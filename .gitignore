@@ -1,36 +1,111 @@
-# Node
-node_modules/
+############################################################
+# MILES ENTERPRISE
+# Authoritative .gitignore
+############################################################
 
+############################
+# Node
+############################
+
+node_modules/
+npm-debug.log*
+package-lock.backup*
+
+############################
 # Environment
+############################
+
 .env
 .env.*
+!.env.example
 
+############################
 # Google Credentials
+############################
+
 CONFIG/Credentials/
 google_token.json
 google_oauth_client.json
 
-# Runtime output
+############################
+# Runtime Generated Data
+############################
+
+DATA/runtime/
+DATA/cache/
+DATA/temp/
+DATA/browser/
+DATA/workforce_results/
+DATA/workforce_logs/
+DATA/workforce_queue/
+DATA/workforce_state/
+DATA/snapshots/
+
+############################
+# Reports / Output
+############################
+
 reports/
 status/
 output/
 outbound/
 tasks/
+coverage/
+dist/
 
+############################
 # Logs
-*.log
+############################
 
-# OS
+*.log
+logs/
+
+############################
+# Database Journals
+############################
+
+*.db-wal
+*.db-shm
+
+############################
+# Windows
+############################
+
 Thumbs.db
 Desktop.ini
 
+############################
 # VS Code
+############################
+
 .vscode/
 
+############################
 # Archives
+############################
+
 *.zip
-node_modules
-node_modules
-node_modules
-node_modules
-node_modules
+*.7z
+*.rar
+
+############################
+# Temporary Files
+############################
+
+*.tmp
+*.bak
+*.old
+*.orig
+
+############################################################
+# Keep Empty Runtime Folders
+############################################################
+
+!DATA/
+!DATA/runtime/.gitkeep
+!DATA/cache/.gitkeep
+!DATA/temp/.gitkeep
+!DATA/workforce_results/.gitkeep
+!DATA/workforce_logs/.gitkeep
+!DATA/workforce_queue/.gitkeep
+!DATA/workforce_state/.gitkeep
