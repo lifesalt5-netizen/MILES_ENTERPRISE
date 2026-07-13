@@ -1,0 +1,6797 @@
+
+============================================================
+FILE: .\SERVICES\CapabilityRegistryService.js
+============================================================
+/**
+ * MILES Capability Registry Service
+ * Version: 1.0.0
+ *
+ * Purpose:
+ * Converts repository components into operational capabilities.
+ *
+ * Depends on:
+ * DATA/repository/repository_registry.json
+ *
+ * Builder Action:
+ * CAPABILITY_REGISTRY
+ *
+ * Outputs:
+ * DATA/capability/capability_registry.json
+ * DATA/capability/capability_summary.json
+ * DATA/capability/capability_owner_map.json
+ * DATA/capability/capability_execution_map.json
+ * DATA/capability/capability_report.md
+ */
+
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
+const REPOSITORY_REGISTRY = path.join(ROOT, "DATA", "repository", "repository_registry.json");
+const OUT_DIR = path.join(ROOT, "DATA", "capability");
+
+function ensureDir(dir) {
+    fs.mkdirSync(dir, { recursive: true });
+}
+
+function readJson(file) {
+    if (!fs.existsSync(file)) {
+        throw new Error(`Required file not found: ${file}`);
+    }
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function writeJson(name, data) {
+    ensureDir(OUT_DIR);
+    fs.writeFileSync(path.join(OUT_DIR, name), JSON.stringify(data, null, 2), "utf8");
+}
+
+function unique(values) {
+    return [...new Set(values.filter(Boolean))];
+}
+
+class CapabilityRegistryService {
+
+    run() {
+        const startedAt = Date.now();
+
+        console.log("");
+        console.log("========================================");
+        console.log(" MILES Capability Registry");
+        console.log("========================================");
+
+        const registry = this.buildRegistry();
+        this.save(registry);
+
+        const durationMs = Date.now() - startedAt;
+
+        console.log("");
+        console.log("Capability Registry Complete");
+        console.log(`Capabilities: ${registry.statistics.totalCapabilities}`);
+        console.log(`Executable Capabilities: ${registry.statistics.executableCapabilities}`);
+        console.log(`Autonomy Score: ${registry.autonomy.score}`);
+        console.log("");
+
+        return {
+            ok: true,
+            action: "CAPABILITY_REGISTRY",
+            generatedAt: registry.generatedAt,
+            durationMs,
+            outDir: OUT_DIR,
+            statistics: registry.statistics,
+            autonomy: registry.autonomy
+        };
+    }
+
+    buildRegistry() {
+        const repo = readJson(REPOSITORY_REGISTRY);
+        const generatedAt = new Date().toISOString();
+
+        const components = repo.components || [];
+
+        const capabilities = this.extractCapabilities(components);
+        const ownerMap = this.buildOwnerMap(capabilities);
+        const executionMap = this.buildExecutionMap(capabilities);
+        const gaps = this.findCapabilityGaps(capabilities);
+        const autonomy = this.scoreAutonomy(capabilities, gaps);
+
+        return {
+            generatedAt,
+            sourceRepositoryRegistryGeneratedAt: repo.generatedAt,
+            mission: "MILES becomes the autonomous Digital COO for P2GC.",
+            capabilities,
+            ownerMap,
+            executionMap,
+            gaps,
+            statistics: this.statistics(capabilities, gaps),
+            autonomy
+        };
+    }
+
+    extractCapabilities(components) {
+        const capabilityMap = new Map();
+
+        for (const component of components) {
+            const detected = component.capabilities || [];
+            const inferred = this.inferCapabilities(component);
+            const all = unique([...detected, ...inferred]);
+
+            for (const cap of all) {
+                if (!capabilityMap.has(cap)) {
+                    capabilityMap.set(cap, {
+                        id: cap,
+                        name: this.humanize(cap),
+                        category: this.category(cap),
+                        description: this.describe(cap),
+                        owners: [],
+                        components: [],
+                        executable: false,
+                        governance: this.governance(cap),
+                        autonomyImpact: this.autonomyImpact(cap),
+                        reducesKevinWorkload: true,
+                        status: "DISCOVERED"
+                    });
+                }
+
+                const record = capabilityMap.get(cap);
+
+                record.owners.push(component.owner || "Unknown");
+
+                record.components.push({
+                    componentId: component.id,
+                    path: component.path,
+                    name: component.name,
+                    componentTypes: component.componentTypes,
+                    owner: component.owner,
+                    dependencies: component.dependencies || [],
+                    events: component.events || {},
+                    status: component.status
+                });
+
+                if (this.isExecutable(component)) {
+                    record.executable = true;
+                }
+            }
+        }
+
+        const capabilities = Array.from(capabilityMap.values());
+
+        for (const cap of capabilities) {
+            cap.owners = unique(cap.owners);
+            cap.componentCount = cap.components.length;
+            cap.primaryOwner = cap.owners[0] || "Unknown";
+            cap.status = cap.executable ? "EXECUTABLE_CANDIDATE" : "DISCOVERED_ONLY";
+        }
+
+        return capabilities.sort((a, b) => a.id.localeCompare(b.id));
+    }
+
+    inferCapabilities(component) {
+        const p = (component.path || "").toLowerCase();
+        const n = (component.name || "").toLowerCase();
+        const types = component.componentTypes || [];
+        const caps = [];
+
+        if (p.includes("instantly") || p.includes("campaign") || p.includes("outbound")) {
+            caps.push("outbound_campaign_operations");
+        }
+
+        if (p.includes("website") || p.includes("b12") || p.includes("seo")) {
+            caps.push("website_operations");
+        }
+
+        if (p.includes("orion") || p.includes("contractor") || p.includes("recompete")) {
+            caps.push("orion_intelligence_operations");
+        }
+
+        if (p.includes("crm") || p.includes("pipeline") || p.includes("proposal") || p.includes("revenue")) {
+            caps.push("revenue_operations");
+        }
+
+        if (p.includes("executive") || p.includes("brief") || p.includes("dashboard")) {
+            caps.push("executive_intelligence");
+        }
+
+        if (p.includes("coo") || p.includes("orchestrator") || p.includes("decision") || p.includes("planner")) {
+            caps.push("coo_orchestration");
+        }
+
+        if (p.includes("runtime") || p.includes("kernel") || p.includes("pm2")) {
+            caps.push("runtime_operations");
+        }
+
+        if (p.includes("learning") || p.includes("confidence") || p.includes("history")) {
+            caps.push("self_learning_operations");
+        }
+
+        if (p.includes("builder") || p.includes("registry") || p.includes("scanner") || p.includes("analyzer")) {
+            caps.push("self_engineering_operations");
+        }
+
+        if (types.includes("connector")) caps.push("connector_operations");
+        if (types.includes("provider")) caps.push("provider_operations");
+        if (types.includes("worker")) caps.push("worker_execution");
+        if (types.includes("service")) caps.push("service_execution");
+        if (types.includes("api")) caps.push("api_surface");
+
+        return caps;
+    }
+
+    isExecutable(component) {
+        const types = component.componentTypes || [];
+
+        return (
+            types.includes("service") ||
+            types.includes("worker") ||
+            types.includes("connector") ||
+            types.includes("provider") ||
+            types.includes("runtime") ||
+            types.includes("automation")
+        );
+    }
+
+    buildOwnerMap(capabilities) {
+        const ownerMap = {};
+
+        for (const cap of capabilities) {
+            for (const owner of cap.owners) {
+                if (!ownerMap[owner]) ownerMap[owner] = [];
+                ownerMap[owner].push({
+                    capabilityId: cap.id,
+                    name: cap.name,
+                    executable: cap.executable,
+                    componentCount: cap.componentCount
+                });
+            }
+        }
+
+        return ownerMap;
+    }
+
+    buildExecutionMap(capabilities) {
+        const executionMap = {};
+
+        for (const cap of capabilities) {
+            executionMap[cap.id] = {
+                capability: cap.name,
+                executable: cap.executable,
+                primaryOwner: cap.primaryOwner,
+                governance: cap.governance,
+                autonomyImpact: cap.autonomyImpact,
+                candidateExecutors: cap.components
+                    .filter(c => {
+                        const types = c.componentTypes || [];
+                        return (
+                            types.includes("service") ||
+                            types.includes("worker") ||
+                            types.includes("connector") ||
+                            types.includes("provider") ||
+                            types.includes("runtime")
+                        );
+                    })
+                    .map(c => ({
+                        path: c.path,
+                        name: c.name,
+                        componentTypes: c.componentTypes,
+                        owner: c.owner
+                    }))
+            };
+        }
+
+        return executionMap;
+    }
+
+    findCapabilityGaps(capabilities) {
+        const byId = new Set(capabilities.map(c => c.id));
+
+        const requiredForCOO = [
+            "repository_awareness",
+            "self_engineering_operations",
+            "runtime_operations",
+            "coo_orchestration",
+            "executive_intelligence",
+            "revenue_operations",
+            "outbound_campaign_operations",
+            "website_operations",
+            "orion_intelligence_operations",
+            "connector_operations",
+            "provider_operations",
+            "worker_execution",
+            "self_learning_operations"
+        ];
+
+        return requiredForCOO
+            .filter(id => !byId.has(id))
+            .map(id => ({
+                capabilityId: id,
+                name: this.humanize(id),
+                severity: "HIGH",
+                reason: "Required for autonomous Digital COO operation but not detected in repository registry."
+            }));
+    }
+
+    scoreAutonomy(capabilities, gaps) {
+        let score = 100;
+
+        score -= Math.min(35, gaps.length * 5);
+
+        const executableCount = capabilities.filter(c => c.executable).length;
+        const total = capabilities.length || 1;
+        const executableRatio = executableCount / total;
+
+        if (executableRatio < 0.5) score -= 20;
+        else if (executableRatio < 0.75) score -= 10;
+
+        const hasCOO = capabilities.some(c => c.id === "coo_orchestration");
+        const hasRevenue = capabilities.some(c => c.id === "revenue_operations");
+        const hasLearning = capabilities.some(c => c.id === "self_learning_operations");
+
+        if (!hasCOO) score -= 15;
+        if (!hasRevenue) score -= 10;
+        if (!hasLearning) score -= 10;
+
+        score = Math.max(0, score);
+
+        return {
+            score,
+            status:
+                score >= 90 ? "AUTONOMY_READY" :
+                score >= 75 ? "STRONG" :
+                score >= 60 ? "PARTIAL" :
+                "NEEDS_BUILD",
+            executableRatio,
+            totalCapabilities: capabilities.length,
+            executableCapabilities: executableCount,
+            gaps: gaps.length
+        };
+    }
+
+    statistics(capabilities, gaps) {
+        return {
+            totalCapabilities: capabilities.length,
+            executableCapabilities: capabilities.filter(c => c.executable).length,
+            discoveredOnlyCapabilities: capabilities.filter(c => !c.executable).length,
+            highAutonomyImpact: capabilities.filter(c => c.autonomyImpact === "HIGH" || c.autonomyImpact === "CRITICAL").length,
+            governanceApprovalRequired: capabilities.filter(c => c.governance.requiresApproval).length,
+            gaps: gaps.length
+        };
+    }
+
+    category(capabilityId) {
+        if (capabilityId.includes("revenue") || capabilityId.includes("campaign")) return "Revenue";
+        if (capabilityId.includes("website") || capabilityId.includes("marketing")) return "Marketing";
+        if (capabilityId.includes("orion") || capabilityId.includes("government")) return "ORION";
+        if (capabilityId.includes("runtime") || capabilityId.includes("kernel")) return "Runtime";
+        if (capabilityId.includes("engineering") || capabilityId.includes("repository")) return "Engineering";
+        if (capabilityId.includes("learning")) return "Learning";
+        if (capabilityId.includes("executive") || capabilityId.includes("coo")) return "Executive";
+        if (capabilityId.includes("connector") || capabilityId.includes("provider") || capabilityId.includes("worker")) return "Infrastructure";
+        return "General";
+    }
+
+    governance(capabilityId) {
+        const approvalRequired = [
+            "pricing_changes",
+            "client_proposal_send",
+            "contract_signing",
+            "data_deletion"
+        ];
+
+        return {
+            requiresApproval: approvalRequired.includes(capabilityId),
+            approvalLevel: approvalRequired.includes(capabilityId) ? "KEVIN" : "AUTONOMOUS_ALLOWED"
+        };
+    }
+
+    autonomyImpact(capabilityId) {
+        if (["coo_orchestration", "runtime_operations", "self_learning_operations", "self_engineering_operations"].includes(capabilityId)) return "CRITICAL";
+        if (["revenue_operations", "outbound_campaign_operations", "orion_intelligence_operations", "executive_intelligence"].includes(capabilityId)) return "HIGH";
+        if (["website_operations", "connector_operations", "provider_operations", "worker_execution"].includes(capabilityId)) return "MEDIUM";
+        return "LOW";
+    }
+
+    describe(capabilityId) {
+        const descriptions = {
+            repository_awareness: "Understands the MILES codebase and component inventory.",
+            self_engineering_operations: "Can inspect, maintain, and improve MILES engineering assets.",
+            runtime_operations: "Can monitor and manage runtime systems.",
+            coo_orchestration: "Can coordinate business operations across P2GC.",
+            executive_intelligence: "Can produce executive summaries, KPIs, priorities, and business briefings.",
+            revenue_operations: "Can monitor and act on revenue, pipeline, CRM, and proposals.",
+            outbound_campaign_operations: "Can operate Instantly and outbound email campaigns.",
+            website_operations: "Can operate website improvements, forms, pages, and conversion systems.",
+            orion_intelligence_operations: "Can operate ORION contractor, buyer, opportunity, and recommendation intelligence.",
+            connector_operations: "Can integrate external systems.",
+            provider_operations: "Can retrieve operational data from system providers.",
+            worker_execution: "Can execute assigned work items.",
+            self_learning_operations: "Can learn from outcomes and improve future behavior."
+        };
+
+        return descriptions[capabilityId] || `Detected capability: ${this.humanize(capabilityId)}.`;
+    }
+
+    humanize(value) {
+        return String(value)
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    save(registry) {
+        ensureDir(OUT_DIR);
+
+        writeJson("capability_registry.json", registry);
+        writeJson("capability_summary.json", {
+            generatedAt: registry.generatedAt,
+            statistics: registry.statistics,
+            autonomy: registry.autonomy,
+            gaps: registry.gaps
+        });
+        writeJson("capability_owner_map.json", {
+            generatedAt: registry.generatedAt,
+            ownerMap: registry.ownerMap
+        });
+        writeJson("capability_execution_map.json", {
+            generatedAt: registry.generatedAt,
+            executionMap: registry.executionMap
+        });
+
+        fs.writeFileSync(
+            path.join(OUT_DIR, "capability_report.md"),
+            this.renderReport(registry),
+            "utf8"
+        );
+    }
+
+    renderReport(registry) {
+        const caps = registry.capabilities
+            .map(c => `| ${c.name} | ${c.category} | ${c.executable ? "Yes" : "No"} | ${c.primaryOwner} | ${c.autonomyImpact} |`)
+            .join("\n");
+
+        const gaps = registry.gaps.length
+            ? registry.gaps.map(g => `- ${g.name}: ${g.reason}`).join("\n")
+            : "No critical COO capability gaps detected.";
+
+        return `# MILES Capability Registry Report
+
+Generated: ${registry.generatedAt}
+
+## Mission
+
+MILES becomes the autonomous Digital COO for P2GC.
+
+## Autonomy Status
+
+Status: ${registry.autonomy.status}  
+Score: ${registry.autonomy.score}
+
+## Summary
+
+| Metric | Count |
+|---|---:|
+| Total Capabilities | ${registry.statistics.totalCapabilities} |
+| Executable Capabilities | ${registry.statistics.executableCapabilities} |
+| Discovered Only | ${registry.statistics.discoveredOnlyCapabilities} |
+| High/Critical Autonomy Impact | ${registry.statistics.highAutonomyImpact} |
+| Governance Approval Required | ${registry.statistics.governanceApprovalRequired} |
+| Gaps | ${registry.statistics.gaps} |
+
+## Capabilities
+
+| Capability | Category | Executable | Primary Owner | Autonomy Impact |
+|---|---|---:|---|---|
+${caps}
+
+## Gaps
+
+${gaps}
+
+## Next Step
+
+Use this Capability Registry as input for the Executive Brain.
+
+The Executive Brain will decide what work should happen using:
+- company state,
+- capability availability,
+- governance rules,
+- task priority,
+- execution readiness.
+`;
+    }
+}
+
+module.exports = new CapabilityRegistryService();
+
+============================================================
+FILE: .\SERVICES\ProviderRegistryService.js
+============================================================
+"use strict";
+
+/**
+ * MILES Provider Registry Service
+ * EXEC_001
+ * Complete replacement file.
+ *
+ * Purpose:
+ * Maintains the provider/action inventory used by the Unified Action Engine.
+ * This registry is intentionally metadata-only. Secrets belong in a vault, not here.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "action_engine");
+const REGISTRY_FILE = path.join(OUT_DIR, "provider_registry.json");
+const REPORT_FILE = path.join(OUT_DIR, "provider_registry_report.md");
+
+function ensureDir(dir) {
+    fs.mkdirSync(dir, { recursive: true });
+}
+
+function readJson(file, fallback) {
+    try {
+        if (!fs.existsSync(file)) return fallback;
+        return JSON.parse(fs.readFileSync(file, "utf8"));
+    } catch {
+        return fallback;
+    }
+}
+
+function writeJson(file, value) {
+    ensureDir(path.dirname(file));
+    fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8");
+}
+
+class ProviderRegistryService {
+    constructor() {
+        this.defaultProviders = this.buildDefaults();
+    }
+
+    run(input = {}) {
+        const registry = this.loadOrCreate();
+
+        if (input.refresh === true) {
+            registry.providers = this.defaultProviders;
+            registry.updatedAt = new Date().toISOString();
+            writeJson(REGISTRY_FILE, registry);
+        }
+
+        fs.writeFileSync(REPORT_FILE, this.renderReport(registry), "utf8");
+
+        return {
+            ok: true,
+            action: "PROVIDER_REGISTRY",
+            generatedAt: new Date().toISOString(),
+            outDir: OUT_DIR,
+            providers: registry.providers.length,
+            executableProviders: registry.providers.filter(p => p.status === "AVAILABLE" && p.canExecute === true).length,
+            registryFile: REGISTRY_FILE
+        };
+    }
+
+    loadOrCreate() {
+        const existing = readJson(REGISTRY_FILE, null);
+        if (existing && Array.isArray(existing.providers)) return existing;
+
+        const registry = {
+            ok: true,
+            type: "MILES_PROVIDER_REGISTRY",
+            build: "EXEC_001",
+            generatedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            policy: {
+                secretsStoredHere: false,
+                secretLocation: "Credential vault or environment variables only.",
+                destructiveActionsRequireKevin: true,
+                defaultMode: "SAFE_DRY_RUN_UNLESS_PROVIDER_VERIFIED"
+            },
+            providers: this.defaultProviders
+        };
+
+        writeJson(REGISTRY_FILE, registry);
+        fs.writeFileSync(REPORT_FILE, this.renderReport(registry), "utf8");
+        return registry;
+    }
+
+    getProvider(name) {
+        const registry = this.loadOrCreate();
+        const normalized = String(name || "").toLowerCase();
+        return registry.providers.find(p =>
+            p.id.toLowerCase() === normalized ||
+            p.name.toLowerCase() === normalized ||
+            (p.aliases || []).map(a => a.toLowerCase()).includes(normalized)
+        ) || null;
+    }
+
+    resolveProviderFromText(text) {
+        const value = String(text || "").toLowerCase();
+        const registry = this.loadOrCreate();
+
+        for (const provider of registry.providers) {
+            const keys = [provider.id, provider.name, ...(provider.aliases || [])]
+                .map(v => String(v).toLowerCase());
+            if (keys.some(k => value.includes(k))) return provider;
+        }
+
+        if (/instantly|campaign|outbound|bounce|warmup|inbox/.test(value)) return this.getProvider("instantly");
+        if (/google workspace|gmail|user|alias|mailbox/.test(value)) return this.getProvider("google_workspace");
+        if (/namecheap|domain|dns|dkim|spf|dmarc/.test(value)) return this.getProvider("namecheap");
+        if (/website|ionos|page|form|seo|publish/.test(value)) return this.getProvider("website");
+        if (/linkedin|post|profile|connection/.test(value)) return this.getProvider("linkedin");
+        if (/orion|contractor|buyer|vehicle|recompete|dataset/.test(value)) return this.getProvider("orion");
+        if (/crm|pipeline|lead|prospect|client/.test(value)) return this.getProvider("crm");
+        if (/file|folder|csv|xlsx|json|archive/.test(value)) return this.getProvider("filesystem");
+        if (/email|gmail|reply|inbox/.test(value)) return this.getProvider("email");
+
+        return this.getProvider("general_operations");
+    }
+
+    buildDefaults() {
+        const base = [
+            {
+                id: "instantly",
+                name: "Instantly",
+                aliases: ["outbound", "campaign", "warmup", "bounce"],
+                purpose: "Outbound campaign operations and inbox rotation.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DELETE_CAMPAIGN", "SEND_LIVE_EMAIL", "CHANGE_DOMAIN_AUTH"],
+                supportedActions: ["CREATE_CAMPAIGN", "UPLOAD_LEADS", "ASSIGN_INBOXES", "PAUSE_CAMPAIGN", "READ_METRICS"],
+                verification: "Provider controller must confirm object exists or state changed.",
+                rollback: "Provider-specific rollback required."
+            },
+            {
+                id: "google_workspace",
+                name: "Google Workspace",
+                aliases: ["gmail", "workspace", "google admin"],
+                purpose: "Mailbox and user administration.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DELETE_USER", "SUSPEND_USER", "RESET_PASSWORD"],
+                supportedActions: ["CREATE_USER", "CREATE_ALIAS", "READ_USERS", "CHECK_MAILBOX"],
+                verification: "Confirm user, alias, or mailbox state after action.",
+                rollback: "Disable or remove created object only with governance approval."
+            },
+            {
+                id: "namecheap",
+                name: "Namecheap",
+                aliases: ["domain", "dns", "dkim", "spf", "dmarc"],
+                purpose: "Domain and DNS operations.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["BUY_DOMAIN", "DELETE_DNS_RECORD", "TRANSFER_DOMAIN"],
+                supportedActions: ["READ_DOMAINS", "UPDATE_DNS", "CHECK_DKIM", "CHECK_SPF", "CHECK_DMARC"],
+                verification: "DNS lookup or registrar readback.",
+                rollback: "Restore previous DNS records from audit snapshot."
+            },
+            {
+                id: "website",
+                name: "Website",
+                aliases: ["ionos", "cms", "seo", "landing page"],
+                purpose: "Website content, forms, SEO, and publishing workflow.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["PUBLISH_PRICING_CHANGE", "DELETE_PAGE"],
+                supportedActions: ["READ_PAGE", "QUEUE_PAGE_EDIT", "VERIFY_FORM", "GENERATE_PAGE_CHANGE"],
+                verification: "Fetch page or inspect change queue after execution.",
+                rollback: "Restore from website backup/change queue."
+            },
+            {
+                id: "linkedin",
+                name: "LinkedIn",
+                aliases: ["social", "posts"],
+                purpose: "LinkedIn content and relationship operations.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["PUBLISH_POST", "SEND_MESSAGE"],
+                supportedActions: ["DRAFT_POST", "READ_ACTIVITY", "QUEUE_MESSAGE"],
+                verification: "Draft or post URL/state confirmed.",
+                rollback: "Manual or provider-specific rollback."
+            },
+            {
+                id: "orion",
+                name: "ORION",
+                aliases: ["contractor", "buyer", "vehicle", "dataset", "recompete"],
+                purpose: "ORION data, analysis, and intelligence operations.",
+                status: "AVAILABLE",
+                canRead: true,
+                canExecute: true,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DELETE_DATA", "DROP_TABLE"],
+                supportedActions: ["READ_STATUS", "QUEUE_REFRESH", "GENERATE_REPORT", "VALIDATE_DATASET"],
+                verification: "File/database output exists and passes validation.",
+                rollback: "Restore from backup if mutation support is added."
+            },
+            {
+                id: "crm",
+                name: "CRM",
+                aliases: ["pipeline", "lead", "prospect", "client"],
+                purpose: "Pipeline, lead, client, and proposal tracking.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DELETE_RECORD", "SEND_PROPOSAL"],
+                supportedActions: ["READ_PIPELINE", "UPDATE_STAGE", "CREATE_FOLLOWUP", "QUEUE_PROPOSAL"],
+                verification: "Record state confirmed after execution.",
+                rollback: "Restore prior record snapshot."
+            },
+            {
+                id: "filesystem",
+                name: "Filesystem",
+                aliases: ["file", "folder", "csv", "json", "xlsx"],
+                purpose: "Local file creation, validation, archiving, and reports.",
+                status: "AVAILABLE",
+                canRead: true,
+                canExecute: true,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DELETE_FILE", "DELETE_FOLDER"],
+                supportedActions: ["CREATE_REPORT", "VALIDATE_FILE", "ARCHIVE_FILE", "WRITE_JSON", "READ_JSON"],
+                verification: "File exists and content validates.",
+                rollback: "Restore from backup."
+            },
+            {
+                id: "email",
+                name: "Email",
+                aliases: ["gmail", "inbox", "reply"],
+                purpose: "Email reading, drafting, and executive communication workflows.",
+                status: "NEEDS_CONNECTOR",
+                canRead: true,
+                canExecute: false,
+                canDelete: false,
+                requiresKevinApprovalFor: ["SEND_EMAIL", "DELETE_EMAIL"],
+                supportedActions: ["READ_INBOX", "DRAFT_EMAIL", "CLASSIFY_REPLY"],
+                verification: "Draft/message state confirmed.",
+                rollback: "Provider-specific."
+            },
+            {
+                id: "general_operations",
+                name: "General Operations",
+                aliases: ["miles", "operations", "general"],
+                purpose: "Safe internal operational work when no provider is detected.",
+                status: "AVAILABLE",
+                canRead: true,
+                canExecute: true,
+                canDelete: false,
+                requiresKevinApprovalFor: ["DESTRUCTIVE_ACTION"],
+                supportedActions: ["CREATE_INTERNAL_RECORD", "GENERATE_RECOMMENDATION", "QUEUE_REVIEW"],
+                verification: "Internal output exists.",
+                rollback: "Archive or supersede internal record."
+            }
+        ];
+
+        return base.map(provider => ({
+            ...provider,
+            lastVerified: null,
+            health: provider.status === "AVAILABLE" ? "READY" : "NOT_CONNECTED"
+        }));
+    }
+
+    renderReport(registry) {
+        const rows = registry.providers.map(p =>
+            `| ${p.name} | ${p.status} | ${p.canExecute ? "Yes" : "No"} | ${p.health} | ${p.supportedActions.length} |`
+        ).join("\n");
+
+        return `# MILES Provider Registry Report\n\nGenerated: ${new Date().toISOString()}\n\n## Policy\n\nSecrets Stored Here: No  \nDefault Mode: ${registry.policy.defaultMode}\n\n## Providers\n\n| Provider | Status | Can Execute | Health | Actions |\n|---|---:|---:|---:|---:|\n${rows}\n`;
+    }
+}
+
+module.exports = new ProviderRegistryService();
+
+============================================================
+FILE: .\SERVICES\ProviderAuthorityRegistryService.js
+============================================================
+"use strict";
+
+/**
+ * EXEC_006 Provider Authority Registry Service
+ * Complete replacement file.
+ *
+ * Purpose:
+ * Creates one authoritative provider model used by Action Engine,
+ * Provider Controllers, Business Execution Engine, Dashboard, and Learning.
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
+const OUT_FILE = path.join(OUT_DIR, "provider_authority_registry.json");
+
+function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
+function exists(p) { try { return fs.existsSync(p); } catch { return false; } }
+function readJson(file, fallback) {
+    try { if (!exists(file)) return fallback; return JSON.parse(fs.readFileSync(file, "utf8")); }
+    catch { return fallback; }
+}
+function writeJson(file, value) { ensureDir(path.dirname(file)); fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8"); }
+
+class ProviderAuthorityRegistryService {
+    constructor() {
+        this.providers = this.defaultProviders();
+    }
+
+    run(input = {}) {
+        const generatedAt = new Date().toISOString();
+        const priorRegistry = readJson(path.join(ROOT, "DATA", "provider_controllers", "provider_controller_registry.json"), null)
+            || readJson(path.join(ROOT, "DATA", "provider_controllers", "latest_provider_controllers.json"), null);
+
+        const liveStatus = this.detectLiveStatus();
+        const providers = this.providers.map(provider => {
+            const prior = this.findPrior(priorRegistry, provider.key);
+            const status = liveStatus[provider.key] || {};
+            return this.normalizeProvider(provider, prior, status);
+        });
+
+        const result = {
+            ok: true,
+            action: "PROVIDER_AUTHORITY_REGISTRY",
+            type: "MILES_PROVIDER_AUTHORITY_REGISTRY",
+            build: "EXEC_006",
+            generatedAt,
+            providers,
+            summary: {
+                total: providers.length,
+                ready: providers.filter(p => p.status === "READY").length,
+                readReady: providers.filter(p => p.capabilities.read.enabled).length,
+                writeReady: providers.filter(p => p.capabilities.write.enabled).length,
+                safeMode: providers.filter(p => p.status === "SAFE_MODE" || p.safeMode).length,
+                missingCredentials: providers.filter(p => !p.credentials.present).length
+            },
+            outDir: OUT_DIR
+        };
+
+        writeJson(OUT_FILE, result);
+        writeJson(path.join(OUT_DIR, "latest_provider_authority_registry.json"), result);
+        return result;
+    }
+
+    defaultProviders() {
+        return [
+            {
+                key: "instantly",
+                name: "Instantly",
+                env: ["INSTANTLY_API_KEY"],
+                module: "InstantlyProviderCompatibilityService",
+                operations: ["HEALTH_CHECK", "LIST_CAMPAIGNS", "GET_CAMPAIGN", "CREATE_CAMPAIGN", "PAUSE_CAMPAIGN", "RESUME_CAMPAIGN", "UPLOAD_LEADS", "ASSIGN_SENDING_ACCOUNTS", "GENERATE_CAMPAIGN_REPORT"],
+                readOps: ["HEALTH_CHECK", "LIST_CAMPAIGNS", "GET_CAMPAIGN", "GENERATE_CAMPAIGN_REPORT"],
+                writeOps: ["CREATE_CAMPAIGN", "PAUSE_CAMPAIGN", "RESUME_CAMPAIGN", "UPLOAD_LEADS", "ASSIGN_SENDING_ACCOUNTS"],
+                writeFlag: "INSTANTLY_WRITE_ENABLED"
+            },
+            {
+                key: "google_workspace",
+                name: "Google Workspace",
+                env: ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_WORKSPACE_ADMIN_EMAIL"],
+                module: "GoogleWorkspaceProviderController",
+                operations: ["HEALTH_CHECK", "LIST_USERS", "CREATE_USER", "CREATE_ALIAS", "SUSPEND_USER", "VERIFY_MAILBOX"],
+                readOps: ["HEALTH_CHECK", "LIST_USERS", "VERIFY_MAILBOX"],
+                writeOps: ["CREATE_USER", "CREATE_ALIAS", "SUSPEND_USER"],
+                writeFlag: "GOOGLE_WORKSPACE_WRITE_ENABLED"
+            },
+            {
+                key: "namecheap",
+                name: "Namecheap",
+                env: ["NAMECHEAP_API_USER", "NAMECHEAP_API_KEY", "NAMECHEAP_CLIENT_IP"],
+                module: "NamecheapProviderController",
+                operations: ["HEALTH_CHECK", "LIST_DOMAINS", "UPDATE_DNS_OR_VERIFY_AUTH", "VERIFY_SPF", "VERIFY_DKIM", "VERIFY_DMARC"],
+                readOps: ["HEALTH_CHECK", "LIST_DOMAINS", "VERIFY_SPF", "VERIFY_DKIM", "VERIFY_DMARC"],
+                writeOps: ["UPDATE_DNS_OR_VERIFY_AUTH"],
+                writeFlag: "NAMECHEAP_WRITE_ENABLED"
+            },
+            {
+                key: "website",
+                name: "Website",
+                env: ["WEBSITE_ROOT"],
+                module: "WebsiteProviderController",
+                operations: ["HEALTH_CHECK", "BACKUP_SITE", "UPDATE_PAGE", "PUBLISH_PAGE", "VERIFY_PAGE", "GENERATE_WEBSITE_REPORT"],
+                readOps: ["HEALTH_CHECK", "VERIFY_PAGE", "GENERATE_WEBSITE_REPORT"],
+                writeOps: ["BACKUP_SITE", "UPDATE_PAGE", "PUBLISH_PAGE"],
+                writeFlag: "WEBSITE_WRITE_ENABLED"
+            },
+            {
+                key: "orion",
+                name: "ORION",
+                env: ["ORION_DB_PATH"],
+                module: "OrionProviderController",
+                operations: ["HEALTH_CHECK", "VERIFY_DATABASE", "REFRESH_DATASETS", "RUN_INTELLIGENCE_JOB", "GENERATE_ORION_REPORT"],
+                readOps: ["HEALTH_CHECK", "VERIFY_DATABASE", "GENERATE_ORION_REPORT"],
+                writeOps: ["REFRESH_DATASETS", "RUN_INTELLIGENCE_JOB"],
+                writeFlag: "ORION_WRITE_ENABLED"
+            },
+            {
+                key: "filesystem",
+                name: "File System",
+                env: [],
+                module: "FileSystemProviderController",
+                operations: ["HEALTH_CHECK", "ENSURE_DIRECTORY", "WRITE_JSON", "READ_JSON", "VERIFY_PATH"],
+                readOps: ["HEALTH_CHECK", "READ_JSON", "VERIFY_PATH"],
+                writeOps: ["ENSURE_DIRECTORY", "WRITE_JSON"],
+                writeFlag: "FILESYSTEM_WRITE_ENABLED",
+                alwaysAvailable: true
+            }
+        ];
+    }
+
+    findPrior(registry, key) {
+        const providers = registry?.providers || registry?.registry?.providers || [];
+        return providers.find(p => p.provider === key || p.key === key) || null;
+    }
+
+    detectLiveStatus() {
+        return {
+            instantly: {
+                credentialsPresent: Boolean(process.env.INSTANTLY_API_KEY),
+                writeEnabled: String(process.env.INSTANTLY_WRITE_ENABLED || "").toLowerCase() === "true"
+            },
+            filesystem: { credentialsPresent: true, writeEnabled: true },
+            orion: { credentialsPresent: Boolean(process.env.ORION_DB_PATH) || exists(path.join(ROOT, "DATA")), writeEnabled: String(process.env.ORION_WRITE_ENABLED || "").toLowerCase() === "true" },
+            website: { credentialsPresent: Boolean(process.env.WEBSITE_ROOT) || exists(path.join(ROOT, "DATA", "website")), writeEnabled: String(process.env.WEBSITE_WRITE_ENABLED || "").toLowerCase() === "true" },
+            google_workspace: { credentialsPresent: Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_WORKSPACE_ADMIN_EMAIL), writeEnabled: String(process.env.GOOGLE_WORKSPACE_WRITE_ENABLED || "").toLowerCase() === "true" },
+            namecheap: { credentialsPresent: Boolean(process.env.NAMECHEAP_API_USER && process.env.NAMECHEAP_API_KEY && process.env.NAMECHEAP_CLIENT_IP), writeEnabled: String(process.env.NAMECHEAP_WRITE_ENABLED || "").toLowerCase() === "true" }
+        };
+    }
+
+    normalizeProvider(provider, prior, status) {
+        const credentialsPresent = provider.alwaysAvailable || Boolean(status.credentialsPresent || prior?.credentialsPresent);
+        const writeEnabled = Boolean(status.writeEnabled);
+        const readEnabled = credentialsPresent || provider.alwaysAvailable;
+        const executable = readEnabled;
+        const safeMode = !writeEnabled;
+        return {
+            key: provider.key,
+            provider: provider.key,
+            name: provider.name,
+            providerName: provider.name,
+            module: provider.module,
+            executable,
+            credentialsPresent,
+            credentials: {
+                present: credentialsPresent,
+                requiredEnv: provider.env,
+                missingEnv: provider.env.filter(k => !process.env[k])
+            },
+            safeMode,
+            status: executable ? (safeMode ? "READY_READ_ONLY" : "READY") : "MISSING_CREDENTIALS",
+            capabilities: {
+                read: { enabled: readEnabled, operations: provider.readOps },
+                write: { enabled: writeEnabled && credentialsPresent, operations: provider.writeOps, flag: provider.writeFlag },
+                rollback: { enabled: false, operations: [] },
+                verify: { enabled: true }
+            },
+            supportedOperations: provider.operations,
+            generatedAt: new Date().toISOString()
+        };
+    }
+}
+
+module.exports = new ProviderAuthorityRegistryService();
+
+============================================================
+FILE: .\SERVICES\ProviderCapabilityBindingService.js
+============================================================
+"use strict";
+
+/** EXEC_006 Provider Capability Binding Service - Complete replacement file. */
+
+const fs = require("fs");
+const path = require("path");
+const authority = require("./ProviderAuthorityRegistryService");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
+
+function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
+function writeJson(file, value) { ensureDir(path.dirname(file)); fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8"); }
+
+class ProviderCapabilityBindingService {
+    run(input = {}) {
+        const registry = authority.run(input);
+        const bindings = {};
+        for (const provider of registry.providers) {
+            bindings[provider.key] = {
+                provider: provider.key,
+                providerName: provider.name,
+                executable: provider.executable,
+                status: provider.status,
+                credentialsPresent: provider.credentialsPresent,
+                readOperations: provider.capabilities.read.operations,
+                writeOperations: provider.capabilities.write.operations,
+                writeEnabled: provider.capabilities.write.enabled,
+                operations: provider.supportedOperations.reduce((acc, op) => {
+                    acc[op] = {
+                        provider: provider.key,
+                        operation: op,
+                        executable: provider.executable,
+                        readOnly: provider.capabilities.read.operations.includes(op),
+                        write: provider.capabilities.write.operations.includes(op),
+                        authorized: provider.capabilities.read.operations.includes(op) || provider.capabilities.write.enabled
+                    };
+                    return acc;
+                }, {})
+            };
+        }
+        const result = {
+            ok: true,
+            action: "PROVIDER_CAPABILITY_BINDINGS",
+            build: "EXEC_006",
+            generatedAt: new Date().toISOString(),
+            bindings,
+            summary: {
+                providers: Object.keys(bindings).length,
+                executableProviders: Object.values(bindings).filter(b => b.executable).length,
+                operations: Object.values(bindings).reduce((sum, b) => sum + Object.keys(b.operations).length, 0)
+            },
+            outDir: OUT_DIR
+        };
+        writeJson(path.join(OUT_DIR, "provider_capability_bindings.json"), result);
+        return result;
+    }
+}
+
+module.exports = new ProviderCapabilityBindingService();
+
+============================================================
+FILE: .\SERVICES\ProviderSynchronizationService.js
+============================================================
+"use strict";
+
+/**
+ * EXEC_006 Provider Synchronization Service
+ * Complete replacement file.
+ */
+
+const fs = require("fs");
+const path = require("path");
+const authority = require("./ProviderAuthorityRegistryService");
+const adapters = require("./ProviderInterfaceAdapterService");
+const bindings = require("./ProviderCapabilityBindingService");
+const instantly = require("./InstantlyProviderCompatibilityService");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
+
+function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
+function writeJson(file, value) { ensureDir(path.dirname(file)); fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8"); }
+
+class ProviderSynchronizationService {
+    async run(input = {}) {
+        const startedAt = Date.now();
+        const registry = authority.run(input);
+        const interfaceAdapters = adapters.run(input);
+        const capabilityBindings = bindings.run(input);
+        const liveReadTest = await this.liveReadTest(input);
+
+        const mismatches = this.detectMismatches(registry, interfaceAdapters, capabilityBindings, liveReadTest);
+        const result = {
+            ok: mismatches.filter(m => m.severity === "ERROR").length === 0,
+            action: "PROVIDER_SYNC",
+            type: "MILES_PROVIDER_SYNCHRONIZATION",
+            build: "EXEC_006",
+            generatedAt: new Date().toISOString(),
+            durationMs: Date.now() - startedAt,
+            registry,
+            interfaceAdapters,
+            capabilityBindings,
+            liveReadTest,
+            mismatches,
+            summary: {
+                providers: registry.summary.total,
+                ready: registry.summary.ready,
+                readReady: registry.summary.readReady,
+                writeReady: registry.summary.writeReady,
+                compatibleAdapters: interfaceAdapters.summary.compatible,
+                mismatches: mismatches.length,
+                errors: mismatches.filter(m => m.severity === "ERROR").length,
+                instantlyReadReady: Boolean(liveReadTest?.ok)
+            },
+            outDir: OUT_DIR
+        };
+        writeJson(path.join(OUT_DIR, "provider_synchronization.json"), result);
+        writeJson(path.join(OUT_DIR, "latest_provider_synchronization.json"), result);
+        fs.writeFileSync(path.join(OUT_DIR, "provider_synchronization_report.md"), this.renderReport(result), "utf8");
+        return result;
+    }
+
+    async liveReadTest(input = {}) {
+        if (input.skipLiveRead === true) return { ok: true, skipped: true, reason: "skipLiveRead requested" };
+        if (!process.env.INSTANTLY_API_KEY) {
+            return { ok: false, provider: "instantly", status: "MISSING_CREDENTIALS", message: "INSTANTLY_API_KEY not set; live read test skipped." };
+        }
+        return await instantly.listCampaigns({ limit: 1 });
+    }
+
+    detectMismatches(registry, interfaceAdapters, capabilityBindings, liveReadTest) {
+        const mismatches = [];
+        for (const adapter of interfaceAdapters.adapters) {
+            if (!adapter.compatible) {
+                mismatches.push({ severity: "ERROR", provider: adapter.provider, message: `Provider adapter missing required methods: ${adapter.missingMethods.join(", ")}` });
+            }
+        }
+        const inst = registry.providers.find(p => p.key === "instantly");
+        if (process.env.INSTANTLY_API_KEY && inst && !inst.executable) {
+            mismatches.push({ severity: "ERROR", provider: "instantly", message: "INSTANTLY_API_KEY is present but authority registry does not mark Instantly executable." });
+        }
+        if (process.env.INSTANTLY_API_KEY && !liveReadTest.ok) {
+            mismatches.push({ severity: "WARNING", provider: "instantly", message: "Instantly key is present but live read test did not pass.", detail: liveReadTest.message || liveReadTest.status });
+        }
+        const bind = capabilityBindings.bindings.instantly;
+        if (inst && bind && inst.executable !== bind.executable) {
+            mismatches.push({ severity: "ERROR", provider: "instantly", message: "Authority registry and capability binding disagree on Instantly executable state." });
+        }
+        return mismatches;
+    }
+
+    renderReport(result) {
+        const mismatches = result.mismatches.length
+            ? result.mismatches.map(m => `- ${m.severity} / ${m.provider}: ${m.message}`).join("\n")
+            : "- None";
+        return `# EXEC_006 Provider Synchronization Report\n\nGenerated: ${result.generatedAt}\n\n## Summary\n\nProviders: ${result.summary.providers}\nReady: ${result.summary.ready}\nRead Ready: ${result.summary.readReady}\nWrite Ready: ${result.summary.writeReady}\nCompatible Adapters: ${result.summary.compatibleAdapters}\nInstantly Read Ready: ${result.summary.instantlyReadReady ? "Yes" : "No"}\nErrors: ${result.summary.errors}\n\n## Mismatches\n\n${mismatches}\n`;
+    }
+}
+
+module.exports = new ProviderSynchronizationService();
+
+============================================================
+FILE: .\SERVICES\ProviderControllerRegistryService.js
+============================================================
+"use strict";
+const fs = require("fs");
+const path = require("path");
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "provider_controllers");
+function ensureDir(dir){ fs.mkdirSync(dir,{recursive:true}); }
+function writeJson(file,value){ ensureDir(path.dirname(file)); fs.writeFileSync(file, JSON.stringify(value,null,2), "utf8"); }
+class ProviderControllerRegistryService {
+    constructor(){
+        this.controllers = {
+            instantly: require("./InstantlyProviderController"),
+            google_workspace: require("./GoogleWorkspaceProviderController"),
+            namecheap: require("./NamecheapProviderController"),
+            website: require("./WebsiteProviderController"),
+            orion: require("./OrionProviderController"),
+            filesystem: require("./FileSystemProviderController")
+        };
+    }
+    get(provider){ return this.controllers[String(provider||"").toLowerCase()] || null; }
+    list(){ return Object.values(this.controllers).map(c => c.status()); }
+    run(){
+        const generatedAt = new Date().toISOString();
+        const providers = this.list();
+        const result = {
+            ok:true,
+            action:"PROVIDER_CONTROLLERS",
+            type:"MILES_PROVIDER_CONTROLLER_REGISTRY",
+            build:"EXEC_002",
+            generatedAt,
+            providers,
+            summary:{ total: providers.length, executable: providers.filter(p=>p.executable).length, credentialsConfigured: providers.filter(p=>p.credentialsPresent).length },
+            outDir: OUT_DIR
+        };
+        ensureDir(OUT_DIR);
+        writeJson(path.join(OUT_DIR,"provider_controllers.json"), result);
+        fs.writeFileSync(path.join(OUT_DIR,"provider_controllers_report.md"), this.render(result), "utf8");
+        return result;
+    }
+    render(result){ return `# EXEC_002 Provider Controllers\n\nGenerated: ${result.generatedAt}\n\nTotal: ${result.summary.total}\nExecutable: ${result.summary.executable}\nCredentials Configured: ${result.summary.credentialsConfigured}\n\n${result.providers.map(p=>`- ${p.providerName} (${p.provider}) — executable=${p.executable}, credentials=${p.credentialsPresent}`).join("\n")}\n`; }
+}
+module.exports = new ProviderControllerRegistryService();
+
+============================================================
+FILE: .\SERVICES\ProviderInterfaceAdapterService.js
+============================================================
+"use strict";
+
+/**
+ * EXEC_006 Provider Interface Adapter Service
+ * Complete replacement file.
+ */
+
+const fs = require("fs");
+const path = require("path");
+const authority = require("./ProviderAuthorityRegistryService");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
+
+function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
+function writeJson(file, value) { ensureDir(path.dirname(file)); fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8"); }
+
+class ProviderInterfaceAdapterService {
+    run(input = {}) {
+        const registry = authority.run(input);
+        const adapters = registry.providers.map(p => this.adapterFor(p));
+        const result = {
+            ok: true,
+            action: "PROVIDER_INTERFACE_ADAPTERS",
+            build: "EXEC_006",
+            generatedAt: new Date().toISOString(),
+            adapters,
+            summary: {
+                total: adapters.length,
+                compatible: adapters.filter(a => a.compatible).length,
+                missingMethods: adapters.reduce((sum, a) => sum + a.missingMethods.length, 0)
+            },
+            outDir: OUT_DIR
+        };
+        writeJson(path.join(OUT_DIR, "provider_interface_adapters.json"), result);
+        return result;
+    }
+
+    adapterFor(provider) {
+        const required = ["connect", "status", "execute"];
+        const optional = ["healthCheck", "verify", "rollback", "report"];
+        let moduleObject = null;
+        const errors = [];
+        try {
+            moduleObject = require(`./${provider.module}`);
+        } catch (error) {
+            errors.push(error.message);
+        }
+        const methods = [...required, ...optional].map(name => ({ name, present: Boolean(moduleObject && typeof moduleObject[name] === "function") }));
+        const missingMethods = methods.filter(m => required.includes(m.name) && !m.present).map(m => m.name);
+        return {
+            provider: provider.key,
+            providerName: provider.name,
+            module: provider.module,
+            compatible: missingMethods.length === 0,
+            methods,
+            missingMethods,
+            errors
+        };
+    }
+}
+
+module.exports = new ProviderInterfaceAdapterService();
+
+============================================================
+FILE: .\SERVICES\registry\EnterpriseCapabilityRegistryService.js
+============================================================
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+class EnterpriseCapabilityRegistryService {
+  constructor(options = {}) {
+    this.rootDir = path.resolve(options.rootDir || process.cwd());
+    this.runtimeDir = path.resolve(
+      options.runtimeDir || path.join(this.rootDir, 'runtime', 'enterprise_registry')
+    );
+    this.componentRegistryPath = path.join(this.runtimeDir, 'component_registry.json');
+    this.capabilityRegistryPath = path.join(this.runtimeDir, 'capability_registry.json');
+    this.routingTablePath = path.join(this.runtimeDir, 'capability_routing_table.json');
+    this.summaryPath = path.join(this.runtimeDir, 'capability_registry_summary.json');
+    this.service = 'ENTERPRISE_CAPABILITY_REGISTRY';
+    this.version = '1.0.0';
+    fs.mkdirSync(this.runtimeDir, { recursive: true });
+  }
+
+  now() {
+    return new Date().toISOString();
+  }
+
+  loadComponents() {
+    const parsed = JSON.parse(fs.readFileSync(this.componentRegistryPath, 'utf8'));
+    return Array.isArray(parsed.components) ? parsed.components : [];
+  }
+
+  inferCapabilities(component) {
+    const capabilities = new Set(component.supportedActions || []);
+    const source = `${component.name} ${component.relativePath} ${(component.categories || []).join(' ')}`.toUpperCase();
+
+    const rules = [
+      [/INSTANTLY/, ['SYNC_CAMPAIGNS', 'SYNC_SEGMENTS', 'UPLOAD_LEADS', 'CHECK_DELIVERABILITY']],
+      [/WEBSITE/, ['AUDIT_WEBSITE', 'QUEUE_WEBSITE_CHANGE', 'PUBLISH_WEBSITE_CHANGE']],
+      [/GOOGLE|GMAIL/, ['READ_EMAIL', 'SEND_EMAIL', 'MANAGE_GOOGLE_ACCOUNT']],
+      [/CALENDAR|CALENDLY/, ['READ_CALENDAR', 'CREATE_CALENDAR_EVENT', 'SYNC_SCHEDULING']],
+      [/NAMECHEAP|DNS/, ['READ_DNS', 'UPDATE_DNS', 'CHECK_DOMAIN_HEALTH']],
+      [/IONOS/, ['MANAGE_IONOS', 'CHECK_HOSTING_HEALTH']],
+      [/PROPOSAL/, ['ANALYZE_SOLICITATION', 'BUILD_COMPLIANCE_MATRIX', 'MANAGE_PROPOSAL']],
+      [/ORION/, ['QUERY_ORION', 'SCORE_CONTRACTOR', 'SCORE_OPPORTUNITY']],
+      [/SALES|CRM/, ['MANAGE_PIPELINE', 'QUALIFY_LEAD', 'CREATE_FOLLOW_UP']],
+      [/MARKETING/, ['PLAN_CAMPAIGN', 'MANAGE_MARKETING']],
+      [/PLANNER/, ['CREATE_PLAN', 'PRIORITIZE_WORK']],
+      [/SCHEDULER|CRON/, ['SCHEDULE_WORK']],
+      [/DASHBOARD|REPORT/, ['GENERATE_EXECUTIVE_REPORT']],
+      [/HEALTH|SUPERVISOR/, ['RUN_HEALTH_CHECK', 'RECOVER_SERVICE']],
+      [/APPROVAL|DECISION|GOVERNANCE/, ['REQUEST_APPROVAL', 'EVALUATE_AUTHORITY']]
+    ];
+
+    for (const [pattern, names] of rules) {
+      if (pattern.test(source)) names.forEach(name => capabilities.add(name));
+    }
+
+    return [...capabilities].sort();
+  }
+
+  capabilityRisk(name) {
+    const highRisk = [
+      'SEND_EMAIL', 'START_CAMPAIGN', 'RESUME_CAMPAIGN',
+      'DELETE_CAMPAIGN', 'DELETE_LEADS', 'UPDATE_DNS',
+      'PUBLISH_WEBSITE_CHANGE', 'MANAGE_GOOGLE_ACCOUNT'
+    ];
+    const mediumRisk = [
+      'UPLOAD_LEADS', 'CREATE_CALENDAR_EVENT',
+      'QUEUE_WEBSITE_CHANGE', 'CREATE_FOLLOW_UP'
+    ];
+
+    if (highRisk.includes(name)) return 'HIGH';
+    if (mediumRisk.includes(name)) return 'MEDIUM';
+    return 'LOW';
+  }
+
+  build() {
+    if (!fs.existsSync(this.componentRegistryPath)) {
+      throw new Error('Component registry does not exist. Run the component registry first.');
+    }
+
+    const components = this.loadComponents();
+    const capabilityMap = new Map();
+
+    for (const component of components) {
+      const capabilities = this.inferCapabilities(component);
+
+      for (const capabilityName of capabilities) {
+        if (!capabilityMap.has(capabilityName)) {
+          capabilityMap.set(capabilityName, {
+            capabilityId: `CAP_${capabilityName}`,
+            name: capabilityName,
+            riskLevel: this.capabilityRisk(capabilityName),
+            providers: [],
+            status: 'AVAILABLE',
+            generatedAt: this.now()
+          });
+        }
+
+        capabilityMap.get(capabilityName).providers.push({
+          componentId: component.componentId,
+          componentName: component.name,
+          relativePath: component.relativePath,
+          primaryType: component.primaryType,
+          componentStatus: component.status,
+          approvalRequired: (component.approvalRequiredActions || []).includes(capabilityName),
+          modifiedAt: component.modifiedAt
+        });
+      }
+    }
+
+    const capabilities = [...capabilityMap.values()]
+      .map(capability => ({
+        ...capability,
+        providerCount: capability.providers.length,
+        preferredProvider: this.selectPreferredProvider(capability.providers)
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    const routingTable = capabilities.reduce((result, capability) => {
+      result[capability.name] = {
+        capabilityId: capability.capabilityId,
+        riskLevel: capability.riskLevel,
+        preferredProvider: capability.preferredProvider,
+        fallbackProviders: capability.providers
+          .filter(provider =>
+            !capability.preferredProvider ||
+            provider.componentId !== capability.preferredProvider.componentId
+          )
+          .slice(0, 5)
+      };
+      return result;
+    }, {});
+
+    const summary = {
+      ok: true,
+      service: this.service,
+      version: this.version,
+      capabilityCount: capabilities.length,
+      providerAssignmentCount: capabilities.reduce((sum, item) => sum + item.providerCount, 0),
+      highRiskCapabilityCount: capabilities.filter(item => item.riskLevel === 'HIGH').length,
+      mediumRiskCapabilityCount: capabilities.filter(item => item.riskLevel === 'MEDIUM').length,
+      lowRiskCapabilityCount: capabilities.filter(item => item.riskLevel === 'LOW').length,
+      generatedAt: this.now()
+    };
+
+    fs.writeFileSync(
+      this.capabilityRegistryPath,
+      JSON.stringify({ ...summary, capabilities }, null, 2),
+      'utf8'
+    );
+    fs.writeFileSync(this.routingTablePath, JSON.stringify(routingTable, null, 2), 'utf8');
+    fs.writeFileSync(this.summaryPath, JSON.stringify(summary, null, 2), 'utf8');
+
+    return summary;
+  }
+
+  selectPreferredProvider(providers) {
+    if (!providers.length) return null;
+
+    const rank = provider => {
+      let score = 0;
+      if (provider.componentStatus === 'DISCOVERED') score += 5;
+      if (provider.primaryType === 'WORKER') score += 4;
+      if (provider.primaryType === 'CONNECTOR') score += 3;
+      if (!provider.relativePath.includes('_REFERENCE')) score += 2;
+      if (!provider.relativePath.includes('_LEGACY_BUILDS')) score += 2;
+      score += new Date(provider.modifiedAt).getTime() / 1e15;
+      return score;
+    };
+
+    return [...providers].sort((a, b) => rank(b) - rank(a))[0];
+  }
+
+  resolve(capabilityName) {
+    if (!fs.existsSync(this.capabilityRegistryPath)) {
+      return { ok: false, status: 'CAPABILITY_REGISTRY_NOT_BUILT', capabilityName };
+    }
+
+    const parsed = JSON.parse(fs.readFileSync(this.capabilityRegistryPath, 'utf8'));
+    const capability = (parsed.capabilities || []).find(item => item.name === capabilityName);
+
+    if (!capability) {
+      return { ok: false, status: 'CAPABILITY_NOT_FOUND', capabilityName };
+    }
+
+    return {
+      ok: true,
+      status: 'CAPABILITY_RESOLVED',
+      capabilityName,
+      riskLevel: capability.riskLevel,
+      preferredProvider: capability.preferredProvider,
+      fallbackProviders: capability.providers.filter(provider =>
+        !capability.preferredProvider ||
+        provider.componentId !== capability.preferredProvider.componentId
+      )
+    };
+  }
+
+  healthCheck() {
+    const ok = [
+      this.capabilityRegistryPath,
+      this.routingTablePath,
+      this.summaryPath
+    ].every(filePath => fs.existsSync(filePath));
+
+    return {
+      ok,
+      service: this.service,
+      version: this.version,
+      status: ok ? 'HEALTHY' : 'NOT_INITIALIZED',
+      generatedAt: this.now()
+    };
+  }
+}
+
+module.exports = EnterpriseCapabilityRegistryService;
+
+============================================================
+FILE: .\SERVICES\registry\EnterpriseComponentRegistryService.js
+============================================================
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+class EnterpriseComponentRegistryService {
+  constructor(options = {}) {
+    this.rootDir = path.resolve(options.rootDir || process.cwd());
+    this.runtimeDir = path.resolve(
+      options.runtimeDir || path.join(this.rootDir, 'runtime', 'enterprise_registry')
+    );
+    this.registryPath = path.join(this.runtimeDir, 'component_registry.json');
+    this.summaryPath = path.join(this.runtimeDir, 'component_registry_summary.json');
+    this.changesPath = path.join(this.runtimeDir, 'component_registry_changes.json');
+    this.service = 'ENTERPRISE_COMPONENT_REGISTRY';
+    this.version = '1.0.0';
+
+    this.excludedDirectories = new Set([
+      'node_modules', '.git', '.vs', 'dist', 'build', 'coverage',
+      'tmp', 'temp', 'logs', 'backups', 'archive', 'archives',
+      '_REFERENCE', '_LEGACY_BUILDS'
+    ]);
+
+    this.allowedExtensions = new Set([
+      '.js', '.cjs', '.mjs', '.ts', '.tsx', '.py', '.ps1',
+      '.cs', '.json', '.md', '.csv', '.sql', '.html'
+    ]);
+
+    fs.mkdirSync(this.runtimeDir, { recursive: true });
+  }
+
+  now() {
+    return new Date().toISOString();
+  }
+
+  safeRead(filePath) {
+    try {
+      return fs.readFileSync(filePath, 'utf8');
+    } catch {
+      return '';
+    }
+  }
+
+  hashText(text) {
+    return crypto.createHash('sha256').update(text || '').digest('hex');
+  }
+
+  isExcluded(fullPath) {
+    const relative = path.relative(this.rootDir, fullPath);
+    if (!relative || relative.startsWith('..')) return false;
+    return relative.split(path.sep).some(part =>
+      this.excludedDirectories.has(part) || part.startsWith('_MILES_AUDIT_')
+    );
+  }
+
+  walk(dir = this.rootDir, files = []) {
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return files;
+    }
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (this.isExcluded(fullPath)) continue;
+
+      if (entry.isDirectory()) {
+        this.walk(fullPath, files);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name).toLowerCase();
+        if (this.allowedExtensions.has(ext)) files.push(fullPath);
+      }
+    }
+
+    return files;
+  }
+
+  classify(relativePath, content) {
+    const value = `${relativePath}\n${content.slice(0, 4000)}`.toLowerCase();
+
+    const rules = [
+      ['WORKER', /\bworker\b/],
+      ['PLANNER', /\bplanner\b/],
+      ['CONNECTOR', /\bconnector\b/],
+      ['PROVIDER', /\bprovider\b/],
+      ['SCHEDULER', /\bscheduler|cron\b/],
+      ['RUNTIME', /\bruntime|supervisor|bootstrap\b/],
+      ['GOVERNANCE', /\bapproval|decision|authority|governance\b/],
+      ['MEMORY', /\bmemory|knowledge|context\b/],
+      ['LEARNING', /\blearning|optimization|feedback\b/],
+      ['DASHBOARD', /\bdashboard|report|executive intelligence\b/],
+      ['DATABASE', /\bdatabase|sqlite|schema|repository\b/],
+      ['API', /\bapi|route|express\b/],
+      ['TEST', /\btest|spec|healthcheck\b/]
+    ];
+
+    const categories = rules.filter(([, pattern]) => pattern.test(value)).map(([name]) => name);
+    return categories.length ? categories : ['GENERAL'];
+  }
+
+  extractArray(text, propertyName) {
+    const regex = new RegExp(`${propertyName}\\s*=\\s*(?:Array\\.from\\([^[]*)?\\[([\\s\\S]*?)\\]`, 'i');
+    const match = text.match(regex);
+    if (!match) return [];
+
+    const values = [];
+    const stringRegex = /['"`]([A-Z][A-Z0-9_]{2,})['"`]/g;
+    let item;
+    while ((item = stringRegex.exec(match[1])) !== null) values.push(item[1]);
+    return [...new Set(values)];
+  }
+
+  extractExports(text) {
+    const values = [];
+    const patterns = [
+      /module\.exports\s*=\s*([A-Za-z_$][\w$]*)/g,
+      /exports\.([A-Za-z_$][\w$]*)\s*=/g,
+      /export\s+(?:default\s+)?class\s+([A-Za-z_$][\w$]*)/g,
+      /export\s+(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/g
+    ];
+
+    for (const pattern of patterns) {
+      let match;
+      while ((match = pattern.exec(text)) !== null) values.push(match[1]);
+    }
+    return [...new Set(values)];
+  }
+
+  extractClasses(text) {
+    const values = [];
+    const regex = /\bclass\s+([A-Za-z_$][\w$]*)/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) values.push(match[1]);
+    return [...new Set(values)];
+  }
+
+  inferStatus(relativePath, content) {
+    const lower = `${relativePath}\n${content}`.toLowerCase();
+    if (lower.includes('placeholder') || lower.includes('not implemented')) return 'PARTIAL';
+    if (lower.includes('todo') || lower.includes('fixme') || lower.includes('stub')) return 'NEEDS_REVIEW';
+    if (/test|spec|healthcheck/i.test(relativePath)) return 'SUPPORTING';
+    return 'DISCOVERED';
+  }
+
+  buildComponent(filePath) {
+    const stat = fs.statSync(filePath);
+    const relativePath = path.relative(this.rootDir, filePath);
+    const content = this.safeRead(filePath);
+    const classes = this.extractClasses(content);
+    const exportedSymbols = this.extractExports(content);
+    const supportedActions = this.extractArray(content, 'supportedActions');
+    const approvalRequiredActions = this.extractArray(content, 'approvalRequiredActions');
+    const categories = this.classify(relativePath, content);
+
+    const idSource = `${relativePath}|${classes.join(',')}|${exportedSymbols.join(',')}`;
+    const componentId = `CMP_${this.hashText(idSource).slice(0, 16).toUpperCase()}`;
+
+    return {
+      componentId,
+      name: classes[0] || exportedSymbols[0] || path.basename(filePath, path.extname(filePath)),
+      relativePath,
+      extension: path.extname(filePath).toLowerCase(),
+      categories,
+      primaryType: categories[0],
+      status: this.inferStatus(relativePath, content),
+      classes,
+      exportedSymbols,
+      supportedActions,
+      approvalRequiredActions,
+      sizeBytes: stat.size,
+      modifiedAt: stat.mtime.toISOString(),
+      contentHash: this.hashText(content),
+      discoveredAt: this.now()
+    };
+  }
+
+  loadPrevious() {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(this.registryPath, 'utf8'));
+      return Array.isArray(parsed.components) ? parsed.components : [];
+    } catch {
+      return [];
+    }
+  }
+
+  compare(previous, current) {
+    const oldMap = new Map(previous.map(item => [item.componentId, item]));
+    const newMap = new Map(current.map(item => [item.componentId, item]));
+
+    const added = current.filter(item => !oldMap.has(item.componentId));
+    const removed = previous.filter(item => !newMap.has(item.componentId));
+    const changed = current.filter(item => {
+      const old = oldMap.get(item.componentId);
+      return old && old.contentHash !== item.contentHash;
+    }).map(item => ({
+      componentId: item.componentId,
+      name: item.name,
+      relativePath: item.relativePath,
+      previousHash: oldMap.get(item.componentId).contentHash,
+      currentHash: item.contentHash
+    }));
+
+    return { added, removed, changed, generatedAt: this.now() };
+  }
+
+  generateSummary(components) {
+    const countByType = {};
+    const countByStatus = {};
+    let supportedActionCount = 0;
+
+    for (const component of components) {
+      countByType[component.primaryType] = (countByType[component.primaryType] || 0) + 1;
+      countByStatus[component.status] = (countByStatus[component.status] || 0) + 1;
+      supportedActionCount += component.supportedActions.length;
+    }
+
+    return {
+      ok: true,
+      service: this.service,
+      version: this.version,
+      rootDir: this.rootDir,
+      componentCount: components.length,
+      supportedActionCount,
+      countByType,
+      countByStatus,
+      generatedAt: this.now()
+    };
+  }
+
+  scan() {
+    const previous = this.loadPrevious();
+    const files = this.walk();
+    const components = [];
+
+    for (const filePath of files) {
+      try {
+        components.push(this.buildComponent(filePath));
+      } catch {
+        // A single unreadable file must not stop the registry build.
+      }
+    }
+
+    components.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+    const changes = this.compare(previous, components);
+    const summary = this.generateSummary(components);
+
+    fs.writeFileSync(
+      this.registryPath,
+      JSON.stringify({
+        ok: true,
+        service: this.service,
+        version: this.version,
+        rootDir: this.rootDir,
+        components,
+        generatedAt: this.now()
+      }, null, 2),
+      'utf8'
+    );
+
+    fs.writeFileSync(this.summaryPath, JSON.stringify(summary, null, 2), 'utf8');
+    fs.writeFileSync(this.changesPath, JSON.stringify(changes, null, 2), 'utf8');
+
+    return { ...summary, changes };
+  }
+
+  healthCheck() {
+    const filesExist = [this.registryPath, this.summaryPath, this.changesPath]
+      .every(filePath => fs.existsSync(filePath));
+
+    return {
+      ok: filesExist,
+      service: this.service,
+      version: this.version,
+      status: filesExist ? 'HEALTHY' : 'NOT_INITIALIZED',
+      registryPath: this.registryPath,
+      summaryPath: this.summaryPath,
+      changesPath: this.changesPath,
+      generatedAt: this.now()
+    };
+  }
+}
+
+module.exports = EnterpriseComponentRegistryService;
+
+============================================================
+FILE: .\SERVICES\runtime_registry\RuntimeRegistryService.js
+============================================================
+'use strict';
+
+/*
+  MILES Enterprise
+  File: SERVICES/runtime_registry/RuntimeRegistryService.js
+  Version: 2.0.2
+
+  Purpose:
+  - Maintain the authoritative live runtime registry.
+  - Actively probe MILES HTTP and TCP services.
+  - Maintain the registry service's own heartbeat.
+  - Prevent overlapping discovery cycles.
+  - Retry transient HTTP failures before marking a service DOWN.
+  - Clear stale errors when a service recovers.
+  - Persist service health, summaries, and lifecycle events.
+*/
+
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const net = require('net');
+
+class RuntimeRegistryService {
+  constructor(options = {}) {
+    this.rootDir = path.resolve(
+      options.rootDir ||
+      process.env.MILES_ROOT ||
+      process.cwd()
+    );
+
+    this.runtimeDir = path.resolve(
+      options.runtimeDir ||
+      path.join(
+        this.rootDir,
+        'runtime',
+        'runtime_registry_v2'
+      )
+    );
+
+    this.registryPath = path.join(
+      this.runtimeDir,
+      'runtime_registry.json'
+    );
+
+    this.summaryPath = path.join(
+      this.runtimeDir,
+      'runtime_registry_summary.json'
+    );
+
+    this.eventsPath = path.join(
+      this.runtimeDir,
+      'runtime_registry_events.jsonl'
+    );
+
+    this.pidPath = path.join(
+      this.runtimeDir,
+      'runtime_registry_service.pid'
+    );
+
+    this.probesPath = path.join(
+      this.runtimeDir,
+      'runtime_probes.json'
+    );
+
+    this.service = 'RUNTIME_REGISTRY_SERVICE_V2';
+    this.version = '2.0.2';
+
+    this.host =
+      options.host ||
+      process.env.MILES_RUNTIME_REGISTRY_HOST ||
+      '127.0.0.1';
+
+    this.port = this.positiveInteger(
+      options.port ||
+      process.env.MILES_RUNTIME_REGISTRY_PORT,
+      8791
+    );
+
+    this.pollIntervalMs = this.positiveInteger(
+      options.pollIntervalMs ||
+      process.env.MILES_RUNTIME_REGISTRY_INTERVAL_MS,
+      15000
+    );
+
+    this.staleAfterMs = this.positiveInteger(
+      options.staleAfterMs ||
+      process.env.MILES_RUNTIME_REGISTRY_STALE_MS,
+      120000
+    );
+
+    this.httpTimeoutMs = this.positiveInteger(
+      options.httpTimeoutMs ||
+      process.env.MILES_RUNTIME_REGISTRY_HTTP_TIMEOUT_MS,
+      5000
+    );
+
+    this.httpProbeAttempts = this.positiveInteger(
+      options.httpProbeAttempts ||
+      process.env.MILES_RUNTIME_REGISTRY_HTTP_ATTEMPTS,
+      3
+    );
+
+    this.httpRetryDelayMs = this.positiveInteger(
+      options.httpRetryDelayMs ||
+      process.env.MILES_RUNTIME_REGISTRY_HTTP_RETRY_DELAY_MS,
+      500
+    );
+
+    this.tcpTimeoutMs = this.positiveInteger(
+      options.tcpTimeoutMs ||
+      process.env.MILES_RUNTIME_REGISTRY_TCP_TIMEOUT_MS,
+      3000
+    );
+
+    this.records = new Map();
+
+    this.server = null;
+    this.timer = null;
+    this.startedAt = null;
+    this.discoveryRunning = false;
+    this.stopping = false;
+
+    this.defaultProbes = [
+      {
+        id: 'DESKTOP_UI',
+        name: 'MILES Desktop UI',
+        type: 'HTTP_SERVICE',
+        host: '127.0.0.1',
+        port: 3737,
+        protocol: 'http',
+        path: '/api/status',
+        fallbackPaths: ['/'],
+        capabilities: [
+          'DISPLAY_DASHBOARD'
+        ]
+      },
+      {
+        id: 'MILES_API',
+        name: 'MILES API',
+        type: 'HTTP_SERVICE',
+        host: '127.0.0.1',
+        port: 3000,
+        protocol: 'http',
+        path: '/',
+        fallbackPaths: ['/health', '/api/health'],
+        capabilities: [
+          'SERVE_API'
+        ]
+      },
+      {
+        id: 'COMMAND_CENTER',
+        name: 'Miles Command Center',
+        type: 'HTTP_SERVICE',
+        host: '127.0.0.1',
+        port: 8787,
+        protocol: 'http',
+        path: '/',
+        fallbackPaths: [],
+        capabilities: [
+          'COMMAND_AND_CONTROL'
+        ]
+      }
+    ];
+
+    this.ensureStorage();
+    this.load();
+  }
+
+  now() {
+    return new Date().toISOString();
+  }
+
+  positiveInteger(value, fallback) {
+    const parsed = Number(value);
+
+    return Number.isFinite(parsed) && parsed > 0
+      ? Math.floor(parsed)
+      : fallback;
+  }
+
+  sleep(milliseconds) {
+    return new Promise(resolve => {
+      setTimeout(resolve, milliseconds);
+    });
+  }
+
+  ensureStorage() {
+    fs.mkdirSync(
+      this.runtimeDir,
+      {
+        recursive: true
+      }
+    );
+
+    if (!fs.existsSync(this.registryPath)) {
+      this.atomicWrite(
+        this.registryPath,
+        {
+          ok: true,
+          service: this.service,
+          version: this.version,
+          services: [],
+          generatedAt: this.now()
+        }
+      );
+    }
+
+    if (!fs.existsSync(this.summaryPath)) {
+      this.atomicWrite(
+        this.summaryPath,
+        {}
+      );
+    }
+
+    if (!fs.existsSync(this.eventsPath)) {
+      fs.writeFileSync(
+        this.eventsPath,
+        '',
+        'utf8'
+      );
+    }
+
+    if (!fs.existsSync(this.probesPath)) {
+      this.atomicWrite(
+        this.probesPath,
+        []
+      );
+    }
+  }
+
+  load() {
+    try {
+      const parsed = JSON.parse(
+        fs.readFileSync(
+          this.registryPath,
+          'utf8'
+        )
+      );
+
+      const services = Array.isArray(parsed.services)
+        ? parsed.services
+        : [];
+
+      for (const record of services) {
+        if (!record || !record.id) {
+          continue;
+        }
+
+        this.records.set(
+          this.normalizeId(record.id),
+          record
+        );
+      }
+    } catch {
+      this.records.clear();
+    }
+  }
+
+  normalizeId(value) {
+    return String(value || '')
+      .trim()
+      .replace(
+        /[^A-Za-z0-9_.:-]+/g,
+        '_'
+      )
+      .toUpperCase();
+  }
+
+  unique(values = []) {
+    return [
+      ...new Set(
+        values
+          .filter(Boolean)
+          .map(value => String(value))
+      )
+    ];
+  }
+
+  isHealthyStatus(status) {
+    return [
+      'RUNNING',
+      'HEALTHY'
+    ].includes(
+      String(status || '').toUpperCase()
+    );
+  }
+
+  register(payload = {}) {
+    const id = this.normalizeId(
+      payload.id ||
+      payload.serviceId ||
+      payload.name
+    );
+
+    if (!id) {
+      return {
+        ok: false,
+        status: 'SERVICE_ID_REQUIRED'
+      };
+    }
+
+    const existing =
+      this.records.get(id) ||
+      {};
+
+    const status =
+      payload.status ||
+      existing.status ||
+      'REGISTERED';
+
+    const isHealthy =
+      this.isHealthyStatus(status);
+
+    const timestamp =
+      this.now();
+
+    const record = {
+      id,
+
+      name:
+        payload.name ||
+        existing.name ||
+        id,
+
+      type:
+        payload.type ||
+        existing.type ||
+        'SERVICE',
+
+      domain:
+        payload.domain ??
+        existing.domain ??
+        null,
+
+      version:
+        payload.version ||
+        existing.version ||
+        null,
+
+      status,
+
+      pid:
+        payload.pid ??
+        existing.pid ??
+        null,
+
+      host:
+        payload.host ||
+        existing.host ||
+        null,
+
+      port:
+        payload.port ??
+        existing.port ??
+        null,
+
+      protocol:
+        payload.protocol ||
+        existing.protocol ||
+        null,
+
+      path:
+        payload.path ||
+        existing.path ||
+        null,
+
+      fallbackPaths: this.unique([
+        ...(existing.fallbackPaths || []),
+        ...(payload.fallbackPaths || [])
+      ]),
+
+      capabilities: this.unique([
+        ...(existing.capabilities || []),
+        ...(payload.capabilities || [])
+      ]),
+
+      dependencies: this.unique([
+        ...(existing.dependencies || []),
+        ...(payload.dependencies || [])
+      ]),
+
+      approvalRequiredActions: this.unique([
+        ...(existing.approvalRequiredActions || []),
+        ...(payload.approvalRequiredActions || [])
+      ]),
+
+      healthSource:
+        payload.healthSource ||
+        existing.healthSource ||
+        'SELF_REGISTERED',
+
+      source:
+        payload.source ||
+        existing.source ||
+        'RUNTIME_REGISTRY_API',
+
+      startedAt:
+        existing.startedAt ||
+        payload.startedAt ||
+        timestamp,
+
+      registeredAt:
+        existing.registeredAt ||
+        timestamp,
+
+      heartbeatAt:
+        timestamp,
+
+      lastHealthyAt:
+        isHealthy
+          ? timestamp
+          : (
+              existing.lastHealthyAt ||
+              null
+            ),
+
+      lastError:
+        isHealthy
+          ? null
+          : (
+              payload.lastError ??
+              existing.lastError ??
+              null
+            ),
+
+      lastFailureAt:
+        !isHealthy && payload.lastError
+          ? timestamp
+          : (
+              existing.lastFailureAt ||
+              null
+            ),
+
+      restartCount:
+        payload.restartCount ??
+        existing.restartCount ??
+        0,
+
+      consecutiveSuccesses:
+        isHealthy
+          ? (
+              Number(existing.consecutiveSuccesses || 0) +
+              1
+            )
+          : 0,
+
+      consecutiveFailures:
+        isHealthy
+          ? 0
+          : (
+              Number(existing.consecutiveFailures || 0) +
+              1
+            ),
+
+      metadata: {
+        ...(existing.metadata || {}),
+        ...(payload.metadata || {})
+      }
+    };
+
+    this.records.set(
+      id,
+      record
+    );
+
+    this.appendEvent(
+      'SERVICE_REGISTERED',
+      {
+        id: record.id,
+        name: record.name,
+        status: record.status,
+        pid: record.pid,
+        host: record.host,
+        port: record.port,
+        healthSource: record.healthSource
+      }
+    );
+
+    this.persist();
+
+    return {
+      ok: true,
+      status: 'SERVICE_REGISTERED',
+      service: record
+    };
+  }
+
+  heartbeat(id, patch = {}) {
+    const normalizedId =
+      this.normalizeId(id);
+
+    const existing =
+      this.records.get(normalizedId);
+
+    if (!existing) {
+      return this.register({
+        id: normalizedId,
+        ...patch,
+        status:
+          patch.status ||
+          'RUNNING'
+      });
+    }
+
+    const status =
+      patch.status ||
+      existing.status ||
+      'RUNNING';
+
+    const isHealthy =
+      this.isHealthyStatus(status);
+
+    const timestamp =
+      this.now();
+
+    const next = {
+      ...existing,
+      ...patch,
+
+      id:
+        normalizedId,
+
+      status,
+
+      heartbeatAt:
+        timestamp,
+
+      lastHealthyAt:
+        isHealthy
+          ? timestamp
+          : existing.lastHealthyAt,
+
+      lastError:
+        isHealthy
+          ? null
+          : (
+              patch.lastError ??
+              existing.lastError ??
+              null
+            ),
+
+      lastFailureAt:
+        !isHealthy && patch.lastError
+          ? timestamp
+          : existing.lastFailureAt,
+
+      consecutiveSuccesses:
+        isHealthy
+          ? (
+              Number(existing.consecutiveSuccesses || 0) +
+              1
+            )
+          : 0,
+
+      consecutiveFailures:
+        isHealthy
+          ? 0
+          : (
+              Number(existing.consecutiveFailures || 0) +
+              1
+            ),
+
+      capabilities: this.unique([
+        ...(existing.capabilities || []),
+        ...(patch.capabilities || [])
+      ]),
+
+      dependencies: this.unique([
+        ...(existing.dependencies || []),
+        ...(patch.dependencies || [])
+      ])
+    };
+
+    this.records.set(
+      normalizedId,
+      next
+    );
+
+    this.appendEvent(
+      'SERVICE_HEARTBEAT',
+      {
+        id: normalizedId,
+        status: next.status,
+        pid: next.pid
+      }
+    );
+
+    this.persist();
+
+    return {
+      ok: true,
+      status: 'HEARTBEAT_RECORDED',
+      service: next
+    };
+  }
+
+  deregister(
+    id,
+    reason = null
+  ) {
+    const normalizedId =
+      this.normalizeId(id);
+
+    const existing =
+      this.records.get(normalizedId);
+
+    if (!existing) {
+      return {
+        ok: false,
+        status: 'SERVICE_NOT_FOUND',
+        id: normalizedId
+      };
+    }
+
+    const timestamp =
+      this.now();
+
+    const next = {
+      ...existing,
+
+      status:
+        'DOWN',
+
+      pid:
+        null,
+
+      heartbeatAt:
+        timestamp,
+
+      lastError:
+        reason ||
+        existing.lastError ||
+        'Service deregistered.',
+
+      lastFailureAt:
+        timestamp,
+
+      consecutiveSuccesses:
+        0,
+
+      consecutiveFailures:
+        Number(existing.consecutiveFailures || 0) +
+        1
+    };
+
+    this.records.set(
+      normalizedId,
+      next
+    );
+
+    this.appendEvent(
+      'SERVICE_DEREGISTERED',
+      {
+        id: normalizedId,
+        reason
+      }
+    );
+
+    this.persist();
+
+    return {
+      ok: true,
+      status: 'SERVICE_DEREGISTERED',
+      service: next
+    };
+  }
+
+  list() {
+    return [
+      ...this.records.values()
+    ].sort(
+      (a, b) =>
+        a.id.localeCompare(b.id)
+    );
+  }
+
+  get(id) {
+    return (
+      this.records.get(
+        this.normalizeId(id)
+      ) ||
+      null
+    );
+  }
+
+  getCapabilityProviders(capability) {
+    const target =
+      String(capability || '')
+        .toUpperCase();
+
+    return this.list().filter(record =>
+      (record.capabilities || [])
+        .map(value =>
+          String(value)
+            .toUpperCase()
+        )
+        .includes(target)
+    );
+  }
+
+  async probeEndpoint(probe) {
+    const startedAt =
+      Date.now();
+
+    let result;
+
+    if (
+      String(probe.protocol || '')
+        .toLowerCase() === 'tcp'
+    ) {
+      result = await this.probeTcp(
+        probe.host,
+        probe.port
+      );
+    } else {
+      result = await this.probeHttpWithRetries(
+        probe
+      );
+    }
+
+    return {
+      ...probe,
+      ...result,
+      latencyMs:
+        Date.now() -
+        startedAt,
+      checkedAt:
+        this.now()
+    };
+  }
+
+  probeTcp(host, port) {
+    return new Promise(resolve => {
+      const socket =
+        new net.Socket();
+
+      let settled =
+        false;
+
+      const finish = value => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+
+        try {
+          socket.destroy();
+        } catch {}
+
+        resolve(value);
+      };
+
+      socket.setTimeout(
+        this.tcpTimeoutMs
+      );
+
+      socket.once(
+        'connect',
+        () => {
+          finish({
+            ok: true,
+            status: 'RUNNING'
+          });
+        }
+      );
+
+      socket.once(
+        'timeout',
+        () => {
+          finish({
+            ok: false,
+            status: 'DOWN',
+            error: `TCP timeout after ${this.tcpTimeoutMs}ms`
+          });
+        }
+      );
+
+      socket.once(
+        'error',
+        error => {
+          finish({
+            ok: false,
+            status: 'DOWN',
+            error: error.message
+          });
+        }
+      );
+
+      socket.connect(
+        Number(port),
+        host
+      );
+    });
+  }
+
+  async probeHttpWithRetries(probe) {
+    const paths = this.unique([
+      probe.path || '/',
+      ...(probe.fallbackPaths || [])
+    ]);
+
+    const attemptHistory = [];
+    let lastFailure = null;
+
+    for (
+      let attempt = 1;
+      attempt <= this.httpProbeAttempts;
+      attempt += 1
+    ) {
+      for (const probePath of paths) {
+        const result =
+          await this.probeHttpOnce({
+            ...probe,
+            path: probePath
+          });
+
+        attemptHistory.push({
+          attempt,
+          path: probePath,
+          ok: result.ok,
+          httpStatus:
+            result.httpStatus ??
+            null,
+          error:
+            result.error ||
+            null,
+          latencyMs:
+            result.latencyMs
+        });
+
+        if (result.ok) {
+          return {
+            ...result,
+            status:
+              'RUNNING',
+            attempts:
+              attempt,
+            successfulPath:
+              probePath,
+            attemptHistory
+          };
+        }
+
+        lastFailure = {
+          ...result,
+          attemptedPath:
+            probePath
+        };
+      }
+
+      if (
+        attempt <
+        this.httpProbeAttempts
+      ) {
+        await this.sleep(
+          this.httpRetryDelayMs
+        );
+      }
+    }
+
+    return {
+      ok: false,
+      status: 'DOWN',
+      error:
+        lastFailure?.error ||
+        `HTTP probe failed after ${this.httpProbeAttempts} attempts`,
+      httpStatus:
+        lastFailure?.httpStatus ??
+        null,
+      attempts:
+        this.httpProbeAttempts,
+      attemptedPath:
+        lastFailure?.attemptedPath ||
+        probe.path ||
+        '/',
+      attemptHistory
+    };
+  }
+
+  probeHttpOnce(probe) {
+    return new Promise(resolve => {
+      const startedAt =
+        Date.now();
+
+      let settled =
+        false;
+
+      const finish = value => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+
+        resolve({
+          ...value,
+          latencyMs:
+            Date.now() -
+            startedAt
+        });
+      };
+
+      const request = http.request(
+        {
+          host:
+            probe.host,
+
+          port:
+            Number(probe.port),
+
+          path:
+            probe.path ||
+            '/',
+
+          method:
+            'GET',
+
+          timeout:
+            this.httpTimeoutMs,
+
+          headers: {
+            Connection:
+              'close',
+
+            'User-Agent':
+              `MILES-Runtime-Registry/${this.version}`,
+
+            Accept:
+              'application/json,text/plain,text/html,*/*'
+          },
+
+          agent:
+            false
+        },
+
+        response => {
+          response.resume();
+
+          response.once(
+            'end',
+            () => {
+              finish({
+                ok: true,
+                status:
+                  'RUNNING',
+                httpStatus:
+                  response.statusCode,
+                responseComplete:
+                  true
+              });
+            }
+          );
+
+          response.once(
+            'aborted',
+            () => {
+              finish({
+                ok: true,
+                status:
+                  'RUNNING',
+                httpStatus:
+                  response.statusCode,
+                responseComplete:
+                  false
+              });
+            }
+          );
+
+          response.once(
+            'error',
+            error => {
+              finish({
+                ok: true,
+                status:
+                  'RUNNING',
+                httpStatus:
+                  response.statusCode,
+                responseComplete:
+                  false,
+                responseError:
+                  error.message
+              });
+            }
+          );
+        }
+      );
+
+      request.once(
+        'socket',
+        socket => {
+          socket.setTimeout(
+            this.httpTimeoutMs
+          );
+        }
+      );
+
+      request.once(
+        'timeout',
+        () => {
+          request.destroy();
+
+          finish({
+            ok: false,
+            status:
+              'DOWN',
+            error:
+              `HTTP timeout after ${this.httpTimeoutMs}ms`
+          });
+        }
+      );
+
+      request.once(
+        'error',
+        error => {
+          finish({
+            ok: false,
+            status:
+              'DOWN',
+            error:
+              error.message
+          });
+        }
+      );
+
+      request.end();
+    });
+  }
+
+  async runDiscoveryCycle() {
+    if (this.discoveryRunning) {
+      return {
+        ok: true,
+        status:
+          'DISCOVERY_CYCLE_ALREADY_RUNNING',
+        generatedAt:
+          this.now()
+      };
+    }
+
+    this.discoveryRunning =
+      true;
+
+    try {
+      this.heartbeat(
+        this.service,
+        {
+          status:
+            'RUNNING',
+
+          pid:
+            process.pid,
+
+          host:
+            this.host,
+
+          port:
+            this.port,
+
+          protocol:
+            'http',
+
+          healthSource:
+            'SELF_REGISTERED',
+
+          source:
+            'SELF',
+
+          lastError:
+            null
+        }
+      );
+
+      const configured =
+        this.loadConfiguredProbes();
+
+      const probes = [
+        ...this.defaultProbes,
+        ...configured
+      ];
+
+      const deduped =
+        new Map();
+
+      for (const probe of probes) {
+        const id =
+          this.normalizeId(
+            probe.id ||
+            probe.name
+          );
+
+        if (!id) {
+          continue;
+        }
+
+        deduped.set(
+          id,
+          {
+            ...probe,
+            id
+          }
+        );
+      }
+
+      const results = [];
+
+      for (const probe of deduped.values()) {
+        const result =
+          await this.probeEndpoint(
+            probe
+          );
+
+        results.push(
+          result
+        );
+
+        this.register({
+          ...probe,
+
+          id:
+            this.normalizeId(
+              probe.id ||
+              probe.name
+            ),
+
+          status:
+            result.status,
+
+          healthSource:
+            'ACTIVE_PROBE',
+
+          lastError:
+            result.ok
+              ? null
+              : (
+                  result.error ||
+                  'Health probe failed.'
+                ),
+
+          metadata: {
+            ...(probe.metadata || {}),
+
+            latencyMs:
+              result.latencyMs,
+
+            httpStatus:
+              result.httpStatus ??
+              null,
+
+            checkedAt:
+              result.checkedAt,
+
+            attempts:
+              result.attempts ??
+              1,
+
+            successfulPath:
+              result.successfulPath ??
+              null,
+
+            attemptedPath:
+              result.attemptedPath ??
+              null,
+
+            attemptHistory:
+              result.attemptHistory ||
+              []
+          }
+        });
+      }
+
+      this.markStaleRecords();
+      this.persist();
+
+      return {
+        ok: true,
+
+        status:
+          'DISCOVERY_CYCLE_COMPLETED',
+
+        checked:
+          results.length,
+
+        healthy:
+          results.filter(
+            item => item.ok
+          ).length,
+
+        unhealthy:
+          results.filter(
+            item => !item.ok
+          ).length,
+
+        results,
+
+        generatedAt:
+          this.now()
+      };
+    } catch (error) {
+      this.appendEvent(
+        'DISCOVERY_CYCLE_FAILED',
+        {
+          error:
+            error.stack ||
+            error.message
+        }
+      );
+
+      throw error;
+    } finally {
+      this.discoveryRunning =
+        false;
+    }
+  }
+
+  loadConfiguredProbes() {
+    if (!fs.existsSync(this.probesPath)) {
+      this.atomicWrite(
+        this.probesPath,
+        []
+      );
+
+      return [];
+    }
+
+    try {
+      const parsed =
+        JSON.parse(
+          fs.readFileSync(
+            this.probesPath,
+            'utf8'
+          )
+        );
+
+      return Array.isArray(parsed)
+        ? parsed
+        : [];
+    } catch (error) {
+      this.appendEvent(
+        'PROBE_CONFIGURATION_READ_FAILED',
+        {
+          path:
+            this.probesPath,
+
+          error:
+            error.message
+        }
+      );
+
+      return [];
+    }
+  }
+
+  markStaleRecords() {
+    const current =
+      Date.now();
+
+    for (
+      const [id, record]
+      of this.records.entries()
+    ) {
+      if (!record.heartbeatAt) {
+        continue;
+      }
+
+      const heartbeat =
+        Date.parse(
+          record.heartbeatAt
+        );
+
+      if (!Number.isFinite(heartbeat)) {
+        continue;
+      }
+
+      if (
+        current - heartbeat >
+          this.staleAfterMs &&
+        this.isHealthyStatus(
+          record.status
+        ) &&
+        record.healthSource !==
+          'ACTIVE_PROBE'
+      ) {
+        this.records.set(
+          id,
+          {
+            ...record,
+
+            status:
+              'STALE',
+
+            lastError:
+              `No heartbeat received within ${this.staleAfterMs}ms.`,
+
+            lastFailureAt:
+              this.now(),
+
+            consecutiveSuccesses:
+              0,
+
+            consecutiveFailures:
+              Number(
+                record.consecutiveFailures ||
+                0
+              ) + 1
+          }
+        );
+      }
+    }
+  }
+
+  buildSummary() {
+    const services =
+      this.list();
+
+    const countByStatus = {};
+    const countByType = {};
+
+    for (const record of services) {
+      countByStatus[
+        record.status
+      ] =
+        (
+          countByStatus[
+            record.status
+          ] ||
+          0
+        ) +
+        1;
+
+      countByType[
+        record.type
+      ] =
+        (
+          countByType[
+            record.type
+          ] ||
+          0
+        ) +
+        1;
+    }
+
+    const unhealthy =
+      services.filter(
+        record =>
+          [
+            'DOWN',
+            'ERROR',
+            'STALE',
+            'DEGRADED'
+          ].includes(
+            String(
+              record.status ||
+              ''
+            ).toUpperCase()
+          )
+      );
+
+    return {
+      ok:
+        unhealthy.length ===
+        0,
+
+      service:
+        this.service,
+
+      version:
+        this.version,
+
+      status:
+        unhealthy.length
+          ? 'DEGRADED'
+          : 'HEALTHY',
+
+      host:
+        this.host,
+
+      port:
+        this.port,
+
+      pid:
+        process.pid,
+
+      startedAt:
+        this.startedAt,
+
+      uptimeSeconds:
+        this.startedAt
+          ? Math.floor(
+              (
+                Date.now() -
+                Date.parse(
+                  this.startedAt
+                )
+              ) /
+              1000
+            )
+          : 0,
+
+      totalServices:
+        services.length,
+
+      countByStatus,
+      countByType,
+
+      unhealthyServices:
+        unhealthy.map(
+          record => ({
+            id:
+              record.id,
+
+            status:
+              record.status,
+
+            lastError:
+              record.lastError,
+
+            heartbeatAt:
+              record.heartbeatAt,
+
+            lastHealthyAt:
+              record.lastHealthyAt,
+
+            consecutiveFailures:
+              record.consecutiveFailures ||
+              0
+          })
+        ),
+
+      capabilityCount:
+        this.unique(
+          services.flatMap(
+            record =>
+              record.capabilities ||
+              []
+          )
+        ).length,
+
+      discoveryRunning:
+        this.discoveryRunning,
+
+      pollIntervalMs:
+        this.pollIntervalMs,
+
+      httpTimeoutMs:
+        this.httpTimeoutMs,
+
+      httpProbeAttempts:
+        this.httpProbeAttempts,
+
+      generatedAt:
+        this.now()
+    };
+  }
+
+  persist() {
+    const payload = {
+      ok: true,
+
+      service:
+        this.service,
+
+      version:
+        this.version,
+
+      rootDir:
+        this.rootDir,
+
+      services:
+        this.list(),
+
+      generatedAt:
+        this.now()
+    };
+
+    this.atomicWrite(
+      this.registryPath,
+      payload
+    );
+
+    this.atomicWrite(
+      this.summaryPath,
+      this.buildSummary()
+    );
+  }
+
+  appendEvent(
+    eventType,
+    payload
+  ) {
+    try {
+      fs.appendFileSync(
+        this.eventsPath,
+
+        JSON.stringify({
+          eventType,
+          payload,
+          generatedAt:
+            this.now()
+        }) + '\n',
+
+        'utf8'
+      );
+    } catch (error) {
+      console.error(
+        `[RUNTIME REGISTRY] Event write failed: ${error.message}`
+      );
+    }
+  }
+
+  atomicWrite(
+    filePath,
+    value
+  ) {
+    const tempPath =
+      `${filePath}.${process.pid}.${Date.now()}.tmp`;
+
+    const text =
+      JSON.stringify(
+        value,
+        null,
+        2
+      );
+
+    try {
+      fs.writeFileSync(
+        tempPath,
+        text,
+        'utf8'
+      );
+
+      fs.renameSync(
+        tempPath,
+        filePath
+      );
+    } catch {
+      try {
+        fs.writeFileSync(
+          filePath,
+          text,
+          'utf8'
+        );
+      } finally {
+        try {
+          if (
+            fs.existsSync(
+              tempPath
+            )
+          ) {
+            fs.unlinkSync(
+              tempPath
+            );
+          }
+        } catch {}
+      }
+    }
+  }
+
+  sendJson(
+    response,
+    statusCode,
+    payload
+  ) {
+    if (
+      response.headersSent ||
+      response.writableEnded
+    ) {
+      return;
+    }
+
+    response.writeHead(
+      statusCode,
+      {
+        'Content-Type':
+          'application/json; charset=utf-8',
+
+        'Cache-Control':
+          'no-store',
+
+        Connection:
+          'close'
+      }
+    );
+
+    response.end(
+      JSON.stringify(
+        payload,
+        null,
+        2
+      )
+    );
+  }
+
+  async readJsonBody(request) {
+    const chunks = [];
+
+    for await (
+      const chunk
+      of request
+    ) {
+      chunks.push(chunk);
+    }
+
+    if (!chunks.length) {
+      return {};
+    }
+
+    const raw =
+      Buffer.concat(
+        chunks
+      ).toString('utf8');
+
+    return JSON.parse(raw);
+  }
+
+  async handleRequest(
+    request,
+    response
+  ) {
+    try {
+      const url =
+        new URL(
+          request.url,
+          `http://${this.host}:${this.port}`
+        );
+
+      if (
+        request.method ===
+          'GET' &&
+        url.pathname ===
+          '/health'
+      ) {
+        return this.sendJson(
+          response,
+          200,
+          this.buildSummary()
+        );
+      }
+
+      if (
+        request.method ===
+          'GET' &&
+        url.pathname ===
+          '/services'
+      ) {
+        return this.sendJson(
+          response,
+          200,
+          {
+            ok: true,
+            services:
+              this.list(),
+            generatedAt:
+              this.now()
+          }
+        );
+      }
+
+      if (
+        request.method ===
+          'GET' &&
+        url.pathname.startsWith(
+          '/services/'
+        )
+      ) {
+        const id =
+          decodeURIComponent(
+            url.pathname.slice(
+              '/services/'.length
+            )
+          );
+
+        const service =
+          this.get(id);
+
+        return this.sendJson(
+          response,
+          service
+            ? 200
+            : 404,
+
+          service
+            ? {
+                ok: true,
+                service
+              }
+            : {
+                ok: false,
+                status:
+                  'SERVICE_NOT_FOUND',
+                id
+              }
+        );
+      }
+
+      if (
+        request.method ===
+          'GET' &&
+        url.pathname.startsWith(
+          '/capabilities/'
+        )
+      ) {
+        const capability =
+          decodeURIComponent(
+            url.pathname.slice(
+              '/capabilities/'.length
+            )
+          );
+
+        return this.sendJson(
+          response,
+          200,
+          {
+            ok: true,
+
+            capability,
+
+            providers:
+              this.getCapabilityProviders(
+                capability
+              ),
+
+            generatedAt:
+              this.now()
+          }
+        );
+      }
+
+      if (
+        request.method ===
+          'POST' &&
+        url.pathname ===
+          '/register'
+      ) {
+        const body =
+          await this.readJsonBody(
+            request
+          );
+
+        const result =
+          this.register(body);
+
+        return this.sendJson(
+          response,
+          result.ok
+            ? 200
+            : 400,
+          result
+        );
+      }
+
+      if (
+        request.method ===
+          'POST' &&
+        url.pathname.startsWith(
+          '/heartbeat/'
+        )
+      ) {
+        const id =
+          decodeURIComponent(
+            url.pathname.slice(
+              '/heartbeat/'.length
+            )
+          );
+
+        const body =
+          await this.readJsonBody(
+            request
+          );
+
+        return this.sendJson(
+          response,
+          200,
+          this.heartbeat(
+            id,
+            body
+          )
+        );
+      }
+
+      if (
+        request.method ===
+          'POST' &&
+        url.pathname.startsWith(
+          '/deregister/'
+        )
+      ) {
+        const id =
+          decodeURIComponent(
+            url.pathname.slice(
+              '/deregister/'.length
+            )
+          );
+
+        const body =
+          await this.readJsonBody(
+            request
+          );
+
+        return this.sendJson(
+          response,
+          200,
+          this.deregister(
+            id,
+            body.reason ||
+            null
+          )
+        );
+      }
+
+      if (
+        request.method ===
+          'POST' &&
+        url.pathname ===
+          '/discover'
+      ) {
+        const result =
+          await this.runDiscoveryCycle();
+
+        return this.sendJson(
+          response,
+          200,
+          result
+        );
+      }
+
+      return this.sendJson(
+        response,
+        404,
+        {
+          ok: false,
+
+          status:
+            'ROUTE_NOT_FOUND',
+
+          method:
+            request.method,
+
+          path:
+            url.pathname
+        }
+      );
+    } catch (error) {
+      return this.sendJson(
+        response,
+        500,
+        {
+          ok: false,
+
+          status:
+            'RUNTIME_REGISTRY_REQUEST_FAILED',
+
+          error:
+            error.message
+        }
+      );
+    }
+  }
+
+  async start() {
+    if (this.server) {
+      return {
+        ok: true,
+
+        status:
+          'ALREADY_RUNNING',
+
+        host:
+          this.host,
+
+        port:
+          this.port,
+
+        pid:
+          process.pid
+      };
+    }
+
+    this.stopping =
+      false;
+
+    this.startedAt =
+      this.now();
+
+    this.register({
+      id:
+        this.service,
+
+      name:
+        'MILES Runtime Registry Service V2',
+
+      type:
+        'REGISTRY_SERVICE',
+
+      version:
+        this.version,
+
+      status:
+        'RUNNING',
+
+      pid:
+        process.pid,
+
+      host:
+        this.host,
+
+      port:
+        this.port,
+
+      protocol:
+        'http',
+
+      capabilities: [
+        'REGISTER_RUNTIME_SERVICE',
+        'TRACK_RUNTIME_HEALTH',
+        'RESOLVE_LIVE_CAPABILITY_PROVIDER',
+        'DISCOVER_LOCAL_SERVICE'
+      ],
+
+      healthSource:
+        'SELF_REGISTERED',
+
+      source:
+        'SELF',
+
+      lastError:
+        null
+    });
+
+    this.server =
+      http.createServer(
+        (
+          request,
+          response
+        ) => {
+          this.handleRequest(
+            request,
+            response
+          ).catch(error => {
+            this.sendJson(
+              response,
+              500,
+              {
+                ok: false,
+                status:
+                  'UNHANDLED_REGISTRY_REQUEST_ERROR',
+                error:
+                  error.message
+              }
+            );
+          });
+        }
+      );
+
+    this.server.keepAliveTimeout =
+      5000;
+
+    this.server.headersTimeout =
+      7000;
+
+    await new Promise(
+      (
+        resolve,
+        reject
+      ) => {
+        const onError = error => {
+          reject(error);
+        };
+
+        this.server.once(
+          'error',
+          onError
+        );
+
+        this.server.listen(
+          this.port,
+          this.host,
+          () => {
+            this.server.removeListener(
+              'error',
+              onError
+            );
+
+            resolve();
+          }
+        );
+      }
+    );
+
+    fs.writeFileSync(
+      this.pidPath,
+      String(process.pid),
+      'utf8'
+    );
+
+    await this.runDiscoveryCycle();
+
+    this.timer =
+      setInterval(
+        () => {
+          this.runDiscoveryCycle()
+            .catch(error => {
+              this.appendEvent(
+                'DISCOVERY_CYCLE_FAILED',
+                {
+                  error:
+                    error.stack ||
+                    error.message
+                }
+              );
+            });
+        },
+
+        this.pollIntervalMs
+      );
+
+    this.timer.unref();
+
+    this.appendEvent(
+      'RUNTIME_REGISTRY_STARTED',
+      {
+        service:
+          this.service,
+
+        version:
+          this.version,
+
+        host:
+          this.host,
+
+        port:
+          this.port,
+
+        pid:
+          process.pid
+      }
+    );
+
+    return {
+      ok: true,
+
+      status:
+        'RUNTIME_REGISTRY_STARTED',
+
+      version:
+        this.version,
+
+      host:
+        this.host,
+
+      port:
+        this.port,
+
+      pid:
+        process.pid,
+
+      generatedAt:
+        this.now()
+    };
+  }
+
+  async stop() {
+    if (this.stopping) {
+      return {
+        ok: true,
+        status:
+          'RUNTIME_REGISTRY_ALREADY_STOPPING',
+        generatedAt:
+          this.now()
+      };
+    }
+
+    this.stopping =
+      true;
+
+    if (this.timer) {
+      clearInterval(
+        this.timer
+      );
+
+      this.timer =
+        null;
+    }
+
+    this.deregister(
+      this.service,
+      'Service stopped.'
+    );
+
+    if (this.server) {
+      await new Promise(resolve => {
+        this.server.close(() => {
+          resolve();
+        });
+      });
+
+      this.server =
+        null;
+    }
+
+    try {
+      if (
+        fs.existsSync(
+          this.pidPath
+        )
+      ) {
+        fs.unlinkSync(
+          this.pidPath
+        );
+      }
+    } catch {}
+
+    this.appendEvent(
+      'RUNTIME_REGISTRY_STOPPED',
+      {
+        service:
+          this.service,
+
+        version:
+          this.version,
+
+        generatedAt:
+          this.now()
+      }
+    );
+
+    return {
+      ok: true,
+
+      status:
+        'RUNTIME_REGISTRY_STOPPED',
+
+      generatedAt:
+        this.now()
+    };
+  }
+}
+
+module.exports =
+  RuntimeRegistryService;
+
+============================================================
+FILE: .\SERVICES\runtime_registry\RuntimeRegistryClient.js
+============================================================
+'use strict';
+
+const http = require('http');
+
+class RuntimeRegistryClient {
+  constructor(options = {}) {
+    this.host = options.host || process.env.MILES_RUNTIME_REGISTRY_HOST || '127.0.0.1';
+    this.port = Number(options.port || process.env.MILES_RUNTIME_REGISTRY_PORT || 8791);
+    this.timeoutMs = Number(options.timeoutMs || 3000);
+  }
+
+  request(method, path, payload = null) {
+    return new Promise((resolve, reject) => {
+      const body = payload ? JSON.stringify(payload) : null;
+
+      const request = http.request(
+        {
+          host: this.host,
+          port: this.port,
+          method,
+          path,
+          timeout: this.timeoutMs,
+          headers: body
+            ? {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(body)
+              }
+            : {}
+        },
+        response => {
+          const chunks = [];
+
+          response.on('data', chunk => chunks.push(chunk));
+          response.on('end', () => {
+            const raw = Buffer.concat(chunks).toString('utf8');
+
+            try {
+              resolve(JSON.parse(raw));
+            } catch {
+              resolve({
+                ok: false,
+                status: 'INVALID_REGISTRY_RESPONSE',
+                httpStatus: response.statusCode,
+                raw
+              });
+            }
+          });
+        }
+      );
+
+      request.once('timeout', () => {
+        request.destroy(new Error('Runtime Registry request timed out.'));
+      });
+
+      request.once('error', reject);
+
+      if (body) request.write(body);
+      request.end();
+    });
+  }
+
+  register(payload) {
+    return this.request('POST', '/register', payload);
+  }
+
+  heartbeat(id, patch = {}) {
+    return this.request(
+      'POST',
+      `/heartbeat/${encodeURIComponent(id)}`,
+      patch
+    );
+  }
+
+  deregister(id, reason = null) {
+    return this.request(
+      'POST',
+      `/deregister/${encodeURIComponent(id)}`,
+      { reason }
+    );
+  }
+
+  health() {
+    return this.request('GET', '/health');
+  }
+
+  services() {
+    return this.request('GET', '/services');
+  }
+
+  providers(capability) {
+    return this.request(
+      'GET',
+      `/capabilities/${encodeURIComponent(capability)}`
+    );
+  }
+}
+
+module.exports = RuntimeRegistryClient;
+
+============================================================
+FILE: .\SERVICES\CapabilityRegistry.js
+============================================================
+"use strict";
+
+const fs = require("fs");
+
+const ConfigService = require("./ConfigService");
+
+class CapabilityRegistry {
+
+    constructor() {
+        this.file =
+            ConfigService.getRuntimePath("capability_registry.json");
+    }
+
+    load() {
+
+        if (!fs.existsSync(this.file))
+            return {};
+
+        return JSON.parse(
+            fs.readFileSync(this.file, "utf8")
+        );
+
+    }
+
+    getAll() {
+
+        return this.load();
+
+    }
+
+    getService(name) {
+
+        const registry = this.load();
+
+        return registry[name] || null;
+
+    }
+
+    getCapabilities(name) {
+
+        const service = this.getService(name);
+
+        if (!service)
+            return [];
+
+        return service.capabilities || [];
+
+    }
+
+    findByCapability(capability) {
+
+        const registry = this.load();
+
+        const matches = [];
+
+        for (const serviceName of Object.keys(registry)) {
+
+            const service = registry[serviceName];
+
+            if (
+                service.capabilities &&
+                service.capabilities.includes(capability)
+            ) {
+
+                matches.push({
+                    service: serviceName,
+                    status: service.status,
+                    version: service.version || null
+                });
+
+            }
+
+        }
+
+        return matches;
+
+    }
+
+}
+
+module.exports = new CapabilityRegistry();
+
+============================================================
+FILE: .\SERVICES\MissionCapabilityResolver.js
+============================================================
+"use strict";
+
+const CapabilityRegistry = require("./CapabilityRegistry");
+
+class MissionCapabilityResolver {
+
+    constructor() {
+
+        this.map = {
+
+            close_mission: "close_mission",
+
+            validate_resolution: "validate_resolution",
+
+            website_health: "website_health",
+
+            website_update: "website_update",
+
+            execute_worker: "execute_worker",
+
+            create_mission: "create_mission",
+
+            collect_learning_data: "collect_learning_data"
+
+        };
+
+    }
+
+    resolve(mission) {
+
+        const capability =
+
+            mission.requiredCapability ||
+
+            this.map[mission.type] ||
+
+            null;
+
+        if (!capability) {
+
+            return {
+
+                ok: false,
+
+                reason: "No capability mapping."
+
+            };
+
+        }
+
+        const matches =
+
+            CapabilityRegistry.findByCapability(capability);
+
+        return {
+
+            ok: matches.length > 0,
+
+            capability,
+
+            workers: matches
+
+        };
+
+    }
+
+}
+
+module.exports = new MissionCapabilityResolver();
+
+============================================================
+FILE: .\SERVICES\WorkerRegistry.js
+============================================================
+"use strict";
+
+
+class WorkerRegistry {
+
+
+    constructor(){
+
+        this.workers = {};
+
+    }
+
+
+    register(type, worker){
+
+        this.workers[type] = worker;
+
+        return {
+            type,
+            status:"REGISTERED"
+        };
+
+    }
+
+
+    get(type){
+
+        return this.workers[type] || null;
+
+    }
+
+
+    list(){
+
+        return Object.keys(this.workers);
+
+    }
+
+
+}
+
+
+module.exports = new WorkerRegistry();
+
+============================================================
+FILE: .\SERVICES\worker_runtime\WorkerRegistry.js
+============================================================
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+class WorkerRegistry {
+  constructor(options = {}) {
+    this.service = 'WORKER_REGISTRY';
+    this.name = this.service;
+    this.version = '1.1.0';
+    this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();
+
+    this.runtimeDir = path.join(this.rootDir, 'runtime', 'worker_registry');
+    this.stateFile = path.join(this.runtimeDir, 'worker_registry_state.json');
+    this.registryFile = path.join(this.runtimeDir, 'registered_workers.json');
+    this.logFile = path.join(this.rootDir, 'logs', 'worker_registry.log');
+
+    this.workers = new Map();
+
+    this.state = {
+      ok: true,
+      service: this.service,
+      version: this.version,
+      status: 'INITIALIZED',
+      rootDir: this.rootDir,
+      workersRegistered: 0,
+      lastRegisteredAt: null,
+      lastUnregisteredAt: null,
+      lastError: null,
+      generatedAt: new Date().toISOString()
+    };
+
+    this.ensureDir(this.runtimeDir);
+    this.ensureDir(path.dirname(this.logFile));
+    this.loadFromDisk();
+    this.saveState();
+  }
+
+  register(workerName, workerOrDefinition = {}) {
+    const name = this.normalizeName(workerName || workerOrDefinition.name || workerOrDefinition.worker);
+
+    if (!name) {
+      return {
+        ok: false,
+        service: this.service,
+        status: 'WORKER_NAME_REQUIRED'
+      };
+    }
+
+    const record = {
+      name,
+      worker: workerOrDefinition,
+      registeredAt: new Date().toISOString(),
+      status: 'REGISTERED'
+    };
+
+    this.workers.set(name, record);
+
+    this.state.workersRegistered = this.workers.size;
+    this.state.lastRegisteredAt = record.registeredAt;
+    this.state.status = 'READY';
+    this.state.lastError = null;
+
+    this.persist();
+    this.log('INFO', `Registered worker: ${name}`);
+
+    return {
+      ok: true,
+      service: this.service,
+      status: 'WORKER_REGISTERED',
+      worker: name
+    };
+  }
+
+  unregister(workerName) {
+    const name = this.normalizeName(workerName);
+
+    if (!this.workers.has(name)) {
+      return {
+        ok: true,
+        service: this.service,
+        status: 'WORKER_NOT_REGISTERED',
+        worker: name
+      };
+    }
+
+    this.workers.delete(name);
+
+    this.state.workersRegistered = this.workers.size;
+    this.state.lastUnregisteredAt = new Date().toISOString();
+
+    this.persist();
+    this.log('INFO', `Unregistered worker: ${name}`);
+
+    return {
+      ok: true,
+      service: this.service,
+      status: 'WORKER_UNREGISTERED',
+      worker: name
+    };
+  }
+
+  get(workerName) {
+    return this.getWorker(workerName);
+  }
+
+  getWorker(workerName) {
+    const name = this.normalizeName(workerName);
+    const record = this.workers.get(name);
+
+    if (!record) return null;
+
+    return record.worker;
+  }
+
+  getWorkerRecord(workerName) {
+    const name = this.normalizeName(workerName);
+    return this.workers.get(name) || null;
+  }
+
+  has(workerName) {
+    return this.hasWorker(workerName);
+  }
+
+  hasWorker(workerName) {
+    return this.workers.has(this.normalizeName(workerName));
+  }
+
+  list() {
+    return this.listWorkers();
+  }
+
+  listWorkers() {
+    return Array.from(this.workers.values()).map((record) => ({
+      name: record.name,
+      status: record.status,
+      registeredAt: record.registeredAt,
+      hasExecute: Boolean(record.worker && typeof record.worker.execute === 'function'),
+      hasRun: Boolean(record.worker && typeof record.worker.run === 'function'),
+      hasStart: Boolean(record.worker && typeof record.worker.start === 'function'),
+      hasStop: Boolean(record.worker && typeof record.worker.stop === 'function'),
+      hasHealthCheck: Boolean(record.worker && typeof record.worker.healthCheck === 'function')
+    }));
+  }
+
+  clear() {
+    this.workers.clear();
+    this.state.workersRegistered = 0;
+    this.persist();
+
+    return {
+      ok: true,
+      service: this.service,
+      status: 'REGISTRY_CLEARED'
+    };
+  }
+
+  async start() {
+    this.state.status = 'RUNNING';
+    this.state.lastError = null;
+    this.saveState();
+
+    return {
+      ok: true,
+      service: this.service,
+      status: 'STARTED',
+      state: this.getState()
+    };
+  }
+
+  async stop() {
+    this.state.status = 'STOPPED';
+    this.saveState();
+
+    return {
+      ok: true,
+      service: this.service,
+      status: 'STOPPED',
+      state: this.getState()
+    };
+  }
+
+  async healthCheck() {
+    return {
+      ok: true,
+      service: this.service,
+      version: this.version,
+      status: 'HEALTHY',
+      workersRegistered: this.workers.size,
+      workers: this.listWorkers(),
+      state: this.getState(),
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  getExecutiveSummary() {
+    return {
+      ok: true,
+      service: this.service,
+      status: 'WORKER_REGISTRY_SUMMARY_READY',
+      workersRegistered: this.workers.size,
+      workers: this.listWorkers(),
+      state: this.getState(),
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  getState() {
+    return {
+      ...this.state,
+      workersRegistered: this.workers.size,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  normalizeName(value) {
+    return String(value || '').trim();
+  }
+
+  loadFromDisk() {
+    try {
+      if (!fs.existsSync(this.registryFile)) return;
+
+      const data = JSON.parse(fs.readFileSync(this.registryFile, 'utf8'));
+      const workers = Array.isArray(data.workers) ? data.workers : [];
+
+      for (const worker of workers) {
+        if (!worker || !worker.name) continue;
+
+        this.workers.set(worker.name, {
+          name: worker.name,
+          worker,
+          registeredAt: worker.registeredAt || new Date().toISOString(),
+          status: worker.status || 'REGISTERED'
+        });
+      }
+
+      this.state.workersRegistered = this.workers.size;
+    } catch (error) {
+      this.state.ok = false;
+      this.state.status = 'LOAD_FAILED';
+      this.state.lastError = error.message;
+      this.log('ERROR', error.message);
+    }
+  }
+
+  persist() {
+    const workers = Array.from(this.workers.values()).map((record) => ({
+      name: record.name,
+      status: record.status,
+      registeredAt: record.registeredAt,
+      metadata:
+        record.worker && typeof record.worker === 'object'
+          ? {
+              service: record.worker.service || record.worker.name || record.name,
+              version: record.worker.version || null
+            }
+          : {}
+    }));
+
+    this.writeJson(this.registryFile, {
+      generatedAt: new Date().toISOString(),
+      source: this.service,
+      workers
+    });
+
+    this.saveState();
+  }
+
+  saveState() {
+    this.writeJson(this.stateFile, this.getState());
+  }
+
+  writeJson(filePath, data) {
+    this.ensureDir(path.dirname(filePath));
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  }
+
+  ensureDir(dir) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  log(level, message) {
+    const entry = {
+      timestamp: new Date().toISOString(),
+      level,
+      service: this.service,
+      message
+    };
+
+    fs.appendFileSync(this.logFile, `${JSON.stringify(entry)}\n`, 'utf8');
+  }
+}
+
+module.exports = WorkerRegistry;
+module.exports.WorkerRegistry = WorkerRegistry;
+module.exports.default = WorkerRegistry;
+
+============================================================
+FILE: .\PROVIDERS\providers\InstantlyProvider.js
+============================================================
+"use strict";
+
+const IDataProvider = require("../contracts/IDataProvider");
+const instantly = require("../../CONNECTORS/INSTANTLY/instantly");
+
+class InstantlyProvider extends IDataProvider {
+
+    constructor() {
+
+        super("Instantly");
+
+        this.dependencies = [
+            "Instantly"
+        ];
+
+        this.sourceSystems = [
+            "CONNECTORS/INSTANTLY"
+        ];
+
+    }
+
+    async initialize() {
+
+        this.status = "Initializing";
+
+        await this.refresh();
+
+        return true;
+
+    }
+
+    async refresh() {
+
+        this.lastRefresh = new Date().toISOString();
+        this.dataFreshness = "Live";
+
+        try {
+
+            const response = await instantly.listCampaigns();
+
+            const campaigns = response.items || [];
+
+            const activeCampaigns =
+                campaigns.filter(c => c.status === 1);
+
+            const pausedCampaigns =
+                campaigns.filter(c => c.status !== 1);
+
+            this.status = "Healthy";
+
+            this.metrics = {
+
+                totalCampaigns: campaigns.length,
+
+                activeCampaigns: activeCampaigns.length,
+
+                pausedCampaigns: pausedCampaigns.length,
+
+                campaignNames:
+                    campaigns.map(c => c.name),
+
+                campaigns:
+                    campaigns.map(c => ({
+
+                        id: c.id,
+
+                        name: c.name,
+
+                        status: c.status,
+
+                        dailyLimit: c.daily_limit || 0,
+
+                        organization: c.organization,
+
+                        owner: c.owned_by,
+
+                        created: c.timestamp_created,
+
+                        updated: c.timestamp_updated
+
+                    }))
+
+            };
+
+            this.exceptions = [];
+
+            if (campaigns.length === 0) {
+
+                this.exceptions.push({
+
+                    type: "NoCampaigns",
+
+                    severity: "Warning",
+
+                    message:
+                        "No Instantly campaigns were found."
+
+                });
+
+            }
+
+            if (activeCampaigns.length === 0) {
+
+                this.exceptions.push({
+
+                    type: "NoActiveCampaigns",
+
+                    severity: "Warning",
+
+                    message:
+                        "All Instantly campaigns are currently paused."
+
+                });
+
+            }
+
+            this.recommendations = [];
+
+            if (activeCampaigns.length < 2) {
+
+                this.recommendations.push(
+                    "Review campaign schedule and activate additional outreach campaigns."
+                );
+
+            }
+
+        }
+
+        catch (err) {
+
+            this.status = "Critical";
+
+            this.metrics = {};
+
+            this.exceptions = [
+
+                {
+
+                    type: "InstantlyAPI",
+
+                    severity: "Critical",
+
+                    message: err.message
+
+                }
+
+            ];
+
+            this.recommendations = [
+
+                "Verify Instantly API connectivity.",
+                "Verify INSTANTLY_API_KEY.",
+                "Verify internet connectivity."
+
+            ];
+
+        }
+
+    }
+
+    getCampaignByName(name) {
+
+        if (!this.metrics.campaigns) {
+
+            return null;
+
+        }
+
+        return this.metrics.campaigns.find(
+            c => c.name === name
+        );
+
+    }
+
+    getActiveCampaigns() {
+
+        if (!this.metrics.campaigns) {
+
+            return [];
+
+        }
+
+        return this.metrics.campaigns.filter(
+            c => c.status === 1
+        );
+
+    }
+
+    async shutdown() {
+
+        return true;
+
+    }
+
+}
+
+module.exports = InstantlyProvider;
+
+============================================================
+FILE: .\CONFIG\WORKFORCE\MILES_WORKFORCE_REGISTRY.json
+============================================================
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T00:24:42.994508Z",
+  "source": "Uploaded Twin role files",
+  "employees": [
+    {
+      "id": "aden",
+      "name": "Aden",
+      "department": "Market Intelligence",
+      "title": "Agency Buying Map Strategist",
+      "mission": "Map how agencies buy specific services, including buying offices, contracting offices, vehicles, budgets, contacts, and entry strategy.",
+      "capabilities": [
+        "agency buying map",
+        "agency intelligence",
+        "buying offices",
+        "contracting offices",
+        "contract vehicle mapping",
+        "budget intelligence",
+        "program intelligence",
+        "opportunity forecast analysis",
+        "agency entry strategy",
+        "agency contact map",
+        "federal market entry strategy",
+        "vehicle strategy"
+      ],
+      "owns": [
+        "Agency Buying Map",
+        "Contract Vehicle Strategy",
+        "Budget & Program Intelligence",
+        "Agency Contact Map",
+        "Opportunity Forecast Report"
+      ],
+      "does_not_own": [
+        "prime capture strategy",
+        "proposal writing",
+        "email outreach execution"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "agency forecasts"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "alexis",
+      "name": "Alexis",
+      "department": "Sales",
+      "title": "GovCon Growth & Client Acquisition Strategist",
+      "mission": "Turn government contractors into paying P2GC clients through segmentation, targeting, offer strategy, pricing positioning, messaging, and conversion strategy.",
+      "capabilities": [
+        "sales",
+        "client acquisition",
+        "growth strategy",
+        "market segmentation",
+        "lead strategy",
+        "offer strategy",
+        "offer-to-segment matching",
+        "outreach strategy",
+        "conversion strategy",
+        "pricing positioning",
+        "pipeline intelligence",
+        "close strategy",
+        "objection handling",
+        "revenue growth"
+      ],
+      "owns": [
+        "Target Segment of the Week",
+        "Lead Criteria",
+        "Outreach Messaging",
+        "Offer Recommendation",
+        "Close Strategy",
+        "Pipeline Insights"
+      ],
+      "does_not_own": [
+        "raw lead scraping",
+        "sending infrastructure",
+        "proposal writing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "CRM",
+        "Instantly",
+        "Website"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "allison",
+      "name": "Allison Price",
+      "department": "Competitive Intelligence",
+      "title": "Expiration & Recompete Intelligence Director",
+      "mission": "Track contracts, vehicles, certifications, incumbents, and procurement pathways approaching expiration, recompete, renewal, consolidation, or vulnerability.",
+      "capabilities": [
+        "recompete",
+        "expiration",
+        "contract expiration",
+        "vehicle renewal",
+        "incumbent fragility",
+        "certification continuity",
+        "procurement continuity",
+        "forecasting",
+        "sources sought",
+        "rfi",
+        "draft rfp",
+        "renewal scoring",
+        "expiration heatmap"
+      ],
+      "owns": [
+        "ORION Expiration Engine",
+        "ORION Recompete Engine",
+        "ORION Incumbent Fragility Engine",
+        "ORION Vehicle Renewal Engine",
+        "ORION Set-Aside Continuity Engine"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_alert",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "SBA",
+        "SLED portals"
+      ],
+      "reportsTo": "Olivia",
+      "escalatesTo": "MILES"
+    },
+    {
+      "id": "aria",
+      "name": "Aria",
+      "department": "Marketing",
+      "title": "Email Marketing & Conversion Architect",
+      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+      "capabilities": [
+        "email",
+        "email marketing",
+        "copywriting",
+        "subject lines",
+        "preview text",
+        "campaign messaging",
+        "cta optimization",
+        "conversion optimization",
+        "segment messaging",
+        "outbound copy",
+        "marketing",
+        "reply conversion",
+        "campaign diagnosis"
+      ],
+      "owns": [
+        "Subject Lines",
+        "Preview Text",
+        "Email Body",
+        "CTA Line",
+        "Messaging Strategy",
+        "Campaign Copy"
+      ],
+      "does_not_own": [
+        "infrastructure",
+        "sending execution",
+        "raw data pulls"
+      ],
+      "authority": "content_recommendation",
+      "connectors": [
+        "Instantly",
+        "Website",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "claudia",
+      "name": "Claudia",
+      "department": "SLED",
+      "title": "SLED Procurement Intelligence Specialist",
+      "mission": "Own SLED opportunity intelligence, SLED data integration, SLED entry strategy, win strategy, and fast-revenue opportunity pipeline.",
+      "capabilities": [
+        "sled",
+        "state procurement",
+        "local procurement",
+        "county bids",
+        "city bids",
+        "education market",
+        "university procurement",
+        "sled opportunity intelligence",
+        "sled data integration",
+        "fast revenue",
+        "state targeting",
+        "sled pipeline",
+        "municipal bids"
+      ],
+      "owns": [
+        "SLED Opportunity Intelligence",
+        "SLED_Raw",
+        "SLED_Normalized",
+        "SLED_Live_Open",
+        "SLED Entry Strategy",
+        "SLED Pipeline"
+      ],
+      "does_not_own": [
+        "federal strategy",
+        "prime capture",
+        "email validation",
+        "general outreach"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "SLED portals",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "cora",
+      "name": "Cora",
+      "department": "Capture",
+      "title": "Prime Capture Positioning Strategist",
+      "mission": "Position small companies to realistically get on federal contract teams through prime landscape, capture entry, subcontract positioning, prime mapping, and teaming strategy.",
+      "capabilities": [
+        "capture",
+        "capture strategy",
+        "prime capture",
+        "prime landscape",
+        "teaming strategy",
+        "subcontract positioning",
+        "prime outreach plan",
+        "capture entry strategy",
+        "prime target list",
+        "teaming position",
+        "positioning",
+        "partner strategy"
+      ],
+      "owns": [
+        "Prime Landscape Report",
+        "Capture Entry Strategy",
+        "Prime Target List",
+        "Teaming Position Strategy",
+        "Prime Outreach Plan"
+      ],
+      "does_not_own": [
+        "proposal production",
+        "pricing negotiation",
+        "random lead sourcing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "USAspending",
+        "FPDS",
+        "SAM"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "daniel",
+      "name": "Daniel",
+      "department": "Vehicles",
+      "title": "Contract Vehicle Strategy Specialist",
+      "mission": "Determine which contract vehicles clients should pursue to access federal, state, and prime contracting opportunities.",
+      "capabilities": [
+        "vehicle",
+        "contract vehicle strategy",
+        "vehicle landscape",
+        "vehicle feasibility",
+        "vehicle revenue mapping",
+        "prime vehicle holders",
+        "set-aside mapping",
+        "vehicle pathway",
+        "vehicle readiness",
+        "vehicle timing",
+        "cooperative purchasing"
+      ],
+      "owns": [
+        "Contract Vehicle Strategy Report",
+        "Vehicle Revenue Map",
+        "Prime Holder List",
+        "Entry Strategy",
+        "Vehicle Readiness Checklist",
+        "Vehicle Timing Calendar"
+      ],
+      "does_not_own": [
+        "application execution",
+        "proposal submission"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "GSA eBuy",
+        "FPDS"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "derek",
+      "name": "Derek Vaughn",
+      "department": "Pricing",
+      "title": "GovCon Pricing Strategist",
+      "mission": "Ensure clients are priced to win and remain profitable through pricing positioning, competitive pricing analysis, win probability, and margin strategy.",
+      "capabilities": [
+        "pricing",
+        "pricing strategy",
+        "competitive pricing",
+        "margin strategy",
+        "win probability",
+        "price vulnerability",
+        "premium pricing",
+        "competitive pricing position"
+      ],
+      "owns": [
+        "Pricing Positioning Strategy",
+        "Competitive Pricing Analysis",
+        "Win Probability Pricing Review",
+        "Margin Strategy"
+      ],
+      "does_not_own": [
+        "accounting",
+        "budgets",
+        "invoicing",
+        "cost modeling"
+      ],
+      "authority": "recommendation_requires_ceo_for_final_price",
+      "connectors": [
+        "ORION",
+        "proposal data"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "isabel",
+      "name": "Isabel",
+      "department": "Vehicles",
+      "title": "Contract Vehicle Activation & Strategy Authority",
+      "mission": "Own how to get on, activate, position, and use government contract vehicles to generate revenue.",
+      "capabilities": [
+        "vehicle activation",
+        "contract vehicle application",
+        "vehicle go no-go",
+        "application steps",
+        "required documents",
+        "submission strategy",
+        "post-award activation",
+        "vehicle revenue strategy",
+        "eOffer",
+        "eMod",
+        "SIP",
+        "state vehicle portals"
+      ],
+      "owns": [
+        "Vehicle Overview",
+        "GO/NO-GO",
+        "Application Steps",
+        "Required Documents",
+        "Submission Strategy",
+        "Activation Steps",
+        "Revenue Strategy",
+        "Risks/Pitfalls"
+      ],
+      "does_not_own": [
+        "reseller work",
+        "contracting officer interaction"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "GSA",
+        "state portals",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "jackson",
+      "name": "Jackson",
+      "department": "Competitive Intelligence",
+      "title": "Competitive Displacement Strategist",
+      "mission": "Identify vulnerable incumbents and position clients to replace, subcontract under, or capture recompetes.",
+      "capabilities": [
+        "competitive",
+        "competitive displacement",
+        "incumbent identification",
+        "recompete timing",
+        "incumbent weakness",
+        "small business entry points",
+        "displacement strategy",
+        "competitor profiles",
+        "vehicle displacement",
+        "price vulnerability",
+        "teaming strategy"
+      ],
+      "owns": [
+        "Incumbent Landscape",
+        "Recompete Timeline",
+        "Vulnerability Signals",
+        "Entry Strategy",
+        "Displacement Path"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "eBuy"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "jason",
+      "name": "Jason Wise",
+      "department": "Capture Systems",
+      "title": "Sub/Prime Developer",
+      "mission": "Build and operate the system matching prime demand to qualified subcontractors at opportunity and requirement level.",
+      "capabilities": [
+        "prime sub matching",
+        "alignment engine",
+        "matching engine",
+        "system architecture",
+        "requirement processing",
+        "sub readiness",
+        "gap analysis",
+        "capture infrastructure",
+        "team assembly",
+        "productization",
+        "prime value"
+      ],
+      "owns": [
+        "Alignment Engine",
+        "Prime Requirement Profiles",
+        "Sub Profiles",
+        "Match Scores",
+        "Gap Flags",
+        "Team Assembly System"
+      ],
+      "does_not_own": [
+        "sales closing",
+        "proposal writing",
+        "random lead sourcing",
+        "crm management"
+      ],
+      "authority": "system_builder",
+      "connectors": [
+        "ORION",
+        "Sheets",
+        "CRM"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "keith",
+      "name": "Keith Anderson",
+      "department": "Proposals",
+      "title": "Government Proposal Authority",
+      "mission": "Final proposal authority for compliance, evaluator scoring alignment, differentiation, and competitive submission quality.",
+      "capabilities": [
+        "proposal",
+        "proposal compliance",
+        "proposal authority",
+        "capture alignment",
+        "section l and m",
+        "compliance matrix",
+        "technical volume",
+        "management volume",
+        "past performance positioning",
+        "color team review",
+        "red team",
+        "gold team",
+        "scoring alignment",
+        "proposal QA"
+      ],
+      "owns": [
+        "Final Proposal Review",
+        "Compliance Matrix Validation",
+        "Evaluator Alignment",
+        "Differentiation Review",
+        "No Submission Without Approval"
+      ],
+      "does_not_own": [
+        "CEO approval",
+        "pricing final approval"
+      ],
+      "authority": "final_proposal_quality_authority",
+      "connectors": [
+        "Docs",
+        "Drive",
+        "proposal files"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "marcus",
+      "name": "Marcus",
+      "department": "Market Intelligence",
+      "title": "Federal Market Intelligence Analyst",
+      "mission": "Provide data-driven federal market intelligence showing where money flows, who wins, vehicles used, and realistic small business entry paths.",
+      "capabilities": [
+        "market intelligence",
+        "federal market size",
+        "agency buying intelligence",
+        "prime intelligence",
+        "small business reality",
+        "opportunity expansion",
+        "incumbent intelligence",
+        "past performance match",
+        "opportunity density",
+        "market entry report",
+        "spend analysis"
+      ],
+      "owns": [
+        "Federal Market Intelligence Brief",
+        "Market Size Analysis",
+        "Top Buyers",
+        "Vehicle Usage",
+        "Prime Contractors",
+        "Small Business Entry Points",
+        "Recent Awards",
+        "Recompetes"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_intelligence",
+      "connectors": [
+        "ORION",
+        "USAspending",
+        "SAM",
+        "FPDS",
+        "GSA eBuy",
+        "SBA"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "natalie",
+      "name": "Natalie Cross",
+      "department": "Past Performance",
+      "title": "Past Performance Strategist",
+      "mission": "Design how clients build, stack, and leverage past performance to become eligible and competitive.",
+      "capabilities": [
+        "past performance",
+        "ppe",
+        "past performance gap",
+        "eligibility strategy",
+        "subcontracting path",
+        "pilot contracts",
+        "commercial work translation",
+        "naics alignment",
+        "psc alignment",
+        "stacking strategy"
+      ],
+      "owns": [
+        "Past Performance Gap Analysis",
+        "PPE Build Strategy",
+        "PPE Positioning",
+        "Stacking Strategy"
+      ],
+      "does_not_own": [
+        "performing contract work",
+        "securing contracts",
+        "proposal writing",
+        "opportunity sourcing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "client records"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "olivia",
+      "name": "Olivia",
+      "department": "Forecasting",
+      "title": "Opportunity Forecasting & Pipeline Intelligence",
+      "mission": "Predict opportunities before they hit SAM/eBuy through recompetes, expirations, spending trends, early signals, and future pipeline analysis.",
+      "capabilities": [
+        "forecast",
+        "forecasting",
+        "opportunity forecast",
+        "future pipeline",
+        "recompete identification",
+        "contract expiration",
+        "spending trend",
+        "early opportunity signals",
+        "rfi",
+        "sources sought",
+        "incumbent weakness",
+        "pipeline dashboard"
+      ],
+      "owns": [
+        "12-Month Opportunity Forecast",
+        "24-Month Recompete Tracker",
+        "Agency Spending Trend Analysis",
+        "Incumbent Vendor Map",
+        "Future Pipeline Dashboard"
+      ],
+      "does_not_own": [
+        "live opportunity discovery",
+        "proposal writing"
+      ],
+      "authority": "operational_intelligence",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "FPDS",
+        "USAspending",
+        "agency forecasts"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "sophia",
+      "name": "Sophia",
+      "department": "Sales",
+      "title": "Federal Sales Pipeline Strategist",
+      "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+      "capabilities": [
+        "sales",
+        "pipeline",
+        "sales pipeline",
+        "federal sales",
+        "lead qualification",
+        "prospect pipeline",
+        "federal readiness score",
+        "opportunity-driven prospect targeting",
+        "pipeline forecasting",
+        "client expansion",
+        "weekly pipeline report",
+        "revenue conversion"
+      ],
+      "owns": [
+        "Federal Sales Pipeline Dashboard",
+        "Qualified Prospects",
+        "Next Actions",
+        "Revenue Forecast",
+        "Weekly Pipeline Report"
+      ],
+      "does_not_own": [
+        "raw data gathering",
+        "proposal writing",
+        "prime outreach"
+      ],
+      "authority": "operational_pipeline",
+      "connectors": [
+        "ORION",
+        "CRM",
+        "Instantly"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "victoria",
+      "name": "Victoria Hale",
+      "department": "Vehicles",
+      "title": "Vehicle Strategy & Access Pathway Specialist",
+      "mission": "Help clients access government work through the right vehicles without needing to own them immediately.",
+      "capabilities": [
+        "vehicle strategy",
+        "vehicle go no-go",
+        "access without ownership",
+        "prime vehicle holders",
+        "subcontracting entry points",
+        "buyer behavior mapping",
+        "vehicle failure diagnosis",
+        "recovery pathways",
+        "gsa no sales recovery"
+      ],
+      "owns": [
+        "Vehicle GO/NO-GO",
+        "Vehicle Access Pathway",
+        "Buyer Vehicle Usage",
+        "Vehicle Failure Diagnosis"
+      ],
+      "does_not_own": [
+        "vehicle applications",
+        "contract management",
+        "reseller work",
+        "contracting officer outreach"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "GSA"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    }
+  ]
+}
+
+============================================================
+FILE: .\DATA\runtime\capability_registry.json
+============================================================
+{
+  "ResolutionEngine": {
+    "status": "healthy",
+    "version": "BUILD_040",
+    "capabilities": [
+      "validate_resolution",
+      "close_mission"
+    ]
+  },
+
+  "ResolutionMemoryService": {
+    "status": "healthy",
+    "version": "BUILD_040",
+    "capabilities": [
+      "store_resolution",
+      "retrieve_resolution_history"
+    ]
+  },
+
+  "LearningDataService": {
+    "status": "healthy",
+    "version": "BUILD_041",
+    "capabilities": [
+      "collect_learning_data",
+      "aggregate_runtime_data"
+    ]
+  },
+
+  "MissionLifecycleService": {
+    "status": "healthy",
+    "capabilities": [
+      "create_mission",
+      "update_mission",
+      "complete_mission"
+    ]
+  },
+
+  "EngineeringOrchestrator": {
+    "status": "healthy",
+    "capabilities": [
+      "dispatch_engineering_work",
+      "coordinate_workers"
+    ]
+  },
+
+  "WorkerExecutionBridge": {
+    "status": "healthy",
+    "capabilities": [
+      "execute_worker",
+      "monitor_worker"
+    ]
+  },
+"InstantlyCOOWorker": {
+  "status": "healthy",
+  "version": "BUILD_049",
+  "capabilities": [
+    "campaign_health_check",
+    "campaign_create",
+    "lead_upload",
+    "campaign_pause",
+    "reply_review"
+  ]
+},
+
+"WebsiteCOOWorker": {
+  "status": "healthy",
+  "version": "BUILD_049",
+  "capabilities": [
+    "website_health",
+    "website_update",
+    "website_publish"
+  ]
+},
+
+"GoogleWorkspaceCOOWorker": {
+  "status": "healthy",
+  "version": "BUILD_049",
+  "capabilities": [
+    "gmail_read",
+    "gmail_send",
+    "calendar_read",
+    "calendar_update",
+    "drive_read"
+  ]
+},
+
+"NamecheapCOOWorker": {
+  "status": "healthy",
+  "version": "BUILD_049",
+  "capabilities": [
+    "dns_update",
+    "domain_lookup",
+    "domain_management"
+  ]
+}
+}
+
+============================================================
+FILE: .\DATA\runtime\worker_registry.json
+============================================================
+{
+  "ResolutionEngine": {
+    "status": "healthy",
+    "type": "core",
+    "capabilities": ["validate_resolution", "close_mission"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "LearningDataService": {
+    "status": "healthy",
+    "type": "learning",
+    "capabilities": ["collect_learning_data", "aggregate_runtime_data"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "WorkerExecutionBridge": {
+    "status": "healthy",
+    "type": "execution",
+    "capabilities": ["execute_worker", "monitor_worker"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "WebsiteWorker": {
+    "status": "planned",
+    "type": "business",
+    "capabilities": ["website_health", "website_update"],
+    "assetAccess": ["Website", "IONOS"],
+    "approvalRequired": true
+  },
+  "BrowserWorker": {
+    "status": "planned",
+    "type": "business",
+    "capabilities": ["browser_navigation", "login", "form_submission", "file_upload", "file_download"],
+    "assetAccess": ["Instantly", "GoogleWorkspace", "IONOS", "Namecheap", "Website"],
+    "approvalRequired": true
+  },
+  "InstantlyWorker": {
+    "status": "planned",
+    "type": "sales",
+    "capabilities": ["campaign_create", "lead_upload", "campaign_pause", "campaign_health_check", "reply_review"],
+    "assetAccess": ["Instantly"],
+    "approvalRequired": true
+  }
+}
+
+============================================================
+FILE: .\DATA\provider_sync\provider_capability_bindings.json
+============================================================
+{
+  "ok": true,
+  "action": "PROVIDER_CAPABILITY_BINDINGS",
+  "build": "EXEC_006",
+  "generatedAt": "2026-07-04T03:01:05.258Z",
+  "bindings": {
+    "instantly": {
+      "provider": "instantly",
+      "providerName": "Instantly",
+      "executable": true,
+      "status": "READY_READ_ONLY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_CAMPAIGNS",
+        "GET_CAMPAIGN",
+        "GENERATE_CAMPAIGN_REPORT"
+      ],
+      "writeOperations": [
+        "CREATE_CAMPAIGN",
+        "PAUSE_CAMPAIGN",
+        "RESUME_CAMPAIGN",
+        "UPLOAD_LEADS",
+        "ASSIGN_SENDING_ACCOUNTS"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "instantly",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_CAMPAIGNS": {
+          "provider": "instantly",
+          "operation": "LIST_CAMPAIGNS",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "GET_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "GET_CAMPAIGN",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "CREATE_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "CREATE_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "PAUSE_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "PAUSE_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "RESUME_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "RESUME_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "UPLOAD_LEADS": {
+          "provider": "instantly",
+          "operation": "UPLOAD_LEADS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "ASSIGN_SENDING_ACCOUNTS": {
+          "provider": "instantly",
+          "operation": "ASSIGN_SENDING_ACCOUNTS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "GENERATE_CAMPAIGN_REPORT": {
+          "provider": "instantly",
+          "operation": "GENERATE_CAMPAIGN_REPORT",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "google_workspace": {
+      "provider": "google_workspace",
+      "providerName": "Google Workspace",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_USERS",
+        "VERIFY_MAILBOX"
+      ],
+      "writeOperations": [
+        "CREATE_USER",
+        "CREATE_ALIAS",
+        "SUSPEND_USER"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "google_workspace",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_USERS": {
+          "provider": "google_workspace",
+          "operation": "LIST_USERS",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "CREATE_USER": {
+          "provider": "google_workspace",
+          "operation": "CREATE_USER",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "CREATE_ALIAS": {
+          "provider": "google_workspace",
+          "operation": "CREATE_ALIAS",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "SUSPEND_USER": {
+          "provider": "google_workspace",
+          "operation": "SUSPEND_USER",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_MAILBOX": {
+          "provider": "google_workspace",
+          "operation": "VERIFY_MAILBOX",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "namecheap": {
+      "provider": "namecheap",
+      "providerName": "Namecheap",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_DOMAINS",
+        "VERIFY_SPF",
+        "VERIFY_DKIM",
+        "VERIFY_DMARC"
+      ],
+      "writeOperations": [
+        "UPDATE_DNS_OR_VERIFY_AUTH"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "namecheap",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_DOMAINS": {
+          "provider": "namecheap",
+          "operation": "LIST_DOMAINS",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "UPDATE_DNS_OR_VERIFY_AUTH": {
+          "provider": "namecheap",
+          "operation": "UPDATE_DNS_OR_VERIFY_AUTH",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_SPF": {
+          "provider": "namecheap",
+          "operation": "VERIFY_SPF",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DKIM": {
+          "provider": "namecheap",
+          "operation": "VERIFY_DKIM",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DMARC": {
+          "provider": "namecheap",
+          "operation": "VERIFY_DMARC",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "website": {
+      "provider": "website",
+      "providerName": "Website",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "VERIFY_PAGE",
+        "GENERATE_WEBSITE_REPORT"
+      ],
+      "writeOperations": [
+        "BACKUP_SITE",
+        "UPDATE_PAGE",
+        "PUBLISH_PAGE"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "website",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "BACKUP_SITE": {
+          "provider": "website",
+          "operation": "BACKUP_SITE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "UPDATE_PAGE": {
+          "provider": "website",
+          "operation": "UPDATE_PAGE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "PUBLISH_PAGE": {
+          "provider": "website",
+          "operation": "PUBLISH_PAGE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_PAGE": {
+          "provider": "website",
+          "operation": "VERIFY_PAGE",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "GENERATE_WEBSITE_REPORT": {
+          "provider": "website",
+          "operation": "GENERATE_WEBSITE_REPORT",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "orion": {
+      "provider": "orion",
+      "providerName": "ORION",
+      "executable": true,
+      "status": "READY_READ_ONLY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "VERIFY_DATABASE",
+        "GENERATE_ORION_REPORT"
+      ],
+      "writeOperations": [
+        "REFRESH_DATASETS",
+        "RUN_INTELLIGENCE_JOB"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "orion",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DATABASE": {
+          "provider": "orion",
+          "operation": "VERIFY_DATABASE",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "REFRESH_DATASETS": {
+          "provider": "orion",
+          "operation": "REFRESH_DATASETS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "RUN_INTELLIGENCE_JOB": {
+          "provider": "orion",
+          "operation": "RUN_INTELLIGENCE_JOB",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "GENERATE_ORION_REPORT": {
+          "provider": "orion",
+          "operation": "GENERATE_ORION_REPORT",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "filesystem": {
+      "provider": "filesystem",
+      "providerName": "File System",
+      "executable": true,
+      "status": "READY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "READ_JSON",
+        "VERIFY_PATH"
+      ],
+      "writeOperations": [
+        "ENSURE_DIRECTORY",
+        "WRITE_JSON"
+      ],
+      "writeEnabled": true,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "filesystem",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "ENSURE_DIRECTORY": {
+          "provider": "filesystem",
+          "operation": "ENSURE_DIRECTORY",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": true
+        },
+        "WRITE_JSON": {
+          "provider": "filesystem",
+          "operation": "WRITE_JSON",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": true
+        },
+        "READ_JSON": {
+          "provider": "filesystem",
+          "operation": "READ_JSON",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_PATH": {
+          "provider": "filesystem",
+          "operation": "VERIFY_PATH",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    }
+  },
+  "summary": {
+    "providers": 6,
+    "executableProviders": 3,
+    "operations": 37
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\provider_sync"
+}
+
+============================================================
+FILE: .\DATA\provider_sync\provider_authority_registry.json
+============================================================
+{
+  "ok": true,
+  "action": "PROVIDER_AUTHORITY_REGISTRY",
+  "type": "MILES_PROVIDER_AUTHORITY_REGISTRY",
+  "build": "EXEC_006",
+  "generatedAt": "2026-07-04T03:01:05.252Z",
+  "providers": [
+    {
+      "key": "instantly",
+      "provider": "instantly",
+      "name": "Instantly",
+      "providerName": "Instantly",
+      "module": "InstantlyProviderCompatibilityService",
+      "executable": true,
+      "credentialsPresent": true,
+      "credentials": {
+        "present": true,
+        "requiredEnv": [
+          "INSTANTLY_API_KEY"
+        ],
+        "missingEnv": []
+      },
+      "safeMode": true,
+      "status": "READY_READ_ONLY",
+      "capabilities": {
+        "read": {
+          "enabled": true,
+          "operations": [
+            "HEALTH_CHECK",
+            "LIST_CAMPAIGNS",
+            "GET_CAMPAIGN",
+            "GENERATE_CAMPAIGN_REPORT"
+          ]
+        },
+        "write": {
+          "enabled": false,
+          "operations": [
+            "CREATE_CAMPAIGN",
+            "PAUSE_CAMPAIGN",
+            "RESUME_CAMPAIGN",
+            "UPLOAD_LEADS",
+            "ASSIGN_SENDING_ACCOUNTS"
+          ],
+          "flag": "INSTANTLY_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "LIST_CAMPAIGNS",
+        "GET_CAMPAIGN",
+        "CREATE_CAMPAIGN",
+        "PAUSE_CAMPAIGN",
+        "RESUME_CAMPAIGN",
+        "UPLOAD_LEADS",
+        "ASSIGN_SENDING_ACCOUNTS",
+        "GENERATE_CAMPAIGN_REPORT"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    },
+    {
+      "key": "google_workspace",
+      "provider": "google_workspace",
+      "name": "Google Workspace",
+      "providerName": "Google Workspace",
+      "module": "GoogleWorkspaceProviderController",
+      "credentialsPresent": false,
+      "credentials": {
+        "present": false,
+        "requiredEnv": [
+          "GOOGLE_APPLICATION_CREDENTIALS",
+          "GOOGLE_WORKSPACE_ADMIN_EMAIL"
+        ],
+        "missingEnv": [
+          "GOOGLE_APPLICATION_CREDENTIALS",
+          "GOOGLE_WORKSPACE_ADMIN_EMAIL"
+        ]
+      },
+      "safeMode": true,
+      "status": "MISSING_CREDENTIALS",
+      "capabilities": {
+        "read": {
+          "operations": [
+            "HEALTH_CHECK",
+            "LIST_USERS",
+            "VERIFY_MAILBOX"
+          ]
+        },
+        "write": {
+          "enabled": false,
+          "operations": [
+            "CREATE_USER",
+            "CREATE_ALIAS",
+            "SUSPEND_USER"
+          ],
+          "flag": "GOOGLE_WORKSPACE_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "LIST_USERS",
+        "CREATE_USER",
+        "CREATE_ALIAS",
+        "SUSPEND_USER",
+        "VERIFY_MAILBOX"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    },
+    {
+      "key": "namecheap",
+      "provider": "namecheap",
+      "name": "Namecheap",
+      "providerName": "Namecheap",
+      "module": "NamecheapProviderController",
+      "credentialsPresent": false,
+      "credentials": {
+        "present": false,
+        "requiredEnv": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_CLIENT_IP"
+        ],
+        "missingEnv": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_CLIENT_IP"
+        ]
+      },
+      "safeMode": true,
+      "status": "MISSING_CREDENTIALS",
+      "capabilities": {
+        "read": {
+          "operations": [
+            "HEALTH_CHECK",
+            "LIST_DOMAINS",
+            "VERIFY_SPF",
+            "VERIFY_DKIM",
+            "VERIFY_DMARC"
+          ]
+        },
+        "write": {
+          "enabled": false,
+          "operations": [
+            "UPDATE_DNS_OR_VERIFY_AUTH"
+          ],
+          "flag": "NAMECHEAP_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "LIST_DOMAINS",
+        "UPDATE_DNS_OR_VERIFY_AUTH",
+        "VERIFY_SPF",
+        "VERIFY_DKIM",
+        "VERIFY_DMARC"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    },
+    {
+      "key": "website",
+      "provider": "website",
+      "name": "Website",
+      "providerName": "Website",
+      "module": "WebsiteProviderController",
+      "credentialsPresent": false,
+      "credentials": {
+        "present": false,
+        "requiredEnv": [
+          "WEBSITE_ROOT"
+        ],
+        "missingEnv": [
+          "WEBSITE_ROOT"
+        ]
+      },
+      "safeMode": true,
+      "status": "MISSING_CREDENTIALS",
+      "capabilities": {
+        "read": {
+          "operations": [
+            "HEALTH_CHECK",
+            "VERIFY_PAGE",
+            "GENERATE_WEBSITE_REPORT"
+          ]
+        },
+        "write": {
+          "enabled": false,
+          "operations": [
+            "BACKUP_SITE",
+            "UPDATE_PAGE",
+            "PUBLISH_PAGE"
+          ],
+          "flag": "WEBSITE_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "BACKUP_SITE",
+        "UPDATE_PAGE",
+        "PUBLISH_PAGE",
+        "VERIFY_PAGE",
+        "GENERATE_WEBSITE_REPORT"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    },
+    {
+      "key": "orion",
+      "provider": "orion",
+      "name": "ORION",
+      "providerName": "ORION",
+      "module": "OrionProviderController",
+      "executable": true,
+      "credentialsPresent": true,
+      "credentials": {
+        "present": true,
+        "requiredEnv": [
+          "ORION_DB_PATH"
+        ],
+        "missingEnv": [
+          "ORION_DB_PATH"
+        ]
+      },
+      "safeMode": true,
+      "status": "READY_READ_ONLY",
+      "capabilities": {
+        "read": {
+          "enabled": true,
+          "operations": [
+            "HEALTH_CHECK",
+            "VERIFY_DATABASE",
+            "GENERATE_ORION_REPORT"
+          ]
+        },
+        "write": {
+          "enabled": false,
+          "operations": [
+            "REFRESH_DATASETS",
+            "RUN_INTELLIGENCE_JOB"
+          ],
+          "flag": "ORION_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "VERIFY_DATABASE",
+        "REFRESH_DATASETS",
+        "RUN_INTELLIGENCE_JOB",
+        "GENERATE_ORION_REPORT"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    },
+    {
+      "key": "filesystem",
+      "provider": "filesystem",
+      "name": "File System",
+      "providerName": "File System",
+      "module": "FileSystemProviderController",
+      "executable": true,
+      "credentialsPresent": true,
+      "credentials": {
+        "present": true,
+        "requiredEnv": [],
+        "missingEnv": []
+      },
+      "safeMode": false,
+      "status": "READY",
+      "capabilities": {
+        "read": {
+          "enabled": true,
+          "operations": [
+            "HEALTH_CHECK",
+            "READ_JSON",
+            "VERIFY_PATH"
+          ]
+        },
+        "write": {
+          "enabled": true,
+          "operations": [
+            "ENSURE_DIRECTORY",
+            "WRITE_JSON"
+          ],
+          "flag": "FILESYSTEM_WRITE_ENABLED"
+        },
+        "rollback": {
+          "enabled": false,
+          "operations": []
+        },
+        "verify": {
+          "enabled": true
+        }
+      },
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "ENSURE_DIRECTORY",
+        "WRITE_JSON",
+        "READ_JSON",
+        "VERIFY_PATH"
+      ],
+      "generatedAt": "2026-07-04T03:01:05.252Z"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "ready": 1,
+    "readReady": 3,
+    "writeReady": 1,
+    "safeMode": 5,
+    "missingCredentials": 3
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\provider_sync"
+}
+
+============================================================
+FILE: .\DATA\action_engine\provider_registry.json
+============================================================
+{
+  "ok": true,
+  "type": "MILES_PROVIDER_REGISTRY",
+  "build": "EXEC_001",
+  "generatedAt": "2026-07-04T02:13:39.411Z",
+  "updatedAt": "2026-07-04T02:13:39.424Z",
+  "policy": {
+    "secretsStoredHere": false,
+    "secretLocation": "Credential vault or environment variables only.",
+    "destructiveActionsRequireKevin": true,
+    "defaultMode": "SAFE_DRY_RUN_UNLESS_PROVIDER_VERIFIED"
+  },
+  "providers": [
+    {
+      "id": "instantly",
+      "name": "Instantly",
+      "aliases": [
+        "outbound",
+        "campaign",
+        "warmup",
+        "bounce"
+      ],
+      "purpose": "Outbound campaign operations and inbox rotation.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DELETE_CAMPAIGN",
+        "SEND_LIVE_EMAIL",
+        "CHANGE_DOMAIN_AUTH"
+      ],
+      "supportedActions": [
+        "CREATE_CAMPAIGN",
+        "UPLOAD_LEADS",
+        "ASSIGN_INBOXES",
+        "PAUSE_CAMPAIGN",
+        "READ_METRICS"
+      ],
+      "verification": "Provider controller must confirm object exists or state changed.",
+      "rollback": "Provider-specific rollback required.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "google_workspace",
+      "name": "Google Workspace",
+      "aliases": [
+        "gmail",
+        "workspace",
+        "google admin"
+      ],
+      "purpose": "Mailbox and user administration.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DELETE_USER",
+        "SUSPEND_USER",
+        "RESET_PASSWORD"
+      ],
+      "supportedActions": [
+        "CREATE_USER",
+        "CREATE_ALIAS",
+        "READ_USERS",
+        "CHECK_MAILBOX"
+      ],
+      "verification": "Confirm user, alias, or mailbox state after action.",
+      "rollback": "Disable or remove created object only with governance approval.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "namecheap",
+      "name": "Namecheap",
+      "aliases": [
+        "domain",
+        "dns",
+        "dkim",
+        "spf",
+        "dmarc"
+      ],
+      "purpose": "Domain and DNS operations.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "BUY_DOMAIN",
+        "DELETE_DNS_RECORD",
+        "TRANSFER_DOMAIN"
+      ],
+      "supportedActions": [
+        "READ_DOMAINS",
+        "UPDATE_DNS",
+        "CHECK_DKIM",
+        "CHECK_SPF",
+        "CHECK_DMARC"
+      ],
+      "verification": "DNS lookup or registrar readback.",
+      "rollback": "Restore previous DNS records from audit snapshot.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "website",
+      "name": "Website",
+      "aliases": [
+        "ionos",
+        "cms",
+        "seo",
+        "landing page"
+      ],
+      "purpose": "Website content, forms, SEO, and publishing workflow.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "PUBLISH_PRICING_CHANGE",
+        "DELETE_PAGE"
+      ],
+      "supportedActions": [
+        "READ_PAGE",
+        "QUEUE_PAGE_EDIT",
+        "VERIFY_FORM",
+        "GENERATE_PAGE_CHANGE"
+      ],
+      "verification": "Fetch page or inspect change queue after execution.",
+      "rollback": "Restore from website backup/change queue.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "aliases": [
+        "social",
+        "posts"
+      ],
+      "purpose": "LinkedIn content and relationship operations.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "PUBLISH_POST",
+        "SEND_MESSAGE"
+      ],
+      "supportedActions": [
+        "DRAFT_POST",
+        "READ_ACTIVITY",
+        "QUEUE_MESSAGE"
+      ],
+      "verification": "Draft or post URL/state confirmed.",
+      "rollback": "Manual or provider-specific rollback.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "orion",
+      "name": "ORION",
+      "aliases": [
+        "contractor",
+        "buyer",
+        "vehicle",
+        "dataset",
+        "recompete"
+      ],
+      "purpose": "ORION data, analysis, and intelligence operations.",
+      "status": "AVAILABLE",
+      "canRead": true,
+      "canExecute": true,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DELETE_DATA",
+        "DROP_TABLE"
+      ],
+      "supportedActions": [
+        "READ_STATUS",
+        "QUEUE_REFRESH",
+        "GENERATE_REPORT",
+        "VALIDATE_DATASET"
+      ],
+      "verification": "File/database output exists and passes validation.",
+      "rollback": "Restore from backup if mutation support is added.",
+      "lastVerified": null,
+      "health": "READY"
+    },
+    {
+      "id": "crm",
+      "name": "CRM",
+      "aliases": [
+        "pipeline",
+        "lead",
+        "prospect",
+        "client"
+      ],
+      "purpose": "Pipeline, lead, client, and proposal tracking.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DELETE_RECORD",
+        "SEND_PROPOSAL"
+      ],
+      "supportedActions": [
+        "READ_PIPELINE",
+        "UPDATE_STAGE",
+        "CREATE_FOLLOWUP",
+        "QUEUE_PROPOSAL"
+      ],
+      "verification": "Record state confirmed after execution.",
+      "rollback": "Restore prior record snapshot.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "filesystem",
+      "name": "Filesystem",
+      "aliases": [
+        "file",
+        "folder",
+        "csv",
+        "json",
+        "xlsx"
+      ],
+      "purpose": "Local file creation, validation, archiving, and reports.",
+      "status": "AVAILABLE",
+      "canRead": true,
+      "canExecute": true,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DELETE_FILE",
+        "DELETE_FOLDER"
+      ],
+      "supportedActions": [
+        "CREATE_REPORT",
+        "VALIDATE_FILE",
+        "ARCHIVE_FILE",
+        "WRITE_JSON",
+        "READ_JSON"
+      ],
+      "verification": "File exists and content validates.",
+      "rollback": "Restore from backup.",
+      "lastVerified": null,
+      "health": "READY"
+    },
+    {
+      "id": "email",
+      "name": "Email",
+      "aliases": [
+        "gmail",
+        "inbox",
+        "reply"
+      ],
+      "purpose": "Email reading, drafting, and executive communication workflows.",
+      "status": "NEEDS_CONNECTOR",
+      "canRead": true,
+      "canExecute": false,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "SEND_EMAIL",
+        "DELETE_EMAIL"
+      ],
+      "supportedActions": [
+        "READ_INBOX",
+        "DRAFT_EMAIL",
+        "CLASSIFY_REPLY"
+      ],
+      "verification": "Draft/message state confirmed.",
+      "rollback": "Provider-specific.",
+      "lastVerified": null,
+      "health": "NOT_CONNECTED"
+    },
+    {
+      "id": "general_operations",
+      "name": "General Operations",
+      "aliases": [
+        "miles",
+        "operations",
+        "general"
+      ],
+      "purpose": "Safe internal operational work when no provider is detected.",
+      "status": "AVAILABLE",
+      "canRead": true,
+      "canExecute": true,
+      "canDelete": false,
+      "requiresKevinApprovalFor": [
+        "DESTRUCTIVE_ACTION"
+      ],
+      "supportedActions": [
+        "CREATE_INTERNAL_RECORD",
+        "GENERATE_RECOMMENDATION",
+        "QUEUE_REVIEW"
+      ],
+      "verification": "Internal output exists.",
+      "rollback": "Archive or supersede internal record.",
+      "lastVerified": null,
+      "health": "READY"
+    }
+  ]
+}
+
+============================================================
+REGISTRY SERVICE USAGE SEARCH
+============================================================
+
+### REFERENCES: CapabilityRegistryService
+
+Path                                                                                           LineNumber Line         
+----                                                                                           ---------- ----         
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseCapabilityRegistryService.js          6 class Enterpr
+                                                                                                          iseCapability
+                                                                                                          RegistryServi
+                                                                                                          ce {         
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseCapabilityRegistryService.js        215 module.export
+                                                                                                          s = Enterpris
+                                                                                                          eCapabilityRe
+                                                                                                          gistryService
+                                                                                                          ;            
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityRegistryService.js                            51 class Capabil
+                                                                                                          ityRegistrySe
+                                                                                                          rvice {      
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityRegistryService.js                           500 module.export
+                                                                                                          s = new Capab
+                                                                                                          ilityRegistry
+                                                                                                          Service();   
+
+
+
+
+### REFERENCES: ProviderRegistryService
+
+Path                                                                      LineNumber Line                              
+----                                                                      ---------- ----                              
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ActionEngineService.js             16 const ProviderRegistry = require("
+                                                                                     ./ProviderRegistryService");      
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRegistryService.js         39 class ProviderRegistryService {   
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRegistryService.js        283 module.exports = new              
+                                                                                     ProviderRegistryService();        
+
+
+
+
+### REFERENCES: ProviderCapabilityBindingService
+
+Path                                                                               LineNumber Line                     
+----                                                                               ---------- ----                     
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderCapabilityBindingService.js         15 class ProviderCapabilityB
+                                                                                              indingService {          
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderCapabilityBindingService.js         60 module.exports = new Prov
+                                                                                              iderCapabilityBindingServ
+                                                                                              ice();                   
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderSynchronizationService.js           12 const bindings = require(
+                                                                                              "./ProviderCapabilityBind
+                                                                                              ingService");            
+
+
+
+
+### REFERENCES: ProviderAuthorityRegistryService
+
+Path                                                                               LineNumber Line                     
+----                                                                               ---------- ----                     
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderAuthorityRegistryService.js         27 class ProviderAuthorityRe
+                                                                                              gistryService {          
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderAuthorityRegistryService.js        185 module.exports = new Prov
+                                                                                              iderAuthorityRegistryServ
+                                                                                              ice();                   
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderCapabilityBindingService.js          7 const authority = require
+                                                                                              ("./ProviderAuthorityRegi
+                                                                                              stryService");           
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderInterfaceAdapterService.js          10 const authority = require
+                                                                                              ("./ProviderAuthorityRegi
+                                                                                              stryService");           
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderSynchronizationService.js           10 const authority = require
+                                                                                              ("./ProviderAuthorityRegi
+                                                                                              stryService");           
+
+
+
+
+### REFERENCES: EnterpriseCapabilityRegistryService
+
+Path                                                                                           LineNumber Line         
+----                                                                                           ---------- ----         
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseCapabilityRegistryService.js          6 class Enterpr
+                                                                                                          iseCapability
+                                                                                                          RegistryServi
+                                                                                                          ce {         
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseCapabilityRegistryService.js        215 module.export
+                                                                                                          s = Enterpris
+                                                                                                          eCapabilityRe
+                                                                                                          gistryService
+                                                                                                          ;            
+
+
+
+
+### REFERENCES: RuntimeRegistryService
+
+Path                                                                                      LineNumber Line              
+----                                                                                      ---------- ----              
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\runtime_registry\RuntimeRegistryService.js          5   File: SERVICES/r
+                                                                                                     untime_registry/Ru
+                                                                                                     ntimeRegistryServi
+                                                                                                     ce.js             
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\runtime_registry\RuntimeRegistryService.js         23 class RuntimeRegis
+                                                                                                     tryService {      
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\runtime_registry\RuntimeRegistryService.js       2140   RuntimeRegistryS
+                                                                                                     ervice;           
+
+
+
+
+### REFERENCES: MissionCapabilityResolver
+
+Path                                                                            LineNumber Line                        
+----                                                                            ---------- ----                        
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\MissionCapabilityResolver.js              5 class                       
+                                                                                           MissionCapabilityResolver { 
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\MissionCapabilityResolver.js             69 module.exports = new        
+                                                                                           MissionCapabilityResolver();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeActivationAuditService.js         22             ["Core", "Missio
+                                                                                           nCapabilityResolver", "SERVI
+                                                                                           CES/MissionCapabilityResolve
+                                                                                           r.js"],                     
+
+
+
+
+### REFERENCES: MILES_WORKFORCE_REGISTRY
+
+Path                                                               LineNumber Line                                     
+----                                                               ---------- ----                                     
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceService.js          5 const REGISTRY_PATH = path.join(ROOT,    
+                                                                              "CONFIG", "WORKFORCE",                   
+                                                                              "MILES_WORKFORCE_REGISTRY.json");        
+
+
+

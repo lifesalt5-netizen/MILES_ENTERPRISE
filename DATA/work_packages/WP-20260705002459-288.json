@@ -1,0 +1,216 @@
+{
+  "id": "WP-20260705002459-288",
+  "objective": "OPPORTUNITY",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-05T00:24:59.917Z",
+  "updatedAt": "2026-07-05T00:24:59.917Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "OPPORTUNITY",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-05T00:24:59.917Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783112834347-20863",
+      "area": "LIFECYCLE",
+      "priority": 1,
+      "description": "evaluate_opportunity",
+      "reason": "",
+      "recommendedAction": "",
+      "expectedImpact": "",
+      "relatedProvider": null,
+      "metadata": {
+        "target": "NOT APPLICABLE",
+        "company": "Unknown Buyer",
+        "contact": null,
+        "email": null,
+        "probability": 0.7,
+        "source": "ORION",
+        "lastDuplicateDetectedAt": "2026-07-05T00:24:41.630Z"
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "orion",
+    "workforce": "ORION Workforce",
+    "requiredCapabilities": [
+      "orion.sqlite.read",
+      "orion.database.health.audit",
+      "orion.data.inventory.evaluate",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "orion.sqlite.read",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "orion.database.health.audit",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "orion.data.inventory.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "orion.sqlite.read",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "readDatabaseStatus",
+        "expectedOutput": "Current ORION production database counts and table health.",
+        "verification": "Verify contractor, buyer, opportunity, recompete, recommendation, and persona counts are captured."
+      },
+      {
+        "step": 2,
+        "capability": "orion.database.health.audit",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "auditDatabaseHealth",
+        "expectedOutput": "ORION database health assessment.",
+        "verification": "Verify database access, table availability, and expected production counts."
+      },
+      {
+        "step": 3,
+        "capability": "orion.data.inventory.evaluate",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "evaluateDataReadiness",
+        "expectedOutput": "ORION data readiness and missing implementation list.",
+        "verification": "Verify the output identifies missing tables, weak joins, or blocked intelligence layers."
+      },
+      {
+        "step": 4,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive ORION status update.",
+        "verification": "Verify update explains current status, risks, and next actions."
+      }
+    ],
+    "providers": [
+      "OrionProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "ORION database can be read.",
+      "Core production counts are captured.",
+      "Data health is evaluated.",
+      "Executive update is generated."
+    ],
+    "successCriteria": [
+      "ORION status is current.",
+      "Missing implementation is clearly identified.",
+      "Next operational action is available."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "orion.sqlite.read",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "readDatabaseStatus",
+      "expectedOutput": "Current ORION production database counts and table health.",
+      "verification": "Verify contractor, buyer, opportunity, recompete, recommendation, and persona counts are captured."
+    },
+    {
+      "step": 2,
+      "capability": "orion.database.health.audit",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "auditDatabaseHealth",
+      "expectedOutput": "ORION database health assessment.",
+      "verification": "Verify database access, table availability, and expected production counts."
+    },
+    {
+      "step": 3,
+      "capability": "orion.data.inventory.evaluate",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "evaluateDataReadiness",
+      "expectedOutput": "ORION data readiness and missing implementation list.",
+      "verification": "Verify the output identifies missing tables, weak joins, or blocked intelligence layers."
+    },
+    {
+      "step": 4,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive ORION status update.",
+      "verification": "Verify update explains current status, risks, and next actions."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

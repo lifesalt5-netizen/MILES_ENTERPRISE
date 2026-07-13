@@ -1,0 +1,473 @@
+[
+  {
+    "id": "CMD-1783614776916-jir7z0",
+    "title": "Analyze Mission Requirements",
+    "type": "ARCHITECT",
+    "priority": 1,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T16:32:56.917Z",
+    "updatedAt": "2026-07-09T16:43:08.795Z",
+    "payload": {
+      "id": "TICKET-1783614776913-vwkb65",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Analyze Mission Requirements",
+      "type": "ARCHITECT",
+      "owner": "ARCHITECT",
+      "priority": 1,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T16:32:56.917Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T16:43:08.762Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T16:43:08.795Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "ARCHITECT",
+      "completed": true,
+      "task": "Analyze Mission Requirements"
+    },
+    "completedAt": "2026-07-09T16:43:08.795Z"
+  },
+  {
+    "id": "CMD-1783614776973-fmk5zt",
+    "title": "Prepare Executive Report",
+    "type": "ATLAS",
+    "priority": 3,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T16:32:56.973Z",
+    "updatedAt": "2026-07-09T17:00:07.268Z",
+    "payload": {
+      "id": "TICKET-1783614776913-9k9xfj",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Prepare Executive Report",
+      "type": "ATLAS",
+      "owner": "ATLAS",
+      "priority": 3,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T16:32:56.973Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T17:00:05.932Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T17:00:07.268Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "ATLAS",
+      "task": "Prepare Executive Report",
+      "completed": true,
+      "drift": 1,
+      "report": {
+        "ok": true,
+        "version": "2.0.1",
+        "generatedAt": "2026-07-09T17:00:05.969Z",
+        "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+        "pm2": {
+          "list": "┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐\n│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │\n└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘\nhost metrics | cpu: 11.7% | ram usage: 80.3% | disk: ⇓ 0mb/s ⇑ 0mb/s |",
+          "describe": "[PM2][WARN] MILES doesn't exist"
+        },
+        "runtime": {
+          "startupFile": "StartProductionSystem.js",
+          "startupLoadsCooWorker": true,
+          "startupLoadsRevenueWorker": true,
+          "startupLoadsDealWorker": true,
+          "startupLoadsAtlasWorker": true,
+          "startupLoadsCommandWorker": false,
+          "startupEmitsCOOTick": true,
+          "cooWorkerUsesAutonomous": true,
+          "cooWorkerHasLegacyFallback": true,
+          "cooWorkerPrimaryEngine": "AutonomousCOOLoopService",
+          "cooWorkerFallbackEngine": "ProductionCOOEngine"
+        },
+        "architecture": {
+          "ok": false,
+          "expected": {
+            "cooEngine": "AutonomousCOOLoopService",
+            "startupFile": "StartProductionSystem.js",
+            "event": "COO_TICK"
+          },
+          "actual": {
+            "startupFile": "StartProductionSystem.js",
+            "startupLoadsCooWorker": true,
+            "startupLoadsRevenueWorker": true,
+            "startupLoadsDealWorker": true,
+            "startupLoadsAtlasWorker": true,
+            "startupLoadsCommandWorker": false,
+            "startupEmitsCOOTick": true,
+            "cooWorkerUsesAutonomous": true,
+            "cooWorkerHasLegacyFallback": true,
+            "cooWorkerPrimaryEngine": "AutonomousCOOLoopService",
+            "cooWorkerFallbackEngine": "ProductionCOOEngine"
+          },
+          "checks": {
+            "startProductionExists": true,
+            "eventBusExists": false,
+            "cooWorkerExists": true,
+            "revenueWorkerExists": true,
+            "dealWorkerExists": true,
+            "replyWorkerExists": true,
+            "atlasWorkerExists": true,
+            "commandWorkerExists": true,
+            "autonomousCOOExists": true,
+            "executiveIntelligenceExists": true,
+            "businessAggregatorExists": true,
+            "revenueLoopExists": true,
+            "commandQueueExists": true,
+            "orionConnectorExists": true
+          },
+          "drift": [
+            {
+              "severity": "HIGH",
+              "issue": "Missing architecture component: eventBusExists"
+            }
+          ],
+          "warnings": [
+            {
+              "severity": "INFO",
+              "issue": "COO worker contains ProductionCOOEngine fallback, but AutonomousCOOLoopService is primary"
+            }
+          ]
+        },
+        "recommendations": [
+          {
+            "priority": 1,
+            "type": "ARCHITECTURE_DRIFT",
+            "issue": "Missing architecture component: eventBusExists",
+            "action": "Create engineering ticket and repair automatically under Governance v3."
+          },
+          {
+            "priority": 3,
+            "type": "ARCHITECTURE_WARNING",
+            "issue": "COO worker contains ProductionCOOEngine fallback, but AutonomousCOOLoopService is primary",
+            "action": "Monitor. No immediate repair required."
+          }
+        ]
+      }
+    },
+    "completedAt": "2026-07-09T17:00:07.268Z"
+  },
+  {
+    "id": "CMD-1783622462001-lyrddj",
+    "title": "Analyze Mission Requirements",
+    "type": "ARCHITECT",
+    "priority": 1,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T18:41:02.001Z",
+    "updatedAt": "2026-07-09T18:41:02.185Z",
+    "payload": {
+      "id": "TICKET-1783622461994-gj2jad",
+      "missionId": "MISSION-1783622461986-nv6zxy",
+      "title": "Analyze Mission Requirements",
+      "type": "ARCHITECT",
+      "owner": "ARCHITECT",
+      "priority": 1,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:41:01.994Z",
+      "updatedAt": "2026-07-09T18:41:01.994Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Autonomous Google Workspace Provider",
+        "objective": "Create Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T18:41:02.001Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T18:41:02.178Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T18:41:02.185Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "ARCHITECT",
+      "completed": true,
+      "output": "Architecture analysis completed for: Analyze Mission Requirements",
+      "taskId": "CMD-1783622462001-lyrddj"
+    },
+    "completedAt": "2026-07-09T18:41:02.185Z"
+  },
+  {
+    "id": "CMD-1783622462161-srfe8j",
+    "title": "Create Implementation Plan",
+    "type": "BUILDER",
+    "priority": 2,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T18:41:02.161Z",
+    "updatedAt": "2026-07-09T18:41:02.199Z",
+    "payload": {
+      "id": "TICKET-1783622461994-6sobu1",
+      "missionId": "MISSION-1783622461986-nv6zxy",
+      "title": "Create Implementation Plan",
+      "type": "BUILDER",
+      "owner": "BUILDER",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:41:01.994Z",
+      "updatedAt": "2026-07-09T18:41:01.994Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Autonomous Google Workspace Provider",
+        "objective": "Create Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T18:41:02.161Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T18:41:02.192Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T18:41:02.199Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "BUILDER",
+      "completed": true,
+      "output": "Implementation build plan completed for: Create Implementation Plan",
+      "taskId": "CMD-1783622462161-srfe8j"
+    },
+    "completedAt": "2026-07-09T18:41:02.198Z"
+  },
+  {
+    "id": "CMD-1783622462166-0uf9c7",
+    "title": "Validate Implementation Plan",
+    "type": "VALIDATOR",
+    "priority": 2,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T18:41:02.166Z",
+    "updatedAt": "2026-07-09T18:41:02.211Z",
+    "payload": {
+      "id": "TICKET-1783622461994-697628",
+      "missionId": "MISSION-1783622461986-nv6zxy",
+      "title": "Validate Implementation Plan",
+      "type": "VALIDATOR",
+      "owner": "VALIDATOR",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:41:01.994Z",
+      "updatedAt": "2026-07-09T18:41:01.994Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Autonomous Google Workspace Provider",
+        "objective": "Create Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T18:41:02.166Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T18:41:02.205Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T18:41:02.211Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "VALIDATOR",
+      "completed": true,
+      "output": "Validation completed for: Validate Implementation Plan",
+      "taskId": "CMD-1783622462166-0uf9c7"
+    },
+    "completedAt": "2026-07-09T18:41:02.211Z"
+  },
+  {
+    "id": "CMD-1783622462171-dqqjaz",
+    "title": "Prepare Executive Report",
+    "type": "ATLAS",
+    "priority": 3,
+    "status": "COMPLETED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T18:41:02.171Z",
+    "updatedAt": "2026-07-09T18:41:03.251Z",
+    "payload": {
+      "id": "TICKET-1783622461994-t3n6qh",
+      "missionId": "MISSION-1783622461986-nv6zxy",
+      "title": "Prepare Executive Report",
+      "type": "ATLAS",
+      "owner": "ATLAS",
+      "priority": 3,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:41:01.994Z",
+      "updatedAt": "2026-07-09T18:41:01.994Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Autonomous Google Workspace Provider",
+        "objective": "Create Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T18:41:02.172Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T18:41:02.220Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T18:41:03.251Z",
+        "event": "COMPLETED"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "result": {
+      "worker": "ATLAS",
+      "task": "Prepare Executive Report",
+      "completed": true,
+      "drift": 1,
+      "report": {
+        "ok": true,
+        "version": "2.0.1",
+        "generatedAt": "2026-07-09T18:41:02.226Z",
+        "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+        "pm2": {
+          "list": "[PM2] Spawning PM2 daemon with pm2_home=C:\\Users\\lifes\\.pm2\n[PM2] PM2 Successfully daemonized\n┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐\n│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │\n└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘",
+          "describe": "[PM2][WARN] MILES doesn't exist"
+        },
+        "runtime": {
+          "startupFile": "StartProductionSystem.js",
+          "startupLoadsCooWorker": true,
+          "startupLoadsRevenueWorker": true,
+          "startupLoadsDealWorker": true,
+          "startupLoadsAtlasWorker": true,
+          "startupLoadsCommandWorker": false,
+          "startupEmitsCOOTick": true,
+          "cooWorkerUsesAutonomous": true,
+          "cooWorkerHasLegacyFallback": true,
+          "cooWorkerPrimaryEngine": "AutonomousCOOLoopService",
+          "cooWorkerFallbackEngine": "ProductionCOOEngine"
+        },
+        "architecture": {
+          "ok": false,
+          "expected": {
+            "cooEngine": "AutonomousCOOLoopService",
+            "startupFile": "StartProductionSystem.js",
+            "event": "COO_TICK"
+          },
+          "actual": {
+            "startupFile": "StartProductionSystem.js",
+            "startupLoadsCooWorker": true,
+            "startupLoadsRevenueWorker": true,
+            "startupLoadsDealWorker": true,
+            "startupLoadsAtlasWorker": true,
+            "startupLoadsCommandWorker": false,
+            "startupEmitsCOOTick": true,
+            "cooWorkerUsesAutonomous": true,
+            "cooWorkerHasLegacyFallback": true,
+            "cooWorkerPrimaryEngine": "AutonomousCOOLoopService",
+            "cooWorkerFallbackEngine": "ProductionCOOEngine"
+          },
+          "checks": {
+            "startProductionExists": true,
+            "eventBusExists": false,
+            "cooWorkerExists": true,
+            "revenueWorkerExists": true,
+            "dealWorkerExists": true,
+            "replyWorkerExists": true,
+            "atlasWorkerExists": true,
+            "commandWorkerExists": true,
+            "autonomousCOOExists": true,
+            "executiveIntelligenceExists": true,
+            "businessAggregatorExists": true,
+            "revenueLoopExists": true,
+            "commandQueueExists": true,
+            "orionConnectorExists": true
+          },
+          "drift": [
+            {
+              "severity": "HIGH",
+              "issue": "Missing architecture component: eventBusExists"
+            }
+          ],
+          "warnings": [
+            {
+              "severity": "INFO",
+              "issue": "COO worker contains ProductionCOOEngine fallback, but AutonomousCOOLoopService is primary"
+            }
+          ]
+        },
+        "recommendations": [
+          {
+            "priority": 1,
+            "type": "ARCHITECTURE_DRIFT",
+            "issue": "Missing architecture component: eventBusExists",
+            "action": "Create engineering ticket and repair automatically under Governance v3."
+          },
+          {
+            "priority": 3,
+            "type": "ARCHITECTURE_WARNING",
+            "issue": "COO worker contains ProductionCOOEngine fallback, but AutonomousCOOLoopService is primary",
+            "action": "Monitor. No immediate repair required."
+          }
+        ]
+      }
+    },
+    "completedAt": "2026-07-09T18:41:03.251Z"
+  }
+]

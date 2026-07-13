@@ -1,0 +1,160 @@
+{
+  "generatedAt": "2026-07-08T23:22:30.131Z",
+  "department": "Marketing COO",
+  "status": "OPERATIONAL",
+  "instantly": {
+    "ok": true,
+    "totalCampaigns": 10,
+    "activeCampaigns": 1,
+    "pausedCampaigns": 9,
+    "error": null
+  },
+  "segments": {
+    "totalSegments": 48,
+    "readyForUpload": 0,
+    "assignedToCampaign": 5,
+    "needsReview": 48,
+    "largeFilesIndexedOnly": 15,
+    "totalExactRows": 601941,
+    "totalIndexedSizeMB": 1727
+  },
+  "workGenerated": {
+    "total": 1,
+    "requiresKevin": 1,
+    "autonomous": 0
+  },
+  "topSegments": [
+    {
+      "name": "P2GC_FIRST_CONTRACT_TARGETS",
+      "exactRows": 101671,
+      "estimatedRows": 101671,
+      "sizeMB": 24.92,
+      "largeFile": false,
+      "category": "SEGMENT",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_CONSULTING",
+      "exactRows": 55725,
+      "estimatedRows": 55725,
+      "sizeMB": 11.77,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_OTHER_ELIGIBLE",
+      "exactRows": 46215,
+      "estimatedRows": 46215,
+      "sizeMB": 9.46,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_MANUFACTURING_EQUIPMENT",
+      "exactRows": 45396,
+      "estimatedRows": 45396,
+      "sizeMB": 9.82,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_TRYING_NOT_WINNING",
+      "exactRows": 44429,
+      "estimatedRows": 44429,
+      "sizeMB": 13.27,
+      "largeFile": false,
+      "category": "SEGMENT",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_IT_SERVICES",
+      "exactRows": 39616,
+      "estimatedRows": 39616,
+      "sizeMB": 8.62,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_SPECIALTY_TRADE",
+      "exactRows": 39445,
+      "estimatedRows": 39445,
+      "sizeMB": 8.21,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_BUSINESS_SUPPORT",
+      "exactRows": 38490,
+      "estimatedRows": 38490,
+      "sizeMB": 7.9,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_BELTWAY_AGENCY_TARGETS",
+      "exactRows": 25502,
+      "estimatedRows": 25502,
+      "sizeMB": 11.16,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    },
+    {
+      "name": "P2GC_SEGMENT_ENGINEERING",
+      "exactRows": 25471,
+      "estimatedRows": 25471,
+      "sizeMB": 5.41,
+      "largeFile": false,
+      "category": "GSA",
+      "hasEmailColumn": true,
+      "verified": false,
+      "readyForUpload": false,
+      "assignedCampaign": null
+    }
+  ],
+  "topWork": [
+    {
+      "department": "Marketing",
+      "priority": 1,
+      "title": "Review paused Instantly campaigns",
+      "requiresKevin": true,
+      "payload": {
+        "activeCampaigns": 1,
+        "pausedCampaigns": 9
+      }
+    }
+  ]
+}

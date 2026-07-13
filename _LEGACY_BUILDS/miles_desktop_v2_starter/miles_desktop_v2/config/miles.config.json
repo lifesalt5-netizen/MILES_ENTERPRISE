@@ -1,0 +1,38 @@
+{
+  "company": "Pathways 2 Government Contracting",
+  "ceo": "Kevin",
+  "runtime": {
+    "autoStart": true,
+    "healthCheckIntervalMs": 10000,
+    "recoveryEnabled": true,
+    "maxRestartAttempts": 3
+  },
+  "governance": {
+    "milesCanExecute": [
+      "operations",
+      "engineering",
+      "website",
+      "orion",
+      "crm",
+      "instantly",
+      "google_workspace",
+      "namecheap",
+      "ionos",
+      "calendly",
+      "linkedin",
+      "task_management",
+      "project_management",
+      "engineering_management"
+    ],
+    "requiresCEOApproval": [
+      "pricing",
+      "hiring",
+      "client_commitments",
+      "contracts",
+      "spending",
+      "legal_decisions",
+      "strategic_direction",
+      "final_approval_required"
+    ]
+  }
+}

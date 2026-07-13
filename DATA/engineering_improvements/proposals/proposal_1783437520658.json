@@ -1,0 +1,234 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_IMPLEMENT",
+  "proposalId": "proposal_1783437520658",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nRuntime Dispatch Audit\n\nDo not execute EngineeringImprovementService.\n\nDo not create plans.\n\nDo not create proposals.\n\nDo not execute ENGINEERING_IMPLEMENT.\n\nTrace the runtime dispatch path for THIS request.\n\nReport only:\n\n1. The first function that receives this command.\n2. Every subsequent function call until a service is selected.\n3. The exact file and function that chooses EngineeringImprovementService.\n4. Whether the user's requested service name (RepositorySearchService) is discarded, ignored, or overwritten.\n5. The exact variable that stores the selected service.\n6. The exact line of code that performs the final service dispatch.\n\nIf RepositorySearchService is never instantiated, explicitly state that and identify where execution was redirected instead.\n\nReturn evidence only.",
+  "status": "PROPOSAL_CREATED",
+  "productionModified": false,
+  "approvalRequired": true,
+  "safeMode": true,
+  "executiveSummary": "Engineering proposal package created. No production files were modified.",
+  "analysis": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_ANALYZE",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nRuntime Dispatch Audit\n\nDo not execute EngineeringImprovementService.\n\nDo not create plans.\n\nDo not create proposals.\n\nDo not execute ENGINEERING_IMPLEMENT.\n\nTrace the runtime dispatch path for THIS request.\n\nReport only:\n\n1. The first function that receives this command.\n2. Every subsequent function call until a service is selected.\n3. The exact file and function that chooses EngineeringImprovementService.\n4. Whether the user's requested service name (RepositorySearchService) is discarded, ignored, or overwritten.\n5. The exact variable that stores the selected service.\n6. The exact line of code that performs the final service dispatch.\n\nIf RepositorySearchService is never instantiated, explicitly state that and identify where execution was redirected instead.\n\nReturn evidence only.",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 8629,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.654Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 10679,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.654Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15241,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:18:40.654Z"
+      },
+      {
+        "file": "SERVICES/SelfMaintenanceService.js",
+        "exists": true,
+        "size": 11109,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:18:40.654Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15103,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.654Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 5822,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.655Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "size": 6783,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:18:40.655Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": true,
+        "size": 477,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.655Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 526,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.655Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 7509,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.655Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:18:40.656Z"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "checkedAt": "2026-07-07T15:18:40.656Z"
+  },
+  "plan": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_PLAN",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nRuntime Dispatch Audit\n\nDo not execute EngineeringImprovementService.\n\nDo not create plans.\n\nDo not create proposals.\n\nDo not execute ENGINEERING_IMPLEMENT.\n\nTrace the runtime dispatch path for THIS request.\n\nReport only:\n\n1. The first function that receives this command.\n2. Every subsequent function call until a service is selected.\n3. The exact file and function that chooses EngineeringImprovementService.\n4. Whether the user's requested service name (RepositorySearchService) is discarded, ignored, or overwritten.\n5. The exact variable that stores the selected service.\n6. The exact line of code that performs the final service dispatch.\n\nIf RepositorySearchService is never instantiated, explicitly state that and identify where execution was redirected instead.\n\nReturn evidence only.",
+    "status": "PLAN_CREATED",
+    "steps": [
+      {
+        "step": 1,
+        "action": "ENGINEERING_ANALYZE",
+        "description": "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        "step": 2,
+        "action": "ENGINEERING_PLAN",
+        "description": "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        "step": 3,
+        "action": "ENGINEERING_IMPLEMENT",
+        "description": "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        "step": 4,
+        "action": "ENGINEERING_VALIDATE",
+        "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        "step": 5,
+        "action": "ENGINEERING_REPORT",
+        "description": "Return an executive engineering report with evidence and recommended next action."
+      }
+    ],
+    "recommendations": [
+      {
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "severity": "HIGH",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "plannedAt": "2026-07-07T15:18:40.658Z"
+  },
+  "proposedChanges": [
+    {
+      "file": "SERVICES/ExecutionService.js",
+      "exists": true,
+      "currentSize": 10679,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutionService.js"
+    }
+  ],
+  "validationCommands": [
+    "node --check .\\SERVICES\\ExecutionService.js"
+  ],
+  "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+  "createdAt": "2026-07-07T15:18:40.658Z"
+}

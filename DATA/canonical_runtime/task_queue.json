@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "id": "TASK-1783550820936-42442",
+      "status": "READY",
+      "priority": 1,
+      "department": "Engineering",
+      "title": "Canonical Core installed",
+      "payload": {
+        "build": "BUILD_001",
+        "purpose": "Create one canonical runtime foundation for MILES Enterprise"
+      },
+      "requiresKevin": false,
+      "createdAt": "2026-07-08T22:47:00.939Z",
+      "updatedAt": "2026-07-08T22:47:00.939Z"
+    },
+    {
+      "id": "TASK-1783551923715-71817",
+      "status": "READY",
+      "priority": 1,
+      "department": "Marketing",
+      "title": "Fix Instantly API connection",
+      "payload": {
+        "error": "Cannot find module 'axios'\nRequire stack:\n- D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\INSTANTLY\\instantly.js\n- D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DIGITAL_COO\\Marketing\\MarketingCOO.js\n- D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\RunMarketingEnterprise.js"
+      },
+      "requiresKevin": false,
+      "createdAt": "2026-07-08T23:05:23.715Z",
+      "updatedAt": "2026-07-08T23:05:23.715Z"
+    },
+    {
+      "id": "TASK-1783552075388-23864",
+      "status": "READY",
+      "priority": 1,
+      "department": "Marketing",
+      "title": "Review paused Instantly campaigns",
+      "payload": {
+        "activeCampaigns": 1,
+        "pausedCampaigns": 9
+      },
+      "requiresKevin": true,
+      "createdAt": "2026-07-08T23:07:55.388Z",
+      "updatedAt": "2026-07-08T23:07:55.388Z"
+    },
+    {
+      "id": "TASK-1783552950127-3575",
+      "status": "READY",
+      "priority": 1,
+      "department": "Marketing",
+      "title": "Review paused Instantly campaigns",
+      "payload": {
+        "activeCampaigns": 1,
+        "pausedCampaigns": 9
+      },
+      "requiresKevin": true,
+      "createdAt": "2026-07-08T23:22:30.127Z",
+      "updatedAt": "2026-07-08T23:22:30.127Z"
+    }
+  ]
+}

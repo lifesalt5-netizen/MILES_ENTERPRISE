@@ -1,0 +1,24 @@
+﻿{
+    "ok":  true,
+    "build":  "020B",
+    "name":  "Sales COO Complete Replacement",
+    "installedAt":  "2026-07-11T22:33:11.0992923-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_020B_20260711_223306",
+    "changedFiles":  [
+                         "SERVICES\\CapabilityService.js",
+                         "SERVICES\\ProviderRouterService.js",
+                         "PROVIDERS\\providers\\SalesProvider.js"
+                     ],
+    "capabilities":  [
+                         "sales.reply.process",
+                         "sales.proposal.review",
+                         "sales.pipeline.review"
+                     ],
+    "safety":  [
+                   "No email is sent automatically",
+                   "No proposal is submitted automatically",
+                   "No CRM record is changed automatically",
+                   "Positive replies and submission actions are marked for protected review"
+               ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_020\\build_020B_test_20260711_223306.txt"
+}

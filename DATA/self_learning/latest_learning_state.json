@@ -1,0 +1,125 @@
+{
+  "ok": true,
+  "action": "SELF_LEARNING",
+  "type": "MILES_SELF_LEARNING_STATE",
+  "build": "BUILD_038",
+  "generatedAt": "2026-07-04T02:00:00.694Z",
+  "durationMs": 3858,
+  "source": "SelfLearningService",
+  "decision": {
+    "ok": true,
+    "action": "DECISION_LEARNING",
+    "generatedAt": "2026-07-04T02:00:00.693Z",
+    "sampleSize": 4,
+    "totals": {
+      "PROCEED": 4,
+      "ESCALATE": 0,
+      "DEFER": 0,
+      "UNKNOWN": 0
+    },
+    "byPriority": {
+      "MEDIUM": 2,
+      "LOW": 2
+    },
+    "proceedRate": 100,
+    "escalationRate": 0,
+    "approvalRequiredCount": 0,
+    "insight": "Executive Brain is operating with high autonomy."
+  },
+  "failure": {
+    "ok": true,
+    "action": "FAILURE_LEARNING",
+    "generatedAt": "2026-07-04T02:00:00.694Z",
+    "failedWorkItems": 40,
+    "blockedWorkItems": 0,
+    "runtimeFailures": [],
+    "byArea": {
+      "Marketing": 5,
+      "Runtime": 10,
+      "ORION": 5,
+      "Executive": 5,
+      "Engineering": 15
+    },
+    "insight": "Failed items exist; review failure metadata for repeat causes."
+  },
+  "routing": {
+    "ok": true,
+    "action": "ROUTING_LEARNING",
+    "generatedAt": "2026-07-04T02:00:00.694Z",
+    "runs": 4,
+    "latestSummary": {
+      "pendingBefore": 12,
+      "routed": 8,
+      "awaitingApproval": 2,
+      "skipped": 0,
+      "openAfter": 32,
+      "queuedAfter": 28
+    },
+    "totals": {
+      "pendingBefore": 13,
+      "routed": 9,
+      "skipped": 0,
+      "awaitingApproval": 2
+    },
+    "routeRate": 69,
+    "skipRate": 0,
+    "capabilityCounts": {
+      "executive_intelligence": 2,
+      "website_operations": 1,
+      "general_operations": 1,
+      "outbound_campaign_operations": 5
+    },
+    "insight": "Routing history is still forming; continue collecting cycles."
+  },
+  "priority": {
+    "ok": true,
+    "action": "PRIORITY_OPTIMIZATION",
+    "generatedAt": "2026-07-04T02:00:00.694Z",
+    "openWork": 0,
+    "urgentOpenWork": 0,
+    "byPriority": {},
+    "byArea": {},
+    "topAreas": [],
+    "insight": "No open work; generate next operational objectives."
+  },
+  "confidence": {
+    "ok": true,
+    "action": "CONFIDENCE_SCORING",
+    "generatedAt": "2026-07-04T02:00:00.694Z",
+    "score": 68,
+    "status": "WATCH",
+    "reasons": [
+      "Executive autonomy rate is strong.",
+      "Failed work item count is elevated."
+    ]
+  },
+  "recommendations": [
+    {
+      "id": "REC-1783130400694-1",
+      "area": "Runtime Confidence",
+      "severity": "MEDIUM",
+      "recommendation": "Review failure and routing patterns before increasing autonomy.",
+      "owner": "MILES",
+      "status": "OPEN"
+    },
+    {
+      "id": "REC-1783130400694-2",
+      "area": "Execution",
+      "severity": "MEDIUM",
+      "recommendation": "Analyze failed work item metadata and create recovery rules.",
+      "owner": "MILES",
+      "status": "OPEN"
+    }
+  ],
+  "summary": {
+    "confidenceScore": 68,
+    "confidenceStatus": "WATCH",
+    "decisionSampleSize": 4,
+    "routeRate": 69,
+    "failedWorkItems": 40,
+    "blockedWorkItems": 0,
+    "openWork": 0,
+    "recommendations": 2
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\self_learning"
+}

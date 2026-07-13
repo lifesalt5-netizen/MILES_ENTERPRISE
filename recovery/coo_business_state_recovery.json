@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-07-13T15:56:27.331Z",
+  "source": "COO_BUSINESS_STATE_ENGINE",
+  "status": "NO_RECOVERY_REQUIRED",
+  "readiness": {
+    "status": "READY",
+    "activeDomains": 7,
+    "blockedDomains": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0,
+    "canOperate": true,
+    "generatedAt": "2026-07-13T15:56:27.232Z"
+  }
+}

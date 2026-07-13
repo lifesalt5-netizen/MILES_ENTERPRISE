@@ -1,0 +1,242 @@
+{
+  "ok": true,
+  "action": "PROVIDER_INTERFACE_ADAPTERS",
+  "build": "EXEC_006",
+  "generatedAt": "2026-07-04T03:01:05.249Z",
+  "adapters": [
+    {
+      "provider": "instantly",
+      "providerName": "Instantly",
+      "module": "InstantlyProviderCompatibilityService",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": true
+        },
+        {
+          "name": "verify",
+          "present": false
+        },
+        {
+          "name": "rollback",
+          "present": false
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    },
+    {
+      "provider": "google_workspace",
+      "providerName": "Google Workspace",
+      "module": "GoogleWorkspaceProviderController",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": false
+        },
+        {
+          "name": "verify",
+          "present": true
+        },
+        {
+          "name": "rollback",
+          "present": true
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    },
+    {
+      "provider": "namecheap",
+      "providerName": "Namecheap",
+      "module": "NamecheapProviderController",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": false
+        },
+        {
+          "name": "verify",
+          "present": true
+        },
+        {
+          "name": "rollback",
+          "present": true
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    },
+    {
+      "provider": "website",
+      "providerName": "Website",
+      "module": "WebsiteProviderController",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": false
+        },
+        {
+          "name": "verify",
+          "present": true
+        },
+        {
+          "name": "rollback",
+          "present": true
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    },
+    {
+      "provider": "orion",
+      "providerName": "ORION",
+      "module": "OrionProviderController",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": false
+        },
+        {
+          "name": "verify",
+          "present": true
+        },
+        {
+          "name": "rollback",
+          "present": true
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    },
+    {
+      "provider": "filesystem",
+      "providerName": "File System",
+      "module": "FileSystemProviderController",
+      "compatible": true,
+      "methods": [
+        {
+          "name": "connect",
+          "present": true
+        },
+        {
+          "name": "status",
+          "present": true
+        },
+        {
+          "name": "execute",
+          "present": true
+        },
+        {
+          "name": "healthCheck",
+          "present": false
+        },
+        {
+          "name": "verify",
+          "present": true
+        },
+        {
+          "name": "rollback",
+          "present": true
+        },
+        {
+          "name": "report",
+          "present": false
+        }
+      ],
+      "missingMethods": [],
+      "errors": []
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "compatible": 6,
+    "missingMethods": 0
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\provider_sync"
+}

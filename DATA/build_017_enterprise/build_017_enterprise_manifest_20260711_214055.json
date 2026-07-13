@@ -1,0 +1,33 @@
+﻿{
+    "ok":  true,
+    "build":  "017",
+    "name":  "Enterprise Registry Activation",
+    "installedAt":  "2026-07-11T21:40:57.9336991-04:00",
+    "root":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_017_ENTERPRISE_20260711_214055",
+    "replacedFiles":  [
+                          "SERVICES\\CapabilityService.js",
+                          "SERVICES\\WorkforceService.js",
+                          "SERVICES\\ProviderRouterService.js"
+                      ],
+    "integratedServices":  [
+                               "SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+                               "SERVICES\\ProviderAuthorityRegistryService.js",
+                               "SERVICES\\ProviderCapabilityBindingService.js"
+                           ],
+    "integratedDataSources":  [
+                                  "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY.json",
+                                  "DATA\\runtime\\worker_registry.json",
+                                  "DATA\\repository\\worker_registry.json",
+                                  "DATA\\capability\\capability_owner_map.json",
+                                  "DATA\\capability\\capability_execution_map.json"
+                              ],
+    "preservedExecutionPath":  [
+                                   "SERVICES\\PlannerService.js",
+                                   "SERVICES\\WorkflowService.js",
+                                   "SERVICES\\WorkPackageService.js",
+                                   "SERVICES\\ExecutionService.js",
+                                   "SERVICES\\WorkforceExecutionService.js"
+                               ],
+    "testReport":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_017_enterprise\\build_017_enterprise_test_20260711_214055.txt"
+}

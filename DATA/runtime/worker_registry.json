@@ -1,0 +1,44 @@
+{
+  "ResolutionEngine": {
+    "status": "healthy",
+    "type": "core",
+    "capabilities": ["validate_resolution", "close_mission"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "LearningDataService": {
+    "status": "healthy",
+    "type": "learning",
+    "capabilities": ["collect_learning_data", "aggregate_runtime_data"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "WorkerExecutionBridge": {
+    "status": "healthy",
+    "type": "execution",
+    "capabilities": ["execute_worker", "monitor_worker"],
+    "assetAccess": [],
+    "approvalRequired": false
+  },
+  "WebsiteWorker": {
+    "status": "planned",
+    "type": "business",
+    "capabilities": ["website_health", "website_update"],
+    "assetAccess": ["Website", "IONOS"],
+    "approvalRequired": true
+  },
+  "BrowserWorker": {
+    "status": "planned",
+    "type": "business",
+    "capabilities": ["browser_navigation", "login", "form_submission", "file_upload", "file_download"],
+    "assetAccess": ["Instantly", "GoogleWorkspace", "IONOS", "Namecheap", "Website"],
+    "approvalRequired": true
+  },
+  "InstantlyWorker": {
+    "status": "planned",
+    "type": "sales",
+    "capabilities": ["campaign_create", "lead_upload", "campaign_pause", "campaign_health_check", "reply_review"],
+    "assetAccess": ["Instantly"],
+    "approvalRequired": true
+  }
+}

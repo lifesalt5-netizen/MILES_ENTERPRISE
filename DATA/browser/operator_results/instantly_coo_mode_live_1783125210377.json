@@ -1,0 +1,683 @@
+{
+  "ok": true,
+  "stage": "COMPLETED",
+  "mode": "EXECUTE",
+  "campaigns": [
+    {
+      "name": "EXPIRED everything",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "OPPORTUNITIES | EXPIRED everything | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "expiring within 12 months",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | expiring within 12 months | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "expiring within 6 months",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | expiring within 6 months | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VOSB",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VOSB | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SDVOSB",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SDVOSB | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "WOSB",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | WOSB | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "HubZone",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | HubZone | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "8a firms",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | 8a firms | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SBS Growth",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SBS Growth | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SBS low sales",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SBS low sales | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SBS no vehicle",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SBS no vehicle | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "Sam High Growth",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | Sam High Growth | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "Sam Growth",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | Sam Growth | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "Sam Low Sales",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | Sam Low Sales | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SAM no sales",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SAM no sales | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VA 5m+",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VA 5m+ | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VA 3-5m",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VA 3-5m | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VA 501k-3m",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VA 501k-3m | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VA 0-500k",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VA 0-500k | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "VA No Sales",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | VA No Sales | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "GSA 5m+",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | GSA 5m+ | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "GSA 3m–5m",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | GSA 3m–5m | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "GSA 500k–3m",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | GSA 500k–3m | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "GSA 0–500k",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | GSA 0–500k | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "ACTIVE PIPELINE",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | ACTIVE PIPELINE | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "MEETING BOOKED",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | MEETING BOOKED | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "TECHNICAL SUPPRESSION",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | TECHNICAL SUPPRESSION | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "FUTURE FOLLOW-UP",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | FUTURE FOLLOW-UP | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "NO - SUPPRESSED",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | NO - SUPPRESSED | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "NURTURE - 30 DAY",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | NURTURE - 30 DAY | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "NURTURE - 14 DAY",
+      "status": "draft",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | NURTURE - 14 DAY | Draft | -",
+      "decision": {
+        "action": "IGNORE",
+        "intent": "draft_review",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    },
+    {
+      "name": "SBS Verified Email Targets",
+      "status": "active",
+      "progress": null,
+      "sent": null,
+      "click": null,
+      "replied": null,
+      "opportunities": null,
+      "source": "body-line-status-neighbor",
+      "rawText": "0 | SBS Verified Email Targets | Active | 2%",
+      "decision": {
+        "action": "EXECUTE",
+        "intent": "audit_active_campaign",
+        "reason": "Active campaign should be monitored for health and capacity."
+      }
+    }
+  ],
+  "actions": {
+    "executed": [
+      {
+        "ok": true,
+        "campaign": "SBS Verified Email Targets",
+        "action": "audit_active_campaign",
+        "mode": "SAFE_AUDIT_EXECUTION",
+        "reason": "Active campaign should be monitored for health and capacity.",
+        "ts": "2026-07-04T00:33:30.134Z",
+        "url": "https://app.instantly.ai/app/campaigns",
+        "verified": true
+      }
+    ],
+    "verified": [
+      {
+        "ok": true,
+        "campaign": "SBS Verified Email Targets",
+        "action": "audit_active_campaign",
+        "mode": "SAFE_AUDIT_EXECUTION",
+        "reason": "Active campaign should be monitored for health and capacity.",
+        "ts": "2026-07-04T00:33:30.134Z",
+        "url": "https://app.instantly.ai/app/campaigns",
+        "verified": true
+      }
+    ],
+    "failed": [],
+    "paused": [],
+    "approvals": [],
+    "ignored": [
+      {
+        "campaign": "EXPIRED everything",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "expiring within 12 months",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "expiring within 6 months",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VOSB",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "SDVOSB",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "WOSB",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "HubZone",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "8a firms",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "SBS Growth",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "SBS low sales",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "SBS no vehicle",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "Sam High Growth",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "Sam Growth",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "Sam Low Sales",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "SAM no sales",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VA 5m+",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VA 3-5m",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VA 501k-3m",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VA 0-500k",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "VA No Sales",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "GSA 5m+",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "GSA 3m–5m",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "GSA 500k–3m",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "GSA 0–500k",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "ACTIVE PIPELINE",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "MEETING BOOKED",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "TECHNICAL SUPPRESSION",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "FUTURE FOLLOW-UP",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "NO - SUPPRESSED",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "NURTURE - 30 DAY",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      },
+      {
+        "campaign": "NURTURE - 14 DAY",
+        "reason": "Draft campaign detected. No automatic send action taken."
+      }
+    ]
+  },
+  "diagnostics": {
+    "campaignCount": 32,
+    "url": "https://app.instantly.ai/app/campaigns",
+    "title": "Instantly"
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaigns_opened_1783125210053.png"
+  ],
+  "errors": []
+}

@@ -1,0 +1,42 @@
+{
+  "build": "BUILD_037",
+  "name": "Executive Dashboard",
+  "package": "BUILD_037_EXECUTIVE_DASHBOARD",
+  "purpose": "CEO dashboard and read-only executive visibility layer for MILES OS",
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "actions": [
+    "EXECUTIVE_DASHBOARD",
+    "DASHBOARD_DATA",
+    "DASHBOARD_SERVER"
+  ],
+  "services": [
+    "SERVICES/DashboardDataService.js",
+    "SERVICES/ExecutiveDashboardService.js",
+    "SERVICES/DashboardServerService.js"
+  ],
+  "builder": [
+    "BUILDER/BuilderService.js"
+  ],
+  "powershell": [
+    "INSTALL_EXECUTIVE_DASHBOARD.ps1",
+    "RUN_EXECUTIVE_DASHBOARD.ps1",
+    "RUN_EXECUTIVE_DASHBOARD_SERVER.ps1",
+    "VERIFY_EXECUTIVE_DASHBOARD.ps1"
+  ],
+  "outputs": [
+    "DATA/executive_dashboard/dashboard_state.json",
+    "DATA/executive_dashboard/dashboard_summary.json",
+    "DATA/executive_dashboard/dashboard_alerts.json",
+    "DATA/executive_dashboard/executive_dashboard_report.md",
+    "DATA/executive_dashboard/index.html"
+  ],
+  "readOnly": true,
+  "dependsOn": [
+    "BUILD_031 Repository Registry",
+    "BUILD_032 Capability Registry",
+    "BUILD_033 Executive Brain",
+    "BUILD_034 Company State",
+    "BUILD_035 Task Router",
+    "BUILD_036 Continuous COO Loop"
+  ]
+}

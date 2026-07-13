@@ -1,0 +1,15 @@
+MILES — RUN THIS NOW
+
+cd D:\P2GC_Intelligence\MILES_OS
+
+if (!(Test-Path ".\tools")) { New-Item -ItemType Directory -Path ".\tools" }
+
+# Copy sprint-zero-discovery.js into .\tools\sprint-zero-discovery.js first
+
+node .\tools\sprint-zero-discovery.js
+
+After completion, send Kevin:
+1. sprint_zero_output\BUILD_RECOMMENDATIONS.json
+2. sprint_zero_output\DUPLICATE_REPORT.json
+3. sprint_zero_output\ORPHAN_REPORT.json
+4. sprint_zero_output\SYSTEM_REGISTRY.json summary

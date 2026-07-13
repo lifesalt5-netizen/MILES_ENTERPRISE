@@ -1,0 +1,1037 @@
+{
+  "ok": true,
+  "service": "RepositorySearchService",
+  "action": "REPOSITORY_SEARCH",
+  "query": [
+    "WAITING_FOR_CEO_APPROVAL",
+    "CEO_APPROVAL_OPERATION",
+    "dispatcherWorker",
+    "approveOperation",
+    "approve",
+    "ApprovalService"
+  ],
+  "count": 170,
+  "matches": [
+    {
+      "file": "CORE/CANONICAL/EnterpriseStore.js",
+      "line": 185,
+      "pattern": "approve",
+      "text": "approvedUploadCount INTEGER,"
+    },
+    {
+      "file": "CORE/CANONICAL/EnterpriseStore.js",
+      "line": 539,
+      "pattern": "approve",
+      "text": "approvedUploadCount: Number(item.approvedUploadCount || 0),"
+    },
+    {
+      "file": "CORE/CANONICAL/EnterpriseStore.js",
+      "line": 553,
+      "pattern": "approve",
+      "text": "(id,segmentId,segmentName,campaignId,campaignName,domain,requestedUploadCount,approvedUploadCount,status,priority,requiresKevin,approvalId,reason,payload,createdAt,updatedAt)"
+    },
+    {
+      "file": "CORE/CANONICAL/EnterpriseStore.js",
+      "line": 555,
+      "pattern": "approve",
+      "text": ").run(queueItem.id,queueItem.segmentId,queueItem.segmentName,queueItem.campaignId,queueItem.campaignName,queueItem.domain,queueItem.requestedUploadCount,queueItem.approvedUploadCount,queueItem.status,queueItem.priority,queueItem.requiresKevin,queueItem.approvalId,queueItem.reason,JSON.stringify(queueItem.payload),queueItem.createdAt,queueItem.updatedAt);"
+    },
+    {
+      "file": "SERVICES/DecisionEngine.js",
+      "line": 271,
+      "pattern": "approve",
+      "text": "status: approvalRequired ? \"CEO_APPROVAL_REQUIRED\" : \"APPROVED_FOR_AUTONOMOUS_EXECUTION\","
+    },
+    {
+      "file": "SERVICES/DecisionEngine.js",
+      "line": 272,
+      "pattern": "approve",
+      "text": "reason: approvalRequired ? authority.reason || risk.reason : \"Decision is approved for autonomous execution.\""
+    },
+    {
+      "file": "SERVICES/EngineeringImprovementService.js",
+      "line": 343,
+      "pattern": "approve",
+      "text": "\"Review this proposal. If approved, request a full replacement script for each target file.\","
+    },
+    {
+      "file": "SERVICES/EngineeringImprovementService.js",
+      "line": 430,
+      "pattern": "approve",
+      "text": "? \"Review the engineering proposal package and approve specific replacement scripts before production modification.\""
+    },
+    {
+      "file": "SERVICES/ExecutiveBrainService.js",
+      "line": 172,
+      "pattern": "approve",
+      "text": "return \"Execute approved operational workflow.\";"
+    },
+    {
+      "file": "SERVICES/RepositoryRegistryService.js",
+      "line": 589,
+      "pattern": "approve",
+      "text": "ProductionCOOEngine remains legacy unless explicitly approved."
+    },
+    {
+      "file": "SERVICES/SelfMaintenanceService.js",
+      "line": 125,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "waitingForApproval: operations.filter((o) => o.status === \"WAITING_FOR_CEO_APPROVAL\").length,"
+    },
+    {
+      "file": "SERVICES/WorkforceExecutionService.js",
+      "line": 476,
+      "pattern": "approve",
+      "text": "return `${providerResult.provider} executed successfully. Decision approved for autonomous verification and reporting.`;"
+    },
+    {
+      "file": "SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "line": 121,
+      "pattern": "approve",
+      "text": "if (decision.action === \"APPROVE\") {"
+    },
+    {
+      "file": "SERVICES/capability_builder/AutonomousCapabilityBuilderService.js",
+      "line": 255,
+      "pattern": "approve",
+      "text": "\"No production deployment should occur until Kevin approves.\""
+    },
+    {
+      "file": "SERVICES/Decision/ApprovalEngine.js",
+      "line": 13,
+      "pattern": "approve",
+      "text": "status: approvalRequired ? \"AWAITING_CEO_APPROVAL\" : \"APPROVED_FOR_AUTONOMOUS_EXECUTION\","
+    },
+    {
+      "file": "SERVICES/Decision/ApprovalEngine.js",
+      "line": 16,
+      "pattern": "approve",
+      "text": ": \"Decision is approved for autonomous execution.\""
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 40,
+      "pattern": "approve",
+      "text": "this.approvedDecisionLogPath ="
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 41,
+      "pattern": "approve",
+      "text": "options.approvedDecisionLogPath ||"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 42,
+      "pattern": "approve",
+      "text": "path.join(this.decisionDir, 'approved_decisions.jsonl');"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 62,
+      "pattern": "approve",
+      "text": "decisionsApproved: 0,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 67,
+      "pattern": "approve",
+      "text": "lastApprovedAt: null,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 88,
+      "pattern": "approve",
+      "text": "if (!fs.existsSync(this.approvedDecisionLogPath)) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 89,
+      "pattern": "approve",
+      "text": "fs.writeFileSync(this.approvedDecisionLogPath, '', 'utf8');"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 155,
+      "pattern": "approve",
+      "text": "if (decision.approved) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 156,
+      "pattern": "approve",
+      "text": "this.state.decisionsApproved += 1;"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 157,
+      "pattern": "approve",
+      "text": "this.state.lastApprovedAt = new Date().toISOString();"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 158,
+      "pattern": "approve",
+      "text": "this.appendJsonLine(this.approvedDecisionLogPath, decision);"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 165,
+      "pattern": "approve",
+      "text": "this.state.status = decision.approved ? 'DECISION_APPROVED' : 'DECISION_REJECTED';"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 174,
+      "pattern": "approve",
+      "text": "ok: decision.approved,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 176,
+      "pattern": "approve",
+      "text": "error: decision.approved ? null : decision.reasons.join(' '),"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 303,
+      "pattern": "approve",
+      "text": "const approved = reasons.length === 0;"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 305,
+      "pattern": "approve",
+      "text": "if (approved) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 313,
+      "pattern": "approve",
+      "text": "approved,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 455,
+      "pattern": "approve",
+      "text": "if (!decision.approved) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 501,
+      "pattern": "approve",
+      "text": "decisionApprovedAt: decision.decidedAt,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 687,
+      "pattern": "approve",
+      "text": "const approvedLogExists = fs.existsSync(this.approvedDecisionLogPath);"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 694,
+      "pattern": "approve",
+      "text": "approvedLogExists &&"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 706,
+      "pattern": "approve",
+      "text": "approvedDecisionLogPath: this.approvedDecisionLogPath,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+      "line": 713,
+      "pattern": "approve",
+      "text": "approvedLogExists,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+      "line": 40,
+      "pattern": "approve",
+      "text": "decisionsApproved: 0,"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+      "line": 172,
+      "pattern": "approve",
+      "text": "if (result.decision.approved) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+      "line": 173,
+      "pattern": "approve",
+      "text": "this.state.decisionsApproved += 1;"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+      "line": 226,
+      "pattern": "approve",
+      "text": "if (result.decision.approved) {"
+    },
+    {
+      "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+      "line": 227,
+      "pattern": "approve",
+      "text": "this.state.decisionsApproved += 1;"
+    },
+    {
+      "file": "SERVICES/digital_coo/COOBusinessStateEngine.js",
+      "line": 477,
+      "pattern": "CEO_APPROVAL_OPERATION",
+      "text": "type: 'CEO_APPROVAL_OPERATION',"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1014,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "'WAITING_FOR_CEO_APPROVAL'"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1019,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "'WAITING_FOR_CEO_APPROVAL';"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1025,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "'WAITING_FOR_CEO_APPROVAL';"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 92,
+      "pattern": "approve",
+      "text": "if (decision.approved) {"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 99,
+      "pattern": "approve",
+      "text": "decision.approved"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 100,
+      "pattern": "approve",
+      "text": "? 'OPERATION_APPROVED'"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 212,
+      "pattern": "approve",
+      "text": "approved: executable,"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 278,
+      "pattern": "approve",
+      "text": "!evaluation.decision.approved"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "line": 73,
+      "pattern": "dispatcherWorker",
+      "text": "if (t.includes('run') || t.includes('start') || t.includes('check') || t.includes('status')) return 'dispatcherWorker';"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "line": 124,
+      "pattern": "CEO_APPROVAL_OPERATION",
+      "text": "type: approvalRequired ? 'CEO_APPROVAL_OPERATION' : action,"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "line": 125,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "status: approvalRequired ? 'WAITING_FOR_CEO_APPROVAL' : 'READY',"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "line": 430,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "s === 'WAITING_FOR_CEO_APPROVAL'"
+    },
+    {
+      "file": "SERVICES/Executive/CEOApprovalQueue.js",
+      "line": 87,
+      "pattern": "approve",
+      "text": "approve(id, note = \"\") {"
+    },
+    {
+      "file": "SERVICES/Executive/CEOApprovalQueue.js",
+      "line": 88,
+      "pattern": "approve",
+      "text": "return this.resolve(id, \"APPROVED\", note);"
+    },
+    {
+      "file": "SERVICES/Executive/CEOApprovalQueue.js",
+      "line": 152,
+      "pattern": "approve",
+      "text": "approved: history.filter(x => x.status === \"APPROVED\").length,"
+    },
+    {
+      "file": "SERVICES/worker_runtime/AutonomousWorkOrchestrator.js",
+      "line": 668,
+      "pattern": "approve",
+      "text": "ok: Boolean(result.result.decision.approved),"
+    },
+    {
+      "file": "PROVIDERS/InstantlyProvider.js",
+      "line": 33,
+      "pattern": "approve",
+      "text": "[\"segmentId\", \"segmentName\", \"campaignId\", \"campaignName\", \"approvedUploadCount\", \"domain\", \"queueId\"],"
+    },
+    {
+      "file": "PROVIDERS/InstantlyProvider.js",
+      "line": 39,
+      "pattern": "approve",
+      "text": "job.approvedUploadCount,"
+    },
+    {
+      "file": "CONNECTORS/INSTANTLY/miles_instantly_connector/README.md",
+      "line": 22,
+      "pattern": "approve",
+      "text": "Keep `MILES_DRY_RUN=true` until Kevin approves live lead creation and campaign mutations."
+    },
+    {
+      "file": "CONNECTORS/WEBSITE_B12/modules/audit.js",
+      "line": 26,
+      "pattern": "approve",
+      "text": "ApprovedByKevin: c.ApprovedByKevin,"
+    },
+    {
+      "file": "WORKERS/dispatcherWorker.js",
+      "line": 12,
+      "pattern": "approve",
+      "text": "\"Build MILES self-development capability so Kevin only approves and MILES handles implementation.\","
+    },
+    {
+      "file": "DIGITAL_COO/Marketing/MarketingIntelligenceEngine.js",
+      "line": 97,
+      "pattern": "approve",
+      "text": "nextAction = \"Review sample and approve campaign assignment\";"
+    },
+    {
+      "file": "DIGITAL_COO/Marketing/MarketingCapacityPlanner.js",
+      "line": 101,
+      "pattern": "approve",
+      "text": "title: \"Approve paused campaign review\","
+    },
+    {
+      "file": "DIGITAL_COO/Marketing/MarketingUploadQueueEngine.js",
+      "line": 129,
+      "pattern": "approve",
+      "text": "\"APPROVED\","
+    },
+    {
+      "file": "DIGITAL_COO/Marketing/MarketingUploadQueueEngine.js",
+      "line": 146,
+      "pattern": "approve",
+      "text": "title: `Approve upload: ${segment.name}`,"
+    },
+    {
+      "file": "DIGITAL_COO/Marketing/MarketingUploadQueueEngine.js",
+      "line": 215,
+      "pattern": "approve",
+      "text": "approvedUploadCount: 0,"
+    },
+    {
+      "file": "DIGITAL_COO/Engineering/EngineeringCOO.js",
+      "line": 49,
+      "pattern": "approve",
+      "text": "approve(item){"
+    },
+    {
+      "file": "TESTS/Test_CEOApprovalQueue.js",
+      "line": 17,
+      "pattern": "approve",
+      "text": "objective: \"Approve pricing change\","
+    },
+    {
+      "file": "TESTS/Test_CEOApprovalQueue.js",
+      "line": 31,
+      "pattern": "approve",
+      "text": "const approved = approvals.approve(\"TEST-CEO-APPROVAL-001\", \"Approved during smoke test.\");"
+    },
+    {
+      "file": "TESTS/Test_CEOApprovalQueue.js",
+      "line": 33,
+      "pattern": "approve",
+      "text": "console.log(\"Approved:\", approved.ok);"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 227,
+      "pattern": "approve",
+      "text": "approve(taskId, decidedBy = \"Kevin\") {"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 231,
+      "pattern": "approve",
+      "text": "this.db.prepare(`UPDATE approvals SET status = 'APPROVED', decided_by = ?, decided_at = CURRENT_TIMESTAMP WHERE task_id = ?`)"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 234,
+      "pattern": "approve",
+      "text": "this.db.prepare(`UPDATE task_queue SET status = 'QUEUED', approval_status = 'APPROVED', updated_at = CURRENT_TIMESTAMP WHERE id = ?`)"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 238,
+      "pattern": "approve",
+      "text": "eventBus.publish(\"TASK_APPROVED\", updated);"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 239,
+      "pattern": "approve",
+      "text": "this.log(\"INFO\", \"Task approved\", { task_id: taskId });"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 302,
+      "pattern": "approve",
+      "text": "if (classification.decision === \"CEO_APPROVAL\" && task.approval_status !== \"APPROVED\") {"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 420,
+      "pattern": "approve",
+      "text": "router.post(\"/:id/approve\", (req, res) => {"
+    },
+    {
+      "file": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "line": 422,
+      "pattern": "approve",
+      "text": "const task = executionService.approve(Number(req.params.id), req.body?.decidedBy || \"Kevin\");"
+    },
+    {
+      "file": "DOCS/BUILD_005_RELEASE_NOTES.md",
+      "line": 5,
+      "pattern": "approve",
+      "text": "- CEO Approval Center with approve/reject/request changes workflow"
+    },
+    {
+      "file": "DOCS/BUILD_005_RELEASE_NOTES.md",
+      "line": 22,
+      "pattern": "approve",
+      "text": "- CEO Approval Center allows approve/reject/request changes"
+    },
+    {
+      "file": "DOCS/NEXT_STEPS.md",
+      "line": 18,
+      "pattern": "approve",
+      "text": "- B12 execute approved draft edits"
+    },
+    {
+      "file": "MIGRATIONS/migrate_upload_queue_to_canonical.js",
+      "line": 39,
+      "pattern": "approve",
+      "text": "approvedUploadCount INTEGER,"
+    },
+    {
+      "file": "MIGRATIONS/migrate_upload_queue_to_canonical.js",
+      "line": 74,
+      "pattern": "approve",
+      "text": "approvedUploadCount,"
+    },
+    {
+      "file": "MIGRATIONS/migrate_upload_queue_to_canonical.js",
+      "line": 92,
+      "pattern": "approve",
+      "text": "approved_upload_count,"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 112,
+      "pattern": "approve",
+      "text": "updateUploadQueueForApproval(approvalId, newStatus, approvedCount = null) {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 124,
+      "pattern": "approve",
+      "text": "if (approvedCount !== null) {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 125,
+      "pattern": "approve",
+      "text": "patch.approvedUploadCount = approvedCount;"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 131,
+      "pattern": "approve",
+      "text": "approve(approvalId, actor = \"Kevin\", notes = \"\") {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 143,
+      "pattern": "approve",
+      "text": "\"APPROVED\","
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 146,
+      "pattern": "approve",
+      "text": "{ approvedAt: this.now() }"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalQueueEngine.js",
+      "line": 155,
+      "pattern": "approve",
+      "text": "this.store.insertEvent(\"APPROVAL_APPROVED\", approval.department || \"Governance\", {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 12,
+      "pattern": "approve",
+      "text": "node .\\\\GOVERNANCE\\\\ApprovalCommand.js approve <approvalId> [notes]"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 14,
+      "pattern": "approve",
+      "text": "node .\\\\GOVERNANCE\\\\ApprovalCommand.js approve-all <department> [notes]"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 18,
+      "pattern": "approve",
+      "text": "node .\\\\GOVERNANCE\\\\ApprovalCommand.js approve-all Marketing \"Kevin approved marketing upload dry run\""
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 49,
+      "pattern": "approve",
+      "text": "if (command === \"approve\") {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 51,
+      "pattern": "approve",
+      "text": "const result = engine.approve(arg1, \"Kevin\", notes || \"Approved by Kevin.\");"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 52,
+      "pattern": "approve",
+      "text": "console.log(\"Approved:\");"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 75,
+      "pattern": "approve",
+      "text": "if (command === \"approve-all\") {"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 79,
+      "pattern": "approve",
+      "text": "let approved = 0;"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 84,
+      "pattern": "approve",
+      "text": "engine.approve("
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 87,
+      "pattern": "approve",
+      "text": "notes || `Kevin approved all pending ${department} approvals.`"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 89,
+      "pattern": "approve",
+      "text": "approved++;"
+    },
+    {
+      "file": "GOVERNANCE/ApprovalCommand.js",
+      "line": 96,
+      "pattern": "approve",
+      "text": "console.log(`Approved ${approved} ${department} approvals. Failed: ${failed}`);"
+    },
+    {
+      "file": "EXECUTION/MarketingExecutionEngine.js",
+      "line": 29,
+      "pattern": "approve",
+      "text": "approvedUploadCount: item.approvedUploadCount,"
+    },
+    {
+      "file": "SCHEDULER/RunJobRegistrySeed.js",
+      "line": 25,
+      "pattern": "approve",
+      "text": "payload: { description: \"Executes approved Marketing upload queue items.\" }"
+    },
+    {
+      "file": "EXECUTIVE/ExecutiveDecisionEngine.js",
+      "line": 112,
+      "pattern": "approve",
+      "text": "reason: `${state.readyUploads.length} approved upload queue items are ready for execution.`,"
+    },
+    {
+      "file": "INFRASTRUCTURE/EmailInfrastructureManager.js",
+      "line": 88,
+      "pattern": "approve",
+      "text": "AND status IN ('PENDING_APPROVAL','APPROVED','CREATED','CONNECTED','WARMING','ACTIVE')"
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 24,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 36,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 66,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 78,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 108,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 120,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 150,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 162,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 192,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 204,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 234,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 246,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 276,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 288,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 318,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 330,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 360,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/coo_operation_ledger.json",
+      "line": 372,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_state.json",
+      "line": 20,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"lastDispatchStatus\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 6,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 18,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 30,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 42,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 54,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 66,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 78,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 90,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 102,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 114,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 126,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 138,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 150,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 162,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 174,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 186,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 198,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 210,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 518,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 530,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 722,
+      "pattern": "CEO_APPROVAL_OPERATION",
+      "text": "\"type\": \"CEO_APPROVAL_OPERATION\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 723,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 732,
+      "pattern": "approve",
+      "text": "\"command\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 735,
+      "pattern": "approve",
+      "text": "\"objective\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 746,
+      "pattern": "approve",
+      "text": "\"objective\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/digital_coo_host_operation_queue.json",
+      "line": 747,
+      "pattern": "approve",
+      "text": "\"originalCommand\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 204,
+      "pattern": "CEO_APPROVAL_OPERATION",
+      "text": "\"type\": \"CEO_APPROVAL_OPERATION\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 205,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"status\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 214,
+      "pattern": "approve",
+      "text": "\"command\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 217,
+      "pattern": "approve",
+      "text": "\"objective\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 228,
+      "pattern": "approve",
+      "text": "\"objective\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "state/business_operations_queue.json",
+      "line": 229,
+      "pattern": "approve",
+      "text": "\"originalCommand\": \"MILES — INSTANTLY LIVE ACTIVATION DIRECTIVE\\n\\nObjective:\\nTake the existing Instantly COO system from verified dry-run operation to controlled live operation. Do not build new architecture, registries, managers, planners, dispatchers, workers, connectors, or duplicate services.\\n\\nAuthoritative root:\\nD:\\\\P2GC_Intelligence\\\\MILES_ENTERPRISE\\n\\nKnown completed components include:\\n- InstantlyCOOWorker\\n- InstantlyApiClient\\n- InstantlyLiveProviderController\\n- InstantlyLiveIntegrationService\\n- InstantlyControlledWriteService\\n- ControlledWriteService\\n- ControlledWritePolicyService\\n- InstantlyCampaignOperator\\n- CampaignMonitoringEngine\\n- MarketingExecutionEngine\\n- ExecutiveDecisionEngine\\n- EnterpriseScheduler\\n- LiveProductionExecutionSystem\\n- LiveAutonomousBusinessMode\\n- ContinuousCOOLoopService\\n- WorkerDispatcher\\n- AutonomousWorkOrchestrator\\n\\nConfirmed:\\n- INSTANTLY_API_KEY works.\\n- Live API health check returned HTTP 200.\\n- Campaign listing works.\\n- Campaign detail retrieval works.\\n- Campaign inventory works.\\n- Instantly COO Worker works.\\n- Dry-run execution already works.\\n- MILES_ENTERPRISE is the authoritative runtime.\\n- Do not use D:\\\\P2GC_Intelligence\\\\MILES_OS.\\n\\nMission:\\n1. Identify the exact production startup entry point currently used to run MILES.\\n2. Trace the existing “Run Instantly” command from command intake through:\\n   - intent planning\\n   - mission/work creation\\n   - worker routing\\n   - InstantlyCOOWorker\\n   - controlled-write policy\\n   - live provider controller\\n   - Instantly API\\n3. Identify every gate that forces dry-run or disables writes.\\n4. Do not globally remove safety controls.\\n5. Enable controlled live execution only for an allowlist of reversible Instantly operations:\\n   - HEALTH_CHECK\\n   - LIST_CAMPAIGNS\\n   - GET_CAMPAIGN\\n   - GENERATE_CAMPAIGN_REPORT\\n   - PAUSE_CAMPAIGN\\n6. Keep these operations approval-protected until separately validated:\\n   - RESUME_CAMPAIGN\\n   - START_CAMPAIGN\\n   - CREATE_CAMPAIGN\\n   - UPLOAD_LEADS\\n   - ASSIGN_SENDING_ACCOUNTS\\n   - DELETE_CAMPAIGN\\n   - DELETE_LEADS\\n   - CHANGE_EMAIL_COPY\\n   - INCREASE_DAILY_LIMIT\\n7. Run one controlled live canary using a non-destructive read operation first.\\n8. Run one reversible live write canary only after verification:\\n   - pause a specifically approved campaign\\n   - verify its live state\\n   - restore it only if restoration is separately approved\\n9. Record:\\n   - entry point\\n   - execution path\\n   - gate discovered\\n   - files changed\\n   - API request\\n   - API response\\n   - verification result\\n   - rollback status\\n10. If any required capability already exists, use it. Do not create another implementation.\\n11. If blocked, return the exact file, line, condition, and environment variable causing the block.\\n12. Do not modify unrelated systems.\\n\\nSuccess condition:\\nThe command “Run Instantly” reaches InstantlyCOOWorker, passes the controlled-write policy for an authorized operation, executes through InstantlyLiveProviderController, receives a verified live API result, records the outcome, and returns a concise COO summary.\\n\\nBegin with discovery and execution tracing. Do not build anything unless the trace proves a required function is genuinely absent.\","
+    },
+    {
+      "file": "executive_intelligence/coo_goal_engine_feed.json",
+      "line": 6446,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"lastDispatchStatus\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "executive_intelligence/coo_goal_engine_feed.json",
+      "line": 6722,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"lastDispatchStatus\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "executive_intelligence/coo_execution_loop_feed.json",
+      "line": 6253,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"lastDispatchStatus\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "executive_intelligence/coo_execution_loop_feed.json",
+      "line": 6529,
+      "pattern": "WAITING_FOR_CEO_APPROVAL",
+      "text": "\"lastDispatchStatus\": \"WAITING_FOR_CEO_APPROVAL\","
+    },
+    {
+      "file": "_MILES_AUDIT_20260710_190911/PROJECT_TREE.txt",
+      "line": 332,
+      "pattern": "approve",
+      "text": "[D] approved"
+    },
+    {
+      "file": "_MILES_AUDIT_20260710_190911/PROJECT_TREE.txt",
+      "line": 15582,
+      "pattern": "dispatcherWorker",
+      "text": "[F] dispatcherWorker.js"
+    },
+    {
+      "file": "BuildMilesDeveloperIndex.js",
+      "line": 338,
+      "pattern": "approve",
+      "text": "/(?:CREATE|READ|WRITE|UPDATE|DELETE|LIST|SYNC|UPLOAD|DOWNLOAD|EXECUTE|MANAGE|TRACK|RESOLVE|DISCOVER|PLAN|APPROVE|RECOMMEND|HEALTH|CAMPAIGN|LEAD|INBOX|ORION|GOOGLE|INSTANTLY|WEBSITE|QUEUE|MEMORY|EVENT|REGISTRY)/.test("
+    }
+  ],
+  "searchedAt": "2026-07-11T21:00:13.675Z"
+}

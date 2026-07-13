@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "service": "COO_EXECUTION_LOOP",
+  "version": "1.0.0",
+  "status": "RUNNING",
+  "startedAt": "2026-07-08T19:30:42.922Z",
+  "stoppedAt": null,
+  "cycleCount": 37,
+  "operationsCreated": 0,
+  "operationsQueued": 0,
+  "operationsSkippedDuplicate": 296,
+  "operationFailures": 0,
+  "lastCycleAt": "2026-07-08T20:06:45.230Z",
+  "lastError": null,
+  "generatedAt": "2026-07-08T20:06:45.763Z",
+  "running": true,
+  "activeCycle": true
+}

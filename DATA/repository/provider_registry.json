@@ -1,0 +1,311 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "providers": [
+    {
+      "id": "0b93e2289dfd",
+      "name": "provider_registry.json",
+      "path": "DATA/repository/provider_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 7965,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "provider",
+        "api"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "ca2d3303da9b",
+      "name": "ProviderRouterService.js",
+      "path": "SERVICES/ProviderRouterService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6278,
+      "modifiedAt": "2026-07-02T01:03:48.000Z",
+      "componentTypes": [
+        "service",
+        "provider"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../PROVIDERS/providers/MarketingProvider",
+        "../PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "227696be835b",
+      "name": "Build-Provider.ps1",
+      "path": "BUILDER/Build-Provider.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 2025,
+      "modifiedAt": "2026-07-02T18:06:48.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "engineering_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "3b1d09182614",
+      "name": "Test_Build017_ProviderRouter.js",
+      "path": "TESTS/Test_Build017_ProviderRouter.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2664,
+      "modifiedAt": "2026-07-01T17:26:36.000Z",
+      "componentTypes": [
+        "provider",
+        "api",
+        "database"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../SERVICES/ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "1503c69a9619",
+      "name": "IDataProvider.js",
+      "path": "PROVIDERS/contracts/IDataProvider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1899,
+      "modifiedAt": "2026-06-30T23:12:36.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "9a2a7c6bbb41",
+      "name": "ProviderRegistry.js",
+      "path": "PROVIDERS/registry/ProviderRegistry.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2292,
+      "modifiedAt": "2026-06-30T23:10:52.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "engineering_operations",
+        "data_provider_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "e1259ef74a7b",
+      "name": "MarketingProvider.js",
+      "path": "PROVIDERS/providers/MarketingProvider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3772,
+      "modifiedAt": "2026-06-30T23:21:32.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../contracts/IDataProvider",
+        "../../CONNECTORS/INSTANTLY/instantly"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "98ec24c0c72a",
+      "name": "OrionProvider.js",
+      "path": "PROVIDERS/providers/OrionProvider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4575,
+      "modifiedAt": "2026-07-03T20:45:58.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../contracts/IDataProvider",
+        "../../CONNECTORS/ORION/connector"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "69671cc42c86",
+      "name": "WebsiteProvider.js",
+      "path": "PROVIDERS/providers/WebsiteProvider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3627,
+      "modifiedAt": "2026-07-02T18:08:12.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../contracts/IDataProvider",
+        "../../CONNECTORS/WEBSITE/website"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "18382d413ec1",
+      "name": "test_marketing_provider.js",
+      "path": "test_marketing_provider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 238,
+      "modifiedAt": "2026-06-30T23:22:48.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "data_provider_operations"
+      ],
+      "dependencies": [
+        "./PROVIDERS/providers/MarketingProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "1fca6a7547cb",
+      "name": "test_orion_provider.js",
+      "path": "test_orion_provider.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 226,
+      "modifiedAt": "2026-07-01T01:02:16.000Z",
+      "componentTypes": [
+        "provider"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations"
+      ],
+      "dependencies": [
+        "./PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    }
+  ]
+}

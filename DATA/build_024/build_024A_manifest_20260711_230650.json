@@ -1,0 +1,21 @@
+﻿{
+    "ok":  true,
+    "build":  "024A",
+    "name":  "Google Workspace Capability Registration",
+    "installedAt":  "2026-07-11T23:06:58.8771608-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_024A_20260711_230650",
+    "changedFiles":  [
+                         "SERVICES\\CapabilityService.js"
+                     ],
+    "preservedFiles":  [
+                           "SERVICES\\ProviderRouterService.js",
+                           "PROVIDERS\\providers\\GoogleWorkspaceProvider.js"
+                       ],
+    "capabilities":  [
+                         "google.workspace.audit",
+                         "google.inbox.review",
+                         "google.calendar.review",
+                         "google.drive.review"
+                     ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_024\\build_024A_test_20260711_230650.txt"
+}

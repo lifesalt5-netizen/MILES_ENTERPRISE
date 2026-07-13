@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-07-04T02:00:00.694Z",
+  "recommendations": [
+    {
+      "id": "REC-1783130400694-1",
+      "area": "Runtime Confidence",
+      "severity": "MEDIUM",
+      "recommendation": "Review failure and routing patterns before increasing autonomy.",
+      "owner": "MILES",
+      "status": "OPEN"
+    },
+    {
+      "id": "REC-1783130400694-2",
+      "area": "Execution",
+      "severity": "MEDIUM",
+      "recommendation": "Analyze failed work item metadata and create recovery rules.",
+      "owner": "MILES",
+      "status": "OPEN"
+    }
+  ]
+}

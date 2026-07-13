@@ -1,0 +1,258 @@
+{
+  "generatedAt": "2026-07-08T22:41:57.868Z",
+  "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+  "totals": {
+    "jsFiles": 542,
+    "duplicateNames": 136,
+    "coreRiskDuplicates": 24
+  },
+  "roles": {
+    "Unknown": 106,
+    "Engine": 12,
+    "Queue": 8,
+    "Connector": 75,
+    "EventBus": 5,
+    "Logger": 6,
+    "Controller": 3,
+    "Worker": 31,
+    "Service": 229,
+    "Startup": 19,
+    "Provider": 48
+  },
+  "startupFiles": [
+    "CORE/RuntimeController.js",
+    "CORE/CONFIG/BootstrapValidator.js",
+    "CORE/Kernel/StartMiles.js",
+    "SERVICES/RuntimeHealthService.js",
+    "SERVICES/RuntimeRecoveryService.js",
+    "SERVICES/StartProductionSystem.js",
+    "PROVIDERS/StartProductionSystem.js",
+    "RunMarketingCOO.js",
+    "StartAutonomousCOO.js",
+    "StartMiles.js",
+    "StartMilesProduction.js",
+    "StartProductionSystem.js",
+    "StartSupervisor.js",
+    "build006_patch/payload/StartMiles.js",
+    "BUILDER/RuntimeController.js",
+    "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RuntimeHealthService.js",
+    "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/StartAutonomousCOO.js",
+    "miles_autonomous_patch/StartAutonomousCOO.js",
+    "miles_build005_exec_layer/miles_build005_exec_layer/StartMiles.js",
+    "miles_build006_outbound_ops/build006_patch/payload/StartMiles.js",
+    "miles_desktop_v2_build003/miles_desktop_v2/scripts/run_build_043.js",
+    "miles_desktop_v2_build003/miles_desktop_v2/src/runtime/runtimeHost.js",
+    "miles_desktop_v2_starter/miles_desktop_v2/src/runtime/runtimeHost.js",
+    "scripts/run_build_043.js",
+    "scripts/run_build_044.js",
+    "_REFERENCE/MILES_OS_v1/CORE/Kernel/StartMiles.js",
+    "RunEnterpriseInventory.js"
+  ],
+  "coreRiskDuplicates": [
+    {
+      "name": "eventbus.js",
+      "count": 5,
+      "files": [
+        "CORE/EventBus.js",
+        "CORE/Kernel/EventBus.js",
+        "SERVICES/Events/EventBus.js",
+        "miles_core_framework_dropin/CORE/EventBus.js",
+        "_REFERENCE/MILES_OS_v1/CORE/Kernel/EventBus.js"
+      ]
+    },
+    {
+      "name": "logger.js",
+      "count": 8,
+      "files": [
+        "CORE/logger.js",
+        "CONNECTORS/WEBSITE_B12/modules/logger.js",
+        "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/CORE/Logger.js",
+        "miles_autonomous_patch/CORE/Logger.js",
+        "miles_core_framework_dropin/CORE/Logger.js",
+        "miles_desktop_v2_build003/miles_desktop_v2/src/main/logging/logger.js",
+        "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+        "_REFERENCE/MILES_OS_v1/CORE/logger.js"
+      ]
+    },
+    {
+      "name": "taskqueue.js",
+      "count": 3,
+      "files": [
+        "CORE/TaskQueue.js",
+        "miles_core_framework_dropin/CORE/TaskQueue.js",
+        "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/taskQueue.js"
+      ]
+    },
+    {
+      "name": "serviceregistry.js",
+      "count": 2,
+      "files": [
+        "CORE/Kernel/ServiceRegistry.js",
+        "_REFERENCE/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js"
+      ]
+    },
+    {
+      "name": "actiondispatcherservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ActionDispatcherService.js",
+        "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionDispatcherService.js"
+      ]
+    },
+    {
+      "name": "businessexecutionengineservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/BusinessExecutionEngineService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/BusinessExecutionEngineService.js"
+      ]
+    },
+    {
+      "name": "capabilityregistryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/CapabilityRegistryService.js",
+        "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/SERVICES/CapabilityRegistryService.js"
+      ]
+    },
+    {
+      "name": "executionauditservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ExecutionAuditService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionAuditService.js"
+      ]
+    },
+    {
+      "name": "executiondispatcherservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ExecutionDispatcherService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionDispatcherService.js"
+      ]
+    },
+    {
+      "name": "executionmonitorservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ExecutionMonitorService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionMonitorService.js"
+      ]
+    },
+    {
+      "name": "executionplannerservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ExecutionPlannerService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionPlannerService.js"
+      ]
+    },
+    {
+      "name": "executionschedulerservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ExecutionSchedulerService.js",
+        "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionSchedulerService.js"
+      ]
+    },
+    {
+      "name": "executionservice.js",
+      "count": 3,
+      "files": [
+        "SERVICES/ExecutionService.js",
+        "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "miles_autonomous_patch/SERVICES/ExecutionService.js"
+      ]
+    },
+    {
+      "name": "providerauthorityregistryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ProviderAuthorityRegistryService.js",
+        "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderAuthorityRegistryService.js"
+      ]
+    },
+    {
+      "name": "providercontrollerexecutionservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ProviderControllerExecutionService.js",
+        "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerExecutionService.js"
+      ]
+    },
+    {
+      "name": "providercontrollerregistryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ProviderControllerRegistryService.js",
+        "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerRegistryService.js"
+      ]
+    },
+    {
+      "name": "providerregistryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/ProviderRegistryService.js",
+        "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ProviderRegistryService.js"
+      ]
+    },
+    {
+      "name": "queuerecoveryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/QueueRecoveryService.js",
+        "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/QueueRecoveryService.js"
+      ]
+    },
+    {
+      "name": "repositoryregistryservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/RepositoryRegistryService.js",
+        "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js"
+      ]
+    },
+    {
+      "name": "taskrouterservice.js",
+      "count": 2,
+      "files": [
+        "SERVICES/TaskRouterService.js",
+        "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/SERVICES/TaskRouterService.js"
+      ]
+    },
+    {
+      "name": "workforceexecutionservice.js",
+      "count": 3,
+      "files": [
+        "SERVICES/WorkforceExecutionService.js",
+        "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+        "miles_autonomous_patch/SERVICES/WorkforceExecutionService.js"
+      ]
+    },
+    {
+      "name": "workqueueservice.js",
+      "count": 3,
+      "files": [
+        "SERVICES/WorkQueueService.js",
+        "BUILD_012/BUILD_012/SERVICES/WorkQueueService.js",
+        "BUILD_014/BUILD_014/SERVICES/WorkQueueService.js"
+      ]
+    },
+    {
+      "name": "operationexecutionkernel.js",
+      "count": 2,
+      "files": [
+        "SERVICES/operation_kernel/OperationExecutionKernel.js",
+        "ROADMAP/SERVICES/operation_kernel/OperationExecutionKernel.js"
+      ]
+    },
+    {
+      "name": "test_work_queue.js",
+      "count": 2,
+      "files": [
+        "test_work_queue.js",
+        "BUILD_014/BUILD_014/TESTS/test_work_queue.js"
+      ]
+    }
+  ]
+}

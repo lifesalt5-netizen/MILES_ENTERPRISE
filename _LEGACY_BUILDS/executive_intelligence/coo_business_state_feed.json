@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-07-08T19:30:42.856Z",
+  "source": "COO_BUSINESS_STATE_ENGINE",
+  "status": "BUSINESS_STATE_READY",
+  "businessGoal": {
+    "revenueTarget30Days": 10000,
+    "monthlyClientTarget": 5,
+    "primaryObjective": "Miles operates P2GC below CEO level and drives revenue execution."
+  },
+  "operationalReadiness": {
+    "status": "READY",
+    "activeDomains": 7,
+    "blockedDomains": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0,
+    "canOperate": true,
+    "generatedAt": "2026-07-08T19:30:42.827Z"
+  },
+  "kpis": {
+    "revenueBooked30Days": 0,
+    "monthlyClientsClosed": 0,
+    "weeklySalesCalls": 0,
+    "weeklyProposals": 0,
+    "weeklyPositiveReplies": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0
+  },
+  "authorityModel": {
+    "milesMayExecute": [
+      "Create operational work",
+      "Assign work to workers",
+      "Monitor runtime health",
+      "Monitor campaign operations",
+      "Track business state",
+      "Generate executive alerts",
+      "Prepare CEO approval items",
+      "Maintain dashboards and logs",
+      "Retry failed operations",
+      "Escalate blockers"
+    ],
+    "ceoApprovalRequired": [
+      "Change pricing",
+      "Send final client proposal",
+      "Sign agreements",
+      "Hire contractors",
+      "Delete production data",
+      "Make legal commitments",
+      "Make financial commitments"
+    ]
+  }
+}

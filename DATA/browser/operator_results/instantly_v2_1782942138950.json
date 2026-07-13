@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "stage": "COMPLETED",
+  "campaigns": [
+    {
+      "name": "api_detected_campaign",
+      "status": "active"
+    }
+  ],
+  "paused": 0,
+  "active": 1,
+  "executed": [],
+  "approvals": [],
+  "sources": {
+    "dom": 0,
+    "api": 1
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\v2_opened_1782942133568.png",
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\v2_analyzed_1782942138670.png"
+  ],
+  "errors": []
+}

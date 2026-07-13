@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_REPORT",
+  "objective": "MILES ENGINEERING DIRECTIVE\n\nDo not execute this command.\n\nDo not invoke Builder.\n\nDo not invoke any connector.\n\nAnalyze only.\n\nDetermine why CommandIntentPlannerService classified this directive as:\n\nAction = MILES_EXECUTE\n\ninstead of:\n\nENGINEERING_IMPROVEMENT\n\nReport:\n\n1. Which rule in CommandIntentPlannerService matched this command?\n\n2. If no rule matched, identify the exact location where the planner falls back to:\n\nMILES_EXECUTE\n\n3. Show the file path.\n\n4. Show the function name.\n\n5. Show the exact fallback condition.\n\n6. Recommend the engineering change required so that:\n\nMILES EXECUTIVE DIRECTIVE\nMILES ENGINEERING DIRECTIVE\nBUILD ###\n\nalways classify as ENGINEERING_IMPROVEMENT.\n\nDo not modify code.\n\nDo not execute Builder.\n\nOnly inspect the planner.",
+  "executiveSummary": "MILES engineering workflow executed. The service analyzed the active runtime, generated a safe improvement plan, validated key files, and produced this report.",
+  "rootCauseSummary": "Engineering directives were previously misrouted because planning and execution both performed keyword-based provider routing.",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "area": "Planner",
+      "issue": "CommandIntentPlannerService contains keyword routing.",
+      "recommendation": "Use hierarchical intent classification before connector selection."
+    }
+  ],
+  "improvementPlan": [
+    {
+      "step": 1,
+      "action": "ENGINEERING_ANALYZE",
+      "description": "Inspect active MILES runtime files and identify architectural gaps."
+    },
+    {
+      "step": 2,
+      "action": "ENGINEERING_PLAN",
+      "description": "Create the smallest safe implementation plan."
+    },
+    {
+      "step": 3,
+      "action": "ENGINEERING_VALIDATE",
+      "description": "Validate required files, syntax expectations, and routing assumptions."
+    },
+    {
+      "step": 4,
+      "action": "ENGINEERING_REPORT",
+      "description": "Return an executive engineering report."
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_VALIDATE",
+    "filesChecked": 7,
+    "missingFiles": [],
+    "filesWithoutModuleExports": [
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15103,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "checkedAt": "2026-07-07T03:40:07.270Z"
+      }
+    ],
+    "builderHasEngineeringImprovement": true,
+    "validationStatus": "PASSED",
+    "checkedAt": "2026-07-07T03:40:07.270Z"
+  },
+  "recommendedNextAction": "Run an engineering directive again and confirm it routes to ENGINEERING_IMPROVEMENT.",
+  "completedAt": "2026-07-07T03:40:07.270Z"
+}

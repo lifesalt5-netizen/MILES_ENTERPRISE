@@ -1,0 +1,125 @@
+[
+  {
+    "id": "INSTANTLY-RUN-COO-OPERATOR",
+    "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+    "provider": "Instantly",
+    "domain": "Revenue Operations",
+    "priority": "CRITICAL",
+    "priorityScore": 100,
+    "reason": "Instantly is a primary revenue system and must be inspected every COO cycle.",
+    "capability": "instantly.audit",
+    "metadata": {},
+    "discoveredAt": "2026-07-04T23:48:19.610Z"
+  },
+  {
+    "id": "WORK-MARKETING-NO-ACTIVE-1783208900085",
+    "source": "MarketingDiscovery",
+    "provider": "MarketingProvider",
+    "domain": "marketing",
+    "priority": "CRITICAL",
+    "priorityScore": 100,
+    "objective": "Investigate why all Instantly campaigns are paused",
+    "reason": "No active Instantly campaigns detected.",
+    "discoveredAt": "2026-07-04T23:48:20.085Z"
+  },
+  {
+    "id": "INSTANTLY-DRAFT-READINESS",
+    "objective": "Inspect 31 draft Instantly campaigns for missing leads, inboxes, sequences, schedules, and launch readiness.",
+    "provider": "Instantly",
+    "domain": "Revenue Operations",
+    "priority": "HIGH",
+    "priorityScore": 90,
+    "reason": "Draft campaigns represent unused revenue capacity.",
+    "capability": "instantly.campaign_readiness",
+    "metadata": {
+      "count": 31,
+      "campaigns": [
+        "EXPIRED everything",
+        "expiring within 12 months",
+        "expiring within 6 months",
+        "VOSB",
+        "SDVOSB",
+        "WOSB",
+        "HubZone",
+        "8a firms",
+        "SBS Growth",
+        "SBS low sales",
+        "SBS no vehicle",
+        "Sam High Growth",
+        "Sam Growth",
+        "Sam Low Sales",
+        "SAM no sales",
+        "VA 5m+",
+        "VA 3-5m",
+        "VA 501k-3m",
+        "VA 0-500k",
+        "VA No Sales",
+        "GSA 5m+",
+        "GSA 3m–5m",
+        "GSA 500k–3m",
+        "GSA 0–500k",
+        "ACTIVE PIPELINE",
+        "MEETING BOOKED",
+        "TECHNICAL SUPPRESSION",
+        "FUTURE FOLLOW-UP",
+        "NO - SUPPRESSED",
+        "NURTURE - 30 DAY",
+        "NURTURE - 14 DAY"
+      ]
+    },
+    "discoveredAt": "2026-07-04T23:48:19.612Z"
+  },
+  {
+    "id": "GOVDATA-REFRESH-CHECK",
+    "objective": "Check government data refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled pulls.",
+    "provider": "GovernmentData",
+    "domain": "Intelligence Operations",
+    "priority": "HIGH",
+    "priorityScore": 88,
+    "reason": "ORION must stay current with awards, contractors, vehicles, and new procurement activity.",
+    "capability": "government_data.refresh_check",
+    "metadata": {},
+    "discoveredAt": "2026-07-04T23:48:43.716Z"
+  },
+  {
+    "id": "INSTANTLY-ACTIVE-HEALTH",
+    "objective": "Audit 1 active Instantly campaigns for bounce risk, reply performance, lead exhaustion, and inbox capacity.",
+    "provider": "Instantly",
+    "domain": "Revenue Operations",
+    "priority": "HIGH",
+    "priorityScore": 85,
+    "reason": "Active campaigns require continuous COO monitoring.",
+    "capability": "instantly.active_health",
+    "metadata": {
+      "count": 1,
+      "campaigns": [
+        "SBS Verified Email Targets"
+      ]
+    },
+    "discoveredAt": "2026-07-04T23:48:19.612Z"
+  },
+  {
+    "id": "WEBSITE-B12-CONVERSION-AUDIT",
+    "objective": "Audit B12 website for lead-generation improvements, homepage CTA strength, service page clarity, forms, SEO, and conversion blockers.",
+    "provider": "B12",
+    "domain": "Marketing Operations",
+    "priority": "HIGH",
+    "priorityScore": 82,
+    "reason": "Website must operate as a lead-generation system, not a static brochure.",
+    "capability": "website.conversion_audit",
+    "metadata": {},
+    "discoveredAt": "2026-07-04T23:48:43.716Z"
+  },
+  {
+    "id": "LINKEDIN-DAILY-GROWTH-WORK",
+    "objective": "Prepare LinkedIn post ideas, article topics, connection targets, and outreach messages for GovCon prospects.",
+    "provider": "LinkedIn",
+    "domain": "Marketing Operations",
+    "priority": "MEDIUM",
+    "priorityScore": 72,
+    "reason": "LinkedIn supports relationship building and inbound authority.",
+    "capability": "linkedin.growth_queue",
+    "metadata": {},
+    "discoveredAt": "2026-07-04T23:48:43.716Z"
+  }
+]

@@ -1,0 +1,51 @@
+Add this require near the top of BUILDER/BuilderService.js:
+
+const architecture = require("./ArchitectureDiscovery");
+
+Then add this command inside the commands object in execute():
+
+        DISCOVER_ARCHITECTURE: () => {
+            const result = architecture.writeReport();
+            return {
+                ok: true,
+                action: "DISCOVER_ARCHITECTURE",
+                result
+            };
+        },
+
+Optional aliases:
+
+        BUILD_CAPABILITY_REGISTRY: () => {
+            const result = architecture.writeReport();
+            return {
+                ok: true,
+                action: "BUILD_CAPABILITY_REGISTRY",
+                outDir: result.outDir,
+                capabilities: result.capabilities
+            };
+        },
+
+        ENGINEERING_HEALTH: () => {
+            const scan = this.scanProject();
+            const analysis = require("./ProjectAnalyzer").writeReport();
+            const architectureResult = architecture.writeReport();
+            return {
+                ok: true,
+                action: "ENGINEERING_HEALTH",
+                scan: {
+                    outFile: scan.outFile,
+                    totalFiles: scan.report.totalFiles,
+                    summary: scan.report.summary
+                },
+                analysis: {
+                    outFile: analysis.outFile,
+                    recommendations: analysis.result.recommendations,
+                    warnings: analysis.result.warnings
+                },
+                architecture: {
+                    outDir: architectureResult.outDir,
+                    summary: architectureResult.summary,
+                    capabilities: architectureResult.capabilities
+                }
+            };
+        },

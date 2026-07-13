@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-07-08T21:00:07.867Z",
+  "department": "Marketing COO",
+  "status": "OPERATIONAL",
+  "instantly": {
+    "ok": true,
+    "totalCampaigns": 10,
+    "activeCampaigns": 1,
+    "pausedCampaigns": 9,
+    "error": null
+  },
+  "segments": {
+    "totalSegments": 0,
+    "readySegments": 0,
+    "totalLeadsFound": 0
+  },
+  "workQueue": {
+    "total": 1,
+    "ready": 0,
+    "awaitingApproval": 1
+  },
+  "topActions": [
+    {
+      "priority": 1,
+      "department": "Marketing",
+      "title": "Review paused Instantly campaigns",
+      "reason": "9 paused campaigns and 1 active campaigns detected.",
+      "requiresKevin": true,
+      "status": "AWAITING_APPROVAL"
+    }
+  ]
+}

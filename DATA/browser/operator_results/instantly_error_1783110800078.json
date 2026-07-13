@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "stage": "FAILED",
+  "mode": "EXECUTE",
+  "campaigns": [],
+  "actions": {
+    "executed": [],
+    "verified": [],
+    "failed": [],
+    "paused": [],
+    "approvals": [],
+    "ignored": []
+  },
+  "diagnostics": {
+    "failureUrl": "https://app.instantly.ai/app/campaigns",
+    "failureTitle": "Application error: a client-side exception has occurred"
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaign_page_not_detected_1783110799983.png",
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\operator_failure_1783110800031.png"
+  ],
+  "errors": [
+    "Error: Campaign page loaded but no campaign UI could be detected.\n    at InstantlyCampaignOperator.openCampaignsPage (D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js:195:13)\n    at async InstantlyCampaignOperator.run (D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js:75:7)\n    at async WorkforceExecutionService.runInstantlyOperator (D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\WorkforceExecutionService.js:311:30)\n    at async WorkforceExecutionService.executeStep (D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\WorkforceExecutionService.js:163:26)\n    at async WorkforceExecutionService.executeAndVerify (D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\WorkforceExecutionService.js:545:22)\n    at async MilesRuntime.processWorkItem (D:\\P2GC_Intelligence\\MILES_OS\\CORE\\Runtime\\MilesRuntime.js:271:22)\n    at async MilesRuntime.runCycle (D:\\P2GC_Intelligence\\MILES_OS\\CORE\\Runtime\\MilesRuntime.js:143:28)\n    at async MilesRuntime.start (D:\\P2GC_Intelligence\\MILES_OS\\CORE\\Runtime\\MilesRuntime.js:49:7)"
+  ]
+}

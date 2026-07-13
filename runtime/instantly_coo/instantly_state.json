@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "service": "INSTANTLY_COO_WORKER",
+  "version": "1.0.0",
+  "status": "CAMPAIGNS_SYNCED",
+  "segmentsTracked": 0,
+  "campaignsTracked": 0,
+  "leadUploadsQueued": 0,
+  "leadUploadsCompleted": 0,
+  "leadUploadsFailed": 0,
+  "deliverabilityChecks": 0,
+  "campaignsPaused": 0,
+  "campaignsResumed": 0,
+  "campaignsStarted": 0,
+  "campaignsStopped": 0,
+  "lastSyncAt": "2026-07-10T03:13:26.396Z",
+  "lastUploadAt": null,
+  "lastDeliverabilityCheckAt": null,
+  "lastCampaignActionAt": null,
+  "lastReportAt": null,
+  "lastError": null,
+  "generatedAt": "2026-07-10T03:13:26.396Z"
+}

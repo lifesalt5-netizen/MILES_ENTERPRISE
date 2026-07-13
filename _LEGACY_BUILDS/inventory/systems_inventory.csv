@@ -1,0 +1,8 @@
+﻿System,Owner,Location,Status,Criticality,Last_Reviewed,Notes
+ORION,Kevin,"D:\P2GC_Intelligence\Orion Demo 6126\orion_live_demo_ready\ORION_DEMO_LIVE_READY.db",Active,Critical,2026-06-20,Authoritative ORION database
+Instantly,Miles,SaaS,Active,Critical,2026-06-20,Outbound campaign platform
+Google Workspace,Miles,SaaS,Active,Critical,2026-06-20,Email infrastructure
+IONOS,Miles,SaaS,Active,High,2026-06-20,Website hosting and primary domain management
+Namecheap,Miles,SaaS,Active,High,2026-06-20,Additional domain management
+Calendly,Kevin,SaaS,Active,Medium,2026-06-20,Meeting booking
+LinkedIn,Kevin,SaaS,Active,Medium,2026-06-20,Social and relationship channel

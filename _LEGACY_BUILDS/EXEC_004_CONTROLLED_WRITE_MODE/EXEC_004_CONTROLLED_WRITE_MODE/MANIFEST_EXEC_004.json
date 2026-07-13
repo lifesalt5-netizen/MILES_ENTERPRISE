@@ -1,0 +1,19 @@
+{
+  "build": "EXEC_004",
+  "name": "Controlled Write Mode",
+  "createdAt": "2026-07-04",
+  "services": [
+    "ControlledWritePolicyService.js",
+    "ControlledWriteAuditService.js",
+    "InstantlyControlledWriteService.js",
+    "ControlledWriteService.js"
+  ],
+  "runners": [
+    "INSTALL_CONTROLLED_WRITE.ps1",
+    "VERIFY_CONTROLLED_WRITE.ps1",
+    "RUN_CONTROLLED_WRITE_DRY_RUN.ps1",
+    "RUN_CONTROLLED_WRITE_POLICY.ps1",
+    "RUN_CONTROLLED_WRITE_LIVE_TEST.ps1"
+  ],
+  "defaultMode": "SAFE_DRY_RUN"
+}

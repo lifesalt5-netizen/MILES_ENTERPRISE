@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-07-08T19:30:35.660Z",
+  "loaded": [
+    "workerRegistry",
+    "workerDispatcher",
+    "workerRuntime",
+    "workerRuntimeManager",
+    "connectorRuntime",
+    "connectorRuntimeManager",
+    "learningEngine",
+    "learningEngineManager",
+    "digitalCOORuntime",
+    "digitalCOORuntimeManager",
+    "cooBusinessStateEngine",
+    "cooGoalEngine",
+    "cooExecutionLoop"
+  ],
+  "unavailable": [],
+  "failed": []
+}

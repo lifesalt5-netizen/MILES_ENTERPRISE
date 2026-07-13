@@ -1,0 +1,10 @@
+{
+  "build": 14,
+  "version": "0.14.0",
+  "name": "Production Work Queue Lifecycle",
+  "releaseDate": "2026-07-01",
+  "status": "development",
+  "requiresMigration": true,
+  "runtimeSchema": 3,
+  "objective": "Replace WorkQueueService with production lifecycle support for COO orchestration."
+}

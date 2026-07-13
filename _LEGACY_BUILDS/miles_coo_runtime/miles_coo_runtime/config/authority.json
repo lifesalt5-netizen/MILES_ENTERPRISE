@@ -1,0 +1,28 @@
+{
+  "autonomous_allowed": [
+    "audit_systems",
+    "read_campaigns",
+    "analyze_bounces",
+    "pause_campaign",
+    "resume_campaign",
+    "upload_leads",
+    "create_campaign_draft",
+    "rotate_inboxes",
+    "optimize_website_copy",
+    "draft_linkedin_content",
+    "refresh_government_data",
+    "update_orion",
+    "generate_executive_brief"
+  ],
+  "ceo_approval_required": [
+    "new_spending",
+    "pricing_change",
+    "legal_commitment",
+    "proposal_submission",
+    "delete_critical_data",
+    "hire_or_fire",
+    "major_strategy_change",
+    "purchase_domain",
+    "purchase_software"
+  ]
+}

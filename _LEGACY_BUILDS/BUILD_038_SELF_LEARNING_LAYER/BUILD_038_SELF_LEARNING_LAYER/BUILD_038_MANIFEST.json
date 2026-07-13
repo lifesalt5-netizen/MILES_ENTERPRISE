@@ -1,0 +1,31 @@
+{
+  "build": "BUILD_038",
+  "name": "Self Learning Layer",
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "action": "SELF_LEARNING",
+  "components": {
+    "builder": ["BUILDER/BuilderService.js"],
+    "services": [
+      "SERVICES/LearningDataService.js",
+      "SERVICES/DecisionLearningService.js",
+      "SERVICES/FailureLearningService.js",
+      "SERVICES/RoutingLearningService.js",
+      "SERVICES/PriorityOptimizationService.js",
+      "SERVICES/ConfidenceScoringService.js",
+      "SERVICES/RecommendationEngineService.js",
+      "SERVICES/SelfLearningService.js"
+    ],
+    "scripts": [
+      "INSTALL_SELF_LEARNING.ps1",
+      "RUN_SELF_LEARNING.ps1",
+      "VERIFY_SELF_LEARNING.ps1"
+    ],
+    "outputs": [
+      "DATA/self_learning/latest_learning_state.json",
+      "DATA/self_learning/learning_history.json",
+      "DATA/self_learning/learning_recommendations.json",
+      "DATA/self_learning/self_learning_report.md"
+    ]
+  },
+  "status": "READY"
+}

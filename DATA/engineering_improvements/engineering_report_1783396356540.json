@@ -1,0 +1,341 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_REPORT",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nEngineering Capability Audit\n\nDo not modify any files.\n\nDo not generate proposals.\n\nUse the active runtime.\n\nDetermine why EngineeringImprovementService always returns:\n\nproductionModified: false\napprovalRequired: true\nstatus: PROPOSAL_CREATED\n\nTrace the complete execution path beginning with:\n\nENGINEERING_IMPROVEMENT\n\nDetermine exactly where implementation is intentionally disabled.\n\nReport:\n\n1. Every file involved.\n2. Every function involved.\n3. The exact line or conditional that forces proposal mode.\n4. Whether SAFE_MODE is enabled.\n5. Whether production writes are disabled globally.\n6. Whether EngineeringImprovementService contains any code capable of writing files.\n7. Whether BuilderService contains any code capable of writing files.\n8. Whether there is any FileWriter, CodeWriter, PatchEngine, ReplacementEngine, RuntimeInstrumentationEngine, or similar implementation service already present.\n9. If such a service exists, identify why it is not being invoked.\n10. If no such service exists, explicitly state that the capability does not currently exist in the production runtime.\n\nDo not recommend changes.\n\nDo not generate a proposal.\n\nReturn only the evidence collected from the running system.",
+  "executiveSummary": "MILES engineering workflow executed. The service analyzed the runtime, generated a safe implementation proposal, validated key files, and produced this report.",
+  "rootCauseSummary": "One or more engineering issues remain. See findings for evidence and recommended fixes.",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "area": "Planner",
+      "file": "SERVICES/CommandIntentPlannerService.js",
+      "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+      "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+      "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+    }
+  ],
+  "improvementPlan": [
+    {
+      "step": 1,
+      "action": "ENGINEERING_ANALYZE",
+      "description": "Inspect active MILES runtime files and identify architectural gaps."
+    },
+    {
+      "step": 2,
+      "action": "ENGINEERING_PLAN",
+      "description": "Create the smallest safe implementation plan while preserving production architecture."
+    },
+    {
+      "step": 3,
+      "action": "ENGINEERING_IMPLEMENT",
+      "description": "Create a controlled proposal package. Do not modify production files directly."
+    },
+    {
+      "step": 4,
+      "action": "ENGINEERING_VALIDATE",
+      "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+    },
+    {
+      "step": 5,
+      "action": "ENGINEERING_REPORT",
+      "description": "Return an executive engineering report with evidence and recommended next action."
+    }
+  ],
+  "implementation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_IMPLEMENT",
+    "proposalId": "proposal_1783396356533",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nEngineering Capability Audit\n\nDo not modify any files.\n\nDo not generate proposals.\n\nUse the active runtime.\n\nDetermine why EngineeringImprovementService always returns:\n\nproductionModified: false\napprovalRequired: true\nstatus: PROPOSAL_CREATED\n\nTrace the complete execution path beginning with:\n\nENGINEERING_IMPROVEMENT\n\nDetermine exactly where implementation is intentionally disabled.\n\nReport:\n\n1. Every file involved.\n2. Every function involved.\n3. The exact line or conditional that forces proposal mode.\n4. Whether SAFE_MODE is enabled.\n5. Whether production writes are disabled globally.\n6. Whether EngineeringImprovementService contains any code capable of writing files.\n7. Whether BuilderService contains any code capable of writing files.\n8. Whether there is any FileWriter, CodeWriter, PatchEngine, ReplacementEngine, RuntimeInstrumentationEngine, or similar implementation service already present.\n9. If such a service exists, identify why it is not being invoked.\n10. If no such service exists, explicitly state that the capability does not currently exist in the production runtime.\n\nDo not recommend changes.\n\nDo not generate a proposal.\n\nReturn only the evidence collected from the running system.",
+    "status": "PROPOSAL_CREATED",
+    "productionModified": false,
+    "approvalRequired": true,
+    "safeMode": true,
+    "executiveSummary": "Engineering proposal package created. No production files were modified.",
+    "analysis": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_ANALYZE",
+      "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nEngineering Capability Audit\n\nDo not modify any files.\n\nDo not generate proposals.\n\nUse the active runtime.\n\nDetermine why EngineeringImprovementService always returns:\n\nproductionModified: false\napprovalRequired: true\nstatus: PROPOSAL_CREATED\n\nTrace the complete execution path beginning with:\n\nENGINEERING_IMPROVEMENT\n\nDetermine exactly where implementation is intentionally disabled.\n\nReport:\n\n1. Every file involved.\n2. Every function involved.\n3. The exact line or conditional that forces proposal mode.\n4. Whether SAFE_MODE is enabled.\n5. Whether production writes are disabled globally.\n6. Whether EngineeringImprovementService contains any code capable of writing files.\n7. Whether BuilderService contains any code capable of writing files.\n8. Whether there is any FileWriter, CodeWriter, PatchEngine, ReplacementEngine, RuntimeInstrumentationEngine, or similar implementation service already present.\n9. If such a service exists, identify why it is not being invoked.\n10. If no such service exists, explicitly state that the capability does not currently exist in the production runtime.\n\nDo not recommend changes.\n\nDo not generate a proposal.\n\nReturn only the evidence collected from the running system.",
+      "files": [
+        {
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "exists": true,
+          "size": 8629,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.529Z"
+        },
+        {
+          "file": "SERVICES/ExecutionService.js",
+          "exists": true,
+          "size": 10679,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.529Z"
+        },
+        {
+          "file": "SERVICES/EngineeringImprovementService.js",
+          "exists": true,
+          "size": 15241,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:36.529Z"
+        },
+        {
+          "file": "SERVICES/SelfMaintenanceService.js",
+          "exists": true,
+          "size": 11109,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": false,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+          "exists": true,
+          "size": 15103,
+          "hasModuleExport": false,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "SERVICES/ExecutiveResponseService.js",
+          "exists": true,
+          "size": 5822,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "BUILDER/BuilderService.js",
+          "exists": true,
+          "size": 6427,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": true,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "BUILDER/index.js",
+          "exists": true,
+          "size": 477,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "CONNECTORS/MILES/connector.js",
+          "exists": true,
+          "size": 526,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.530Z"
+        },
+        {
+          "file": "CORE/TaskQueue.js",
+          "exists": true,
+          "size": 7509,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.531Z"
+        },
+        {
+          "file": "CORE/ConnectorManager.js",
+          "exists": true,
+          "size": 1096,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:36.531Z"
+        }
+      ],
+      "findings": [
+        {
+          "severity": "HIGH",
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+          "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        }
+      ],
+      "checkedAt": "2026-07-07T03:52:36.531Z"
+    },
+    "plan": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_PLAN",
+      "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nEngineering Capability Audit\n\nDo not modify any files.\n\nDo not generate proposals.\n\nUse the active runtime.\n\nDetermine why EngineeringImprovementService always returns:\n\nproductionModified: false\napprovalRequired: true\nstatus: PROPOSAL_CREATED\n\nTrace the complete execution path beginning with:\n\nENGINEERING_IMPROVEMENT\n\nDetermine exactly where implementation is intentionally disabled.\n\nReport:\n\n1. Every file involved.\n2. Every function involved.\n3. The exact line or conditional that forces proposal mode.\n4. Whether SAFE_MODE is enabled.\n5. Whether production writes are disabled globally.\n6. Whether EngineeringImprovementService contains any code capable of writing files.\n7. Whether BuilderService contains any code capable of writing files.\n8. Whether there is any FileWriter, CodeWriter, PatchEngine, ReplacementEngine, RuntimeInstrumentationEngine, or similar implementation service already present.\n9. If such a service exists, identify why it is not being invoked.\n10. If no such service exists, explicitly state that the capability does not currently exist in the production runtime.\n\nDo not recommend changes.\n\nDo not generate a proposal.\n\nReturn only the evidence collected from the running system.",
+      "status": "PLAN_CREATED",
+      "steps": [
+        {
+          "step": 1,
+          "action": "ENGINEERING_ANALYZE",
+          "description": "Inspect active MILES runtime files and identify architectural gaps."
+        },
+        {
+          "step": 2,
+          "action": "ENGINEERING_PLAN",
+          "description": "Create the smallest safe implementation plan while preserving production architecture."
+        },
+        {
+          "step": 3,
+          "action": "ENGINEERING_IMPLEMENT",
+          "description": "Create a controlled proposal package. Do not modify production files directly."
+        },
+        {
+          "step": 4,
+          "action": "ENGINEERING_VALIDATE",
+          "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+        },
+        {
+          "step": 5,
+          "action": "ENGINEERING_REPORT",
+          "description": "Return an executive engineering report with evidence and recommended next action."
+        }
+      ],
+      "recommendations": [
+        {
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "severity": "HIGH",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        }
+      ],
+      "plannedAt": "2026-07-07T03:52:36.533Z"
+    },
+    "proposedChanges": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "currentSize": 8629,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\CommandIntentPlannerService.js"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "currentSize": 10679,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\ExecutionService.js"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "currentSize": 6427,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "currentSize": 15103,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "currentSize": 5822,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+      }
+    ],
+    "validationCommands": [
+      "node --check .\\SERVICES\\CommandIntentPlannerService.js",
+      "node --check .\\SERVICES\\ExecutionService.js",
+      "node --check .\\BUILDER\\BuilderService.js",
+      "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+      "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    ],
+    "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+    "createdAt": "2026-07-07T03:52:36.534Z",
+    "proposalPath": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\engineering_improvements\\proposals\\proposal_1783396356533.json"
+  },
+  "validation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_VALIDATE",
+    "filesChecked": 11,
+    "missingFiles": [],
+    "filesWithoutModuleExports": [],
+    "validation": {
+      "requiredFilesPresent": true,
+      "moduleExportsValid": true,
+      "builderHasEngineeringImprovement": true,
+      "builderHasSelfMaintenance": true,
+      "plannerRecognizesEngineering": true,
+      "executionHasNoProviderByCapability": true,
+      "executionHasConnectorDispatch": true
+    },
+    "validationStatus": "PASSED",
+    "checkedAt": "2026-07-07T03:52:36.540Z"
+  },
+  "recommendedNextAction": "Review the engineering proposal package and approve specific replacement scripts before production modification.",
+  "completedAt": "2026-07-07T03:52:36.540Z"
+}

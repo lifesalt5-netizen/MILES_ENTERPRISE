@@ -1,0 +1,592 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "databases": [
+    {
+      "id": "06a01c30ba67",
+      "name": "connector.js",
+      "path": "CONNECTORS/ORION/connector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7015,
+      "modifiedAt": "2026-07-03T20:44:34.000Z",
+      "componentTypes": [
+        "connector",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [
+        "better-sqlite3",
+        "fs"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "72861172bf2d",
+      "name": "package.json",
+      "path": "MILES_OS_v1/MILES_OS_v1/package.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 648,
+      "modifiedAt": "2026-06-28T23:11:04.000Z",
+      "componentTypes": [
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "15dd00b71bad",
+      "name": "MILES_ASSET_REGISTRY.csv",
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_ASSET_REGISTRY.csv",
+      "extension": ".csv",
+      "fileType": "csv",
+      "bytes": 757,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "f44add54b7b3",
+      "name": "Database.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Database.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1520,
+      "modifiedAt": "2026-06-28T20:32:30.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [],
+      "dependencies": [
+        "better-sqlite3",
+        "path",
+        "fs"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "62703f519fd1",
+      "name": "OrionConnector.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/ORION/OrionConnector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1534,
+      "modifiedAt": "2026-06-28T22:07:08.000Z",
+      "componentTypes": [
+        "connector",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "better-sqlite3"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "78f0d42e30bc",
+      "name": "package-lock.json",
+      "path": "MILES_OS_v1/MILES_OS_v1/package-lock.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 103925,
+      "modifiedAt": "2026-06-28T23:11:12.000Z",
+      "componentTypes": [
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "website_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "280c9027d8e9",
+      "name": "Database.js",
+      "path": "CORE/Database.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1520,
+      "modifiedAt": "2026-06-29T18:43:06.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [],
+      "dependencies": [
+        "better-sqlite3",
+        "path",
+        "fs"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "d6a678f1da1f",
+      "name": "WP-20260702182411-918.json",
+      "path": "DATA/work_packages/WP-20260702182411-918.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 7597,
+      "modifiedAt": "2026-07-02T18:24:12.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "4ebe6a70d4a7",
+      "name": "WP-20260702191733-776.json",
+      "path": "DATA/work_packages/WP-20260702191733-776.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 7813,
+      "modifiedAt": "2026-07-02T19:17:34.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "395088d9865e",
+      "name": "WP-20260702191733-639.json",
+      "path": "DATA/work_packages/WP-20260702191733-639.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 7938,
+      "modifiedAt": "2026-07-02T19:17:34.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "ddfe85fbf453",
+      "name": "database_registry.json",
+      "path": "DATA/repository/database_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 14698,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "da1d1f507cd5",
+      "name": "OrionPlanner.js",
+      "path": "SERVICES/Planning/OrionPlanner.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6723,
+      "modifiedAt": "2026-07-02T01:27:50.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "government_data",
+        "approval_governance",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./BasePlanner"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "89e5fb9adfaa",
+      "name": "OrionDiscovery.js",
+      "path": "SERVICES/Discovery/OrionDiscovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1625,
+      "modifiedAt": "2026-07-01T18:27:38.000Z",
+      "componentTypes": [
+        "api",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "73c923dda30a",
+      "name": "RepositoryRegistryService.js",
+      "path": "SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "7030d0b2f71b",
+      "name": "package.json",
+      "path": "package.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 475,
+      "modifiedAt": "2026-07-03T00:01:02.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "fa288d1472d2",
+      "name": "package-lock.json",
+      "path": "package-lock.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 53337,
+      "modifiedAt": "2026-07-03T02:19:42.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "website_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "5b8ee53ade12",
+      "name": "MILES_ASSET_REGISTRY.csv",
+      "path": "MILES_ASSET_REGISTRY.csv",
+      "extension": ".csv",
+      "fileType": "csv",
+      "bytes": 1524,
+      "modifiedAt": "2026-06-29T18:46:06.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "3b1d09182614",
+      "name": "Test_Build017_ProviderRouter.js",
+      "path": "TESTS/Test_Build017_ProviderRouter.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2664,
+      "modifiedAt": "2026-07-01T17:26:36.000Z",
+      "componentTypes": [
+        "provider",
+        "api",
+        "database"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../SERVICES/ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "08f8f80c8889",
+      "name": "json_store.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/storage/json_store.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 1930,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "database"
+      ],
+      "capabilities": [],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "6a44c0640ca3",
+      "name": "sprint-zero-discovery.js",
+      "path": "MILES_Sprint_Zero_Discovery_Package/MILES_Sprint_Zero_Discovery_Package/sprint-zero-discovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 12685,
+      "modifiedAt": "2026-07-04T02:06:10.000Z",
+      "componentTypes": [
+        "runtime",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "c68464b6d88d",
+      "name": "RepositoryRegistryService.js",
+      "path": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+﻿{
+  "ok": true,
+  "build": "BUILD_042_BUSINESS_INPUT_CONNECTORS",
+  "createdAt": "2026-07-04T22:42:26.4959813-04:00",
+  "mission": "Connect MILES to live business inputs so the Digital COO has real work to manage.",
+  "status": "INITIALIZED",
+  "primaryInputs": {
+    "Instantly": {
+      "purpose": "Campaigns, replies, interested leads, positive responses, outbound health",
+      "status": "PENDING_VALIDATION"
+    },
+    "CRM": {
+      "purpose": "Deals, opportunities, client follow-ups, proposal pipeline",
+      "status": "PENDING_VALIDATION"
+    },
+    "ORION": {
+      "purpose": "Contractor intelligence, opportunity intelligence, buyer intelligence",
+      "status": "PENDING_VALIDATION"
+    },
+    "Website": {
+      "purpose": "Leads, form submissions, service pages, conversion health",
+      "status": "PENDING_VALIDATION"
+    },
+    "ExecutiveDashboard": {
+      "purpose": "Revenue, tasks, health, priorities, actions",
+      "status": "PENDING_VALIDATION"
+    }
+  }
+}

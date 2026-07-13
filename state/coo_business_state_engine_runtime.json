@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "service": "COO_BUSINESS_STATE_ENGINE",
+  "version": "1.0.0",
+  "status": "RUNNING",
+  "startedAt": "2026-07-13T15:56:27.192Z",
+  "stoppedAt": null,
+  "refreshCount": 1,
+  "lastRefreshAt": "2026-07-13T15:56:27.232Z",
+  "lastError": null,
+  "generatedAt": "2026-07-13T15:56:27.391Z",
+  "running": true
+}

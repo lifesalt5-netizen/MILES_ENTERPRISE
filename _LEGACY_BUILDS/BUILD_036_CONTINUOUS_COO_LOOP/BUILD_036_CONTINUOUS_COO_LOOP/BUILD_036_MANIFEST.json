@@ -1,0 +1,45 @@
+{
+  "build": "BUILD_036",
+  "name": "Continuous COO Loop",
+  "status": "complete",
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "architecture": "Continuation of BUILD_031 through BUILD_035",
+  "entryPoints": [
+    "node .\\BUILDER\\index.js COO_LOOP",
+    "powershell -ExecutionPolicy Bypass -File .\\RUN_COO_LOOP.ps1",
+    "powershell -ExecutionPolicy Bypass -File .\\RUN_COO_LOOP_ONCE.ps1",
+    "powershell -ExecutionPolicy Bypass -File .\\RUN_COO_LOOP_FOREVER.ps1"
+  ],
+  "builderActions": [
+    "COO_LOOP",
+    "CONTINUOUS_COO_LOOP",
+    "VERIFY_COO_LOOP"
+  ],
+  "files": [
+    "BUILDER/BuilderService.js",
+    "SERVICES/ContinuousCOOLoopService.js",
+    "SERVICES/QueueRecoveryService.js",
+    "SERVICES/HeartbeatService.js",
+    "SERVICES/RuntimeHealthService.js",
+    "SERVICES/RestartGuardianService.js",
+    "SERVICES/LoopSchedulerService.js",
+    "SERVICES/JsonFileService.js",
+    "SERVICES/TimeUtil.js",
+    "VERIFY/VERIFY_COO_LOOP.js",
+    "INSTALL_COO_LOOP.ps1",
+    "RUN_COO_LOOP.ps1",
+    "RUN_COO_LOOP_ONCE.ps1",
+    "RUN_COO_LOOP_FOREVER.ps1",
+    "VERIFY_COO_LOOP.ps1",
+    "README_BUILD_036.md"
+  ],
+  "runtimeOutputs": [
+    "DATA/runtime/latest_coo_cycle.json",
+    "DATA/runtime/coo_cycle_history.json",
+    "DATA/runtime/coo_loop_heartbeat.json",
+    "DATA/runtime/coo_runtime_health.json",
+    "DATA/runtime/restart_guardian.json",
+    "DATA/runtime/queue_recovery_log.json",
+    "DATA/runtime/coo_loop_report.md"
+  ]
+}

@@ -1,0 +1,72 @@
+﻿{
+    "generated_at":  "2026-07-05T22:23:03.3935955-04:00",
+    "status":  "critical",
+    "actions":  [
+                    {
+                        "component":  "WorkerRegistry",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "WorkerDispatcher",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "WorkerRuntime",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "WorkerRuntimeManager",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "ConnectorRuntime",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "ConnectorRuntimeManager",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "AutonomousWorkOrchestrator",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "AutonomousWorkOrchestratorManager",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "DigitalCOORuntime",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "DigitalCOORuntimeManager",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    },
+                    {
+                        "component":  "DigitalCOOHost",
+                        "action":  "verify_file_exists_in_production_repository",
+                        "severity":  "high",
+                        "notes":  "Required runtime integration component not discoverable under production repository."
+                    }
+                ]
+}

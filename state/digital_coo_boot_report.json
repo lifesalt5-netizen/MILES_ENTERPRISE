@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-07-13T15:56:24.346Z",
+  "loaded": [
+    "workerRegistry",
+    "workerDispatcher",
+    "InstantlyCOOWorker:revenueWorker",
+    "connectorRuntime",
+    "connectorRuntimeManager",
+    "learningEngine",
+    "learningEngineManager",
+    "digitalCOORuntime",
+    "digitalCOORuntimeManager",
+    "cooBusinessStateEngine",
+    "cooGoalEngine",
+    "cooExecutionLoop"
+  ],
+  "unavailable": [],
+  "failed": [
+    {
+      "component": "workerRuntime",
+      "error": "WorkerRuntime is not a constructor"
+    },
+    {
+      "component": "workerRuntimeManager",
+      "error": "WorkerRuntime is not a constructor"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "priority": 1,
+    "department": "Marketing",
+    "title": "Review paused Instantly campaigns",
+    "reason": "9 paused campaigns and 1 active campaigns detected.",
+    "requiresKevin": true,
+    "status": "AWAITING_APPROVAL"
+  }
+]

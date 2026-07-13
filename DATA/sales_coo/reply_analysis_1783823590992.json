@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "provider": "SalesProvider",
+  "action": "processReplies",
+  "generatedAt": "2026-07-12T02:33:10.992Z",
+  "analysis": {
+    "timestamp": "2026-07-12T02:33:10.991Z",
+    "processed": [
+      {
+        "reply": {
+          "id": "reply-1",
+          "text": "Yes, I am interested. Let's schedule a call.",
+          "lead": {
+            "id": "lead-1",
+            "email": "test@example.com"
+          }
+        },
+        "classification": {
+          "type": "meeting",
+          "confidence": 0.85
+        }
+      }
+    ],
+    "summary": {
+      "interested": 0,
+      "notNow": 0,
+      "notInterested": 0,
+      "meeting": 1,
+      "spam": 0,
+      "unknown": 0
+    }
+  },
+  "protectedActions": [
+    {
+      "type": "CEO_REVIEW",
+      "reason": "Positive prospect response requires human-approved communication or commitment.",
+      "lead": {
+        "id": "lead-1",
+        "email": "test@example.com"
+      },
+      "classification": {
+        "type": "meeting",
+        "confidence": 0.85
+      }
+    }
+  ],
+  "metrics": {
+    "repliesProcessed": 1,
+    "classifications": {
+      "interested": 0,
+      "notNow": 0,
+      "notInterested": 0,
+      "meeting": 1,
+      "spam": 0,
+      "unknown": 0
+    },
+    "protectedActions": 1
+  }
+}

@@ -1,0 +1,289 @@
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+let taskQueue = null;
+
+try {
+  taskQueue = require("../CORE/TaskQueue");
+} catch {
+  taskQueue = null;
+}
+
+const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
+
+function now() {
+  return new Date().toISOString();
+}
+
+function ensureDir(dir) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+function readJson(file, fallback) {
+  try {
+    if (!fs.existsSync(file)) return fallback;
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJson(file, data) {
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+}
+
+class BusinessOperationsBridgeService {
+  constructor(options = {}) {
+    this.name = "BusinessOperationsBridgeService";
+    this.taskQueue = options.taskQueue || taskQueue;
+    this.enabled = options.enabled !== false;
+    this.rootDir = options.rootDir || ROOT;
+    this.queueFile =
+      options.queueFile ||
+      path.join(this.rootDir, "state", "business_operations_queue.json");
+
+    this.lastRun = null;
+    this.bridgedCount = 0;
+    this.failedCount = 0;
+  }
+
+  log(message) {
+    console.log(`[BUSINESS-BRIDGE] ${message}`);
+  }
+
+  readQueue() {
+    return readJson(this.queueFile, {
+      generatedAt: now(),
+      source: "MILES_COMMAND_CENTER",
+      operations: []
+    });
+  }
+
+  writeQueue(queue) {
+    queue.generatedAt = now();
+    writeJson(this.queueFile, queue);
+  }
+
+  isPending(operation) {
+    return ["READY", "PENDING", "NEW"].includes(
+      String(operation.status || "").toUpperCase()
+    );
+  }
+
+  resolveProvider(operation = {}) {
+    const text = [
+      operation.provider,
+      operation.system,
+      operation.connector,
+      operation.department,
+      operation.area,
+      operation.worker,
+      operation.command,
+      operation.action,
+      operation.title
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    if (/instantly|campaign|email|lead|outbound|revenue|sales|crm|pipeline|proposal|deal/.test(text)) {
+      return "Sales";
+    }
+
+    if (/orion|contractor|buyer|persona|recommendation|database/.test(text)) {
+      return "ORION";
+    }
+
+    if (/sam|gsa|va|rfi|sources sought|forecast|sled|government|contract|opportunit/.test(text)) {
+      return "Government";
+    }
+
+    if (/website|b12|seo|cta|form|conversion/.test(text)) {
+      return "Website";
+    }
+
+    if (/linkedin|post|article|comment|engagement/.test(text)) {
+      return "LinkedIn";
+    }
+
+    if (/engineering|runtime|repair|regression|log|self/.test(text)) {
+      return "Engineering";
+    }
+
+    return "Executive";
+  }
+
+  normalizePriority(value) {
+    if (value === 1 || value === "1") return 1;
+    if (value === 2 || value === "2") return 2;
+    if (value === 3 || value === "3") return 3;
+    if (value === 4 || value === "4") return 4;
+
+    const text = String(value || "").toUpperCase();
+
+    if (text === "CRITICAL") return 1;
+    if (text === "HIGH") return 2;
+    if (text === "MEDIUM" || text === "NORMAL") return 3;
+    if (text === "LOW") return 4;
+
+    return 3;
+  }
+
+  buildTaskParts(operation) {
+    const command =
+      operation.command ||
+      operation.action ||
+      operation.title ||
+      "Business operation";
+
+    const provider = this.resolveProvider(operation);
+
+    const payload = {
+      ...operation,
+      provider,
+      system: operation.system || provider,
+      department: operation.department || provider,
+      connector: operation.connector || provider,
+      action: command,
+      objective: command,
+      command,
+      sourceOperationId: operation.id,
+      source: "business_operations_queue"
+    };
+
+    return {
+      type: operation.type || "BUSINESS_OPERATION",
+      payload,
+      priority: this.normalizePriority(operation.priority)
+    };
+  }
+
+  enqueueTask(operation) {
+    if (!this.taskQueue) {
+      throw new Error("TaskQueue unavailable");
+    }
+
+    const task = this.buildTaskParts(operation);
+
+    if (typeof this.taskQueue.add !== "function") {
+      throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+    }
+
+    return this.taskQueue.add(task.type, task.payload, task.priority);
+  }
+
+  markOperation(operationId, patch) {
+    const queue = this.readQueue();
+
+    queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
+
+    queue.operations = queue.operations.map((operation) => {
+      if (operation.id !== operationId) return operation;
+
+      return {
+        ...operation,
+        ...patch,
+        updatedAt: now()
+      };
+    });
+
+    this.writeQueue(queue);
+  }
+
+  async runOnce() {
+    if (!this.enabled) {
+      return {
+        ok: true,
+        status: "DISABLED",
+        operationsFound: 0,
+        operationsQueued: 0,
+        operationsFailed: 0
+      };
+    }
+
+    this.lastRun = now();
+
+    const queue = this.readQueue();
+    queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
+
+    const pending = queue.operations.filter((operation) =>
+      this.isPending(operation)
+    );
+
+    if (!pending.length) {
+      this.log("No pending business operations.");
+
+      return {
+        ok: true,
+        status: "NO_PENDING_OPERATIONS",
+        queueFile: this.queueFile,
+        operationsFound: 0,
+        operationsQueued: 0,
+        operationsFailed: 0
+      };
+    }
+
+    this.log(`Found ${pending.length} pending business operation(s).`);
+
+    let queued = 0;
+    let failed = 0;
+
+    for (const operation of pending) {
+      try {
+        const task = this.enqueueTask(operation);
+
+        this.markOperation(operation.id, {
+          status: "BRIDGED",
+          bridgedAt: now(),
+          taskQueueStatus: "QUEUED",
+          taskId: task.id || null
+        });
+
+        queued++;
+        this.bridgedCount++;
+
+        this.log(`Bridged operation to TaskQueue: ${operation.title || operation.command}`);
+      } catch (error) {
+        this.markOperation(operation.id, {
+          status: "BRIDGE_FAILED",
+          bridgeFailedAt: now(),
+          taskQueueStatus: "FAILED",
+          error: error.message
+        });
+
+        failed++;
+        this.failedCount++;
+
+        this.log(`Bridge failed: ${error.message}`);
+      }
+    }
+
+    return {
+      ok: failed === 0,
+      status: failed === 0 ? "BRIDGE_COMPLETED" : "BRIDGE_COMPLETED_WITH_FAILURES",
+      queueFile: this.queueFile,
+      operationsFound: pending.length,
+      operationsQueued: queued,
+      operationsFailed: failed,
+      bridged: queued,
+      failed
+    };
+  }
+
+  getStatus() {
+    return {
+      service: this.name,
+      enabled: this.enabled,
+      queueFile: this.queueFile,
+      taskQueueAvailable: Boolean(this.taskQueue),
+      lastRun: this.lastRun,
+      bridgedCount: this.bridgedCount,
+      failedCount: this.failedCount
+    };
+  }
+}
+
+module.exports = BusinessOperationsBridgeService;

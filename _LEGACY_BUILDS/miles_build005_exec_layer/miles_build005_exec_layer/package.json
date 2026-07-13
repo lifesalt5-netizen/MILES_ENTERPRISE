@@ -1,0 +1,1 @@
+{"name":"miles-desktop-production","version":"0.1.0-build005","private":true,"scripts":{"start":"node StartMiles.js","test":"node TESTS/healthcheck.js","healthcheck":"node TESTS/healthcheck.js"},"dependencies":{}}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "TEST-CEO-APPROVAL-001",
+    "status": "APPROVED",
+    "priority": "HIGH",
+    "category": "Pricing",
+    "objective": "Approve pricing change",
+    "reason": "Pricing changes require CEO approval.",
+    "recommendation": "Review before allowing MILES to proceed.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "TestProvider",
+    "capability": "executive.approval.test",
+    "action": "requestApproval",
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {},
+    "createdAt": "2026-07-01T19:23:40.999Z",
+    "updatedAt": "2026-07-01T19:23:41.005Z",
+    "ceoNote": "Approved during smoke test.",
+    "resolvedAt": "2026-07-01T19:23:41.005Z"
+  }
+]

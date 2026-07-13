@@ -1,0 +1,16 @@
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const { OutboundService } = require('../SERVICES/OutboundService');
+const root = process.cwd();
+const out = new OutboundService(root);
+out.init();
+const s = out.status();
+assert(s.domains >= 7, 'Expected at least 7 domains');
+assert(s.activeInboxes >= 9, 'Expected at least 9 active production inboxes');
+assert(s.plannedInboxes >= 16, 'Expected at least 16 planned expansion inboxes');
+assert(s.dailyCapacity >= 205, 'Expected production capacity >= 205/day');
+assert(s.protectedAdmin === 'Admin Only', 'pathways2gc.com admin inbox must be protected');
+['DOMAIN_STATUS_MASTER.csv','INBOX_STATUS_MASTER.csv','CAMPAIGN_STATUS_MASTER.csv','SEGMENT_INVENTORY_MASTER.csv','OUTBOUND_ASSET_REGISTRY.csv','OUTBOUND_DAILY_REPORT.csv'].forEach(f=>assert(fs.existsSync(path.join(root,'DATA','OUTBOUND',f)),`Missing ${f}`));
+console.log('MILES Build 006 healthcheck passed');
+console.log(JSON.stringify(s,null,2));

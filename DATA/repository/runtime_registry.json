@@ -1,0 +1,860 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "runtime": [
+    {
+      "id": "a54a59fa4dd1",
+      "name": "MILES_RUNTIME_LOOP.ps1",
+      "path": "MILES_RUNTIME_LOOP.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 1597,
+      "modifiedAt": "2026-06-20T22:16:12.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "runtime_operations",
+        "website_operations",
+        "email_outbound_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "419c56f227ae",
+      "name": "MilesKernel.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1858,
+      "modifiedAt": "2026-06-28T21:50:58.000Z",
+      "componentTypes": [
+        "runtime",
+        "kernel"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "runtime_operations"
+      ],
+      "dependencies": [
+        "./ServiceRegistry",
+        "./HealthMonitor",
+        "./EventBus",
+        "../../SERVICES/MemoryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "71de21e750af",
+      "name": "MilesKernel.js",
+      "path": "MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 565,
+      "modifiedAt": "2026-06-28T20:00:38.000Z",
+      "componentTypes": [
+        "runtime",
+        "kernel"
+      ],
+      "capabilities": [
+        "runtime_operations"
+      ],
+      "dependencies": [
+        "../Scheduler/TaskScheduler"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "5815174ae057",
+      "name": "MilesKernel.js",
+      "path": "CORE/Kernel/MilesKernel.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3287,
+      "modifiedAt": "2026-06-29T23:24:04.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "engineering_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "runtime_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "../ConnectorManager",
+        "../../SERVICES/ExecutionService",
+        "./ServiceRegistry",
+        "./HealthMonitor",
+        "./EventBus",
+        "../../SERVICES/MemoryService",
+        "../../SERVICES/SchedulerService",
+        "../../SERVICES/DashboardService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "9d161e1f5a87",
+      "name": "RuntimeController.js",
+      "path": "CORE/RuntimeController.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6023,
+      "modifiedAt": "2026-06-30T16:35:36.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations",
+        "learning_operations"
+      ],
+      "dependencies": [
+        "./GATEWAY/CommandGateway",
+        "./TaskQueue",
+        "../SERVICES/WorkflowService",
+        "../SERVICES/PlannerService",
+        "../SERVICES/WorkforceExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "7a98a9b65a9a",
+      "name": "TestRuntimeController.js",
+      "path": "CORE/TestRuntimeController.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 725,
+      "modifiedAt": "2026-06-30T16:39:30.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "email_outbound_operations"
+      ],
+      "dependencies": [
+        "./RuntimeController"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "4b4fd3b948ee",
+      "name": "MilesRuntime.js",
+      "path": "CORE/Runtime/MilesRuntime.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 8404,
+      "modifiedAt": "2026-07-01T19:02:52.000Z",
+      "componentTypes": [
+        "api",
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../../SERVICES/WorkflowService",
+        "../../SERVICES/WorkforceExecutionService",
+        "../../SERVICES/Events/EventBus",
+        "../../SERVICES/Learning/LearningEngine",
+        "../../SERVICES/Memory/OperationalMemoryService",
+        "../../SERVICES/ProviderRouterService",
+        "../../SERVICES/Supervisor/ExecutiveSupervisor"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "SIGINT"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "6abf4aadc8e4",
+      "name": "task_queue.json",
+      "path": "DATA/runtime/task_queue.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 6972372,
+      "modifiedAt": "2026-07-04T00:36:56.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "791ee4e18aba",
+      "name": "work_queue.json",
+      "path": "DATA/runtime/work_queue.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 15824325,
+      "modifiedAt": "2026-07-04T00:37:24.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "0cd300cb7586",
+      "name": "work_queue_archive.json",
+      "path": "DATA/runtime/work_queue_archive.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 2885,
+      "modifiedAt": "2026-07-01T01:52:58.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "runtime_operations",
+        "email_outbound_operations",
+        "data_provider_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "b74917d335e1",
+      "name": "latest_coo_cycle.json",
+      "path": "DATA/runtime/latest_coo_cycle.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 1458206,
+      "modifiedAt": "2026-07-04T00:36:56.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "engineering_operations",
+        "website_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "16306dee01bf",
+      "name": "atlas_runtime_report.json",
+      "path": "DATA/runtime/atlas_runtime_report.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 8275,
+      "modifiedAt": "2026-07-04T00:34:36.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "runtime_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "31cfbc16c14b",
+      "name": "runtime_registry.json",
+      "path": "DATA/repository/runtime_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 21812,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "6268278e210f",
+      "name": "RuntimeRecoveryService.js",
+      "path": "SERVICES/RuntimeRecoveryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2580,
+      "modifiedAt": "2026-07-02T19:05:20.000Z",
+      "componentTypes": [
+        "service",
+        "runtime",
+        "event_bus"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "data",
+          "close"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "5430364762f9",
+      "name": "ATLASRuntimeInspector.js",
+      "path": "SERVICES/ATLASRuntimeInspector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6192,
+      "modifiedAt": "2026-07-03T22:27:18.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "73c923dda30a",
+      "name": "RepositoryRegistryService.js",
+      "path": "SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "3eb08a100d0e",
+      "name": "RuntimeController.js",
+      "path": "BUILDER/RuntimeController.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 566,
+      "modifiedAt": "2026-06-29T22:09:20.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations"
+      ],
+      "dependencies": [
+        "child_process",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "2a7a5f013713",
+      "name": "ArchitectureDiscovery.js",
+      "path": "BUILDER/ArchitectureDiscovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 11074,
+      "modifiedAt": "2026-07-04T03:34:08.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto",
+        "./ProjectScanner"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "dd47e011b2b8",
+      "name": "runtimeHost.js",
+      "path": "miles_desktop_v2_starter/miles_desktop_v2/src/runtime/runtimeHost.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1864,
+      "modifiedAt": "2026-06-30T22:35:34.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../shared/state"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "62d08dc7ccc7",
+      "name": "backup-runtime.js",
+      "path": "miles_desktop_v2_starter/miles_desktop_v2/scripts/backup-runtime.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 423,
+      "modifiedAt": "2026-06-30T22:35:34.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "31f3f560dbcf",
+      "name": "taskQueue.js",
+      "path": "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/taskQueue.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1184,
+      "modifiedAt": "2026-06-30T23:46:06.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "4b87faa6bd3e",
+      "name": "milesRuntime.js",
+      "path": "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/milesRuntime.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3049,
+      "modifiedAt": "2026-06-30T23:46:06.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "path",
+        "../logging/logger",
+        "../connectors/connectorManager",
+        "../workers/workerManager",
+        "../approvals/approvalQueue",
+        "../notifications/notificationCenter",
+        "./taskQueue",
+        "../scheduler/scheduler",
+        "../supervisor/supervisor",
+        "../executive/executiveBrain"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "786dd0238308",
+      "name": "runtimeHost.js",
+      "path": "miles_desktop_v2_build003/miles_desktop_v2/src/runtime/runtimeHost.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1864,
+      "modifiedAt": "2026-06-30T22:35:34.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../shared/state"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "6e57afb9528b",
+      "name": "backup-runtime.js",
+      "path": "miles_desktop_v2_build003/miles_desktop_v2/scripts/backup-runtime.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 455,
+      "modifiedAt": "2026-06-30T23:46:06.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "24b1a885ca6f",
+      "name": "miles_runtime.py",
+      "path": "miles_coo_runtime/miles_coo_runtime/miles_runtime.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 1682,
+      "modifiedAt": "2026-07-02T02:32:54.000Z",
+      "componentTypes": [
+        "runtime"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "6a44c0640ca3",
+      "name": "sprint-zero-discovery.js",
+      "path": "MILES_Sprint_Zero_Discovery_Package/MILES_Sprint_Zero_Discovery_Package/sprint-zero-discovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 12685,
+      "modifiedAt": "2026-07-04T02:06:10.000Z",
+      "componentTypes": [
+        "runtime",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "ebdb4e2b02f3",
+      "name": "ArchitectureDiscovery.js",
+      "path": "MILES_BUILDER_AUTONOMY_PATCH_v1/BUILDER/ArchitectureDiscovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 11074,
+      "modifiedAt": "2026-07-04T03:34:08.000Z",
+      "componentTypes": [
+        "runtime",
+        "engineering"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto",
+        "./ProjectScanner"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "c68464b6d88d",
+      "name": "RepositoryRegistryService.js",
+      "path": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    }
+  ]
+}

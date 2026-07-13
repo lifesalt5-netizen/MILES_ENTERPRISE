@@ -1,0 +1,11 @@
+CapabilityID,CapabilityName,Module,ActionType,RiskLevel,Trigger,Inputs,Outputs,Verification,Status,ApprovalRule
+CAP-001,Refresh Executive Dashboard,EXECUTIVE,dashboard_refresh,low,manual_or_loop,"MILES_* CSV, reports, outbound inventory",MILES_DASHBOARD.csv,"file updated and execution log entry created",operational,auto
+CAP-002,Sync Campaign Inventory,OPERATIONS,campaign_inventory_sync,low,manual_or_loop,outbound/campaign_inventory.csv,MILES_SYSTEM_STATUS.csv,"campaign counts written",operational,auto
+CAP-003,Check Domain Capacity,OPERATIONS,domain_capacity_check,low,manual_or_loop,"masters/DOMAIN_MASTER.csv, outbound/outbound_accounts.csv",reports/domain_capacity_report.csv,"domain capacity report exists",operational,auto
+CAP-004,Refresh Segment Counts,OPERATIONS,segment_count,low,manual_or_loop,"masters/SEGMENT_INVENTORY.csv, inventory/segment_inventory_master.csv",reports/segment_status_report.csv,"segment report exists",operational,auto
+CAP-005,Generate CEO Daily Brief,EXECUTIVE,report_generate,low,manual_or_loop,"status, logs, reports, masters",status/daily_status.md,"daily status written",operational,auto
+CAP-006,Queue CEO Approval,CORE,approval_queue,medium,on_protected_task,tasks/approval_queue.csv,tasks/approval_queue.csv,"approval item created",operational,ceo_required
+CAP-007,Repository Duplicate Audit,CORE,repository_audit,low,manual,repository_tree.txt,reports/repository_consolidation_report.csv,"report generated",operational,auto
+CAP-008,Instantly Health Snapshot,CONNECTORS,campaign_inventory_sync,low,manual_or_loop,"CONNECTORS/INSTANTLY, outbound/campaign_inventory.csv",reports/instantly_health_snapshot.csv,"snapshot generated",operational,auto
+CAP-009,Website Queue Review,WEBSITE_OPS,recommendation_generate,low,manual_or_loop,WEBSITE_OPS/WEBSITE_CHANGE_QUEUE.csv,reports/website_ops_status.csv,"report generated",operational,auto
+CAP-010,Protected External Execution Gate,CORE,authority_check,high,on_any_external_write,"task queue, authority matrix",tasks/approval_queue.csv,"unsafe action blocked",operational,ceo_required

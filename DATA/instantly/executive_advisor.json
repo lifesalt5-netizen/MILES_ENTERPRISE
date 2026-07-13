@@ -1,0 +1,135 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-09T23:50:17.086Z",
+  "totals": {
+    "campaigns": 10,
+    "healthy": 1,
+    "review": 9,
+    "queuedWork": 81
+  },
+  "recommendations": [
+    {
+      "campaign": "GSA 500k–3m",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "HubZone",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "Sam Low Sales",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "EXPIRED everything",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "GSA 3m–5m",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "FUTURE FOLLOW-UP",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "SBS Verified Email Targets",
+      "priority": "NONE",
+      "summary": "Healthy",
+      "action": "NO_ACTION"
+    },
+    {
+      "campaign": "VA No Sales",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "VA 3-5m",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    },
+    {
+      "campaign": "NURTURE - 14 DAY",
+      "priority": "HIGH",
+      "summary": "Needs Configuration",
+      "issues": [
+        "NO_SEQUENCE_STEPS",
+        "NO_SENDING_ACCOUNTS"
+      ],
+      "actions": [
+        "Assign sending accounts",
+        "Create email sequence"
+      ]
+    }
+  ]
+}

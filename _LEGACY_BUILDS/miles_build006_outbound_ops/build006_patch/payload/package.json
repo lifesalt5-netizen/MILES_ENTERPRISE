@@ -1,0 +1,15 @@
+{
+  "name": "miles-desktop-production",
+  "version": "0.1.0-build006",
+  "description": "MILES Desktop - Build 006 Outbound Operations",
+  "main": "StartMiles.js",
+  "scripts": {
+    "start": "node StartMiles.js",
+    "test": "node TESTS/healthcheck.js",
+    "audit:outbound": "node TESTS/outbound_audit.js"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "express": "latest"
+  }
+}

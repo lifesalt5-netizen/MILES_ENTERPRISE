@@ -1,0 +1,602 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "events": {
+    "allEvents": [
+      ") || haystack.includes(",
+      ")) types.push(",
+      "*",
+      "CONNECTOR_REGISTERED",
+      "COO_RESULT",
+      "COO_TICK",
+      "DEALS",
+      "DEAL_EVENT",
+      "DEAL_RESULT",
+      "DEAL_UPDATE",
+      "ENGINEERING_COO_REPORT",
+      "INCOMING_LEADS",
+      "INCOMING_REPLIES",
+      "LEADS",
+      "LEAD_EVENT",
+      "REPLIES",
+      "REPLY_EVENT",
+      "REPLY_RECEIVED",
+      "REPLY_RESULT",
+      "REVENUE_RESULT",
+      "SCHEDULER_STARTED",
+      "SCHEDULER_STOPPED",
+      "SIGINT",
+      "SYSTEM_CYCLE",
+      "SYSTEM_REPAIR",
+      "SYSTEM_TICK",
+      "TASK_APPROVED",
+      "TASK_AWAITING_APPROVAL",
+      "TASK_COMPLETED",
+      "TASK_CREATED",
+      "TASK_FAILED",
+      "TASK_REJECTED",
+      "TASK_STARTED",
+      "approval:add",
+      "approval:decide",
+      "close",
+      "command:execute",
+      "data",
+      "end",
+      "error",
+      "executive:command",
+      "exit",
+      "runtime:health",
+      "runtime:restart",
+      "runtime:start",
+      "runtime:status",
+      "runtime:stop",
+      "state:get",
+      "test.event",
+      "timeout",
+      "window-all-closed"
+    ],
+    "published": [
+      {
+        "event": "*",
+        "publisher": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/EventBus.js",
+        "componentId": "579e10e4e0f1"
+      },
+      {
+        "event": "*",
+        "publisher": "miles_core_framework_dropin/CORE/EventBus.js",
+        "componentId": "2db802d66a65"
+      },
+      {
+        "event": "CONNECTOR_REGISTERED",
+        "publisher": "miles_core_framework_dropin/CORE/ConnectorManager.js",
+        "componentId": "3503bc9009c3"
+      },
+      {
+        "event": "*",
+        "publisher": "CORE/EventBus.js",
+        "componentId": "2f1228d5731e"
+      },
+      {
+        "event": "CONNECTOR_REGISTERED",
+        "publisher": "CORE/ConnectorManager.js",
+        "componentId": "32b73db08f26"
+      },
+      {
+        "event": "*",
+        "publisher": "CORE/Kernel/EventBus.js",
+        "componentId": "4dd09ee60de4"
+      },
+      {
+        "event": "SCHEDULER_STARTED",
+        "publisher": "SERVICES/SchedulerService.js",
+        "componentId": "40d85194f5ee"
+      },
+      {
+        "event": "SCHEDULER_STOPPED",
+        "publisher": "SERVICES/SchedulerService.js",
+        "componentId": "40d85194f5ee"
+      },
+      {
+        "event": "ENGINEERING_COO_REPORT",
+        "publisher": "SERVICES/EngineeringCOOService.js",
+        "componentId": "eb7b8f86f139"
+      },
+      {
+        "event": "SYSTEM_TICK",
+        "publisher": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "DEAL_UPDATE",
+        "publisher": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "LEADS",
+        "publisher": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "REPLIES",
+        "publisher": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "DEALS",
+        "publisher": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "SYSTEM_CYCLE",
+        "publisher": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "COO_TICK",
+        "publisher": "SERVICES/StartProductionSystem.js",
+        "componentId": "d0a11c15b2da"
+      },
+      {
+        "event": "COO_TICK",
+        "publisher": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "SYSTEM_REPAIR",
+        "publisher": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "DEAL_EVENT",
+        "publisher": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": ") || haystack.includes(",
+        "publisher": "SERVICES/RepositoryRegistryService.js",
+        "componentId": "73c923dda30a"
+      },
+      {
+        "event": "TASK_CREATED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_APPROVED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_REJECTED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_STARTED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_COMPLETED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_FAILED",
+        "publisher": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+        "componentId": "2a8d324dfdc2"
+      },
+      {
+        "event": "TASK_AWAITING_APPROVAL",
+        "publisher": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+        "componentId": "8d736374dfda"
+      },
+      {
+        "event": "TASK_STARTED",
+        "publisher": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+        "componentId": "8d736374dfda"
+      },
+      {
+        "event": "TASK_COMPLETED",
+        "publisher": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+        "componentId": "8d736374dfda"
+      },
+      {
+        "event": "TASK_FAILED",
+        "publisher": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+        "componentId": "8d736374dfda"
+      },
+      {
+        "event": "TASK_AWAITING_APPROVAL",
+        "publisher": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "e46d659200ac"
+      },
+      {
+        "event": "TASK_STARTED",
+        "publisher": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "e46d659200ac"
+      },
+      {
+        "event": "TASK_COMPLETED",
+        "publisher": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "e46d659200ac"
+      },
+      {
+        "event": "TASK_FAILED",
+        "publisher": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "e46d659200ac"
+      },
+      {
+        "event": "TASK_AWAITING_APPROVAL",
+        "publisher": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "0422ee9ce07c"
+      },
+      {
+        "event": "TASK_STARTED",
+        "publisher": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "0422ee9ce07c"
+      },
+      {
+        "event": "TASK_COMPLETED",
+        "publisher": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "0422ee9ce07c"
+      },
+      {
+        "event": "TASK_FAILED",
+        "publisher": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+        "componentId": "0422ee9ce07c"
+      },
+      {
+        "event": "COO_TICK",
+        "publisher": "StartProductionSystem.js",
+        "componentId": "f8993cc30f6d"
+      },
+      {
+        "event": "COO_RESULT",
+        "publisher": "workers/cooWorker.js",
+        "componentId": "c78eae85c1fe"
+      },
+      {
+        "event": "REVENUE_RESULT",
+        "publisher": "workers/revenueWorker.js",
+        "componentId": "c797fde2e194"
+      },
+      {
+        "event": "REPLY_RESULT",
+        "publisher": "workers/replyWorker.js",
+        "componentId": "3899cea0b539"
+      },
+      {
+        "event": "DEAL_RESULT",
+        "publisher": "workers/dealWorker.js",
+        "componentId": "b542bb247b21"
+      },
+      {
+        "event": ") || haystack.includes(",
+        "publisher": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+        "componentId": "c68464b6d88d"
+      }
+    ],
+    "subscribed": [
+      {
+        "event": "data",
+        "subscriber": "CONNECTORS/WEBSITE/website.js",
+        "componentId": "1ea1c1729ee2"
+      },
+      {
+        "event": "end",
+        "subscriber": "CONNECTORS/WEBSITE/website.js",
+        "componentId": "1ea1c1729ee2"
+      },
+      {
+        "event": "timeout",
+        "subscriber": "CONNECTORS/WEBSITE/website.js",
+        "componentId": "1ea1c1729ee2"
+      },
+      {
+        "event": "error",
+        "subscriber": "CONNECTORS/WEBSITE/website.js",
+        "componentId": "1ea1c1729ee2"
+      },
+      {
+        "event": "SIGINT",
+        "subscriber": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/StartMiles.js",
+        "componentId": "29927ee6dca9"
+      },
+      {
+        "event": "*",
+        "subscriber": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/EventBus.js",
+        "componentId": "579e10e4e0f1"
+      },
+      {
+        "event": "*",
+        "subscriber": "CORE/Kernel/EventBus.js",
+        "componentId": "4dd09ee60de4"
+      },
+      {
+        "event": "SIGINT",
+        "subscriber": "CORE/Kernel/StartMiles.js",
+        "componentId": "bd71d6498fb8"
+      },
+      {
+        "event": "SIGINT",
+        "subscriber": "CORE/Runtime/MilesRuntime.js",
+        "componentId": "4b4fd3b948ee"
+      },
+      {
+        "event": "data",
+        "subscriber": "SERVICES/RuntimeRecoveryService.js",
+        "componentId": "6268278e210f"
+      },
+      {
+        "event": "close",
+        "subscriber": "SERVICES/RuntimeRecoveryService.js",
+        "componentId": "6268278e210f"
+      },
+      {
+        "event": "INCOMING_LEADS",
+        "subscriber": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "INCOMING_REPLIES",
+        "subscriber": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "DEAL_UPDATE",
+        "subscriber": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "SYSTEM_TICK",
+        "subscriber": "SERVICES/LiveAutonomousBusinessMode.js",
+        "componentId": "9bed0799e149"
+      },
+      {
+        "event": "INCOMING_LEADS",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "INCOMING_REPLIES",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "DEAL_UPDATE",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "LEADS",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "REPLIES",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "DEALS",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "SYSTEM_CYCLE",
+        "subscriber": "SERVICES/AutonomousCompanyOperatingSystem.js",
+        "componentId": "e80e8dcd3359"
+      },
+      {
+        "event": "LEAD_EVENT",
+        "subscriber": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "REPLY_EVENT",
+        "subscriber": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "DEAL_EVENT",
+        "subscriber": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "COO_TICK",
+        "subscriber": "SERVICES/LiveProductionExecutionSystem.js",
+        "componentId": "33e6b886fbc8"
+      },
+      {
+        "event": "LEAD_EVENT",
+        "subscriber": "SERVICES/MilesAdaptiveRealTimeIntelligenceSystem.js",
+        "componentId": "199f9abeaa51"
+      },
+      {
+        "event": "REPLY_EVENT",
+        "subscriber": "SERVICES/MilesAdaptiveRealTimeIntelligenceSystem.js",
+        "componentId": "199f9abeaa51"
+      },
+      {
+        "event": "DEAL_EVENT",
+        "subscriber": "SERVICES/MilesAdaptiveRealTimeIntelligenceSystem.js",
+        "componentId": "199f9abeaa51"
+      },
+      {
+        "event": "COO_TICK",
+        "subscriber": "SERVICES/MilesAdaptiveRealTimeIntelligenceSystem.js",
+        "componentId": "199f9abeaa51"
+      },
+      {
+        "event": ")) types.push(",
+        "subscriber": "SERVICES/RepositoryRegistryService.js",
+        "componentId": "73c923dda30a"
+      },
+      {
+        "event": "test.event",
+        "subscriber": "TESTS/Test_Build020_EventBus.js",
+        "componentId": "c3941f207f7f"
+      },
+      {
+        "event": "SIGINT",
+        "subscriber": "StartSupervisor.js",
+        "componentId": "cae58e50103d"
+      },
+      {
+        "event": "SIGINT",
+        "subscriber": "OpenMilesBrowser.js",
+        "componentId": "c2da1d32fd67"
+      },
+      {
+        "event": "window-all-closed",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "state:get",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "runtime:start",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "runtime:stop",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "runtime:restart",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "runtime:health",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "command:execute",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "approval:add",
+        "subscriber": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+        "componentId": "aa5b45e353cc"
+      },
+      {
+        "event": "window-all-closed",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "runtime:start",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "runtime:stop",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "runtime:restart",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "runtime:status",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "executive:command",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "approval:decide",
+        "subscriber": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+        "componentId": "ca457394bb47"
+      },
+      {
+        "event": "exit",
+        "subscriber": "miles_sprint_alpha_patch/miles_sprint_alpha_patch/APPLY_SPRINT_ALPHA.ps1",
+        "componentId": "5308251352cf"
+      },
+      {
+        "event": "data",
+        "subscriber": "miles_build004_patch/miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "c52f8285c5b2"
+      },
+      {
+        "event": "end",
+        "subscriber": "miles_build004_patch/miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "c52f8285c5b2"
+      },
+      {
+        "event": "error",
+        "subscriber": "miles_build004_patch/miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "c52f8285c5b2"
+      },
+      {
+        "event": "data",
+        "subscriber": "miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "4b054b176ee2"
+      },
+      {
+        "event": "end",
+        "subscriber": "miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "4b054b176ee2"
+      },
+      {
+        "event": "error",
+        "subscriber": "miles_build004_patch/APPLY_BUILD_004.ps1",
+        "componentId": "4b054b176ee2"
+      },
+      {
+        "event": "data",
+        "subscriber": "miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js",
+        "componentId": "87dc55ebaf6c"
+      },
+      {
+        "event": "end",
+        "subscriber": "miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js",
+        "componentId": "87dc55ebaf6c"
+      },
+      {
+        "event": "error",
+        "subscriber": "miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js",
+        "componentId": "87dc55ebaf6c"
+      },
+      {
+        "event": "COO_TICK",
+        "subscriber": "workers/cooWorker.js",
+        "componentId": "c78eae85c1fe"
+      },
+      {
+        "event": "COO_RESULT",
+        "subscriber": "workers/revenueWorker.js",
+        "componentId": "c797fde2e194"
+      },
+      {
+        "event": "REPLY_RECEIVED",
+        "subscriber": "workers/replyWorker.js",
+        "componentId": "3899cea0b539"
+      },
+      {
+        "event": "REVENUE_RESULT",
+        "subscriber": "workers/dealWorker.js",
+        "componentId": "b542bb247b21"
+      },
+      {
+        "event": ")) types.push(",
+        "subscriber": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+        "componentId": "c68464b6d88d"
+      }
+    ]
+  }
+}

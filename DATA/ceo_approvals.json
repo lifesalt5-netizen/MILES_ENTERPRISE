@@ -1,0 +1,47 @@
+{
+  "updatedAt": "2026-06-30T21:07:44.505Z",
+  "approvals": [
+    {
+      "id": "WEB-001",
+      "department": "Website Operations",
+      "title": "Website change: Home Hero",
+      "summary": "CEO approval required before publish.",
+      "businessImpact": "Protect website quality and conversion while preserving CEO control over messaging.",
+      "risk": "Low",
+      "rollbackPlan": "Restore previous page version or revert change from B12 history.",
+      "recommendation": "Review and approve if the proposed change matches current positioning.",
+      "status": "Waiting for CEO",
+      "createdAt": "2026-06-30T21:07:44.505Z",
+      "updatedAt": "2026-06-30T21:07:44.505Z",
+      "comments": []
+    },
+    {
+      "id": "WEB-002",
+      "department": "Website Operations",
+      "title": "Website change: Header Navigation",
+      "summary": "CEO approval required before publish.",
+      "businessImpact": "Protect website quality and conversion while preserving CEO control over messaging.",
+      "risk": "Low",
+      "rollbackPlan": "Restore previous page version or revert change from B12 history.",
+      "recommendation": "Review and approve if the proposed change matches current positioning.",
+      "status": "Waiting for CEO",
+      "createdAt": "2026-06-30T21:07:44.505Z",
+      "updatedAt": "2026-06-30T21:07:44.505Z",
+      "comments": []
+    },
+    {
+      "id": "WEB-003",
+      "department": "Website Operations",
+      "title": "Website change: Hero CTA",
+      "summary": "CEO approval required before publish.",
+      "businessImpact": "Protect website quality and conversion while preserving CEO control over messaging.",
+      "risk": "Low",
+      "rollbackPlan": "Restore previous page version or revert change from B12 history.",
+      "recommendation": "Review and approve if the proposed change matches current positioning.",
+      "status": "Waiting for CEO",
+      "createdAt": "2026-06-30T21:07:44.505Z",
+      "updatedAt": "2026-06-30T21:07:44.505Z",
+      "comments": []
+    }
+  ]
+}

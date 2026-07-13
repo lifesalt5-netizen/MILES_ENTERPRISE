@@ -1,0 +1,14 @@
+{
+  "name": "exec_009_namecheap",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "health": "tsx examples/run_domain_health_check.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "latest",
+    "tsx": "latest"
+  }
+}

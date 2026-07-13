@@ -1,0 +1,16 @@
+{
+  "build": "EXEC_005",
+  "name": "Business Execution Engine",
+  "status": "ready",
+  "files": {
+    "services": 8,
+    "builder": 1,
+    "scripts": 4
+  },
+  "outputs": [
+    "DATA/business_execution/latest_business_execution.json",
+    "DATA/business_execution/business_execution_history.json",
+    "DATA/business_execution/business_execution_report.md",
+    "DATA/business_execution/execution_audit.json"
+  ]
+}

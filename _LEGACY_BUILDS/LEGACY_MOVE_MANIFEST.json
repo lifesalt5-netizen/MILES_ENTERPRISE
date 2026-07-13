@@ -1,0 +1,488 @@
+﻿[
+    {
+        "movedAt":  "2026-07-08T19:19:08.7619561-04:00",
+        "name":  "build006_patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\build006_patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\build006_patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7701719-04:00",
+        "name":  "BUILDER",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILDER",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILDER"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7711837-04:00",
+        "name":  "BUILD_007",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_007",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_007"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7711837-04:00",
+        "name":  "BUILD_011",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_011",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_011"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7711837-04:00",
+        "name":  "BUILD_012",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_012",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_012"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7787455-04:00",
+        "name":  "BUILD_013",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_013",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_013"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7787455-04:00",
+        "name":  "BUILD_014",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_014",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_014"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7877126-04:00",
+        "name":  "BUILD_015",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_015",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_015"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7899152-04:00",
+        "name":  "BUILD_036_CONTINUOUS_COO_LOOP",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_036_CONTINUOUS_COO_LOOP",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_036_CONTINUOUS_COO_LOOP"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.7926550-04:00",
+        "name":  "BUILD_037_EXECUTIVE_DASHBOARD",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_037_EXECUTIVE_DASHBOARD",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_037_EXECUTIVE_DASHBOARD"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8007833-04:00",
+        "name":  "BUILD_038_SELF_LEARNING_LAYER",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_038_SELF_LEARNING_LAYER",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_038_SELF_LEARNING_LAYER"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8038431-04:00",
+        "name":  "BUILD_040_EXECUTIVE_INTELLIGENCE_EXPANSION",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_040_EXECUTIVE_INTELLIGENCE_EXPANSION",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_040_EXECUTIVE_INTELLIGENCE_EXPANSION"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8038431-04:00",
+        "name":  "BUILD_041_RUNTIME_SYNCHRONIZATION_LAYER",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_041_RUNTIME_SYNCHRONIZATION_LAYER",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_041_RUNTIME_SYNCHRONIZATION_LAYER"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8078801-04:00",
+        "name":  "BUILD_042_BUSINESS_INPUT_CONNECTORS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\BUILD_042_BUSINESS_INPUT_CONNECTORS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\BUILD_042_BUSINESS_INPUT_CONNECTORS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8078801-04:00",
+        "name":  "Drop in",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\Drop in",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\Drop in"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8122830-04:00",
+        "name":  "event-bus",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\event-bus",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\event-bus"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8145355-04:00",
+        "name":  "executive_intelligence",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\executive_intelligence",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\executive_intelligence"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8158935-04:00",
+        "name":  "EXEC_001_UNIFIED_ACTION_ENGINE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_001_UNIFIED_ACTION_ENGINE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_001_UNIFIED_ACTION_ENGINE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8182112-04:00",
+        "name":  "EXEC_002_PROVIDER_CONTROLLERS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_002_PROVIDER_CONTROLLERS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_002_PROVIDER_CONTROLLERS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8202119-04:00",
+        "name":  "EXEC_003_INSTANTLY_LIVE_INTEGRATION",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_003_INSTANTLY_LIVE_INTEGRATION",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_003_INSTANTLY_LIVE_INTEGRATION"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8202119-04:00",
+        "name":  "EXEC_004_CONTROLLED_WRITE_MODE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_004_CONTROLLED_WRITE_MODE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_004_CONTROLLED_WRITE_MODE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8253484-04:00",
+        "name":  "EXEC_005_BUSINESS_EXECUTION_ENGINE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_005_BUSINESS_EXECUTION_ENGINE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_005_BUSINESS_EXECUTION_ENGINE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8275585-04:00",
+        "name":  "EXEC_006_PROVIDER_SYNCHRONIZATION",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_006_PROVIDER_SYNCHRONIZATION",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_006_PROVIDER_SYNCHRONIZATION"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8275585-04:00",
+        "name":  "EXEC_007_MISSION_ENGINE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_007_MISSION_ENGINE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_007_MISSION_ENGINE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8318374-04:00",
+        "name":  "EXEC_009_NAMECHEAP",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_009_NAMECHEAP",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_009_NAMECHEAP"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8318374-04:00",
+        "name":  "EXEC_010_WEBSITE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_010_WEBSITE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_010_WEBSITE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8361868-04:00",
+        "name":  "EXEC_011_ORION",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\EXEC_011_ORION",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\EXEC_011_ORION"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8378830-04:00",
+        "name":  "health",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\health",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\health"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8408635-04:00",
+        "name":  "INT_001_ORION_PRODUCTION_INTEGRATION",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\INT_001_ORION_PRODUCTION_INTEGRATION",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\INT_001_ORION_PRODUCTION_INTEGRATION"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8408635-04:00",
+        "name":  "inventory",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\inventory",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\inventory"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8408635-04:00",
+        "name":  "learning",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\learning",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\learning"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8475232-04:00",
+        "name":  "logs",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\logs",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\logs"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8475232-04:00",
+        "name":  "masters",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\masters",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\masters"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8515078-04:00",
+        "name":  "MILES_Automation_FastTrack_v0.4.0",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_Automation_FastTrack_v0.4.0",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_Automation_FastTrack_v0.4.0"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8536953-04:00",
+        "name":  "MILES_AUTONOMOUS_COO_PATCH",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_AUTONOMOUS_COO_PATCH",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_AUTONOMOUS_COO_PATCH"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8563573-04:00",
+        "name":  "miles_autonomous_patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_autonomous_patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_autonomous_patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8586389-04:00",
+        "name":  "miles_build004_patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_build004_patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_build004_patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8606027-04:00",
+        "name":  "miles_build005_exec_layer",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_build005_exec_layer",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_build005_exec_layer"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8626023-04:00",
+        "name":  "miles_build006_outbound_ops",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_build006_outbound_ops",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_build006_outbound_ops"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8657443-04:00",
+        "name":  "miles_build007_sales_ops",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_build007_sales_ops",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_build007_sales_ops"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8676568-04:00",
+        "name":  "MILES_BUILDER_AUTONOMY_PATCH_v1",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILDER_AUTONOMY_PATCH_v1",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILDER_AUTONOMY_PATCH_v1"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8698596-04:00",
+        "name":  "MILES_BUILD_026_Instantly_COO_Patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_026_Instantly_COO_Patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_026_Instantly_COO_Patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8698596-04:00",
+        "name":  "MILES_BUILD_027_Instantly_COO_Live_Patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_027_Instantly_COO_Live_Patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_027_Instantly_COO_Live_Patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8773045-04:00",
+        "name":  "MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8786807-04:00",
+        "name":  "MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8808356-04:00",
+        "name":  "MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8808356-04:00",
+        "name":  "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8850201-04:00",
+        "name":  "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8889448-04:00",
+        "name":  "miles_coo_runtime",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_coo_runtime",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_coo_runtime"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8889448-04:00",
+        "name":  "miles_core_framework_dropin",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_core_framework_dropin",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_core_framework_dropin"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8934030-04:00",
+        "name":  "miles_desktop_v2_build003",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_desktop_v2_build003",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_desktop_v2_build003"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8958328-04:00",
+        "name":  "miles_desktop_v2_starter",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_desktop_v2_starter",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_desktop_v2_starter"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8958328-04:00",
+        "name":  "MILES_FIX_ALL_PATCH",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_FIX_ALL_PATCH",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_FIX_ALL_PATCH"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.8958328-04:00",
+        "name":  "MILES_OS_patch_007",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_OS_patch_007",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_OS_patch_007"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9016911-04:00",
+        "name":  "MILES_OS_v1_COO_REPOSITORY_INTELLIGENCE",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_OS_v1_COO_REPOSITORY_INTELLIGENCE",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_OS_v1_COO_REPOSITORY_INTELLIGENCE"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9016911-04:00",
+        "name":  "MILES_OS_v1_REPOSITORY_INTEGRATED",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_OS_v1_REPOSITORY_INTEGRATED",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_OS_v1_REPOSITORY_INTEGRATED"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9016911-04:00",
+        "name":  "MILES_OS_v1_REPOSITORY_INTEGRATED_v2",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_OS_v1_REPOSITORY_INTEGRATED_v2",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_OS_v1_REPOSITORY_INTEGRATED_v2"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9094677-04:00",
+        "name":  "MILES_Platform_v0.3.0_Local_Operator",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_Platform_v0.3.0_Local_Operator",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_Platform_v0.3.0_Local_Operator"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9120067-04:00",
+        "name":  "MILES_REPOSITORY_CONSOLIDATION_KIT",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_REPOSITORY_CONSOLIDATION_KIT",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_REPOSITORY_CONSOLIDATION_KIT"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9145839-04:00",
+        "name":  "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9168273-04:00",
+        "name":  "miles_sprint_alpha_patch",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_sprint_alpha_patch",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\miles_sprint_alpha_patch"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9179742-04:00",
+        "name":  "MILES_Sprint_Zero_Discovery_Package",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\MILES_Sprint_Zero_Discovery_Package",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MILES_Sprint_Zero_Discovery_Package"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9213189-04:00",
+        "name":  "OPERATOR",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\OPERATOR",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\OPERATOR"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9227759-04:00",
+        "name":  "outbound",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\outbound",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\outbound"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9259758-04:00",
+        "name":  "output",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\output",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\output"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9270441-04:00",
+        "name":  "PROD_001_CREDENTIAL_VAULT",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\PROD_001_CREDENTIAL_VAULT",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\PROD_001_CREDENTIAL_VAULT"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9304566-04:00",
+        "name":  "PROJECTS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\PROJECTS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\PROJECTS"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9304566-04:00",
+        "name":  "recovery",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\recovery",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\recovery"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9329986-04:00",
+        "name":  "releases",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\releases",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\releases"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9329986-04:00",
+        "name":  "reports",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\reports",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\reports"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9371663-04:00",
+        "name":  "ROADMAP",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\ROADMAP",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\ROADMAP"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9415312-04:00",
+        "name":  "runtime",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\runtime",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\runtime"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9415312-04:00",
+        "name":  "scripts",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\scripts",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\scripts"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9442079-04:00",
+        "name":  "src",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\src",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\src"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9462251-04:00",
+        "name":  "state",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\state",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\state"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9484778-04:00",
+        "name":  "status",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\status",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\status"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9484778-04:00",
+        "name":  "tasks",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\tasks",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\tasks"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9528621-04:00",
+        "name":  "validation",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\validation",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\validation"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9550227-04:00",
+        "name":  "VERIFY",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\VERIFY",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\VERIFY"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9587561-04:00",
+        "name":  "WEB",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\WEB",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\WEB"
+    },
+    {
+        "movedAt":  "2026-07-08T19:19:08.9623509-04:00",
+        "name":  "WEBSITE_OPS",
+        "from":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\WEBSITE_OPS",
+        "to":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\WEBSITE_OPS"
+    }
+]

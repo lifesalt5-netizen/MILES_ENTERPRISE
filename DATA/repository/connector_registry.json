@@ -1,0 +1,1582 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "connectors": [
+    {
+      "id": "02025baf588a",
+      "name": "B12_CONNECTOR_V1.ps1",
+      "path": "CONNECTORS/WEBSITE_B12/B12_CONNECTOR_V1.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 764,
+      "modifiedAt": "2026-06-28T19:18:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "ff703d547e4f",
+      "name": "config.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1161,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "dotenv",
+        "path",
+        "fs"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "4ef69a55e930",
+      "name": "auth.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2475,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "@google-cloud/local-auth",
+        "googleapis",
+        "./config"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "cce00cca9f05",
+      "name": "gmail.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1379,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "8a1cdbd9ff9d",
+      "name": "calendar.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1169,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "1446e5a4d976",
+      "name": "drive.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 861,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "ffd6336e56e4",
+      "name": "contacts.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 983,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "371918311595",
+      "name": "health.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/health.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1315,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./auth",
+        "./gmail",
+        "./calendar",
+        "./drive",
+        "./contacts"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "634360d9fccd",
+      "name": "index.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 208,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./auth",
+        "./gmail",
+        "./calendar",
+        "./drive",
+        "./contacts",
+        "./health"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "dc1a96dfc368",
+      "name": "README.md",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 859,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "02d9caec4049",
+      "name": "install_google_connector.ps1",
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/scripts/install_google_connector.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 460,
+      "modifiedAt": "2026-06-29T04:04:50.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "35136b30ae48",
+      "name": "account_manager.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 5361,
+      "modifiedAt": "2026-06-29T04:48:18.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "@google-cloud/local-auth",
+        "googleapis",
+        "./config"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "216b59487159",
+      "name": "workspace.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1958,
+      "modifiedAt": "2026-06-29T04:48:18.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./account_manager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "61be957fc552",
+      "name": "index.js",
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 849,
+      "modifiedAt": "2026-06-29T04:48:18.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./auth",
+        "./gmail",
+        "./calendar",
+        "./drive",
+        "./contacts",
+        "./account_manager",
+        "./workspace"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "803c6cd3d9a1",
+      "name": "connector.js",
+      "path": "CONNECTORS/INSTANTLY/connector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 711,
+      "modifiedAt": "2026-06-30T00:43:06.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./instantly"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "06a01c30ba67",
+      "name": "connector.js",
+      "path": "CONNECTORS/ORION/connector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7015,
+      "modifiedAt": "2026-07-03T20:44:34.000Z",
+      "componentTypes": [
+        "connector",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [
+        "better-sqlite3",
+        "fs"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "eb4dc5d2cee4",
+      "name": "connector.js",
+      "path": "CONNECTORS/MILES/connector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 528,
+      "modifiedAt": "2026-06-29T22:09:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../../BUILDER"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "d469558c0453",
+      "name": "package.json",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/package.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 318,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "c912ebf13b17",
+      "name": "controller.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1248,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./modules/browser",
+        "./modules/session",
+        "./modules/screenshots",
+        "./modules/audit",
+        "./modules/logger"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "550625714006",
+      "name": "paths.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 489,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "approval_governance",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "c5b089ee177f",
+      "name": "logger.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 400,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "./paths"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "8d7dad0d0e7d",
+      "name": "browser.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 193,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "playwright"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "ea55e8d27e53",
+      "name": "session.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 573,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "engineering_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "89627db15a86",
+      "name": "screenshots.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 432,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./paths"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "58fa7589f43e",
+      "name": "audit.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1127,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "./paths"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Website"
+    },
+    {
+      "id": "325791523d48",
+      "name": "README.md",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/INSTANTLY/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 228,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "317f1a65eba0",
+      "name": "README.md",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/ORION/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 224,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "62703f519fd1",
+      "name": "OrionConnector.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/ORION/OrionConnector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1534,
+      "modifiedAt": "2026-06-28T22:07:08.000Z",
+      "componentTypes": [
+        "connector",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "better-sqlite3"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "9b50c756b2db",
+      "name": "README.md",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 225,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "dc92b18075f0",
+      "name": "auth.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:23.390Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "6287b1be7055",
+      "name": "config.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/config.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:38.820Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "6a83b5bdd0f0",
+      "name": "gmail.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:52.590Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "a65020b38fd0",
+      "name": "calendar.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:11.060Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "17d1a0eea238",
+      "name": "drive.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:24.380Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "049d274858ff",
+      "name": "contacts.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:41.290Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "af4966ccc03f",
+      "name": "README.md",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/IONOS/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 224,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "d110360197eb",
+      "name": "README.md",
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/CALENDLY/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 227,
+      "modifiedAt": "2026-06-28T23:52:20.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "b9221add94b9",
+      "name": "ConnectorManager.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/ConnectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.130Z",
+      "componentTypes": [
+        "service",
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "ea81ed09882f",
+      "name": "install_google_connector.ps1",
+      "path": "Drop in/install_google_connector.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 464,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "d6ae3be69dca",
+      "name": "config.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/config.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 672,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "dotenv",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "a68bc565c26e",
+      "name": "auth.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/auth.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2217,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "@google-cloud/local-auth",
+        "googleapis",
+        "./config"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "0e50ee60600c",
+      "name": "gmail.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/gmail.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 982,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "8464bcc1ebf7",
+      "name": "calendar.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/calendar.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 867,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "f3bb9c2a6aa6",
+      "name": "drive.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/drive.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 725,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "87acec026ef2",
+      "name": "contacts.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/contacts.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 755,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "4ff7aeb9bf75",
+      "name": "index.js",
+      "path": "Drop in/CONNECTORS/GOOGLE/index.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1030,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./auth",
+        "./gmail",
+        "./calendar",
+        "./drive",
+        "./contacts"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "f6e94bfa350a",
+      "name": "README.md",
+      "path": "Drop in/CONNECTORS/GOOGLE/README.md",
+      "extension": ".md",
+      "fileType": "markdown",
+      "bytes": 477,
+      "modifiedAt": "2026-06-29T04:07:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "b62b1b001ced",
+      "name": "miles_connector_health.js",
+      "path": "miles_core_framework_dropin/miles_connector_health.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 422,
+      "modifiedAt": "2026-06-29T04:42:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./CORE/ConnectorManager",
+        "./CORE/HealthDashboard",
+        "./CONNECTORS/GOOGLE"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "3503bc9009c3",
+      "name": "ConnectorManager.js",
+      "path": "miles_core_framework_dropin/CORE/ConnectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1096,
+      "modifiedAt": "2026-06-29T04:42:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./Logger",
+        "./EventBus"
+      ],
+      "events": {
+        "published": [
+          "CONNECTOR_REGISTERED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "11debf7a7236",
+      "name": "index.js",
+      "path": "miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 830,
+      "modifiedAt": "2026-06-29T04:42:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "googleapis",
+        "./auth",
+        "./gmail",
+        "./calendar",
+        "./drive",
+        "./contacts"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "32b73db08f26",
+      "name": "ConnectorManager.js",
+      "path": "CORE/ConnectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1096,
+      "modifiedAt": "2026-06-29T04:42:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [
+        "./Logger",
+        "./EventBus"
+      ],
+      "events": {
+        "published": [
+          "CONNECTOR_REGISTERED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "3776a2a553f1",
+      "name": "gmailIngestor.js",
+      "path": "CORE/Connectors/Ingestion/gmailIngestor.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 382,
+      "modifiedAt": "2026-07-03T01:35:00.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../../event-bus/emitter"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "4c13721a3833",
+      "name": "instantlyIngestor.js",
+      "path": "CORE/Connectors/Ingestion/instantlyIngestor.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 419,
+      "modifiedAt": "2026-07-03T01:36:04.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "learning_operations"
+      ],
+      "dependencies": [
+        "../../event-bus/emitter"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "e0cfe02599ec",
+      "name": "crmIngestor.js",
+      "path": "CORE/Connectors/Ingestion/crmIngestor.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 393,
+      "modifiedAt": "2026-07-03T01:36:32.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "../../event-bus/emitter"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Revenue"
+    },
+    {
+      "id": "8a80f35f06ed",
+      "name": "connector_health.json",
+      "path": "DATA/status/connector_health.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 421,
+      "modifiedAt": "2026-06-29T01:43:58.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "56a5f5d41109",
+      "name": "connector_registry.json",
+      "path": "DATA/repository/connector_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 39347,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "engineering_operations",
+        "website_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "dd747a93f554",
+      "name": "miles_connector_health.js",
+      "path": "miles_connector_health.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 623,
+      "modifiedAt": "2026-06-29T01:31:10.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "dotenv",
+        "./CORE/ConnectorManager",
+        "./CORE/HealthDashboard",
+        "./CONNECTORS/GOOGLE",
+        "./CONNECTORS/INSTANTLY/instantly"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "4228269e5b1e",
+      "name": "ConnectorManager.js",
+      "path": "SERVICES/ConnectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:04.670Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "1a356e524474",
+      "name": "ConnectorBuilder.js",
+      "path": "BUILDER/ConnectorBuilder.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2298,
+      "modifiedAt": "2026-06-29T22:38:40.000Z",
+      "componentTypes": [
+        "connector",
+        "engineering"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "government_data",
+        "engineering_operations",
+        "connector_operations"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "a45de85b085f",
+      "name": "connectorManager.js",
+      "path": "miles_desktop_v2_build003/miles_desktop_v2/src/main/connectors/connectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1352,
+      "modifiedAt": "2026-06-30T23:46:06.000Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "798495786cb7",
+      "name": "crmConnector.js",
+      "path": "src/connectors/crmConnector.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-07-03T20:05:01.110Z",
+      "componentTypes": [
+        "connector"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "connector_operations"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Revenue"
+    }
+  ]
+}

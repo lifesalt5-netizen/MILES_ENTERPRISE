@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-04T00:38:36.033Z",
+  "statistics": {
+    "totalCapabilities": 22,
+    "executableCapabilities": 21,
+    "discoveredOnlyCapabilities": 1,
+    "highAutonomyImpact": 8,
+    "governanceApprovalRequired": 0,
+    "gaps": 1
+  },
+  "autonomy": {
+    "score": 95,
+    "status": "AUTONOMY_READY",
+    "executableRatio": 0.9545454545454546,
+    "totalCapabilities": 22,
+    "executableCapabilities": 21,
+    "gaps": 1
+  },
+  "gaps": [
+    {
+      "capabilityId": "repository_awareness",
+      "name": "Repository Awareness",
+      "severity": "HIGH",
+      "reason": "Required for autonomous Digital COO operation but not detected in repository registry."
+    }
+  ]
+}

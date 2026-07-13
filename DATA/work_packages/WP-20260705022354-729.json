@@ -1,0 +1,178 @@
+{
+  "id": "WP-20260705022354-729",
+  "objective": "LEAD",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-05T02:23:54.770Z",
+  "updatedAt": "2026-07-05T02:23:54.770Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "LEAD",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-05T02:23:54.770Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783112830288-83320",
+      "area": "REVENUE",
+      "priority": 1,
+      "description": "qualify_and_follow_up",
+      "reason": "",
+      "recommendedAction": "",
+      "expectedImpact": "",
+      "relatedProvider": null,
+      "metadata": {
+        "target": "K & K CONSTRUCTION SUPPLY INC",
+        "company": "K & K CONSTRUCTION SUPPLY INC",
+        "contact": null,
+        "email": null,
+        "probability": 0.65,
+        "value": 0,
+        "source": "BUSINESS_STATE",
+        "lastDuplicateDetectedAt": "2026-07-05T02:15:31.146Z"
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

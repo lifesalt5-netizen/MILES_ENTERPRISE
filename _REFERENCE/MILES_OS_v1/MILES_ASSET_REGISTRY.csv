@@ -1,0 +1,8 @@
+AssetID,AssetType,AssetName,Platform,Owner,Status,Criticality,AutomationLevel,AccessMethod,Notes
+A001,Website,pathways2gc.com,B12,Kevin,Active,Critical,Manual+AI,B12 Login,Primary website
+A002,Domain,pathways2gc.com,IONOS,Kevin,Active,Critical,Manual,IONOS,Website only no outbound
+A003,Email Platform,Instantly,Instantly,Kevin,Active,Critical,Automated,API/UI,Outbound engine
+A004,Database,ORION,SQLite,Kevin,Active,Critical,Automated,Local DB,Contractor intelligence
+A005,Calendar,Calendly,Calendly,Kevin,Active,High,Automated,API,Booking engine
+A006,Workspace,Google Workspace,Google,Kevin,Active,Critical,Automated,Admin Console,Email infrastructure
+A007,Website Ops,MILES Website Ops,Internal,Miles,Active,High,Automated,Local Files,Website governance

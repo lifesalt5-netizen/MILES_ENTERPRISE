@@ -1,0 +1,2563 @@
+{
+  "ADD_DNS_RECORD": {
+    "capabilityId": "CAP_ADD_DNS_RECORD",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "ADD_GROUP_MEMBER": {
+    "capabilityId": "CAP_ADD_GROUP_MEMBER",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "ANALYZE_SOLICITATION": {
+    "capabilityId": "CAP_ANALYZE_SOLICITATION",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B01059603FC17209",
+      "componentName": "proposal_1783396283948",
+      "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396283948.json",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-07T03:51:24.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_1CD556A42F69C703",
+        "componentName": "proposal_1783395983281",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983281.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_E576873EF954A1D6",
+        "componentName": "proposal_1783395983306",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983306.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_42D4F7F0AF312AD7",
+        "componentName": "proposal_1783396043330",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043330.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_C60B50A4C113115F",
+        "componentName": "proposal_1783396043345",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043345.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_95EDC1FF4922CCAC",
+        "componentName": "proposal_1783396043952",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043952.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      }
+    ]
+  },
+  "APPLY_WEBSITE_CHANGE": {
+    "capabilityId": "CAP_APPLY_WEBSITE_CHANGE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "AUDIT_WEBSITE": {
+    "capabilityId": "CAP_AUDIT_WEBSITE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2CE61257B3AEC451",
+        "componentName": "B12_CONNECTOR_V1",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_CONNECTOR_V1.ps1",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:18:48.000Z"
+      },
+      {
+        "componentId": "CMP_912E7E2B72F81FFF",
+        "componentName": "B12_PLAYWRIGHT_OBSERVER",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_PLAYWRIGHT_OBSERVER.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:43:38.000Z"
+      },
+      {
+        "componentId": "CMP_9A6E10A15B7B8E26",
+        "componentName": "controller",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\controller.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B3E20F4B17D10A26",
+        "componentName": "audit",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\audit.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_D0ADEE6576FA4BC8",
+        "componentName": "browser",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\browser.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      }
+    ]
+  },
+  "BUILD_COMPLIANCE_MATRIX": {
+    "capabilityId": "CAP_BUILD_COMPLIANCE_MATRIX",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B01059603FC17209",
+      "componentName": "proposal_1783396283948",
+      "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396283948.json",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-07T03:51:24.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_1CD556A42F69C703",
+        "componentName": "proposal_1783395983281",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983281.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_E576873EF954A1D6",
+        "componentName": "proposal_1783395983306",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983306.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_42D4F7F0AF312AD7",
+        "componentName": "proposal_1783396043330",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043330.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_C60B50A4C113115F",
+        "componentName": "proposal_1783396043345",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043345.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_95EDC1FF4922CCAC",
+        "componentName": "proposal_1783396043952",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043952.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      }
+    ]
+  },
+  "CHANGE_NAMESERVERS": {
+    "capabilityId": "CAP_CHANGE_NAMESERVERS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "CHECK_DELIVERABILITY": {
+    "capabilityId": "CAP_CHECK_DELIVERABILITY",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_1398B10D43B2CE13",
+      "componentName": "InstantlyExecutiveAdvisor",
+      "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T23:50:04.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8D27D3F6DC3095C9",
+        "componentName": "InstantlyConnector",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyConnector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_7D22589D3DB8F336",
+        "componentName": "connector",
+        "relativePath": "CONNECTORS\\INSTANTLY\\connector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_DC2B587235FF0F7B",
+        "componentName": "instantly_test",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly_test.js",
+        "primaryType": "TEST",
+        "componentStatus": "SUPPORTING",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:18:32.000Z"
+      },
+      {
+        "componentId": "CMP_B7A4555D2EC477BC",
+        "componentName": "instantly",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:17:12.000Z"
+      }
+    ]
+  },
+  "CHECK_DOMAIN_HEALTH": {
+    "capabilityId": "CAP_CHECK_DOMAIN_HEALTH",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2DD63D90CAE9BC91",
+        "componentName": "NamecheapProviderController",
+        "relativePath": "SERVICES\\NamecheapProviderController.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      }
+    ]
+  },
+  "CHECK_HOSTING_HEALTH": {
+    "capabilityId": "CAP_CHECK_HOSTING_HEALTH",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_571CE69356DF3657",
+      "componentName": "README",
+      "relativePath": "CONNECTORS\\IONOS\\README.md",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "CONFIGURE_MAIL_ROUTING": {
+    "capabilityId": "CAP_CONFIGURE_MAIL_ROUTING",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "CREATE_ALIAS": {
+    "capabilityId": "CAP_CREATE_ALIAS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "CREATE_CALENDAR_EVENT": {
+    "capabilityId": "CAP_CREATE_CALENDAR_EVENT",
+    "riskLevel": "MEDIUM",
+    "preferredProvider": {
+      "componentId": "CMP_FEAAD039D66A097F",
+      "componentName": "README",
+      "relativePath": "CONNECTORS\\CALENDLY\\README.md",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      },
+      {
+        "componentId": "CMP_AE132CFE795D266F",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:04:50.000Z"
+      }
+    ]
+  },
+  "CREATE_FOLLOW_UP": {
+    "capabilityId": "CAP_CREATE_FOLLOW_UP",
+    "riskLevel": "MEDIUM",
+    "preferredProvider": {
+      "componentId": "CMP_87E669C69A08B3C9",
+      "componentName": "CRMClient",
+      "relativePath": "CONNECTORS\\Real\\crmClient.js",
+      "primaryType": "API",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-03T02:15:00.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_D1CCC3084844532F",
+        "componentName": "CRMIngestor",
+        "relativePath": "CORE\\Connectors\\Ingestion\\crmIngestor.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T01:36:32.000Z"
+      }
+    ]
+  },
+  "CREATE_GROUP": {
+    "capabilityId": "CAP_CREATE_GROUP",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "CREATE_PLAN": {
+    "capabilityId": "CAP_CREATE_PLAN",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_982B533911E0FCD1",
+      "componentName": "EngineeringOrchestrator",
+      "relativePath": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T16:25:42.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_EA75BC7056D50FC2",
+        "componentName": "engineering_report_1783393954788",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783393954788.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:12:36.000Z"
+      },
+      {
+        "componentId": "CMP_4293E7111263C219",
+        "componentName": "engineering_report_1783394473177",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783394473177.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:21:14.000Z"
+      },
+      {
+        "componentId": "CMP_3D060566D0414747",
+        "componentName": "engineering_report_1783395607270",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395607270.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:40:08.000Z"
+      },
+      {
+        "componentId": "CMP_E17D1F98C169B093",
+        "componentName": "engineering_report_1783395686224",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395686224.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:41:28.000Z"
+      },
+      {
+        "componentId": "CMP_4853003D3803C505",
+        "componentName": "engineering_report_1783395739154",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395739154.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:42:20.000Z"
+      }
+    ]
+  },
+  "CREATE_USER": {
+    "capabilityId": "CAP_CREATE_USER",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "DELETE_ALIAS": {
+    "capabilityId": "CAP_DELETE_ALIAS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "DELETE_DNS_RECORD": {
+    "capabilityId": "CAP_DELETE_DNS_RECORD",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "DISCOVER_PAGES": {
+    "capabilityId": "CAP_DISCOVER_PAGES",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "DOMAIN_TASK": {
+    "capabilityId": "CAP_DOMAIN_TASK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_476773B4C3BA4CE5",
+      "componentName": "BaseCOOWorker",
+      "relativePath": "SERVICES\\workers\\BaseCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:54:30.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "EVALUATE_AUTHORITY": {
+    "capabilityId": "CAP_EVALUATE_AUTHORITY",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_06DB54481202E847",
+      "componentName": "business_operations_queue",
+      "relativePath": "state\\business_operations_queue.json",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-10T21:29:56.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_6ECAB9E31C1B033F",
+        "componentName": "MILES_AUTHORITY_MATRIX",
+        "relativePath": "CONFIG\\MILES_AUTHORITY_MATRIX.csv",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-20T23:02:28.000Z"
+      },
+      {
+        "componentId": "CMP_69155D6C793D8908",
+        "componentName": "planning_rules",
+        "relativePath": "CONFIG\\WORKFLOWS\\planning_rules.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:33:38.000Z"
+      },
+      {
+        "componentId": "CMP_71367B1968FBDE8C",
+        "componentName": "MILES_WORKFORCE_REGISTRY_v1",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY_v1.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:28.000Z"
+      },
+      {
+        "componentId": "CMP_5C11D5BB5C0C4E77",
+        "componentName": "MILES_WORKFORCE_REGISTRY",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:28.000Z"
+      }
+    ]
+  },
+  "GENERATE_EXECUTIVE_REPORT": {
+    "capabilityId": "CAP_GENERATE_EXECUTIVE_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E6B68F5FC42002E3",
+      "componentName": "coo_goal_engine_feed",
+      "relativePath": "executive_intelligence\\coo_goal_engine_feed.json",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-10T18:42:48.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_32AB22BE35FD99EF",
+        "componentName": "BUILD_036_MANIFEST",
+        "relativePath": "BUILD_036_MANIFEST.json",
+        "primaryType": "RUNTIME",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T05:30:38.000Z"
+      },
+      {
+        "componentId": "CMP_4FAB60E37F28BC0E",
+        "componentName": "BuildDuplicateReport",
+        "relativePath": "BuildDuplicateReport.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T22:44:04.000Z"
+      },
+      {
+        "componentId": "CMP_C57E340AC173F5A4",
+        "componentName": "MILES_CAPABILITIES_v1",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_CAPABILITIES_v1.json",
+        "primaryType": "LEARNING",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:30.000Z"
+      },
+      {
+        "componentId": "CMP_71367B1968FBDE8C",
+        "componentName": "MILES_WORKFORCE_REGISTRY_v1",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY_v1.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:28.000Z"
+      }
+    ]
+  },
+  "GENERATE_GOOGLE_WORKSPACE_REPORT": {
+    "capabilityId": "CAP_GENERATE_GOOGLE_WORKSPACE_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "GENERATE_INSTANTLY_REPORT": {
+    "capabilityId": "CAP_GENERATE_INSTANTLY_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "GENERATE_NAMECHEAP_REPORT": {
+    "capabilityId": "CAP_GENERATE_NAMECHEAP_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "GENERATE_REPORT": {
+    "capabilityId": "CAP_GENERATE_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_476773B4C3BA4CE5",
+      "componentName": "BaseCOOWorker",
+      "relativePath": "SERVICES\\workers\\BaseCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:54:30.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "GENERATE_WEBSITE_REPORT": {
+    "capabilityId": "CAP_GENERATE_WEBSITE_REPORT",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "GOOGLE_WORKSPACE_HEALTH_CHECK": {
+    "capabilityId": "CAP_GOOGLE_WORKSPACE_HEALTH_CHECK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "INSTANTLY_HEALTH_CHECK": {
+    "capabilityId": "CAP_INSTANTLY_HEALTH_CHECK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "MANAGE_GOOGLE_ACCOUNT": {
+    "capabilityId": "CAP_MANAGE_GOOGLE_ACCOUNT",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_AF2C9F17D44E683D",
+        "componentName": "google_oauth_client",
+        "relativePath": "CONFIG\\Credentials\\google_oauth_client.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T22:45:10.000Z"
+      },
+      {
+        "componentId": "CMP_8AE261F5EDB2E330",
+        "componentName": "google_token",
+        "relativePath": "CONFIG\\Credentials\\google_token.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T00:34:18.000Z"
+      },
+      {
+        "componentId": "CMP_EA4784154E72EAEA",
+        "componentName": "account_manager",
+        "relativePath": "CONNECTORS\\GOOGLE\\account_manager.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:48:18.000Z"
+      },
+      {
+        "componentId": "CMP_17BEADFE70D27513",
+        "componentName": "auth",
+        "relativePath": "CONNECTORS\\GOOGLE\\auth.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:56:04.000Z"
+      },
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      }
+    ]
+  },
+  "MANAGE_IONOS": {
+    "capabilityId": "CAP_MANAGE_IONOS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_571CE69356DF3657",
+      "componentName": "README",
+      "relativePath": "CONNECTORS\\IONOS\\README.md",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "MANAGE_MARKETING": {
+    "capabilityId": "CAP_MANAGE_MARKETING",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_646FD8B1A751F696",
+      "componentName": "marketing_executive_dashboard",
+      "relativePath": "DATA\\dashboards\\marketing_executive_dashboard.json",
+      "primaryType": "PROVIDER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T00:52:56.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_4B876B4F763CA289",
+        "componentName": "MarketingCOOService",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\MarketingCOOService.js",
+        "primaryType": "API",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:06.000Z"
+      },
+      {
+        "componentId": "CMP_B9B724C67570C4F8",
+        "componentName": "MarketingExecutiveDashboard",
+        "relativePath": "DASHBOARDS\\MarketingExecutiveDashboard.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-09T00:44:02.000Z"
+      },
+      {
+        "componentId": "CMP_F30DBD7B3458927F",
+        "componentName": "RunMarketingExecutiveDashboard",
+        "relativePath": "DASHBOARDS\\RunMarketingExecutiveDashboard.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-09T00:32:14.000Z"
+      },
+      {
+        "componentId": "CMP_3C1DB2D8597B9181",
+        "componentName": "marketing_executive_brief",
+        "relativePath": "DATA\\digital_coo\\briefs\\marketing_executive_brief.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:08.000Z"
+      },
+      {
+        "componentId": "CMP_CA602CF28BF2FE3F",
+        "componentName": "marketing_work_queue",
+        "relativePath": "DATA\\digital_coo\\registries\\marketing_work_queue.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:08.000Z"
+      }
+    ]
+  },
+  "MANAGE_PIPELINE": {
+    "capabilityId": "CAP_MANAGE_PIPELINE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_87E669C69A08B3C9",
+      "componentName": "CRMClient",
+      "relativePath": "CONNECTORS\\Real\\crmClient.js",
+      "primaryType": "API",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-03T02:15:00.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_D1CCC3084844532F",
+        "componentName": "CRMIngestor",
+        "relativePath": "CORE\\Connectors\\Ingestion\\crmIngestor.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T01:36:32.000Z"
+      }
+    ]
+  },
+  "MANAGE_PROPOSAL": {
+    "capabilityId": "CAP_MANAGE_PROPOSAL",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B01059603FC17209",
+      "componentName": "proposal_1783396283948",
+      "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396283948.json",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-07T03:51:24.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_1CD556A42F69C703",
+        "componentName": "proposal_1783395983281",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983281.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_E576873EF954A1D6",
+        "componentName": "proposal_1783395983306",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783395983306.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:46:24.000Z"
+      },
+      {
+        "componentId": "CMP_42D4F7F0AF312AD7",
+        "componentName": "proposal_1783396043330",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043330.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_C60B50A4C113115F",
+        "componentName": "proposal_1783396043345",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043345.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      },
+      {
+        "componentId": "CMP_95EDC1FF4922CCAC",
+        "componentName": "proposal_1783396043952",
+        "relativePath": "DATA\\engineering_improvements\\proposals\\proposal_1783396043952.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:47:24.000Z"
+      }
+    ]
+  },
+  "NAMECHEAP_HEALTH_CHECK": {
+    "capabilityId": "CAP_NAMECHEAP_HEALTH_CHECK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PAUSE_CAMPAIGN": {
+    "capabilityId": "CAP_PAUSE_CAMPAIGN",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "PLAN_CAMPAIGN": {
+    "capabilityId": "CAP_PLAN_CAMPAIGN",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_646FD8B1A751F696",
+      "componentName": "marketing_executive_dashboard",
+      "relativePath": "DATA\\dashboards\\marketing_executive_dashboard.json",
+      "primaryType": "PROVIDER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T00:52:56.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_4B876B4F763CA289",
+        "componentName": "MarketingCOOService",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\MarketingCOOService.js",
+        "primaryType": "API",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:06.000Z"
+      },
+      {
+        "componentId": "CMP_B9B724C67570C4F8",
+        "componentName": "MarketingExecutiveDashboard",
+        "relativePath": "DASHBOARDS\\MarketingExecutiveDashboard.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-09T00:44:02.000Z"
+      },
+      {
+        "componentId": "CMP_F30DBD7B3458927F",
+        "componentName": "RunMarketingExecutiveDashboard",
+        "relativePath": "DASHBOARDS\\RunMarketingExecutiveDashboard.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-09T00:32:14.000Z"
+      },
+      {
+        "componentId": "CMP_3C1DB2D8597B9181",
+        "componentName": "marketing_executive_brief",
+        "relativePath": "DATA\\digital_coo\\briefs\\marketing_executive_brief.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:08.000Z"
+      },
+      {
+        "componentId": "CMP_CA602CF28BF2FE3F",
+        "componentName": "marketing_work_queue",
+        "relativePath": "DATA\\digital_coo\\registries\\marketing_work_queue.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-08T21:00:08.000Z"
+      }
+    ]
+  },
+  "PRIORITIZE_WORK": {
+    "capabilityId": "CAP_PRIORITIZE_WORK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_982B533911E0FCD1",
+      "componentName": "EngineeringOrchestrator",
+      "relativePath": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T16:25:42.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_EA75BC7056D50FC2",
+        "componentName": "engineering_report_1783393954788",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783393954788.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:12:36.000Z"
+      },
+      {
+        "componentId": "CMP_4293E7111263C219",
+        "componentName": "engineering_report_1783394473177",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783394473177.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:21:14.000Z"
+      },
+      {
+        "componentId": "CMP_3D060566D0414747",
+        "componentName": "engineering_report_1783395607270",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395607270.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:40:08.000Z"
+      },
+      {
+        "componentId": "CMP_E17D1F98C169B093",
+        "componentName": "engineering_report_1783395686224",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395686224.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:41:28.000Z"
+      },
+      {
+        "componentId": "CMP_4853003D3803C505",
+        "componentName": "engineering_report_1783395739154",
+        "relativePath": "DATA\\engineering_improvements\\engineering_report_1783395739154.json",
+        "primaryType": "PLANNER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-07T03:42:20.000Z"
+      }
+    ]
+  },
+  "PROCESS_DOMAIN_ACTION_QUEUE": {
+    "capabilityId": "CAP_PROCESS_DOMAIN_ACTION_QUEUE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PROCESS_LEAD_UPLOADS": {
+    "capabilityId": "CAP_PROCESS_LEAD_UPLOADS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "PROCESS_PROVISIONING_QUEUE": {
+    "capabilityId": "CAP_PROCESS_PROVISIONING_QUEUE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PROCESS_WEBSITE_CHANGES": {
+    "capabilityId": "CAP_PROCESS_WEBSITE_CHANGES",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PROCESS_WORK_QUEUE": {
+    "capabilityId": "CAP_PROCESS_WORK_QUEUE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_476773B4C3BA4CE5",
+      "componentName": "BaseCOOWorker",
+      "relativePath": "SERVICES\\workers\\BaseCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:54:30.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PUBLISH_SITE": {
+    "capabilityId": "CAP_PUBLISH_SITE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "PUBLISH_WEBSITE_CHANGE": {
+    "capabilityId": "CAP_PUBLISH_WEBSITE_CHANGE",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2CE61257B3AEC451",
+        "componentName": "B12_CONNECTOR_V1",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_CONNECTOR_V1.ps1",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:18:48.000Z"
+      },
+      {
+        "componentId": "CMP_912E7E2B72F81FFF",
+        "componentName": "B12_PLAYWRIGHT_OBSERVER",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_PLAYWRIGHT_OBSERVER.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:43:38.000Z"
+      },
+      {
+        "componentId": "CMP_9A6E10A15B7B8E26",
+        "componentName": "controller",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\controller.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B3E20F4B17D10A26",
+        "componentName": "audit",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\audit.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_D0ADEE6576FA4BC8",
+        "componentName": "browser",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\browser.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      }
+    ]
+  },
+  "QUALIFY_LEAD": {
+    "capabilityId": "CAP_QUALIFY_LEAD",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_87E669C69A08B3C9",
+      "componentName": "CRMClient",
+      "relativePath": "CONNECTORS\\Real\\crmClient.js",
+      "primaryType": "API",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-03T02:15:00.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_D1CCC3084844532F",
+        "componentName": "CRMIngestor",
+        "relativePath": "CORE\\Connectors\\Ingestion\\crmIngestor.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T01:36:32.000Z"
+      }
+    ]
+  },
+  "QUERY_ORION": {
+    "capabilityId": "CAP_QUERY_ORION",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E589FE9A6752D29B",
+      "componentName": "OrionConnector",
+      "relativePath": "CONNECTORS\\ORION\\connector.js",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T23:19:10.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8933807DDE6ABF73",
+        "componentName": "README",
+        "relativePath": "CONNECTORS\\ORION\\README.md",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B31CDA83C6C7B213",
+        "componentName": "OrionProvider",
+        "relativePath": "PROVIDERS\\providers\\OrionProvider.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T20:45:58.000Z"
+      },
+      {
+        "componentId": "CMP_2AA76A0D611C3E51",
+        "componentName": "OrionDiscovery",
+        "relativePath": "SERVICES\\Discovery\\OrionDiscovery.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-01T18:27:38.000Z"
+      },
+      {
+        "componentId": "CMP_7663611DC82D951C",
+        "componentName": "OrionProviderController",
+        "relativePath": "SERVICES\\OrionProviderController.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      },
+      {
+        "componentId": "CMP_79EE1322948188ED",
+        "componentName": "OrionPlanner",
+        "relativePath": "SERVICES\\Planning\\OrionPlanner.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-02T01:27:50.000Z"
+      }
+    ]
+  },
+  "QUEUE_DOMAIN_ACTION": {
+    "capabilityId": "CAP_QUEUE_DOMAIN_ACTION",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "QUEUE_LEAD_UPLOAD": {
+    "capabilityId": "CAP_QUEUE_LEAD_UPLOAD",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "QUEUE_PROVISIONING": {
+    "capabilityId": "CAP_QUEUE_PROVISIONING",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "QUEUE_WEBSITE_CHANGE": {
+    "capabilityId": "CAP_QUEUE_WEBSITE_CHANGE",
+    "riskLevel": "MEDIUM",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2CE61257B3AEC451",
+        "componentName": "B12_CONNECTOR_V1",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_CONNECTOR_V1.ps1",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:18:48.000Z"
+      },
+      {
+        "componentId": "CMP_912E7E2B72F81FFF",
+        "componentName": "B12_PLAYWRIGHT_OBSERVER",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\B12_PLAYWRIGHT_OBSERVER.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T19:43:38.000Z"
+      },
+      {
+        "componentId": "CMP_9A6E10A15B7B8E26",
+        "componentName": "controller",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\controller.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B3E20F4B17D10A26",
+        "componentName": "audit",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\audit.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_D0ADEE6576FA4BC8",
+        "componentName": "browser",
+        "relativePath": "CONNECTORS\\WEBSITE_B12\\modules\\browser.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      }
+    ]
+  },
+  "QUEUE_WORK": {
+    "capabilityId": "CAP_QUEUE_WORK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_476773B4C3BA4CE5",
+      "componentName": "BaseCOOWorker",
+      "relativePath": "SERVICES\\workers\\BaseCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:54:30.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "READ_CALENDAR": {
+    "capabilityId": "CAP_READ_CALENDAR",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_FEAAD039D66A097F",
+      "componentName": "README",
+      "relativePath": "CONNECTORS\\CALENDLY\\README.md",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      },
+      {
+        "componentId": "CMP_AE132CFE795D266F",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:04:50.000Z"
+      }
+    ]
+  },
+  "READ_DNS": {
+    "capabilityId": "CAP_READ_DNS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2DD63D90CAE9BC91",
+        "componentName": "NamecheapProviderController",
+        "relativePath": "SERVICES\\NamecheapProviderController.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      }
+    ]
+  },
+  "READ_EMAIL": {
+    "capabilityId": "CAP_READ_EMAIL",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_AF2C9F17D44E683D",
+        "componentName": "google_oauth_client",
+        "relativePath": "CONFIG\\Credentials\\google_oauth_client.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T22:45:10.000Z"
+      },
+      {
+        "componentId": "CMP_8AE261F5EDB2E330",
+        "componentName": "google_token",
+        "relativePath": "CONFIG\\Credentials\\google_token.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T00:34:18.000Z"
+      },
+      {
+        "componentId": "CMP_EA4784154E72EAEA",
+        "componentName": "account_manager",
+        "relativePath": "CONNECTORS\\GOOGLE\\account_manager.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:48:18.000Z"
+      },
+      {
+        "componentId": "CMP_17BEADFE70D27513",
+        "componentName": "auth",
+        "relativePath": "CONNECTORS\\GOOGLE\\auth.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:56:04.000Z"
+      },
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      }
+    ]
+  },
+  "RECOVER_SERVICE": {
+    "capabilityId": "CAP_RECOVER_SERVICE",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_C5DB835404D4472F",
+      "componentName": "Supervisor",
+      "relativePath": "CORE\\Supervisor.js",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-30T16:23:50.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_84F08E03D0AD1C78",
+        "componentName": "miles_google_accounts_health",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\miles_google_accounts_health.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:48:18.000Z"
+      },
+      {
+        "componentId": "CMP_C54BEFE944F7DA59",
+        "componentName": "health",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:04:50.000Z"
+      },
+      {
+        "componentId": "CMP_50C96628FA00E622",
+        "componentName": "HealthResult",
+        "relativePath": "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\instantly\\service.py",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T02:12:02.000Z"
+      },
+      {
+        "componentId": "CMP_2DAD69060CF0D3DD",
+        "componentName": "HealthDashboard",
+        "relativePath": "CORE\\HealthDashboard.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:42:48.000Z"
+      },
+      {
+        "componentId": "CMP_D0E81441F9796C74",
+        "componentName": "HealthMonitor",
+        "relativePath": "CORE\\Kernel\\HealthMonitor.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      }
+    ]
+  },
+  "REMOVE_GROUP_MEMBER": {
+    "capabilityId": "CAP_REMOVE_GROUP_MEMBER",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "REQUEST_APPROVAL": {
+    "capabilityId": "CAP_REQUEST_APPROVAL",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_06DB54481202E847",
+      "componentName": "business_operations_queue",
+      "relativePath": "state\\business_operations_queue.json",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-10T21:29:56.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_6ECAB9E31C1B033F",
+        "componentName": "MILES_AUTHORITY_MATRIX",
+        "relativePath": "CONFIG\\MILES_AUTHORITY_MATRIX.csv",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-20T23:02:28.000Z"
+      },
+      {
+        "componentId": "CMP_69155D6C793D8908",
+        "componentName": "planning_rules",
+        "relativePath": "CONFIG\\WORKFLOWS\\planning_rules.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:33:38.000Z"
+      },
+      {
+        "componentId": "CMP_71367B1968FBDE8C",
+        "componentName": "MILES_WORKFORCE_REGISTRY_v1",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY_v1.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:28.000Z"
+      },
+      {
+        "componentId": "CMP_5C11D5BB5C0C4E77",
+        "componentName": "MILES_WORKFORCE_REGISTRY",
+        "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_REGISTRY.json",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T00:25:28.000Z"
+      }
+    ]
+  },
+  "RESUME_CAMPAIGN": {
+    "capabilityId": "CAP_RESUME_CAMPAIGN",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": true,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "RUN_HEALTH_CHECK": {
+    "capabilityId": "CAP_RUN_HEALTH_CHECK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_C5DB835404D4472F",
+      "componentName": "Supervisor",
+      "relativePath": "CORE\\Supervisor.js",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-30T16:23:50.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_84F08E03D0AD1C78",
+        "componentName": "miles_google_accounts_health",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\miles_google_accounts_health.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:48:18.000Z"
+      },
+      {
+        "componentId": "CMP_C54BEFE944F7DA59",
+        "componentName": "health",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:04:50.000Z"
+      },
+      {
+        "componentId": "CMP_50C96628FA00E622",
+        "componentName": "HealthResult",
+        "relativePath": "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\instantly\\service.py",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T02:12:02.000Z"
+      },
+      {
+        "componentId": "CMP_2DAD69060CF0D3DD",
+        "componentName": "HealthDashboard",
+        "relativePath": "CORE\\HealthDashboard.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:42:48.000Z"
+      },
+      {
+        "componentId": "CMP_D0E81441F9796C74",
+        "componentName": "HealthMonitor",
+        "relativePath": "CORE\\Kernel\\HealthMonitor.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      }
+    ]
+  },
+  "SCHEDULE_WORK": {
+    "capabilityId": "CAP_SCHEDULE_WORK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_C550F043B005EB8F",
+      "componentName": "MILES_EXECUTION_LOG",
+      "relativePath": "MILES_EXECUTION_LOG.csv",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-10T17:35:46.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_13A9249646219AFA",
+        "componentName": "Scheduler",
+        "relativePath": "AUTOMATIONS\\Scheduler.js",
+        "primaryType": "SCHEDULER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_64E1F56906B6C228",
+        "componentName": "MilesKernel",
+        "relativePath": "CORE\\Kernel\\MilesKernel.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T23:24:04.000Z"
+      },
+      {
+        "componentId": "CMP_7851C0C9BE8DE26B",
+        "componentName": "project_analysis",
+        "relativePath": "DATA\\builder\\project_analysis.json",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T22:31:00.000Z"
+      },
+      {
+        "componentId": "CMP_53E4A635A1164FF2",
+        "componentName": "event_registry",
+        "relativePath": "DATA\\repository\\event_registry.json",
+        "primaryType": "SCHEDULER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T00:38:36.000Z"
+      },
+      {
+        "componentId": "CMP_C7E9C9697EA06A4C",
+        "componentName": "runtime_registry",
+        "relativePath": "DATA\\repository\\runtime_registry.json",
+        "primaryType": "SCHEDULER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T00:38:36.000Z"
+      }
+    ]
+  },
+  "SCORE_CONTRACTOR": {
+    "capabilityId": "CAP_SCORE_CONTRACTOR",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E589FE9A6752D29B",
+      "componentName": "OrionConnector",
+      "relativePath": "CONNECTORS\\ORION\\connector.js",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T23:19:10.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8933807DDE6ABF73",
+        "componentName": "README",
+        "relativePath": "CONNECTORS\\ORION\\README.md",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B31CDA83C6C7B213",
+        "componentName": "OrionProvider",
+        "relativePath": "PROVIDERS\\providers\\OrionProvider.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T20:45:58.000Z"
+      },
+      {
+        "componentId": "CMP_2AA76A0D611C3E51",
+        "componentName": "OrionDiscovery",
+        "relativePath": "SERVICES\\Discovery\\OrionDiscovery.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-01T18:27:38.000Z"
+      },
+      {
+        "componentId": "CMP_7663611DC82D951C",
+        "componentName": "OrionProviderController",
+        "relativePath": "SERVICES\\OrionProviderController.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      },
+      {
+        "componentId": "CMP_79EE1322948188ED",
+        "componentName": "OrionPlanner",
+        "relativePath": "SERVICES\\Planning\\OrionPlanner.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-02T01:27:50.000Z"
+      }
+    ]
+  },
+  "SCORE_OPPORTUNITY": {
+    "capabilityId": "CAP_SCORE_OPPORTUNITY",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E589FE9A6752D29B",
+      "componentName": "OrionConnector",
+      "relativePath": "CONNECTORS\\ORION\\connector.js",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T23:19:10.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8933807DDE6ABF73",
+        "componentName": "README",
+        "relativePath": "CONNECTORS\\ORION\\README.md",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T18:43:06.000Z"
+      },
+      {
+        "componentId": "CMP_B31CDA83C6C7B213",
+        "componentName": "OrionProvider",
+        "relativePath": "PROVIDERS\\providers\\OrionProvider.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-03T20:45:58.000Z"
+      },
+      {
+        "componentId": "CMP_2AA76A0D611C3E51",
+        "componentName": "OrionDiscovery",
+        "relativePath": "SERVICES\\Discovery\\OrionDiscovery.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-01T18:27:38.000Z"
+      },
+      {
+        "componentId": "CMP_7663611DC82D951C",
+        "componentName": "OrionProviderController",
+        "relativePath": "SERVICES\\OrionProviderController.js",
+        "primaryType": "DASHBOARD",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      },
+      {
+        "componentId": "CMP_79EE1322948188ED",
+        "componentName": "OrionPlanner",
+        "relativePath": "SERVICES\\Planning\\OrionPlanner.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-02T01:27:50.000Z"
+      }
+    ]
+  },
+  "SEND_EMAIL": {
+    "capabilityId": "CAP_SEND_EMAIL",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_AF2C9F17D44E683D",
+        "componentName": "google_oauth_client",
+        "relativePath": "CONFIG\\Credentials\\google_oauth_client.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T22:45:10.000Z"
+      },
+      {
+        "componentId": "CMP_8AE261F5EDB2E330",
+        "componentName": "google_token",
+        "relativePath": "CONFIG\\Credentials\\google_token.json",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T00:34:18.000Z"
+      },
+      {
+        "componentId": "CMP_EA4784154E72EAEA",
+        "componentName": "account_manager",
+        "relativePath": "CONNECTORS\\GOOGLE\\account_manager.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:48:18.000Z"
+      },
+      {
+        "componentId": "CMP_17BEADFE70D27513",
+        "componentName": "auth",
+        "relativePath": "CONNECTORS\\GOOGLE\\auth.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:56:04.000Z"
+      },
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      }
+    ]
+  },
+  "START_CAMPAIGN": {
+    "capabilityId": "CAP_START_CAMPAIGN",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": true,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "STOP_CAMPAIGN": {
+    "capabilityId": "CAP_STOP_CAMPAIGN",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_4CE04D464E5B6E59",
+      "componentName": "InstantlyCOOWorker",
+      "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:59:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_74EDF31B2994D67B",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "SERVICES\\workers\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      }
+    ]
+  },
+  "SUSPEND_USER": {
+    "capabilityId": "CAP_SUSPEND_USER",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "SYNC_ALIASES": {
+    "capabilityId": "CAP_SYNC_ALIASES",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "SYNC_CAMPAIGNS": {
+    "capabilityId": "CAP_SYNC_CAMPAIGNS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_1398B10D43B2CE13",
+      "componentName": "InstantlyExecutiveAdvisor",
+      "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T23:50:04.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8D27D3F6DC3095C9",
+        "componentName": "InstantlyConnector",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyConnector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_7D22589D3DB8F336",
+        "componentName": "connector",
+        "relativePath": "CONNECTORS\\INSTANTLY\\connector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_DC2B587235FF0F7B",
+        "componentName": "instantly_test",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly_test.js",
+        "primaryType": "TEST",
+        "componentStatus": "SUPPORTING",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:18:32.000Z"
+      },
+      {
+        "componentId": "CMP_B7A4555D2EC477BC",
+        "componentName": "instantly",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:17:12.000Z"
+      }
+    ]
+  },
+  "SYNC_DNS_RECORDS": {
+    "capabilityId": "CAP_SYNC_DNS_RECORDS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "SYNC_DOMAINS": {
+    "capabilityId": "CAP_SYNC_DOMAINS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_B41E4BC3126ECBE5",
+        "componentName": "GoogleWorkspaceCOOWorker",
+        "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T02:06:20.000Z"
+      }
+    ]
+  },
+  "SYNC_GROUPS": {
+    "capabilityId": "CAP_SYNC_GROUPS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "SYNC_SCHEDULING": {
+    "capabilityId": "CAP_SYNC_SCHEDULING",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_FEAAD039D66A097F",
+      "componentName": "README",
+      "relativePath": "CONNECTORS\\CALENDLY\\README.md",
+      "primaryType": "CONNECTOR",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_9F38D6D4CED370CC",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-28T23:52:50.000Z"
+      },
+      {
+        "componentId": "CMP_AE132CFE795D266F",
+        "componentName": "calendar",
+        "relativePath": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+        "primaryType": "TEST",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-29T04:04:50.000Z"
+      }
+    ]
+  },
+  "SYNC_SEGMENTS": {
+    "capabilityId": "CAP_SYNC_SEGMENTS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_1398B10D43B2CE13",
+      "componentName": "InstantlyExecutiveAdvisor",
+      "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T23:50:04.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8D27D3F6DC3095C9",
+        "componentName": "InstantlyConnector",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyConnector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_7D22589D3DB8F336",
+        "componentName": "connector",
+        "relativePath": "CONNECTORS\\INSTANTLY\\connector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_DC2B587235FF0F7B",
+        "componentName": "instantly_test",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly_test.js",
+        "primaryType": "TEST",
+        "componentStatus": "SUPPORTING",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:18:32.000Z"
+      },
+      {
+        "componentId": "CMP_B7A4555D2EC477BC",
+        "componentName": "instantly",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:17:12.000Z"
+      }
+    ]
+  },
+  "SYNC_USERS": {
+    "capabilityId": "CAP_SYNC_USERS",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "TEST_ACTION": {
+    "capabilityId": "CAP_TEST_ACTION",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_F6FFF4CDC749D402",
+      "componentName": "TestWorker",
+      "relativePath": "MILES_Enterprise_Registry_Phase1_v1.0\\TESTS\\enterprise_registry.test.js",
+      "primaryType": "GOVERNANCE",
+      "componentStatus": "SUPPORTING",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-11T03:16:12.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_241780B21F77B11A",
+        "componentName": "TestWorker",
+        "relativePath": "TESTS\\enterprise_registry.test.js",
+        "primaryType": "GOVERNANCE",
+        "componentStatus": "SUPPORTING",
+        "approvalRequired": true,
+        "modifiedAt": "2026-07-11T03:16:12.000Z"
+      }
+    ]
+  },
+  "UPDATE_DNS": {
+    "capabilityId": "CAP_UPDATE_DNS",
+    "riskLevel": "HIGH",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_2DD63D90CAE9BC91",
+        "componentName": "NamecheapProviderController",
+        "relativePath": "SERVICES\\NamecheapProviderController.js",
+        "primaryType": "GENERAL",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-04T06:18:28.000Z"
+      }
+    ]
+  },
+  "UPDATE_DNS_RECORD": {
+    "capabilityId": "CAP_UPDATE_DNS_RECORD",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_E324C4BB1CF8D48F",
+      "componentName": "NamecheapCOOWorker",
+      "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T02:08:44.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "UPLOAD_LEADS": {
+    "capabilityId": "CAP_UPLOAD_LEADS",
+    "riskLevel": "MEDIUM",
+    "preferredProvider": {
+      "componentId": "CMP_1398B10D43B2CE13",
+      "componentName": "InstantlyExecutiveAdvisor",
+      "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-09T23:50:04.000Z"
+    },
+    "fallbackProviders": [
+      {
+        "componentId": "CMP_8D27D3F6DC3095C9",
+        "componentName": "InstantlyConnector",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyConnector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_4CE04D464E5B6E59",
+        "componentName": "InstantlyCOOWorker",
+        "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+        "primaryType": "WORKER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-06T01:59:44.000Z"
+      },
+      {
+        "componentId": "CMP_7D22589D3DB8F336",
+        "componentName": "connector",
+        "relativePath": "CONNECTORS\\INSTANTLY\\connector.js",
+        "primaryType": "CONNECTOR",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-07-10T03:32:22.000Z"
+      },
+      {
+        "componentId": "CMP_DC2B587235FF0F7B",
+        "componentName": "instantly_test",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly_test.js",
+        "primaryType": "TEST",
+        "componentStatus": "SUPPORTING",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:18:32.000Z"
+      },
+      {
+        "componentId": "CMP_B7A4555D2EC477BC",
+        "componentName": "instantly",
+        "relativePath": "CONNECTORS\\INSTANTLY\\instantly.js",
+        "primaryType": "PROVIDER",
+        "componentStatus": "DISCOVERED",
+        "approvalRequired": false,
+        "modifiedAt": "2026-06-30T23:17:12.000Z"
+      }
+    ]
+  },
+  "VERIFY_DOMAIN": {
+    "capabilityId": "CAP_VERIFY_DOMAIN",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_B41E4BC3126ECBE5",
+      "componentName": "GoogleWorkspaceCOOWorker",
+      "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": true,
+      "modifiedAt": "2026-07-06T02:06:20.000Z"
+    },
+    "fallbackProviders": []
+  },
+  "WEBSITE_HEALTH_CHECK": {
+    "capabilityId": "CAP_WEBSITE_HEALTH_CHECK",
+    "riskLevel": "LOW",
+    "preferredProvider": {
+      "componentId": "CMP_37E389177AC91708",
+      "componentName": "WebsiteCOOWorker",
+      "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+      "primaryType": "WORKER",
+      "componentStatus": "DISCOVERED",
+      "approvalRequired": false,
+      "modifiedAt": "2026-07-06T01:56:50.000Z"
+    },
+    "fallbackProviders": []
+  }
+}

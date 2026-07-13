@@ -1,0 +1,15 @@
+{
+  "build": "EXEC_007",
+  "name": "Mission Automation Engine",
+  "phase": "Execution",
+  "architecture_change": false,
+  "preserves": ["BUILD_031", "BUILD_032", "BUILD_033", "BUILD_034", "BUILD_035", "BUILD_036", "BUILD_037", "BUILD_038", "EXEC_001", "EXEC_002", "EXEC_003", "EXEC_004", "EXEC_005", "EXEC_006"],
+  "entrypoint": "MISSION_ENGINE.ts",
+  "direct_provider_calls": false,
+  "routes_through": "EXEC_005 Business Execution Engine / EXEC_001 Unified Action Engine",
+  "controlled_writes_default": "disabled",
+  "governance": {
+    "kevin_approval_required": ["pricing", "contracts", "hiring", "legal", "partnerships", "strategic decisions"],
+    "miles_autonomous": ["sales operations", "marketing operations", "website operations", "ORION operations", "CRM", "follow-up", "campaign monitoring", "reporting", "scheduling", "retry and recovery"]
+  }
+}

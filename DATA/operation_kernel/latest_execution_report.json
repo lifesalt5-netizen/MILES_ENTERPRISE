@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "service": "OPERATION_EXECUTION_KERNEL",
+  "version": "1.0.0",
+  "generatedAt": "2026-07-06T01:03:44.992Z",
+  "status": "OPERATION_KERNEL_ACTIVE",
+  "decisions": [
+    {
+      "id": "SALES_COO",
+      "priority": 1,
+      "worker": "SalesCOOWorker",
+      "action": "Prepare autonomous sales execution",
+      "approvalRequired": false
+    },
+    {
+      "id": "INSTANTLY_COO",
+      "priority": 2,
+      "worker": "InstantlyCOOWorker",
+      "action": "Prepare outbound execution",
+      "approvalRequired": false
+    },
+    {
+      "id": "WEBSITE_COO",
+      "priority": 3,
+      "worker": "WebsiteCOOWorker",
+      "action": "Prepare website execution",
+      "approvalRequired": true
+    },
+    {
+      "id": "ORION_COO",
+      "priority": 4,
+      "worker": "OrionCOOWorker",
+      "action": "Prepare intelligence execution",
+      "approvalRequired": false
+    }
+  ],
+  "executionPlan": [
+    {
+      "workId": "WORK_1783299824992_SALES_COO",
+      "worker": "SalesCOOWorker",
+      "priority": 1,
+      "action": "Prepare autonomous sales execution",
+      "approvalRequired": false,
+      "status": "READY"
+    },
+    {
+      "workId": "WORK_1783299824992_INSTANTLY_COO",
+      "worker": "InstantlyCOOWorker",
+      "priority": 2,
+      "action": "Prepare outbound execution",
+      "approvalRequired": false,
+      "status": "READY"
+    },
+    {
+      "workId": "WORK_1783299824992_WEBSITE_COO",
+      "worker": "WebsiteCOOWorker",
+      "priority": 3,
+      "action": "Prepare website execution",
+      "approvalRequired": true,
+      "status": "WAITING_FOR_APPROVAL"
+    },
+    {
+      "workId": "WORK_1783299824992_ORION_COO",
+      "worker": "OrionCOOWorker",
+      "priority": 4,
+      "action": "Prepare intelligence execution",
+      "approvalRequired": false,
+      "status": "READY"
+    }
+  ]
+}

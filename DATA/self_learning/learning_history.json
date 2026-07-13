@@ -1,0 +1,146 @@
+[
+  {
+    "generatedAt": "2026-07-04T01:59:14.377Z",
+    "summary": {
+      "confidenceScore": 63,
+      "confidenceStatus": "WATCH",
+      "decisionSampleSize": 4,
+      "routeRate": 69,
+      "failedWorkItems": 80,
+      "blockedWorkItems": 0,
+      "openWork": 32,
+      "recommendations": 3
+    },
+    "confidence": {
+      "ok": true,
+      "action": "CONFIDENCE_SCORING",
+      "generatedAt": "2026-07-04T01:59:14.377Z",
+      "score": 63,
+      "status": "WATCH",
+      "reasons": [
+        "Executive autonomy rate is strong.",
+        "Failed work item count is elevated.",
+        "Urgent open work is accumulating."
+      ]
+    },
+    "recommendations": [
+      {
+        "id": "REC-1783130354377-1",
+        "area": "Runtime Confidence",
+        "severity": "MEDIUM",
+        "recommendation": "Review failure and routing patterns before increasing autonomy.",
+        "owner": "MILES",
+        "status": "OPEN"
+      },
+      {
+        "id": "REC-1783130354377-2",
+        "area": "Execution",
+        "severity": "MEDIUM",
+        "recommendation": "Analyze failed work item metadata and create recovery rules.",
+        "owner": "MILES",
+        "status": "OPEN"
+      },
+      {
+        "id": "REC-1783130354377-3",
+        "area": "Priority",
+        "severity": "HIGH",
+        "recommendation": "Prioritize approval queue, blocked items, and P1/P2 work next cycle.",
+        "owner": "MILES",
+        "status": "OPEN"
+      }
+    ]
+  },
+  {
+    "generatedAt": "2026-07-04T01:59:40.822Z",
+    "summary": {
+      "confidenceScore": 63,
+      "confidenceStatus": "WATCH",
+      "decisionSampleSize": 4,
+      "routeRate": 69,
+      "failedWorkItems": 80,
+      "blockedWorkItems": 0,
+      "openWork": 32,
+      "recommendations": 3
+    },
+    "confidence": {
+      "ok": true,
+      "action": "CONFIDENCE_SCORING",
+      "generatedAt": "2026-07-04T01:59:40.822Z",
+      "score": 63,
+      "status": "WATCH",
+      "reasons": [
+        "Executive autonomy rate is strong.",
+        "Failed work item count is elevated.",
+        "Urgent open work is accumulating."
+      ]
+    },
+    "recommendations": [
+      {
+        "id": "REC-1783130380822-1",
+        "area": "Runtime Confidence",
+        "severity": "MEDIUM",
+        "recommendation": "Review failure and routing patterns before increasing autonomy.",
+        "owner": "MILES",
+        "status": "OPEN"
+      },
+      {
+        "id": "REC-1783130380822-2",
+        "area": "Execution",
+        "severity": "MEDIUM",
+        "recommendation": "Analyze failed work item metadata and create recovery rules.",
+        "owner": "MILES",
+        "status": "OPEN"
+      },
+      {
+        "id": "REC-1783130380822-3",
+        "area": "Priority",
+        "severity": "HIGH",
+        "recommendation": "Prioritize approval queue, blocked items, and P1/P2 work next cycle.",
+        "owner": "MILES",
+        "status": "OPEN"
+      }
+    ]
+  },
+  {
+    "generatedAt": "2026-07-04T02:00:00.694Z",
+    "summary": {
+      "confidenceScore": 68,
+      "confidenceStatus": "WATCH",
+      "decisionSampleSize": 4,
+      "routeRate": 69,
+      "failedWorkItems": 40,
+      "blockedWorkItems": 0,
+      "openWork": 0,
+      "recommendations": 2
+    },
+    "confidence": {
+      "ok": true,
+      "action": "CONFIDENCE_SCORING",
+      "generatedAt": "2026-07-04T02:00:00.694Z",
+      "score": 68,
+      "status": "WATCH",
+      "reasons": [
+        "Executive autonomy rate is strong.",
+        "Failed work item count is elevated."
+      ]
+    },
+    "recommendations": [
+      {
+        "id": "REC-1783130400694-1",
+        "area": "Runtime Confidence",
+        "severity": "MEDIUM",
+        "recommendation": "Review failure and routing patterns before increasing autonomy.",
+        "owner": "MILES",
+        "status": "OPEN"
+      },
+      {
+        "id": "REC-1783130400694-2",
+        "area": "Execution",
+        "severity": "MEDIUM",
+        "recommendation": "Analyze failed work item metadata and create recovery rules.",
+        "owner": "MILES",
+        "status": "OPEN"
+      }
+    ]
+  }
+]

@@ -1,0 +1,5 @@
+﻿"asset_id","asset_name","asset_type","location","owner","system","status","last_updated","authoritative"
+"ASSET-FILEINVENTORY","FileInventory.csv","Inventory","D:\P2GC_Intelligence\FileInventory.csv","Miles","MILES_OS","Active","6/4/2026 8:01:16 PM","Pending Review"
+"ASSET-FOLDERINVENTORY","FolderInventory.csv","Inventory","D:\P2GC_Intelligence\FolderInventory.csv","Miles","MILES_OS","Active","6/4/2026 8:06:12 PM","Pending Review"
+"ASSET-DATABASEINVENTORY","DATABASE_INVENTORY.csv","Inventory","D:\P2GC_Intelligence\DATABASE_INVENTORY.csv","Miles","MILES_OS","Active","6/20/2026 3:46:16 PM","Pending Review"
+"ASSET-ORIONFILEINVENTORY","ORION_FILE_INVENTORY.csv","Inventory","D:\P2GC_Intelligence\ORION_FILE_INVENTORY.csv","Miles","MILES_OS","Active","6/20/2026 3:41:20 PM","Pending Review"

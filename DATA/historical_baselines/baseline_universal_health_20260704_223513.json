@@ -1,0 +1,69 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-05T02:35:00.353Z",
+  "overallScore": 80,
+  "overallStatus": "Watch",
+  "highRiskCount": 0,
+  "mediumRiskCount": 2,
+  "lowRiskCount": 0,
+  "systems": [
+    {
+      "area": "Runtime",
+      "status": "Watch",
+      "score": 82,
+      "risk": "MEDIUM",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-05T02:35:00.353Z",
+      "lastFailure": "2026-07-05T02:35:00.353Z",
+      "exceptions": [
+        {
+          "type": "TaskFailures",
+          "severity": "Warning",
+          "message": "117 failed runtime task(s) detected."
+        }
+      ],
+      "recommendations": [
+        "Review failed task details and queue safe repair work."
+      ],
+      "metrics": {
+        "total": 117,
+        "pending": 0,
+        "running": 0,
+        "completed": 0,
+        "failed": 117,
+        "healthScore": 0
+      }
+    },
+    {
+      "area": "WorkQueue",
+      "status": "Watch",
+      "score": 78,
+      "risk": "MEDIUM",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-05T02:35:00.353Z",
+      "lastFailure": null,
+      "exceptions": [
+        {
+          "type": "Escalations",
+          "severity": "Warning",
+          "message": "2 Kevin-level escalation(s) open."
+        }
+      ],
+      "recommendations": [
+        "Review CEO approval queue and resolve blocked decisions."
+      ],
+      "metrics": {
+        "total": 72,
+        "open": 32,
+        "pending": 2,
+        "queued": 30,
+        "inProgress": 0,
+        "blocked": 0,
+        "awaitingApproval": 0,
+        "completed": 0,
+        "failed": 40,
+        "escalations": 2
+      }
+    }
+  ]
+}

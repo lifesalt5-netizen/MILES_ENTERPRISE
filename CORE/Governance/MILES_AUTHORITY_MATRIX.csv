@@ -1,0 +1,35 @@
+Action,Owner,MilesCanExecute,MilesNeedsApproval,Notes
+Website Audit,Miles,Yes,No,Run anytime
+Draft Website Changes,Miles,Yes,No,Save drafts only
+Publish Website Changes,Kevin,No,Yes,Kevin approval required
+Create Landing Pages,Miles,Yes,No,Draft mode only
+Publish Landing Pages,Kevin,No,Yes,Approval required
+Generate Blog Posts,Miles,Yes,No,Draft automatically
+Publish Blog Posts,Kevin,No,Yes,Approval required
+Create Instantly Campaigns,Miles,Yes,No,Follow domain rules
+Pause Campaigns,Miles,Yes,No,Protect deliverability
+Resume Campaigns,Miles,Yes,No,After validation
+Upload Leads,Miles,Yes,No,Approved segments only
+Monitor Bounce Rates,Miles,Yes,No,Continuous
+Remove Bad Leads,Miles,Yes,No,Protect sender reputation
+Manage Segment Inventory,Miles,Yes,No,Continuous
+Manage Work Registry,Miles,Yes,No,Continuous
+Manage Asset Registry,Miles,Yes,No,Continuous
+Ingest ORION Data,Miles,Yes,No,Continuous
+Validate ORION Schemas,Miles,Yes,No,Continuous
+Create ORION Recommendations,Miles,Yes,No,Continuous
+Modify ORION Schema,Miles,Yes,No,Backup first
+Delete ORION Data,Kevin,No,Yes,Approval required
+Create Client Reports,Miles,Yes,No,Continuous
+Prepare Meeting Briefings,Miles,Yes,No,Continuous
+Update CRM Records,Miles,Yes,No,Continuous
+Buy Domains,Kevin,No,Yes,Approval required
+Cancel Domains,Kevin,No,Yes,Approval required
+Modify DNS,Kevin,No,Yes,Approval required
+Spend Company Money,Kevin,No,Yes,Approval required
+Conduct Client Demos,Kevin,No,Always,CEO responsibility
+Conduct Sales Calls,Kevin,No,Always,CEO responsibility
+Negotiate Contracts,Kevin,No,Always,CEO responsibility
+Set Pricing,Kevin,No,Always,CEO responsibility
+Send Email Using pathways2gc.com,Kevin,No,Always,Protected asset
+Use pathways2gc.com for Outbound Campaigns,Kevin,No,Never,Protected asset

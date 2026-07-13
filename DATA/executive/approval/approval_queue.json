@@ -1,0 +1,140 @@
+[
+  {
+    "id": "CEO-20260701193425-1746",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Credential / Interactive Login",
+    "objective": "Authorize Instantly browser session",
+    "reason": "MILES opened Instantly but login or MFA is required before autonomous inspection can continue.",
+    "recommendation": "Kevin should complete the browser login once, then rerun the worker so MILES can reuse the saved session.",
+    "risk": "LOW",
+    "requestedBy": "MILES",
+    "provider": "Instantly",
+    "capability": "browser.instantly.session",
+    "action": "loginRequired",
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "url": "https://app.instantly.ai/auth/login",
+      "title": "",
+      "screenshot": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\instantly_opened_1782934465691.png"
+    },
+    "createdAt": "2026-07-01T19:34:25.884Z",
+    "updatedAt": "2026-07-01T19:34:25.884Z"
+  },
+  {
+    "id": "CEO-20260701221627-9789",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Instantly COO Control",
+    "objective": "Unibox",
+    "reason": "Requires COO validation",
+    "recommendation": "Review and decide.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "InstantlyCOO",
+    "capability": "campaign.control",
+    "action": null,
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "name": "Unibox",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    "createdAt": "2026-07-01T22:16:27.834Z",
+    "updatedAt": "2026-07-01T22:16:27.834Z"
+  },
+  {
+    "id": "CEO-20260701221627-7759",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Instantly COO Control",
+    "objective": "0",
+    "reason": "Requires COO validation",
+    "recommendation": "Review and decide.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "InstantlyCOO",
+    "capability": "campaign.control",
+    "action": null,
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "name": "0",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    "createdAt": "2026-07-01T22:16:27.838Z",
+    "updatedAt": "2026-07-01T22:16:27.838Z"
+  },
+  {
+    "id": "CEO-20260701221627-6948",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Instantly COO Control",
+    "objective": "Status",
+    "reason": "Requires COO validation",
+    "recommendation": "Review and decide.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "InstantlyCOO",
+    "capability": "campaign.control",
+    "action": null,
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "name": "Status",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    "createdAt": "2026-07-01T22:16:27.841Z",
+    "updatedAt": "2026-07-01T22:16:27.841Z"
+  },
+  {
+    "id": "CEO-20260702000557-9473",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Instantly COO Control",
+    "objective": "Welcome back",
+    "reason": "Requires COO validation",
+    "recommendation": "Review and decide.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "InstantlyCOO",
+    "capability": "campaign.control",
+    "action": null,
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "name": "Welcome back",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    "createdAt": "2026-07-02T00:05:57.278Z",
+    "updatedAt": "2026-07-02T00:05:57.278Z"
+  },
+  {
+    "id": "CEO-20260702000557-3640",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Instantly COO Control",
+    "objective": "Campaigns",
+    "reason": "Requires COO validation",
+    "recommendation": "Review and decide.",
+    "risk": "MEDIUM",
+    "requestedBy": "MILES",
+    "provider": "InstantlyCOO",
+    "capability": "campaign.control",
+    "action": null,
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "name": "Campaigns",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    "createdAt": "2026-07-02T00:05:57.282Z",
+    "updatedAt": "2026-07-02T00:05:57.282Z"
+  }
+]

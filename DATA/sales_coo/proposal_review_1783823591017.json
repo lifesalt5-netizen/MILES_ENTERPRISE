@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "provider": "SalesProvider",
+  "action": "reviewProposals",
+  "generatedAt": "2026-07-12T02:33:11.017Z",
+  "proposals": [
+    {
+      "id": "proposal-1",
+      "title": "Test Proposal",
+      "dueDate": "2026-07-12T22:33:08.951Z",
+      "hoursRemaining": 20,
+      "urgency": "CRITICAL",
+      "submissionProtected": true
+    }
+  ],
+  "metrics": {
+    "proposals": 1,
+    "critical": 1,
+    "high": 0
+  },
+  "exceptions": [],
+  "recommendations": [
+    {
+      "action": "PREPARE_SUBMISSION_READINESS",
+      "proposalId": "proposal-1",
+      "title": "Test Proposal",
+      "dueDate": "2026-07-12T22:33:08.951Z",
+      "urgency": "CRITICAL",
+      "requiresCEOApproval": true
+    }
+  ]
+}

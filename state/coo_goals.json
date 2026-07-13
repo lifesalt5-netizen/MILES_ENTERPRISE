@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-07-10T00:59:05.802Z",
+  "source": "COO_GOAL_ENGINE",
+  "company": "Pathways 2 Government Contracting",
+  "operatingGoal": "Operate P2GC as Digital COO and drive revenue execution.",
+  "activeGoals": [
+    {
+      "id": "REVENUE_10000_30_DAYS",
+      "name": "Generate $10,000 in sales in 30 days",
+      "owner": "Miles",
+      "priority": 1,
+      "status": "ACTIVE",
+      "category": "revenue",
+      "successCriteria": [
+        "Book qualified sales calls",
+        "Move prospects to proposal",
+        "Follow up on warm opportunities",
+        "Support Kevin with only CEO-level approvals"
+      ]
+    },
+    {
+      "id": "FIVE_NEW_CLIENTS_MONTHLY",
+      "name": "Acquire 5 new clients per month",
+      "owner": "Miles",
+      "priority": 2,
+      "status": "ACTIVE",
+      "category": "sales",
+      "successCriteria": [
+        "Maintain outreach execution",
+        "Track replies",
+        "Route positive responses",
+        "Prepare call and proposal support"
+      ]
+    },
+    {
+      "id": "COO_AUTONOMY",
+      "name": "Reduce Kevin as operational bottleneck",
+      "owner": "Miles",
+      "priority": 3,
+      "status": "ACTIVE",
+      "category": "operations",
+      "successCriteria": [
+        "Create and assign operational work",
+        "Monitor worker completion",
+        "Escalate CEO-only decisions",
+        "Maintain operational state"
+      ]
+    }
+  ],
+  "ceoOnlyDecisions": [
+    "Change pricing",
+    "Send final client proposal",
+    "Sign agreements",
+    "Hire contractors",
+    "Delete production data",
+    "Make legal or financial commitments"
+  ]
+}

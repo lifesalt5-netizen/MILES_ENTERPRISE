@@ -1,0 +1,224 @@
+{
+  "id": "WP-20260702192146-305",
+  "objective": "Repair WorkQueue: Escalations",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-02T19:21:46.666Z",
+  "updatedAt": "2026-07-02T19:21:46.666Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Repair WorkQueue: Escalations",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-02T19:21:46.666Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783020106365-63056",
+      "area": "WorkQueue",
+      "priority": 2,
+      "description": "2 Kevin-level escalation(s) open.",
+      "reason": "Autonomous repair candidate detected during COO health check.",
+      "recommendedAction": "Investigate issue, generate repair recommendation, and verify result.",
+      "expectedImpact": "Restores or protects autonomous operating capability.",
+      "relatedProvider": "WorkQueue",
+      "metadata": {
+        "repair": {
+          "id": "REPAIR-1783020106263-67695",
+          "cycleId": "COO-20260702192144-001",
+          "area": "WorkQueue",
+          "severity": "Warning",
+          "title": "Repair WorkQueue: Escalations",
+          "problem": "2 Kevin-level escalation(s) open.",
+          "safeAutonomous": true,
+          "requiresKevin": false,
+          "recommendedRepair": "Investigate issue, generate repair recommendation, and verify result.",
+          "verification": "Issue is resolved, downgraded, or escalated with evidence.",
+          "rollback": "Restore prior state if a safe repair changes system state.",
+          "status": "READY",
+          "source": "AutonomousCOOLoopService",
+          "createdAt": "2026-07-02T19:21:46.263Z",
+          "metadata": {
+            "system": {
+              "area": "WorkQueue",
+              "status": "Watch",
+              "score": 78,
+              "risk": "MEDIUM",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-02T19:21:46.262Z",
+              "lastFailure": null,
+              "exceptions": [
+                {
+                  "type": "Escalations",
+                  "severity": "Warning",
+                  "message": "2 Kevin-level escalation(s) open."
+                }
+              ],
+              "recommendations": [
+                "Review CEO approval queue and resolve blocked decisions."
+              ],
+              "metrics": {
+                "total": 60,
+                "open": 20,
+                "pending": 2,
+                "queued": 18,
+                "inProgress": 0,
+                "blocked": 0,
+                "awaitingApproval": 0,
+                "completed": 0,
+                "failed": 40,
+                "escalations": 2
+              }
+            },
+            "exception": {
+              "type": "Escalations",
+              "severity": "Warning",
+              "message": "2 Kevin-level escalation(s) open."
+            }
+          }
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

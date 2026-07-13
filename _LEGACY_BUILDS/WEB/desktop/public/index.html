@@ -1,0 +1,45 @@
+﻿<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>MILES Desktop</title>
+  <style>
+    body{font-family:Arial, sans-serif;background:#0f172a;color:#e5e7eb;margin:0}
+    header{padding:18px 24px;background:#111827;border-bottom:1px solid #334155}
+    h1{margin:0;font-size:24px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:18px}.card{background:#111827;border:1px solid #334155;border-radius:10px;padding:16px}.wide{grid-column:span 2}button,input{font-size:15px;padding:10px;border-radius:8px;border:1px solid #475569}input{width:70%;background:#020617;color:white}button{background:#2563eb;color:white;cursor:pointer}.muted{color:#94a3b8}pre{white-space:pre-wrap;background:#020617;padding:12px;border-radius:8px;max-height:300px;overflow:auto}.ok{color:#22c55e}.warn{color:#f59e0b}
+  </style>
+</head>
+<body>
+<header><h1>MILES Desktop</h1><div class="muted">P2GC Digital COO Runtime</div></header>
+<div class="grid">
+  <div class="card"><div class="muted">Runtime</div><h2 id="runtime">Loading</h2></div>
+  <div class="card"><div class="muted">Pending Tasks</div><h2 id="tasks">-</h2></div>
+  <div class="card"><div class="muted">Connectors</div><h2 id="connectors">-</h2></div>
+  <div class="card"><div class="muted">Approvals</div><h2 id="approvals">-</h2></div>
+  <div class="card wide"><h3>Executive Chat</h3><input id="cmd" placeholder="Miles, what needs my attention?"/><button onclick="sendCmd()">Send</button><pre id="chat"></pre></div>
+  <div class="card wide"><h3>Live Status</h3><pre id="status"></pre></div>
+  <div class="card wide"><h3>Detected Connectors</h3><pre id="connectorList"></pre></div>
+  <div class="card wide"><h3>Notifications</h3><pre id="notifications"></pre></div>
+</div>
+<script>
+async function refresh(){
+  const s = await fetch('/api/status').then(r=>r.json());
+  document.getElementById('runtime').innerHTML = s.runtime === 'running' ? '<span class="ok">Running</span>' : '<span class="warn">Stopped</span>';
+  document.getElementById('tasks').textContent = s.tasks.pending;
+  document.getElementById('connectors').textContent = Object.keys(s.connectors || {}).length;
+  document.getElementById('approvals').textContent = (s.approvals || []).length;
+  document.getElementById('status').textContent = JSON.stringify(s, null, 2);
+  document.getElementById('connectorList').textContent = JSON.stringify(s.connectors, null, 2);
+  document.getElementById('notifications').textContent = JSON.stringify(s.notifications, null, 2);
+}
+async function sendCmd(){
+  const command = document.getElementById('cmd').value;
+  const r = await fetch('/api/command',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command})}).then(r=>r.json());
+  document.getElementById('chat').textContent = r.message;
+  document.getElementById('cmd').value='';
+  refresh();
+}
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>

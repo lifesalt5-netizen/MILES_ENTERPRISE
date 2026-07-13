@@ -1,0 +1,14 @@
+[
+  {
+    "missionId": "aba0e389-5646-47cb-99c6-efbeebab311e",
+    "worker": "InstantlyCOOWorker",
+    "type": "CONFIGURE_CAMPAIGN",
+    "priority": 1,
+    "status": "QUEUED",
+    "targetId": "campaign_001",
+    "targetName": "HubZone",
+    "payload": {},
+    "reason": "Campaign has no sending accounts.",
+    "createdAt": "2026-07-09T23:52:54.548Z"
+  }
+]

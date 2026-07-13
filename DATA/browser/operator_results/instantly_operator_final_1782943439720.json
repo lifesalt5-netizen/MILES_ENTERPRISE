@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "stage": "COMPLETED",
+  "campaigns": [],
+  "actions": {
+    "executed": [],
+    "verified": [],
+    "failed": [],
+    "approvals": []
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaigns_opened_1782943431370.png"
+  ],
+  "errors": []
+}

@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "service": "ENTERPRISE_COMPONENT_REGISTRY",
+  "version": "1.0.0",
+  "rootDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+  "componentCount": 10907,
+  "supportedActionCount": 67,
+  "countByType": {
+    "GENERAL": 156,
+    "MEMORY": 16,
+    "API": 13,
+    "TEST": 57,
+    "SCHEDULER": 18,
+    "CONNECTOR": 517,
+    "WORKER": 88,
+    "RUNTIME": 174,
+    "DASHBOARD": 37,
+    "PROVIDER": 8798,
+    "DATABASE": 9,
+    "GOVERNANCE": 971,
+    "LEARNING": 10,
+    "PLANNER": 43
+  },
+  "countByStatus": {
+    "DISCOVERED": 10773,
+    "SUPPORTING": 125,
+    "PARTIAL": 9
+  },
+  "generatedAt": "2026-07-10T23:19:29.783Z"
+}

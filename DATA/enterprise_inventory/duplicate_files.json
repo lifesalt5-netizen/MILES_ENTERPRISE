@@ -1,0 +1,1164 @@
+[
+  {
+    "name": "authority.js",
+    "count": 2,
+    "files": [
+      "CORE/authority.js",
+      "_REFERENCE/MILES_OS_v1/CORE/authority.js"
+    ]
+  },
+  {
+    "name": "connectormanager.js",
+    "count": 5,
+    "files": [
+      "CORE/ConnectorManager.js",
+      "SERVICES/ConnectorManager.js",
+      "miles_core_framework_dropin/CORE/ConnectorManager.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/connectors/connectorManager.js",
+      "_REFERENCE/MILES_OS_v1/SERVICES/ConnectorManager.js"
+    ]
+  },
+  {
+    "name": "database.js",
+    "count": 2,
+    "files": [
+      "CORE/Database.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Database.js"
+    ]
+  },
+  {
+    "name": "eventbus.js",
+    "count": 5,
+    "files": [
+      "CORE/EventBus.js",
+      "CORE/Kernel/EventBus.js",
+      "SERVICES/Events/EventBus.js",
+      "miles_core_framework_dropin/CORE/EventBus.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Kernel/EventBus.js"
+    ]
+  },
+  {
+    "name": "healthdashboard.js",
+    "count": 2,
+    "files": [
+      "CORE/HealthDashboard.js",
+      "miles_core_framework_dropin/CORE/HealthDashboard.js"
+    ]
+  },
+  {
+    "name": "logger.js",
+    "count": 8,
+    "files": [
+      "CORE/logger.js",
+      "CONNECTORS/WEBSITE_B12/modules/logger.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/CORE/Logger.js",
+      "miles_autonomous_patch/CORE/Logger.js",
+      "miles_core_framework_dropin/CORE/Logger.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/logging/logger.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+      "_REFERENCE/MILES_OS_v1/CORE/logger.js"
+    ]
+  },
+  {
+    "name": "miles.js",
+    "count": 2,
+    "files": [
+      "CORE/miles.js",
+      "_REFERENCE/MILES_OS_v1/CORE/miles.js"
+    ]
+  },
+  {
+    "name": "runtimecontroller.js",
+    "count": 2,
+    "files": [
+      "CORE/RuntimeController.js",
+      "BUILDER/RuntimeController.js"
+    ]
+  },
+  {
+    "name": "supervisor.js",
+    "count": 2,
+    "files": [
+      "CORE/Supervisor.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/supervisor/supervisor.js"
+    ]
+  },
+  {
+    "name": "taskqueue.js",
+    "count": 3,
+    "files": [
+      "CORE/TaskQueue.js",
+      "miles_core_framework_dropin/CORE/TaskQueue.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/taskQueue.js"
+    ]
+  },
+  {
+    "name": "healthmonitor.js",
+    "count": 2,
+    "files": [
+      "CORE/Kernel/HealthMonitor.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Kernel/HealthMonitor.js"
+    ]
+  },
+  {
+    "name": "mileskernel.js",
+    "count": 2,
+    "files": [
+      "CORE/Kernel/MilesKernel.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Kernel/MilesKernel.js"
+    ]
+  },
+  {
+    "name": "serviceregistry.js",
+    "count": 2,
+    "files": [
+      "CORE/Kernel/ServiceRegistry.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js"
+    ]
+  },
+  {
+    "name": "startmiles.js",
+    "count": 6,
+    "files": [
+      "CORE/Kernel/StartMiles.js",
+      "StartMiles.js",
+      "build006_patch/payload/StartMiles.js",
+      "miles_build005_exec_layer/miles_build005_exec_layer/StartMiles.js",
+      "miles_build006_outbound_ops/build006_patch/payload/StartMiles.js",
+      "_REFERENCE/MILES_OS_v1/CORE/Kernel/StartMiles.js"
+    ]
+  },
+  {
+    "name": "milesruntime.js",
+    "count": 2,
+    "files": [
+      "CORE/Runtime/MilesRuntime.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/milesRuntime.js"
+    ]
+  },
+  {
+    "name": "actionauditservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionAuditService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionAuditService.js"
+    ]
+  },
+  {
+    "name": "actiondispatcherservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionDispatcherService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionDispatcherService.js"
+    ]
+  },
+  {
+    "name": "actionengineservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionEngineService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionEngineService.js"
+    ]
+  },
+  {
+    "name": "actionhistoryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionHistoryService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionHistoryService.js"
+    ]
+  },
+  {
+    "name": "actionretryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionRetryService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionRetryService.js"
+    ]
+  },
+  {
+    "name": "actionverificationservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ActionVerificationService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionVerificationService.js"
+    ]
+  },
+  {
+    "name": "autonomouscooloopservice.js",
+    "count": 6,
+    "files": [
+      "SERVICES/AutonomousCOOLoopService.js",
+      "AutonomousCOOLoopService.js",
+      "BUILD_012/BUILD_012/SERVICES/AutonomousCOOLoopService.js",
+      "BUILD_013/BUILD_013/SERVICES/AutonomousCOOLoopService.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js",
+      "miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js"
+    ]
+  },
+  {
+    "name": "baseprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/BaseProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/BaseProviderController.js"
+    ]
+  },
+  {
+    "name": "businessexecutionengineservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/BusinessExecutionEngineService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/BusinessExecutionEngineService.js"
+    ]
+  },
+  {
+    "name": "capabilityregistryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/CapabilityRegistryService.js",
+      "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/SERVICES/CapabilityRegistryService.js"
+    ]
+  },
+  {
+    "name": "companystateservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/CompanyStateService.js",
+      "MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/SERVICES/CompanyStateService.js"
+    ]
+  },
+  {
+    "name": "confidencescoringservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ConfidenceScoringService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/ConfidenceScoringService.js"
+    ]
+  },
+  {
+    "name": "connectorruntimemanager.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ConnectorRuntimeManager.js",
+      "SERVICES/connector_runtime/ConnectorRuntimeManager.js"
+    ]
+  },
+  {
+    "name": "continuouscooloopservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ContinuousCOOLoopService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/ContinuousCOOLoopService.js"
+    ]
+  },
+  {
+    "name": "controlledwriteauditservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ControlledWriteAuditService.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteAuditService.js"
+    ]
+  },
+  {
+    "name": "controlledwritepolicyservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ControlledWritePolicyService.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWritePolicyService.js"
+    ]
+  },
+  {
+    "name": "controlledwriteservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ControlledWriteService.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteService.js"
+    ]
+  },
+  {
+    "name": "cooorchestratorservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/COOOrchestratorService.js",
+      "BUILD_013/BUILD_013/SERVICES/COOOrchestratorService.js",
+      "BUILD_015/BUILD_015/SERVICES/COOOrchestratorService.js"
+    ]
+  },
+  {
+    "name": "dashboarddataservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/DashboardDataService.js",
+      "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardDataService.js"
+    ]
+  },
+  {
+    "name": "dashboardserverservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/DashboardServerService.js",
+      "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardServerService.js"
+    ]
+  },
+  {
+    "name": "decisionengine.js",
+    "count": 2,
+    "files": [
+      "SERVICES/DecisionEngine.js",
+      "SERVICES/Decision/DecisionEngine.js"
+    ]
+  },
+  {
+    "name": "decisionlearningservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/DecisionLearningService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/DecisionLearningService.js"
+    ]
+  },
+  {
+    "name": "escalationmanagerservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/EscalationManagerService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/EscalationManagerService.js"
+    ]
+  },
+  {
+    "name": "executionauditservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutionAuditService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionAuditService.js"
+    ]
+  },
+  {
+    "name": "executiondispatcherservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutionDispatcherService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionDispatcherService.js"
+    ]
+  },
+  {
+    "name": "executionmonitorservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutionMonitorService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionMonitorService.js"
+    ]
+  },
+  {
+    "name": "executionplannerservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutionPlannerService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionPlannerService.js"
+    ]
+  },
+  {
+    "name": "executionschedulerservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutionSchedulerService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionSchedulerService.js"
+    ]
+  },
+  {
+    "name": "executionservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/ExecutionService.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+      "miles_autonomous_patch/SERVICES/ExecutionService.js"
+    ]
+  },
+  {
+    "name": "executivebrainservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutiveBrainService.js",
+      "MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/SERVICES/ExecutiveBrainService.js"
+    ]
+  },
+  {
+    "name": "executivedashboardservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ExecutiveDashboardService.js",
+      "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/ExecutiveDashboardService.js"
+    ]
+  },
+  {
+    "name": "executiveintelligenceservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/ExecutiveIntelligenceService.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js",
+      "miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js"
+    ]
+  },
+  {
+    "name": "failurelearningservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/FailureLearningService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/FailureLearningService.js"
+    ]
+  },
+  {
+    "name": "filesystemprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/FileSystemProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/FileSystemProviderController.js"
+    ]
+  },
+  {
+    "name": "googleworkspaceprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/GoogleWorkspaceProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/GoogleWorkspaceProviderController.js"
+    ]
+  },
+  {
+    "name": "heartbeatservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/HeartbeatService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/HeartbeatService.js"
+    ]
+  },
+  {
+    "name": "instantlyactionbridgeservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyActionBridgeService.js",
+      "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyActionBridgeService.js"
+    ]
+  },
+  {
+    "name": "instantlyapiclient.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyApiClient.js",
+      "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyApiClient.js"
+    ]
+  },
+  {
+    "name": "instantlycontrolledwriteservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyControlledWriteService.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/InstantlyControlledWriteService.js"
+    ]
+  },
+  {
+    "name": "instantlyliveintegrationservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyLiveIntegrationService.js",
+      "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveIntegrationService.js"
+    ]
+  },
+  {
+    "name": "instantlyliveprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyLiveProviderController.js",
+      "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveProviderController.js"
+    ]
+  },
+  {
+    "name": "instantlyprovidercompatibilityservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyProviderCompatibilityService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/InstantlyProviderCompatibilityService.js"
+    ]
+  },
+  {
+    "name": "instantlyprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/InstantlyProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/InstantlyProviderController.js"
+    ]
+  },
+  {
+    "name": "jsonfileservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/JsonFileService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/JsonFileService.js"
+    ]
+  },
+  {
+    "name": "learningdataservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/LearningDataService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/LearningDataService.js"
+    ]
+  },
+  {
+    "name": "loopschedulerservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/LoopSchedulerService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/LoopSchedulerService.js"
+    ]
+  },
+  {
+    "name": "memoryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/MemoryService.js",
+      "_REFERENCE/MILES_OS_v1/SERVICES/MemoryService.js"
+    ]
+  },
+  {
+    "name": "namecheapprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/NamecheapProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/NamecheapProviderController.js"
+    ]
+  },
+  {
+    "name": "orionprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/OrionProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/OrionProviderController.js"
+    ]
+  },
+  {
+    "name": "outboundservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/OutboundService.js",
+      "build006_patch/payload/SERVICES/OutboundService.js",
+      "miles_build006_outbound_ops/build006_patch/payload/SERVICES/OutboundService.js"
+    ]
+  },
+  {
+    "name": "priorityoptimizationservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/PriorityOptimizationService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/PriorityOptimizationService.js"
+    ]
+  },
+  {
+    "name": "providerauthorityregistryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderAuthorityRegistryService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderAuthorityRegistryService.js"
+    ]
+  },
+  {
+    "name": "providercapabilitybindingservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderCapabilityBindingService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderCapabilityBindingService.js"
+    ]
+  },
+  {
+    "name": "providercontrollerexecutionservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderControllerExecutionService.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerExecutionService.js"
+    ]
+  },
+  {
+    "name": "providercontrollerhealthservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderControllerHealthService.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerHealthService.js"
+    ]
+  },
+  {
+    "name": "providercontrollerregistryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderControllerRegistryService.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerRegistryService.js"
+    ]
+  },
+  {
+    "name": "providerinterfaceadapterservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderInterfaceAdapterService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderInterfaceAdapterService.js"
+    ]
+  },
+  {
+    "name": "providerregistryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderRegistryService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ProviderRegistryService.js"
+    ]
+  },
+  {
+    "name": "providersynchronizationservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/ProviderSynchronizationService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderSynchronizationService.js"
+    ]
+  },
+  {
+    "name": "queuerecoveryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/QueueRecoveryService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/QueueRecoveryService.js"
+    ]
+  },
+  {
+    "name": "recommendationengineservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RecommendationEngineService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RecommendationEngineService.js"
+    ]
+  },
+  {
+    "name": "repositoryregistryservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RepositoryRegistryService.js",
+      "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js"
+    ]
+  },
+  {
+    "name": "restartguardianservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RestartGuardianService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RestartGuardianService.js"
+    ]
+  },
+  {
+    "name": "retrymanagerservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RetryManagerService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/RetryManagerService.js"
+    ]
+  },
+  {
+    "name": "routinglearningservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RoutingLearningService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RoutingLearningService.js"
+    ]
+  },
+  {
+    "name": "runtimehealthservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/RuntimeHealthService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RuntimeHealthService.js"
+    ]
+  },
+  {
+    "name": "selflearningservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/SelfLearningService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/SelfLearningService.js"
+    ]
+  },
+  {
+    "name": "startproductionsystem.js",
+    "count": 3,
+    "files": [
+      "SERVICES/StartProductionSystem.js",
+      "PROVIDERS/StartProductionSystem.js",
+      "StartProductionSystem.js"
+    ]
+  },
+  {
+    "name": "taskmanager.js",
+    "count": 2,
+    "files": [
+      "SERVICES/TaskManager.js",
+      "_REFERENCE/MILES_OS_v1/SERVICES/TaskManager.js"
+    ]
+  },
+  {
+    "name": "taskrouterservice.js",
+    "count": 2,
+    "files": [
+      "SERVICES/TaskRouterService.js",
+      "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/SERVICES/TaskRouterService.js"
+    ]
+  },
+  {
+    "name": "test_autonomous_coo_loop.js",
+    "count": 3,
+    "files": [
+      "SERVICES/test_autonomous_coo_loop.js",
+      "BUILD_012/BUILD_012/TESTS/test_autonomous_coo_loop.js",
+      "BUILD_013/BUILD_013/TESTS/test_autonomous_coo_loop.js"
+    ]
+  },
+  {
+    "name": "timeutil.js",
+    "count": 2,
+    "files": [
+      "SERVICES/TimeUtil.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/TimeUtil.js"
+    ]
+  },
+  {
+    "name": "websiteprovidercontroller.js",
+    "count": 2,
+    "files": [
+      "SERVICES/WebsiteProviderController.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/WebsiteProviderController.js"
+    ]
+  },
+  {
+    "name": "workflowservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/WorkflowService.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkflowService.js",
+      "miles_autonomous_patch/SERVICES/WorkflowService.js"
+    ]
+  },
+  {
+    "name": "workforceexecutionservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/WorkforceExecutionService.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+      "miles_autonomous_patch/SERVICES/WorkforceExecutionService.js"
+    ]
+  },
+  {
+    "name": "workqueueservice.js",
+    "count": 3,
+    "files": [
+      "SERVICES/WorkQueueService.js",
+      "BUILD_012/BUILD_012/SERVICES/WorkQueueService.js",
+      "BUILD_014/BUILD_014/SERVICES/WorkQueueService.js"
+    ]
+  },
+  {
+    "name": "instantlycampaignoperator.js",
+    "count": 6,
+    "files": [
+      "SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js"
+    ]
+  },
+  {
+    "name": "learningengine.js",
+    "count": 2,
+    "files": [
+      "SERVICES/Learning/LearningEngine.js",
+      "SERVICES/learning_engine/LearningEngine.js"
+    ]
+  },
+  {
+    "name": "operationexecutionkernel.js",
+    "count": 2,
+    "files": [
+      "SERVICES/operation_kernel/OperationExecutionKernel.js",
+      "ROADMAP/SERVICES/operation_kernel/OperationExecutionKernel.js"
+    ]
+  },
+  {
+    "name": "account_manager.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/GOOGLE/account_manager.js",
+      "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js"
+    ]
+  },
+  {
+    "name": "auth.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/auth.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js",
+      "Drop in/CONNECTORS/GOOGLE/auth.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js"
+    ]
+  },
+  {
+    "name": "calendar.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/calendar.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js",
+      "Drop in/CONNECTORS/GOOGLE/calendar.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js"
+    ]
+  },
+  {
+    "name": "config.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/config.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js",
+      "Drop in/CONNECTORS/GOOGLE/config.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/config.js"
+    ]
+  },
+  {
+    "name": "contacts.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/contacts.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js",
+      "Drop in/CONNECTORS/GOOGLE/contacts.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js"
+    ]
+  },
+  {
+    "name": "drive.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/drive.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js",
+      "Drop in/CONNECTORS/GOOGLE/drive.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js"
+    ]
+  },
+  {
+    "name": "gmail.js",
+    "count": 4,
+    "files": [
+      "CONNECTORS/GOOGLE/gmail.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js",
+      "Drop in/CONNECTORS/GOOGLE/gmail.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js"
+    ]
+  },
+  {
+    "name": "index.js",
+    "count": 9,
+    "files": [
+      "CONNECTORS/GOOGLE/index.js",
+      "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js",
+      "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js",
+      "BUILDER/index.js",
+      "Drop in/CONNECTORS/GOOGLE/index.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/index.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/index.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/index.js",
+      "miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js"
+    ]
+  },
+  {
+    "name": "workspace.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/GOOGLE/workspace.js",
+      "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js"
+    ]
+  },
+  {
+    "name": "miles_google_accounts_health.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/miles_google_accounts_health.js",
+      "miles_google_accounts_health.js"
+    ]
+  },
+  {
+    "name": "connector.js",
+    "count": 3,
+    "files": [
+      "CONNECTORS/INSTANTLY/connector.js",
+      "CONNECTORS/MILES/connector.js",
+      "CONNECTORS/ORION/connector.js"
+    ]
+  },
+  {
+    "name": "controller.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/controller.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js"
+    ]
+  },
+  {
+    "name": "audit.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/modules/audit.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js"
+    ]
+  },
+  {
+    "name": "browser.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/modules/browser.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js"
+    ]
+  },
+  {
+    "name": "paths.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/modules/paths.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js"
+    ]
+  },
+  {
+    "name": "screenshots.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js"
+    ]
+  },
+  {
+    "name": "session.js",
+    "count": 2,
+    "files": [
+      "CONNECTORS/WEBSITE_B12/modules/session.js",
+      "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js"
+    ]
+  },
+  {
+    "name": "server.js",
+    "count": 2,
+    "files": [
+      "API/server.js",
+      "_REFERENCE/MILES_OS_v1/API/server.js"
+    ]
+  },
+  {
+    "name": "memory.routes.js",
+    "count": 2,
+    "files": [
+      "API/API/memory.routes.js",
+      "_REFERENCE/MILES_OS_v1/API/API/memory.routes.js"
+    ]
+  },
+  {
+    "name": "milesbrain.js",
+    "count": 2,
+    "files": [
+      "AI/MilesBrain.js",
+      "_REFERENCE/MILES_OS_v1/AI/MilesBrain.js"
+    ]
+  },
+  {
+    "name": "scheduler.js",
+    "count": 3,
+    "files": [
+      "AUTOMATIONS/Scheduler.js",
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/scheduler/scheduler.js",
+      "_REFERENCE/MILES_OS_v1/AUTOMATIONS/Scheduler.js"
+    ]
+  },
+  {
+    "name": "healthcheck.js",
+    "count": 4,
+    "files": [
+      "TESTS/healthcheck.js",
+      "build006_patch/payload/TESTS/healthcheck.js",
+      "miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js",
+      "miles_build006_outbound_ops/build006_patch/payload/TESTS/healthcheck.js"
+    ]
+  },
+  {
+    "name": "outbound_audit.js",
+    "count": 3,
+    "files": [
+      "TESTS/outbound_audit.js",
+      "build006_patch/payload/TESTS/outbound_audit.js",
+      "miles_build006_outbound_ops/build006_patch/payload/TESTS/outbound_audit.js"
+    ]
+  },
+  {
+    "name": "test_instantlycampaignoperator.js",
+    "count": 3,
+    "files": [
+      "TESTS/Test_InstantlyCampaignOperator.js",
+      "MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js",
+      "MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js"
+    ]
+  },
+  {
+    "name": "miles_connector_health.js",
+    "count": 2,
+    "files": [
+      "miles_connector_health.js",
+      "miles_core_framework_dropin/miles_connector_health.js"
+    ]
+  },
+  {
+    "name": "startautonomouscoo.js",
+    "count": 3,
+    "files": [
+      "StartAutonomousCOO.js",
+      "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/StartAutonomousCOO.js",
+      "miles_autonomous_patch/StartAutonomousCOO.js"
+    ]
+  },
+  {
+    "name": "test_coo_orchestrator.js",
+    "count": 3,
+    "files": [
+      "test_coo_orchestrator.js",
+      "BUILD_013/BUILD_013/TESTS/test_coo_orchestrator.js",
+      "BUILD_015/BUILD_015/TESTS/test_coo_orchestrator.js"
+    ]
+  },
+  {
+    "name": "test_work_queue.js",
+    "count": 2,
+    "files": [
+      "test_work_queue.js",
+      "BUILD_014/BUILD_014/TESTS/test_work_queue.js"
+    ]
+  },
+  {
+    "name": "architecturediscovery.js",
+    "count": 2,
+    "files": [
+      "BUILDER/ArchitectureDiscovery.js",
+      "MILES_BUILDER_AUTONOMY_PATCH_v1/BUILDER/ArchitectureDiscovery.js"
+    ]
+  },
+  {
+    "name": "builderservice.js",
+    "count": 15,
+    "files": [
+      "BUILDER/BuilderService.js",
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/BUILDER/BuilderService.js",
+      "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/BUILDER/BuilderService.js",
+      "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/BUILDER/BuilderService.js",
+      "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/BUILDER/BuilderService.js",
+      "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/BuilderService.js",
+      "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/BUILDER/BuilderService.js",
+      "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/BuilderService.js",
+      "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/BuilderService.js",
+      "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/BUILDER/BuilderService.js",
+      "MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js"
+    ]
+  },
+  {
+    "name": "salesoperationsservice.js",
+    "count": 2,
+    "files": [
+      "BUILD_007/SERVICES/SalesOperationsService.js",
+      "miles_build007_sales_ops/BUILD_007/SERVICES/SalesOperationsService.js"
+    ]
+  },
+  {
+    "name": "sales_healthcheck.js",
+    "count": 2,
+    "files": [
+      "BUILD_007/TESTS/sales_healthcheck.js",
+      "miles_build007_sales_ops/BUILD_007/TESTS/sales_healthcheck.js"
+    ]
+  },
+  {
+    "name": "verify_coo_loop.js",
+    "count": 2,
+    "files": [
+      "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/VERIFY/VERIFY_COO_LOOP.js",
+      "VERIFY/VERIFY_COO_LOOP.js"
+    ]
+  },
+  {
+    "name": "backup-runtime.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/scripts/backup-runtime.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/scripts/backup-runtime.js"
+    ]
+  },
+  {
+    "name": "run_build_043.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/scripts/run_build_043.js",
+      "scripts/run_build_043.js"
+    ]
+  },
+  {
+    "name": "smoke-test.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/scripts/smoke-test.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/scripts/smoke-test.js"
+    ]
+  },
+  {
+    "name": "main.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js"
+    ]
+  },
+  {
+    "name": "preload.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/src/main/preload.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/src/main/preload.js"
+    ]
+  },
+  {
+    "name": "app.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/src/renderer/app.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/src/renderer/app.js"
+    ]
+  },
+  {
+    "name": "runtimehost.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/src/runtime/runtimeHost.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/src/runtime/runtimeHost.js"
+    ]
+  },
+  {
+    "name": "state.js",
+    "count": 2,
+    "files": [
+      "miles_desktop_v2_build003/miles_desktop_v2/src/shared/state.js",
+      "miles_desktop_v2_starter/miles_desktop_v2/src/shared/state.js"
+    ]
+  },
+  {
+    "name": "dashboard.js",
+    "count": 2,
+    "files": [
+      "WEB/Dashboard.js",
+      "_REFERENCE/MILES_OS_v1/WEB/Dashboard.js"
+    ]
+  }
+]

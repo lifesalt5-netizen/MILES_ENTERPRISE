@@ -1,0 +1,3065 @@
+{
+  "generatedAt": "2026-07-13T15:58:56.209Z",
+  "runtime": {
+    "mode": "local",
+    "node": "v24.18.0",
+    "cwd": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+    "platform": "win32"
+  },
+  "configuration": {
+    "healthy": true,
+    "failSoft": true,
+    "envExists": true,
+    "required": [
+      {
+        "ok": true,
+        "key": "ORION_DB_PATH",
+        "value": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db"
+      }
+    ],
+    "optional": [
+      {
+        "key": "INSTANTLY_API_KEY",
+        "present": true
+      }
+    ]
+  },
+  "connectors": {
+    "INSTANTLY": {
+      "name": "INSTANTLY",
+      "ok": true,
+      "provider": "Instantly",
+      "apiVersion": "v2",
+      "campaignsReachable": true,
+      "accountsReachable": true,
+      "campaignResponseType": "object",
+      "accountResponseType": "object",
+      "dryRun": true,
+      "mutationsAllowed": false,
+      "generatedAt": "2026-07-13T15:58:50.740Z"
+    },
+    "ORION": {
+      "name": "ORION",
+      "ok": true,
+      "service": "ORION",
+      "status": "OK",
+      "db": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+      "tableCount": 66,
+      "checkedAt": "2026-07-13T15:58:50.740Z"
+    },
+    "MILES": {
+      "name": "MILES",
+      "status": "OK",
+      "ok": true,
+      "service": "MILES Internal Capability Connector",
+      "message": "Internal capability routing operational.",
+      "checkedAt": "2026-07-13T15:58:50.740Z"
+    }
+  },
+  "workforce": {
+    "ok": true,
+    "workers": 120,
+    "employees": 120,
+    "capabilities": 344,
+    "active": 0,
+    "idle": 120,
+    "queued": 25
+  },
+  "capabilities": {
+    "ok": true,
+    "count": 344,
+    "available": [
+      "agency buying map",
+      "agency intelligence",
+      "buying offices",
+      "contracting offices",
+      "contract vehicle mapping",
+      "budget intelligence",
+      "program intelligence",
+      "opportunity forecast analysis",
+      "agency entry strategy",
+      "agency contact map",
+      "federal market entry strategy",
+      "vehicle strategy",
+      "contract vehicle strategy",
+      "budget program intelligence",
+      "opportunity forecast report",
+      "sales",
+      "client acquisition",
+      "growth strategy",
+      "market segmentation",
+      "lead strategy",
+      "offer strategy",
+      "offer to segment matching",
+      "outreach strategy",
+      "conversion strategy",
+      "pricing positioning",
+      "pipeline intelligence",
+      "close strategy",
+      "objection handling",
+      "revenue growth",
+      "target segment of the week",
+      "lead criteria",
+      "outreach messaging",
+      "offer recommendation",
+      "pipeline insights",
+      "recompete",
+      "expiration",
+      "contract expiration",
+      "vehicle renewal",
+      "incumbent fragility",
+      "certification continuity",
+      "procurement continuity",
+      "forecasting",
+      "sources sought",
+      "rfi",
+      "draft rfp",
+      "renewal scoring",
+      "expiration heatmap",
+      "orion expiration engine",
+      "orion recompete engine",
+      "orion incumbent fragility engine"
+    ]
+  },
+  "workflow": {
+    "ok": true,
+    "total": 1983,
+    "queued": 1965,
+    "awaitingApproval": 18,
+    "completed": 0,
+    "active": [
+      {
+        "id": "WP-20260702005453-314",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T00:54:53.160Z",
+        "updatedAt": "2026-07-02T00:54:53.160Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T00:54:53.160Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782953682025",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702005554-123",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T00:55:54.909Z",
+        "updatedAt": "2026-07-02T00:55:54.909Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T00:55:54.909Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782953754307",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702005656-385",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T00:56:56.891Z",
+        "updatedAt": "2026-07-02T00:56:56.891Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T00:56:56.891Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782953816244",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702005759-386",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T00:57:59.000Z",
+        "updatedAt": "2026-07-02T00:57:59.000Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T00:57:59.000Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782953878420",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702005901-466",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T00:59:01.040Z",
+        "updatedAt": "2026-07-02T00:59:01.040Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T00:59:01.040Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782953940390",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702010003-415",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T01:00:03.316Z",
+        "updatedAt": "2026-07-02T01:00:03.316Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T01:00:03.316Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782954002618",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702010105-054",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T01:01:05.429Z",
+        "updatedAt": "2026-07-02T01:01:05.429Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T01:01:05.429Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782954064797",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702010207-935",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T01:02:07.489Z",
+        "updatedAt": "2026-07-02T01:02:07.489Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T01:02:07.489Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782954126769",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702010309-253",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T01:03:09.551Z",
+        "updatedAt": "2026-07-02T01:03:09.551Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T01:03:09.551Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782954188946",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      },
+      {
+        "id": "WP-20260702010354-517",
+        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "status": "QUEUED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-02T01:03:54.226Z",
+        "updatedAt": "2026-07-02T01:03:54.226Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-02T01:03:54.226Z",
+          "owner": "MILES",
+          "context": {
+            "source": "ExecutiveSupervisor",
+            "cycleId": "MILES-COO-CYCLE-1782954233619",
+            "provider": "Instantly",
+            "domain": "Revenue Operations",
+            "priority": "CRITICAL",
+            "priorityScore": 100,
+            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
+            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+          },
+          "domain": "marketing",
+          "workforce": "Marketing Workforce",
+          "requiredCapabilities": [
+            "marketing.instantly.read",
+            "marketing.campaign.audit",
+            "marketing.deliverability.evaluate",
+            "marketing.execution.route",
+            "executive.update.generate"
+          ],
+          "assignments": [
+            {
+              "capability": "marketing.instantly.read",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.campaign.audit",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.deliverability.evaluate",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "marketing.execution.route",
+              "candidates": [
+                {
+                  "capability": "marketing",
+                  "employees": [
+                    {
+                      "employee": "Aria",
+                      "department": "Marketing",
+                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                      "authority": "content_recommendation"
+                    }
+                  ]
+                }
+              ],
+              "bestWorker": {
+                "employee": "Aria",
+                "department": "Marketing",
+                "source": "workforce"
+              }
+            },
+            {
+              "capability": "executive.update.generate",
+              "candidates": [],
+              "bestWorker": {
+                "employee": "MILES",
+                "department": "Executive",
+                "source": "fallback"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "marketing.instantly.read",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+            },
+            {
+              "step": 2,
+              "capability": "marketing.campaign.audit",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "identifyPausedCampaigns",
+              "expectedOutput": "List of paused campaigns requiring review.",
+              "verification": "Verify paused campaigns are separated from active campaigns."
+            },
+            {
+              "step": 3,
+              "capability": "marketing.deliverability.evaluate",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "evaluateDeliverabilityRisk",
+              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+            },
+            {
+              "step": 4,
+              "capability": "marketing.execution.route",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "recommendResumeOrHold",
+              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+            },
+            {
+              "step": 5,
+              "capability": "executive.update.generate",
+              "assignedTo": "MILES",
+              "department": "Executive",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": null,
+              "action": "generateExecutiveUpdate",
+              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+              "verification": "Verify update is clear, concise, and action-oriented."
+            }
+          ],
+          "providers": [
+            "MarketingProvider"
+          ],
+          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Instantly campaign data was read successfully.",
+            "Paused campaigns were identified.",
+            "Deliverability risk was evaluated.",
+            "Resume or hold recommendation was generated.",
+            "Executive update was produced."
+          ],
+          "successCriteria": [
+            "Paused campaign inventory exists.",
+            "Every paused campaign has an action recommendation.",
+            "No unsafe sending action is performed without approval."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "marketing.instantly.read",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "MarketingProvider",
+            "action": "readCampaigns",
+            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+          },
+          {
+            "step": 2,
+            "capability": "marketing.campaign.audit",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "identifyPausedCampaigns",
+            "expectedOutput": "List of paused campaigns requiring review.",
+            "verification": "Verify paused campaigns are separated from active campaigns."
+          },
+          {
+            "step": 3,
+            "capability": "marketing.deliverability.evaluate",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "evaluateDeliverabilityRisk",
+            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+          },
+          {
+            "step": 4,
+            "capability": "marketing.execution.route",
+            "assignedTo": "MILES",
+            "department": "Marketing",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "recommendResumeOrHold",
+            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+          },
+          {
+            "step": 5,
+            "capability": "executive.update.generate",
+            "assignedTo": "MILES",
+            "department": "Executive",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": null,
+            "action": "generateExecutiveUpdate",
+            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+            "verification": "Verify update is clear, concise, and action-oriented."
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PENDING"
+        }
+      }
+    ]
+  },
+  "queue": {
+    "total": 168,
+    "pending": 25,
+    "running": 7,
+    "completed": 133,
+    "failed": 2,
+    "healthScore": 100
+  },
+  "recovery": {
+    "total": 2,
+    "waiting": 2,
+    "retrying": 0,
+    "blocked": 0,
+    "byType": {}
+  },
+  "health": {
+    "overall": "DEGRADED",
+    "warnings": [
+      "Failed tasks present: 2"
+    ],
+    "errors": []
+  }
+}

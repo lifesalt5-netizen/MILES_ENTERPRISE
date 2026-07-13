@@ -1,0 +1,2290 @@
+
+============================================================
+FILE: .\SERVICES\CapabilityService.js
+============================================================
+"use strict";
+
+const workforce = require("./WorkforceService");
+const executiveState = require("./ExecutiveStateService");
+
+const CAPABILITY_REGISTRY = Object.freeze([
+  {
+    capability: "website.health.repair",
+    provider: "WebsiteProvider",
+    department: "Website",
+    workforce: "Website Operations Workforce",
+    action: "verifyWebsite",
+    taskType: "WORKFORCE_STEP",
+    priority: 100,
+    patterns: [
+      /websiteproviderloadfailure/i,
+      /\brepair\s+(the\s+)?website\b/i,
+      /\bwebsite\b.*\b(broken|failed|failure|down|unavailable|critical|repair)\b/i,
+      /\b(broken|failed|failure|down|unavailable|critical|repair)\b.*\bwebsite\b/i
+    ],
+    expectedOutput: "Verified website health, availability, content signals, and repair evidence.",
+    verification: "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+  },
+  {
+    capability: "website.health.verify",
+    provider: "WebsiteProvider",
+    department: "Website",
+    workforce: "Website Operations Workforce",
+    action: "verifyWebsite",
+    taskType: "WORKFORCE_STEP",
+    priority: 85,
+    patterns: [
+      /\bverify\s+(the\s+)?website\b/i,
+      /\bwebsite\s+(health|audit|status|availability|ssl|dns)\b/i,
+      /\b(audit|check|inspect|monitor)\b.*\bwebsite\b/i
+    ],
+    expectedOutput: "Current website health report with metrics, exceptions, and recommendations.",
+    verification: "Verify the website audit produced current metrics and provider evidence."
+  },
+  {
+    capability: "marketing.campaign.audit",
+    provider: "MarketingProvider",
+    department: "Marketing",
+    workforce: "Marketing Operations Workforce",
+    action: "refresh",
+    taskType: "WORKFORCE_STEP",
+    priority: 85,
+    patterns: [
+      /\binstantly\b/i,
+      /\bcampaign\b.*\b(audit|health|verify|review|status|paused|bounce|deliverability)\b/i,
+      /\b(audit|health|verify|review|status|paused|bounce|deliverability)\b.*\bcampaign\b/i,
+      /\bemail\s+outreach\b/i
+    ],
+    expectedOutput: "Current Instantly campaign health, active/paused campaign counts, exceptions, and recommendations.",
+    verification: "Verify MarketingProvider returned current campaign metrics and no unhandled provider failure."
+  },
+  {
+    capability: "orion.refresh",
+    provider: "OrionProvider",
+    department: "ORION",
+    workforce: "ORION Data Operations Workforce",
+    action: "refresh",
+    taskType: "WORKFORCE_STEP",
+    priority: 85,
+    patterns: [
+      /\borion\b.*\b(refresh|sync|update|health|verify|audit|load)\b/i,
+      /\b(refresh|sync|update|health|verify|audit|load)\b.*\borion\b/i,
+      /\bgovernment\s+data\b.*\b(refresh|sync|update|verify)\b/i
+    ],
+    expectedOutput: "Refreshed ORION provider state, metrics, exceptions, and recommendations.",
+    verification: "Verify OrionProvider completed refresh and returned provider evidence."
+  }
+]);
+
+const EXECUTIVE_FALLBACK = Object.freeze({
+  capability: "executive.objective.evaluate",
+  provider: null,
+  department: "Executive",
+  workforce: "Executive Operations Workforce",
+  action: "evaluateObjective",
+  taskType: "WORKFORCE_STEP",
+  priority: 50,
+  expectedOutput: "Clear interpretation of the work objective.",
+  verification: "Verify the objective is actionable and aligned to P2GC operating priorities."
+});
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeText(objective, context = {}) {
+  return [
+    objective,
+    context.title,
+    context.area,
+    context.type,
+    context.provider,
+    context.capability,
+    context.action
+  ].filter(Boolean).join(" ");
+}
+
+class CapabilityService {
+  buildGraph() {
+    const graph = workforce.capabilityGraph();
+
+    executiveState.update("capabilities", {
+      count: Object.keys(graph).length,
+      graph
+    });
+
+    executiveState.update("workforce", workforce.status());
+
+    return {
+      ok: true,
+      capabilities: Object.keys(graph).length,
+      graph
+    };
+  }
+
+  registry() {
+    return CAPABILITY_REGISTRY.map(entry => ({
+      capability: entry.capability,
+      provider: entry.provider,
+      department: entry.department,
+      workforce: entry.workforce,
+      action: entry.action,
+      taskType: entry.taskType,
+      priority: entry.priority,
+      expectedOutput: entry.expectedOutput,
+      verification: entry.verification
+    }));
+  }
+
+  findWorkers(capability) {
+    const graph = this.buildGraph().graph;
+    const q = String(capability || "").toLowerCase();
+
+    return Object.entries(graph)
+      .filter(([cap]) => cap.includes(q) || q.includes(cap))
+      .map(([matchedCapability, employees]) => ({
+        capability: matchedCapability,
+        employees
+      }));
+  }
+
+  getCapability(capability) {
+    const key = String(capability || "").trim().toLowerCase();
+    return CAPABILITY_REGISTRY.find(
+      entry => entry.capability.toLowerCase() === key
+    ) || null;
+  }
+
+  resolveObjective(objective, context = {}) {
+    if (context.capability) {
+      const explicit = this.getCapability(context.capability);
+      if (explicit) {
+        return {
+          ...clone(explicit),
+          provider: context.provider || explicit.provider,
+          department: context.department || explicit.department,
+          action: context.action || explicit.action,
+          resolution: "EXPLICIT_CAPABILITY"
+        };
+      }
+    }
+
+    const text = normalizeText(objective, context);
+
+    for (const entry of CAPABILITY_REGISTRY) {
+      if (entry.patterns.some(pattern => pattern.test(text))) {
+        const resolved = clone(entry);
+        delete resolved.patterns;
+
+        return {
+          ...resolved,
+          provider: context.provider || resolved.provider,
+          department: context.department || resolved.department,
+          action: context.action || resolved.action,
+          resolution: "OBJECTIVE_MATCH"
+        };
+      }
+    }
+
+    return {
+      ...clone(EXECUTIVE_FALLBACK),
+      provider: context.provider || null,
+      department: context.department || EXECUTIVE_FALLBACK.department,
+      action: context.action || EXECUTIVE_FALLBACK.action,
+      resolution: "EXECUTIVE_FALLBACK"
+    };
+  }
+
+  planObjective(objective, context = {}) {
+    const resolved = this.resolveObjective(objective, context);
+    const candidates = this.findWorkers(resolved.capability);
+    const bestWorker =
+      candidates?.[0]?.employees?.[0] ||
+      null;
+
+    const assignedTo =
+      context.assignedTo ||
+      bestWorker?.employee ||
+      bestWorker?.name ||
+      "MILES";
+
+    const step = {
+      step: 1,
+      capability: resolved.capability,
+      provider: resolved.provider,
+      department: resolved.department,
+      action: resolved.action,
+      taskType: resolved.taskType || "WORKFORCE_STEP",
+      assignedTo,
+      status: "QUEUED",
+      dependsOn: [],
+      expectedOutput: resolved.expectedOutput,
+      verification: resolved.verification
+    };
+
+    return {
+      ok: true,
+      objective,
+      domain: String(resolved.department || "Executive").toLowerCase(),
+      workforce: resolved.workforce,
+      resolution: resolved.resolution,
+      requiredCapabilities: [resolved.capability],
+      assignments: [{
+        capability: resolved.capability,
+        provider: resolved.provider,
+        department: resolved.department,
+        action: resolved.action,
+        bestWorker: bestWorker || null,
+        candidates
+      }],
+      operationalPlan: {
+        domain: String(resolved.department || "Executive").toLowerCase(),
+        workforce: resolved.workforce,
+        providers: resolved.provider ? [resolved.provider] : [],
+        approvalRequired: false,
+        steps: [step],
+        verificationChecklist: [resolved.verification],
+        successCriteria: [
+          resolved.provider
+            ? `${resolved.provider}.${resolved.action} executes through ProviderRouterService.`
+            : "The objective is evaluated and routed without bypassing governance."
+        ]
+      }
+    };
+  }
+}
+
+module.exports = new CapabilityService();
+
+============================================================
+FILE: .\SERVICES\PlannerService.js
+============================================================
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const capabilityService = require("./CapabilityService");
+
+const ROOT = process.env.MILES_ROOT || process.cwd();
+const RULES_PATH = path.join(ROOT, "CONFIG", "WORKFLOWS", "planning_rules.json");
+
+function loadRules() {
+  if (!fs.existsSync(RULES_PATH)) return {};
+
+  try {
+    return JSON.parse(fs.readFileSync(RULES_PATH, "utf8"));
+  } catch (err) {
+    console.error("[PlannerService] planning_rules.json could not be parsed:", err.message);
+    return {};
+  }
+}
+
+function inferPriority(objective = "") {
+  const text = String(objective || "").toLowerCase();
+
+  if (/urgent|critical|today|deadline|due|broken|failed|failure|down|paused|bounce|blocked/.test(text)) {
+    return "CRITICAL";
+  }
+
+  if (/revenue|sales|client|proposal|dreamers|campaign|orion|instantly|lead|pipeline|website|linkedin|usaspending|gsa|va fss|sam|government data/.test(text)) {
+    return "HIGH";
+  }
+
+  if (/review|improve|audit|update|check|refresh|inspect|monitor|verify/.test(text)) {
+    return "MEDIUM";
+  }
+
+  return "LOW";
+}
+
+function requiresApproval(objective = "", context = {}) {
+  if (context.approvalRequired === true) return true;
+
+  const text = String(objective || "").toLowerCase();
+
+  return /pricing|price change|change pricing|discount|proposal send|send proposal|submit proposal|contract sign|sign agreement|legal|lawsuit|terminate client|fire employee|hire employee|bank account|wire transfer|purchase|buy software|buy domain|new spend|spend money|delete database|delete client|delete data|tax|payroll/.test(text);
+}
+
+class PlannerService {
+  createPlan(objective, context = {}) {
+    const rules = loadRules();
+    const priority = context.priority || inferPriority(objective);
+    const capabilityPlan = capabilityService.planObjective(objective, context);
+    const operationalPlan = capabilityPlan.operationalPlan || {};
+
+    const requiredCapabilities = capabilityPlan.requiredCapabilities || [];
+    const assignments = capabilityPlan.assignments || [];
+    const assignmentByCapability = Object.fromEntries(
+      assignments.map(assignment => [assignment.capability, assignment])
+    );
+
+    const steps = (operationalPlan.steps || []).map((step, index) => {
+      const assignment = assignmentByCapability[step.capability] || {};
+      const best = assignment.bestWorker || {};
+      const candidate = assignment.candidates?.[0]?.employees?.[0] || null;
+
+      return {
+        step: step.step || index + 1,
+        capability: step.capability,
+        assignedTo:
+          step.assignedTo ||
+          best.employee ||
+          best.name ||
+          candidate?.employee ||
+          candidate?.name ||
+          "MILES",
+        department:
+          step.department ||
+          assignment.department ||
+          best.department ||
+          candidate?.department ||
+          operationalPlan.workforce ||
+          "Executive",
+        status: step.status || "QUEUED",
+        dependsOn: Array.isArray(step.dependsOn) ? step.dependsOn : [],
+        taskType: step.taskType || "WORKFORCE_STEP",
+        provider:
+          step.provider ||
+          assignment.provider ||
+          context.provider ||
+          null,
+        action:
+          step.action ||
+          assignment.action ||
+          context.action ||
+          "evaluateObjective",
+        expectedOutput:
+          step.expectedOutput ||
+          `${step.capability} operational result`,
+        verification:
+          step.verification ||
+          `Verify ${step.capability} completed through the authoritative execution path.`
+      };
+    });
+
+    if (steps.length === 0) {
+      throw new Error(
+        `PlannerService produced no executable steps for objective: ${objective}`
+      );
+    }
+
+    const approvalRequired =
+      requiresApproval(objective, context) ||
+      Boolean(operationalPlan.approvalRequired);
+
+    return {
+      ok: true,
+      type: "PLAN",
+      objective,
+      priority,
+      priorityScore:
+        context.priorityScore ||
+        rules.priorityScale?.[priority] ||
+        50,
+      createdAt: new Date().toISOString(),
+      owner: "MILES",
+      context,
+      domain:
+        capabilityPlan.domain ||
+        operationalPlan.domain ||
+        context.domain ||
+        "executive",
+      workforce:
+        capabilityPlan.workforce ||
+        operationalPlan.workforce ||
+        "Executive Operations Workforce",
+      resolution: capabilityPlan.resolution || "UNKNOWN",
+      requiredCapabilities,
+      assignments,
+      steps,
+      providers:
+        operationalPlan.providers ||
+        steps.map(step => step.provider).filter(Boolean),
+      executionAuthority:
+        approvalRequired
+          ? "CEO_APPROVAL_REQUIRED"
+          : "MILES_AUTONOMOUS_COO",
+      approvalRequired,
+      verificationChecklist:
+        operationalPlan.verificationChecklist || [],
+      successCriteria:
+        operationalPlan.successCriteria || [],
+      rulesVersion: rules.version || "unknown"
+    };
+  }
+
+  requiresApproval(objective = "", context = {}) {
+    return requiresApproval(objective, context);
+  }
+}
+
+module.exports = new PlannerService();
+
+============================================================
+FILE: .\SERVICES\ProviderRouterService.js
+============================================================
+"use strict";
+
+const MarketingProvider = require("../PROVIDERS/providers/MarketingProvider");
+const OrionProvider = require("../PROVIDERS/providers/OrionProvider");
+const WebsiteProvider = require("../PROVIDERS/providers/WebsiteProvider");
+
+class ProviderRouterService {
+  constructor() {
+    this.providers = {
+      MarketingProvider,
+      OrionProvider,
+      WebsiteProvider
+    };
+
+    this.aliases = {
+      marketing: "MarketingProvider",
+      marketingprovider: "MarketingProvider",
+      instantly: "MarketingProvider",
+      instantlyprovider: "MarketingProvider",
+      linkedin: "MarketingProvider",
+      millionverifier: "MarketingProvider",
+
+      website: "WebsiteProvider",
+      websiteprovider: "WebsiteProvider",
+      b12: "WebsiteProvider",
+      websiteb12: "WebsiteProvider",
+
+      orion: "OrionProvider",
+      orionprovider: "OrionProvider",
+      governmentdata: "OrionProvider",
+      govdata: "OrionProvider",
+      usaspending: "OrionProvider",
+      gsa: "OrionProvider",
+      gsaelibrary: "OrionProvider",
+      vafss: "OrionProvider",
+      sam: "OrionProvider",
+      rfi: "OrionProvider",
+      forecast: "OrionProvider",
+      sourcessought: "OrionProvider"
+    };
+  }
+
+  normalizeProviderName(providerName = "") {
+    const raw = String(providerName || "").trim();
+    if (!raw) return null;
+
+    const key = raw.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return this.aliases[key] || raw;
+  }
+
+  hasProvider(providerName = "") {
+    const normalized = this.normalizeProviderName(providerName);
+    return Boolean(normalized && this.providers[normalized]);
+  }
+
+  async invokeProvider(provider, action, task) {
+    const normalizedAction = String(action || "").trim();
+
+    if (
+      normalizedAction &&
+      typeof provider[normalizedAction] === "function"
+    ) {
+      return provider[normalizedAction](task);
+    }
+
+    if (typeof provider.executeTask === "function") {
+      return provider.executeTask(task);
+    }
+
+    if (typeof provider.initialize === "function") {
+      return provider.initialize(task);
+    }
+
+    if (typeof provider.refresh === "function") {
+      return provider.refresh(task);
+    }
+
+    throw new Error(
+      `Provider exposes no executable action: ${normalizedAction || "unspecified"}`
+    );
+  }
+
+  async executeProviderTask(task = {}) {
+    const payload = task.payload || task || {};
+    const requestedProvider = payload.provider || null;
+    const providerName = this.normalizeProviderName(requestedProvider);
+
+    if (!providerName) {
+      return this.noProviderResult(task, "No provider was specified for this task.");
+    }
+
+    const ProviderClass = this.providers[providerName];
+
+    if (!ProviderClass) {
+      return this.noProviderResult(
+        task,
+        `Provider is not registered: ${providerName}`
+      );
+    }
+
+    const startedAt = new Date().toISOString();
+
+    try {
+      const provider = new ProviderClass();
+      const requestedAction = payload.action || "refresh";
+      const providerOutput = await this.invokeProvider(
+        provider,
+        requestedAction,
+        task
+      );
+      const completedAt = new Date().toISOString();
+
+      return {
+        ok: provider.status !== "Critical",
+        type: "PROVIDER_EXECUTION_RESULT",
+        requestedProvider,
+        provider: providerName,
+        routedTo: providerName,
+        action: requestedAction,
+        actionInvoked:
+          typeof provider[requestedAction] === "function"
+            ? requestedAction
+            : (
+                typeof provider.executeTask === "function"
+                  ? "executeTask"
+                  : (
+                      typeof provider.initialize === "function"
+                        ? "initialize"
+                        : "refresh"
+                    )
+              ),
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null,
+        objective: payload.objective || null,
+        capability: payload.capability || null,
+        assignedTo: payload.assignedTo || "MILES",
+        department: payload.department || null,
+        status: provider.status || "Unknown",
+        dataFreshness: provider.dataFreshness || "Unknown",
+        lastRefresh: provider.lastRefresh || completedAt,
+        metrics: provider.metrics || {},
+        exceptions: provider.exceptions || [],
+        recommendations: provider.recommendations || [],
+        providerOutput,
+        evidence: {
+          providerLoaded: true,
+          initialized: true,
+          requestedProvider,
+          routedProvider: providerName,
+          requestedAction,
+          actionAvailable:
+            typeof provider[requestedAction] === "function",
+          metricsCaptured: Boolean(provider.metrics),
+          exceptionsCaptured: Array.isArray(provider.exceptions),
+          recommendationsCaptured: Array.isArray(provider.recommendations)
+        },
+        startedAt,
+        completedAt
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        type: "PROVIDER_EXECUTION_RESULT",
+        requestedProvider,
+        provider: providerName,
+        routedTo: providerName,
+        action: payload.action || "refresh",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null,
+        objective: payload.objective || null,
+        capability: payload.capability || null,
+        assignedTo: payload.assignedTo || "MILES",
+        department: payload.department || null,
+        status: "FAILED",
+        metrics: {},
+        exceptions: [{
+          type: "ProviderRouter",
+          severity: "Critical",
+          message: err.stack || err.message
+        }],
+        recommendations: [
+          `Verify provider action and connector configuration for ${providerName}.`
+        ],
+        evidence: {
+          providerLoaded: true,
+          initialized: false,
+          requestedProvider,
+          routedProvider: providerName,
+          requestedAction: payload.action || null,
+          error: err.stack || err.message
+        },
+        startedAt,
+        completedAt: new Date().toISOString()
+      };
+    }
+  }
+
+  noProviderResult(task = {}, reason = "") {
+    const payload = task.payload || task || {};
+
+    return {
+      ok: false,
+      type: "NO_PROVIDER_RESULT",
+      provider: payload.provider || null,
+      action: payload.action || null,
+      taskId: task.id || null,
+      workPackageId: payload.workPackageId || null,
+      objective: payload.objective || null,
+      capability: payload.capability || null,
+      assignedTo: payload.assignedTo || "MILES",
+      department: payload.department || null,
+      status: "NO_PROVIDER",
+      metrics: {},
+      exceptions: [{
+        type: "ProviderRouting",
+        severity: "Info",
+        message: reason
+      }],
+      recommendations: [
+        "Register this provider or route it to an existing operational provider."
+      ],
+      evidence: {
+        providerLoaded: false,
+        reason
+      },
+      completedAt: new Date().toISOString()
+    };
+  }
+
+  status() {
+    return {
+      ok: true,
+      registeredProviders: Object.keys(this.providers),
+      aliases: this.aliases
+    };
+  }
+}
+
+module.exports = new ProviderRouterService();
+
+============================================================
+FILE: .\SERVICES\WorkforceService.js
+============================================================
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const REGISTRY_PATH = path.join(ROOT, "CONFIG", "WORKFORCE", "MILES_WORKFORCE_REGISTRY.json");
+
+function normalizeList(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
+  return String(v).split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
+}
+
+class WorkforceService {
+  load() {
+    if (!fs.existsSync(REGISTRY_PATH)) {
+      return { employees: [], error: `Missing workforce registry: ${REGISTRY_PATH}` };
+    }
+
+    const raw = JSON.parse(fs.readFileSync(REGISTRY_PATH, "utf8"));
+    const employees = Array.isArray(raw) ? raw : (raw.employees || raw.workforce || []);
+
+    return { employees };
+  }
+
+  all() {
+    return this.load().employees;
+  }
+
+  capabilityGraph() {
+    const graph = {};
+
+    for (const employee of this.all()) {
+      const name = employee.name || employee.employee || employee.id || "UNKNOWN";
+      const capabilities = normalizeList(employee.capabilities || employee.owns || employee.skills);
+
+      for (const cap of capabilities) {
+        const key = cap.toLowerCase();
+        if (!graph[key]) graph[key] = [];
+        graph[key].push({
+          employee: name,
+          department: employee.department || "",
+          mission: employee.mission || "",
+          authority: employee.authority || "Operational"
+        });
+      }
+    }
+
+    return graph;
+  }
+
+  findByCapability(query) {
+    const q = String(query || "").toLowerCase();
+    const graph = this.capabilityGraph();
+
+    const matches = [];
+
+    for (const [capability, employees] of Object.entries(graph)) {
+      if (capability.includes(q) || q.includes(capability)) {
+        matches.push({ capability, employees });
+      }
+    }
+
+    return matches;
+  }
+
+  plan(objective) {
+    const text = String(objective || "").toLowerCase();
+
+    const capabilityHints = [
+      "sales",
+      "pipeline",
+      "forecast",
+      "recompete",
+      "expiration",
+      "capture",
+      "proposal",
+      "vehicle",
+      "pricing",
+      "email",
+      "marketing",
+      "sled",
+      "agency",
+      "prime",
+      "subcontract",
+      "past performance",
+      "competitive",
+      "market intelligence"
+    ];
+
+    const required = capabilityHints.filter(c => text.includes(c));
+    const assignments = [];
+
+    for (const cap of required) {
+      assignments.push({
+        capability: cap,
+        candidates: this.findByCapability(cap)
+      });
+    }
+
+    return {
+      ok: true,
+      objective,
+      requiredCapabilities: required,
+      assignments
+    };
+  }
+
+  status() {
+    const employees = this.all();
+    const graph = this.capabilityGraph();
+
+    return {
+      ok: true,
+      employees: employees.length,
+      capabilities: Object.keys(graph).length,
+      registryPath: REGISTRY_PATH
+    };
+  }
+}
+
+module.exports = new WorkforceService();
+
+============================================================
+FILE: .\SERVICES\WorkflowService.js
+============================================================
+"use strict";
+
+const workPackages = require("./WorkPackageService");
+const taskManager = require("./TaskManager");
+
+function normalizePriority(value) {
+  if (typeof value === "number") return value;
+
+  const text = String(value || "").toUpperCase();
+
+  if (text === "CRITICAL") return 100;
+  if (text === "HIGH") return 85;
+  if (text === "MEDIUM") return 60;
+  if (text === "LOW") return 35;
+
+  return 50;
+}
+
+class WorkflowService {
+  createWorkflow(objective, context = {}) {
+    console.log("[D012] createWorkflow:", objective);
+    const wp = workPackages.create(objective, context);
+
+    if (wp.status === "AWAITING_APPROVAL") {
+      return {
+        ok: true,
+        status: "AWAITING_APPROVAL",
+        workPackage: wp,
+        message: "Work package created and awaiting CEO approval."
+      };
+    }
+
+    const queuedTasks = [];
+    const priority = normalizePriority(wp.priorityScore || wp.priority || context.priority);
+
+    for (const step of wp.tasks || []) {
+      console.log("[D012] Queueing step:", step.step, step.action, step.provider);
+      const task = taskManager.create(
+    step.taskType || "WORKFORCE_STEP",
+    {
+        workPackageId: wp.id,
+        objective: wp.objective,
+        capability: step.capability,
+        assignedTo: step.assignedTo,
+        department: step.department,
+        provider: step.provider || null,
+        action: step.action,
+        expectedOutput: step.expectedOutput,
+        verification: step.verification
+    },
+    priority
+);
+
+console.log("[D012] Task created:", task);
+
+      queuedTasks.push(task);
+    }
+
+    return {
+      ok: true,
+      status: "QUEUED",
+      workPackage: wp,
+      queuedTasks
+    };
+  }
+
+  status() {
+    const packages = workPackages.list();
+
+    return {
+      ok: true,
+      total: packages.length,
+      queued: packages.filter(p => p.status === "QUEUED").length,
+      awaitingApproval: packages.filter(p => p.status === "AWAITING_APPROVAL").length,
+      completed: packages.filter(p => p.status === "COMPLETED").length,
+      active: packages.slice(0, 10)
+    };
+  }
+}
+
+module.exports = new WorkflowService();
+
+============================================================
+FILE: .\SERVICES\WorkPackageService.js
+============================================================
+const fs = require("fs");
+const path = require("path");
+const planner = require("./PlannerService");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const PACKAGE_DIR = path.join(ROOT, "DATA", "work_packages");
+
+function id() {
+  const d = new Date();
+  const stamp = d.toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+  return `WP-${stamp}-${Math.floor(Math.random() * 1000).toString().padStart(3, "0")}`;
+}
+
+class WorkPackageService {
+  create(objective, context = {}) {
+    fs.mkdirSync(PACKAGE_DIR, { recursive: true });
+
+    const plan = planner.createPlan(objective, context);
+    const workPackage = {
+      id: id(),
+      objective,
+      status: plan.approvalRequired ? "AWAITING_APPROVAL" : "QUEUED",
+      owner: "MILES",
+      priority: plan.priority,
+      priorityScore: plan.priorityScore,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      plan,
+      tasks: plan.steps,
+      approvals: plan.approvalRequired ? [{
+        required: true,
+        reason: "CEO approval required by planning rules.",
+        status: "PENDING"
+      }] : [],
+      results: [],
+      verification: {
+        required: true,
+        status: "PENDING"
+      }
+    };
+
+    this.save(workPackage);
+    return workPackage;
+  }
+
+  save(workPackage) {
+    fs.mkdirSync(PACKAGE_DIR, { recursive: true });
+    fs.writeFileSync(
+      path.join(PACKAGE_DIR, `${workPackage.id}.json`),
+      JSON.stringify(workPackage, null, 2)
+    );
+  }
+
+  list() {
+    if (!fs.existsSync(PACKAGE_DIR)) return [];
+    return fs.readdirSync(PACKAGE_DIR)
+      .filter(f => f.endsWith(".json"))
+      .map(f => JSON.parse(fs.readFileSync(path.join(PACKAGE_DIR, f), "utf8")))
+      .sort((a, b) => (b.priorityScore || 0) - (a.priorityScore || 0));
+  }
+
+  get(packageId) {
+    const file = path.join(PACKAGE_DIR, `${packageId}.json`);
+    if (!fs.existsSync(file)) return null;
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  }
+
+  update(packageId, patch = {}) {
+    const current = this.get(packageId);
+    if (!current) throw new Error(`Work package not found: ${packageId}`);
+
+    const updated = {
+      ...current,
+      ...patch,
+      updatedAt: new Date().toISOString()
+    };
+
+    this.save(updated);
+    return updated;
+  }
+}
+
+module.exports = new WorkPackageService();
+
+============================================================
+FILE: .\SERVICES\WorkforceExecutionService.js
+============================================================
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const eventBus = require("./Events/EventBus");
+const EventTypes = require("./Events/EventTypes");
+
+const workforce = require("./WorkforceService");
+const executiveState = require("./ExecutiveStateService");
+const providerRouter = require("./ProviderRouterService");
+const decisionEngine = require("./Decision/DecisionEngine");
+const executionPlanService = require("./ExecutionPlanService");
+const { log } = require("../CORE/logger");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const RESULTS_DIR = path.join(ROOT, "DATA", "workforce_results");
+
+let instantlyOperator = null;
+
+try {
+  instantlyOperator = require("./Browser/Workers/InstantlyCampaignOperator");
+} catch {
+  instantlyOperator = null;
+}
+
+function safeId(value) {
+  return String(value || "UNKNOWN")
+    .replace(/[^a-z0-9_-]+/gi, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 120);
+}
+
+function ensureDirs() {
+  fs.mkdirSync(RESULTS_DIR, { recursive: true });
+}
+
+function findEmployee(name) {
+  const target = String(name || "").toLowerCase();
+
+  return workforce.all().find(e =>
+    String(e.name || e.employee || e.id || "").toLowerCase() === target
+  ) || null;
+}
+
+function publishSafe(type, payload = {}, metadata = {}) {
+  try {
+    eventBus.publish(type, payload, metadata);
+  } catch (err) {
+    log("WorkforceExecutionService", "Publish event", "Failed", err.message);
+  }
+}
+
+function textOf(task = {}) {
+  const payload = task.payload || task || {};
+
+  return [
+    task.id,
+    task.type,
+    payload.provider,
+    payload.capability,
+    payload.action,
+    payload.objective,
+    payload.expectedOutput,
+    payload.verification,
+    payload.department
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function isInstantlyTask(task = {}) {
+  const text = textOf(task);
+
+  return /instantly|campaign|deliverability|bounce|inbox|lead upload|email outreach|paused campaign|active campaign/.test(text);
+}
+
+function shouldRunInstantlyBrowserOperator(task = {}) {
+  const payload = task.payload || task || {};
+  const text = textOf(task);
+
+  if (!instantlyOperator) return false;
+
+  if (/generateexecutiveupdate|executive\.update\.generate/.test(text)) {
+    return false;
+  }
+
+  if (
+    String(payload.action || "").toLowerCase() === "readcampaigns" ||
+    String(payload.capability || "").toLowerCase().includes("instantly.read") ||
+    String(payload.capability || "").toLowerCase().includes("campaign.audit") ||
+    String(payload.capability || "").toLowerCase().includes("deliverability") ||
+    String(payload.provider || "").toLowerCase() === "instantly"
+  ) {
+    return true;
+  }
+
+  return /run instantly coo operator|campaign readiness|paused instantly|active instantly|audit campaigns/.test(text);
+}
+
+function defaultRecommendation(task, employee) {
+  const payload = task.payload || {};
+  const capability = payload.capability || task.type || "general";
+  const objective = payload.objective || "No objective provided";
+  const workerName = payload.assignedTo || employee?.name || employee?.employee || "MILES";
+  const expectedOutput = payload.expectedOutput || `${capability} recommendation`;
+
+  return {
+    summary: `${workerName} prepared ${expectedOutput} for: ${objective}`,
+    recommendation: `Proceed with the next operational step for ${capability}.`,
+    nextActions: [
+      `Review current state for ${capability}.`,
+      "Confirm available source data.",
+      "Escalate only if CEO approval rules are triggered."
+    ],
+    needsHumanInput: false,
+    ceoApprovalRequired: false
+  };
+}
+
+class WorkforceExecutionService {
+  constructor() {
+    this.operatorCache = {};
+  }
+
+  async executeStep(task = {}) {
+    ensureDirs();
+
+    const payload = task.payload || {};
+    const employee = findEmployee(payload.assignedTo);
+
+    publishSafe(EventTypes.EXECUTION_STARTED, {
+      taskId: task.id || null,
+      type: task.type || null,
+      payload
+    }, {
+      source: "WorkforceExecutionService",
+      taskId: task.id || null,
+      workPackageId: payload.workPackageId || null
+    });
+
+    let providerResult = null;
+    let automationResult = null;
+
+    if (payload.provider && providerRouter.hasProvider(payload.provider)) {
+      providerResult = await providerRouter.executeProviderTask(task);
+
+      publishSafe(EventTypes.PROVIDER_EXECUTED, {
+        taskId: task.id || null,
+        provider: payload.provider,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        providerResult
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+    }
+
+    if (shouldRunInstantlyBrowserOperator(task)) {
+      automationResult = await this.runInstantlyOperator(task);
+
+      publishSafe("provider.browser_operator.executed", {
+        taskId: task.id || null,
+        provider: payload.provider || null,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        automationResult
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      providerResult = this.mergeAutomationResult(providerResult, automationResult, task);
+    }
+
+    let decision = null;
+    let executionPlan = null;
+
+    if (providerResult) {
+      decision = decisionEngine.evaluate({
+        objective: payload.objective,
+        provider: payload.provider,
+        action: payload.action,
+        capability: payload.capability,
+        providerResult,
+        exceptions: providerResult.exceptions || [],
+        recommendations: providerResult.recommendations || []
+      });
+
+      publishSafe(EventTypes.DECISION_COMPLETED, {
+        taskId: task.id || null,
+        provider: payload.provider,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        decision
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      executionPlan = executionPlanService.create({
+        taskId: task.id || null,
+        payload,
+        providerResult,
+        decision
+      });
+    }
+
+    const output = providerResult
+      ? {
+          summary: `${providerResult.provider || payload.provider} executed ${payload.action || "refresh"}.`,
+          recommendation: this.buildProviderRecommendation(providerResult, decision, executionPlan),
+          nextActions: executionPlan?.nextActions || providerResult.recommendations || [],
+          needsHumanInput: executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED",
+          ceoApprovalRequired: executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED",
+          providerResult,
+          automationResult,
+          decision,
+          executionPlan
+        }
+      : defaultRecommendation(task, employee);
+
+    const result = {
+      ok: providerResult ? Boolean(providerResult.ok && executionPlan?.canExecute) : true,
+      type: "WORKFORCE_STEP_RESULT",
+      executionMode: providerResult ? executionPlan.executionMode : "WORKFORCE_RECOMMENDATION",
+      taskId: task.id || null,
+      workPackageId: payload.workPackageId || null,
+      objective: payload.objective || null,
+      capability: payload.capability || null,
+      provider: payload.provider || null,
+      action: payload.action || null,
+      assignedTo: payload.assignedTo || null,
+      department: payload.department || employee?.department || null,
+      expectedOutput: payload.expectedOutput || null,
+      verification: payload.verification || null,
+      employeeFound: Boolean(employee),
+      employeeProfile: employee ? {
+        name: employee.name || employee.employee || employee.id,
+        department: employee.department || "",
+        mission: employee.mission || "",
+        authority: employee.authority || "Operational"
+      } : null,
+      output,
+      status: this.resolveStatus(providerResult, executionPlan),
+      createdAt: new Date().toISOString()
+    };
+
+    const fileName = `${safeId(result.workPackageId || "WP")}_${safeId(result.taskId || Date.now())}.json`;
+    const outFile = path.join(RESULTS_DIR, fileName);
+
+    fs.writeFileSync(outFile, JSON.stringify(result, null, 2));
+
+    this.updateExecutiveState(result, outFile);
+
+    publishSafe(EventTypes.EXECUTION_COMPLETED, {
+      taskId: result.taskId,
+      workPackageId: result.workPackageId,
+      provider: result.provider,
+      action: result.action,
+      capability: result.capability,
+      executionMode: result.executionMode,
+      status: result.status,
+      outFile
+    }, {
+      source: "WorkforceExecutionService",
+      taskId: result.taskId,
+      workPackageId: result.workPackageId
+    });
+
+    log("WorkforceExecutionService", "Execute workforce step", "Success", outFile);
+
+    return { ...result, outFile };
+  }
+
+  async runInstantlyOperator(task = {}) {
+    const payload = task.payload || task || {};
+    const cacheKey = payload.workPackageId || task.id || "GLOBAL_INSTANTLY_OPERATOR";
+
+    if (this.operatorCache[cacheKey]) {
+      return {
+        ...this.operatorCache[cacheKey],
+        cached: true
+      };
+    }
+
+    if (!instantlyOperator || typeof instantlyOperator.run !== "function") {
+      return {
+        ok: false,
+        provider: "InstantlyBrowserOperator",
+        status: "NOT_AVAILABLE",
+        exceptions: [
+          {
+            type: "InstantlyBrowserOperator",
+            severity: "Warning",
+            message: "InstantlyCampaignOperator is not available or does not expose run()."
+          }
+        ],
+        recommendations: [
+          "Verify SERVICES/Browser/Workers/InstantlyCampaignOperator.js exists and exports a runnable operator."
+        ]
+      };
+    }
+
+    try {
+      const operatorResult = await instantlyOperator.run({
+        execute: true,
+        headless: true,
+        sourceTaskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      const normalized = {
+        ok: Boolean(operatorResult.ok),
+        provider: "InstantlyBrowserOperator",
+        status: operatorResult.stage || (operatorResult.ok ? "COMPLETED" : "FAILED"),
+        campaigns: operatorResult.campaigns || [],
+        actions: operatorResult.actions || {},
+        diagnostics: operatorResult.diagnostics || {},
+        screenshots: operatorResult.screenshots || [],
+        file: operatorResult.file || null,
+        exceptions: (operatorResult.errors || []).map(error => ({
+          type: "InstantlyBrowserOperator",
+          severity: "Warning",
+          message: String(error)
+        })),
+        recommendations: this.buildInstantlyRecommendations(operatorResult),
+        raw: operatorResult
+      };
+
+      this.operatorCache[cacheKey] = normalized;
+      return normalized;
+    } catch (err) {
+      const failed = {
+        ok: false,
+        provider: "InstantlyBrowserOperator",
+        status: "FAILED",
+        exceptions: [
+          {
+            type: "InstantlyBrowserOperator",
+            severity: "Critical",
+            message: err.stack || err.message
+          }
+        ],
+        recommendations: [
+          "Review browser session, Instantly login state, and campaign operator output."
+        ]
+      };
+
+      this.operatorCache[cacheKey] = failed;
+      return failed;
+    }
+  }
+
+  buildInstantlyRecommendations(operatorResult = {}) {
+    const campaigns = operatorResult.campaigns || [];
+    const actions = operatorResult.actions || {};
+
+    const drafts = campaigns.filter(c => String(c.status).toLowerCase() === "draft");
+    const paused = campaigns.filter(c => String(c.status).toLowerCase() === "paused");
+    const active = campaigns.filter(c => String(c.status).toLowerCase() === "active");
+
+    const recommendations = [];
+
+    if (drafts.length > 0) {
+      recommendations.push(`Inspect ${drafts.length} draft Instantly campaign(s) for leads, inbox assignment, sequence, schedule, and launch readiness.`);
+    }
+
+    if (paused.length > 0) {
+      recommendations.push(`Diagnose ${paused.length} paused Instantly campaign(s) for bounce, domain, inbox, or lead issues before resuming.`);
+    }
+
+    if (active.length > 0) {
+      recommendations.push(`Monitor ${active.length} active Instantly campaign(s) for bounce rate, reply rate, lead exhaustion, and inbox capacity.`);
+    }
+
+    if ((actions.failed || []).length > 0) {
+      recommendations.push(`Review ${actions.failed.length} failed Instantly action(s).`);
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push("Instantly campaign inventory was captured successfully. Continue monitoring.");
+    }
+
+    return recommendations;
+  }
+
+  mergeAutomationResult(providerResult, automationResult, task = {}) {
+    const payload = task.payload || task || {};
+
+    if (!providerResult) {
+      return {
+        ok: Boolean(automationResult?.ok),
+        type: "PROVIDER_EXECUTION_RESULT",
+        provider: payload.provider || "Instantly",
+        action: payload.action || "runInstantlyOperator",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null,
+        objective: payload.objective || null,
+        capability: payload.capability || null,
+        assignedTo: payload.assignedTo || "MILES",
+        department: payload.department || null,
+        status: automationResult?.status || "UNKNOWN",
+        dataFreshness: "Live Browser",
+        lastRefresh: new Date().toISOString(),
+        metrics: {
+          browserCampaigns: automationResult?.campaigns?.length || 0,
+          browserActions: automationResult?.actions || {},
+          browserDiagnostics: automationResult?.diagnostics || {}
+        },
+        exceptions: automationResult?.exceptions || [],
+        recommendations: automationResult?.recommendations || [],
+        evidence: {
+          providerLoaded: true,
+          browserOperatorExecuted: true,
+          browserResultFile: automationResult?.file || null,
+          screenshots: automationResult?.screenshots || []
+        },
+        completedAt: new Date().toISOString()
+      };
+    }
+
+    return {
+      ...providerResult,
+      ok: Boolean(providerResult.ok && automationResult?.ok !== false),
+      metrics: {
+        ...(providerResult.metrics || {}),
+        browserCampaigns: automationResult?.campaigns?.length || 0,
+        browserActions: automationResult?.actions || {},
+        browserDiagnostics: automationResult?.diagnostics || {}
+      },
+      exceptions: [
+        ...(providerResult.exceptions || []),
+        ...(automationResult?.exceptions || [])
+      ],
+      recommendations: [
+        ...(providerResult.recommendations || []),
+        ...(automationResult?.recommendations || [])
+      ],
+      evidence: {
+        ...(providerResult.evidence || {}),
+        browserOperatorExecuted: true,
+        browserResultFile: automationResult?.file || null,
+        screenshots: automationResult?.screenshots || []
+      }
+    };
+  }
+
+  resolveStatus(providerResult, executionPlan) {
+    if (!providerResult) return "AWAITING_VERIFICATION";
+    if (!providerResult.ok) return "NEEDS_REVIEW";
+    if (executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED") return "AWAITING_CEO_APPROVAL";
+    return "AWAITING_VERIFICATION";
+  }
+
+  buildProviderRecommendation(providerResult = {}, decision = {}, executionPlan = {}) {
+    if (!providerResult.ok) {
+      return `Provider execution failed or needs review: ${providerResult.provider}`;
+    }
+
+    if (decision?.decision === "ESCALATE") {
+      return "Provider executed, but MILES decision engine requires CEO approval before further action.";
+    }
+
+    const exceptions = providerResult.exceptions || [];
+
+    if (exceptions.length > 0) {
+      return `${providerResult.provider} executed successfully but returned ${exceptions.length} exception(s). Review before autonomous action.`;
+    }
+
+    return `${providerResult.provider} executed successfully. Decision approved for autonomous verification and reporting.`;
+  }
+
+  updateExecutiveState(result, outFile) {
+    const current = executiveState.get() || {};
+    const workforceResults = current.workforceResults || [];
+
+    workforceResults.push({
+      taskId: result.taskId,
+      workPackageId: result.workPackageId,
+      capability: result.capability,
+      provider: result.provider,
+      action: result.action,
+      assignedTo: result.assignedTo,
+      executionMode: result.executionMode,
+      status: result.status,
+      outFile,
+      createdAt: result.createdAt
+    });
+
+    executiveState.update("workforceResults", workforceResults.slice(-250));
+  }
+
+  verifyResult(result = {}) {
+    const hasRecommendation = Boolean(result.output && result.output.recommendation);
+    const providerFailed = result.executionMode === "AUTONOMOUS" && result.ok === false;
+    const needsApproval = result.executionMode === "CEO_APPROVAL_REQUIRED";
+
+    const verified = {
+      ok: hasRecommendation && !providerFailed && !needsApproval,
+      type: "WORKFORCE_STEP_VERIFICATION",
+      taskId: result.taskId || null,
+      workPackageId: result.workPackageId || null,
+      capability: result.capability || null,
+      provider: result.provider || null,
+      action: result.action || null,
+      assignedTo: result.assignedTo || null,
+      verified: hasRecommendation && !providerFailed && !needsApproval,
+      status:
+        needsApproval ? "AWAITING_CEO_APPROVAL" :
+        hasRecommendation && !providerFailed ? "COMPLETED" :
+        "NEEDS_REVIEW",
+      evidence: {
+        executionMode: result.executionMode || "UNKNOWN",
+        hasOutput: Boolean(result.output),
+        hasRecommendation,
+        providerFailed,
+        needsApproval
+      },
+      checkedAt: new Date().toISOString()
+    };
+
+    const current = executiveState.get() || {};
+    const verifications = current.verifications || [];
+
+    verifications.push(verified);
+    executiveState.update("verifications", verifications.slice(-250));
+
+    publishSafe(EventTypes.VERIFICATION_COMPLETED, verified, {
+      source: "WorkforceExecutionService",
+      taskId: verified.taskId,
+      workPackageId: verified.workPackageId
+    });
+
+    return verified;
+  }
+
+  async executeAndVerify(task = {}) {
+    try {
+      const result = await this.executeStep(task);
+      const verification = this.verifyResult(result);
+
+      return {
+        ok: verification.verified,
+        result,
+        verification,
+        status: verification.status
+      };
+    } catch (err) {
+      publishSafe(EventTypes.EXECUTION_FAILED, {
+        taskId: task.id || null,
+        workPackageId: task.payload?.workPackageId || null,
+        error: err.stack || err.message
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: task.payload?.workPackageId || null
+      });
+
+      throw err;
+    }
+  }
+}
+
+module.exports = new WorkforceExecutionService();
+
+============================================================
+FILE: .\PROVIDERS\contracts\IDataProvider.js
+============================================================
+/**
+ * MILES IDataProvider
+ *
+ * Standard contract for every operational data provider.
+ *
+ * Every provider MUST return:
+ *  - status
+ *  - metrics
+ *  - exceptions
+ *  - recommendations
+ *  - freshness
+ *
+ * No provider should throw fatal errors.
+ * Always degrade gracefully.
+ */
+
+class IDataProvider {
+    constructor(name) {
+        if (!name) {
+            throw new Error("Provider requires a name.");
+        }
+
+        this.name = name;
+
+        this.status = "Unknown";
+
+        this.metrics = {};
+
+        this.exceptions = [];
+
+        this.recommendations = [];
+
+        this.lastRefresh = null;
+
+        this.dataFreshness = "Never";
+
+        this.dependencies = [];
+
+        this.sourceSystems = [];
+    }
+
+    async initialize() {
+        return true;
+    }
+
+    async refresh() {
+        throw new Error(
+            `${this.name}: refresh() not implemented.`
+        );
+    }
+
+    getStatus() {
+        return {
+            provider: this.name,
+            status: this.status,
+            lastRefresh: this.lastRefresh,
+            dataFreshness: this.dataFreshness
+        };
+    }
+
+    getMetrics() {
+        return this.metrics;
+    }
+
+    getExceptions() {
+        return this.exceptions;
+    }
+
+    getRecommendations() {
+        return this.recommendations;
+    }
+
+    getProviderState() {
+        return {
+            provider: this.name,
+            status: this.status,
+            lastRefresh: this.lastRefresh,
+            dataFreshness: this.dataFreshness,
+            metrics: this.metrics,
+            exceptions: this.exceptions,
+            recommendations: this.recommendations,
+            dependencies: this.dependencies,
+            sourceSystems: this.sourceSystems
+        };
+    }
+
+    async shutdown() {
+        return true;
+    }
+}
+
+module.exports = IDataProvider;
+
+============================================================
+FILE: .\PROVIDERS\providers\WebsiteProvider.js
+============================================================
+"use strict";
+
+const IDataProvider = require("../contracts/IDataProvider");
+const website = require("../../CONNECTORS/WEBSITE/website");
+
+class WebsiteProvider extends IDataProvider {
+  constructor() {
+    super("Website");
+
+    this.dependencies = ["Website"];
+    this.sourceSystems = ["CONNECTORS/WEBSITE"];
+  }
+
+  async initialize() {
+    return this.verifyWebsite();
+  }
+
+  async refresh() {
+    return this.verifyWebsite();
+  }
+
+  async verifyWebsite() {
+    this.lastRefresh = new Date().toISOString();
+    this.dataFreshness = "Live";
+
+    try {
+      const result = await website.auditWebsite();
+
+      this.status = result.ok ? "Healthy" : "Critical";
+      this.metrics = result.metrics || {};
+      this.exceptions = result.ok
+        ? []
+        : [{
+            type: "WebsiteUnavailable",
+            severity: "Critical",
+            message: result.error || "Website audit failed."
+          }];
+
+      this.recommendations = result.ok
+        ? []
+        : [
+            "Verify B12 website availability.",
+            "Verify DNS.",
+            "Verify SSL."
+          ];
+
+      return {
+        ok: Boolean(result.ok),
+        provider: "WebsiteProvider",
+        action: "verifyWebsite",
+        status: this.status,
+        metrics: this.metrics,
+        exceptions: this.exceptions,
+        recommendations: this.recommendations,
+        verifiedAt: this.lastRefresh
+      };
+    } catch (err) {
+      this.status = "Critical";
+      this.metrics = {};
+      this.exceptions = [{
+        type: "WebsiteAudit",
+        severity: "Critical",
+        message: err.stack || err.message
+      }];
+      this.recommendations = [
+        "Verify Website connector.",
+        "Verify P2GC_WEBSITE_URL.",
+        "Verify outbound HTTPS access."
+      ];
+
+      return {
+        ok: false,
+        provider: "WebsiteProvider",
+        action: "verifyWebsite",
+        status: this.status,
+        metrics: this.metrics,
+        exceptions: this.exceptions,
+        recommendations: this.recommendations,
+        verifiedAt: this.lastRefresh
+      };
+    }
+  }
+
+  async executeTask(task = {}) {
+    const payload = task.payload || task || {};
+    const action = payload.action || "verifyWebsite";
+
+    if (typeof this[action] !== "function") {
+      throw new Error(`Unsupported WebsiteProvider action: ${action}`);
+    }
+
+    return this[action](task);
+  }
+
+  async shutdown() {
+    return true;
+  }
+}
+
+module.exports = WebsiteProvider;
+
+============================================================
+FILE: .\PROVIDERS\providers\MarketingProvider.js
+============================================================
+const IDataProvider = require("../contracts/IDataProvider");
+const instantly = require("../../CONNECTORS/INSTANTLY/instantly");
+
+class MarketingProvider extends IDataProvider {
+
+    constructor() {
+
+        super("Marketing");
+
+        this.dependencies = [
+            "Instantly",
+            "Website",
+            "LinkedIn",
+            "MillionVerifier"
+        ];
+
+        this.sourceSystems = [
+            "CONNECTORS/INSTANTLY",
+            "CONNECTORS/WEBSITE_B12"
+        ];
+
+    }
+
+    async initialize() {
+
+        this.status = "Initializing";
+
+        await this.refresh();
+
+        return true;
+
+    }
+
+    async refresh() {
+
+        this.lastRefresh = new Date().toISOString();
+        this.dataFreshness = "Live";
+
+        try {
+
+            const response = await instantly.listCampaigns();
+
+            const campaigns = response.items || [];
+
+            const activeCampaigns = campaigns.filter(c => c.status === 1);
+
+            const pausedCampaigns = campaigns.filter(c => c.status !== 1);
+
+            this.status = "Healthy";
+
+            this.metrics = {
+
+                totalCampaigns: campaigns.length,
+
+                activeCampaigns: activeCampaigns.length,
+
+                pausedCampaigns: pausedCampaigns.length,
+
+                campaignNames: campaigns.map(c => c.name),
+
+                campaigns: campaigns.map(c => ({
+
+                    id: c.id,
+
+                    name: c.name,
+
+                    status: c.status,
+
+                    dailyLimit: c.daily_limit || 0,
+
+                    organization: c.organization,
+
+                    owner: c.owned_by,
+
+                    created: c.timestamp_created,
+
+                    updated: c.timestamp_updated
+
+                }))
+
+            };
+
+            this.exceptions = [];
+
+            if (campaigns.length === 0) {
+
+                this.exceptions.push({
+
+                    type: "NoCampaigns",
+
+                    severity: "Warning",
+
+                    message: "No Instantly campaigns were found."
+
+                });
+
+            }
+
+            if (activeCampaigns.length === 0) {
+
+                this.exceptions.push({
+
+                    type: "NoActiveCampaigns",
+
+                    severity: "Warning",
+
+                    message: "All campaigns are currently paused."
+
+                });
+
+            }
+
+            this.recommendations = [];
+
+            if (activeCampaigns.length < 2) {
+
+                this.recommendations.push(
+                    "Review campaign schedule and activate additional outreach campaigns."
+                );
+
+            }
+
+        }
+
+        catch (err) {
+
+            this.status = "Critical";
+
+            this.metrics = {};
+
+            this.exceptions = [
+
+                {
+
+                    type: "InstantlyAPI",
+
+                    severity: "Critical",
+
+                    message: err.message
+
+                }
+
+            ];
+
+            this.recommendations = [
+
+                "Verify Instantly API connectivity.",
+                "Verify INSTANTLY_API_KEY.",
+                "Verify internet connectivity."
+
+            ];
+
+        }
+
+    }
+
+    getCampaignByName(name) {
+
+        if (!this.metrics.campaigns) {
+
+            return null;
+
+        }
+
+        return this.metrics.campaigns.find(c => c.name === name);
+
+    }
+
+    getActiveCampaigns() {
+
+        if (!this.metrics.campaigns) {
+
+            return [];
+
+        }
+
+        return this.metrics.campaigns.filter(c => c.status === 1);
+
+    }
+
+    async shutdown() {
+
+        return true;
+
+    }
+
+}
+
+module.exports = MarketingProvider;
+
+============================================================
+FILE: .\PROVIDERS\providers\OrionProvider.js
+============================================================
+"use strict";
+
+const IDataProvider = require("../contracts/IDataProvider");
+const orion = require("../../CONNECTORS/ORION/connector");
+
+class OrionProvider extends IDataProvider {
+
+    constructor() {
+
+        super("ORION");
+
+        this.dependencies = [
+            "ORION Database"
+        ];
+
+        this.sourceSystems = [
+            "CONNECTORS/ORION"
+        ];
+
+        this.contractors = [];
+        this.buyers = [];
+        this.opportunities = [];
+        this.recompetes = [];
+        this.recommendationRecords = [];
+        this.personaRecords = [];
+
+    }
+
+    async initialize() {
+
+        this.status = "Initializing";
+
+        await this.refresh();
+
+        return true;
+
+    }
+
+    async refresh() {
+
+        this.lastRefresh = new Date().toISOString();
+        this.dataFreshness = "Live";
+
+        try {
+
+            const summary = orion.getSummary();
+
+            this.status =
+                summary.health.ok
+                    ? "Healthy"
+                    : "Critical";
+
+            //
+            // Load business objects
+            //
+
+            this.contractors =
+                orion.getContractors(100);
+
+            this.buyers =
+                orion.getBuyers(100);
+
+            this.opportunities =
+                orion.getOpportunities(100);
+
+            this.recompetes =
+                orion.getRecompetes(100);
+
+            this.recommendationRecords =
+                orion.getRecommendations(100);
+
+            this.personaRecords =
+                orion.getPersonas(100);
+
+            //
+            // Metrics
+            //
+
+            this.metrics = {
+
+                database: summary.health.db,
+
+                tableCount: summary.health.tableCount,
+
+                contractors: summary.contractors.count,
+
+                buyers: summary.buyers.count,
+
+                opportunities: summary.opportunities.count,
+
+                recompetes: summary.recompetes.count,
+
+                recommendations: summary.recommendations.count,
+
+                personas: summary.personas.count
+
+            };
+
+            this.exceptions = [];
+
+            if (!summary.health.ok) {
+
+                this.exceptions.push({
+
+                    type: "Database",
+
+                    severity: "Critical",
+
+                    message: "ORION database unavailable."
+
+                });
+
+            }
+
+            this.recommendations = [];
+
+            if (summary.opportunities.count === 0) {
+
+                this.recommendations.push(
+                    "No opportunities detected. Verify ingestion pipeline."
+                );
+
+            }
+
+        }
+
+        catch (err) {
+
+            this.status = "Critical";
+
+            this.metrics = {};
+
+            this.contractors = [];
+            this.buyers = [];
+            this.opportunities = [];
+            this.recompetes = [];
+            this.recommendationRecords = [];
+            this.personaRecords = [];
+
+            this.exceptions = [
+
+                {
+
+                    type: "ORION",
+
+                    severity: "Critical",
+
+                    message: err.message
+
+                }
+
+            ];
+
+            this.recommendations = [
+
+                "Verify ORION connector.",
+                "Verify ORION database."
+
+            ];
+
+        }
+
+    }
+
+    getProviderState() {
+
+        return {
+
+            provider: this.name,
+
+            status: this.status,
+
+            lastRefresh: this.lastRefresh,
+
+            dataFreshness: this.dataFreshness,
+
+            metrics: this.metrics,
+
+            exceptions: this.exceptions,
+
+            recommendations: this.recommendations,
+
+            //
+            // Business objects consumed by
+            // BusinessStateAggregator
+            //
+
+            contractors: this.contractors,
+
+            buyers: this.buyers,
+
+            opportunities: this.opportunities,
+
+            recompetes: this.recompetes,
+
+            recommendationRecords: this.recommendationRecords,
+
+            personaRecords: this.personaRecords,
+
+            //
+            // Revenue Engine compatibility
+            //
+
+            leads: this.contractors,
+
+            deals: [],
+
+            replies: [],
+
+            campaigns: [],
+
+            proposals: []
+
+        };
+
+    }
+
+    async shutdown() {
+
+        return true;
+
+    }
+
+}
+
+module.exports = OrionProvider;
+
+============================================================
+FILE: .\CONFIG\WORKFLOWS\planning_rules.json
+============================================================
+{
+  "version": "1.0.0",
+  "approvalRequired": [
+    "pricing_change",
+    "client_proposal_send",
+    "legal_commitment",
+    "financial_commitment",
+    "domain_dns_change",
+    "website_publish",
+    "external_email_send"
+  ],
+  "defaultWorkflowStatus": "QUEUED",
+  "defaultOwner": "MILES",
+  "priorityScale": {
+    "CRITICAL": 100,
+    "HIGH": 80,
+    "MEDIUM": 50,
+    "LOW": 25
+  }
+}
+
+============================================================
+PROVIDER DIRECTORY INVENTORY
+============================================================
+
+Name                 FullName                                                                       Length LastWriteTim
+                                                                                                           e           
+----                 --------                                                                       ------ ------------
+InstantlyProvider.js D:\P2GC_Intelligence\MILES_ENTERPRISE\PROVIDERS\providers\InstantlyProvider.js   3889 7/8/2026 ...
+MarketingProvider.js D:\P2GC_Intelligence\MILES_ENTERPRISE\PROVIDERS\providers\MarketingProvider.js   3772 6/30/2026...
+OrionProvider.js     D:\P2GC_Intelligence\MILES_ENTERPRISE\PROVIDERS\providers\OrionProvider.js       4575 7/3/2026 ...
+WebsiteProvider.js   D:\P2GC_Intelligence\MILES_ENTERPRISE\PROVIDERS\providers\WebsiteProvider.js     2456 7/11/2026...
+
+
+
+
+============================================================
+WORKFORCE AND EMPLOYEE FILE INVENTORY
+============================================================
+
+FullName                                                                                                 Length LastWri
+                                                                                                                teTime 
+--------                                                                                                 ------ -------
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BaseProviderController.js                                   3916 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityRegistryService.js                               17894 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityService.js                                        8043 7/11...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\FileSystemProviderController.js                             2470 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\GoogleWorkspaceProviderController.js                         561 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\InstantlyLiveProviderController.js                          7689 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\InstantlyProviderCompatibilityService.js                    5157 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\InstantlyProviderController.js                               731 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\NamecheapProviderController.js                               600 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\OrionProviderController.js                                   495 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderAuthorityRegistryService.js                         9159 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderCapabilityBindingService.js                         2607 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderControllerExecutionService.js                       2108 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderControllerHealthService.js                          1278 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderControllerRegistryService.js                        2295 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderInterfaceAdapterService.js                          2296 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRegistryService.js                                 12419 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js                                    7200 7/11...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderSynchronizationService.js                           5036 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RepositoryRegistryService.js                               21035 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WebsiteProviderController.js                                 504 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js                               18971 7/2/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceService.js                                         2941 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkerRegistry.js                                            467 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DepartmentMissionAdapter.js                                  894 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DepartmentBootstrap.js                                       446 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityRegistry.js                                       1466 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AssetRegistry.js                                             939 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\MissionCapabilityResolver.js                                1167 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\capability_builder\AutonomousCapabilityBuilderService.js    8303 7/10...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\capability_engine\CapabilityDeploymentEngine.js            24142 7/5/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\capability_engine\CapabilityDeploymentEngineManager.js      8984 7/5/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Planning\PlannerRegistry.js                                  916 7/1/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\worker_runtime\WorkerRegistry.js                            7539 7/5/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseComponentRegistryService.js              9159 7/10...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\registry\EnterpriseCapabilityRegistryService.js             7884 7/10...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\runtime_registry\RuntimeRegistryService.js                 37338 7/10...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\runtime_registry\RuntimeRegistryClient.js                   2293 7/10...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CONFIG\WORKFORCE\MILES_DEPARTMENTS_v1.json                            690 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CONFIG\WORKFORCE\MILES_WORKFORCE_REGISTRY.json                      20311 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CONFIG\WORKFORCE\MILES_WORKFORCE_REGISTRY_v1.json                   20311 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CONFIG\WORKFORCE\MILES_WORKFORCE_SUMMARY.md                           828 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CONFIG\WORKFORCE\MILES_WORKFORCE_SUMMARY_v1.md                        452 6/29...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\ai_workforce_master.json                                        3745 6/30...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\action_engine\provider_registry.json                            7995 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\action_engine\provider_registry_report.md                        787 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\business_inputs\business_input_registry.json                     990 7/4/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability\capability_execution_map.json                      220614 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability\capability_owner_map.json                           29958 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability\capability_registry.json                           995979 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability\capability_report.md                                 2245 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability\capability_summary.json                               684 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\capability_backlog\latest_capability_backlog.json               3336 7/11...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\digital_coo\registries\campaign_registry.json                   2389 7/8/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\digital_coo\registries\segment_registry.json                       2 7/8/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\OUTBOUND\OUTBOUND_ASSET_REGISTRY.csv                             659 6/30...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_controllers\latest_provider_execution.json             1023 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_controllers\provider_controllers.json                  2764 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_controllers\provider_controllers_report.md              504 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_controllers\provider_controller_health.json            1389 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_controllers\provider_execution_history.json            2204 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\latest_provider_authority_registry.json           8340 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\latest_provider_synchronization.json             27592 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\provider_authority_registry.json                  8340 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\provider_capability_bindings.json                11005 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\provider_interface_adapters.json                  4885 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\provider_synchronization.json                    27592 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\provider_sync\provider_synchronization_report.md                 226 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\api_registry.json                                   23133 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\connector_registry.json                             39347 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\database_registry.json                              14698 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\event_registry.json                                 18099 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\provider_registry.json                               7965 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\repository_registry.json                          6152424 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\runtime_registry.json                               21812 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\service_registry.json                               65563 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\repository\worker_registry.json                                14800 7/3/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\runtime\capability_registry.json                                1809 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\runtime\asset_registry.json                                      868 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\runtime\worker_registry.json                                    1385 7/9/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\marketing_coo\instantly_registry.json                           2362 7/8/...
+D:\P2GC_Intelligence\MILES_ENTERPRISE\DATA\marketing_coo\segment_registry.json                            88431 7/8/...
+
+
+

@@ -1,0 +1,372 @@
+{
+  "generatedAt": "2026-06-29T22:30:59.013Z",
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "totals": {
+    "csv": 59,
+    "other": 51,
+    "markdown": 24,
+    "json": 19,
+    "powershell": 19,
+    "javascript": 123
+  },
+  "totalFiles": 295,
+  "requiredServices": [
+    "SERVICES/ExecutionService.js",
+    "SERVICES/SchedulerService.js",
+    "SERVICES/DashboardService.js",
+    "SERVICES/TaskManager.js",
+    "SERVICES/MemoryService.js"
+  ],
+  "missingServices": [],
+  "requiredKernel": [
+    "CORE/Kernel/MilesKernel.js",
+    "CORE/Kernel/ServiceRegistry.js",
+    "CORE/Kernel/ConnectorManager.js",
+    "CORE/Kernel/EventBus.js",
+    "CORE/Kernel/StartMiles.js"
+  ],
+  "missingKernel": [
+    "CORE/Kernel/ConnectorManager.js"
+  ],
+  "recommendedConnectors": [
+    "CONNECTORS/MILES/connector.js",
+    "CONNECTORS/ORION/connector.js",
+    "CONNECTORS/INSTANTLY/connector.js",
+    "CONNECTORS/GOOGLE/connector.js",
+    "CONNECTORS/WEBSITE/connector.js",
+    "CONNECTORS/NAMECHEAP/connector.js"
+  ],
+  "missingConnectors": [
+    "CONNECTORS/ORION/connector.js",
+    "CONNECTORS/INSTANTLY/connector.js",
+    "CONNECTORS/GOOGLE/connector.js",
+    "CONNECTORS/WEBSITE/connector.js",
+    "CONNECTORS/NAMECHEAP/connector.js"
+  ],
+  "emptyFiles": [
+    "inventory/segment_discovery.csv",
+    "output/logs/execution_log.csv",
+    "CONFIG/MILES_AUTHORITY_MATRIX.csv",
+    "CONFIG/MILES_MISSION.txt",
+    "CONNECTORS/GOOGLE/calendar.js",
+    "CONNECTORS/GOOGLE/drive.js",
+    "CONNECTORS/GOOGLE/contacts.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/config.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js",
+    "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js",
+    "MILES_OS_v1/MILES_OS_v1/SERVICES/TaskManager.js",
+    "MILES_OS_v1/MILES_OS_v1/SERVICES/ConnectorManager.js",
+    "MILES_OS_v1/MILES_OS_v1/AI/MilesBrain.js",
+    "MILES_OS_v1/MILES_OS_v1/AUTOMATIONS/Scheduler.js",
+    "MILES_OS_v1/MILES_OS_v1/WEB/Dashboard.js",
+    "MILES_OS_v1/MILES_OS_v1/.env",
+    "MILES_OS_v1/CORE/DecisionEngine/DecisionEngine.js",
+    "MILES_OS_v1/CORE/EventBus/EventBus.js",
+    "miles_instantly_connector/miles_instantly_connector/miles_os/__init__.py",
+    "miles_instantly_connector/miles_instantly_connector/miles_os/services/__init__.py",
+    "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/__init__.py",
+    "MILES_Platform_v0.3.0_Local_Operator/CORE/__init__.py",
+    "MILES_Platform_v0.3.0_Local_Operator/OPERATIONS/__init__.py",
+    "MILES_Platform_v0.3.0_Local_Operator/EXECUTIVE/__init__.py",
+    "MILES_Platform_v0.3.0_Local_Operator/DATA/__init__.py",
+    ".env",
+    "AI/MilesBrain.js",
+    "AUTOMATIONS/Scheduler.js",
+    "SERVICES/ConnectorManager.js",
+    "SERVICES/TaskManager.js",
+    "WEB/Dashboard.js"
+  ],
+  "duplicates": [
+    {
+      "name": "audit.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/audit.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js"
+      ]
+    },
+    {
+      "name": "browser.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/browser.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js"
+      ]
+    },
+    {
+      "name": "logger.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/logger.js",
+        "MILES_OS_v1/MILES_OS_v1/CORE/logger.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+        "miles_core_framework_dropin/CORE/Logger.js",
+        "CORE/logger.js"
+      ]
+    },
+    {
+      "name": "paths.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/paths.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js"
+      ]
+    },
+    {
+      "name": "screenshots.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js"
+      ]
+    },
+    {
+      "name": "session.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/modules/session.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js"
+      ]
+    },
+    {
+      "name": "controller.js",
+      "paths": [
+        "CONNECTORS/WEBSITE_B12/controller.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js"
+      ]
+    },
+    {
+      "name": "auth.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/auth.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js",
+        "Drop in/CONNECTORS/GOOGLE/auth.js"
+      ]
+    },
+    {
+      "name": "config.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/config.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/config.js",
+        "Drop in/CONNECTORS/GOOGLE/config.js"
+      ]
+    },
+    {
+      "name": "gmail.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/gmail.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js",
+        "Drop in/CONNECTORS/GOOGLE/gmail.js"
+      ]
+    },
+    {
+      "name": "calendar.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/calendar.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js",
+        "Drop in/CONNECTORS/GOOGLE/calendar.js"
+      ]
+    },
+    {
+      "name": "drive.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/drive.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js",
+        "Drop in/CONNECTORS/GOOGLE/drive.js"
+      ]
+    },
+    {
+      "name": "contacts.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/contacts.js",
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js",
+        "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js",
+        "Drop in/CONNECTORS/GOOGLE/contacts.js"
+      ]
+    },
+    {
+      "name": "index.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js",
+        "CONNECTORS/GOOGLE/index.js",
+        "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js",
+        "Drop in/CONNECTORS/GOOGLE/index.js",
+        "miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js",
+        "BUILDER/index.js"
+      ]
+    },
+    {
+      "name": "miles_google_accounts_health.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/miles_google_accounts_health.js",
+        "miles_google_accounts_health.js"
+      ]
+    },
+    {
+      "name": "account_manager.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js",
+        "CONNECTORS/GOOGLE/account_manager.js"
+      ]
+    },
+    {
+      "name": "workspace.js",
+      "paths": [
+        "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js",
+        "CONNECTORS/GOOGLE/workspace.js"
+      ]
+    },
+    {
+      "name": "authority.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/authority.js",
+        "CORE/authority.js"
+      ]
+    },
+    {
+      "name": "miles.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/miles.js",
+        "CORE/miles.js"
+      ]
+    },
+    {
+      "name": "database.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Database.js",
+        "CORE/Database.js"
+      ]
+    },
+    {
+      "name": "serviceregistry.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js",
+        "CORE/Kernel/ServiceRegistry.js"
+      ]
+    },
+    {
+      "name": "healthmonitor.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/HealthMonitor.js",
+        "CORE/Kernel/HealthMonitor.js"
+      ]
+    },
+    {
+      "name": "mileskernel.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+        "MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+        "CORE/Kernel/MilesKernel.js"
+      ]
+    },
+    {
+      "name": "startmiles.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/StartMiles.js",
+        "MILES_OS_v1/CORE/Kernel/StartMiles.js",
+        "CORE/Kernel/StartMiles.js"
+      ]
+    },
+    {
+      "name": "eventbus.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/EventBus.js",
+        "MILES_OS_v1/CORE/EventBus/EventBus.js",
+        "miles_core_framework_dropin/CORE/EventBus.js",
+        "CORE/EventBus.js",
+        "CORE/Kernel/EventBus.js"
+      ]
+    },
+    {
+      "name": "server.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/API/server.js",
+        "API/server.js"
+      ]
+    },
+    {
+      "name": "memory.routes.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/API/API/memory.routes.js",
+        "API/API/memory.routes.js"
+      ]
+    },
+    {
+      "name": "taskmanager.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/SERVICES/TaskManager.js",
+        "SERVICES/TaskManager.js"
+      ]
+    },
+    {
+      "name": "connectormanager.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/SERVICES/ConnectorManager.js",
+        "miles_core_framework_dropin/CORE/ConnectorManager.js",
+        "CORE/ConnectorManager.js",
+        "SERVICES/ConnectorManager.js"
+      ]
+    },
+    {
+      "name": "memoryservice.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/SERVICES/MemoryService.js",
+        "SERVICES/MemoryService.js"
+      ]
+    },
+    {
+      "name": "milesbrain.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/AI/MilesBrain.js",
+        "AI/MilesBrain.js"
+      ]
+    },
+    {
+      "name": "scheduler.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/AUTOMATIONS/Scheduler.js",
+        "AUTOMATIONS/Scheduler.js"
+      ]
+    },
+    {
+      "name": "dashboard.js",
+      "paths": [
+        "MILES_OS_v1/MILES_OS_v1/WEB/Dashboard.js",
+        "WEB/Dashboard.js"
+      ]
+    },
+    {
+      "name": "miles_connector_health.js",
+      "paths": [
+        "miles_core_framework_dropin/miles_connector_health.js",
+        "miles_connector_health.js"
+      ]
+    },
+    {
+      "name": "taskqueue.js",
+      "paths": [
+        "miles_core_framework_dropin/CORE/TaskQueue.js",
+        "CORE/TaskQueue.js"
+      ]
+    },
+    {
+      "name": "healthdashboard.js",
+      "paths": [
+        "miles_core_framework_dropin/CORE/HealthDashboard.js",
+        "CORE/HealthDashboard.js"
+      ]
+    }
+  ],
+  "warnings": [
+    "Multiple logger.js/Logger.js-style files may create case-sensitivity problems.",
+    "node_modules exists locally. Ensure it is not tracked by Git.",
+    ".env exists locally. Ensure secrets are rotated if exposed and never committed.",
+    "34 empty files found."
+  ],
+  "recommendations": [
+    "Build missing standard connector wrappers so ConnectorManager can register real business systems.",
+    "Commit the stable runtime state to develop after successful smoke test."
+  ]
+}

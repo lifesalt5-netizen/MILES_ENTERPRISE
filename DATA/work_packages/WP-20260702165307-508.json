@@ -1,0 +1,214 @@
+{
+  "id": "WP-20260702165307-508",
+  "objective": "Investigate Runtime watch condition",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-02T16:53:07.810Z",
+  "updatedAt": "2026-07-02T16:53:07.810Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Investigate Runtime watch condition",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-02T16:53:07.810Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783011187647-50316",
+      "area": "Runtime",
+      "priority": 2,
+      "description": "Runtime is in Watch status with score 82.",
+      "reason": "Runtime is in Watch status with score 82.",
+      "recommendedAction": "Review failed task details and queue safe repair work.",
+      "expectedImpact": "Prevents small operational issues from becoming business blockers.",
+      "relatedProvider": "Runtime",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1783011187641-44742",
+          "priority": 2,
+          "area": "Runtime",
+          "title": "Investigate Runtime watch condition",
+          "reason": "Runtime is in Watch status with score 82.",
+          "recommendedAction": "Review failed task details and queue safe repair work.",
+          "expectedImpact": "Prevents small operational issues from becoming business blockers.",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "relatedProvider": "Runtime",
+          "businessImpactScore": 80,
+          "automationConfidence": "HIGH",
+          "metadata": {
+            "health": {
+              "area": "Runtime",
+              "status": "Watch",
+              "score": 82,
+              "risk": "MEDIUM",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-02T16:53:07.640Z",
+              "lastFailure": "2026-07-02T16:53:07.640Z",
+              "exceptions": [
+                {
+                  "type": "TaskFailures",
+                  "severity": "Warning",
+                  "message": "486 failed runtime task(s) detected."
+                }
+              ],
+              "recommendations": [
+                "Review failed task details and queue safe repair work."
+              ],
+              "metrics": {
+                "total": 1639,
+                "pending": 1145,
+                "running": 0,
+                "completed": 8,
+                "failed": 486
+              }
+            }
+          }
+        },
+        "automationConfidence": "HIGH",
+        "businessImpactScore": 80
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

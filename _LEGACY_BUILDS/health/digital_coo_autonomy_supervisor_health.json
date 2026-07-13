@@ -1,0 +1,199 @@
+﻿{
+    "generated_at":  "2026-07-05T22:23:03.4099316-04:00",
+    "supervisor":  "Digital COO Autonomy Supervisor",
+    "health":  {
+                   "status":  "critical",
+                   "components_checked":  11,
+                   "missing_components":  [
+                                              "WorkerRegistry",
+                                              "WorkerDispatcher",
+                                              "WorkerRuntime",
+                                              "WorkerRuntimeManager",
+                                              "ConnectorRuntime",
+                                              "ConnectorRuntimeManager",
+                                              "AutonomousWorkOrchestrator",
+                                              "AutonomousWorkOrchestratorManager",
+                                              "DigitalCOORuntime",
+                                              "DigitalCOORuntimeManager",
+                                              "DigitalCOOHost"
+                                          ],
+                   "unreadable_components":  null,
+                   "medium_risk":  null,
+                   "high_risk":  [
+                                     "WorkerRegistry",
+                                     "WorkerDispatcher",
+                                     "WorkerRuntime",
+                                     "WorkerRuntimeManager",
+                                     "ConnectorRuntime",
+                                     "ConnectorRuntimeManager",
+                                     "AutonomousWorkOrchestrator",
+                                     "AutonomousWorkOrchestratorManager",
+                                     "DigitalCOORuntime",
+                                     "DigitalCOORuntimeManager",
+                                     "DigitalCOOHost"
+                                 ]
+               },
+    "audit":  [
+                  {
+                      "component":  "WorkerRegistry",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "WorkerRegistry",
+                                              "register",
+                                              "worker"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "WorkerDispatcher",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "WorkerDispatcher",
+                                              "dispatch",
+                                              "worker"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "WorkerRuntime",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "WorkerRuntime",
+                                              "run",
+                                              "worker"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "WorkerRuntimeManager",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "WorkerRuntimeManager",
+                                              "manage",
+                                              "runtime"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "ConnectorRuntime",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "ConnectorRuntime",
+                                              "connector"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "ConnectorRuntimeManager",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "ConnectorRuntimeManager",
+                                              "connector",
+                                              "runtime"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "AutonomousWorkOrchestrator",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "AutonomousWorkOrchestrator",
+                                              "orchestrator"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "AutonomousWorkOrchestratorManager",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "AutonomousWorkOrchestratorManager",
+                                              "orchestrator",
+                                              "manager"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "DigitalCOORuntime",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "DigitalCOORuntime",
+                                              "Digital COO"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "DigitalCOORuntimeManager",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "DigitalCOORuntimeManager",
+                                              "Digital COO",
+                                              "manager"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  },
+                  {
+                      "component":  "DigitalCOOHost",
+                      "present":  false,
+                      "file":  null,
+                      "markers_checked":  [
+                                              "DigitalCOOHost",
+                                              "host"
+                                          ],
+                      "markers_found":  [
+
+                                        ],
+                      "status":  "missing",
+                      "risk":  "high"
+                  }
+              ]
+}

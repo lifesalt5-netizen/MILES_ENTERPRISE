@@ -1,0 +1,8586 @@
+[
+  {
+    "file": "CORE/authority.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 14,
+    "sizeBytes": 736
+  },
+  {
+    "file": "CORE/AutonomousDiscoveryEngine.js",
+    "role": "Engine",
+    "classes": [
+      "AutonomousDiscoveryEngine"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./TaskQueue",
+      "./SystemIntelligence",
+      "./RuntimeController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 351,
+    "sizeBytes": 11434
+  },
+  {
+    "file": "CORE/AutonomousLoop.js",
+    "role": "Unknown",
+    "classes": [
+      "AutonomousLoop"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./AutonomousDiscoveryEngine",
+      "./ExecutionEngine",
+      "./TaskQueue"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 163,
+    "sizeBytes": 4609
+  },
+  {
+    "file": "CORE/CommandQueue.js",
+    "role": "Queue",
+    "classes": [
+      "CommandQueue"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 187,
+    "sizeBytes": 3989
+  },
+  {
+    "file": "CORE/ConnectorManager.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorManager"
+    ],
+    "requires": [
+      "./Logger",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 46,
+    "sizeBytes": 1096
+  },
+  {
+    "file": "CORE/Database.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesDatabase"
+    ],
+    "requires": [
+      "better-sqlite3",
+      "path",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 56,
+    "sizeBytes": 1520
+  },
+  {
+    "file": "CORE/EventBus.js",
+    "role": "EventBus",
+    "classes": [
+      "MilesEventBus"
+    ],
+    "requires": [
+      "events",
+      "./Logger"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 23,
+    "sizeBytes": 508
+  },
+  {
+    "file": "CORE/ExecutionEngine.js",
+    "role": "Engine",
+    "classes": [
+      "ExecutionEngine"
+    ],
+    "requires": [
+      "./TaskQueue",
+      "./ConnectorManager",
+      "./BROWSER/BrowserWorker",
+      "../SERVICES/WorkforceExecutionService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 153,
+    "sizeBytes": 4349
+  },
+  {
+    "file": "CORE/ExecutionOrchestrator.js",
+    "role": "Unknown",
+    "classes": [
+      "ExecutionOrchestrator"
+    ],
+    "requires": [
+      "./TaskQueue",
+      "../SERVICES/WorkflowService",
+      "../SERVICES/WorkforceExecutionService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 147,
+    "sizeBytes": 4301
+  },
+  {
+    "file": "CORE/HealthDashboard.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./ConnectorManager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 27,
+    "sizeBytes": 905
+  },
+  {
+    "file": "CORE/logger.js",
+    "role": "Logger",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 38,
+    "sizeBytes": 966
+  },
+  {
+    "file": "CORE/miles.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./logger",
+      "./authority"
+    ],
+    "exports": [],
+    "lines": 52,
+    "sizeBytes": 1908
+  },
+  {
+    "file": "CORE/RuntimeController.js",
+    "role": "Controller",
+    "classes": [
+      "RuntimeController"
+    ],
+    "requires": [
+      "./GATEWAY/CommandGateway",
+      "./TaskQueue",
+      "../SERVICES/WorkflowService",
+      "../SERVICES/PlannerService",
+      "../SERVICES/WorkforceExecutionService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 217,
+    "sizeBytes": 6023
+  },
+  {
+    "file": "CORE/Supervisor.js",
+    "role": "Unknown",
+    "classes": [
+      "Supervisor"
+    ],
+    "requires": [
+      "./ConnectorManager",
+      "./TaskQueue",
+      "../SERVICES/WorkforceService",
+      "../SERVICES/CapabilityService",
+      "../SERVICES/WorkflowService",
+      "./STATE/ExecutiveState",
+      "./RECOVERY/RecoveryEngine"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 156,
+    "sizeBytes": 5257
+  },
+  {
+    "file": "CORE/SystemIntelligence.js",
+    "role": "Unknown",
+    "classes": [
+      "SystemIntelligence"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 250,
+    "sizeBytes": 6683
+  },
+  {
+    "file": "CORE/TaskQueue.js",
+    "role": "Queue",
+    "classes": [
+      "TaskQueue"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./Logger",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 294,
+    "sizeBytes": 7509
+  },
+  {
+    "file": "CORE/TestRuntimeController.js",
+    "role": "Controller",
+    "classes": [],
+    "requires": [
+      "./RuntimeController"
+    ],
+    "exports": [],
+    "lines": 36,
+    "sizeBytes": 725
+  },
+  {
+    "file": "CORE/BROWSER/BrowserManager.js",
+    "role": "Unknown",
+    "classes": [
+      "BrowserManager"
+    ],
+    "requires": [
+      "path",
+      "fs",
+      "playwright"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 169,
+    "sizeBytes": 4256
+  },
+  {
+    "file": "CORE/BROWSER/BrowserWorker.js",
+    "role": "Worker",
+    "classes": [
+      "BrowserWorker"
+    ],
+    "requires": [
+      "./BrowserManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 104,
+    "sizeBytes": 2974
+  },
+  {
+    "file": "CORE/BROWSER/SessionManager.js",
+    "role": "Unknown",
+    "classes": [
+      "SessionManager"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 975
+  },
+  {
+    "file": "CORE/CONFIG/BootstrapValidator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./ConfigurationManager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 19,
+    "sizeBytes": 361
+  },
+  {
+    "file": "CORE/CONFIG/ConfigurationManager.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "dotenv"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 48,
+    "sizeBytes": 1057
+  },
+  {
+    "file": "CORE/Connectors/Ingestion/crmIngestor.js",
+    "role": "Connector",
+    "classes": [
+      "CRMIngestor"
+    ],
+    "requires": [
+      "../../event-bus/emitter"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 21,
+    "sizeBytes": 393
+  },
+  {
+    "file": "CORE/Connectors/Ingestion/gmailIngestor.js",
+    "role": "Connector",
+    "classes": [
+      "GmailIngestor"
+    ],
+    "requires": [
+      "../../event-bus/emitter"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 20,
+    "sizeBytes": 382
+  },
+  {
+    "file": "CORE/Connectors/Ingestion/instantlyIngestor.js",
+    "role": "Connector",
+    "classes": [
+      "InstantlyIngestor"
+    ],
+    "requires": [
+      "../../event-bus/emitter"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 21,
+    "sizeBytes": 419
+  },
+  {
+    "file": "CORE/ENGINEERING/EngineeringManager.js",
+    "role": "Engine",
+    "classes": [
+      "EngineeringManager"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 326,
+    "sizeBytes": 5492
+  },
+  {
+    "file": "CORE/GATEWAY/CommandGateway.js",
+    "role": "Unknown",
+    "classes": [
+      "CommandGateway"
+    ],
+    "requires": [
+      "../../SERVICES/PlannerService",
+      "../../SERVICES/WorkflowService",
+      "../TaskQueue",
+      "../STATE/ExecutiveState"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 225,
+    "sizeBytes": 5594
+  },
+  {
+    "file": "CORE/Kernel/EventBus.js",
+    "role": "EventBus",
+    "classes": [
+      "MilesEventBus"
+    ],
+    "requires": [
+      "events",
+      "path",
+      "./Logger"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 909
+  },
+  {
+    "file": "CORE/Kernel/HealthMonitor.js",
+    "role": "Unknown",
+    "classes": [
+      "HealthMonitor"
+    ],
+    "requires": [
+      "./ServiceRegistry",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 44,
+    "sizeBytes": 913
+  },
+  {
+    "file": "CORE/Kernel/MilesKernel.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesKernel"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../ConnectorManager",
+      "../../SERVICES/ExecutionService",
+      "./ServiceRegistry",
+      "./HealthMonitor",
+      "./EventBus",
+      "../../SERVICES/MemoryService",
+      "../../SERVICES/SchedulerService",
+      "../../SERVICES/DashboardService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 116,
+    "sizeBytes": 3287
+  },
+  {
+    "file": "CORE/Kernel/ServiceRegistry.js",
+    "role": "Service",
+    "classes": [
+      "ServiceRegistry"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 824
+  },
+  {
+    "file": "CORE/Kernel/StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "./MilesKernel"
+    ],
+    "exports": [],
+    "lines": 9,
+    "sizeBytes": 182
+  },
+  {
+    "file": "CORE/RECOVERY/RecoveryEngine.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 96,
+    "sizeBytes": 1542
+  },
+  {
+    "file": "CORE/Runtime/MilesRuntime.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesRuntime"
+    ],
+    "requires": [
+      "../../SERVICES/WorkflowService",
+      "../../SERVICES/WorkforceExecutionService",
+      "../../SERVICES/Events/EventBus",
+      "../../SERVICES/Learning/LearningEngine",
+      "../../SERVICES/Memory/OperationalMemoryService",
+      "../../SERVICES/ProviderRouterService",
+      "../../SERVICES/Supervisor/ExecutiveSupervisor"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 344,
+    "sizeBytes": 8404
+  },
+  {
+    "file": "CORE/STATE/ExecutiveState.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../CONFIG/ConfigurationManager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 110,
+    "sizeBytes": 2753
+  },
+  {
+    "file": "SERVICES/ActionAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ActionAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 60,
+    "sizeBytes": 1596
+  },
+  {
+    "file": "SERVICES/ActionDispatcherService.js",
+    "role": "Service",
+    "classes": [
+      "ActionDispatcherService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 122,
+    "sizeBytes": 4081
+  },
+  {
+    "file": "SERVICES/ActionEngineService.js",
+    "role": "Service",
+    "classes": [
+      "ActionEngineService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderRegistryService",
+      "./ActionDispatcherService",
+      "./ActionVerificationService",
+      "./ActionRetryService",
+      "./ActionHistoryService",
+      "./ActionAuditService",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 265,
+    "sizeBytes": 10876
+  },
+  {
+    "file": "SERVICES/ActionHistoryService.js",
+    "role": "Service",
+    "classes": [
+      "ActionHistoryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 69,
+    "sizeBytes": 2000
+  },
+  {
+    "file": "SERVICES/ActionRetryService.js",
+    "role": "Service",
+    "classes": [
+      "ActionRetryService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 33,
+    "sizeBytes": 960
+  },
+  {
+    "file": "SERVICES/ActionVerificationService.js",
+    "role": "Service",
+    "classes": [
+      "ActionVerificationService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 68,
+    "sizeBytes": 2307
+  },
+  {
+    "file": "SERVICES/ATLASRuntimeInspector.js",
+    "role": "Service",
+    "classes": [
+      "ATLASRuntimeInspector"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "child_process"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 426,
+    "sizeBytes": 7362
+  },
+  {
+    "file": "SERVICES/AutonomousCompanyOperatingSystem.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCompanyOperatingSystem"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 212,
+    "sizeBytes": 5287
+  },
+  {
+    "file": "SERVICES/AutonomousCOOLoopService.backup.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutiveIntelligenceService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "../CORE/TaskQueue",
+      "./ExecutionService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 475,
+    "sizeBytes": 11122
+  },
+  {
+    "file": "SERVICES/AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "./BusinessOperationsBridgeService",
+      "./Learning/LearningEngine",
+      "../CORE/TaskQueue",
+      "./ExecutionService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 1231,
+    "sizeBytes": 38878
+  },
+  {
+    "file": "SERVICES/AutonomousRevenueClosureLoop.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousRevenueClosureLoop"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 101,
+    "sizeBytes": 2329
+  },
+  {
+    "file": "SERVICES/BaseProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "BaseProviderController"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 123,
+    "sizeBytes": 3916
+  },
+  {
+    "file": "SERVICES/BusinessExecutionEngineService.js",
+    "role": "Service",
+    "classes": [
+      "BusinessExecutionEngineService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutionPlannerService",
+      "./ExecutionSchedulerService",
+      "./ExecutionDispatcherService",
+      "./ExecutionMonitorService",
+      "./ExecutionAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 91,
+    "sizeBytes": 4221
+  },
+  {
+    "file": "SERVICES/BusinessOperationsBridgeService.js",
+    "role": "Service",
+    "classes": [
+      "BusinessOperationsBridgeService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../CORE/TaskQueue"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 381,
+    "sizeBytes": 9027
+  },
+  {
+    "file": "SERVICES/BusinessStateAggregator.js",
+    "role": "Service",
+    "classes": [
+      "BusinessStateAggregator"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 97,
+    "sizeBytes": 2163
+  },
+  {
+    "file": "SERVICES/CapabilityRegistryService.js",
+    "role": "Service",
+    "classes": [
+      "CapabilityRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 501,
+    "sizeBytes": 17894
+  },
+  {
+    "file": "SERVICES/CapabilityService.js",
+    "role": "Service",
+    "classes": [
+      "CapabilityService"
+    ],
+    "requires": [
+      "./WorkforceService",
+      "./ExecutiveStateService",
+      "./Planning/PlannerRegistry"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 83,
+    "sizeBytes": 2131
+  },
+  {
+    "file": "SERVICES/CodeRepairService.js",
+    "role": "Service",
+    "classes": [
+      "CodeRepairService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 305,
+    "sizeBytes": 5667
+  },
+  {
+    "file": "SERVICES/CommandIntentPlannerService.js",
+    "role": "Service",
+    "classes": [
+      "CommandIntentPlannerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 359,
+    "sizeBytes": 11231
+  },
+  {
+    "file": "SERVICES/CompanyStateService.js",
+    "role": "Service",
+    "classes": [
+      "CompanyStateService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 416,
+    "sizeBytes": 14854
+  },
+  {
+    "file": "SERVICES/ConfidenceScoringService.js",
+    "role": "Service",
+    "classes": [
+      "ConfidenceScoringService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 1712
+  },
+  {
+    "file": "SERVICES/ConnectorManager.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "SERVICES/ConnectorRuntimeManager.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorRuntimeManager"
+    ],
+    "requires": [
+      "./ConnectorRuntime"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 255,
+    "sizeBytes": 6381
+  },
+  {
+    "file": "SERVICES/ContinuousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "ContinuousCOOLoopService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil",
+      "./HeartbeatService",
+      "./QueueRecoveryService",
+      "./RuntimeHealthService",
+      "./RestartGuardianService",
+      "./LoopSchedulerService",
+      "./ExecutiveBrainService",
+      "./CompanyStateService",
+      "./TaskRouterService",
+      "./WorkQueueService",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 268,
+    "sizeBytes": 8777
+  },
+  {
+    "file": "SERVICES/ControlledWriteAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWriteAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 27,
+    "sizeBytes": 1168
+  },
+  {
+    "file": "SERVICES/ControlledWritePolicyService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWritePolicyService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 126,
+    "sizeBytes": 4698
+  },
+  {
+    "file": "SERVICES/ControlledWriteService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWriteService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ControlledWritePolicyService",
+      "./ControlledWriteAuditService",
+      "./InstantlyControlledWriteService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 64,
+    "sizeBytes": 2556
+  },
+  {
+    "file": "SERVICES/COOExecutiveLoopService.js",
+    "role": "Service",
+    "classes": [
+      "COOExecutiveLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "named exports"
+    ],
+    "lines": 168,
+    "sizeBytes": 4746
+  },
+  {
+    "file": "SERVICES/COOOrchestratorService.js",
+    "role": "Service",
+    "classes": [
+      "COOOrchestratorService"
+    ],
+    "requires": [
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "./ExecutionService",
+      "./BusinessOperationsBridgeService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 230,
+    "sizeBytes": 5689
+  },
+  {
+    "file": "SERVICES/COO_V10_ClosureSystem.js",
+    "role": "Service",
+    "classes": [
+      "COO_V10_ClosureSystem"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./COO_V9_ExecutionLayer"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 201,
+    "sizeBytes": 4126
+  },
+  {
+    "file": "SERVICES/COO_V11_RealWorldAgent.js",
+    "role": "Service",
+    "classes": [
+      "COO_V11_RealWorldAgent"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "axios"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 216,
+    "sizeBytes": 4775
+  },
+  {
+    "file": "SERVICES/COO_V12_AutonomousCompany.js",
+    "role": "Service",
+    "classes": [
+      "COO_V12_AutonomousCompany"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 218,
+    "sizeBytes": 4730
+  },
+  {
+    "file": "SERVICES/COO_V9_ExecutionLayer.js",
+    "role": "Service",
+    "classes": [
+      "COOExecutionLayer"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "axios"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 190,
+    "sizeBytes": 3900
+  },
+  {
+    "file": "SERVICES/DashboardDataService.js",
+    "role": "Service",
+    "classes": [
+      "DashboardDataService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 359,
+    "sizeBytes": 17004
+  },
+  {
+    "file": "SERVICES/DashboardServerService.js",
+    "role": "Service",
+    "classes": [
+      "DashboardServerService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "http",
+      "./ExecutiveDashboardService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 62,
+    "sizeBytes": 2185
+  },
+  {
+    "file": "SERVICES/DashboardService.js",
+    "role": "Service",
+    "classes": [
+      "DashboardService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../CORE/TaskQueue",
+      "../CORE/ConnectorManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 71,
+    "sizeBytes": 2470
+  },
+  {
+    "file": "SERVICES/DealClosureEngine.js",
+    "role": "Service",
+    "classes": [
+      "DealClosureEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 215,
+    "sizeBytes": 4425
+  },
+  {
+    "file": "SERVICES/DecisionEngine.js",
+    "role": "Service",
+    "classes": [
+      "DecisionEngine"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./TaskManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 326,
+    "sizeBytes": 10589
+  },
+  {
+    "file": "SERVICES/DecisionLearningService.js",
+    "role": "Service",
+    "classes": [
+      "DecisionLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 49,
+    "sizeBytes": 1901
+  },
+  {
+    "file": "SERVICES/DesktopServer.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "express",
+      "path",
+      "../CORE/Runtime/MilesRuntime"
+    ],
+    "exports": [],
+    "lines": 21,
+    "sizeBytes": 761
+  },
+  {
+    "file": "SERVICES/EngineeringCOOService.js",
+    "role": "Service",
+    "classes": [
+      "EngineeringCOOService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../CORE/TaskQueue",
+      "../CORE/EventBus",
+      "../CORE/logger",
+      "./SelfEngineeringService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 390,
+    "sizeBytes": 11617
+  },
+  {
+    "file": "SERVICES/EngineeringImprovementService.js",
+    "role": "Service",
+    "classes": [
+      "EngineeringImprovementService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 504,
+    "sizeBytes": 15241
+  },
+  {
+    "file": "SERVICES/EngineeringPlannerService.js",
+    "role": "Service",
+    "classes": [
+      "EngineeringPlannerService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./CONNECTORS/WEBSITE/website",
+      "./PROVIDERS/providers/WebsiteProvider",
+      "./PROVIDERS/providers/MarketingProvider",
+      "./PROVIDERS/providers/OrionProvider"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 224,
+    "sizeBytes": 7677
+  },
+  {
+    "file": "SERVICES/EscalationManagerService.js",
+    "role": "Service",
+    "classes": [
+      "EscalationManagerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 22,
+    "sizeBytes": 825
+  },
+  {
+    "file": "SERVICES/ExecutionAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 35,
+    "sizeBytes": 1266
+  },
+  {
+    "file": "SERVICES/ExecutionDispatcherService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionDispatcherService"
+    ],
+    "requires": [
+      "./ExecutionAuditService",
+      "./EscalationManagerService",
+      "./RetryManagerService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 66,
+    "sizeBytes": 2799
+  },
+  {
+    "file": "SERVICES/ExecutionMonitorService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionMonitorService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 21,
+    "sizeBytes": 893
+  },
+  {
+    "file": "SERVICES/ExecutionPlannerService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionPlannerService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 86,
+    "sizeBytes": 4458
+  },
+  {
+    "file": "SERVICES/ExecutionPlanService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionPlanService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 55,
+    "sizeBytes": 1976
+  },
+  {
+    "file": "SERVICES/ExecutionRouterService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionRouterService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 96,
+    "sizeBytes": 2045
+  },
+  {
+    "file": "SERVICES/ExecutionSchedulerService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionSchedulerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 18,
+    "sizeBytes": 505
+  },
+  {
+    "file": "SERVICES/ExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionService"
+    ],
+    "requires": [
+      "../CORE/TaskQueue",
+      "../CORE/ConnectorManager",
+      "../CORE/EventBus",
+      "../CORE/authority",
+      "../CORE/logger",
+      "./MemoryService",
+      "./Memory/OperationalMemoryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 419,
+    "sizeBytes": 10681
+  },
+  {
+    "file": "SERVICES/ExecutiveBrainService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveBrainService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./DecisionEngine",
+      "./PlannerService",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 243,
+    "sizeBytes": 7536
+  },
+  {
+    "file": "SERVICES/ExecutiveBriefService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveBriefService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 244,
+    "sizeBytes": 8390
+  },
+  {
+    "file": "SERVICES/ExecutiveDashboardService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveDashboardService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./DashboardDataService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 306,
+    "sizeBytes": 12580
+  },
+  {
+    "file": "SERVICES/ExecutiveDispatcher.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveDispatcher"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../CORE/CommandQueue"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 150,
+    "sizeBytes": 4233
+  },
+  {
+    "file": "SERVICES/ExecutiveIntelligenceService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveIntelligenceService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BusinessStateAggregator",
+      "../PROVIDERS/providers/WebsiteProvider",
+      "../PROVIDERS/providers/OrionProvider",
+      "../PROVIDERS/providers/CRMProvider",
+      "../PROVIDERS/providers/InstantlyProvider",
+      "../PROVIDERS/providers/GoogleProvider"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 245,
+    "sizeBytes": 5213
+  },
+  {
+    "file": "SERVICES/ExecutiveResponseService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveResponseService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 214,
+    "sizeBytes": 5822
+  },
+  {
+    "file": "SERVICES/ExecutiveStateService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveStateService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 47,
+    "sizeBytes": 1079
+  },
+  {
+    "file": "SERVICES/FailureLearningService.js",
+    "role": "Service",
+    "classes": [
+      "FailureLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 54,
+    "sizeBytes": 2008
+  },
+  {
+    "file": "SERVICES/FileSystemProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "FileSystemProviderController"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 29,
+    "sizeBytes": 2470
+  },
+  {
+    "file": "SERVICES/GoogleWorkspaceProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "GoogleWorkspaceProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 561
+  },
+  {
+    "file": "SERVICES/HeartbeatService.js",
+    "role": "Service",
+    "classes": [
+      "HeartbeatService"
+    ],
+    "requires": [
+      "path",
+      "os",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 1226
+  },
+  {
+    "file": "SERVICES/InstantlyActionBridgeService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyActionBridgeService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyLiveProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 85,
+    "sizeBytes": 3465
+  },
+  {
+    "file": "SERVICES/InstantlyApiClient.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyApiClient"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 104,
+    "sizeBytes": 3563
+  },
+  {
+    "file": "SERVICES/InstantlyControlledWriteService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyControlledWriteService"
+    ],
+    "requires": [
+      "./ControlledWritePolicyService",
+      "./ControlledWriteAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 189,
+    "sizeBytes": 6675
+  },
+  {
+    "file": "SERVICES/InstantlyLiveIntegrationService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyLiveIntegrationService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyLiveProviderController",
+      "./InstantlyActionBridgeService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 54,
+    "sizeBytes": 2655
+  },
+  {
+    "file": "SERVICES/InstantlyLiveProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyLiveProviderController"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyApiClient"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 167,
+    "sizeBytes": 7689
+  },
+  {
+    "file": "SERVICES/InstantlyProviderCompatibilityService.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyProviderCompatibilityService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 101,
+    "sizeBytes": 5157
+  },
+  {
+    "file": "SERVICES/InstantlyProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 25,
+    "sizeBytes": 731
+  },
+  {
+    "file": "SERVICES/JsonFileService.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 53,
+    "sizeBytes": 1117
+  },
+  {
+    "file": "SERVICES/LearningDataService.js",
+    "role": "Service",
+    "classes": [
+      "LearningDataService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 76,
+    "sizeBytes": 2811
+  },
+  {
+    "file": "SERVICES/LiveAutonomousBusinessMode.js",
+    "role": "Service",
+    "classes": [
+      "LiveAutonomousBusinessMode"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 175,
+    "sizeBytes": 4203
+  },
+  {
+    "file": "SERVICES/LiveProductionExecutionSystem.js",
+    "role": "Service",
+    "classes": [
+      "LiveProductionExecutionSystem"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 192,
+    "sizeBytes": 4355
+  },
+  {
+    "file": "SERVICES/LoopSchedulerService.js",
+    "role": "Service",
+    "classes": [
+      "LoopSchedulerService"
+    ],
+    "requires": [
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 47,
+    "sizeBytes": 1151
+  },
+  {
+    "file": "SERVICES/MemoryService.js",
+    "role": "Service",
+    "classes": [
+      "MemoryService"
+    ],
+    "requires": [
+      "../CORE/Database"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 60,
+    "sizeBytes": 1240
+  },
+  {
+    "file": "SERVICES/MilesAdaptiveRealTimeIntelligenceSystem.js",
+    "role": "Service",
+    "classes": [
+      "MilesAdaptiveRealTimeIntelligenceSystem"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 192,
+    "sizeBytes": 4352
+  },
+  {
+    "file": "SERVICES/MilesSelfLearningCompanyAI.js",
+    "role": "Service",
+    "classes": [
+      "MilesSelfLearningCompanyAI"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 185,
+    "sizeBytes": 4337
+  },
+  {
+    "file": "SERVICES/NamecheapProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "NamecheapProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 600
+  },
+  {
+    "file": "SERVICES/OrionProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "OrionProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 495
+  },
+  {
+    "file": "SERVICES/OutboundService.js",
+    "role": "Service",
+    "classes": [
+      "OutboundService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 143,
+    "sizeBytes": 18381
+  },
+  {
+    "file": "SERVICES/PlannerService.js",
+    "role": "Service",
+    "classes": [
+      "PlannerService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./CapabilityService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 121,
+    "sizeBytes": 4403
+  },
+  {
+    "file": "SERVICES/PriorityOptimizationService.js",
+    "role": "Service",
+    "classes": [
+      "PriorityOptimizationService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 45,
+    "sizeBytes": 1651
+  },
+  {
+    "file": "SERVICES/ProductionCOOEngine.js",
+    "role": "Service",
+    "classes": [
+      "ProductionCOOEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 102,
+    "sizeBytes": 1803
+  },
+  {
+    "file": "SERVICES/ProviderAuthorityRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderAuthorityRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 186,
+    "sizeBytes": 9159
+  },
+  {
+    "file": "SERVICES/ProviderCapabilityBindingService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderCapabilityBindingService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 61,
+    "sizeBytes": 2607
+  },
+  {
+    "file": "SERVICES/ProviderControllerExecutionService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerExecutionService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderControllerRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 30,
+    "sizeBytes": 2108
+  },
+  {
+    "file": "SERVICES/ProviderControllerHealthService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerHealthService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderControllerRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 19,
+    "sizeBytes": 1278
+  },
+  {
+    "file": "SERVICES/ProviderControllerRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyProviderController",
+      "./GoogleWorkspaceProviderController",
+      "./NamecheapProviderController",
+      "./WebsiteProviderController",
+      "./OrionProviderController",
+      "./FileSystemProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 2295
+  },
+  {
+    "file": "SERVICES/ProviderInterfaceAdapterService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderInterfaceAdapterService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 64,
+    "sizeBytes": 2296
+  },
+  {
+    "file": "SERVICES/ProviderRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 284,
+    "sizeBytes": 12419
+  },
+  {
+    "file": "SERVICES/ProviderRouterService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderRouterService"
+    ],
+    "requires": [
+      "../PROVIDERS/providers/MarketingProvider",
+      "../PROVIDERS/providers/OrionProvider"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 202,
+    "sizeBytes": 6278
+  },
+  {
+    "file": "SERVICES/ProviderSynchronizationService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderSynchronizationService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService",
+      "./ProviderInterfaceAdapterService",
+      "./ProviderCapabilityBindingService",
+      "./InstantlyProviderCompatibilityService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 98,
+    "sizeBytes": 5036
+  },
+  {
+    "file": "SERVICES/QueueRecoveryService.js",
+    "role": "Service",
+    "classes": [
+      "QueueRecoveryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 171,
+    "sizeBytes": 5042
+  },
+  {
+    "file": "SERVICES/RealWorldIntegrationLayer.js",
+    "role": "Service",
+    "classes": [
+      "RealWorldIntegrationLayer"
+    ],
+    "requires": [
+      "axios"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 165,
+    "sizeBytes": 3507
+  },
+  {
+    "file": "SERVICES/RecommendationEngineService.js",
+    "role": "Service",
+    "classes": [
+      "RecommendationEngineService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 43,
+    "sizeBytes": 1885
+  },
+  {
+    "file": "SERVICES/ReplyIntelligenceEngine.js",
+    "role": "Service",
+    "classes": [
+      "ReplyIntelligenceEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 229,
+    "sizeBytes": 4868
+  },
+  {
+    "file": "SERVICES/RepositoryRegistryService.js",
+    "role": "Service",
+    "classes": [
+      "RepositoryRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "crypto"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 603,
+    "sizeBytes": 21035
+  },
+  {
+    "file": "SERVICES/RepositorySearchService.js",
+    "role": "Service",
+    "classes": [
+      "RepositorySearchService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 292,
+    "sizeBytes": 7823
+  },
+  {
+    "file": "SERVICES/RestartGuardianService.js",
+    "role": "Service",
+    "classes": [
+      "RestartGuardianService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 48,
+    "sizeBytes": 1577
+  },
+  {
+    "file": "SERVICES/RetryManagerService.js",
+    "role": "Service",
+    "classes": [
+      "RetryManagerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 19,
+    "sizeBytes": 621
+  },
+  {
+    "file": "SERVICES/RoutingLearningService.js",
+    "role": "Service",
+    "classes": [
+      "RoutingLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 51,
+    "sizeBytes": 2126
+  },
+  {
+    "file": "SERVICES/RuntimeHealthService.js",
+    "role": "Service",
+    "classes": [
+      "RuntimeHealthService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 76,
+    "sizeBytes": 2273
+  },
+  {
+    "file": "SERVICES/RuntimeRecoveryService.js",
+    "role": "Service",
+    "classes": [
+      "RuntimeRecoveryService"
+    ],
+    "requires": [
+      "child_process"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 175,
+    "sizeBytes": 3173
+  },
+  {
+    "file": "SERVICES/SchedulerService.js",
+    "role": "Service",
+    "classes": [
+      "SchedulerService"
+    ],
+    "requires": [
+      "./ExecutionService",
+      "../CORE/TaskQueue",
+      "../CORE/EventBus",
+      "./DecisionEngine",
+      "./DashboardService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 55,
+    "sizeBytes": 1401
+  },
+  {
+    "file": "SERVICES/SelfEngineeringService.js",
+    "role": "Service",
+    "classes": [
+      "SelfEngineeringService"
+    ],
+    "requires": [
+      "./EngineeringPlannerService",
+      "./CodeRepairService",
+      "./TestRunnerService",
+      "./RuntimeRecoveryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 119,
+    "sizeBytes": 2423
+  },
+  {
+    "file": "SERVICES/SelfLearningService.js",
+    "role": "Service",
+    "classes": [
+      "SelfLearningService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./LearningDataService",
+      "./DecisionLearningService",
+      "./FailureLearningService",
+      "./RoutingLearningService",
+      "./PriorityOptimizationService",
+      "./ConfidenceScoringService",
+      "./RecommendationEngineService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 104,
+    "sizeBytes": 5231
+  },
+  {
+    "file": "SERVICES/SelfMaintenanceService.js",
+    "role": "Service",
+    "classes": [
+      "SelfMaintenanceService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 364,
+    "sizeBytes": 11109
+  },
+  {
+    "file": "SERVICES/StartProductionSystem.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./api/server",
+      "./SERVICES/ExecutionService",
+      "./workers/cooWorker",
+      "./workers/revenueWorker",
+      "./workers/replyWorker",
+      "./workers/dealWorker",
+      "./workers/atlasWorker",
+      "./CORE/Supervisor",
+      "./event-bus/emitter"
+    ],
+    "exports": [],
+    "lines": 102,
+    "sizeBytes": 2398
+  },
+  {
+    "file": "SERVICES/SystemRootGuard.js",
+    "role": "Service",
+    "classes": [
+      "SystemRootGuard"
+    ],
+    "requires": [
+      "./SERVICES/SystemRootGuard",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 137,
+    "sizeBytes": 3390
+  },
+  {
+    "file": "SERVICES/TaskManager.js",
+    "role": "Service",
+    "classes": [
+      "TaskManager"
+    ],
+    "requires": [
+      "../CORE/TaskQueue",
+      "../CORE/authority"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 31,
+    "sizeBytes": 684
+  },
+  {
+    "file": "SERVICES/TaskRouterService.js",
+    "role": "Service",
+    "classes": [
+      "TaskRouterService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 339,
+    "sizeBytes": 10177
+  },
+  {
+    "file": "SERVICES/TestRunnerService.js",
+    "role": "Service",
+    "classes": [
+      "TestRunnerService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "child_process"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 280,
+    "sizeBytes": 4580
+  },
+  {
+    "file": "SERVICES/test_autonomous_coo_loop.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "./SERVICES/AutonomousCOOLoopService"
+    ],
+    "exports": [],
+    "lines": 14,
+    "sizeBytes": 333
+  },
+  {
+    "file": "SERVICES/TimeUtil.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 32,
+    "sizeBytes": 580
+  },
+  {
+    "file": "SERVICES/WebsiteProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "WebsiteProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 504
+  },
+  {
+    "file": "SERVICES/WorkflowService.js",
+    "role": "Service",
+    "classes": [
+      "WorkflowService"
+    ],
+    "requires": [
+      "./WorkPackageService",
+      "./TaskManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 82,
+    "sizeBytes": 2112
+  },
+  {
+    "file": "SERVICES/WorkforceExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "WorkforceExecutionService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./Events/EventBus",
+      "./Events/EventTypes",
+      "./WorkforceService",
+      "./ExecutiveStateService",
+      "./ProviderRouterService",
+      "./Decision/DecisionEngine",
+      "./ExecutionPlanService",
+      "../CORE/logger",
+      "./Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 570,
+    "sizeBytes": 18971
+  },
+  {
+    "file": "SERVICES/WorkforceService.js",
+    "role": "Service",
+    "classes": [
+      "WorkforceService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 122,
+    "sizeBytes": 2941
+  },
+  {
+    "file": "SERVICES/WorkPackageService.js",
+    "role": "Service",
+    "classes": [
+      "WorkPackageService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./PlannerService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 84,
+    "sizeBytes": 2329
+  },
+  {
+    "file": "SERVICES/WorkQueueService.js",
+    "role": "Service",
+    "classes": [
+      "WorkQueueService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 703,
+    "sizeBytes": 22082
+  },
+  {
+    "file": "SERVICES/Browser/BrowserSessionEnroller.js",
+    "role": "Service",
+    "classes": [
+      "BrowserSessionEnroller"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BrowserSessionManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 92,
+    "sizeBytes": 2333
+  },
+  {
+    "file": "SERVICES/Browser/BrowserSessionManager.js",
+    "role": "Service",
+    "classes": [
+      "BrowserSessionManager"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "playwright"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 161,
+    "sizeBytes": 3608
+  },
+  {
+    "file": "SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 449,
+    "sizeBytes": 12985
+  },
+  {
+    "file": "SERVICES/capability_builder/AutonomousCapabilityBuilderService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCapabilityBuilderService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 264,
+    "sizeBytes": 8087
+  },
+  {
+    "file": "SERVICES/capability_engine/CapabilityDeploymentEngine.js",
+    "role": "Service",
+    "classes": [
+      "CapabilityDeploymentEngine"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 843,
+    "sizeBytes": 24142
+  },
+  {
+    "file": "SERVICES/capability_engine/CapabilityDeploymentEngineManager.js",
+    "role": "Service",
+    "classes": [
+      "CapabilityDeploymentEngineManager"
+    ],
+    "requires": [
+      "./CapabilityDeploymentEngine"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 335,
+    "sizeBytes": 8984
+  },
+  {
+    "file": "SERVICES/connector_runtime/ConnectorRuntime.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorRuntime"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 534,
+    "sizeBytes": 13756
+  },
+  {
+    "file": "SERVICES/connector_runtime/ConnectorRuntimeManager.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorRuntimeManager"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "named exports"
+    ],
+    "lines": 231,
+    "sizeBytes": 6733
+  },
+  {
+    "file": "SERVICES/Decision/ApprovalEngine.js",
+    "role": "Service",
+    "classes": [
+      "ApprovalEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 21,
+    "sizeBytes": 634
+  },
+  {
+    "file": "SERVICES/Decision/AuthorityEngine.js",
+    "role": "Service",
+    "classes": [
+      "AuthorityEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 39,
+    "sizeBytes": 1039
+  },
+  {
+    "file": "SERVICES/Decision/ConfidenceEngine.js",
+    "role": "Service",
+    "classes": [
+      "ConfidenceEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 28,
+    "sizeBytes": 696
+  },
+  {
+    "file": "SERVICES/Decision/DecisionEngine.js",
+    "role": "Service",
+    "classes": [
+      "DecisionEngine"
+    ],
+    "requires": [
+      "./AuthorityEngine",
+      "./RiskEngine",
+      "./PolicyEngine",
+      "./ConfidenceEngine",
+      "./ApprovalEngine"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 48,
+    "sizeBytes": 1112
+  },
+  {
+    "file": "SERVICES/Decision/PolicyEngine.js",
+    "role": "Service",
+    "classes": [
+      "PolicyEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 34,
+    "sizeBytes": 912
+  },
+  {
+    "file": "SERVICES/Decision/RiskEngine.js",
+    "role": "Service",
+    "classes": [
+      "RiskEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 33,
+    "sizeBytes": 868
+  },
+  {
+    "file": "SERVICES/decision_engine/AutonomousDecisionEngine.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousDecisionEngine"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 729,
+    "sizeBytes": 20123
+  },
+  {
+    "file": "SERVICES/decision_engine/AutonomousDecisionEngineManager.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousDecisionEngineManager"
+    ],
+    "requires": [
+      "./AutonomousDecisionEngine"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 332,
+    "sizeBytes": 8914
+  },
+  {
+    "file": "SERVICES/digital_coo/COOBusinessStateEngine.js",
+    "role": "Service",
+    "classes": [
+      "COOBusinessStateEngine"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 629,
+    "sizeBytes": 19660
+  },
+  {
+    "file": "SERVICES/digital_coo/COOExecutionLoop.js",
+    "role": "Service",
+    "classes": [
+      "COOExecutionLoop"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./COOGoalEngine"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 521,
+    "sizeBytes": 15811
+  },
+  {
+    "file": "SERVICES/digital_coo/COOGoalEngine.js",
+    "role": "Service",
+    "classes": [
+      "COOGoalEngine"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 413,
+    "sizeBytes": 12835
+  },
+  {
+    "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+    "role": "Service",
+    "classes": [
+      "DigitalCOOHost"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 415,
+    "sizeBytes": 15626
+  },
+  {
+    "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+    "role": "Service",
+    "classes": [
+      "DigitalCOORuntime"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 440,
+    "sizeBytes": 12879
+  },
+  {
+    "file": "SERVICES/digital_coo/DigitalCOORuntimeManager.js",
+    "role": "Service",
+    "classes": [
+      "DigitalCOORuntimeManager"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./DigitalCOORuntime"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 618,
+    "sizeBytes": 16703
+  },
+  {
+    "file": "SERVICES/digital_coo/MarketingCOOService.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../../CONNECTORS/INSTANTLY/instantly"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 181,
+    "sizeBytes": 5230
+  },
+  {
+    "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "http",
+      "fs",
+      "path",
+      "./DigitalCOOHost",
+      "../CommandIntentPlannerService",
+      "../ExecutiveResponseService"
+    ],
+    "exports": [],
+    "lines": 523,
+    "sizeBytes": 15123
+  },
+  {
+    "file": "SERVICES/digital_coo/MilesExecutionTracer.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 124,
+    "sizeBytes": 4547
+  },
+  {
+    "file": "SERVICES/Discovery/DiscoveryEngine.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyOperationalDiscovery",
+      "WebsiteGrowthDiscovery",
+      "LinkedInGrowthDiscovery",
+      "GovernmentDataDiscovery",
+      "DiscoveryEngine"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./MarketingDiscovery",
+      "./OrionDiscovery",
+      "../Events/EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 345,
+    "sizeBytes": 9975
+  },
+  {
+    "file": "SERVICES/Discovery/MarketingDiscovery.js",
+    "role": "Service",
+    "classes": [
+      "MarketingDiscovery"
+    ],
+    "requires": [
+      "../ProviderRouterService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 62,
+    "sizeBytes": 1782
+  },
+  {
+    "file": "SERVICES/Discovery/OrionDiscovery.js",
+    "role": "Service",
+    "classes": [
+      "OrionDiscovery"
+    ],
+    "requires": [
+      "../ProviderRouterService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 59,
+    "sizeBytes": 1625
+  },
+  {
+    "file": "SERVICES/Events/EventBus.js",
+    "role": "Service",
+    "classes": [
+      "EventBus"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 141,
+    "sizeBytes": 3496
+  },
+  {
+    "file": "SERVICES/Events/EventTypes.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 10,
+    "sizeBytes": 325
+  },
+  {
+    "file": "SERVICES/Executive/CEOApprovalQueue.js",
+    "role": "Service",
+    "classes": [
+      "CEOApprovalQueue"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 160,
+    "sizeBytes": 4166
+  },
+  {
+    "file": "SERVICES/Learning/ConfidenceAdjuster.js",
+    "role": "Service",
+    "classes": [
+      "ConfidenceAdjuster"
+    ],
+    "requires": [
+      "./PerformanceScorer"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 28,
+    "sizeBytes": 640
+  },
+  {
+    "file": "SERVICES/Learning/DecisionHistory.js",
+    "role": "Service",
+    "classes": [
+      "DecisionHistory"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 59,
+    "sizeBytes": 945
+  },
+  {
+    "file": "SERVICES/Learning/LearningEngine.js",
+    "role": "Service",
+    "classes": [
+      "LearningEngine"
+    ],
+    "requires": [
+      "../Memory/OperationalMemoryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 62,
+    "sizeBytes": 1317
+  },
+  {
+    "file": "SERVICES/Learning/PerformanceScorer.js",
+    "role": "Service",
+    "classes": [
+      "PerformanceScorer"
+    ],
+    "requires": [
+      "./LearningEngine"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 32,
+    "sizeBytes": 778
+  },
+  {
+    "file": "SERVICES/learning_engine/LearningEngine.js",
+    "role": "Service",
+    "classes": [
+      "LearningEngine"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 418,
+    "sizeBytes": 11514
+  },
+  {
+    "file": "SERVICES/learning_engine/LearningEngineManager.js",
+    "role": "Service",
+    "classes": [
+      "LearningEngineManager"
+    ],
+    "requires": [
+      "./LearningEngine"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 394,
+    "sizeBytes": 10285
+  },
+  {
+    "file": "SERVICES/Memory/OperationalMemoryService.js",
+    "role": "Service",
+    "classes": [
+      "OperationalMemoryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 94,
+    "sizeBytes": 2464
+  },
+  {
+    "file": "SERVICES/operation_kernel/OperationExecutionKernel.js",
+    "role": "Service",
+    "classes": [
+      "OperationExecutionKernel"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 343,
+    "sizeBytes": 5776
+  },
+  {
+    "file": "SERVICES/Planning/BasePlanner.js",
+    "role": "Service",
+    "classes": [
+      "BasePlanner"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 45,
+    "sizeBytes": 1291
+  },
+  {
+    "file": "SERVICES/Planning/ExecutivePlanner.js",
+    "role": "Service",
+    "classes": [
+      "ExecutivePlanner"
+    ],
+    "requires": [
+      "./BasePlanner"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 73,
+    "sizeBytes": 2320
+  },
+  {
+    "file": "SERVICES/Planning/MarketingPlanner.js",
+    "role": "Service",
+    "classes": [
+      "MarketingPlanner"
+    ],
+    "requires": [
+      "./BasePlanner"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 86,
+    "sizeBytes": 3313
+  },
+  {
+    "file": "SERVICES/Planning/OrionPlanner.js",
+    "role": "Service",
+    "classes": [
+      "OrionPlanner"
+    ],
+    "requires": [
+      "./BasePlanner"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 160,
+    "sizeBytes": 6723
+  },
+  {
+    "file": "SERVICES/Planning/PlannerRegistry.js",
+    "role": "Service",
+    "classes": [
+      "PlannerRegistry"
+    ],
+    "requires": [
+      "./MarketingPlanner",
+      "./OrionPlanner",
+      "./ExecutivePlanner"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 916
+  },
+  {
+    "file": "SERVICES/Supervisor/ExecutiveSupervisor.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveSupervisor"
+    ],
+    "requires": [
+      "../Discovery/DiscoveryEngine"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 39,
+    "sizeBytes": 699
+  },
+  {
+    "file": "SERVICES/workers/BaseCOOWorker.js",
+    "role": "Worker",
+    "classes": [
+      "BaseCOOWorker",
+      "for"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "../worker_runtime/TaskExecutionWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 454,
+    "sizeBytes": 11956
+  },
+  {
+    "file": "SERVICES/workers/GoogleWorkspaceCOOWorker.js",
+    "role": "Worker",
+    "classes": [
+      "GoogleWorkspaceCOOWorker"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseCOOWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 868,
+    "sizeBytes": 26977
+  },
+  {
+    "file": "SERVICES/workers/InstantlyCOOWorker.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCOOWorker"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseCOOWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 970,
+    "sizeBytes": 29047
+  },
+  {
+    "file": "SERVICES/workers/NamecheapCOOWorker.js",
+    "role": "Worker",
+    "classes": [
+      "NamecheapCOOWorker"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseCOOWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 851,
+    "sizeBytes": 26062
+  },
+  {
+    "file": "SERVICES/workers/WebsiteCOOWorker.js",
+    "role": "Worker",
+    "classes": [
+      "WebsiteCOOWorker"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseCOOWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 879,
+    "sizeBytes": 25466
+  },
+  {
+    "file": "SERVICES/worker_runtime/AutonomousWorkerScheduler.js",
+    "role": "Worker",
+    "classes": [
+      "AutonomousWorkerScheduler"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 726,
+    "sizeBytes": 19457
+  },
+  {
+    "file": "SERVICES/worker_runtime/AutonomousWorkOrchestrator.js",
+    "role": "Worker",
+    "classes": [
+      "AutonomousWorkOrchestrator"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 1180,
+    "sizeBytes": 32862
+  },
+  {
+    "file": "SERVICES/worker_runtime/AutonomousWorkOrchestratorManager.js",
+    "role": "Worker",
+    "classes": [
+      "AutonomousWorkOrchestratorManager"
+    ],
+    "requires": [
+      "./AutonomousWorkOrchestrator"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 322,
+    "sizeBytes": 8871
+  },
+  {
+    "file": "SERVICES/worker_runtime/BaseAutonomousWorker.js",
+    "role": "Worker",
+    "classes": [
+      "BaseAutonomousWorker"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 636,
+    "sizeBytes": 16579
+  },
+  {
+    "file": "SERVICES/worker_runtime/TaskExecutionWorker.js",
+    "role": "Worker",
+    "classes": [
+      "TaskExecutionWorker"
+    ],
+    "requires": [
+      "./BaseAutonomousWorker"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 319,
+    "sizeBytes": 8075
+  },
+  {
+    "file": "SERVICES/worker_runtime/WorkerDispatcher.js",
+    "role": "Worker",
+    "classes": [
+      "WorkerDispatcher"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "named exports"
+    ],
+    "lines": 233,
+    "sizeBytes": 6462
+  },
+  {
+    "file": "SERVICES/worker_runtime/WorkerRegistry.js",
+    "role": "Worker",
+    "classes": [
+      "WorkerRegistry"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "named exports"
+    ],
+    "lines": 297,
+    "sizeBytes": 7539
+  },
+  {
+    "file": "SERVICES/worker_runtime/WorkerRuntime.js",
+    "role": "Worker",
+    "classes": [
+      "WorkerRuntimeManager"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./WorkerRuntime",
+      "./WorkerRegistry",
+      "./WorkerDispatcher"
+    ],
+    "exports": [
+      "module.exports",
+      "named exports"
+    ],
+    "lines": 259,
+    "sizeBytes": 8183
+  },
+  {
+    "file": "SERVICES/worker_runtime/WorkerRuntimeManager.js",
+    "role": "Worker",
+    "classes": [
+      "WorkerRuntimeManager"
+    ],
+    "requires": [
+      "path",
+      "./WorkerRuntime",
+      "./WorkerRegistry",
+      "./WorkerDispatcher"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 257,
+    "sizeBytes": 6497
+  },
+  {
+    "file": "SERVICES/engineering/RepositoryInventoryService.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 182,
+    "sizeBytes": 4745
+  },
+  {
+    "file": "PROVIDERS/StartProductionSystem.js",
+    "role": "Provider",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./SERVICES/ProductionCOOEngine",
+      "./SERVICES/ExecutionRouterService",
+      "./SERVICES/AutonomousRevenueClosureLoop",
+      "./CONNECTORS"
+    ],
+    "exports": [],
+    "lines": 134,
+    "sizeBytes": 4052
+  },
+  {
+    "file": "PROVIDERS/contracts/IDataProvider.js",
+    "role": "Provider",
+    "classes": [
+      "IDataProvider"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 92,
+    "sizeBytes": 1899
+  },
+  {
+    "file": "PROVIDERS/providers/InstantlyProvider.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyProvider"
+    ],
+    "requires": [
+      "../contracts/IDataProvider",
+      "../../CONNECTORS/INSTANTLY/instantly"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 197,
+    "sizeBytes": 3889
+  },
+  {
+    "file": "PROVIDERS/providers/MarketingProvider.js",
+    "role": "Provider",
+    "classes": [
+      "MarketingProvider"
+    ],
+    "requires": [
+      "../contracts/IDataProvider",
+      "../../CONNECTORS/INSTANTLY/instantly"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 189,
+    "sizeBytes": 3772
+  },
+  {
+    "file": "PROVIDERS/providers/OrionProvider.js",
+    "role": "Provider",
+    "classes": [
+      "OrionProvider"
+    ],
+    "requires": [
+      "../contracts/IDataProvider",
+      "../../CONNECTORS/ORION/connector"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 226,
+    "sizeBytes": 4575
+  },
+  {
+    "file": "PROVIDERS/providers/WebsiteProvider.js",
+    "role": "Provider",
+    "classes": [
+      "WebsiteProvider"
+    ],
+    "requires": [
+      "../contracts/IDataProvider",
+      "../../CONNECTORS/WEBSITE/website"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 77,
+    "sizeBytes": 1845
+  },
+  {
+    "file": "PROVIDERS/registry/ProviderRegistry.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderRegistry"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 91,
+    "sizeBytes": 2292
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/account_manager.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "@google-cloud/local-auth",
+      "googleapis",
+      "./config"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 168,
+    "sizeBytes": 5361
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/auth.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "@google-cloud/local-auth",
+      "googleapis",
+      "./config"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 71,
+    "sizeBytes": 2051
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/calendar.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/config.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 23,
+    "sizeBytes": 606
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/contacts.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/drive.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/gmail.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 55,
+    "sizeBytes": 1509
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/index.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts",
+      "./account_manager",
+      "./workspace"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 31,
+    "sizeBytes": 849
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/workspace.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./account_manager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 59,
+    "sizeBytes": 1958
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/miles_google_accounts_health.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./CONNECTORS/GOOGLE"
+    ],
+    "exports": [],
+    "lines": 27,
+    "sizeBytes": 939
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "@google-cloud/local-auth",
+      "googleapis",
+      "./config"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 168,
+    "sizeBytes": 5361
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts",
+      "./account_manager",
+      "./workspace"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 31,
+    "sizeBytes": 849
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./account_manager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 59,
+    "sizeBytes": 1958
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "@google-cloud/local-auth",
+      "googleapis",
+      "./config"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 78,
+    "sizeBytes": 2475
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 40,
+    "sizeBytes": 1169
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "path",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 31,
+    "sizeBytes": 1161
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 31,
+    "sizeBytes": 983
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 27,
+    "sizeBytes": 861
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 45,
+    "sizeBytes": 1379
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/health.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 48,
+    "sizeBytes": 1315
+  },
+  {
+    "file": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts",
+      "./health"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 9,
+    "sizeBytes": 208
+  },
+  {
+    "file": "CONNECTORS/INSTANTLY/connector.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./instantly"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 33,
+    "sizeBytes": 711
+  },
+  {
+    "file": "CONNECTORS/INSTANTLY/instantly.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "axios",
+      "dotenv"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 68,
+    "sizeBytes": 1101
+  },
+  {
+    "file": "CONNECTORS/INSTANTLY/instantly_test.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./instantly"
+    ],
+    "exports": [],
+    "lines": 25,
+    "sizeBytes": 413
+  },
+  {
+    "file": "CONNECTORS/MILES/connector.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "../../BUILDER"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 29,
+    "sizeBytes": 528
+  },
+  {
+    "file": "CONNECTORS/ORION/connector.js",
+    "role": "Connector",
+    "classes": [
+      "OrionConnector"
+    ],
+    "requires": [
+      "better-sqlite3",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 329,
+    "sizeBytes": 8311
+  },
+  {
+    "file": "CONNECTORS/Real/crmClient.js",
+    "role": "Connector",
+    "classes": [
+      "CRMClient"
+    ],
+    "requires": [
+      "axios"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 28,
+    "sizeBytes": 451
+  },
+  {
+    "file": "CONNECTORS/Real/gmailListener.js",
+    "role": "Connector",
+    "classes": [
+      "GmailListener"
+    ],
+    "requires": [
+      "googleapis",
+      "../../event-bus/emitter"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 52,
+    "sizeBytes": 1010
+  },
+  {
+    "file": "CONNECTORS/Real/instantlyClient.js",
+    "role": "Connector",
+    "classes": [
+      "InstantlyClient"
+    ],
+    "requires": [
+      "axios"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 27,
+    "sizeBytes": 458
+  },
+  {
+    "file": "CONNECTORS/WEBSITE/website.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "https",
+      "http"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 119,
+    "sizeBytes": 2812
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/B12_PLAYWRIGHT_OBSERVER.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "playwright",
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 29,
+    "sizeBytes": 1021
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/controller.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./modules/browser",
+      "./modules/session",
+      "./modules/screenshots",
+      "./modules/audit",
+      "./modules/logger"
+    ],
+    "exports": [],
+    "lines": 36,
+    "sizeBytes": 1283
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/audit.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 36,
+    "sizeBytes": 1162
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/browser.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "playwright"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 11,
+    "sizeBytes": 203
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/logger.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 12,
+    "sizeBytes": 411
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/paths.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 12,
+    "sizeBytes": 500
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 14,
+    "sizeBytes": 445
+  },
+  {
+    "file": "CONNECTORS/WEBSITE_B12/modules/session.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 19,
+    "sizeBytes": 591
+  },
+  {
+    "file": "WORKERS/atlasWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../SERVICES/ATLASRuntimeInspector"
+    ],
+    "exports": [],
+    "lines": 39,
+    "sizeBytes": 784
+  },
+  {
+    "file": "WORKERS/commandWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../CORE/CommandQueue"
+    ],
+    "exports": [],
+    "lines": 28,
+    "sizeBytes": 656
+  },
+  {
+    "file": "WORKERS/cooWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../event-bus/emitter",
+      "../SERVICES/AutonomousCOOLoopService",
+      "../SERVICES/ProductionCOOEngine"
+    ],
+    "exports": [],
+    "lines": 40,
+    "sizeBytes": 1037
+  },
+  {
+    "file": "WORKERS/dealWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../event-bus/emitter",
+      "../SERVICES/DealClosureEngine"
+    ],
+    "exports": [],
+    "lines": 16,
+    "sizeBytes": 363
+  },
+  {
+    "file": "WORKERS/dispatcherWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../SERVICES/ExecutiveDispatcher"
+    ],
+    "exports": [],
+    "lines": 29,
+    "sizeBytes": 766
+  },
+  {
+    "file": "WORKERS/replyWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../event-bus/emitter",
+      "../SERVICES/ReplyIntelligenceEngine"
+    ],
+    "exports": [],
+    "lines": 12,
+    "sizeBytes": 341
+  },
+  {
+    "file": "WORKERS/revenueWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../event-bus/emitter",
+      "../SERVICES/AutonomousRevenueClosureLoop",
+      "path"
+    ],
+    "exports": [],
+    "lines": 23,
+    "sizeBytes": 562
+  },
+  {
+    "file": "API/server.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "express"
+    ],
+    "exports": [],
+    "lines": 12,
+    "sizeBytes": 247
+  },
+  {
+    "file": "API/API/memory.routes.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "express",
+      "../SERVICES/MemoryService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 37,
+    "sizeBytes": 627
+  },
+  {
+    "file": "AI/MilesBrain.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "AUTOMATIONS/Scheduler.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "TESTS/healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "assert",
+      "fs",
+      "path",
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 17,
+    "sizeBytes": 994
+  },
+  {
+    "file": "TESTS/outbound_audit.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 5,
+    "sizeBytes": 175
+  },
+  {
+    "file": "TESTS/TESTSTest_InstantlyCampaignOperator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [],
+    "lines": 39,
+    "sizeBytes": 1110
+  },
+  {
+    "file": "TESTS/Test_BrowserSessionEnroller.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/BrowserSessionEnroller"
+    ],
+    "exports": [],
+    "lines": 16,
+    "sizeBytes": 316
+  },
+  {
+    "file": "TESTS/Test_BrowserSessionManager.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/BrowserSessionManager"
+    ],
+    "exports": [],
+    "lines": 90,
+    "sizeBytes": 2120
+  },
+  {
+    "file": "TESTS/Test_Build017_ProviderRouter.js",
+    "role": "Provider",
+    "classes": [],
+    "requires": [
+      "../SERVICES/ProviderRouterService"
+    ],
+    "exports": [],
+    "lines": 75,
+    "sizeBytes": 2664
+  },
+  {
+    "file": "TESTS/Test_Build018_DecisionEngine.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Decision/DecisionEngine"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 975
+  },
+  {
+    "file": "TESTS/Test_Build019_AutonomousExecution.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/WorkforceExecutionService"
+    ],
+    "exports": [],
+    "lines": 49,
+    "sizeBytes": 1752
+  },
+  {
+    "file": "TESTS/Test_Build020_EventBus.js",
+    "role": "EventBus",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Events/EventBus"
+    ],
+    "exports": [],
+    "lines": 40,
+    "sizeBytes": 1030
+  },
+  {
+    "file": "TESTS/Test_Build021_EventDrivenExecution.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/WorkforceExecutionService",
+      "../SERVICES/Events/EventBus"
+    ],
+    "exports": [],
+    "lines": 51,
+    "sizeBytes": 1484
+  },
+  {
+    "file": "TESTS/Test_Build022_OperationalMemory.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Memory/OperationalMemoryService"
+    ],
+    "exports": [],
+    "lines": 52,
+    "sizeBytes": 1372
+  },
+  {
+    "file": "TESTS/Test_Build024_LearningEngine.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Learning/LearningEngine"
+    ],
+    "exports": [],
+    "lines": 32,
+    "sizeBytes": 767
+  },
+  {
+    "file": "TESTS/Test_Build025_AdaptiveDecision.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Learning/ConfidenceAdjuster",
+      "../SERVICES/Learning/DecisionHistory"
+    ],
+    "exports": [],
+    "lines": 32,
+    "sizeBytes": 737
+  },
+  {
+    "file": "TESTS/Test_CEOApprovalQueue.js",
+    "role": "Queue",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Executive/CEOApprovalQueue"
+    ],
+    "exports": [],
+    "lines": 40,
+    "sizeBytes": 1327
+  },
+  {
+    "file": "TESTS/Test_ExecutiveSupervisor.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Supervisor/ExecutiveSupervisor"
+    ],
+    "exports": [],
+    "lines": 33,
+    "sizeBytes": 586
+  },
+  {
+    "file": "TESTS/Test_InstantlyCampaignOperator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [],
+    "lines": 43,
+    "sizeBytes": 1427
+  },
+  {
+    "file": "TESTS/Test_InstantlyWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/Workers/InstantlyWorker"
+    ],
+    "exports": [],
+    "lines": 43,
+    "sizeBytes": 1266
+  },
+  {
+    "file": "TESTS/Test_MissionPack1_Discovery.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Discovery/DiscoveryEngine"
+    ],
+    "exports": [],
+    "lines": 38,
+    "sizeBytes": 1124
+  },
+  {
+    "file": "TESTS/Test_Sprint2_Planning.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/WorkflowService",
+      "../SERVICES/WorkPackageService",
+      "../SERVICES/PlannerService",
+      "../SERVICES/CapabilityService"
+    ],
+    "exports": [],
+    "lines": 138,
+    "sizeBytes": 2973
+  },
+  {
+    "file": "TESTS/test_workforce_execution.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/WorkflowService",
+      "../SERVICES/ExecutionService",
+      "../CORE/TaskQueue"
+    ],
+    "exports": [],
+    "lines": 23,
+    "sizeBytes": 755
+  },
+  {
+    "file": "AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./COOOrchestratorService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 106,
+    "sizeBytes": 2552
+  },
+  {
+    "file": "executive_dashboard.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 106,
+    "sizeBytes": 3114
+  },
+  {
+    "file": "miles_connector_health.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./CORE/ConnectorManager",
+      "./CORE/HealthDashboard",
+      "./CONNECTORS/GOOGLE",
+      "./CONNECTORS/INSTANTLY/instantly"
+    ],
+    "exports": [],
+    "lines": 24,
+    "sizeBytes": 623
+  },
+  {
+    "file": "miles_google_accounts_health.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./CONNECTORS/GOOGLE"
+    ],
+    "exports": [],
+    "lines": 27,
+    "sizeBytes": 939
+  },
+  {
+    "file": "OpenMilesBrowser.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./CORE/BROWSER/BrowserManager"
+    ],
+    "exports": [],
+    "lines": 36,
+    "sizeBytes": 976
+  },
+  {
+    "file": "RunMarketingCOO.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/digital_coo/MarketingCOOService"
+    ],
+    "exports": [],
+    "lines": 19,
+    "sizeBytes": 561
+  },
+  {
+    "file": "StartAutonomousCOO.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./CORE/Supervisor",
+      "./SERVICES/AutonomousCOOLoopService",
+      "./CORE/ConnectorManager"
+    ],
+    "exports": [],
+    "lines": 158,
+    "sizeBytes": 3540
+  },
+  {
+    "file": "StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "express",
+      "path",
+      "fs",
+      "./SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 68,
+    "sizeBytes": 3839
+  },
+  {
+    "file": "StartMilesProduction.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "child_process",
+      "path"
+    ],
+    "exports": [],
+    "lines": 220,
+    "sizeBytes": 5574
+  },
+  {
+    "file": "StartProductionSystem.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./api/server",
+      "./SERVICES/ExecutionService",
+      "./workers/cooWorker",
+      "./workers/revenueWorker",
+      "./workers/replyWorker",
+      "./workers/dealWorker",
+      "./workers/atlasWorker",
+      "./CORE/Supervisor",
+      "./event-bus/emitter"
+    ],
+    "exports": [],
+    "lines": 120,
+    "sizeBytes": 2372
+  },
+  {
+    "file": "StartSupervisor.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "./CORE/Supervisor"
+    ],
+    "exports": [],
+    "lines": 11,
+    "sizeBytes": 165
+  },
+  {
+    "file": "TestAutonomousDiscoveryEngine.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "./CORE/AutonomousDiscoveryEngine"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 635
+  },
+  {
+    "file": "TestAutonomousLoop.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./CORE/AutonomousLoop"
+    ],
+    "exports": [],
+    "lines": 21,
+    "sizeBytes": 541
+  },
+  {
+    "file": "TestBrowserOS.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./CORE/BROWSER/BrowserManager",
+      "./CORE/BROWSER/SessionManager"
+    ],
+    "exports": [],
+    "lines": 41,
+    "sizeBytes": 1265
+  },
+  {
+    "file": "TestBrowserWorker.js",
+    "role": "Worker",
+    "classes": [],
+    "requires": [
+      "./CORE/BROWSER/BrowserWorker"
+    ],
+    "exports": [],
+    "lines": 25,
+    "sizeBytes": 648
+  },
+  {
+    "file": "TestEngineeringManager.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "./CORE/ENGINEERING/EngineeringManager"
+    ],
+    "exports": [],
+    "lines": 21,
+    "sizeBytes": 404
+  },
+  {
+    "file": "TestExecutionEngine.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "./CORE/ExecutionEngine",
+      "./CORE/TaskQueue"
+    ],
+    "exports": [],
+    "lines": 31,
+    "sizeBytes": 1020
+  },
+  {
+    "file": "TestPersistentBrowserOS.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./CORE/BROWSER/BrowserManager"
+    ],
+    "exports": [],
+    "lines": 50,
+    "sizeBytes": 1022
+  },
+  {
+    "file": "TestSystemIntelligence.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./CORE/SystemIntelligence"
+    ],
+    "exports": [],
+    "lines": 17,
+    "sizeBytes": 828
+  },
+  {
+    "file": "test_coo_orchestrator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/COOOrchestratorService"
+    ],
+    "exports": [],
+    "lines": 21,
+    "sizeBytes": 641
+  },
+  {
+    "file": "test_executive_brief.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/ExecutiveIntelligenceService",
+      "./SERVICES/ExecutiveBriefService"
+    ],
+    "exports": [],
+    "lines": 14,
+    "sizeBytes": 438
+  },
+  {
+    "file": "test_executive_intelligence.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/ExecutiveIntelligenceService"
+    ],
+    "exports": [],
+    "lines": 18,
+    "sizeBytes": 353
+  },
+  {
+    "file": "test_marketing_provider.js",
+    "role": "Provider",
+    "classes": [],
+    "requires": [
+      "./PROVIDERS/providers/MarketingProvider"
+    ],
+    "exports": [],
+    "lines": 11,
+    "sizeBytes": 238
+  },
+  {
+    "file": "test_orion_provider.js",
+    "role": "Provider",
+    "classes": [],
+    "requires": [
+      "./PROVIDERS/providers/OrionProvider"
+    ],
+    "exports": [],
+    "lines": 11,
+    "sizeBytes": 226
+  },
+  {
+    "file": "test_work_queue.js",
+    "role": "Queue",
+    "classes": [],
+    "requires": [
+      "./SERVICES/ExecutiveIntelligenceService",
+      "./SERVICES/WorkQueueService"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 798
+  },
+  {
+    "file": "build006_patch/payload/StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "express",
+      "path",
+      "fs",
+      "./SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 68,
+    "sizeBytes": 3839
+  },
+  {
+    "file": "build006_patch/payload/SERVICES/OutboundService.js",
+    "role": "Service",
+    "classes": [
+      "OutboundService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 143,
+    "sizeBytes": 18381
+  },
+  {
+    "file": "build006_patch/payload/TESTS/healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "assert",
+      "fs",
+      "path",
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 17,
+    "sizeBytes": 994
+  },
+  {
+    "file": "build006_patch/payload/TESTS/outbound_audit.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 5,
+    "sizeBytes": 175
+  },
+  {
+    "file": "BUILDER/ArchitectureDiscovery.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "crypto",
+      "./ProjectScanner"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 307,
+    "sizeBytes": 11074
+  },
+  {
+    "file": "BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/SelfLearningService",
+      "../SERVICES/ActionEngineService",
+      "../SERVICES/ProviderControllerRegistryService",
+      "../SERVICES/ProviderControllerHealthService",
+      "../SERVICES/ProviderControllerExecutionService",
+      "../SERVICES/InstantlyLiveIntegrationService",
+      "../SERVICES/ControlledWriteService",
+      "../SERVICES/BusinessExecutionEngineService",
+      "../SERVICES/ProviderAuthorityRegistryService",
+      "../SERVICES/ProviderInterfaceAdapterService",
+      "../SERVICES/ProviderCapabilityBindingService",
+      "../SERVICES/ProviderSynchronizationService",
+      "../SERVICES/EngineeringImprovementService",
+      "../SERVICES/SelfMaintenanceService",
+      "../SERVICES/RepositorySearchService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 208,
+    "sizeBytes": 6785
+  },
+  {
+    "file": "BUILDER/BuilderService.previous.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/DashboardServerService",
+      "../SERVICES/SelfLearningService",
+      "../SERVICES/ProviderRegistryService",
+      "../SERVICES/ActionEngineService",
+      "../SERVICES/ActionHistoryService",
+      "../SERVICES/ActionAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 140,
+    "sizeBytes": 3805
+  },
+  {
+    "file": "BUILDER/BuildPlanner.js",
+    "role": "Unknown",
+    "classes": [
+      "BuildPlanner"
+    ],
+    "requires": [
+      "./ProjectAnalyzer"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 54,
+    "sizeBytes": 1285
+  },
+  {
+    "file": "BUILDER/ConnectorBuilder.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorBuilder"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 101,
+    "sizeBytes": 2298
+  },
+  {
+    "file": "BUILDER/FileEditor.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 31,
+    "sizeBytes": 779
+  },
+  {
+    "file": "BUILDER/GitManager.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "child_process",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 28,
+    "sizeBytes": 721
+  },
+  {
+    "file": "BUILDER/index.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./BuilderService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 23,
+    "sizeBytes": 479
+  },
+  {
+    "file": "BUILDER/ProjectAnalyzer.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./ProjectScanner"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 107,
+    "sizeBytes": 3394
+  },
+  {
+    "file": "BUILDER/ProjectScanner.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 66,
+    "sizeBytes": 1716
+  },
+  {
+    "file": "BUILDER/RuntimeController.js",
+    "role": "Controller",
+    "classes": [],
+    "requires": [
+      "child_process",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 24,
+    "sizeBytes": 566
+  },
+  {
+    "file": "BUILD_007/SERVICES/SalesOperationsService.js",
+    "role": "Service",
+    "classes": [
+      "SalesOperationsService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 97,
+    "sizeBytes": 7139
+  },
+  {
+    "file": "BUILD_007/TESTS/sales_healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../SERVICES/SalesOperationsService"
+    ],
+    "exports": [],
+    "lines": 15,
+    "sizeBytes": 922
+  },
+  {
+    "file": "BUILD_012/BUILD_012/SERVICES/AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 168,
+    "sizeBytes": 4717
+  },
+  {
+    "file": "BUILD_012/BUILD_012/SERVICES/WorkQueueService.js",
+    "role": "Service",
+    "classes": [
+      "WorkQueueService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 350,
+    "sizeBytes": 11203
+  },
+  {
+    "file": "BUILD_012/BUILD_012/TESTS/test_autonomous_coo_loop.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/AutonomousCOOLoopService"
+    ],
+    "exports": [],
+    "lines": 13,
+    "sizeBytes": 297
+  },
+  {
+    "file": "BUILD_013/BUILD_013/SERVICES/AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./COOOrchestratorService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 106,
+    "sizeBytes": 2552
+  },
+  {
+    "file": "BUILD_013/BUILD_013/SERVICES/COOOrchestratorService.js",
+    "role": "Service",
+    "classes": [
+      "COOOrchestratorService"
+    ],
+    "requires": [
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "./ExecutionService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 140,
+    "sizeBytes": 4617
+  },
+  {
+    "file": "BUILD_013/BUILD_013/TESTS/test_autonomous_coo_loop.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/AutonomousCOOLoopService"
+    ],
+    "exports": [],
+    "lines": 14,
+    "sizeBytes": 333
+  },
+  {
+    "file": "BUILD_013/BUILD_013/TESTS/test_coo_orchestrator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/COOOrchestratorService"
+    ],
+    "exports": [],
+    "lines": 21,
+    "sizeBytes": 641
+  },
+  {
+    "file": "BUILD_014/BUILD_014/SERVICES/WorkQueueService.js",
+    "role": "Service",
+    "classes": [
+      "WorkQueueService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 556,
+    "sizeBytes": 17231
+  },
+  {
+    "file": "BUILD_014/BUILD_014/TESTS/test_work_queue.js",
+    "role": "Queue",
+    "classes": [],
+    "requires": [
+      "./SERVICES/ExecutiveIntelligenceService",
+      "./SERVICES/WorkQueueService"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 798
+  },
+  {
+    "file": "BUILD_015/BUILD_015/SERVICES/COOOrchestratorService.js",
+    "role": "Service",
+    "classes": [
+      "COOOrchestratorService"
+    ],
+    "requires": [
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "./ExecutionService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 218,
+    "sizeBytes": 7213
+  },
+  {
+    "file": "BUILD_015/BUILD_015/TESTS/test_coo_orchestrator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/COOOrchestratorService"
+    ],
+    "exports": [],
+    "lines": 22,
+    "sizeBytes": 668
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../VERIFY/VERIFY_COO_LOOP"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 119,
+    "sizeBytes": 3136
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/ContinuousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "ContinuousCOOLoopService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil",
+      "./HeartbeatService",
+      "./QueueRecoveryService",
+      "./RuntimeHealthService",
+      "./RestartGuardianService",
+      "./LoopSchedulerService",
+      "./ExecutiveBrainService",
+      "./CompanyStateService",
+      "./TaskRouterService",
+      "./WorkQueueService",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 268,
+    "sizeBytes": 8777
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/HeartbeatService.js",
+    "role": "Service",
+    "classes": [
+      "HeartbeatService"
+    ],
+    "requires": [
+      "path",
+      "os",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 1226
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/JsonFileService.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 53,
+    "sizeBytes": 1117
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/LoopSchedulerService.js",
+    "role": "Service",
+    "classes": [
+      "LoopSchedulerService"
+    ],
+    "requires": [
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 47,
+    "sizeBytes": 1151
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/QueueRecoveryService.js",
+    "role": "Service",
+    "classes": [
+      "QueueRecoveryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 171,
+    "sizeBytes": 5042
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RestartGuardianService.js",
+    "role": "Service",
+    "classes": [
+      "RestartGuardianService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 48,
+    "sizeBytes": 1577
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RuntimeHealthService.js",
+    "role": "Service",
+    "classes": [
+      "RuntimeHealthService"
+    ],
+    "requires": [
+      "path",
+      "./JsonFileService",
+      "./TimeUtil"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 76,
+    "sizeBytes": 2273
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/TimeUtil.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 32,
+    "sizeBytes": 580
+  },
+  {
+    "file": "BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/VERIFY/VERIFY_COO_LOOP.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../SERVICES/ContinuousCOOLoopService"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 74,
+    "sizeBytes": 1919
+  },
+  {
+    "file": "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/DashboardDataService",
+      "../SERVICES/DashboardServerService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 123,
+    "sizeBytes": 3254
+  },
+  {
+    "file": "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardDataService.js",
+    "role": "Service",
+    "classes": [
+      "DashboardDataService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 359,
+    "sizeBytes": 17004
+  },
+  {
+    "file": "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardServerService.js",
+    "role": "Service",
+    "classes": [
+      "DashboardServerService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "http",
+      "./ExecutiveDashboardService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 62,
+    "sizeBytes": 2185
+  },
+  {
+    "file": "BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/ExecutiveDashboardService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveDashboardService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./DashboardDataService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 306,
+    "sizeBytes": 12580
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/DashboardServerService",
+      "../SERVICES/SelfLearningService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 58,
+    "sizeBytes": 2544
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/ConfidenceScoringService.js",
+    "role": "Service",
+    "classes": [
+      "ConfidenceScoringService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 1712
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/DecisionLearningService.js",
+    "role": "Service",
+    "classes": [
+      "DecisionLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 49,
+    "sizeBytes": 1901
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/FailureLearningService.js",
+    "role": "Service",
+    "classes": [
+      "FailureLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 54,
+    "sizeBytes": 2008
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/LearningDataService.js",
+    "role": "Service",
+    "classes": [
+      "LearningDataService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 76,
+    "sizeBytes": 2811
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/PriorityOptimizationService.js",
+    "role": "Service",
+    "classes": [
+      "PriorityOptimizationService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 45,
+    "sizeBytes": 1651
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RecommendationEngineService.js",
+    "role": "Service",
+    "classes": [
+      "RecommendationEngineService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 43,
+    "sizeBytes": 1885
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RoutingLearningService.js",
+    "role": "Service",
+    "classes": [
+      "RoutingLearningService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 51,
+    "sizeBytes": 2126
+  },
+  {
+    "file": "BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/SelfLearningService.js",
+    "role": "Service",
+    "classes": [
+      "SelfLearningService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./LearningDataService",
+      "./DecisionLearningService",
+      "./FailureLearningService",
+      "./RoutingLearningService",
+      "./PriorityOptimizationService",
+      "./ConfidenceScoringService",
+      "./RecommendationEngineService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 104,
+    "sizeBytes": 5231
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/auth.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "@google-cloud/local-auth",
+      "googleapis",
+      "./config"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 71,
+    "sizeBytes": 2217
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/calendar.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 28,
+    "sizeBytes": 867
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/config.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 18,
+    "sizeBytes": 672
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/contacts.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 25,
+    "sizeBytes": 755
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/drive.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 25,
+    "sizeBytes": 725
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/gmail.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 28,
+    "sizeBytes": 982
+  },
+  {
+    "file": "Drop in/CONNECTORS/GOOGLE/index.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 35,
+    "sizeBytes": 1030
+  },
+  {
+    "file": "event-bus/emitter.js",
+    "role": "Unknown",
+    "classes": [
+      "Bus"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 17,
+    "sizeBytes": 284
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/DashboardServerService",
+      "../SERVICES/SelfLearningService",
+      "../SERVICES/ProviderRegistryService",
+      "../SERVICES/ActionEngineService",
+      "../SERVICES/ActionHistoryService",
+      "../SERVICES/ActionAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 140,
+    "sizeBytes": 3805
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ActionAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 60,
+    "sizeBytes": 1596
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionDispatcherService.js",
+    "role": "Service",
+    "classes": [
+      "ActionDispatcherService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 122,
+    "sizeBytes": 4081
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionEngineService.js",
+    "role": "Service",
+    "classes": [
+      "ActionEngineService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderRegistryService",
+      "./ActionDispatcherService",
+      "./ActionVerificationService",
+      "./ActionRetryService",
+      "./ActionHistoryService",
+      "./ActionAuditService",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 265,
+    "sizeBytes": 10876
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionHistoryService.js",
+    "role": "Service",
+    "classes": [
+      "ActionHistoryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 69,
+    "sizeBytes": 2000
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionRetryService.js",
+    "role": "Service",
+    "classes": [
+      "ActionRetryService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 33,
+    "sizeBytes": 960
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionVerificationService.js",
+    "role": "Service",
+    "classes": [
+      "ActionVerificationService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 68,
+    "sizeBytes": 2307
+  },
+  {
+    "file": "EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ProviderRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 284,
+    "sizeBytes": 12419
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/BuilderService.js",
+    "role": "Provider",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "../SERVICES/ProviderControllerRegistryService",
+      "../SERVICES/ProviderControllerHealthService",
+      "../SERVICES/ProviderControllerExecutionService",
+      "./BuilderService.previous"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 34,
+    "sizeBytes": 1699
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/index.js",
+    "role": "Provider",
+    "classes": [],
+    "requires": [
+      "./BuilderService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 5,
+    "sizeBytes": 355
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/BaseProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "BaseProviderController"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 123,
+    "sizeBytes": 3916
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/FileSystemProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "FileSystemProviderController"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 29,
+    "sizeBytes": 2470
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/GoogleWorkspaceProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "GoogleWorkspaceProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 561
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/InstantlyProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 25,
+    "sizeBytes": 731
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/NamecheapProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "NamecheapProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 600
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/OrionProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "OrionProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 495
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerExecutionService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerExecutionService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderControllerRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 30,
+    "sizeBytes": 2108
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerHealthService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerHealthService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderControllerRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 19,
+    "sizeBytes": 1278
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderControllerRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyProviderController",
+      "./GoogleWorkspaceProviderController",
+      "./NamecheapProviderController",
+      "./WebsiteProviderController",
+      "./OrionProviderController",
+      "./FileSystemProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 42,
+    "sizeBytes": 2295
+  },
+  {
+    "file": "EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/WebsiteProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "WebsiteProviderController"
+    ],
+    "requires": [
+      "./BaseProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 15,
+    "sizeBytes": 504
+  },
+  {
+    "file": "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 51,
+    "sizeBytes": 3204
+  },
+  {
+    "file": "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyActionBridgeService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyActionBridgeService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyLiveProviderController"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 85,
+    "sizeBytes": 3465
+  },
+  {
+    "file": "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyApiClient.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyApiClient"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 104,
+    "sizeBytes": 3563
+  },
+  {
+    "file": "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveIntegrationService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyLiveIntegrationService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyLiveProviderController",
+      "./InstantlyActionBridgeService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 54,
+    "sizeBytes": 2655
+  },
+  {
+    "file": "EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveProviderController.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyLiveProviderController"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./InstantlyApiClient"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 167,
+    "sizeBytes": 7689
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/SelfLearningService",
+      "../SERVICES/ActionEngineService",
+      "../SERVICES/ProviderControllerRegistryService",
+      "../SERVICES/ProviderControllerHealthService",
+      "../SERVICES/InstantlyLiveIntegrationService",
+      "../SERVICES/ControlledWriteService",
+      "../SERVICES/ControlledWritePolicyService",
+      "../SERVICES/ControlledWriteAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 2002
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/index.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./BuilderService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 11,
+    "sizeBytes": 554
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWriteAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 27,
+    "sizeBytes": 1168
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWritePolicyService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWritePolicyService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 126,
+    "sizeBytes": 4698
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteService.js",
+    "role": "Service",
+    "classes": [
+      "ControlledWriteService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ControlledWritePolicyService",
+      "./ControlledWriteAuditService",
+      "./InstantlyControlledWriteService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 64,
+    "sizeBytes": 2556
+  },
+  {
+    "file": "EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/InstantlyControlledWriteService.js",
+    "role": "Service",
+    "classes": [
+      "InstantlyControlledWriteService"
+    ],
+    "requires": [
+      "./ControlledWritePolicyService",
+      "./ControlledWriteAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 189,
+    "sizeBytes": 6675
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 45,
+    "sizeBytes": 2514
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/index.js",
+    "role": "Engine",
+    "classes": [],
+    "requires": [
+      "./BuilderService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 18,
+    "sizeBytes": 467
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/BusinessExecutionEngineService.js",
+    "role": "Service",
+    "classes": [
+      "BusinessExecutionEngineService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutionPlannerService",
+      "./ExecutionSchedulerService",
+      "./ExecutionDispatcherService",
+      "./ExecutionMonitorService",
+      "./ExecutionAuditService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 91,
+    "sizeBytes": 4221
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/EscalationManagerService.js",
+    "role": "Service",
+    "classes": [
+      "EscalationManagerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 22,
+    "sizeBytes": 825
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionAuditService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionAuditService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 35,
+    "sizeBytes": 1266
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionDispatcherService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionDispatcherService"
+    ],
+    "requires": [
+      "./ExecutionAuditService",
+      "./EscalationManagerService",
+      "./RetryManagerService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 66,
+    "sizeBytes": 2799
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionMonitorService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionMonitorService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 21,
+    "sizeBytes": 893
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionPlannerService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionPlannerService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 86,
+    "sizeBytes": 4458
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionSchedulerService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionSchedulerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 18,
+    "sizeBytes": 505
+  },
+  {
+    "file": "EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/RetryManagerService.js",
+    "role": "Service",
+    "classes": [
+      "RetryManagerService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 19,
+    "sizeBytes": 621
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/BUILDER/BuilderService.js",
+    "role": "Provider",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService",
+      "../SERVICES/ContinuousCOOLoopService",
+      "../SERVICES/ExecutiveDashboardService",
+      "../SERVICES/SelfLearningService",
+      "../SERVICES/ActionEngineService",
+      "../SERVICES/ProviderControllerRegistryService",
+      "../SERVICES/ProviderControllerHealthService",
+      "../SERVICES/ProviderControllerExecutionService",
+      "../SERVICES/InstantlyLiveIntegrationService",
+      "../SERVICES/ControlledWriteService",
+      "../SERVICES/BusinessExecutionEngineService",
+      "../SERVICES/ProviderAuthorityRegistryService",
+      "../SERVICES/ProviderInterfaceAdapterService",
+      "../SERVICES/ProviderCapabilityBindingService",
+      "../SERVICES/ProviderSynchronizationService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 152,
+    "sizeBytes": 4502
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/InstantlyProviderCompatibilityService.js",
+    "role": "Provider",
+    "classes": [
+      "InstantlyProviderCompatibilityService"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 101,
+    "sizeBytes": 5157
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderAuthorityRegistryService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderAuthorityRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 186,
+    "sizeBytes": 9159
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderCapabilityBindingService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderCapabilityBindingService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 61,
+    "sizeBytes": 2607
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderInterfaceAdapterService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderInterfaceAdapterService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 64,
+    "sizeBytes": 2296
+  },
+  {
+    "file": "EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderSynchronizationService.js",
+    "role": "Provider",
+    "classes": [
+      "ProviderSynchronizationService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ProviderAuthorityRegistryService",
+      "./ProviderInterfaceAdapterService",
+      "./ProviderCapabilityBindingService",
+      "./InstantlyProviderCompatibilityService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 98,
+    "sizeBytes": 5036
+  },
+  {
+    "file": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/authority_gate.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "./csv_utils"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 52,
+    "sizeBytes": 2644
+  },
+  {
+    "file": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/autonomous_work_engine.js",
+    "role": "Engine",
+    "classes": [
+      "MilesAutonomousWorkEngine"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./csv_utils",
+      "./authority_gate"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 214,
+    "sizeBytes": 10975
+  },
+  {
+    "file": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/csv_utils.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 64,
+    "sizeBytes": 2044
+  },
+  {
+    "file": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/EXECUTIVE/status_report.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "../CORE/csv_utils"
+    ],
+    "exports": [],
+    "lines": 12,
+    "sizeBytes": 640
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/StartAutonomousCOO.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./SERVICES/AutonomousCOOLoopService"
+    ],
+    "exports": [],
+    "lines": 70,
+    "sizeBytes": 2543
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/CORE/Logger.js",
+    "role": "Logger",
+    "classes": [],
+    "requires": [
+      "./logger"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 6,
+    "sizeBytes": 77
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousRevenueClosureLoop"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 101,
+    "sizeBytes": 2229
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionService"
+    ],
+    "requires": [
+      "../CORE/TaskQueue",
+      "../CORE/ConnectorManager",
+      "../CORE/EventBus",
+      "../CORE/authority",
+      "../CORE/logger",
+      "./MemoryService",
+      "./Memory/OperationalMemoryService",
+      "./WorkforceExecutionService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 218,
+    "sizeBytes": 6024
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveIntelligenceService"
+    ],
+    "requires": [
+      "../PROVIDERS/providers/MarketingProvider",
+      "../PROVIDERS/providers/OrionProvider"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 116,
+    "sizeBytes": 2925
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkflowService.js",
+    "role": "Service",
+    "classes": [
+      "WorkflowService"
+    ],
+    "requires": [
+      "./WorkPackageService",
+      "./TaskManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 86,
+    "sizeBytes": 2359
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "WorkforceExecutionService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./Events/EventBus",
+      "./Events/EventTypes",
+      "./WorkforceService",
+      "./ExecutiveStateService",
+      "./ProviderRouterService",
+      "./Decision/DecisionEngine",
+      "./ExecutionPlanService",
+      "../CORE/logger",
+      "./Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 570,
+    "sizeBytes": 18971
+  },
+  {
+    "file": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 449,
+    "sizeBytes": 12985
+  },
+  {
+    "file": "miles_autonomous_patch/StartAutonomousCOO.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "./SERVICES/AutonomousCOOLoopService"
+    ],
+    "exports": [],
+    "lines": 70,
+    "sizeBytes": 2543
+  },
+  {
+    "file": "miles_autonomous_patch/CORE/Logger.js",
+    "role": "Logger",
+    "classes": [],
+    "requires": [
+      "./logger"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 6,
+    "sizeBytes": 77
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js",
+    "role": "Service",
+    "classes": [
+      "AutonomousCOOLoopService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./ExecutiveIntelligenceService",
+      "./ExecutiveBriefService",
+      "./WorkQueueService",
+      "./WorkflowService",
+      "./Learning/LearningEngine",
+      "../CORE/TaskQueue",
+      "./ExecutionService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 904,
+    "sizeBytes": 31622
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutionService"
+    ],
+    "requires": [
+      "../CORE/TaskQueue",
+      "../CORE/ConnectorManager",
+      "../CORE/EventBus",
+      "../CORE/authority",
+      "../CORE/logger",
+      "./MemoryService",
+      "./Memory/OperationalMemoryService",
+      "./WorkforceExecutionService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 218,
+    "sizeBytes": 6024
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveIntelligenceService"
+    ],
+    "requires": [
+      "../PROVIDERS/providers/MarketingProvider",
+      "../PROVIDERS/providers/OrionProvider"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 116,
+    "sizeBytes": 2925
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/WorkflowService.js",
+    "role": "Service",
+    "classes": [
+      "WorkflowService"
+    ],
+    "requires": [
+      "./WorkPackageService",
+      "./TaskManager"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 86,
+    "sizeBytes": 2359
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+    "role": "Service",
+    "classes": [
+      "WorkforceExecutionService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./Events/EventBus",
+      "./Events/EventTypes",
+      "./WorkforceService",
+      "./ExecutiveStateService",
+      "./ProviderRouterService",
+      "./Decision/DecisionEngine",
+      "./ExecutionPlanService",
+      "../CORE/logger",
+      "./Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 570,
+    "sizeBytes": 18971
+  },
+  {
+    "file": "miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 449,
+    "sizeBytes": 12985
+  },
+  {
+    "file": "miles_build005_exec_layer/miles_build005_exec_layer/StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "http",
+      "fs",
+      "path",
+      "url"
+    ],
+    "exports": [],
+    "lines": 173,
+    "sizeBytes": 11929
+  },
+  {
+    "file": "miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "http",
+      "child_process",
+      "path"
+    ],
+    "exports": [],
+    "lines": 19,
+    "sizeBytes": 1239
+  },
+  {
+    "file": "miles_build006_outbound_ops/build006_patch/payload/StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "dotenv",
+      "express",
+      "path",
+      "fs",
+      "./SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 68,
+    "sizeBytes": 3839
+  },
+  {
+    "file": "miles_build006_outbound_ops/build006_patch/payload/SERVICES/OutboundService.js",
+    "role": "Service",
+    "classes": [
+      "OutboundService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 143,
+    "sizeBytes": 18381
+  },
+  {
+    "file": "miles_build006_outbound_ops/build006_patch/payload/TESTS/healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "assert",
+      "fs",
+      "path",
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 17,
+    "sizeBytes": 994
+  },
+  {
+    "file": "miles_build006_outbound_ops/build006_patch/payload/TESTS/outbound_audit.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/OutboundService"
+    ],
+    "exports": [],
+    "lines": 5,
+    "sizeBytes": 175
+  },
+  {
+    "file": "miles_build007_sales_ops/BUILD_007/SERVICES/SalesOperationsService.js",
+    "role": "Service",
+    "classes": [
+      "SalesOperationsService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 97,
+    "sizeBytes": 7139
+  },
+  {
+    "file": "miles_build007_sales_ops/BUILD_007/TESTS/sales_healthcheck.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../SERVICES/SalesOperationsService"
+    ],
+    "exports": [],
+    "lines": 15,
+    "sizeBytes": 922
+  },
+  {
+    "file": "MILES_BUILDER_AUTONOMY_PATCH_v1/BUILDER/ArchitectureDiscovery.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "crypto",
+      "./ProjectScanner"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 307,
+    "sizeBytes": 11074
+  },
+  {
+    "file": "MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "../../Decision/AuthorityEngine",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 551,
+    "sizeBytes": 18610
+  },
+  {
+    "file": "MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [],
+    "lines": 56,
+    "sizeBytes": 1864
+  },
+  {
+    "file": "MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 446,
+    "sizeBytes": 14620
+  },
+  {
+    "file": "MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "../SERVICES/Browser/Workers/InstantlyCampaignOperator"
+    ],
+    "exports": [],
+    "lines": 58,
+    "sizeBytes": 1827
+  },
+  {
+    "file": "MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+    "role": "Worker",
+    "classes": [
+      "InstantlyCampaignOperator"
+    ],
+    "requires": [
+      "../BrowserSessionManager",
+      "../../Executive/CEOApprovalQueue",
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 531,
+    "sizeBytes": 15491
+  },
+  {
+    "file": "MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED/MILES_OS/TESTS/Test_Build030_MinimumAutonomousCOO.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "fs"
+    ],
+    "exports": [],
+    "lines": 67,
+    "sizeBytes": 2100
+  },
+  {
+    "file": "MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 121,
+    "sizeBytes": 2840
+  },
+  {
+    "file": "MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/SERVICES/ExecutiveBrainService.js",
+    "role": "Service",
+    "classes": [
+      "ExecutiveBrainService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./DecisionEngine",
+      "./PlannerService",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 243,
+    "sizeBytes": 7536
+  },
+  {
+    "file": "MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 109,
+    "sizeBytes": 2721
+  },
+  {
+    "file": "MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/SERVICES/CompanyStateService.js",
+    "role": "Service",
+    "classes": [
+      "CompanyStateService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 416,
+    "sizeBytes": 14854
+  },
+  {
+    "file": "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService",
+      "../SERVICES/ExecutiveBrainService",
+      "../SERVICES/CompanyStateService",
+      "../SERVICES/TaskRouterService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 111,
+    "sizeBytes": 2818
+  },
+  {
+    "file": "MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/SERVICES/TaskRouterService.js",
+    "role": "Service",
+    "classes": [
+      "TaskRouterService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./WorkQueueService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 339,
+    "sizeBytes": 10177
+  },
+  {
+    "file": "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService",
+      "../SERVICES/CapabilityRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 117,
+    "sizeBytes": 2716
+  },
+  {
+    "file": "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/SERVICES/CapabilityRegistryService.js",
+    "role": "Service",
+    "classes": [
+      "CapabilityRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 501,
+    "sizeBytes": 17894
+  },
+  {
+    "file": "miles_core_framework_dropin/miles_connector_health.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./CORE/ConnectorManager",
+      "./CORE/HealthDashboard",
+      "./CONNECTORS/GOOGLE"
+    ],
+    "exports": [],
+    "lines": 16,
+    "sizeBytes": 422
+  },
+  {
+    "file": "miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "googleapis",
+      "./auth",
+      "./gmail",
+      "./calendar",
+      "./drive",
+      "./contacts"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 34,
+    "sizeBytes": 830
+  },
+  {
+    "file": "miles_core_framework_dropin/CORE/ConnectorManager.js",
+    "role": "Connector",
+    "classes": [
+      "ConnectorManager"
+    ],
+    "requires": [
+      "./Logger",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 46,
+    "sizeBytes": 1096
+  },
+  {
+    "file": "miles_core_framework_dropin/CORE/EventBus.js",
+    "role": "EventBus",
+    "classes": [
+      "MilesEventBus"
+    ],
+    "requires": [
+      "events",
+      "./Logger"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 23,
+    "sizeBytes": 508
+  },
+  {
+    "file": "miles_core_framework_dropin/CORE/HealthDashboard.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./ConnectorManager"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 27,
+    "sizeBytes": 905
+  },
+  {
+    "file": "miles_core_framework_dropin/CORE/Logger.js",
+    "role": "Logger",
+    "classes": [
+      "Logger"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 29,
+    "sizeBytes": 837
+  },
+  {
+    "file": "miles_core_framework_dropin/CORE/TaskQueue.js",
+    "role": "Queue",
+    "classes": [
+      "TaskQueue"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "./Logger",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 58,
+    "sizeBytes": 1666
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/scripts/backup-runtime.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 6,
+    "sizeBytes": 455
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/scripts/run_build_043.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "../SERVICES/capability_builder/AutonomousCapabilityBuilderService"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 645
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/scripts/smoke-test.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "../src/main/runtime/milesRuntime"
+    ],
+    "exports": [],
+    "lines": 16,
+    "sizeBytes": 794
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "electron",
+      "./runtime/milesRuntime",
+      "fs"
+    ],
+    "exports": [],
+    "lines": 34,
+    "sizeBytes": 1652
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/preload.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "electron"
+    ],
+    "exports": [],
+    "lines": 10,
+    "sizeBytes": 481
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/approvals/approvalQueue.js",
+    "role": "Queue",
+    "classes": [
+      "ApprovalQueue"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 13,
+    "sizeBytes": 915
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/connectors/connectorManager.js",
+    "role": "Connector",
+    "classes": [
+      "ManagedConnector",
+      "ConnectorManager"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 39,
+    "sizeBytes": 1352
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/executive/executiveBrain.js",
+    "role": "Unknown",
+    "classes": [
+      "ExecutiveBrain"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 19,
+    "sizeBytes": 1348
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/logging/logger.js",
+    "role": "Logger",
+    "classes": [],
+    "requires": [
+      "path",
+      "./logger"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 10,
+    "sizeBytes": 199
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/notifications/notificationCenter.js",
+    "role": "Unknown",
+    "classes": [
+      "NotificationCenter"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 7,
+    "sizeBytes": 426
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/milesRuntime.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesRuntime"
+    ],
+    "requires": [
+      "path",
+      "../logging/logger",
+      "../connectors/connectorManager",
+      "../workers/workerManager",
+      "../approvals/approvalQueue",
+      "../notifications/notificationCenter",
+      "./taskQueue",
+      "../scheduler/scheduler",
+      "../supervisor/supervisor",
+      "../executive/executiveBrain"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 65,
+    "sizeBytes": 3049
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/taskQueue.js",
+    "role": "Queue",
+    "classes": [
+      "TaskQueue"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 18,
+    "sizeBytes": 1184
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/scheduler/scheduler.js",
+    "role": "Unknown",
+    "classes": [
+      "Scheduler"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 8,
+    "sizeBytes": 464
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/supervisor/supervisor.js",
+    "role": "Unknown",
+    "classes": [
+      "Supervisor"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 3,
+    "sizeBytes": 229
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/main/workers/workerManager.js",
+    "role": "Worker",
+    "classes": [
+      "WorkerManager"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 26,
+    "sizeBytes": 1041
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/renderer/app.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 18,
+    "sizeBytes": 2286
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/runtime/runtimeHost.js",
+    "role": "Unknown",
+    "classes": [
+      "RuntimeHost"
+    ],
+    "requires": [
+      "../shared/state"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 75,
+    "sizeBytes": 1864
+  },
+  {
+    "file": "miles_desktop_v2_build003/miles_desktop_v2/src/shared/state.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 41,
+    "sizeBytes": 768
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/scripts/backup-runtime.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 11,
+    "sizeBytes": 423
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/scripts/smoke-test.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "fs"
+    ],
+    "exports": [],
+    "lines": 22,
+    "sizeBytes": 477
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "electron",
+      "path",
+      "fs",
+      "../runtime/runtimeHost",
+      "../shared/state"
+    ],
+    "exports": [],
+    "lines": 72,
+    "sizeBytes": 2459
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/src/main/preload.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "electron"
+    ],
+    "exports": [],
+    "lines": 11,
+    "sizeBytes": 469
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/src/renderer/app.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 86,
+    "sizeBytes": 3838
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/src/runtime/runtimeHost.js",
+    "role": "Startup",
+    "classes": [
+      "RuntimeHost"
+    ],
+    "requires": [
+      "../shared/state"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 75,
+    "sizeBytes": 1864
+  },
+  {
+    "file": "miles_desktop_v2_starter/miles_desktop_v2/src/shared/state.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 41,
+    "sizeBytes": 768
+  },
+  {
+    "file": "MILES_OS_patch_007/MILES_OS_patch_007/ui/src/lib/api.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 18,
+    "sizeBytes": 731
+  },
+  {
+    "file": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js",
+    "role": "Service",
+    "classes": [
+      "BuilderService"
+    ],
+    "requires": [
+      "./ProjectScanner",
+      "./GitManager",
+      "./RuntimeController",
+      "./ProjectAnalyzer",
+      "./BuildPlanner",
+      "./ConnectorBuilder",
+      "../SERVICES/RepositoryRegistryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 113,
+    "sizeBytes": 2575
+  },
+  {
+    "file": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+    "role": "Service",
+    "classes": [
+      "RepositoryRegistryService"
+    ],
+    "requires": [
+      "fs",
+      "path",
+      "crypto"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 603,
+    "sizeBytes": 21035
+  },
+  {
+    "file": "MILES_Sprint_Zero_Discovery_Package/MILES_Sprint_Zero_Discovery_Package/sprint-zero-discovery.js",
+    "role": "Unknown",
+    "classes": [
+      "pattern"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [],
+    "lines": 317,
+    "sizeBytes": 12685
+  },
+  {
+    "file": "ROADMAP/SERVICES/operation_kernel/OperationExecutionKernel.js",
+    "role": "Service",
+    "classes": [
+      "OperationExecutionKernel"
+    ],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 343,
+    "sizeBytes": 5776
+  },
+  {
+    "file": "scripts/run_build_043.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "../SERVICES/capability_builder/AutonomousCapabilityBuilderService"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 645
+  },
+  {
+    "file": "scripts/run_build_044.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "path",
+      "../SERVICES/operation_kernel/OperationExecutionKernel"
+    ],
+    "exports": [],
+    "lines": 26,
+    "sizeBytes": 628
+  },
+  {
+    "file": "src/connectors/crmConnector.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "VERIFY/VERIFY_COO_LOOP.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "../SERVICES/ContinuousCOOLoopService"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 74,
+    "sizeBytes": 1919
+  },
+  {
+    "file": "WEB/Dashboard.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/AI/MilesBrain.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/API/server.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "express"
+    ],
+    "exports": [],
+    "lines": 12,
+    "sizeBytes": 247
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/API/API/memory.routes.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "express",
+      "../SERVICES/MemoryService"
+    ],
+    "exports": [
+      "module.exports"
+    ],
+    "lines": 37,
+    "sizeBytes": 627
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/AUTOMATIONS/Scheduler.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/config.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/ORION/OrionConnector.js",
+    "role": "Connector",
+    "classes": [
+      "OrionConnector"
+    ],
+    "requires": [
+      "better-sqlite3"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 55,
+    "sizeBytes": 1534
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "./modules/browser",
+      "./modules/session",
+      "./modules/screenshots",
+      "./modules/audit",
+      "./modules/logger"
+    ],
+    "exports": [],
+    "lines": 36,
+    "sizeBytes": 1248
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 36,
+    "sizeBytes": 1127
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "playwright"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 11,
+    "sizeBytes": 193
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 12,
+    "sizeBytes": 400
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 12,
+    "sizeBytes": 489
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./paths"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 14,
+    "sizeBytes": 432
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 19,
+    "sizeBytes": 573
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/authority.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 14,
+    "sizeBytes": 723
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Database.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesDatabase"
+    ],
+    "requires": [
+      "better-sqlite3",
+      "path",
+      "fs"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 56,
+    "sizeBytes": 1520
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/logger.js",
+    "role": "Logger",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path"
+    ],
+    "exports": [
+      "module.exports",
+      "object export"
+    ],
+    "lines": 20,
+    "sizeBytes": 616
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/miles.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "fs",
+      "path",
+      "./logger",
+      "./authority"
+    ],
+    "exports": [],
+    "lines": 52,
+    "sizeBytes": 1857
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Kernel/EventBus.js",
+    "role": "EventBus",
+    "classes": [
+      "EventBus"
+    ],
+    "requires": [
+      "events"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 22,
+    "sizeBytes": 445
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Kernel/HealthMonitor.js",
+    "role": "Unknown",
+    "classes": [
+      "HealthMonitor"
+    ],
+    "requires": [
+      "./ServiceRegistry",
+      "./EventBus"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 44,
+    "sizeBytes": 870
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+    "role": "Unknown",
+    "classes": [
+      "MilesKernel"
+    ],
+    "requires": [
+      "./ServiceRegistry",
+      "./HealthMonitor",
+      "./EventBus",
+      "../../SERVICES/MemoryService"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 56,
+    "sizeBytes": 1858
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js",
+    "role": "Service",
+    "classes": [
+      "ServiceRegistry"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 37,
+    "sizeBytes": 788
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/CORE/Kernel/StartMiles.js",
+    "role": "Startup",
+    "classes": [],
+    "requires": [
+      "./MilesKernel"
+    ],
+    "exports": [],
+    "lines": 9,
+    "sizeBytes": 174
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/DASHBOARD/ExecutiveDashboard.js",
+    "role": "Unknown",
+    "classes": [
+      "ExecutiveDashboard"
+    ],
+    "requires": [
+      "../CORE/Kernel/ServiceRegistry",
+      "../TASK_QUEUE/Engine/TaskEngine",
+      "../CONNECTORS/ORION/OrionConnector"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 76,
+    "sizeBytes": 3102
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/SERVICES/ConnectorManager.js",
+    "role": "Connector",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/SERVICES/MemoryService.js",
+    "role": "Service",
+    "classes": [
+      "MemoryService"
+    ],
+    "requires": [
+      "../CORE/Database"
+    ],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 60,
+    "sizeBytes": 1240
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/SERVICES/TaskManager.js",
+    "role": "Service",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/TASK_QUEUE/Engine/TaskEngine.js",
+    "role": "Engine",
+    "classes": [
+      "TaskEngine"
+    ],
+    "requires": [],
+    "exports": [
+      "module.exports",
+      "singleton instance"
+    ],
+    "lines": 25,
+    "sizeBytes": 548
+  },
+  {
+    "file": "_REFERENCE/MILES_OS_v1/WEB/Dashboard.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [],
+    "exports": [],
+    "lines": 1,
+    "sizeBytes": 0
+  },
+  {
+    "file": "RunEnterpriseInventory.js",
+    "role": "Unknown",
+    "classes": [],
+    "requires": [
+      "./SERVICES/engineering/RepositoryInventoryService"
+    ],
+    "exports": [],
+    "lines": 4,
+    "sizeBytes": 81
+  }
+]

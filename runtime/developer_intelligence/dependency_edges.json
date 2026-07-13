@@ -1,0 +1,2907 @@
+[
+  {
+    "source": "CORE\\AutonomousDiscoveryEngine.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\AutonomousDiscoveryEngine.js",
+    "target": "CORE\\SystemIntelligence.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\AutonomousDiscoveryEngine.js",
+    "target": "CORE\\RuntimeController.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\AutonomousLoop.js",
+    "target": "CORE\\AutonomousDiscoveryEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\AutonomousLoop.js",
+    "target": "CORE\\ExecutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\AutonomousLoop.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ConnectorManager.js",
+    "target": "CORE\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ConnectorManager.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\EventBus.js",
+    "target": "CORE\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionEngine.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionEngine.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionEngine.js",
+    "target": "CORE\\BROWSER\\BrowserWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionEngine.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionOrchestrator.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionOrchestrator.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\ExecutionOrchestrator.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\HealthDashboard.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\miles.js",
+    "target": "CORE\\logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\miles.js",
+    "target": "CORE\\authority.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\RuntimeController.js",
+    "target": "CORE\\GATEWAY\\CommandGateway.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\RuntimeController.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\RuntimeController.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\RuntimeController.js",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\RuntimeController.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "SERVICES\\WorkforceService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "SERVICES\\CapabilityService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "CORE\\STATE\\ExecutiveState.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Supervisor.js",
+    "target": "CORE\\RECOVERY\\RecoveryEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\TaskQueue.js",
+    "target": "CORE\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\TaskQueue.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\TestRuntimeController.js",
+    "target": "CORE\\RuntimeController.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\BROWSER\\BrowserWorker.js",
+    "target": "CORE\\BROWSER\\BrowserManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CONFIG\\BootstrapValidator.js",
+    "target": "CORE\\CONFIG\\ConfigurationManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\GATEWAY\\CommandGateway.js",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\GATEWAY\\CommandGateway.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\GATEWAY\\CommandGateway.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\GATEWAY\\CommandGateway.js",
+    "target": "CORE\\STATE\\ExecutiveState.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\HealthMonitor.js",
+    "target": "CORE\\Kernel\\ServiceRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\HealthMonitor.js",
+    "target": "CORE\\Kernel\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "CORE\\Kernel\\ServiceRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "CORE\\Kernel\\HealthMonitor.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "CORE\\Kernel\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "SERVICES\\MemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "SERVICES\\SchedulerService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\MilesKernel.js",
+    "target": "SERVICES\\DashboardService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Kernel\\StartMiles.js",
+    "target": "CORE\\Kernel\\MilesKernel.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\Events\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\Learning\\LearningEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\Memory\\OperationalMemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\ProviderRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\Runtime\\MilesRuntime.js",
+    "target": "SERVICES\\Supervisor\\ExecutiveSupervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\STATE\\ExecutiveState.js",
+    "target": "CORE\\CONFIG\\ConfigurationManager.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\EventBus.js",
+    "target": "CORE\\CANONICAL\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\TaskQueue.js",
+    "target": "CORE\\CANONICAL\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\Runtime.js",
+    "target": "CORE\\CANONICAL\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\Runtime.js",
+    "target": "CORE\\CANONICAL\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\Runtime.js",
+    "target": "CORE\\CANONICAL\\Registry.js",
+    "resolved": true
+  },
+  {
+    "source": "CORE\\CANONICAL\\Runtime.js",
+    "target": "CORE\\CANONICAL\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ProviderRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ActionDispatcherService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ActionVerificationService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ActionRetryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ActionHistoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\ActionAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ActionEngineService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.backup.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.backup.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.backup.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.backup.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.backup.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\ExecutiveBriefService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\BusinessOperationsBridgeService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\Learning\\LearningEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AutonomousCOOLoopService.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessExecutionEngineService.js",
+    "target": "SERVICES\\ExecutionPlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessExecutionEngineService.js",
+    "target": "SERVICES\\ExecutionSchedulerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessExecutionEngineService.js",
+    "target": "SERVICES\\ExecutionDispatcherService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessExecutionEngineService.js",
+    "target": "SERVICES\\ExecutionMonitorService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessExecutionEngineService.js",
+    "target": "SERVICES\\ExecutionAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessOperationsBridgeService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\CapabilityService.js",
+    "target": "SERVICES\\WorkforceService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\CapabilityService.js",
+    "target": "SERVICES\\ExecutiveStateService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\CapabilityService.js",
+    "target": "SERVICES\\Planning\\PlannerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\JsonFileService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\HeartbeatService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\QueueRecoveryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\RuntimeHealthService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\RestartGuardianService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\LoopSchedulerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\ExecutiveBrainService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\CompanyStateService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\TaskRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ContinuousCOOLoopService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ControlledWriteService.js",
+    "target": "SERVICES\\ControlledWritePolicyService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ControlledWriteService.js",
+    "target": "SERVICES\\ControlledWriteAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ControlledWriteService.js",
+    "target": "SERVICES\\InstantlyControlledWriteService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\ExecutiveBriefService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COOOrchestratorService.js",
+    "target": "SERVICES\\BusinessOperationsBridgeService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\COO_V10_ClosureSystem.js",
+    "target": "SERVICES\\COO_V9_ExecutionLayer.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DashboardServerService.js",
+    "target": "SERVICES\\ExecutiveDashboardService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DashboardService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DashboardService.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DecisionEngine.js",
+    "target": "SERVICES\\TaskManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DesktopServer.js",
+    "target": "CORE\\Runtime\\MilesRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\EngineeringCOOService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\EngineeringCOOService.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\EngineeringCOOService.js",
+    "target": "CORE\\logger.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\EngineeringCOOService.js",
+    "target": "SERVICES\\SelfEngineeringService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionDispatcherService.js",
+    "target": "SERVICES\\ExecutionAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionDispatcherService.js",
+    "target": "SERVICES\\EscalationManagerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionDispatcherService.js",
+    "target": "SERVICES\\RetryManagerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "CORE\\authority.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "CORE\\logger.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "SERVICES\\MemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutionService.js",
+    "target": "SERVICES\\Memory\\OperationalMemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveBrainService.js",
+    "target": "SERVICES\\DecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveBrainService.js",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveBrainService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveDashboardService.js",
+    "target": "SERVICES\\DashboardDataService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveDispatcher.js",
+    "target": "CORE\\CommandQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveIntelligenceService.js",
+    "target": "SERVICES\\BusinessStateAggregator.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveIntelligenceService.js",
+    "target": "PROVIDERS\\providers\\WebsiteProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveIntelligenceService.js",
+    "target": "PROVIDERS\\providers\\OrionProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveIntelligenceService.js",
+    "target": "PROVIDERS\\providers\\InstantlyProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\FileSystemProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\GoogleWorkspaceProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\HeartbeatService.js",
+    "target": "SERVICES\\JsonFileService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\HeartbeatService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyActionBridgeService.js",
+    "target": "SERVICES\\InstantlyLiveProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyControlledWriteService.js",
+    "target": "SERVICES\\ControlledWritePolicyService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyControlledWriteService.js",
+    "target": "SERVICES\\ControlledWriteAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "target": "SERVICES\\InstantlyLiveProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "target": "SERVICES\\InstantlyActionBridgeService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyLiveProviderController.js",
+    "target": "SERVICES\\InstantlyApiClient.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\LoopSchedulerService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\MemoryService.js",
+    "target": "CORE\\Database.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\NamecheapProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\OrionProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\PlannerService.js",
+    "target": "SERVICES\\CapabilityService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderCapabilityBindingService.js",
+    "target": "SERVICES\\ProviderAuthorityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerExecutionService.js",
+    "target": "SERVICES\\ProviderControllerRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerHealthService.js",
+    "target": "SERVICES\\ProviderControllerRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\InstantlyProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\GoogleWorkspaceProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\NamecheapProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\WebsiteProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\OrionProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderControllerRegistryService.js",
+    "target": "SERVICES\\FileSystemProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderInterfaceAdapterService.js",
+    "target": "SERVICES\\ProviderAuthorityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderRouterService.js",
+    "target": "PROVIDERS\\providers\\MarketingProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderRouterService.js",
+    "target": "PROVIDERS\\providers\\OrionProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderSynchronizationService.js",
+    "target": "SERVICES\\ProviderAuthorityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderSynchronizationService.js",
+    "target": "SERVICES\\ProviderInterfaceAdapterService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderSynchronizationService.js",
+    "target": "SERVICES\\ProviderCapabilityBindingService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ProviderSynchronizationService.js",
+    "target": "SERVICES\\InstantlyProviderCompatibilityService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\QueueRecoveryService.js",
+    "target": "SERVICES\\JsonFileService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\QueueRecoveryService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\RestartGuardianService.js",
+    "target": "SERVICES\\JsonFileService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\RestartGuardianService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\RuntimeHealthService.js",
+    "target": "SERVICES\\JsonFileService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\RuntimeHealthService.js",
+    "target": "SERVICES\\TimeUtil.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SchedulerService.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SchedulerService.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SchedulerService.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SchedulerService.js",
+    "target": "SERVICES\\DecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SchedulerService.js",
+    "target": "SERVICES\\DashboardService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfEngineeringService.js",
+    "target": "SERVICES\\EngineeringPlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfEngineeringService.js",
+    "target": "SERVICES\\CodeRepairService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfEngineeringService.js",
+    "target": "SERVICES\\TestRunnerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfEngineeringService.js",
+    "target": "SERVICES\\RuntimeRecoveryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\LearningDataService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\DecisionLearningService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\FailureLearningService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\RoutingLearningService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\PriorityOptimizationService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\ConfidenceScoringService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\SelfLearningService.js",
+    "target": "SERVICES\\RecommendationEngineService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\TaskManager.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\TaskManager.js",
+    "target": "CORE\\authority.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\TaskRouterService.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WebsiteProviderController.js",
+    "target": "SERVICES\\BaseProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkflowService.js",
+    "target": "SERVICES\\WorkPackageService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkflowService.js",
+    "target": "SERVICES\\TaskManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\Events\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\Events\\EventTypes.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\WorkforceService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\ExecutiveStateService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\ProviderRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\Decision\\DecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\ExecutionPlanService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "CORE\\logger.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkforceExecutionService.js",
+    "target": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkPackageService.js",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Browser\\BrowserSessionEnroller.js",
+    "target": "SERVICES\\Browser\\BrowserSessionManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "target": "SERVICES\\Browser\\BrowserSessionManager.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "target": "SERVICES\\Executive\\CEOApprovalQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\capability_engine\\CapabilityDeploymentEngineManager.js",
+    "target": "SERVICES\\capability_engine\\CapabilityDeploymentEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Decision\\DecisionEngine.js",
+    "target": "SERVICES\\Decision\\AuthorityEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Decision\\DecisionEngine.js",
+    "target": "SERVICES\\Decision\\RiskEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Decision\\DecisionEngine.js",
+    "target": "SERVICES\\Decision\\PolicyEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Decision\\DecisionEngine.js",
+    "target": "SERVICES\\Decision\\ConfidenceEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Decision\\DecisionEngine.js",
+    "target": "SERVICES\\Decision\\ApprovalEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\decision_engine\\AutonomousDecisionEngineManager.js",
+    "target": "SERVICES\\decision_engine\\AutonomousDecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\COOExecutionLoop.js",
+    "target": "SERVICES\\digital_coo\\COOGoalEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\DigitalCOOHost.js",
+    "target": "SERVICES\\workers\\InstantlyCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\DigitalCOORuntimeManager.js",
+    "target": "SERVICES\\digital_coo\\DigitalCOORuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\MarketingCOOService.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "target": "SERVICES\\digital_coo\\DigitalCOOHost.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "target": "SERVICES\\CommandIntentPlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "target": "SERVICES\\ExecutiveResponseService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\digital_coo\\InstantlyCOOService.js",
+    "target": "SERVICES\\connector_runtime\\ConnectorRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Discovery\\DiscoveryEngine.js",
+    "target": "SERVICES\\Discovery\\MarketingDiscovery.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Discovery\\DiscoveryEngine.js",
+    "target": "SERVICES\\Discovery\\OrionDiscovery.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Discovery\\DiscoveryEngine.js",
+    "target": "SERVICES\\Events\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Discovery\\MarketingDiscovery.js",
+    "target": "SERVICES\\ProviderRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Discovery\\OrionDiscovery.js",
+    "target": "SERVICES\\ProviderRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Learning\\ConfidenceAdjuster.js",
+    "target": "SERVICES\\Learning\\PerformanceScorer.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Learning\\LearningEngine.js",
+    "target": "SERVICES\\Memory\\OperationalMemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Learning\\PerformanceScorer.js",
+    "target": "SERVICES\\Learning\\LearningEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\learning_engine\\LearningEngineManager.js",
+    "target": "SERVICES\\learning_engine\\LearningEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\ExecutivePlanner.js",
+    "target": "SERVICES\\Planning\\BasePlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\MarketingPlanner.js",
+    "target": "SERVICES\\Planning\\BasePlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\OrionPlanner.js",
+    "target": "SERVICES\\Planning\\BasePlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\PlannerRegistry.js",
+    "target": "SERVICES\\Planning\\MarketingPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\PlannerRegistry.js",
+    "target": "SERVICES\\Planning\\OrionPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Planning\\PlannerRegistry.js",
+    "target": "SERVICES\\Planning\\ExecutivePlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\Supervisor\\ExecutiveSupervisor.js",
+    "target": "SERVICES\\Discovery\\DiscoveryEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\workers\\BaseCOOWorker.js",
+    "target": "SERVICES\\worker_runtime\\TaskExecutionWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+    "target": "SERVICES\\workers\\BaseCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\workers\\InstantlyCOOWorker.js",
+    "target": "SERVICES\\workers\\BaseCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\workers\\NamecheapCOOWorker.js",
+    "target": "SERVICES\\workers\\BaseCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\workers\\WebsiteCOOWorker.js",
+    "target": "SERVICES\\workers\\BaseCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\AutonomousWorkOrchestratorManager.js",
+    "target": "SERVICES\\worker_runtime\\AutonomousWorkOrchestrator.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\TaskExecutionWorker.js",
+    "target": "SERVICES\\worker_runtime\\BaseAutonomousWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "SERVICES\\worker_runtime\\WorkerDispatcher.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "SERVICES\\worker_runtime\\WorkerDispatcher.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerExecutionBridge.js",
+    "target": "CORE\\CommandQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerExecutionBridge.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\AtlasWorkerAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\ArchitectAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\BuilderAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\ValidatorAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\TesterAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\DeployerAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerBootstrap.js",
+    "target": "SERVICES\\WORKER_ADAPTERS\\RecoveryAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WORKER_ADAPTERS\\AtlasWorkerAdapter.js",
+    "target": "SERVICES\\ATLASRuntimeInspector.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DepartmentBootstrap.js",
+    "target": "CORE\\DepartmentRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\DepartmentBootstrap.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringDepartment.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\MissionLifecycleService.js",
+    "target": "SERVICES\\ResolutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ResolutionEngine.js",
+    "target": "SERVICES\\ResolutionMemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ResolutionEngine.js",
+    "target": "PROVIDERS\\providers\\WebsiteProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\CapabilityRegistry.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\AssetRegistry.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveEnvironmentService.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveEnvironmentService.js",
+    "target": "SERVICES\\CapabilityRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\ExecutiveEnvironmentService.js",
+    "target": "SERVICES\\AssetRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\MissionCapabilityResolver.js",
+    "target": "SERVICES\\CapabilityRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerSelector.js",
+    "target": "SERVICES\\CapabilityRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\WorkerSelector.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessWorker.js",
+    "target": "SERVICES\\WorkerContract.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\RuntimeActivationAuditService.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\InstantlyCampaignInventoryService.js",
+    "target": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "resolved": true
+  },
+  {
+    "source": "SERVICES\\BusinessOperationsBridgeService.backup_20260710_172805.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\InstantlyProvider.js",
+    "target": "PROVIDERS\\contracts\\IDataProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\InstantlyProvider.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\MarketingProvider.js",
+    "target": "PROVIDERS\\contracts\\IDataProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\MarketingProvider.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\OrionProvider.js",
+    "target": "PROVIDERS\\contracts\\IDataProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\OrionProvider.js",
+    "target": "CONNECTORS\\ORION\\connector.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\WebsiteProvider.js",
+    "target": "PROVIDERS\\contracts\\IDataProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\providers\\WebsiteProvider.js",
+    "target": "CONNECTORS\\WEBSITE\\website.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\InstantlyProvider.js",
+    "target": "PROVIDERS\\BaseProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "PROVIDERS\\ProviderRegistry.js",
+    "target": "PROVIDERS\\InstantlyProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\account_manager.js",
+    "target": "CONNECTORS\\GOOGLE\\config.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\auth.js",
+    "target": "CONNECTORS\\GOOGLE\\config.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\gmail.js",
+    "target": "CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\gmail.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\calendar.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\drive.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\contacts.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\account_manager.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\workspace.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\workspace.js",
+    "target": "CONNECTORS\\GOOGLE\\account_manager.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\miles_google_accounts_health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\index.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\account_manager.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\workspace.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\workspace.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\account_manager.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\config.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\contacts.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\drive.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\gmail.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\gmail.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\drive.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\contacts.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\gmail.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\drive.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\contacts.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js",
+    "target": "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\health.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\INSTANTLY\\connector.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\INSTANTLY\\instantly_test.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\MILES\\connector.js",
+    "target": "SERVICES\\capability_builder\\AutonomousCapabilityBuilderService.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\Real\\gmailListener.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\controller.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\browser.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\controller.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\session.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\controller.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\screenshots.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\controller.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\audit.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\controller.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\logger.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\modules\\audit.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\paths.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\modules\\logger.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\paths.js",
+    "resolved": true
+  },
+  {
+    "source": "CONNECTORS\\WEBSITE_B12\\modules\\screenshots.js",
+    "target": "CONNECTORS\\WEBSITE_B12\\modules\\paths.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\atlasWorker.js",
+    "target": "SERVICES\\ATLASRuntimeInspector.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\commandWorker.js",
+    "target": "CORE\\CommandQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\cooWorker.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\cooWorker.js",
+    "target": "SERVICES\\AutonomousCOOLoopService.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\cooWorker.js",
+    "target": "SERVICES\\ProductionCOOEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\dealWorker.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\dealWorker.js",
+    "target": "SERVICES\\DealClosureEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\dispatcherWorker.js",
+    "target": "SERVICES\\ExecutiveDispatcher.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\replyWorker.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\replyWorker.js",
+    "target": "SERVICES\\ReplyIntelligenceEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\revenueWorker.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "WORKERS\\revenueWorker.js",
+    "target": "SERVICES\\AutonomousRevenueClosureLoop.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingCOO.js",
+    "target": "CORE\\CANONICAL\\Runtime.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingCOO.js",
+    "target": "CORE\\CANONICAL\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingCOO.js",
+    "target": "CORE\\CANONICAL\\Logger.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingCOO.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\SegmentImporter.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\CampaignImporter.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\CampaignImporter.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingAssignmentEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingIntelligenceEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\DomainInboxImporter.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingCapacityPlanner.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\MarketingUploadQueueEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Marketing\\RunMarketingUploadQueueEngine.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingUploadQueueEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringCOO.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringAssignmentEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringCapacityPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringAssignmentEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\EngineeringWorkerBridge.js",
+    "target": "CORE\\CANONICAL\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\EngineeringMissionAdapter.js",
+    "target": "SERVICES\\ExecutiveDispatcher.js",
+    "resolved": true
+  },
+  {
+    "source": "DIGITAL_COO\\Engineering\\EngineeringDepartment.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringMissionAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\healthcheck.js",
+    "target": "SERVICES\\OutboundService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\outbound_audit.js",
+    "target": "SERVICES\\OutboundService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TESTSTest_InstantlyCampaignOperator.js",
+    "target": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BrowserSessionEnroller.js",
+    "target": "SERVICES\\Browser\\BrowserSessionEnroller.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BrowserSessionManager.js",
+    "target": "SERVICES\\Browser\\BrowserSessionManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build017_ProviderRouter.js",
+    "target": "SERVICES\\ProviderRouterService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build018_DecisionEngine.js",
+    "target": "SERVICES\\Decision\\DecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build019_AutonomousExecution.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build020_EventBus.js",
+    "target": "SERVICES\\Events\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build021_EventDrivenExecution.js",
+    "target": "SERVICES\\WorkforceExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build021_EventDrivenExecution.js",
+    "target": "SERVICES\\Events\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build022_OperationalMemory.js",
+    "target": "SERVICES\\Memory\\OperationalMemoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build024_LearningEngine.js",
+    "target": "SERVICES\\Learning\\LearningEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build025_AdaptiveDecision.js",
+    "target": "SERVICES\\Learning\\ConfidenceAdjuster.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build025_AdaptiveDecision.js",
+    "target": "SERVICES\\Learning\\DecisionHistory.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_CEOApprovalQueue.js",
+    "target": "SERVICES\\Executive\\CEOApprovalQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_ExecutiveSupervisor.js",
+    "target": "SERVICES\\Supervisor\\ExecutiveSupervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_InstantlyCampaignOperator.js",
+    "target": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_MissionPack1_Discovery.js",
+    "target": "SERVICES\\Discovery\\DiscoveryEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Sprint2_Planning.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Sprint2_Planning.js",
+    "target": "SERVICES\\WorkPackageService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Sprint2_Planning.js",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Sprint2_Planning.js",
+    "target": "SERVICES\\CapabilityService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\test_workforce_execution.js",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\test_workforce_execution.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\test_workforce_execution.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestDepartmentRegistry.js",
+    "target": "CORE\\DepartmentRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestDepartmentRegistry.js",
+    "target": "DIGITAL_COO\\Engineering\\RunEngineeringCOO.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestCanonicalEventBus.js",
+    "target": "CORE\\CANONICAL\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringQueue.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringProjectQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveToEngineering.js",
+    "target": "CORE\\CANONICAL\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveToEngineering.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringProjectQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringOrchestrator.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringProjectQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringOrchestrator.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringWorkerBridge.js",
+    "target": "CORE\\CANONICAL\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringWorkerBridge.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringWorkerBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestEngineeringMissionAdapter.js",
+    "target": "DIGITAL_COO\\Engineering\\EngineeringMissionAdapter.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestWorkerExecutionBridge.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestWorkerExecutionBridge.js",
+    "target": "CORE\\CommandQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestWorkerRegistry.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestRealWorkerRegistration.js",
+    "target": "SERVICES\\WorkerBootstrap.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestRealWorkerRegistration.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestFullEngineeringMission.js",
+    "target": "SERVICES\\ExecutiveDispatcher.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestFullEngineeringMission.js",
+    "target": "SERVICES\\WorkerBootstrap.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestFullEngineeringMission.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveMissionRouter.js",
+    "target": "CORE\\DepartmentRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveMissionRouter.js",
+    "target": "SERVICES\\ExecutiveMissionRouter.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveToEngineeringFlow.js",
+    "target": "SERVICES\\DepartmentBootstrap.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveToEngineeringFlow.js",
+    "target": "SERVICES\\ExecutiveMissionRouter.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestMissionLifecycle.js",
+    "target": "SERVICES\\MissionLifecycleService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestMissionSupervisor.js",
+    "target": "SERVICES\\MissionSupervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestExecutiveDashboardData.js",
+    "target": "SERVICES\\DashboardDataService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\TestResolutionEngine.js",
+    "target": "SERVICES\\ResolutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build041_LearningIntegration.js",
+    "target": "SERVICES\\LearningDataService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build042_ConfigService.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build042_CapabilityRegistry.js",
+    "target": "SERVICES\\CapabilityRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build042_AssetRegistry.js",
+    "target": "SERVICES\\AssetRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build042_ExecutiveEnvironment.js",
+    "target": "SERVICES\\ExecutiveEnvironmentService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build043_MissionCapabilityResolver.js",
+    "target": "SERVICES\\MissionCapabilityResolver.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build044_WorkerSelector.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build044_WorkerSelector.js",
+    "target": "SERVICES\\WorkerSelector.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build045_WorkerContract.js",
+    "target": "SERVICES\\WorkerContract.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build046_BusinessWorker.js",
+    "target": "SERVICES\\BusinessWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build046_RuntimeActivationAudit.js",
+    "target": "SERVICES\\RuntimeActivationAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_InstantlyInventoryCheck.js",
+    "target": "SERVICES\\ConfigService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\MissionLifecycleService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\MissionCapabilityResolver.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\WorkerSelector.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\workers\\InstantlyCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\InstantlyProviderController.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\Browser\\BrowserSessionManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build047_RuntimeWiring.js",
+    "target": "SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+    "target": "SERVICES\\MissionLifecycleService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+    "target": "SERVICES\\MissionCapabilityResolver.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+    "target": "SERVICES\\WorkerSelector.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+    "target": "SERVICES\\WorkerExecutionBridge.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+    "target": "SERVICES\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+    "target": "SERVICES\\WorkerSelector.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+    "target": "SERVICES\\MissionCapabilityResolver.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+    "target": "SERVICES\\workers\\InstantlyCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_Build049_InstantlyCOOWorkerExecution.js",
+    "target": "SERVICES\\workers\\InstantlyCOOWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD050_InstantlyLiveConnector.js",
+    "target": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD051_ListCampaigns.js",
+    "target": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD052_CampaignIntelligence.js",
+    "target": "SERVICES\\InstantlyLiveIntegrationService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD053_CampaignInventory.js",
+    "target": "SERVICES\\InstantlyCampaignInventoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD054_ExecutiveAdvisor.js",
+    "target": "SERVICES\\InstantlyExecutiveAdvisor.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD055_MissionCreationService.js",
+    "target": "SERVICES\\MissionCreationService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD056_RuntimeConsolidationAudit.js",
+    "target": "SERVICES\\RuntimeConsolidationAuditService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD057_EnterpriseRuntimeManager.js",
+    "target": "SERVICES\\EnterpriseRuntimeManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\Test_BUILD058_ServiceRegistry.js",
+    "target": "CORE\\Kernel\\ServiceRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\enterprise_registry.test.js",
+    "target": "SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\enterprise_registry.test.js",
+    "target": "SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "TESTS\\runtime_registry_v2.test.js",
+    "target": "SERVICES\\runtime_registry\\RuntimeRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+    "target": "SERVICES\\PlannerService.js",
+    "resolved": true
+  },
+  {
+    "source": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+    "target": "SERVICES\\WorkflowService.js",
+    "resolved": true
+  },
+  {
+    "source": "miles_connector_health.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "miles_connector_health.js",
+    "target": "CORE\\HealthDashboard.js",
+    "resolved": true
+  },
+  {
+    "source": "miles_connector_health.js",
+    "target": "CONNECTORS\\GOOGLE\\index.js",
+    "resolved": true
+  },
+  {
+    "source": "miles_connector_health.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "miles_google_accounts_health.js",
+    "target": "CONNECTORS\\GOOGLE\\index.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "OpenMilesBrowser.js",
+    "target": "CORE\\BROWSER\\BrowserManager.js",
+    "resolved": true
+  },
+  {
+    "source": "RunMarketingCOO.js",
+    "target": "SERVICES\\digital_coo\\MarketingCOOService.js",
+    "resolved": true
+  },
+  {
+    "source": "StartAutonomousCOO.js",
+    "target": "CORE\\Supervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "StartAutonomousCOO.js",
+    "target": "SERVICES\\AutonomousCOOLoopService.js",
+    "resolved": true
+  },
+  {
+    "source": "StartAutonomousCOO.js",
+    "target": "CORE\\ConnectorManager.js",
+    "resolved": true
+  },
+  {
+    "source": "StartMiles.js",
+    "target": "SERVICES\\OutboundService.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "api\\server.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "SERVICES\\ExecutionService.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "workers\\cooWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "workers\\revenueWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "workers\\replyWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "workers\\dealWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "workers\\atlasWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "CORE\\Supervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "StartProductionSystem.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "StartSupervisor.js",
+    "target": "CORE\\Supervisor.js",
+    "resolved": true
+  },
+  {
+    "source": "TestAutonomousDiscoveryEngine.js",
+    "target": "CORE\\AutonomousDiscoveryEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TestAutonomousLoop.js",
+    "target": "CORE\\AutonomousLoop.js",
+    "resolved": true
+  },
+  {
+    "source": "TestBrowserOS.js",
+    "target": "CORE\\BROWSER\\BrowserManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TestBrowserOS.js",
+    "target": "CORE\\BROWSER\\SessionManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TestBrowserWorker.js",
+    "target": "CORE\\BROWSER\\BrowserWorker.js",
+    "resolved": true
+  },
+  {
+    "source": "TestEngineeringManager.js",
+    "target": "CORE\\ENGINEERING\\EngineeringManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TestExecutionEngine.js",
+    "target": "CORE\\ExecutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "TestExecutionEngine.js",
+    "target": "CORE\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "TestPersistentBrowserOS.js",
+    "target": "CORE\\BROWSER\\BrowserManager.js",
+    "resolved": true
+  },
+  {
+    "source": "TestSystemIntelligence.js",
+    "target": "CORE\\SystemIntelligence.js",
+    "resolved": true
+  },
+  {
+    "source": "test_coo_orchestrator.js",
+    "target": "SERVICES\\COOOrchestratorService.js",
+    "resolved": true
+  },
+  {
+    "source": "test_executive_brief.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "test_executive_brief.js",
+    "target": "SERVICES\\ExecutiveBriefService.js",
+    "resolved": true
+  },
+  {
+    "source": "test_executive_intelligence.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "test_marketing_provider.js",
+    "target": "PROVIDERS\\providers\\MarketingProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "test_orion_provider.js",
+    "target": "PROVIDERS\\providers\\OrionProvider.js",
+    "resolved": true
+  },
+  {
+    "source": "test_work_queue.js",
+    "target": "SERVICES\\ExecutiveIntelligenceService.js",
+    "resolved": true
+  },
+  {
+    "source": "test_work_queue.js",
+    "target": "SERVICES\\WorkQueueService.js",
+    "resolved": true
+  },
+  {
+    "source": "RunEnterpriseInventory.js",
+    "target": "SERVICES\\engineering\\RepositoryInventoryService.js",
+    "resolved": true
+  },
+  {
+    "source": "BuildDuplicateReport.js",
+    "target": "DATA\\enterprise_inventory\\duplicate_files.json",
+    "resolved": true
+  },
+  {
+    "source": "RunCanonicalCoreTest.js",
+    "target": "CORE\\CANONICAL\\Runtime.js",
+    "resolved": true
+  },
+  {
+    "source": "RunCanonicalCoreTest.js",
+    "target": "CORE\\CANONICAL\\TaskQueue.js",
+    "resolved": true
+  },
+  {
+    "source": "RunMarketingEnterprise.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingCOO.js",
+    "resolved": true
+  },
+  {
+    "source": "RunEnterpriseStoreTest.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "RunSegmentImport.js",
+    "target": "DIGITAL_COO\\Marketing\\SegmentImporter.js",
+    "resolved": true
+  },
+  {
+    "source": "RunCampaignImport.js",
+    "target": "DIGITAL_COO\\Marketing\\CampaignImporter.js",
+    "resolved": true
+  },
+  {
+    "source": "RunMarketingAssignment.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingAssignmentEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "RunMarketingIntelligence.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingIntelligenceEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "RunDomainInboxImport.js",
+    "target": "DIGITAL_COO\\Marketing\\DomainInboxImporter.js",
+    "resolved": true
+  },
+  {
+    "source": "RunMarketingCapacityPlan.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingCapacityPlanner.js",
+    "resolved": true
+  },
+  {
+    "source": "GOVERNANCE\\ApprovalQueueEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "GOVERNANCE\\RunApprovalQueue.js",
+    "target": "GOVERNANCE\\ApprovalQueueEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "GOVERNANCE\\ApprovalCommand.js",
+    "target": "GOVERNANCE\\ApprovalQueueEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTION\\MarketingExecutionEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTION\\MarketingExecutionEngine.js",
+    "target": "PROVIDERS\\ProviderRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTION\\RunMarketingExecutionEngine.js",
+    "target": "EXECUTION\\MarketingExecutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\EnterpriseScheduler.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\RunSchedulerSmokeTest.js",
+    "target": "SCHEDULER\\EnterpriseScheduler.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\MarketingWorkflow.js",
+    "target": "SCHEDULER\\EnterpriseScheduler.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\MarketingWorkflow.js",
+    "target": "EXECUTION\\MarketingExecutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\MarketingWorkflow.js",
+    "target": "GOVERNANCE\\ApprovalQueueEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\RunMarketingWorkflow.js",
+    "target": "SCHEDULER\\EnterpriseScheduler.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\RunMarketingWorkflow.js",
+    "target": "SCHEDULER\\MarketingWorkflow.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\EnterpriseJobRegistry.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\RunJobRegistrySeed.js",
+    "target": "SCHEDULER\\EnterpriseJobRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\EnterpriseSchedulerLoader.js",
+    "target": "SCHEDULER\\EnterpriseScheduler.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\EnterpriseSchedulerLoader.js",
+    "target": "SCHEDULER\\EnterpriseJobRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\EnterpriseSchedulerLoader.js",
+    "target": "SCHEDULER\\MarketingWorkflow.js",
+    "resolved": true
+  },
+  {
+    "source": "SCHEDULER\\RunDataDrivenScheduler.js",
+    "target": "SCHEDULER\\EnterpriseSchedulerLoader.js",
+    "resolved": true
+  },
+  {
+    "source": "MONITORING\\CampaignMonitoringEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "MONITORING\\RunCampaignMonitoring.js",
+    "target": "MONITORING\\CampaignMonitoringEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "DASHBOARDS\\MarketingExecutiveDashboard.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "DASHBOARDS\\RunMarketingExecutiveDashboard.js",
+    "target": "DASHBOARDS\\MarketingExecutiveDashboard.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\ExecutiveDecisionEngine.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\RunExecutiveDecisionEngine.js",
+    "target": "EXECUTIVE\\ExecutiveDecisionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\ExecutiveDecisionExecutor.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\ExecutiveDecisionExecutor.js",
+    "target": "DIGITAL_COO\\Marketing\\MarketingUploadQueueEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\ExecutiveDecisionExecutor.js",
+    "target": "EXECUTION\\MarketingExecutionEngine.js",
+    "resolved": true
+  },
+  {
+    "source": "EXECUTIVE\\RunExecutiveDecisionExecutor.js",
+    "target": "EXECUTIVE\\ExecutiveDecisionExecutor.js",
+    "resolved": true
+  },
+  {
+    "source": "INFRASTRUCTURE\\EmailInfrastructureManager.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "INFRASTRUCTURE\\RunEmailInfrastructureManager.js",
+    "target": "INFRASTRUCTURE\\EmailInfrastructureManager.js",
+    "resolved": true
+  },
+  {
+    "source": "INFRASTRUCTURE\\InfrastructureRegistrySync.js",
+    "target": "CORE\\CANONICAL\\EnterpriseStore.js",
+    "resolved": true
+  },
+  {
+    "source": "INFRASTRUCTURE\\RunInfrastructureRegistrySync.js",
+    "target": "INFRASTRUCTURE\\InfrastructureRegistrySync.js",
+    "resolved": true
+  },
+  {
+    "source": "event-bus\\emitter.js",
+    "target": "event-bus\\emitter.js",
+    "resolved": true
+  },
+  {
+    "source": "event-bus\\emitter.js",
+    "target": "CORE\\EventBus.js",
+    "resolved": true
+  },
+  {
+    "source": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\MarketingCOOService.js",
+    "target": "CONNECTORS\\INSTANTLY\\instantly.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Enterprise_Registry_Phase1_v1.0\\BuildEnterpriseRegistry.js",
+    "target": "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Enterprise_Registry_Phase1_v1.0\\BuildEnterpriseRegistry.js",
+    "target": "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Enterprise_Registry_Phase1_v1.0\\TESTS\\enterprise_registry.test.js",
+    "target": "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Enterprise_Registry_Phase1_v1.0\\TESTS\\enterprise_registry.test.js",
+    "target": "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "BuildEnterpriseRegistry.js",
+    "target": "SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "BuildEnterpriseRegistry.js",
+    "target": "SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+    "resolved": true
+  },
+  {
+    "source": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+    "target": "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRegistry.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Runtime_Registry_Service_V2_v2.0\\StartRuntimeRegistryService.js",
+    "target": "MILES_Runtime_Registry_Service_V2_v2.0\\SERVICES\\runtime_registry\\RuntimeRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Runtime_Registry_Service_V2_v2.0\\EXAMPLE_SELF_REGISTRATION.js",
+    "target": "MILES_Runtime_Registry_Service_V2_v2.0\\SERVICES\\runtime_registry\\RuntimeRegistryClient.js",
+    "resolved": true
+  },
+  {
+    "source": "MILES_Runtime_Registry_Service_V2_v2.0\\TESTS\\runtime_registry_v2.test.js",
+    "target": "MILES_Runtime_Registry_Service_V2_v2.0\\SERVICES\\runtime_registry\\RuntimeRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "StartRuntimeRegistryService.js",
+    "target": "SERVICES\\runtime_registry\\RuntimeRegistryService.js",
+    "resolved": true
+  },
+  {
+    "source": "RunInstantlyCOO.js",
+    "target": "SERVICES\\digital_coo\\InstantlyCOOService.js",
+    "resolved": true
+  }
+]

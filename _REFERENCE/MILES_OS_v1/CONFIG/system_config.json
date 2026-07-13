@@ -1,0 +1,11 @@
+{
+  "system_name": "MILES OS",
+  "version": "1.0",
+  "primary_domain": "pathways2gc.com",
+  "protected_domains": [
+    "pathways2gc.com"
+  ],
+  "publish_requires_approval": true,
+  "allow_auto_publish": false,
+  "root_path_windows": "D:\\P2GC_Intelligence\\MILES_OS"
+}

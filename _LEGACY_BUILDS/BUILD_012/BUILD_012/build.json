@@ -1,0 +1,10 @@
+{
+  "build": 12,
+  "version": "0.12.0",
+  "name": "Autonomous COO Runtime Integration",
+  "releaseDate": "2026-07-01",
+  "status": "development",
+  "requiresMigration": true,
+  "runtimeSchema": 2,
+  "objective": "Wire provider intelligence, work queue, decisioning, and execution into one autonomous COO cycle."
+}

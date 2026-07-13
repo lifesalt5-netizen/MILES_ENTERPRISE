@@ -1,0 +1,1755 @@
+{
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "generatedAt": "2026-06-29T22:09:42.078Z",
+  "totalFiles": 290,
+  "summary": {
+    "csv": 59,
+    "other": 51,
+    "markdown": 24,
+    "json": 17,
+    "powershell": 18,
+    "javascript": 121
+  },
+  "files": [
+    {
+      "path": "governance/MILES_AUTHORITY_MATRIX.csv",
+      "type": "csv",
+      "bytes": 1806,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "governance/MILES_MISSION.txt",
+      "type": "other",
+      "bytes": 735,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "inventory/systems_inventory.csv",
+      "type": "csv",
+      "bytes": 667,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "inventory/segment_inventory_master.csv",
+      "type": "csv",
+      "bytes": 964,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "inventory/segment_discovery.csv",
+      "type": "csv",
+      "bytes": 0,
+      "modifiedAt": "2026-06-20T20:23:44.120Z"
+    },
+    {
+      "path": "inventory/data_sources.csv",
+      "type": "csv",
+      "bytes": 553,
+      "modifiedAt": "2026-06-20T20:29:12.000Z"
+    },
+    {
+      "path": "inventory/segment_priority_queue.csv",
+      "type": "csv",
+      "bytes": 529,
+      "modifiedAt": "2026-06-20T20:30:40.000Z"
+    },
+    {
+      "path": "inventory/segment_counts.csv",
+      "type": "csv",
+      "bytes": 1777,
+      "modifiedAt": "2026-06-20T20:32:56.000Z"
+    },
+    {
+      "path": "logs/execution_log.csv",
+      "type": "csv",
+      "bytes": 120,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "logs/miles.log",
+      "type": "other",
+      "bytes": 1935,
+      "modifiedAt": "2026-06-29T01:43:58.000Z"
+    },
+    {
+      "path": "reports/pipeline_metrics.csv",
+      "type": "csv",
+      "bytes": 130,
+      "modifiedAt": "2026-06-20T20:45:40.000Z"
+    },
+    {
+      "path": "reports/active_pipeline.csv",
+      "type": "csv",
+      "bytes": 109,
+      "modifiedAt": "2026-06-20T20:46:06.000Z"
+    },
+    {
+      "path": "reports/no_show_recovery.csv",
+      "type": "csv",
+      "bytes": 83,
+      "modifiedAt": "2026-06-20T20:46:18.000Z"
+    },
+    {
+      "path": "reports/campaign_roi.csv",
+      "type": "csv",
+      "bytes": 61,
+      "modifiedAt": "2026-06-20T20:46:28.000Z"
+    },
+    {
+      "path": "tasks/master_task_queue.csv",
+      "type": "csv",
+      "bytes": 865,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "outbound/outbound_accounts.csv",
+      "type": "csv",
+      "bytes": 665,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "outbound/campaign_inventory.csv",
+      "type": "csv",
+      "bytes": 115,
+      "modifiedAt": "2026-06-20T20:36:02.000Z"
+    },
+    {
+      "path": "status/daily_status.md",
+      "type": "markdown",
+      "bytes": 820,
+      "modifiedAt": "2026-06-20T20:22:52.000Z"
+    },
+    {
+      "path": "masters/CLIENT_MASTER.csv",
+      "type": "csv",
+      "bytes": 7228,
+      "modifiedAt": "2026-06-20T21:47:16.000Z"
+    },
+    {
+      "path": "masters/SYSTEM_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 841,
+      "modifiedAt": "2026-06-20T21:47:16.000Z"
+    },
+    {
+      "path": "masters/TASK_MASTER.csv",
+      "type": "csv",
+      "bytes": 819,
+      "modifiedAt": "2026-06-20T21:47:16.000Z"
+    },
+    {
+      "path": "masters/ASSET_MASTER.csv",
+      "type": "csv",
+      "bytes": 802,
+      "modifiedAt": "2026-06-20T21:47:16.000Z"
+    },
+    {
+      "path": "masters/MILES_CONTROL_CENTER.csv",
+      "type": "csv",
+      "bytes": 489,
+      "modifiedAt": "2026-06-20T21:47:16.000Z"
+    },
+    {
+      "path": "masters/SEGMENT_INVENTORY.csv",
+      "type": "csv",
+      "bytes": 44811,
+      "modifiedAt": "2026-06-20T21:52:22.000Z"
+    },
+    {
+      "path": "masters/CAMPAIGN_MASTER.csv",
+      "type": "csv",
+      "bytes": 517,
+      "modifiedAt": "2026-06-20T21:56:08.000Z"
+    },
+    {
+      "path": "masters/DOMAIN_MASTER.csv",
+      "type": "csv",
+      "bytes": 455,
+      "modifiedAt": "2026-06-20T21:56:48.000Z"
+    },
+    {
+      "path": "masters/CAMPAIGN_ROUTING_MASTER.csv",
+      "type": "csv",
+      "bytes": 327,
+      "modifiedAt": "2026-06-20T21:57:28.000Z"
+    },
+    {
+      "path": "masters/EXECUTION_ENGINE_MASTER.csv",
+      "type": "csv",
+      "bytes": 452,
+      "modifiedAt": "2026-06-20T21:58:46.000Z"
+    },
+    {
+      "path": "masters/STATE_ENGINE_MASTER.csv",
+      "type": "csv",
+      "bytes": 664,
+      "modifiedAt": "2026-06-20T22:29:34.000Z"
+    },
+    {
+      "path": "masters/SCHEMA_REGISTRY.json",
+      "type": "json",
+      "bytes": 419,
+      "modifiedAt": "2026-06-20T22:35:06.000Z"
+    },
+    {
+      "path": "SEGMENT_FILE_DISCOVERY.csv",
+      "type": "csv",
+      "bytes": 29422,
+      "modifiedAt": "2026-06-20T21:48:04.000Z"
+    },
+    {
+      "path": "output/READY_.csv",
+      "type": "csv",
+      "bytes": 5764,
+      "modifiedAt": "2026-06-20T22:04:42.000Z"
+    },
+    {
+      "path": "output/MILES_ACTION_RUN_REPORT.csv",
+      "type": "csv",
+      "bytes": 471,
+      "modifiedAt": "2026-06-20T22:04:42.000Z"
+    },
+    {
+      "path": "output/logs/execution_log.csv",
+      "type": "csv",
+      "bytes": 0,
+      "modifiedAt": "2026-06-20T22:04:41.410Z"
+    },
+    {
+      "path": "output/RUN_.csv",
+      "type": "csv",
+      "bytes": 5764,
+      "modifiedAt": "2026-06-20T22:17:42.000Z"
+    },
+    {
+      "path": "output/STATE_ENGINE_SNAPSHOT.csv",
+      "type": "csv",
+      "bytes": 531,
+      "modifiedAt": "2026-06-20T22:21:34.000Z"
+    },
+    {
+      "path": "START_MILES.ps1",
+      "type": "powershell",
+      "bytes": 53,
+      "modifiedAt": "2026-06-20T22:09:28.000Z"
+    },
+    {
+      "path": "MILES_BOOTSTRAP.ps1",
+      "type": "powershell",
+      "bytes": 898,
+      "modifiedAt": "2026-06-20T22:13:02.000Z"
+    },
+    {
+      "path": "MILES_RUNTIME_LOOP.ps1",
+      "type": "powershell",
+      "bytes": 1597,
+      "modifiedAt": "2026-06-20T22:16:12.000Z"
+    },
+    {
+      "path": "WEBSITE_OPS/WEBSITE_SCREENSHOTS/b12_observer_2026-06-28T19-33-58-874Z.png",
+      "type": "other",
+      "bytes": 20361,
+      "modifiedAt": "2026-06-28T19:34:02.000Z"
+    },
+    {
+      "path": "WEBSITE_OPS/WEBSITE_MASTER.csv",
+      "type": "csv",
+      "bytes": 329,
+      "modifiedAt": "2026-06-20T22:54:36.000Z"
+    },
+    {
+      "path": "WEBSITE_OPS/WEBSITE_APPROVAL_QUEUE.csv",
+      "type": "csv",
+      "bytes": 335,
+      "modifiedAt": "2026-06-20T22:54:38.000Z"
+    },
+    {
+      "path": "WEBSITE_OPS/WEBSITE_CHANGE_LOG.csv",
+      "type": "csv",
+      "bytes": 67,
+      "modifiedAt": "2026-06-20T22:54:38.000Z"
+    },
+    {
+      "path": "WEBSITE_OPS/WEBSITE_CHANGE_QUEUE.csv",
+      "type": "csv",
+      "bytes": 778,
+      "modifiedAt": "2026-06-29T18:46:14.000Z"
+    },
+    {
+      "path": "CONFIG/MILES_AUTHORITY_MATRIX.csv",
+      "type": "csv",
+      "bytes": 0,
+      "modifiedAt": "2026-06-20T23:02:26.300Z"
+    },
+    {
+      "path": "CONFIG/MILES_MISSION.txt",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-20T23:02:39.580Z"
+    },
+    {
+      "path": "CONFIG/Credentials/google_oauth_client.json",
+      "type": "json",
+      "bytes": 399,
+      "modifiedAt": "2026-06-28T22:45:10.000Z"
+    },
+    {
+      "path": "CONFIG/Credentials/google_token.json",
+      "type": "json",
+      "bytes": 306,
+      "modifiedAt": "2026-06-29T00:34:18.000Z"
+    },
+    {
+      "path": "CONFIG/system_config.json",
+      "type": "json",
+      "bytes": 278,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONFIG/asset_rules.json",
+      "type": "json",
+      "bytes": 359,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "MILES_TASK_QUEUE.csv",
+      "type": "csv",
+      "bytes": 66,
+      "modifiedAt": "2026-06-20T22:57:00.000Z"
+    },
+    {
+      "path": "MILES_PRIORITY_RULES.csv",
+      "type": "csv",
+      "bytes": 122,
+      "modifiedAt": "2026-06-20T22:57:48.000Z"
+    },
+    {
+      "path": "OPERATOR/OUTPUTS/NEXT_ACTIONS.csv",
+      "type": "csv",
+      "bytes": 1826,
+      "modifiedAt": "2026-06-20T23:07:10.000Z"
+    },
+    {
+      "path": "OPERATOR/OUTPUTS/MILES_OPERATOR_SUMMARY.csv",
+      "type": "csv",
+      "bytes": 183,
+      "modifiedAt": "2026-06-20T23:07:10.000Z"
+    },
+    {
+      "path": "OPERATOR/MILES_OPERATOR.ps1",
+      "type": "powershell",
+      "bytes": 3032,
+      "modifiedAt": "2026-06-20T23:06:54.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/B12_CONNECTOR_V1.ps1",
+      "type": "powershell",
+      "bytes": 764,
+      "modifiedAt": "2026-06-28T19:18:48.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/package-lock.json",
+      "type": "json",
+      "bytes": 1696,
+      "modifiedAt": "2026-06-28T19:32:16.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/B12_PLAYWRIGHT_OBSERVER.js",
+      "type": "javascript",
+      "bytes": 1021,
+      "modifiedAt": "2026-06-28T19:43:38.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/audit.js",
+      "type": "javascript",
+      "bytes": 1162,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/browser.js",
+      "type": "javascript",
+      "bytes": 203,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/logger.js",
+      "type": "javascript",
+      "bytes": 411,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/paths.js",
+      "type": "javascript",
+      "bytes": 500,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+      "type": "javascript",
+      "bytes": 445,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/modules/session.js",
+      "type": "javascript",
+      "bytes": 591,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/controller.js",
+      "type": "javascript",
+      "bytes": 1283,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/WEBSITE_B12/package.json",
+      "type": "json",
+      "bytes": 316,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/auth.js",
+      "type": "javascript",
+      "bytes": 2051,
+      "modifiedAt": "2026-06-28T23:56:04.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/config.js",
+      "type": "javascript",
+      "bytes": 606,
+      "modifiedAt": "2026-06-29T00:33:44.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/gmail.js",
+      "type": "javascript",
+      "bytes": 1509,
+      "modifiedAt": "2026-06-29T00:39:20.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/calendar.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:52:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/drive.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:53:08.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/contacts.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:53:26.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack.zip",
+      "type": "other",
+      "bytes": 7834,
+      "modifiedAt": "2026-06-29T00:05:12.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js",
+      "type": "javascript",
+      "bytes": 1161,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js",
+      "type": "javascript",
+      "bytes": 2475,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js",
+      "type": "javascript",
+      "bytes": 1379,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js",
+      "type": "javascript",
+      "bytes": 1169,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js",
+      "type": "javascript",
+      "bytes": 861,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js",
+      "type": "javascript",
+      "bytes": 983,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/health.js",
+      "type": "javascript",
+      "bytes": 1315,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js",
+      "type": "javascript",
+      "bytes": 208,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/README.md",
+      "type": "markdown",
+      "bytes": 859,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/scripts/install_google_connector.ps1",
+      "type": "powershell",
+      "bytes": 460,
+      "modifiedAt": "2026-06-29T04:04:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/index.js",
+      "type": "javascript",
+      "bytes": 849,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin.zip",
+      "type": "other",
+      "bytes": 4773,
+      "modifiedAt": "2026-06-29T00:48:50.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/miles_google_accounts_health.js",
+      "type": "javascript",
+      "bytes": 939,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/install_google_account_manager.ps1",
+      "type": "powershell",
+      "bytes": 1114,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/README.md",
+      "type": "markdown",
+      "bytes": 565,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js",
+      "type": "javascript",
+      "bytes": 5361,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js",
+      "type": "javascript",
+      "bytes": 1958,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js",
+      "type": "javascript",
+      "bytes": 849,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/account_manager.js",
+      "type": "javascript",
+      "bytes": 5361,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/workspace.js",
+      "type": "javascript",
+      "bytes": 1958,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "CONNECTORS/GOOGLE/README.md",
+      "type": "markdown",
+      "bytes": 234,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/INSTANTLY/instantly_test.js",
+      "type": "javascript",
+      "bytes": 829,
+      "modifiedAt": "2026-06-29T01:07:42.000Z"
+    },
+    {
+      "path": "CONNECTORS/INSTANTLY/instantly.js",
+      "type": "javascript",
+      "bytes": 3966,
+      "modifiedAt": "2026-06-29T01:43:32.000Z"
+    },
+    {
+      "path": "CONNECTORS/INSTANTLY/README.md",
+      "type": "markdown",
+      "bytes": 237,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/CALENDLY/README.md",
+      "type": "markdown",
+      "bytes": 236,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/IONOS/README.md",
+      "type": "markdown",
+      "bytes": 233,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/ORION/README.md",
+      "type": "markdown",
+      "bytes": 233,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CONNECTORS/MILES/connector.js",
+      "type": "javascript",
+      "bytes": 528,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1.zip",
+      "type": "other",
+      "bytes": 17537,
+      "modifiedAt": "2026-06-28T19:52:46.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/README.md",
+      "type": "markdown",
+      "bytes": 1020,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/package.json",
+      "type": "json",
+      "bytes": 648,
+      "modifiedAt": "2026-06-28T23:11:04.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_ASSET_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 757,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_WORK_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 672,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_EXECUTION_LOG.csv",
+      "type": "csv",
+      "bytes": 37,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_TASK_QUEUE.csv",
+      "type": "csv",
+      "bytes": 65,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_SYSTEM_STATUS.csv",
+      "type": "csv",
+      "bytes": 87,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/MILES_DASHBOARD.csv",
+      "type": "csv",
+      "bytes": 65,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/INSTALL_MILES_OS.ps1",
+      "type": "powershell",
+      "bytes": 407,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/logger.js",
+      "type": "javascript",
+      "bytes": 616,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/authority.js",
+      "type": "javascript",
+      "bytes": 723,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/miles.js",
+      "type": "javascript",
+      "bytes": 1857,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Database.js",
+      "type": "javascript",
+      "bytes": 1520,
+      "modifiedAt": "2026-06-28T20:32:30.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js",
+      "type": "javascript",
+      "bytes": 788,
+      "modifiedAt": "2026-06-28T21:46:40.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/HealthMonitor.js",
+      "type": "javascript",
+      "bytes": 870,
+      "modifiedAt": "2026-06-28T21:48:36.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+      "type": "javascript",
+      "bytes": 1858,
+      "modifiedAt": "2026-06-28T21:50:58.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/StartMiles.js",
+      "type": "javascript",
+      "bytes": 174,
+      "modifiedAt": "2026-06-28T21:52:54.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/EventBus.js",
+      "type": "javascript",
+      "bytes": 445,
+      "modifiedAt": "2026-06-28T21:45:28.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/package.json",
+      "type": "json",
+      "bytes": 318,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js",
+      "type": "javascript",
+      "bytes": 1248,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js",
+      "type": "javascript",
+      "bytes": 489,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js",
+      "type": "javascript",
+      "bytes": 400,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js",
+      "type": "javascript",
+      "bytes": 193,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js",
+      "type": "javascript",
+      "bytes": 573,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js",
+      "type": "javascript",
+      "bytes": 432,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js",
+      "type": "javascript",
+      "bytes": 1127,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/INSTANTLY/README.md",
+      "type": "markdown",
+      "bytes": 228,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/ORION/README.md",
+      "type": "markdown",
+      "bytes": 224,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/ORION/OrionConnector.js",
+      "type": "javascript",
+      "bytes": 1534,
+      "modifiedAt": "2026-06-28T22:07:08.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/README.md",
+      "type": "markdown",
+      "bytes": 225,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:23.390Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/config.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:38.820Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:16:52.590Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:11.060Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:24.380Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T23:17:41.290Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/IONOS/README.md",
+      "type": "markdown",
+      "bytes": 224,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONNECTORS/CALENDLY/README.md",
+      "type": "markdown",
+      "bytes": 227,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/TASK_QUEUE/Engine/TaskEngine.js",
+      "type": "javascript",
+      "bytes": 548,
+      "modifiedAt": "2026-06-28T21:58:28.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONFIG/system_config.json",
+      "type": "json",
+      "bytes": 268,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/CONFIG/asset_rules.json",
+      "type": "json",
+      "bytes": 449,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/WEBSITE_OPS/WEBSITE_MASTER.csv",
+      "type": "csv",
+      "bytes": 328,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/WEBSITE_OPS/WEBSITE_CHANGE_QUEUE.csv",
+      "type": "csv",
+      "bytes": 773,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/WEBSITE_OPS/WEBSITE_APPROVAL_QUEUE.csv",
+      "type": "csv",
+      "bytes": 334,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/WEBSITE_OPS/WEBSITE_CHANGE_LOG.csv",
+      "type": "csv",
+      "bytes": 66,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/GOVERNANCE/MILES_MISSION.txt",
+      "type": "other",
+      "bytes": 706,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/GOVERNANCE/MILES_AUTHORITY_MATRIX.csv",
+      "type": "csv",
+      "bytes": 1771,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/DOCS/NEXT_STEPS.md",
+      "type": "markdown",
+      "bytes": 541,
+      "modifiedAt": "2026-06-28T23:52:20.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/package-lock.json",
+      "type": "json",
+      "bytes": 103925,
+      "modifiedAt": "2026-06-28T23:11:12.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/API/server.js",
+      "type": "javascript",
+      "bytes": 247,
+      "modifiedAt": "2026-06-28T20:20:42.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/API/API/memory.routes.js",
+      "type": "javascript",
+      "bytes": 627,
+      "modifiedAt": "2026-06-28T20:39:28.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/API/API/.gitignore",
+      "type": "other",
+      "bytes": 58,
+      "modifiedAt": "2026-06-28T21:08:28.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/TaskManager.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.120Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/ConnectorManager.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.130Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/MemoryService.js",
+      "type": "javascript",
+      "bytes": 1240,
+      "modifiedAt": "2026-06-28T20:34:02.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/AI/MilesBrain.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.130Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/AUTOMATIONS/Scheduler.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.140Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/WEB/Dashboard.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.140Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/.env",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.140Z"
+    },
+    {
+      "path": "MILES_OS_v1/MILES_OS_v1/DASHBOARD/ExecutiveDashboard.js",
+      "type": "javascript",
+      "bytes": 3102,
+      "modifiedAt": "2026-06-28T22:09:32.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/CORE/Kernel/MilesKernel.js",
+      "type": "javascript",
+      "bytes": 565,
+      "modifiedAt": "2026-06-28T20:00:38.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/CORE/Kernel/StartMiles.js",
+      "type": "javascript",
+      "bytes": 491,
+      "modifiedAt": "2026-06-28T20:02:12.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/CORE/Scheduler/TaskScheduler.js",
+      "type": "javascript",
+      "bytes": 314,
+      "modifiedAt": "2026-06-28T19:58:52.000Z"
+    },
+    {
+      "path": "MILES_OS_v1/CORE/DecisionEngine/DecisionEngine.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T19:56:55.120Z"
+    },
+    {
+      "path": "MILES_OS_v1/CORE/EventBus/EventBus.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T19:57:03.610Z"
+    },
+    {
+      "path": "miles_instantly_connector.zip",
+      "type": "other",
+      "bytes": 7658,
+      "modifiedAt": "2026-06-28T22:12:20.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/README.md",
+      "type": "markdown",
+      "bytes": 1454,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T02:11:34.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T02:11:34.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T02:11:34.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/config.py",
+      "type": "other",
+      "bytes": 662,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/client.py",
+      "type": "other",
+      "bytes": 3329,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/service.py",
+      "type": "other",
+      "bytes": 2539,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/registry.py",
+      "type": "other",
+      "bytes": 366,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/dashboard/instantly_panel.py",
+      "type": "other",
+      "bytes": 760,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": "miles_instantly_connector/miles_instantly_connector/tests/test_instantly_service.py",
+      "type": "other",
+      "bytes": 1449,
+      "modifiedAt": "2026-06-29T02:12:02.000Z"
+    },
+    {
+      "path": ".gitignore",
+      "type": "other",
+      "bytes": 302,
+      "modifiedAt": "2026-06-29T17:44:22.000Z"
+    },
+    {
+      "path": "Drop in/install_google_connector.ps1",
+      "type": "powershell",
+      "bytes": 464,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/config.js",
+      "type": "javascript",
+      "bytes": 672,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/auth.js",
+      "type": "javascript",
+      "bytes": 2217,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/gmail.js",
+      "type": "javascript",
+      "bytes": 982,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/calendar.js",
+      "type": "javascript",
+      "bytes": 867,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/drive.js",
+      "type": "javascript",
+      "bytes": 725,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/contacts.js",
+      "type": "javascript",
+      "bytes": 755,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/index.js",
+      "type": "javascript",
+      "bytes": 1030,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "Drop in/CONNECTORS/GOOGLE/README.md",
+      "type": "markdown",
+      "bytes": 477,
+      "modifiedAt": "2026-06-29T04:07:04.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin.zip",
+      "type": "other",
+      "bytes": 4560,
+      "modifiedAt": "2026-06-29T00:43:20.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/miles_connector_health.js",
+      "type": "javascript",
+      "bytes": 422,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/install_core_framework.ps1",
+      "type": "powershell",
+      "bytes": 924,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/README.md",
+      "type": "markdown",
+      "bytes": 364,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CORE/Logger.js",
+      "type": "javascript",
+      "bytes": 837,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CORE/EventBus.js",
+      "type": "javascript",
+      "bytes": 508,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CORE/ConnectorManager.js",
+      "type": "javascript",
+      "bytes": 1096,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CORE/TaskQueue.js",
+      "type": "javascript",
+      "bytes": 1666,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CORE/HealthDashboard.js",
+      "type": "javascript",
+      "bytes": 905,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js",
+      "type": "javascript",
+      "bytes": 830,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "CORE/EventBus.js",
+      "type": "javascript",
+      "bytes": 508,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "CORE/ConnectorManager.js",
+      "type": "javascript",
+      "bytes": 1096,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "CORE/TaskQueue.js",
+      "type": "javascript",
+      "bytes": 1666,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "CORE/HealthDashboard.js",
+      "type": "javascript",
+      "bytes": 905,
+      "modifiedAt": "2026-06-29T04:42:48.000Z"
+    },
+    {
+      "path": "CORE/Database.js",
+      "type": "javascript",
+      "bytes": 1520,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/Kernel/EventBus.js",
+      "type": "javascript",
+      "bytes": 466,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/Kernel/HealthMonitor.js",
+      "type": "javascript",
+      "bytes": 913,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/Kernel/MilesKernel.js",
+      "type": "javascript",
+      "bytes": 2338,
+      "modifiedAt": "2026-06-29T21:59:34.000Z"
+    },
+    {
+      "path": "CORE/Kernel/ServiceRegistry.js",
+      "type": "javascript",
+      "bytes": 824,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/Kernel/StartMiles.js",
+      "type": "javascript",
+      "bytes": 182,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/authority.js",
+      "type": "javascript",
+      "bytes": 736,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "CORE/logger.js",
+      "type": "javascript",
+      "bytes": 966,
+      "modifiedAt": "2026-06-29T21:52:38.000Z"
+    },
+    {
+      "path": "CORE/miles.js",
+      "type": "javascript",
+      "bytes": 1908,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "DATA/runtime/task_queue.json",
+      "type": "json",
+      "bytes": 928,
+      "modifiedAt": "2026-06-29T22:03:06.000Z"
+    },
+    {
+      "path": "DATA/status/connector_health.json",
+      "type": "json",
+      "bytes": 421,
+      "modifiedAt": "2026-06-29T01:43:58.000Z"
+    },
+    {
+      "path": "DATA/status/instantly_campaigns.json",
+      "type": "json",
+      "bytes": 11606,
+      "modifiedAt": "2026-06-29T01:43:58.000Z"
+    },
+    {
+      "path": "miles_connector_health.js",
+      "type": "javascript",
+      "bytes": 623,
+      "modifiedAt": "2026-06-29T01:31:10.000Z"
+    },
+    {
+      "path": "miles_google_accounts_health.js",
+      "type": "javascript",
+      "bytes": 939,
+      "modifiedAt": "2026-06-29T04:48:18.000Z"
+    },
+    {
+      "path": "executive_dashboard.js",
+      "type": "javascript",
+      "bytes": 3114,
+      "modifiedAt": "2026-06-29T17:58:10.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator.zip",
+      "type": "other",
+      "bytes": 13161,
+      "modifiedAt": "2026-06-29T18:14:40.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T22:12:44.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/platform_paths.py",
+      "type": "other",
+      "bytes": 806,
+      "modifiedAt": "2026-06-29T22:13:28.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/json_store.py",
+      "type": "other",
+      "bytes": 897,
+      "modifiedAt": "2026-06-29T22:13:28.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/local_operator_schema.py",
+      "type": "other",
+      "bytes": 1430,
+      "modifiedAt": "2026-06-29T22:13:28.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/local_operator_policy.py",
+      "type": "other",
+      "bytes": 1567,
+      "modifiedAt": "2026-06-29T22:13:28.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/CORE/local_operator_queue.py",
+      "type": "other",
+      "bytes": 3140,
+      "modifiedAt": "2026-06-29T22:13:28.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/OPERATIONS/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T22:12:44.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/OPERATIONS/local_operator_runner.py",
+      "type": "other",
+      "bytes": 4482,
+      "modifiedAt": "2026-06-29T22:13:58.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/EXECUTIVE/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T22:12:44.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/EXECUTIVE/local_operator_report.py",
+      "type": "other",
+      "bytes": 1382,
+      "modifiedAt": "2026-06-29T22:13:58.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/DATA/__init__.py",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T22:12:44.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/scripts/install_miles_operator.ps1",
+      "type": "powershell",
+      "bytes": 781,
+      "modifiedAt": "2026-06-29T22:13:58.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/scripts/miles_operator_run_once.ps1",
+      "type": "powershell",
+      "bytes": 221,
+      "modifiedAt": "2026-06-29T22:13:58.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/docs/RELEASE_NOTES_v0.3.0.md",
+      "type": "markdown",
+      "bytes": 3107,
+      "modifiedAt": "2026-06-29T22:14:12.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/miles_operator.py",
+      "type": "other",
+      "bytes": 2013,
+      "modifiedAt": "2026-06-29T22:13:58.000Z"
+    },
+    {
+      "path": "MILES_Platform_v0.3.0_Local_Operator/README_MILES_PLATFORM_v0.3.0.md",
+      "type": "markdown",
+      "bytes": 1022,
+      "modifiedAt": "2026-06-29T22:14:12.000Z"
+    },
+    {
+      "path": "repository_tree.txt",
+      "type": "other",
+      "bytes": 1144026,
+      "modifiedAt": "2026-06-29T19:11:58.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0.zip",
+      "type": "other",
+      "bytes": 12605,
+      "modifiedAt": "2026-06-29T18:29:02.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/README.md",
+      "type": "markdown",
+      "bytes": 353,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/csv_utils.js",
+      "type": "javascript",
+      "bytes": 2044,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/authority_gate.js",
+      "type": "javascript",
+      "bytes": 2644,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CORE/autonomous_work_engine.js",
+      "type": "javascript",
+      "bytes": 10975,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/EXECUTIVE/status_report.js",
+      "type": "javascript",
+      "bytes": 640,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/CONFIG/MILES_CAPABILITY_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 2071,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/scripts/RUN_MILES_AUTOMATION_FASTTRACK.ps1",
+      "type": "powershell",
+      "bytes": 375,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/scripts/INSTALL_MILES_AUTOMATION_FASTTRACK.ps1",
+      "type": "powershell",
+      "bytes": 1814,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_Automation_FastTrack_v0.4.0/miles_automation_fasttrack_v0_4_0/docs/MILES_AUTOMATION_FASTTRACK_v0.4.0.md",
+      "type": "markdown",
+      "bytes": 2149,
+      "modifiedAt": "2026-06-29T22:27:32.000Z"
+    },
+    {
+      "path": "MILES_FIX_ALL_PATCH.zip",
+      "type": "other",
+      "bytes": 3456,
+      "modifiedAt": "2026-06-29T18:34:02.000Z"
+    },
+    {
+      "path": "MILES_FIX_ALL_PATCH/MILES_FIX_ALL.ps1",
+      "type": "powershell",
+      "bytes": 10444,
+      "modifiedAt": "2026-06-29T22:33:48.000Z"
+    },
+    {
+      "path": ".env",
+      "type": "other",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T22:53:06.840Z"
+    },
+    {
+      "path": "AI/MilesBrain.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:03.930Z"
+    },
+    {
+      "path": "API/API/.gitignore",
+      "type": "other",
+      "bytes": 58,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "API/API/memory.routes.js",
+      "type": "javascript",
+      "bytes": 627,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "API/server.js",
+      "type": "javascript",
+      "bytes": 247,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "AUTOMATIONS/Scheduler.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:04.130Z"
+    },
+    {
+      "path": "DOCS/NEXT_STEPS.md",
+      "type": "markdown",
+      "bytes": 561,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "INSTALL_MILES_OS.ps1",
+      "type": "powershell",
+      "bytes": 420,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "README.md",
+      "type": "markdown",
+      "bytes": 1062,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "SERVICES/ConnectorManager.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:04.670Z"
+    },
+    {
+      "path": "SERVICES/MemoryService.js",
+      "type": "javascript",
+      "bytes": 1240,
+      "modifiedAt": "2026-06-29T18:43:06.000Z"
+    },
+    {
+      "path": "SERVICES/TaskManager.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:04.670Z"
+    },
+    {
+      "path": "SERVICES/ExecutionService.js",
+      "type": "javascript",
+      "bytes": 3508,
+      "modifiedAt": "2026-06-29T21:35:50.000Z"
+    },
+    {
+      "path": "SERVICES/SchedulerService.js",
+      "type": "javascript",
+      "bytes": 1149,
+      "modifiedAt": "2026-06-29T21:43:08.000Z"
+    },
+    {
+      "path": "SERVICES/DashboardService.js",
+      "type": "javascript",
+      "bytes": 2470,
+      "modifiedAt": "2026-06-29T21:57:58.000Z"
+    },
+    {
+      "path": "WEB/Dashboard.js",
+      "type": "javascript",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T18:43:04.760Z"
+    },
+    {
+      "path": "package.json",
+      "type": "json",
+      "bytes": 131,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "package-lock.json",
+      "type": "json",
+      "bytes": 52179,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "MILES_ASSET_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 1524,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "MILES_DASHBOARD.csv",
+      "type": "csv",
+      "bytes": 86,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "MILES_EXECUTION_LOG.csv",
+      "type": "csv",
+      "bytes": 4294,
+      "modifiedAt": "2026-06-29T22:03:06.000Z"
+    },
+    {
+      "path": "MILES_SYSTEM_STATUS.csv",
+      "type": "csv",
+      "bytes": 130,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "MILES_WORK_REGISTRY.csv",
+      "type": "csv",
+      "bytes": 900,
+      "modifiedAt": "2026-06-29T18:46:06.000Z"
+    },
+    {
+      "path": "repo_files.txt",
+      "type": "other",
+      "bytes": 214460,
+      "modifiedAt": "2026-06-29T18:49:48.000Z"
+    },
+    {
+      "path": "repo_status.txt",
+      "type": "other",
+      "bytes": 1400,
+      "modifiedAt": "2026-06-29T18:49:50.000Z"
+    },
+    {
+      "path": "REPOSITORY_FILE_INVENTORY.txt",
+      "type": "other",
+      "bytes": 214460,
+      "modifiedAt": "2026-06-29T19:11:50.000Z"
+    },
+    {
+      "path": "REPOSITORY_DIRECTORY_INVENTORY.csv",
+      "type": "csv",
+      "bytes": 1723679,
+      "modifiedAt": "2026-06-29T19:12:10.000Z"
+    },
+    {
+      "path": "GIT_STATUS.txt",
+      "type": "other",
+      "bytes": 1640,
+      "modifiedAt": "2026-06-29T19:12:18.000Z"
+    },
+    {
+      "path": "GIT_HISTORY.txt",
+      "type": "other",
+      "bytes": 742,
+      "modifiedAt": "2026-06-29T19:12:28.000Z"
+    },
+    {
+      "path": "NODE_PACKAGES.txt",
+      "type": "other",
+      "bytes": 8980,
+      "modifiedAt": "2026-06-29T19:12:42.000Z"
+    },
+    {
+      "path": "PACKAGE_FILES.txt",
+      "type": "other",
+      "bytes": 90894,
+      "modifiedAt": "2026-06-29T19:12:50.000Z"
+    },
+    {
+      "path": "JAVASCRIPT_FILES.txt",
+      "type": "other",
+      "bytes": 754574,
+      "modifiedAt": "2026-06-29T19:12:58.000Z"
+    },
+    {
+      "path": "POWERSHELL_FILES.txt",
+      "type": "other",
+      "bytes": 10894,
+      "modifiedAt": "2026-06-29T19:13:08.000Z"
+    },
+    {
+      "path": "PYTHON_FILES.txt",
+      "type": "other",
+      "bytes": 22254,
+      "modifiedAt": "2026-06-29T19:13:16.000Z"
+    },
+    {
+      "path": "CONFIG_INVENTORY.txt",
+      "type": "other",
+      "bytes": 131694,
+      "modifiedAt": "2026-06-29T19:13:30.000Z"
+    },
+    {
+      "path": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "type": "powershell",
+      "bytes": 19803,
+      "modifiedAt": "2026-06-29T19:18:18.000Z"
+    },
+    {
+      "path": "INSTALL_MILES_BUILDER.ps1",
+      "type": "powershell",
+      "bytes": 8358,
+      "modifiedAt": "2026-06-29T22:08:08.000Z"
+    },
+    {
+      "path": "BUILDER/ProjectScanner.js",
+      "type": "javascript",
+      "bytes": 1716,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "BUILDER/FileEditor.js",
+      "type": "javascript",
+      "bytes": 779,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "BUILDER/GitManager.js",
+      "type": "javascript",
+      "bytes": 721,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "BUILDER/RuntimeController.js",
+      "type": "javascript",
+      "bytes": 566,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "BUILDER/BuilderService.js",
+      "type": "javascript",
+      "bytes": 1064,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    },
+    {
+      "path": "BUILDER/index.js",
+      "type": "javascript",
+      "bytes": 391,
+      "modifiedAt": "2026-06-29T22:09:20.000Z"
+    }
+  ]
+}

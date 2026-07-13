@@ -1,0 +1,173 @@
+{
+  "id": "WP-20260702010456-523",
+  "objective": "Check government data refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled pulls.",
+  "status": "AWAITING_APPROVAL",
+  "owner": "MILES",
+  "priority": "HIGH",
+  "priorityScore": 80,
+  "createdAt": "2026-07-02T01:04:56.859Z",
+  "updatedAt": "2026-07-02T01:04:56.859Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Check government data refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled pulls.",
+    "priority": "HIGH",
+    "priorityScore": 80,
+    "createdAt": "2026-07-02T01:04:56.859Z",
+    "owner": "MILES",
+    "context": {
+      "source": "ExecutiveSupervisor",
+      "cycleId": "MILES-COO-CYCLE-1782954295275",
+      "provider": "GovernmentData",
+      "domain": "Intelligence Operations",
+      "priority": "HIGH",
+      "priorityScore": 88,
+      "discoveredWorkId": "GOVDATA-REFRESH-CHECK",
+      "discoveryReason": "ORION must stay current with awards, contractors, vehicles, and new procurement activity."
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "OPERATIONAL",
+    "approvalRequired": true,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [
+    {
+      "required": true,
+      "reason": "CEO approval required by planning rules.",
+      "status": "PENDING"
+    }
+  ],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

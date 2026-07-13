@@ -1,0 +1,353 @@
+[
+  {
+    "ok": true,
+    "type": "MILES_TASK_ROUTER_RUN",
+    "generatedAt": "2026-07-04T01:12:24.425Z",
+    "source": "TaskRouterService",
+    "companyHealth": {
+      "score": 78,
+      "status": "WATCH",
+      "riskCount": 3,
+      "openWork": 32,
+      "awaitingApproval": 0
+    },
+    "summary": {
+      "pendingBefore": 0,
+      "routed": 0,
+      "awaitingApproval": 0,
+      "skipped": 0,
+      "openAfter": 0,
+      "queuedAfter": 0
+    },
+    "routed": [],
+    "awaitingApproval": [],
+    "skipped": [],
+    "queueStats": {
+      "total": 0,
+      "open": 0,
+      "pending": 0,
+      "queued": 0,
+      "inProgress": 0,
+      "blocked": 0,
+      "awaitingApproval": 0,
+      "completed": 0,
+      "failed": 0,
+      "escalations": 0
+    }
+  },
+  {
+    "ok": true,
+    "type": "MILES_TASK_ROUTER_RUN",
+    "generatedAt": "2026-07-04T01:44:23.574Z",
+    "source": "TaskRouterService",
+    "companyHealth": {
+      "score": 78,
+      "status": "WATCH",
+      "riskCount": 3,
+      "openWork": 1,
+      "awaitingApproval": 0
+    },
+    "summary": {
+      "pendingBefore": 1,
+      "routed": 1,
+      "awaitingApproval": 0,
+      "skipped": 0,
+      "openAfter": 1,
+      "queuedAfter": 1
+    },
+    "routed": [
+      {
+        "id": "WORK-1783129461181-66785",
+        "title": "MILES Authorized Task: BUILD_036 verification cycle.",
+        "area": "executive",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "executive_intelligence",
+          "capabilityName": "Executive Intelligence",
+          "owner": "Website",
+          "service": "CONNECTORS/WEBSITE_B12/B12_CONNECTOR_V1.ps1",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to executive_intelligence."
+        }
+      }
+    ],
+    "awaitingApproval": [],
+    "skipped": [],
+    "queueStats": {
+      "total": 1,
+      "open": 1,
+      "pending": 0,
+      "queued": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "awaitingApproval": 0,
+      "completed": 0,
+      "failed": 0,
+      "escalations": 0
+    }
+  },
+  {
+    "ok": true,
+    "type": "MILES_TASK_ROUTER_RUN",
+    "generatedAt": "2026-07-04T01:44:29.242Z",
+    "source": "TaskRouterService",
+    "companyHealth": {
+      "score": 78,
+      "status": "WATCH",
+      "riskCount": 3,
+      "openWork": 1,
+      "awaitingApproval": 0
+    },
+    "summary": {
+      "pendingBefore": 0,
+      "routed": 0,
+      "awaitingApproval": 0,
+      "skipped": 0,
+      "openAfter": 1,
+      "queuedAfter": 1
+    },
+    "routed": [],
+    "awaitingApproval": [],
+    "skipped": [],
+    "queueStats": {
+      "total": 1,
+      "open": 1,
+      "pending": 0,
+      "queued": 1,
+      "inProgress": 0,
+      "blocked": 0,
+      "awaitingApproval": 0,
+      "completed": 0,
+      "failed": 0,
+      "escalations": 0
+    }
+  },
+  {
+    "ok": true,
+    "type": "MILES_TASK_ROUTER_RUN",
+    "generatedAt": "2026-07-04T01:44:41.908Z",
+    "source": "TaskRouterService",
+    "companyHealth": {
+      "score": 78,
+      "status": "WATCH",
+      "riskCount": 3,
+      "openWork": 33,
+      "awaitingApproval": 0
+    },
+    "summary": {
+      "pendingBefore": 12,
+      "routed": 8,
+      "awaitingApproval": 2,
+      "skipped": 0,
+      "openAfter": 32,
+      "queuedAfter": 28
+    },
+    "routed": [
+      {
+        "id": "WORK-1783020566616-9341",
+        "title": "Repair Website",
+        "area": "Website",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "website_operations",
+          "capabilityName": "Website Operations",
+          "owner": "Runtime",
+          "service": "MILES_RUNTIME_LOOP.ps1",
+          "componentTypes": [
+            "runtime"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to website_operations."
+        }
+      },
+      {
+        "id": "WORK-1783020566628-18398",
+        "title": "Maintain system stability",
+        "area": "Executive",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "executive_intelligence",
+          "capabilityName": "Executive Intelligence",
+          "owner": "Website",
+          "service": "CONNECTORS/WEBSITE_B12/B12_CONNECTOR_V1.ps1",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to executive_intelligence."
+        }
+      },
+      {
+        "id": "WORK-1783032593518-91590",
+        "title": "Maintain stability",
+        "area": "SYSTEM",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "WORK_QUEUE_ONLY",
+          "owner": "Miles",
+          "service": "WorkQueueService",
+          "capability": "general_operations",
+          "reason": "No specific capability detected; routed as general MILES work."
+        }
+      },
+      {
+        "id": "WORK-1783112830288-83320",
+        "title": "LEAD",
+        "area": "REVENUE",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "outbound_campaign_operations",
+          "capabilityName": "Outbound Campaign Operations",
+          "owner": "Marketing",
+          "service": "CONNECTORS/INSTANTLY/connector.js",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to outbound_campaign_operations."
+        }
+      },
+      {
+        "id": "WORK-1783112831255-43677",
+        "title": "OPPORTUNITY",
+        "area": "REVENUE",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "outbound_campaign_operations",
+          "capabilityName": "Outbound Campaign Operations",
+          "owner": "Marketing",
+          "service": "CONNECTORS/INSTANTLY/connector.js",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to outbound_campaign_operations."
+        }
+      },
+      {
+        "id": "WORK-1783112832228-98469",
+        "title": "CONTRACTOR_TARGET",
+        "area": "REVENUE",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "outbound_campaign_operations",
+          "capabilityName": "Outbound Campaign Operations",
+          "owner": "Marketing",
+          "service": "CONNECTORS/INSTANTLY/connector.js",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to outbound_campaign_operations."
+        }
+      },
+      {
+        "id": "WORK-1783112833269-72322",
+        "title": "LEAD",
+        "area": "LIFECYCLE",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "outbound_campaign_operations",
+          "capabilityName": "Outbound Campaign Operations",
+          "owner": "Marketing",
+          "service": "CONNECTORS/INSTANTLY/connector.js",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to outbound_campaign_operations."
+        }
+      },
+      {
+        "id": "WORK-1783112834347-20863",
+        "title": "OPPORTUNITY",
+        "area": "LIFECYCLE",
+        "status": "Queued",
+        "route": {
+          "ok": true,
+          "mode": "CAPABILITY_EXECUTOR",
+          "capability": "outbound_campaign_operations",
+          "capabilityName": "Outbound Campaign Operations",
+          "owner": "Marketing",
+          "service": "CONNECTORS/INSTANTLY/connector.js",
+          "componentTypes": [
+            "connector"
+          ],
+          "governance": {
+            "requiresApproval": false,
+            "approvalLevel": "AUTONOMOUS_ALLOWED"
+          },
+          "reason": "Matched work item to outbound_campaign_operations."
+        }
+      }
+    ],
+    "awaitingApproval": [
+      {
+        "id": "WORK-1783019853192-33665",
+        "title": "Critical exception: WebsiteProviderLoadFailure",
+        "area": "WebsiteProviderLoadFailure",
+        "status": "Awaiting Approval",
+        "reason": "Requires Kevin approval."
+      },
+      {
+        "id": "WORK-1783019853252-2480",
+        "title": "Repair Website: WebsiteProviderLoadFailure",
+        "area": "Website",
+        "status": "Awaiting Approval",
+        "reason": "Requires Kevin approval."
+      }
+    ],
+    "skipped": [],
+    "queueStats": {
+      "total": 72,
+      "open": 32,
+      "pending": 2,
+      "queued": 28,
+      "inProgress": 0,
+      "blocked": 0,
+      "awaitingApproval": 2,
+      "completed": 0,
+      "failed": 40,
+      "escalations": 2
+    }
+  }
+]

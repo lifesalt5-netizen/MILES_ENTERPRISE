@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "level": "ASSISTED_AUTONOMOUS_COO",
+  "overall": 76,
+  "scores": {
+    "observe": 85,
+    "understand": 80,
+    "decide": 82,
+    "execute": 75,
+    "verify": 70,
+    "learn": 70,
+    "improve": 65,
+    "govern": 78
+  },
+  "interpretation": "MILES has the core loop but still requires capability expansion or stronger verification to reach basic autonomous COO level."
+}

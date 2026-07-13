@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "service": "DIGITAL_COO_HOST",
+  "version": "1.3.0",
+  "status": "RUNNING",
+  "rootDir": "D:\\P2GC_Intelligence\\MILES_OS",
+  "running": true,
+  "startedAt": "2026-07-08T19:30:42.922Z",
+  "stoppedAt": null,
+  "startCount": 1,
+  "stopCount": 0,
+  "healthChecks": 37,
+  "lastHealthAt": "2026-07-08T20:06:44.550Z",
+  "lastError": null,
+  "generatedAt": "2026-07-08T20:06:44.550Z"
+}

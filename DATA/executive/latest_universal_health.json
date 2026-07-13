@@ -1,0 +1,324 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-13T15:57:56.199Z",
+  "overallScore": 81,
+  "overallStatus": "Watch",
+  "highRiskCount": 0,
+  "mediumRiskCount": 3,
+  "lowRiskCount": 2,
+  "systems": [
+    {
+      "area": "Runtime",
+      "status": "Watch",
+      "score": 82,
+      "risk": "MEDIUM",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-13T15:57:56.199Z",
+      "lastFailure": "2026-07-13T15:57:56.199Z",
+      "exceptions": [
+        {
+          "type": "TaskFailures",
+          "severity": "Warning",
+          "message": "2 failed runtime task(s) detected."
+        }
+      ],
+      "recommendations": [
+        "Review failed task details and queue safe repair work."
+      ],
+      "metrics": {
+        "total": 150,
+        "pending": 10,
+        "running": 6,
+        "completed": 131,
+        "failed": 2,
+        "healthScore": 100
+      }
+    },
+    {
+      "area": "WorkQueue",
+      "status": "Healthy",
+      "score": 96,
+      "risk": "LOW",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-13T15:57:56.199Z",
+      "lastFailure": null,
+      "exceptions": [],
+      "recommendations": [
+        "Work queue has no Kevin-level blocker."
+      ],
+      "metrics": {
+        "total": 140,
+        "open": 47,
+        "pending": 0,
+        "authorizedPending": 0,
+        "queued": 45,
+        "inProgress": 2,
+        "blocked": 0,
+        "awaitingApproval": 0,
+        "completed": 44,
+        "failed": 40,
+        "escalations": 0
+      }
+    },
+    {
+      "area": "Website",
+      "status": "Watch",
+      "score": 63,
+      "risk": "MEDIUM",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-13T15:57:51.118Z",
+      "lastFailure": null,
+      "exceptions": [
+        {
+          "type": "Conversion",
+          "severity": "Warning",
+          "message": "Calendly integration was not detected."
+        },
+        {
+          "type": "ContentDrift",
+          "severity": "Info",
+          "message": "4 monitored content field(s) changed from baseline."
+        }
+      ],
+      "recommendations": [
+        "Verify the approved Calendly link is present and reachable.",
+        "Review content drift against approved website changes before publishing or rollback."
+      ],
+      "metrics": {
+        "homepageReachable": true,
+        "statusCode": 200,
+        "loadMs": 452,
+        "title": "Unlock Government Contract Opportunities",
+        "h1": "Federal &amp; SLED Market Entry Advisory",
+        "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+        "https": true,
+        "hasCTA": true,
+        "hasContact": true,
+        "hasCalendly": false,
+        "hasServices": true,
+        "hasPhone": true,
+        "hasEmail": true,
+        "finalUrl": "https://pathways2gc.com",
+        "titleLength": 40,
+        "h1Count": 1,
+        "headingCounts": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "metaDescriptionLength": 84,
+        "formCount": 1,
+        "validFormCount": 1,
+        "imageCount": 7,
+        "imagesMissingAlt": 0,
+        "inputLabelCoverage": 100,
+        "linksDiscovered": 19,
+        "internalLinks": 13,
+        "linksChecked": 13,
+        "brokenLinks": 0,
+        "hasCanonical": true,
+        "hasViewport": true,
+        "hasLang": true,
+        "hasMainLandmark": false,
+        "hasNavigation": true,
+        "hasSkipLink": false,
+        "hasAria": true
+      },
+      "sourceSystems": [
+        "CONNECTORS/WEBSITE"
+      ],
+      "dependencies": [
+        "Website"
+      ]
+    },
+    {
+      "area": "ORION",
+      "status": "Watch",
+      "score": 63,
+      "risk": "MEDIUM",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-13T15:57:54.585Z",
+      "lastFailure": null,
+      "exceptions": [
+        {
+          "type": "DatabaseFreshness",
+          "severity": "Warning",
+          "message": "ORION database is 570.38 hours old."
+        }
+      ],
+      "recommendations": [
+        "Run the authorized ORION dataset refresh and verify database modification time afterward."
+      ],
+      "metrics": {
+        "database": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+        "tableCount": 66,
+        "contractors": 361873,
+        "buyers": 36137,
+        "opportunities": 835015,
+        "recompetes": 831804,
+        "recommendations": 361873,
+        "personas": 361873,
+        "recommendationCoverage": 100,
+        "personaCoverage": 100,
+        "databaseFreshness": {
+          "exists": true,
+          "modifiedAt": "2026-06-19T21:35:18.000Z",
+          "ageHours": 570.38,
+          "stale": true,
+          "thresholdHours": 24
+        },
+        "sampleSizes": {
+          "contractors": 100,
+          "buyers": 100,
+          "opportunities": 100,
+          "recompetes": 100,
+          "recommendations": 100,
+          "personas": 100
+        }
+      },
+      "sourceSystems": [],
+      "dependencies": []
+    },
+    {
+      "area": "Instantly",
+      "status": "Healthy",
+      "score": 100,
+      "risk": "LOW",
+      "confidence": "HIGH",
+      "lastSuccess": "2026-07-13T15:57:55.347Z",
+      "lastFailure": null,
+      "exceptions": [],
+      "recommendations": [
+        "Review campaign schedule and activate additional outreach campaigns."
+      ],
+      "metrics": {
+        "totalCampaigns": 10,
+        "activeCampaigns": 1,
+        "pausedCampaigns": 9,
+        "campaignNames": [
+          "GSA 500k–3m",
+          "HubZone",
+          "Sam Low Sales",
+          "EXPIRED everything",
+          "GSA 3m–5m",
+          "FUTURE FOLLOW-UP",
+          "SBS Verified Email Targets",
+          "VA No Sales",
+          "VA 3-5m",
+          "NURTURE - 14 DAY"
+        ],
+        "campaigns": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:04:12.205Z",
+            "updated": "2026-05-28T21:04:12.205Z"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:10:21.044Z",
+            "updated": "2026-05-28T21:10:21.044Z"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:07:42.277Z",
+            "updated": "2026-05-28T21:07:42.277Z"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:12:53.239Z",
+            "updated": "2026-05-28T21:12:53.239Z"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:04:32.690Z",
+            "updated": "2026-05-28T21:04:32.690Z"
+          },
+          {
+            "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+            "name": "FUTURE FOLLOW-UP",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:01:49.997Z",
+            "updated": "2026-05-28T21:01:49.997Z"
+          },
+          {
+            "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+            "name": "SBS Verified Email Targets",
+            "status": 1,
+            "dailyLimit": 240,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-14T17:58:18.525Z",
+            "updated": "2026-07-06T15:32:58.030Z"
+          },
+          {
+            "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+            "name": "VA No Sales",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:05:17.669Z",
+            "updated": "2026-05-28T21:05:17.669Z"
+          },
+          {
+            "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+            "name": "VA 3-5m",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:06:23.954Z",
+            "updated": "2026-05-28T21:06:23.954Z"
+          },
+          {
+            "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+            "name": "NURTURE - 14 DAY",
+            "status": 0,
+            "dailyLimit": 0,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "created": "2026-05-28T21:00:47.084Z",
+            "updated": "2026-05-28T21:00:47.084Z"
+          }
+        ]
+      },
+      "sourceSystems": [
+        "CONNECTORS/INSTANTLY"
+      ],
+      "dependencies": [
+        "Instantly"
+      ]
+    }
+  ]
+}

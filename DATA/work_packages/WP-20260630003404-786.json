@@ -1,0 +1,139 @@
+{
+  "id": "WP-20260630003404-786",
+  "objective": "Grow sales pipeline with email marketing and capture strategy",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": "HIGH",
+  "priorityScore": 80,
+  "createdAt": "2026-06-30T00:34:04.266Z",
+  "updatedAt": "2026-06-30T00:34:04.266Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Grow sales pipeline with email marketing and capture strategy",
+    "priority": "HIGH",
+    "priorityScore": 80,
+    "createdAt": "2026-06-30T00:34:04.266Z",
+    "owner": "MILES",
+    "context": {},
+    "requiredCapabilities": [
+      "sales",
+      "pipeline",
+      "email",
+      "marketing",
+      "capture"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "sales",
+        "assignedTo": "Alexis",
+        "department": "Sales",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "expectedOutput": "sales recommendation",
+        "verification": "Verify sales output is actionable and aligned with CEO rules."
+      },
+      {
+        "step": 2,
+        "capability": "pipeline",
+        "assignedTo": "Alexis",
+        "department": "Sales",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "expectedOutput": "pipeline recommendation",
+        "verification": "Verify pipeline output is actionable and aligned with CEO rules."
+      },
+      {
+        "step": 3,
+        "capability": "email",
+        "assignedTo": "Aria",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "expectedOutput": "email recommendation",
+        "verification": "Verify email output is actionable and aligned with CEO rules."
+      },
+      {
+        "step": 4,
+        "capability": "marketing",
+        "assignedTo": "Aria",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "expectedOutput": "marketing recommendation",
+        "verification": "Verify marketing output is actionable and aligned with CEO rules."
+      },
+      {
+        "step": 5,
+        "capability": "capture",
+        "assignedTo": "Cora",
+        "department": "Capture",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "expectedOutput": "capture recommendation",
+        "verification": "Verify capture output is actionable and aligned with CEO rules."
+      }
+    ],
+    "approvalRequired": false,
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "sales",
+      "assignedTo": "Alexis",
+      "department": "Sales",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "expectedOutput": "sales recommendation",
+      "verification": "Verify sales output is actionable and aligned with CEO rules."
+    },
+    {
+      "step": 2,
+      "capability": "pipeline",
+      "assignedTo": "Alexis",
+      "department": "Sales",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "expectedOutput": "pipeline recommendation",
+      "verification": "Verify pipeline output is actionable and aligned with CEO rules."
+    },
+    {
+      "step": 3,
+      "capability": "email",
+      "assignedTo": "Aria",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "expectedOutput": "email recommendation",
+      "verification": "Verify email output is actionable and aligned with CEO rules."
+    },
+    {
+      "step": 4,
+      "capability": "marketing",
+      "assignedTo": "Aria",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "expectedOutput": "marketing recommendation",
+      "verification": "Verify marketing output is actionable and aligned with CEO rules."
+    },
+    {
+      "step": 5,
+      "capability": "capture",
+      "assignedTo": "Cora",
+      "department": "Capture",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "expectedOutput": "capture recommendation",
+      "verification": "Verify capture output is actionable and aligned with CEO rules."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

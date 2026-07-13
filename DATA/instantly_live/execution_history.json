@@ -1,0 +1,2291 @@
+[
+  {
+    "ok": false,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "MISSING_CREDENTIALS",
+    "executed": false,
+    "durationMs": 11,
+    "result": {
+      "ok": false,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "writeEnabled": false,
+      "durationMs": 0,
+      "result": {
+        "ok": false,
+        "status": "MISSING_CREDENTIALS",
+        "provider": "instantly",
+        "endpoint": "/campaigns?limit=1",
+        "method": "GET",
+        "message": "INSTANTLY_API_KEY is not configured."
+      },
+      "generatedAt": "2026-07-04T02:29:59.731Z"
+    },
+    "generatedAt": "2026-07-04T02:29:59.742Z"
+  },
+  {
+    "ok": false,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "MISSING_CREDENTIALS",
+    "executed": false,
+    "durationMs": 4,
+    "result": {
+      "ok": false,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "writeEnabled": false,
+      "durationMs": 0,
+      "result": {
+        "ok": false,
+        "status": "MISSING_CREDENTIALS",
+        "provider": "instantly",
+        "endpoint": "/campaigns?limit=1",
+        "method": "GET",
+        "message": "INSTANTLY_API_KEY is not configured."
+      },
+      "generatedAt": "2026-07-04T02:30:08.493Z"
+    },
+    "generatedAt": "2026-07-04T02:30:08.497Z"
+  },
+  {
+    "ok": false,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "MISSING_CREDENTIALS",
+    "executed": false,
+    "durationMs": 5,
+    "result": {
+      "ok": false,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "writeEnabled": false,
+      "durationMs": 0,
+      "result": {
+        "ok": false,
+        "status": "MISSING_CREDENTIALS",
+        "provider": "instantly",
+        "endpoint": "/campaigns?limit=1",
+        "method": "GET",
+        "message": "INSTANTLY_API_KEY is not configured."
+      },
+      "generatedAt": "2026-07-04T02:30:16.507Z"
+    },
+    "generatedAt": "2026-07-04T02:30:16.511Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "CREATE_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "durationMs": 0,
+    "result": {
+      "ok": true,
+      "executed": false,
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "message": "Set INSTANTLY_WRITE_ENABLED=true to allow live write operations.",
+      "payloadPreview": {
+        "title": "Repair high-risk Website condition",
+        "description": "Website health score is 0.",
+        "area": "Website",
+        "recommendedAction": "Verify Instantly API connectivity.",
+        "route": null,
+        "sourceWorkItem": {
+          "id": "WORK-1783016649896-41651",
+          "signature": "Website::Repair high-risk Website condition::Website",
+          "createdAt": "2026-07-02T18:24:09.896Z",
+          "updatedAt": "2026-07-02T19:25:36.421Z",
+          "status": "Queued",
+          "priority": 1,
+          "area": "Website",
+          "title": "Repair high-risk Website condition",
+          "description": "Website health score is 0.",
+          "reason": "Website health score is 0.",
+          "source": "ExecutiveMissionPlanner",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "recommendedAction": "Verify Instantly API connectivity.",
+          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+          "relatedProvider": "Website",
+          "executionType": "WORKFLOW",
+          "metadata": {
+            "missionItem": {
+              "id": "MISSION-1783016649895-15164",
+              "priority": 1,
+              "area": "Website",
+              "title": "Repair high-risk Website condition",
+              "reason": "Website health score is 0.",
+              "recommendedAction": "Verify Instantly API connectivity.",
+              "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+              "owner": "Miles",
+              "requiresKevin": false,
+              "relatedProvider": "Website",
+              "businessImpactScore": 95,
+              "automationConfidence": "HIGH",
+              "metadata": {
+                "health": {
+                  "area": "Website",
+                  "status": "Critical",
+                  "score": 0,
+                  "risk": "HIGH",
+                  "confidence": "HIGH",
+                  "lastSuccess": "2026-07-02T18:24:00.451Z",
+                  "lastFailure": "2026-07-02T18:24:09.882Z",
+                  "exceptions": [
+                    {
+                      "type": "InstantlyAPI",
+                      "severity": "Critical",
+                      "message": "instantly.listCampaigns is not a function"
+                    }
+                  ],
+                  "recommendations": [
+                    "Verify Instantly API connectivity.",
+                    "Verify INSTANTLY_API_KEY.",
+                    "Verify internet connectivity."
+                  ],
+                  "metrics": {},
+                  "sourceSystems": [
+                    "CONNECTORSWEBSITE"
+                  ],
+                  "dependencies": [
+                    "Website"
+                  ]
+                }
+              }
+            },
+            "automationConfidence": "HIGH",
+            "businessImpactScore": 95,
+            "queuedBy": "AutonomousCOOLoopService",
+            "queuedAt": "2026-07-02T18:24:10.160Z",
+            "workflowStatus": "QUEUED",
+            "workflowResult": {
+              "ok": true,
+              "status": "QUEUED",
+              "workPackage": {
+                "id": "WP-20260702182410-094",
+                "objective": "Repair high-risk Website condition",
+                "status": "QUEUED",
+                "owner": "MILES",
+                "priority": 1,
+                "priorityScore": 50,
+                "createdAt": "2026-07-02T18:24:10.024Z",
+                "updatedAt": "2026-07-02T18:24:10.024Z",
+                "plan": {
+                  "ok": true,
+                  "type": "PLAN",
+                  "objective": "Repair high-risk Website condition",
+                  "priority": 1,
+                  "priorityScore": 50,
+                  "createdAt": "2026-07-02T18:24:10.024Z",
+                  "owner": "MILES",
+                  "context": {
+                    "sourceWorkItemId": "WORK-1783016649896-41651",
+                    "area": "Website",
+                    "priority": 1,
+                    "description": "Website health score is 0.",
+                    "reason": "Website health score is 0.",
+                    "recommendedAction": "Verify Instantly API connectivity.",
+                    "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                    "relatedProvider": "Website",
+                    "metadata": {
+                      "missionItem": {
+                        "id": "MISSION-1783016649895-15164",
+                        "priority": 1,
+                        "area": "Website",
+                        "title": "Repair high-risk Website condition",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "owner": "Miles",
+                        "requiresKevin": false,
+                        "relatedProvider": "Website",
+                        "businessImpactScore": 95,
+                        "automationConfidence": "HIGH",
+                        "metadata": {
+                          "health": {
+                            "area": "Website",
+                            "status": "Critical",
+                            "score": 0,
+                            "risk": "HIGH",
+                            "confidence": "HIGH",
+                            "lastSuccess": "2026-07-02T18:24:00.451Z",
+                            "lastFailure": "2026-07-02T18:24:09.882Z",
+                            "exceptions": [
+                              {
+                                "type": "InstantlyAPI",
+                                "severity": "Critical",
+                                "message": "instantly.listCampaigns is not a function"
+                              }
+                            ],
+                            "recommendations": [
+                              "Verify Instantly API connectivity.",
+                              "Verify INSTANTLY_API_KEY.",
+                              "Verify internet connectivity."
+                            ],
+                            "metrics": {},
+                            "sourceSystems": [
+                              "CONNECTORSWEBSITE"
+                            ],
+                            "dependencies": [
+                              "Website"
+                            ]
+                          }
+                        }
+                      },
+                      "automationConfidence": "HIGH",
+                      "businessImpactScore": 95
+                    },
+                    "runtimeCycleId": null
+                  },
+                  "domain": "executive",
+                  "workforce": "Executive Operations Workforce",
+                  "requiredCapabilities": [
+                    "executive.objective.evaluate",
+                    "executive.priority.route",
+                    "executive.update.generate"
+                  ],
+                  "assignments": [
+                    {
+                      "capability": "executive.objective.evaluate",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    },
+                    {
+                      "capability": "executive.priority.route",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    },
+                    {
+                      "capability": "executive.update.generate",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    }
+                  ],
+                  "steps": [
+                    {
+                      "step": 1,
+                      "capability": "executive.objective.evaluate",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "evaluateObjective",
+                      "expectedOutput": "Clear interpretation of the work objective.",
+                      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                    },
+                    {
+                      "step": 2,
+                      "capability": "executive.priority.route",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "routeObjective",
+                      "expectedOutput": "Recommended department, priority, and execution path.",
+                      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                    },
+                    {
+                      "step": 3,
+                      "capability": "executive.update.generate",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "generateExecutiveUpdate",
+                      "expectedOutput": "Executive update for the planned work.",
+                      "verification": "Verify update contains status, owner, and next action."
+                    }
+                  ],
+                  "providers": [],
+                  "executionAuthority": "MILES_AUTONOMOUS_COO",
+                  "approvalRequired": false,
+                  "verificationChecklist": [
+                    "Objective was interpreted.",
+                    "Priority was assigned.",
+                    "Execution path was created.",
+                    "Executive update was generated."
+                  ],
+                  "successCriteria": [
+                    "Work item is no longer ambiguous.",
+                    "MILES has a routed next action."
+                  ],
+                  "rulesVersion": "1.0.0"
+                },
+                "tasks": [
+                  {
+                    "step": 1,
+                    "capability": "executive.objective.evaluate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "evaluateObjective",
+                    "expectedOutput": "Clear interpretation of the work objective.",
+                    "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                  },
+                  {
+                    "step": 2,
+                    "capability": "executive.priority.route",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "routeObjective",
+                    "expectedOutput": "Recommended department, priority, and execution path.",
+                    "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                  },
+                  {
+                    "step": 3,
+                    "capability": "executive.update.generate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "generateExecutiveUpdate",
+                    "expectedOutput": "Executive update for the planned work.",
+                    "verification": "Verify update contains status, owner, and next action."
+                  }
+                ],
+                "approvals": [],
+                "results": [],
+                "verification": {
+                  "required": true,
+                  "status": "PENDING"
+                }
+              },
+              "queuedTasks": [
+                {
+                  "id": "TASK-1783016650037",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.objective.evaluate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "evaluateObjective",
+                    "expectedOutput": "Clear interpretation of the work objective.",
+                    "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.037Z",
+                  "updatedAt": "2026-07-02T18:24:10.037Z"
+                },
+                {
+                  "id": "TASK-1783016650078",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.priority.route",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "routeObjective",
+                    "expectedOutput": "Recommended department, priority, and execution path.",
+                    "verification": "Verify the work is assigned to the right workforce or flagged for CEO review.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.078Z",
+                  "updatedAt": "2026-07-02T18:24:10.078Z"
+                },
+                {
+                  "id": "TASK-1783016650125",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.update.generate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "generateExecutiveUpdate",
+                    "expectedOutput": "Executive update for the planned work.",
+                    "verification": "Verify update contains status, owner, and next action.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.125Z",
+                  "updatedAt": "2026-07-02T18:24:10.125Z"
+                }
+              ]
+            },
+            "lastDuplicateDetectedAt": "2026-07-02T19:25:36.421Z"
+          },
+          "lifecycle": [
+            {
+              "status": "Pending",
+              "timestamp": "2026-07-02T18:24:09.896Z",
+              "note": "Work item created."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T18:24:10.160Z",
+              "note": "Work item queued for execution."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T18:24:49.467Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:10:45.487Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:17:33.172Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:21:46.264Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:25:36.421Z",
+              "note": "Duplicate detected; existing open item reused."
+            }
+          ],
+          "duplicateDetected": true
+        }
+      }
+    },
+    "generatedAt": "2026-07-04T02:30:24.615Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 453,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": false,
+      "durationMs": 369,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-04T02:42:03.163Z"
+    },
+    "generatedAt": "2026-07-04T02:42:03.247Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 819,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": false,
+      "durationMs": 427,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-09T23:25:25.587Z"
+    },
+    "generatedAt": "2026-07-09T23:25:25.979Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "LIST_CAMPAIGNS",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 254,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns",
+      "url": "https://api.instantly.ai/api/v2/campaigns",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:21.044Z",
+            "timestamp_updated": "2026-05-28T21:10:21.044Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:42.277Z",
+            "timestamp_updated": "2026-05-28T21:07:42.277Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:12:53.239Z",
+            "timestamp_updated": "2026-05-28T21:12:53.239Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:32.690Z",
+            "timestamp_updated": "2026-05-28T21:04:32.690Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+            "name": "FUTURE FOLLOW-UP",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:49.997Z",
+            "timestamp_updated": "2026-05-28T21:01:49.997Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+            "name": "SBS Verified Email Targets",
+            "status": 1,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-14T17:58:18.525Z",
+            "timestamp_updated": "2026-07-06T15:32:58.030Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 0,
+                    "variants": [
+                      {
+                        "subject": "Are you actively pursuing federal contracts?",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Federal contracting expansion",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "Following up",
+                        "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "Potential federal fit",
+                        "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "Close the loop",
+                        "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "email_gap": 5,
+            "random_wait_max": 7,
+            "text_only": true,
+            "first_email_text_only": true,
+            "email_list": [
+              "contacts@pathwaysgsa.com",
+              "info@pathwaysgsa.com",
+              "kevin@pathwaysgov.com",
+              "kevin@pathwaysgsa.com"
+            ],
+            "daily_limit": 240,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": false,
+            "stop_on_auto_reply": true,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": true,
+            "custom_variables": {
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": false,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+            "name": "VA No Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:05:17.669Z",
+            "timestamp_updated": "2026-05-28T21:05:17.669Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+            "name": "VA 3-5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:23.954Z",
+            "timestamp_updated": "2026-05-28T21:06:23.954Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+            "name": "NURTURE - 14 DAY",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:00:47.084Z",
+            "timestamp_updated": "2026-05-28T21:00:47.084Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "c4995272-21a1-4002-a7ed-57ff9d8fc35b"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:26:50.865Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "LIST_CAMPAIGNS",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 300,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns",
+      "url": "https://api.instantly.ai/api/v2/campaigns",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:21.044Z",
+            "timestamp_updated": "2026-05-28T21:10:21.044Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:42.277Z",
+            "timestamp_updated": "2026-05-28T21:07:42.277Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:12:53.239Z",
+            "timestamp_updated": "2026-05-28T21:12:53.239Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:32.690Z",
+            "timestamp_updated": "2026-05-28T21:04:32.690Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+            "name": "FUTURE FOLLOW-UP",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:49.997Z",
+            "timestamp_updated": "2026-05-28T21:01:49.997Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+            "name": "SBS Verified Email Targets",
+            "status": 1,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-14T17:58:18.525Z",
+            "timestamp_updated": "2026-07-06T15:32:58.030Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 0,
+                    "variants": [
+                      {
+                        "subject": "Are you actively pursuing federal contracts?",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Federal contracting expansion",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "Following up",
+                        "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "Potential federal fit",
+                        "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "Close the loop",
+                        "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "email_gap": 5,
+            "random_wait_max": 7,
+            "text_only": true,
+            "first_email_text_only": true,
+            "email_list": [
+              "contacts@pathwaysgsa.com",
+              "info@pathwaysgsa.com",
+              "kevin@pathwaysgov.com",
+              "kevin@pathwaysgsa.com"
+            ],
+            "daily_limit": 240,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": false,
+            "stop_on_auto_reply": true,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": true,
+            "custom_variables": {
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": false,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+            "name": "VA No Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:05:17.669Z",
+            "timestamp_updated": "2026-05-28T21:05:17.669Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+            "name": "VA 3-5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:23.954Z",
+            "timestamp_updated": "2026-05-28T21:06:23.954Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+            "name": "NURTURE - 14 DAY",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:00:47.084Z",
+            "timestamp_updated": "2026-05-28T21:00:47.084Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "c4995272-21a1-4002-a7ed-57ff9d8fc35b"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:46.039Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 262,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/f990817a-c420-4935-a159-7eda97dec196",
+      "url": "https://api.instantly.ai/api/v2/campaigns/f990817a-c420-4935-a159-7eda97dec196",
+      "data": {
+        "id": "f990817a-c420-4935-a159-7eda97dec196",
+        "name": "GSA 500k–3m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:04:12.205Z",
+        "timestamp_updated": "2026-05-28T21:04:12.205Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:46.322Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 152,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/f33f2df4-6235-4daa-9945-2832afedbb49",
+      "url": "https://api.instantly.ai/api/v2/campaigns/f33f2df4-6235-4daa-9945-2832afedbb49",
+      "data": {
+        "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+        "name": "HubZone",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:10:21.044Z",
+        "timestamp_updated": "2026-05-28T21:10:21.044Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:46.654Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 99,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+      "url": "https://api.instantly.ai/api/v2/campaigns/ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+      "data": {
+        "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+        "name": "Sam Low Sales",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:07:42.277Z",
+        "timestamp_updated": "2026-05-28T21:07:42.277Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:46.768Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 140,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+      "url": "https://api.instantly.ai/api/v2/campaigns/ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+      "data": {
+        "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+        "name": "EXPIRED everything",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:12:53.239Z",
+        "timestamp_updated": "2026-05-28T21:12:53.239Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:46.923Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 112,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/e6200ed3-1620-4fff-a4fe-92df20615fd1",
+      "url": "https://api.instantly.ai/api/v2/campaigns/e6200ed3-1620-4fff-a4fe-92df20615fd1",
+      "data": {
+        "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+        "name": "GSA 3m–5m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:04:32.690Z",
+        "timestamp_updated": "2026-05-28T21:04:32.690Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.049Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 93,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+      "url": "https://api.instantly.ai/api/v2/campaigns/e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+      "data": {
+        "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+        "name": "FUTURE FOLLOW-UP",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:01:49.997Z",
+        "timestamp_updated": "2026-05-28T21:01:49.997Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.159Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 101,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+      "url": "https://api.instantly.ai/api/v2/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+      "data": {
+        "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+        "name": "SBS Verified Email Targets",
+        "status": 1,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-14T17:58:18.525Z",
+        "timestamp_updated": "2026-07-06T15:32:58.030Z",
+        "pl_value": 2500,
+        "sequences": [
+          {
+            "steps": [
+              {
+                "type": "email",
+                "delay": 0,
+                "variants": [
+                  {
+                    "subject": "Are you actively pursuing federal contracts?",
+                    "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  },
+                  {
+                    "subject": "Federal contracting expansion",
+                    "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 2,
+                "variants": [
+                  {
+                    "subject": "Following up",
+                    "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 3,
+                "variants": [
+                  {
+                    "subject": "Potential federal fit",
+                    "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 1,
+                "variants": [
+                  {
+                    "subject": "Close the loop",
+                    "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              }
+            ]
+          }
+        ],
+        "email_gap": 5,
+        "random_wait_max": 7,
+        "text_only": true,
+        "first_email_text_only": true,
+        "email_list": [
+          "contacts@pathwaysgsa.com",
+          "info@pathwaysgsa.com",
+          "kevin@pathwaysgov.com",
+          "kevin@pathwaysgsa.com"
+        ],
+        "daily_limit": 240,
+        "stop_on_reply": true,
+        "email_tag_list": [],
+        "link_tracking": false,
+        "open_tracking": false,
+        "stop_on_auto_reply": true,
+        "prioritize_new_leads": true,
+        "match_lead_esp": false,
+        "not_sending_status": 1,
+        "stop_for_company": true,
+        "custom_variables": {
+          "pause_until": true
+        },
+        "insert_unsubscribe_header": false,
+        "allow_risky_contacts": false,
+        "disable_bounce_protect": false,
+        "cc_list": [],
+        "bcc_list": [],
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+        "provider_routing_rules": []
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.275Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 81,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c9495996-ba29-4611-919e-c083fcd07ee7",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c9495996-ba29-4611-919e-c083fcd07ee7",
+      "data": {
+        "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+        "name": "VA No Sales",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:05:17.669Z",
+        "timestamp_updated": "2026-05-28T21:05:17.669Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.372Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 112,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c7adf755-9035-478a-9efc-f69064e927c2",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c7adf755-9035-478a-9efc-f69064e927c2",
+      "data": {
+        "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+        "name": "VA 3-5m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:06:23.954Z",
+        "timestamp_updated": "2026-05-28T21:06:23.954Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.499Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 86,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "data": {
+        "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+        "name": "NURTURE - 14 DAY",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:00:47.084Z",
+        "timestamp_updated": "2026-05-28T21:00:47.084Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:27:47.603Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "LIST_CAMPAIGNS",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 245,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns",
+      "url": "https://api.instantly.ai/api/v2/campaigns",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:21.044Z",
+            "timestamp_updated": "2026-05-28T21:10:21.044Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:42.277Z",
+            "timestamp_updated": "2026-05-28T21:07:42.277Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:12:53.239Z",
+            "timestamp_updated": "2026-05-28T21:12:53.239Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:32.690Z",
+            "timestamp_updated": "2026-05-28T21:04:32.690Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+            "name": "FUTURE FOLLOW-UP",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:49.997Z",
+            "timestamp_updated": "2026-05-28T21:01:49.997Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+            "name": "SBS Verified Email Targets",
+            "status": 1,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-14T17:58:18.525Z",
+            "timestamp_updated": "2026-07-06T15:32:58.030Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 0,
+                    "variants": [
+                      {
+                        "subject": "Are you actively pursuing federal contracts?",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Federal contracting expansion",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "Following up",
+                        "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "Potential federal fit",
+                        "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "Close the loop",
+                        "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "email_gap": 5,
+            "random_wait_max": 7,
+            "text_only": true,
+            "first_email_text_only": true,
+            "email_list": [
+              "contacts@pathwaysgsa.com",
+              "info@pathwaysgsa.com",
+              "kevin@pathwaysgov.com",
+              "kevin@pathwaysgsa.com"
+            ],
+            "daily_limit": 240,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": false,
+            "stop_on_auto_reply": true,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": true,
+            "custom_variables": {
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": false,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+            "name": "VA No Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:05:17.669Z",
+            "timestamp_updated": "2026-05-28T21:05:17.669Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+            "name": "VA 3-5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:23.954Z",
+            "timestamp_updated": "2026-05-28T21:06:23.954Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+            "name": "NURTURE - 14 DAY",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:00:47.084Z",
+            "timestamp_updated": "2026-05-28T21:00:47.084Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "c4995272-21a1-4002-a7ed-57ff9d8fc35b"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:26.272Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 85,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/f990817a-c420-4935-a159-7eda97dec196",
+      "url": "https://api.instantly.ai/api/v2/campaigns/f990817a-c420-4935-a159-7eda97dec196",
+      "data": {
+        "id": "f990817a-c420-4935-a159-7eda97dec196",
+        "name": "GSA 500k–3m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:04:12.205Z",
+        "timestamp_updated": "2026-05-28T21:04:12.205Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:26.375Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 91,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/f33f2df4-6235-4daa-9945-2832afedbb49",
+      "url": "https://api.instantly.ai/api/v2/campaigns/f33f2df4-6235-4daa-9945-2832afedbb49",
+      "data": {
+        "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+        "name": "HubZone",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:10:21.044Z",
+        "timestamp_updated": "2026-05-28T21:10:21.044Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:26.482Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 101,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+      "url": "https://api.instantly.ai/api/v2/campaigns/ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+      "data": {
+        "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+        "name": "Sam Low Sales",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:07:42.277Z",
+        "timestamp_updated": "2026-05-28T21:07:42.277Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:26.598Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 101,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+      "url": "https://api.instantly.ai/api/v2/campaigns/ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+      "data": {
+        "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+        "name": "EXPIRED everything",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:12:53.239Z",
+        "timestamp_updated": "2026-05-28T21:12:53.239Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.032Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 104,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/e6200ed3-1620-4fff-a4fe-92df20615fd1",
+      "url": "https://api.instantly.ai/api/v2/campaigns/e6200ed3-1620-4fff-a4fe-92df20615fd1",
+      "data": {
+        "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+        "name": "GSA 3m–5m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:04:32.690Z",
+        "timestamp_updated": "2026-05-28T21:04:32.690Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.152Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 83,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+      "url": "https://api.instantly.ai/api/v2/campaigns/e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+      "data": {
+        "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+        "name": "FUTURE FOLLOW-UP",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:01:49.997Z",
+        "timestamp_updated": "2026-05-28T21:01:49.997Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.249Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 96,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+      "url": "https://api.instantly.ai/api/v2/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+      "data": {
+        "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+        "name": "SBS Verified Email Targets",
+        "status": 1,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-14T17:58:18.525Z",
+        "timestamp_updated": "2026-07-06T15:32:58.030Z",
+        "pl_value": 2500,
+        "sequences": [
+          {
+            "steps": [
+              {
+                "type": "email",
+                "delay": 0,
+                "variants": [
+                  {
+                    "subject": "Are you actively pursuing federal contracts?",
+                    "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  },
+                  {
+                    "subject": "Federal contracting expansion",
+                    "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 2,
+                "variants": [
+                  {
+                    "subject": "Following up",
+                    "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 3,
+                "variants": [
+                  {
+                    "subject": "Potential federal fit",
+                    "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              },
+              {
+                "type": "email",
+                "delay": 1,
+                "variants": [
+                  {
+                    "subject": "Close the loop",
+                    "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                  }
+                ],
+                "delay_unit": "days",
+                "pre_delay_unit": "days"
+              }
+            ]
+          }
+        ],
+        "email_gap": 5,
+        "random_wait_max": 7,
+        "text_only": true,
+        "first_email_text_only": true,
+        "email_list": [
+          "contacts@pathwaysgsa.com",
+          "info@pathwaysgsa.com",
+          "kevin@pathwaysgov.com",
+          "kevin@pathwaysgsa.com"
+        ],
+        "daily_limit": 240,
+        "stop_on_reply": true,
+        "email_tag_list": [],
+        "link_tracking": false,
+        "open_tracking": false,
+        "stop_on_auto_reply": true,
+        "prioritize_new_leads": true,
+        "match_lead_esp": false,
+        "not_sending_status": 1,
+        "stop_for_company": true,
+        "custom_variables": {
+          "pause_until": true
+        },
+        "insert_unsubscribe_header": false,
+        "allow_risky_contacts": false,
+        "disable_bounce_protect": false,
+        "cc_list": [],
+        "bcc_list": [],
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+        "provider_routing_rules": []
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.360Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 97,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c9495996-ba29-4611-919e-c083fcd07ee7",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c9495996-ba29-4611-919e-c083fcd07ee7",
+      "data": {
+        "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+        "name": "VA No Sales",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:05:17.669Z",
+        "timestamp_updated": "2026-05-28T21:05:17.669Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.473Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 104,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c7adf755-9035-478a-9efc-f69064e927c2",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c7adf755-9035-478a-9efc-f69064e927c2",
+      "data": {
+        "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+        "name": "VA 3-5m",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:06:23.954Z",
+        "timestamp_updated": "2026-05-28T21:06:23.954Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.595Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 92,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "data": {
+        "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+        "name": "NURTURE - 14 DAY",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:00:47.084Z",
+        "timestamp_updated": "2026-05-28T21:00:47.084Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.706Z"
+  }
+]

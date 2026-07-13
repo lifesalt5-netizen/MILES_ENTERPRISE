@@ -1,0 +1,6 @@
+2026/06/30-13:45:11.344 2228 Reusing MANIFEST D:\P2GC_Intelligence\MILES_OS\DATA\browser\profiles\miles-chrome\Default\IndexedDB\https_calendly.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/06/30-13:45:11.345 2228 Recovering log #3
+2026/06/30-13:45:11.424 2228 Reusing old log D:\P2GC_Intelligence\MILES_OS\DATA\browser\profiles\miles-chrome\Default\IndexedDB\https_calendly.com_0.indexeddb.leveldb/000003.log 
+2026/06/30-13:45:17.771 2228 Level-0 table #5: started
+2026/06/30-13:45:17.963 2228 Level-0 table #5: 1739092 bytes OK
+2026/06/30-13:45:18.070 2228 Delete type=0 #3

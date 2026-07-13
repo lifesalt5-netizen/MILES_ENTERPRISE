@@ -1,0 +1,4 @@
+﻿campaign_id,segment_name,domain,primary_inbox,daily_limit,status,last_run,next_run
+CAMP-0001,P2GC_SEGMENT_CONSULTING,pathwaysgovcon.com,cora@,40,ACTIVE,,2026-06-20
+CAMP-0002,P2GC_SEGMENT_IT_SERVICES,pathwaysgsa.com,info@,30,ACTIVE,,2026-06-20
+CAMP-0003,P2GC_SEGMENT_ENGINEERING,pathwaysgov.com,kevin@,20,ACTIVE,,2026-06-20

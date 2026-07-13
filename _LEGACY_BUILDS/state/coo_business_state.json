@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-07-08T19:30:42.827Z",
+  "source": "COO_BUSINESS_STATE_ENGINE",
+  "company": "Pathways 2 Government Contracting",
+  "operatingMode": "DIGITAL_COO_GUARDED_AUTONOMY",
+  "businessGoal": {
+    "revenueTarget30Days": 10000,
+    "monthlyClientTarget": 5,
+    "primaryObjective": "Miles operates P2GC below CEO level and drives revenue execution."
+  },
+  "authorityModel": {
+    "milesMayExecute": [
+      "Create operational work",
+      "Assign work to workers",
+      "Monitor runtime health",
+      "Monitor campaign operations",
+      "Track business state",
+      "Generate executive alerts",
+      "Prepare CEO approval items",
+      "Maintain dashboards and logs",
+      "Retry failed operations",
+      "Escalate blockers"
+    ],
+    "ceoApprovalRequired": [
+      "Change pricing",
+      "Send final client proposal",
+      "Sign agreements",
+      "Hire contractors",
+      "Delete production data",
+      "Make legal commitments",
+      "Make financial commitments"
+    ]
+  },
+  "domains": {
+    "sales": {
+      "status": "ACTIVE",
+      "priority": 1,
+      "owner": "Miles",
+      "objective": "Increase qualified calls, proposals, and closed revenue.",
+      "openItems": []
+    },
+    "outbound": {
+      "status": "ACTIVE",
+      "priority": 2,
+      "owner": "Miles",
+      "objective": "Keep Instantly campaigns supplied, monitored, and corrected.",
+      "openItems": []
+    },
+    "website": {
+      "status": "ACTIVE",
+      "priority": 3,
+      "owner": "Miles",
+      "objective": "Maintain conversion path for GovCon Win Probability Review.",
+      "openItems": []
+    },
+    "linkedin": {
+      "status": "ACTIVE",
+      "priority": 4,
+      "owner": "Miles",
+      "objective": "Support visibility and relationship development.",
+      "openItems": []
+    },
+    "orion": {
+      "status": "ACTIVE",
+      "priority": 5,
+      "owner": "Miles",
+      "objective": "Use intelligence to support targeting and sales execution.",
+      "openItems": []
+    },
+    "clientDelivery": {
+      "status": "ACTIVE",
+      "priority": 6,
+      "owner": "Miles",
+      "objective": "Track deliverables, deadlines, and client follow-through.",
+      "openItems": []
+    },
+    "runtime": {
+      "status": "ACTIVE",
+      "priority": 7,
+      "owner": "Miles",
+      "objective": "Maintain healthy Digital COO operations.",
+      "openItems": []
+    }
+  },
+  "kpis": {
+    "revenueBooked30Days": 0,
+    "monthlyClientsClosed": 0,
+    "weeklySalesCalls": 0,
+    "weeklyProposals": 0,
+    "weeklyPositiveReplies": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0
+  },
+  "lastInput": {},
+  "operationalReadiness": {
+    "status": "READY",
+    "activeDomains": 7,
+    "blockedDomains": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0,
+    "canOperate": true,
+    "generatedAt": "2026-07-08T19:30:42.827Z"
+  }
+}

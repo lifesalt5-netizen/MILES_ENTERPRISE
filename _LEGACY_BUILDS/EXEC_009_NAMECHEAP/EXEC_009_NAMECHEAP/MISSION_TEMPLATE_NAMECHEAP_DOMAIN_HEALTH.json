@@ -1,0 +1,27 @@
+{
+  "template_id": "MISSION_TEMPLATE_NAMECHEAP_DOMAIN_HEALTH",
+  "name": "Namecheap Domain Health Audit",
+  "provider": "NAMECHEAP",
+  "schedule": "DAILY",
+  "tasks": [
+    {
+      "capability": "ListDomains",
+      "verification": "domain_inventory_returned"
+    },
+    {
+      "capability": "GetDNS",
+      "foreach": "domain",
+      "verification": "dns_records_readable"
+    },
+    {
+      "capability": "HealthCheck",
+      "foreach": "domain",
+      "verification": "health_score_calculated"
+    },
+    {
+      "capability": "SyncRegistry",
+      "verification": "company_state_updated"
+    }
+  ],
+  "governance": "automatic_read_only"
+}

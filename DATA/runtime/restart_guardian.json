@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "action": "RESTART_GUARDIAN",
+  "generatedAt": "2026-07-04T01:44:47.654Z",
+  "cycleId": "COO-1783129478996-10665",
+  "consecutiveFailures": 0,
+  "restartRecommended": false,
+  "errors": [],
+  "recommendation": "Continue COO loop."
+}

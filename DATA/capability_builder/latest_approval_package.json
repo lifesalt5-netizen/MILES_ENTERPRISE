@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "buildId": "BUILD_043_1783907089966",
+  "generatedAt": "2026-07-13T01:44:49.966Z",
+  "status": "PENDING_APPROVAL",
+  "approvalRequiredFrom": "Kevin",
+  "capability": "Sales COO",
+  "summary": "MILES recommends building Sales COO next.",
+  "reason": "Highest combined score across business priority, revenue impact, technical readiness, and governance risk.",
+  "score": 69,
+  "affectedFiles": [
+    {
+      "file": "SERVICES/SalesCOOService.js",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    },
+    {
+      "file": "DATA/capability_builder/staged/sales_coo_plan.json",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    },
+    {
+      "file": "DOCS/sales_coo_operations.md",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    }
+  ],
+  "risks": [
+    "Generated capability may require manual review before production use.",
+    "External system access may require credentials or approval.",
+    "No production deployment should occur until Kevin approves."
+  ],
+  "testsRequired": [
+    "Service loads without error",
+    "Output files are generated",
+    "No production deployment occurs without approval",
+    "Approval package is created"
+  ],
+  "rollbackPlan": "Delete staged generated files and remove pending build queue entry before approval.",
+  "governance": {
+    "productionDeploymentAllowed": false,
+    "approvalRequiredBeforeDeployment": true,
+    "kevinApprovalRequired": true
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "id": "WP-20260713155721-302",
+  "objective": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T15:57:21.238Z",
+  "updatedAt": "2026-07-13T15:57:21.238Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T15:57:21.238Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783958205588-51008",
+      "area": "Engineering",
+      "priority": 2,
+      "description": "Missing capability: Government Data COO. Removes manual work: SAM checks, GSA checks, VA checks, RFI monitoring, source stale checks.",
+      "reason": "Capability gap blocks higher autonomy.",
+      "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+      "expectedImpact": "High",
+      "relatedProvider": "Engineering",
+      "metadata": {
+        "capabilityGap": {
+          "id": "CAP-1783958199717-2-83638",
+          "cycleId": "COO-20260713155633-001",
+          "status": "OPEN",
+          "priority": 2,
+          "createdAt": "2026-07-13T15:56:39.717Z",
+          "area": "Government Data COO",
+          "providerKey": "government",
+          "title": "Build Government Data COO refresh monitor",
+          "businessImpact": "High",
+          "removesManualWork": [
+            "SAM checks",
+            "GSA checks",
+            "VA checks",
+            "RFI monitoring",
+            "source stale checks"
+          ],
+          "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought."
+        },
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Safe operational review, audit, refresh, verification, analysis, or planning authorized autonomously.",
+          "classifiedAt": "2026-07-13T15:56:45.588Z"
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "orion",
+    "workforce": "ORION Data Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "government.data.refresh.monitor"
+    ],
+    "assignments": [
+      {
+        "capability": "government.data.refresh.monitor",
+        "provider": "OrionProvider",
+        "department": "ORION",
+        "action": "refresh",
+        "bestWorker": null,
+        "candidates": []
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "government.data.refresh.monitor",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "refresh",
+        "expectedOutput": "Refreshed government-data source state, database freshness, exceptions, and source-monitor recommendations.",
+        "verification": "Verify OrionProvider completed refresh and returned source and database evidence."
+      }
+    ],
+    "providers": [
+      "OrionProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify OrionProvider completed refresh and returned source and database evidence."
+    ],
+    "successCriteria": [
+      "OrionProvider.refresh executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "government.data.refresh.monitor",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "refresh",
+      "expectedOutput": "Refreshed government-data source state, database freshness, exceptions, and source-monitor recommendations.",
+      "verification": "Verify OrionProvider completed refresh and returned source and database evidence."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

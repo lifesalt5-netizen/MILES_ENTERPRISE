@@ -1,0 +1,5 @@
+﻿domain,provider,inboxes,daily_capacity_total,warmup_status,bounce_rate,spam_score,active_campaigns,rotation_status,last_verified
+pathwaysgovcon.com,Namecheap,"cora@,evan@,maya@,silvia@,victoria@",125,ACTIVE,0,LOW,,ACTIVE,2026-06-20
+pathwaysgsa.com,Namecheap,"contacts@,info@,kevin@",60,ACTIVE,0,LOW,,ACTIVE,2026-06-20
+pathwaysgov.com,Namecheap,"kevin@",20,ACTIVE,0,LOW,,ACTIVE,2026-06-20
+pathways2gc.com,IONOS,"info@",30,LOCKED,0,LOW,,IDLE,2026-06-20

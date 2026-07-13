@@ -1,0 +1,17 @@
+{
+  "id": "TICKET-1783614776913-vwkb65",
+  "missionId": "MISSION-1783614776905-8urwa0",
+  "title": "Analyze Mission Requirements",
+  "type": "ARCHITECT",
+  "owner": "ARCHITECT",
+  "priority": 1,
+  "authority": "AUTOMATIC_ENGINEERING",
+  "status": "QUEUED",
+  "createdAt": "2026-07-09T16:32:56.913Z",
+  "updatedAt": "2026-07-09T16:32:56.913Z",
+  "approvalRequired": false,
+  "payload": {
+    "missionTitle": "Build Google Workspace Provider",
+    "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+  }
+}

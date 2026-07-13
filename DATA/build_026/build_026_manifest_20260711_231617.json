@@ -1,0 +1,25 @@
+﻿{
+    "ok":  true,
+    "build":  "026",
+    "name":  "Governed Executive Dispatch",
+    "installedAt":  "2026-07-11T23:16:18.9008380-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_026_20260711_231617",
+    "changedFiles":  [
+                         "SERVICES\\AutonomousCOOLoopService.js"
+                     ],
+    "preservedServices":  [
+                              "SERVICES\\ExecutiveBriefService.js",
+                              "SERVICES\\WorkQueueService.js",
+                              "SERVICES\\WorkflowService.js",
+                              "SERVICES\\ExecutionService.js",
+                              "SERVICES\\WorkforceExecutionService.js"
+                          ],
+    "capabilities":  [
+                         "Consume Executive COO authorized work",
+                         "Create persistent work-queue items",
+                         "Dispatch authorized objectives through WorkflowService",
+                         "Record CEO-protected decisions",
+                         "Block CEO-protected workflow execution"
+                     ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_026\\build_026_test_20260711_231617.txt"
+}

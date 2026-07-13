@@ -1,0 +1,39 @@
+{
+  "version": "EXEC_004.1",
+  "mode": "CONTROLLED_WRITE",
+  "generatedAt": "2026-07-04T02:46:12.028Z",
+  "global": {
+    "dryRunDefault": true,
+    "writesRequireExplicitEnv": true,
+    "writeEnvVar": "MILES_CONTROLLED_WRITE_ENABLED",
+    "instantWriteEnvVar": "INSTANTLY_WRITE_ENABLED",
+    "productionSafeguard": true,
+    "requireTestPrefix": true,
+    "testPrefix": "MILES_TEST_",
+    "maxRetries": 1,
+    "requireVerification": true,
+    "allowDestructive": false
+  },
+  "providers": {
+    "instantly": {
+      "enabled": true,
+      "writeEnabled": false,
+      "allowedWriteOperations": [
+        "CREATE_TEST_CAMPAIGN",
+        "PAUSE_TEST_CAMPAIGN",
+        "RESUME_TEST_CAMPAIGN"
+      ],
+      "blockedOperations": [
+        "DELETE_CAMPAIGN",
+        "BULK_UPLOAD_LEADS_PRODUCTION",
+        "START_PRODUCTION_CAMPAIGN"
+      ],
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_CAMPAIGNS",
+        "GET_CAMPAIGN",
+        "GENERATE_CAMPAIGN_REPORT"
+      ]
+    }
+  }
+}

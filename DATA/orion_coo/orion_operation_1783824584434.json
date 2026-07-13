@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "provider": "OrionProvider",
+  "action": "auditIntelligence",
+  "status": "Healthy",
+  "generatedAt": "2026-07-12T02:49:44.388Z",
+  "readOnly": true,
+  "metrics": {
+    "database": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_022\\test_orion.db",
+    "tableCount": 6,
+    "contractors": 100,
+    "buyers": 50,
+    "opportunities": 25,
+    "recompetes": 10,
+    "recommendations": 80,
+    "personas": 90,
+    "recommendationCoverage": 80,
+    "personaCoverage": 90,
+    "databaseFreshness": {
+      "exists": true,
+      "modifiedAt": "2026-07-12T02:49:46.000Z",
+      "ageHours": 0,
+      "stale": false,
+      "thresholdHours": 24
+    },
+    "sampleSizes": {
+      "contractors": 1,
+      "buyers": 1,
+      "opportunities": 1,
+      "recompetes": 1,
+      "recommendations": 1,
+      "personas": 1
+    }
+  },
+  "exceptions": [],
+  "recommendations": [],
+  "intelligence": {
+    "contractors": [
+      {
+        "id": 1
+      }
+    ],
+    "buyers": [
+      {
+        "id": 1
+      }
+    ],
+    "opportunities": [
+      {
+        "id": 1
+      }
+    ],
+    "recompetes": [
+      {
+        "id": 1
+      }
+    ],
+    "recommendationRecords": [
+      {
+        "id": 1
+      }
+    ],
+    "personaRecords": [
+      {
+        "id": 1
+      }
+    ]
+  },
+  "safety": {
+    "databaseMode": "READ_ONLY",
+    "writesEnabled": false,
+    "datasetRefreshExecuted": false,
+    "intelligenceJobExecuted": false
+  }
+}

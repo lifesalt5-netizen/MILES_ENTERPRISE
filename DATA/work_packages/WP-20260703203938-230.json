@@ -1,0 +1,167 @@
+{
+  "id": "WP-20260703203938-230",
+  "objective": "Audit B12 website for lead-generation improvements, homepage CTA strength, service page clarity, forms, SEO, and conversion blockers.",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": "HIGH",
+  "priorityScore": 82,
+  "createdAt": "2026-07-03T20:39:38.617Z",
+  "updatedAt": "2026-07-03T20:39:38.617Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Audit B12 website for lead-generation improvements, homepage CTA strength, service page clarity, forms, SEO, and conversion blockers.",
+    "priority": "HIGH",
+    "priorityScore": 82,
+    "createdAt": "2026-07-03T20:39:38.617Z",
+    "owner": "MILES",
+    "context": {
+      "source": "ExecutiveSupervisor",
+      "cycleId": "MILES-COO-CYCLE-1783111124836",
+      "provider": "B12",
+      "domain": "Marketing Operations",
+      "priority": "HIGH",
+      "priorityScore": 82,
+      "discoveredWorkId": "WEBSITE-B12-CONVERSION-AUDIT",
+      "discoveryReason": "Website must operate as a lead-generation system, not a static brochure."
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "B12",
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "B12",
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "B12",
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "B12",
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "B12",
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "B12",
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "module": "INT_001_ORION_PRODUCTION_INTEGRATION",
+  "name": "ORION Production Integration",
+  "version": "1.0.0",
+  "status": "runnable_local_integration_package",
+  "created_at": "2026-07-04T19:07:32.142396+00:00",
+  "known_db_path": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+  "outputs": [
+    "reports/orion_health_report.json",
+    "reports/orion_executive_brief.md",
+    "reports/orion_table_inventory.csv",
+    "reports/orion_mission_triggers.json"
+  ],
+  "write_mode": "READ_ONLY_BY_DEFAULT"
+}

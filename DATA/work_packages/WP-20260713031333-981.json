@@ -1,0 +1,308 @@
+{
+  "id": "WP-20260713031333-981",
+  "objective": "Repair Website: Repair Website: Conversion",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T03:13:33.916Z",
+  "updatedAt": "2026-07-13T03:13:33.916Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Repair Website: Repair Website: Conversion",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T03:13:33.916Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783910436564-53223",
+      "area": "Website",
+      "priority": 2,
+      "description": "Calendly integration was not detected.",
+      "reason": "Autonomous repair candidate detected during COO health check.",
+      "recommendedAction": "Investigate issue, generate repair recommendation, and verify result.",
+      "expectedImpact": "Restores or protects autonomous operating capability.",
+      "relatedProvider": "Website",
+      "provider": null,
+      "capability": null,
+      "action": null,
+      "metadata": {
+        "repair": {
+          "id": "REPAIR-1783910432540-22435",
+          "cycleId": "COO-20260713023950-002",
+          "area": "Website",
+          "severity": "Warning",
+          "title": "Repair Website: Conversion",
+          "objective": "Repair Website: Repair Website: Conversion",
+          "problem": "Calendly integration was not detected.",
+          "safeAutonomous": true,
+          "requiresKevin": false,
+          "recommendedRepair": "Investigate issue, generate repair recommendation, and verify result.",
+          "verification": "Issue is resolved, downgraded, or escalated with evidence.",
+          "rollback": "Restore prior state if a safe repair changes system state.",
+          "status": "READY",
+          "source": "AutonomousCOOLoopService",
+          "createdAt": "2026-07-13T02:40:32.540Z",
+          "metadata": {
+            "system": {
+              "area": "Website",
+              "status": "Watch",
+              "score": 63,
+              "risk": "MEDIUM",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-13T02:39:50.313Z",
+              "lastFailure": null,
+              "exceptions": [
+                {
+                  "type": "Conversion",
+                  "severity": "Warning",
+                  "message": "Calendly integration was not detected."
+                },
+                {
+                  "type": "ContentDrift",
+                  "severity": "Info",
+                  "message": "4 monitored content field(s) changed from baseline."
+                }
+              ],
+              "recommendations": [
+                "Verify the approved Calendly link is present and reachable.",
+                "Review content drift against approved website changes before publishing or rollback."
+              ],
+              "metrics": {
+                "homepageReachable": true,
+                "statusCode": 200,
+                "loadMs": 722,
+                "title": "Unlock Government Contract Opportunities",
+                "h1": "Federal &amp; SLED Market Entry Advisory",
+                "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+                "https": true,
+                "hasCTA": true,
+                "hasContact": true,
+                "hasCalendly": false,
+                "hasServices": true,
+                "hasPhone": true,
+                "hasEmail": true,
+                "finalUrl": "https://pathways2gc.com",
+                "titleLength": 40,
+                "h1Count": 1,
+                "headingCounts": {
+                  "h1": 1,
+                  "h2": 1,
+                  "h3": 3,
+                  "h4": 0,
+                  "h5": 0,
+                  "h6": 0
+                },
+                "metaDescriptionLength": 84,
+                "formCount": 1,
+                "validFormCount": 1,
+                "imageCount": 7,
+                "imagesMissingAlt": 0,
+                "inputLabelCoverage": 100,
+                "linksDiscovered": 19,
+                "internalLinks": 13,
+                "linksChecked": 13,
+                "brokenLinks": 0,
+                "hasCanonical": true,
+                "hasViewport": true,
+                "hasLang": true,
+                "hasMainLandmark": false,
+                "hasNavigation": true,
+                "hasSkipLink": false,
+                "hasAria": true
+              },
+              "sourceSystems": [
+                "CONNECTORS/WEBSITE"
+              ],
+              "dependencies": [
+                "Website"
+              ]
+            },
+            "exception": {
+              "type": "Conversion",
+              "severity": "Warning",
+              "message": "Calendly integration was not detected."
+            }
+          }
+        },
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-13T02:40:36.564Z"
+        },
+        "lastDuplicateDetectedAt": "2026-07-13T03:13:30.306Z"
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "website",
+    "workforce": "Website Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "website.health.repair"
+    ],
+    "assignments": [
+      {
+        "capability": "website.health.repair",
+        "provider": "WebsiteProvider",
+        "department": "Website",
+        "action": "verifyWebsite",
+        "bestWorker": {
+          "employee": "WebsiteCOOWorker",
+          "department": "Website",
+          "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_37E389177AC91708",
+          "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "website.health.repair",
+            "employees": [
+              {
+                "employee": "BrowserWorker.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyCampaignOperator.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "worker_registry.json",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "workerManager.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "WebsiteCOOWorker",
+                "department": "Website",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_37E389177AC91708",
+                "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "website department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "website.health.repair",
+        "assignedTo": "WebsiteCOOWorker",
+        "department": "Website",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "WebsiteProvider",
+        "action": "verifyWebsite",
+        "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+        "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+      }
+    ],
+    "providers": [
+      "WebsiteProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+    ],
+    "successCriteria": [
+      "WebsiteProvider.verifyWebsite executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "website.health.repair",
+      "assignedTo": "WebsiteCOOWorker",
+      "department": "Website",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "WebsiteProvider",
+      "action": "verifyWebsite",
+      "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+      "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

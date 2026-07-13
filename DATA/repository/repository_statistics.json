@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "statistics": {
+    "totalFiles": 8110,
+    "totalComponents": 304,
+    "services": 81,
+    "workers": 19,
+    "providers": 11,
+    "connectors": 61,
+    "runtime": 28,
+    "apis": 29,
+    "databases": 21,
+    "events": 51,
+    "duplicateRisks": 370,
+    "orphanRisks": 103
+  }
+}

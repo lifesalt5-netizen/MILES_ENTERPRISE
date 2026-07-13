@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "action": "INSTANTLY_LIVE_INTEGRATION",
+  "type": "MILES_INSTANTLY_LIVE_STATE",
+  "build": "EXEC_003",
+  "generatedAt": "2026-07-09T23:38:27.720Z",
+  "durationMs": 106,
+  "status": {
+    "ok": true,
+    "provider": "instantly",
+    "providerName": "Instantly",
+    "executable": true,
+    "credentialsPresent": true,
+    "writeEnabled": false,
+    "safeMode": true,
+    "supportedOperations": [
+      "HEALTH_CHECK",
+      "LIST_CAMPAIGNS",
+      "GET_CAMPAIGN",
+      "CREATE_CAMPAIGN",
+      "PAUSE_CAMPAIGN",
+      "RESUME_CAMPAIGN",
+      "UPLOAD_LEADS",
+      "ASSIGN_SENDING_ACCOUNTS",
+      "GENERATE_CAMPAIGN_REPORT"
+    ],
+    "generatedAt": "2026-07-09T23:38:27.720Z"
+  },
+  "result": {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "GET_CAMPAIGN",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 92,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "url": "https://api.instantly.ai/api/v2/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "data": {
+        "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+        "name": "NURTURE - 14 DAY",
+        "status": 0,
+        "campaign_schedule": {},
+        "timestamp_created": "2026-05-28T21:00:47.084Z",
+        "timestamp_updated": "2026-05-28T21:00:47.084Z",
+        "pl_value": 2500,
+        "open_tracking": false,
+        "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+        "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-09T23:38:27.706Z"
+  },
+  "summary": {
+    "credentialsPresent": true,
+    "writeEnabled": false,
+    "executable": true,
+    "resultStatus": "OK"
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\instantly_live"
+}

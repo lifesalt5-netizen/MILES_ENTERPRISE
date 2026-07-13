@@ -1,0 +1,8 @@
+{
+  "build": 15,
+  "version": "0.15.0",
+  "name": "COO Orchestrator Diagnostics",
+  "releaseDate": "2026-07-01",
+  "status": "diagnostic",
+  "objective": "Replace COOOrchestratorService with lifecycle verification and diagnostic output."
+}

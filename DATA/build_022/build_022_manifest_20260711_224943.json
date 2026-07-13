@@ -1,0 +1,36 @@
+﻿{
+    "ok":  true,
+    "build":  "022",
+    "name":  "ORION COO",
+    "installedAt":  "2026-07-11T22:49:44.4674858-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_022_20260711_224943",
+    "changedFiles":  [
+                         "PROVIDERS\\providers\\OrionProvider.js"
+                     ],
+    "reusedComponents":  [
+                             "CONNECTORS\\ORION\\connector.js",
+                             "SERVICES\\provider_controllers\\OrionProviderController.js",
+                             "SERVICES\\ProviderRouterService.js",
+                             "SERVICES\\CapabilityService.js"
+                         ],
+    "capabilities":  [
+                         "Database health",
+                         "Database freshness",
+                         "Contractor intelligence coverage",
+                         "Buyer intelligence coverage",
+                         "Opportunity intelligence coverage",
+                         "Recompete coverage",
+                         "Recommendation coverage",
+                         "Persona coverage",
+                         "Ingestion-risk recommendations",
+                         "Evidence persistence"
+                     ],
+    "safety":  [
+                   "Read-only database operation",
+                   "No dataset refresh executed",
+                   "No intelligence job executed",
+                   "No database writes",
+                   "No recommendation regeneration without future authorization"
+               ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_022\\build_022_test_20260711_224943.txt"
+}

@@ -1,0 +1,10 @@
+{
+  "systems": {
+    "instantly": {"enabled": true, "mode": "stub_until_credentials_added"},
+    "google_workspace": {"enabled": true, "mode": "stub_until_credentials_added"},
+    "b12": {"enabled": true, "mode": "browser_or_manual_queue"},
+    "linkedin": {"enabled": true, "mode": "draft_only_platform_safe"},
+    "orion": {"enabled": true, "mode": "local_db_or_csv"},
+    "government_data": {"enabled": true, "mode": "download_and_ingest"}
+  }
+}

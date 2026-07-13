@@ -1,0 +1,431 @@
+{
+  "id": "WP-20260702165122-899",
+  "objective": "Increase safe outbound operating coverage",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-02T16:51:22.823Z",
+  "updatedAt": "2026-07-02T16:51:22.823Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Increase safe outbound operating coverage",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-02T16:51:22.822Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783011082729-19148",
+      "area": "Marketing",
+      "priority": 1,
+      "description": "Only 1 active campaign(s) detected out of 10.",
+      "reason": "Only 1 active campaign(s) detected out of 10.",
+      "recommendedAction": "Audit paused Instantly campaigns, deliverability risk, inbox capacity, and safe resume options.",
+      "expectedImpact": "Improves lead generation and revenue pipeline.",
+      "relatedProvider": "Marketing",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1783011082728-54410",
+          "priority": 1,
+          "area": "Marketing",
+          "title": "Increase safe outbound operating coverage",
+          "reason": "Only 1 active campaign(s) detected out of 10.",
+          "recommendedAction": "Audit paused Instantly campaigns, deliverability risk, inbox capacity, and safe resume options.",
+          "expectedImpact": "Improves lead generation and revenue pipeline.",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "relatedProvider": "Marketing",
+          "businessImpactScore": 95,
+          "automationConfidence": "HIGH",
+          "metadata": {
+            "marketing": {
+              "totalCampaigns": 10,
+              "activeCampaigns": 1,
+              "pausedCampaigns": 9,
+              "campaignNames": [
+                "GSA 500k–3m",
+                "HubZone",
+                "Sam Low Sales",
+                "EXPIRED everything",
+                "GSA 3m–5m",
+                "FUTURE FOLLOW-UP",
+                "SBS Verified Email Targets",
+                "VA No Sales",
+                "VA 3-5m",
+                "NURTURE - 14 DAY"
+              ],
+              "campaigns": [
+                {
+                  "id": "f990817a-c420-4935-a159-7eda97dec196",
+                  "name": "GSA 500k–3m",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:04:12.205Z",
+                  "updated": "2026-05-28T21:04:12.205Z"
+                },
+                {
+                  "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+                  "name": "HubZone",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:10:21.044Z",
+                  "updated": "2026-05-28T21:10:21.044Z"
+                },
+                {
+                  "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+                  "name": "Sam Low Sales",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:07:42.277Z",
+                  "updated": "2026-05-28T21:07:42.277Z"
+                },
+                {
+                  "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+                  "name": "EXPIRED everything",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:12:53.239Z",
+                  "updated": "2026-05-28T21:12:53.239Z"
+                },
+                {
+                  "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+                  "name": "GSA 3m–5m",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:04:32.690Z",
+                  "updated": "2026-05-28T21:04:32.690Z"
+                },
+                {
+                  "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+                  "name": "FUTURE FOLLOW-UP",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:01:49.997Z",
+                  "updated": "2026-05-28T21:01:49.997Z"
+                },
+                {
+                  "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+                  "name": "SBS Verified Email Targets",
+                  "status": 1,
+                  "dailyLimit": 240,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-14T17:58:18.525Z",
+                  "updated": "2026-06-20T20:38:59.087Z"
+                },
+                {
+                  "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+                  "name": "VA No Sales",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:05:17.669Z",
+                  "updated": "2026-05-28T21:05:17.669Z"
+                },
+                {
+                  "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+                  "name": "VA 3-5m",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:06:23.954Z",
+                  "updated": "2026-05-28T21:06:23.954Z"
+                },
+                {
+                  "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+                  "name": "NURTURE - 14 DAY",
+                  "status": 0,
+                  "dailyLimit": 0,
+                  "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+                  "owner": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+                  "created": "2026-05-28T21:00:47.084Z",
+                  "updated": "2026-05-28T21:00:47.084Z"
+                }
+              ]
+            }
+          }
+        },
+        "automationConfidence": "HIGH",
+        "businessImpactScore": 95
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "marketing",
+    "workforce": "Marketing Workforce",
+    "requiredCapabilities": [
+      "marketing.instantly.read",
+      "marketing.campaign.audit",
+      "marketing.deliverability.evaluate",
+      "marketing.execution.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "marketing.instantly.read",
+        "candidates": [
+          {
+            "capability": "marketing",
+            "employees": [
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "content_recommendation"
+              }
+            ]
+          }
+        ],
+        "bestWorker": {
+          "employee": "Aria",
+          "department": "Marketing",
+          "source": "workforce"
+        }
+      },
+      {
+        "capability": "marketing.campaign.audit",
+        "candidates": [
+          {
+            "capability": "marketing",
+            "employees": [
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "content_recommendation"
+              }
+            ]
+          }
+        ],
+        "bestWorker": {
+          "employee": "Aria",
+          "department": "Marketing",
+          "source": "workforce"
+        }
+      },
+      {
+        "capability": "marketing.deliverability.evaluate",
+        "candidates": [
+          {
+            "capability": "marketing",
+            "employees": [
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "content_recommendation"
+              }
+            ]
+          }
+        ],
+        "bestWorker": {
+          "employee": "Aria",
+          "department": "Marketing",
+          "source": "workforce"
+        }
+      },
+      {
+        "capability": "marketing.execution.route",
+        "candidates": [
+          {
+            "capability": "marketing",
+            "employees": [
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "content_recommendation"
+              }
+            ]
+          }
+        ],
+        "bestWorker": {
+          "employee": "Aria",
+          "department": "Marketing",
+          "source": "workforce"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "marketing.instantly.read",
+        "assignedTo": "MILES",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "MarketingProvider",
+        "action": "readCampaigns",
+        "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+        "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+      },
+      {
+        "step": 2,
+        "capability": "marketing.campaign.audit",
+        "assignedTo": "MILES",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "identifyPausedCampaigns",
+        "expectedOutput": "List of paused campaigns requiring review.",
+        "verification": "Verify paused campaigns are separated from active campaigns."
+      },
+      {
+        "step": 3,
+        "capability": "marketing.deliverability.evaluate",
+        "assignedTo": "MILES",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateDeliverabilityRisk",
+        "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+        "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+      },
+      {
+        "step": 4,
+        "capability": "marketing.execution.route",
+        "assignedTo": "MILES",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "recommendResumeOrHold",
+        "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+        "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+      },
+      {
+        "step": 5,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+        "verification": "Verify update is clear, concise, and action-oriented."
+      }
+    ],
+    "providers": [
+      "MarketingProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Instantly campaign data was read successfully.",
+      "Paused campaigns were identified.",
+      "Deliverability risk was evaluated.",
+      "Resume or hold recommendation was generated.",
+      "Executive update was produced."
+    ],
+    "successCriteria": [
+      "Paused campaign inventory exists.",
+      "Every paused campaign has an action recommendation.",
+      "No unsafe sending action is performed without approval."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "marketing.instantly.read",
+      "assignedTo": "MILES",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "MarketingProvider",
+      "action": "readCampaigns",
+      "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+      "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
+    },
+    {
+      "step": 2,
+      "capability": "marketing.campaign.audit",
+      "assignedTo": "MILES",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "identifyPausedCampaigns",
+      "expectedOutput": "List of paused campaigns requiring review.",
+      "verification": "Verify paused campaigns are separated from active campaigns."
+    },
+    {
+      "step": 3,
+      "capability": "marketing.deliverability.evaluate",
+      "assignedTo": "MILES",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateDeliverabilityRisk",
+      "expectedOutput": "Deliverability risk assessment for paused campaigns.",
+      "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
+    },
+    {
+      "step": 4,
+      "capability": "marketing.execution.route",
+      "assignedTo": "MILES",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "recommendResumeOrHold",
+      "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
+      "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
+    },
+    {
+      "step": 5,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update summarizing campaign status and recommended action.",
+      "verification": "Verify update is clear, concise, and action-oriented."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

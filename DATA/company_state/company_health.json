@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-07-04T01:44:40.791Z",
+  "health": {
+    "score": 78,
+    "status": "WATCH",
+    "riskCount": 3,
+    "openWork": 33,
+    "awaitingApproval": 0
+  },
+  "risks": [
+    {
+      "severity": "MEDIUM",
+      "area": "Engineering",
+      "message": "Repository has 370 duplicate risks.",
+      "action": "Track but do not stop COO build."
+    },
+    {
+      "severity": "MEDIUM",
+      "area": "Engineering",
+      "message": "Repository has 103 orphan risks.",
+      "action": "Track for future cleanup."
+    },
+    {
+      "severity": "LOW",
+      "area": "Capability",
+      "message": "Capability registry reports 1 gap(s).",
+      "action": "Continue COO build sequence."
+    }
+  ],
+  "priorities": [
+    {
+      "priority": 2,
+      "area": "Revenue",
+      "title": "Continue revenue-generation workflows",
+      "reason": "Revenue growth remains the highest business objective."
+    },
+    {
+      "priority": 3,
+      "area": "Engineering",
+      "title": "Continue autonomous COO build sequence",
+      "reason": "Task Router and COO Loop are the next required builds."
+    }
+  ]
+}

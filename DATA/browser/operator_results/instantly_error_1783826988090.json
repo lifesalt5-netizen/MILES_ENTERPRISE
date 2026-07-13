@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "stage": "FAILED",
+  "mode": "EXECUTE",
+  "campaigns": [],
+  "actions": {
+    "executed": [],
+    "verified": [],
+    "failed": [],
+    "paused": [],
+    "approvals": [],
+    "ignored": []
+  },
+  "diagnostics": {
+    "failureUrl": "https://app.instantly.ai/app/campaigns",
+    "failureTitle": "Instantly"
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\screenshots\\campaign_page_not_detected_1783826985774.png",
+    "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\screenshots\\operator_failure_1783826987907.png"
+  ],
+  "errors": [
+    "Error: Campaign page loaded but no campaign UI could be detected.\n    at InstantlyCampaignOperator.openCampaignsPage (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js:195:13)\n    at async InstantlyCampaignOperator.run (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\Browser\\Workers\\InstantlyCampaignOperator.js:75:7)\n    at async WorkforceExecutionService.runInstantlyOperator (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:311:30)\n    at async WorkforceExecutionService.executeStep (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:163:26)\n    at async WorkforceExecutionService.executeAndVerify (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:545:22)\n    at async ExecutionService.executeWorkforceTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:517:9)\n    at async RuntimeWorkerSupervisor.executePass (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartProductionSystem.js:574:9)"
+  ]
+}

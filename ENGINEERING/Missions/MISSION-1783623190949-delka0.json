@@ -1,0 +1,80 @@
+{
+  "id": "MISSION-1783623190949-delka0",
+  "title": "Build Google Workspace Provider",
+  "objective": "Create autonomous Google Workspace provisioning capability",
+  "priority": 1,
+  "authority": "ENGINEERING_AUTOMATIC",
+  "status": "ACCEPTED",
+  "createdAt": "2026-07-09T18:53:10.949Z",
+  "updatedAt": "2026-07-09T18:53:10.949Z",
+  "tasks": [
+    {
+      "id": "TICKET-1783623190950-956ikg",
+      "missionId": "MISSION-1783623190949-delka0",
+      "title": "Analyze Mission Requirements",
+      "type": "ARCHITECT",
+      "owner": "ARCHITECT",
+      "priority": 1,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:53:10.950Z",
+      "updatedAt": "2026-07-09T18:53:10.950Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability"
+      }
+    },
+    {
+      "id": "TICKET-1783623190950-mh2zk6",
+      "missionId": "MISSION-1783623190949-delka0",
+      "title": "Create Implementation Plan",
+      "type": "BUILDER",
+      "owner": "BUILDER",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:53:10.950Z",
+      "updatedAt": "2026-07-09T18:53:10.950Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability"
+      }
+    },
+    {
+      "id": "TICKET-1783623190950-h03u9h",
+      "missionId": "MISSION-1783623190949-delka0",
+      "title": "Validate Implementation Plan",
+      "type": "VALIDATOR",
+      "owner": "VALIDATOR",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:53:10.950Z",
+      "updatedAt": "2026-07-09T18:53:10.950Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability"
+      }
+    },
+    {
+      "id": "TICKET-1783623190950-69sj7f",
+      "missionId": "MISSION-1783623190949-delka0",
+      "title": "Prepare Executive Report",
+      "type": "ATLAS",
+      "owner": "ATLAS",
+      "priority": 3,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T18:53:10.950Z",
+      "updatedAt": "2026-07-09T18:53:10.950Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability"
+      }
+    }
+  ]
+}

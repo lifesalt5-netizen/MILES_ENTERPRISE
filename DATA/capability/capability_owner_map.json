@@ -1,0 +1,1129 @@
+{
+  "generatedAt": "2026-07-04T00:38:36.033Z",
+  "ownerMap": {
+    "Unknown": [
+      {
+        "capabilityId": "api_surface",
+        "name": "Api Surface",
+        "executable": true,
+        "componentCount": 29
+      },
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "outbound_campaign_operations",
+        "name": "Outbound Campaign Operations",
+        "executable": true,
+        "componentCount": 23
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Runtime": [
+      {
+        "capabilityId": "api_surface",
+        "name": "Api Surface",
+        "executable": true,
+        "componentCount": 29
+      },
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "self_learning_operations",
+        "name": "Self Learning Operations",
+        "executable": false,
+        "componentCount": 8
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      },
+      {
+        "capabilityId": "worker_execution",
+        "name": "Worker Execution",
+        "executable": true,
+        "componentCount": 19
+      }
+    ],
+    "Provider Layer": [
+      {
+        "capabilityId": "api_surface",
+        "name": "Api Surface",
+        "executable": true,
+        "componentCount": 29
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "provider_operations",
+        "name": "Provider Operations",
+        "executable": true,
+        "componentCount": 11
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Service Layer": [
+      {
+        "capabilityId": "api_surface",
+        "name": "Api Surface",
+        "executable": true,
+        "componentCount": 29
+      },
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "outbound_campaign_operations",
+        "name": "Outbound Campaign Operations",
+        "executable": true,
+        "componentCount": 23
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "ORION": [
+      {
+        "capabilityId": "api_surface",
+        "name": "Api Surface",
+        "executable": true,
+        "componentCount": 29
+      },
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_intelligence_operations",
+        "name": "Orion Intelligence Operations",
+        "executable": true,
+        "componentCount": 7
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "provider_operations",
+        "name": "Provider Operations",
+        "executable": true,
+        "componentCount": 11
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      }
+    ],
+    "Executive": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_learning_operations",
+        "name": "Self Learning Operations",
+        "executable": false,
+        "componentCount": 8
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Website": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "provider_operations",
+        "name": "Provider Operations",
+        "executable": true,
+        "componentCount": 11
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Marketing": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "outbound_campaign_operations",
+        "name": "Outbound Campaign Operations",
+        "executable": true,
+        "componentCount": 23
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      },
+      {
+        "capabilityId": "worker_execution",
+        "name": "Worker Execution",
+        "executable": true,
+        "componentCount": 19
+      }
+    ],
+    "Connector Layer": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Engineering": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "executive_intelligence",
+        "name": "Executive Intelligence",
+        "executable": true,
+        "componentCount": 70
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "provider_operations",
+        "name": "Provider Operations",
+        "executable": true,
+        "componentCount": 11
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Worker Layer": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "email_outbound_operations",
+        "name": "Email Outbound Operations",
+        "executable": true,
+        "componentCount": 93
+      },
+      {
+        "capabilityId": "engineering_operations",
+        "name": "Engineering Operations",
+        "executable": true,
+        "componentCount": 59
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "self_engineering_operations",
+        "name": "Self Engineering Operations",
+        "executable": true,
+        "componentCount": 32
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      },
+      {
+        "capabilityId": "worker_execution",
+        "name": "Worker Execution",
+        "executable": true,
+        "componentCount": 19
+      }
+    ],
+    "Learning": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "coo_orchestration",
+        "name": "Coo Orchestration",
+        "executable": true,
+        "componentCount": 31
+      },
+      {
+        "capabilityId": "data_provider_operations",
+        "name": "Data Provider Operations",
+        "executable": true,
+        "componentCount": 80
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "marketing_operations",
+        "name": "Marketing Operations",
+        "executable": true,
+        "componentCount": 114
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "self_learning_operations",
+        "name": "Self Learning Operations",
+        "executable": false,
+        "componentCount": 8
+      },
+      {
+        "capabilityId": "website_operations",
+        "name": "Website Operations",
+        "executable": true,
+        "componentCount": 94
+      }
+    ],
+    "Revenue": [
+      {
+        "capabilityId": "approval_governance",
+        "name": "Approval Governance",
+        "executable": true,
+        "componentCount": 99
+      },
+      {
+        "capabilityId": "connector_operations",
+        "name": "Connector Operations",
+        "executable": true,
+        "componentCount": 144
+      },
+      {
+        "capabilityId": "government_data",
+        "name": "Government Data",
+        "executable": true,
+        "componentCount": 30
+      },
+      {
+        "capabilityId": "learning_operations",
+        "name": "Learning Operations",
+        "executable": true,
+        "componentCount": 55
+      },
+      {
+        "capabilityId": "orion_operations",
+        "name": "Orion Operations",
+        "executable": true,
+        "componentCount": 92
+      },
+      {
+        "capabilityId": "revenue_operations",
+        "name": "Revenue Operations",
+        "executable": true,
+        "componentCount": 87
+      },
+      {
+        "capabilityId": "runtime_operations",
+        "name": "Runtime Operations",
+        "executable": true,
+        "componentCount": 106
+      },
+      {
+        "capabilityId": "service_execution",
+        "name": "Service Execution",
+        "executable": true,
+        "componentCount": 81
+      },
+      {
+        "capabilityId": "worker_execution",
+        "name": "Worker Execution",
+        "executable": true,
+        "componentCount": 19
+      }
+    ]
+  }
+}

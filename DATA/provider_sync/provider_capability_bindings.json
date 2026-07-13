@@ -1,0 +1,410 @@
+{
+  "ok": true,
+  "action": "PROVIDER_CAPABILITY_BINDINGS",
+  "build": "EXEC_006",
+  "generatedAt": "2026-07-13T15:59:24.677Z",
+  "bindings": {
+    "instantly": {
+      "provider": "instantly",
+      "providerName": "Instantly",
+      "executable": true,
+      "status": "READY_READ_ONLY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_CAMPAIGNS",
+        "GET_CAMPAIGN",
+        "GENERATE_CAMPAIGN_REPORT"
+      ],
+      "writeOperations": [
+        "CREATE_CAMPAIGN",
+        "PAUSE_CAMPAIGN",
+        "RESUME_CAMPAIGN",
+        "UPLOAD_LEADS",
+        "ASSIGN_SENDING_ACCOUNTS"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "instantly",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_CAMPAIGNS": {
+          "provider": "instantly",
+          "operation": "LIST_CAMPAIGNS",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "GET_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "GET_CAMPAIGN",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "CREATE_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "CREATE_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "PAUSE_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "PAUSE_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "RESUME_CAMPAIGN": {
+          "provider": "instantly",
+          "operation": "RESUME_CAMPAIGN",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "UPLOAD_LEADS": {
+          "provider": "instantly",
+          "operation": "UPLOAD_LEADS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "ASSIGN_SENDING_ACCOUNTS": {
+          "provider": "instantly",
+          "operation": "ASSIGN_SENDING_ACCOUNTS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "GENERATE_CAMPAIGN_REPORT": {
+          "provider": "instantly",
+          "operation": "GENERATE_CAMPAIGN_REPORT",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "google_workspace": {
+      "provider": "google_workspace",
+      "providerName": "Google Workspace",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_USERS",
+        "VERIFY_MAILBOX"
+      ],
+      "writeOperations": [
+        "CREATE_USER",
+        "CREATE_ALIAS",
+        "SUSPEND_USER"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "google_workspace",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_USERS": {
+          "provider": "google_workspace",
+          "operation": "LIST_USERS",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "CREATE_USER": {
+          "provider": "google_workspace",
+          "operation": "CREATE_USER",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "CREATE_ALIAS": {
+          "provider": "google_workspace",
+          "operation": "CREATE_ALIAS",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "SUSPEND_USER": {
+          "provider": "google_workspace",
+          "operation": "SUSPEND_USER",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_MAILBOX": {
+          "provider": "google_workspace",
+          "operation": "VERIFY_MAILBOX",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "namecheap": {
+      "provider": "namecheap",
+      "providerName": "Namecheap",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "LIST_DOMAINS",
+        "VERIFY_SPF",
+        "VERIFY_DKIM",
+        "VERIFY_DMARC"
+      ],
+      "writeOperations": [
+        "UPDATE_DNS_OR_VERIFY_AUTH"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "namecheap",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "LIST_DOMAINS": {
+          "provider": "namecheap",
+          "operation": "LIST_DOMAINS",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "UPDATE_DNS_OR_VERIFY_AUTH": {
+          "provider": "namecheap",
+          "operation": "UPDATE_DNS_OR_VERIFY_AUTH",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_SPF": {
+          "provider": "namecheap",
+          "operation": "VERIFY_SPF",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DKIM": {
+          "provider": "namecheap",
+          "operation": "VERIFY_DKIM",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DMARC": {
+          "provider": "namecheap",
+          "operation": "VERIFY_DMARC",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "website": {
+      "provider": "website",
+      "providerName": "Website",
+      "status": "MISSING_CREDENTIALS",
+      "credentialsPresent": false,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "VERIFY_PAGE",
+        "GENERATE_WEBSITE_REPORT"
+      ],
+      "writeOperations": [
+        "BACKUP_SITE",
+        "UPDATE_PAGE",
+        "PUBLISH_PAGE"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "website",
+          "operation": "HEALTH_CHECK",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "BACKUP_SITE": {
+          "provider": "website",
+          "operation": "BACKUP_SITE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "UPDATE_PAGE": {
+          "provider": "website",
+          "operation": "UPDATE_PAGE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "PUBLISH_PAGE": {
+          "provider": "website",
+          "operation": "PUBLISH_PAGE",
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "VERIFY_PAGE": {
+          "provider": "website",
+          "operation": "VERIFY_PAGE",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "GENERATE_WEBSITE_REPORT": {
+          "provider": "website",
+          "operation": "GENERATE_WEBSITE_REPORT",
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "orion": {
+      "provider": "orion",
+      "providerName": "ORION",
+      "executable": true,
+      "status": "READY_READ_ONLY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "VERIFY_DATABASE",
+        "GENERATE_ORION_REPORT"
+      ],
+      "writeOperations": [
+        "REFRESH_DATASETS",
+        "RUN_INTELLIGENCE_JOB"
+      ],
+      "writeEnabled": false,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "orion",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_DATABASE": {
+          "provider": "orion",
+          "operation": "VERIFY_DATABASE",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "REFRESH_DATASETS": {
+          "provider": "orion",
+          "operation": "REFRESH_DATASETS",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "RUN_INTELLIGENCE_JOB": {
+          "provider": "orion",
+          "operation": "RUN_INTELLIGENCE_JOB",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": false
+        },
+        "GENERATE_ORION_REPORT": {
+          "provider": "orion",
+          "operation": "GENERATE_ORION_REPORT",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    },
+    "filesystem": {
+      "provider": "filesystem",
+      "providerName": "File System",
+      "executable": true,
+      "status": "READY",
+      "credentialsPresent": true,
+      "readOperations": [
+        "HEALTH_CHECK",
+        "READ_JSON",
+        "VERIFY_PATH"
+      ],
+      "writeOperations": [
+        "ENSURE_DIRECTORY",
+        "WRITE_JSON"
+      ],
+      "writeEnabled": true,
+      "operations": {
+        "HEALTH_CHECK": {
+          "provider": "filesystem",
+          "operation": "HEALTH_CHECK",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "ENSURE_DIRECTORY": {
+          "provider": "filesystem",
+          "operation": "ENSURE_DIRECTORY",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": true
+        },
+        "WRITE_JSON": {
+          "provider": "filesystem",
+          "operation": "WRITE_JSON",
+          "executable": true,
+          "readOnly": false,
+          "write": true,
+          "authorized": true
+        },
+        "READ_JSON": {
+          "provider": "filesystem",
+          "operation": "READ_JSON",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        },
+        "VERIFY_PATH": {
+          "provider": "filesystem",
+          "operation": "VERIFY_PATH",
+          "executable": true,
+          "readOnly": true,
+          "write": false,
+          "authorized": true
+        }
+      }
+    }
+  },
+  "summary": {
+    "providers": 6,
+    "executableProviders": 3,
+    "operations": 37
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\provider_sync"
+}

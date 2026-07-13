@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "provider": "SalesProvider",
+  "action": "reviewPipeline",
+  "generatedAt": "2026-07-12T02:33:11.034Z",
+  "analysis": {
+    "timestamp": "2026-07-12T02:33:11.034Z",
+    "summary": {
+      "processed": 1,
+      "hot": 0,
+      "warm": 1,
+      "cold": 0,
+      "closed": 0
+    },
+    "outputs": [
+      {
+        "deal": {
+          "id": "deal-1",
+          "name": "Test Deal",
+          "value": 10000,
+          "probability": 0.5,
+          "score": 80,
+          "lastActivity": "2026-07-08T02:33:08.951Z"
+        },
+        "decision": {
+          "stage": "warm",
+          "action": "PROPOSAL"
+        },
+        "execution": {
+          "status": "proposal_sent"
+        }
+      }
+    ]
+  },
+  "metrics": {
+    "activeDeals": 1,
+    "pipelineValue": 10000,
+    "weightedForecast": 5000,
+    "stalledDeals": 1,
+    "hotDeals": 0,
+    "warmDeals": 1
+  },
+  "recommendations": [
+    {
+      "action": "CREATE_FOLLOW_UP",
+      "dealId": "deal-1",
+      "dealName": "Test Deal",
+      "reason": "No recorded activity for at least 3 days."
+    },
+    {
+      "action": "PROPOSAL",
+      "stage": "warm",
+      "dealId": "deal-1",
+      "dealName": "Test Deal",
+      "protected": true
+    }
+  ]
+}

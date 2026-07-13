@@ -1,0 +1,17 @@
+{
+  "id": "TICKET-1783623190950-h03u9h",
+  "missionId": "MISSION-1783623190949-delka0",
+  "title": "Validate Implementation Plan",
+  "type": "VALIDATOR",
+  "owner": "VALIDATOR",
+  "priority": 2,
+  "authority": "AUTOMATIC_ENGINEERING",
+  "status": "QUEUED",
+  "createdAt": "2026-07-09T18:53:10.950Z",
+  "updatedAt": "2026-07-09T18:53:10.950Z",
+  "approvalRequired": false,
+  "payload": {
+    "missionTitle": "Build Google Workspace Provider",
+    "objective": "Create autonomous Google Workspace provisioning capability"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "service": "ENTERPRISE_CAPABILITY_REGISTRY",
+  "version": "1.0.0",
+  "capabilityCount": 82,
+  "providerAssignmentCount": 28036,
+  "highRiskCapabilityCount": 6,
+  "mediumRiskCapabilityCount": 4,
+  "lowRiskCapabilityCount": 72,
+  "generatedAt": "2026-07-10T23:19:30.140Z"
+}

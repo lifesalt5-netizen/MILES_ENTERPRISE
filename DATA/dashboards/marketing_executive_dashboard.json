@@ -1,0 +1,60 @@
+{
+  "generatedAt": "2026-07-09T00:52:55.186Z",
+  "campaigns": {
+    "total": 10,
+    "byStatus": {
+      "0": 9,
+      "1": 1
+    }
+  },
+  "uploadQueue": {
+    "total": 40,
+    "byStatus": {
+      "DRY_RUN_COMPLETED": 10,
+      "UPLOADED": 10,
+      "PENDING_APPROVAL": 20
+    }
+  },
+  "approvals": {
+    "total": 40,
+    "byStatus": {
+      "APPROVED": 20,
+      "PENDING": 20
+    }
+  },
+  "segments": {
+    "total": 48,
+    "readyForUpload": 35,
+    "byUploadStatus": {
+      "NO_EMAILS": 5,
+      "READY_FOR_REVIEW": 35,
+      "NEEDS_VERIFICATION": 5,
+      "READY_AFTER_DEDUPE_OR_CLEANUP": 3
+    }
+  },
+  "domains": {
+    "total": 4,
+    "byStatus": {
+      "WEBSITE_ONLY": 1,
+      "ACTIVE": 3
+    }
+  },
+  "inboxes": {
+    "total": 10,
+    "usable": 9,
+    "totalDailyCapacity": 205,
+    "byStatus": {
+      "ADMIN_ONLY": 1,
+      "ACTIVE": 9
+    }
+  },
+  "campaignMonitoring": {
+    "campaignsChecked": 1,
+    "totalQueueItems": 2,
+    "totalExecuted": 2,
+    "totalFailed": 0
+  },
+  "provider": {
+    "instantlyMode": "EXPORT_CSV"
+  }
+}

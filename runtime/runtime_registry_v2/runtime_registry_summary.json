@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "service": "RUNTIME_REGISTRY_SERVICE_V2",
+  "version": "2.0.2",
+  "status": "HEALTHY",
+  "host": "127.0.0.1",
+  "port": 8791,
+  "pid": 18436,
+  "startedAt": "2026-07-11T01:00:38.335Z",
+  "uptimeSeconds": 333,
+  "totalServices": 4,
+  "countByStatus": {
+    "RUNNING": 4
+  },
+  "countByType": {
+    "HTTP_SERVICE": 3,
+    "REGISTRY_SERVICE": 1
+  },
+  "unhealthyServices": [],
+  "capabilityCount": 7,
+  "discoveryRunning": true,
+  "pollIntervalMs": 15000,
+  "httpTimeoutMs": 5000,
+  "httpProbeAttempts": 3,
+  "generatedAt": "2026-07-11T01:06:11.780Z"
+}

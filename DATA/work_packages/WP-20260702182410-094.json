@@ -1,0 +1,216 @@
+{
+  "id": "WP-20260702182410-094",
+  "objective": "Repair high-risk Website condition",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-02T18:24:10.024Z",
+  "updatedAt": "2026-07-02T18:24:10.024Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Repair high-risk Website condition",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-02T18:24:10.024Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783016649896-41651",
+      "area": "Website",
+      "priority": 1,
+      "description": "Website health score is 0.",
+      "reason": "Website health score is 0.",
+      "recommendedAction": "Verify Instantly API connectivity.",
+      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+      "relatedProvider": "Website",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1783016649895-15164",
+          "priority": 1,
+          "area": "Website",
+          "title": "Repair high-risk Website condition",
+          "reason": "Website health score is 0.",
+          "recommendedAction": "Verify Instantly API connectivity.",
+          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "relatedProvider": "Website",
+          "businessImpactScore": 95,
+          "automationConfidence": "HIGH",
+          "metadata": {
+            "health": {
+              "area": "Website",
+              "status": "Critical",
+              "score": 0,
+              "risk": "HIGH",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-02T18:24:00.451Z",
+              "lastFailure": "2026-07-02T18:24:09.882Z",
+              "exceptions": [
+                {
+                  "type": "InstantlyAPI",
+                  "severity": "Critical",
+                  "message": "instantly.listCampaigns is not a function"
+                }
+              ],
+              "recommendations": [
+                "Verify Instantly API connectivity.",
+                "Verify INSTANTLY_API_KEY.",
+                "Verify internet connectivity."
+              ],
+              "metrics": {},
+              "sourceSystems": [
+                "CONNECTORSWEBSITE"
+              ],
+              "dependencies": [
+                "Website"
+              ]
+            }
+          }
+        },
+        "automationConfidence": "HIGH",
+        "businessImpactScore": 95
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

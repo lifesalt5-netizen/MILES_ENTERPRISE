@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-13T01:44:49.966Z",
+  "capability": "Sales COO",
+  "status": "PLAN_GENERATED",
+  "deploymentStatus": "NOT_DEPLOYED",
+  "approvalRequired": true,
+  "phases": [
+    "Define capability contract",
+    "Generate service skeleton",
+    "Generate data outputs",
+    "Generate tests",
+    "Generate documentation",
+    "Package approval request",
+    "Wait for Kevin approval"
+  ],
+  "proposedFiles": [
+    "SERVICES/SalesCOOService.js",
+    "DATA/capability_builder/staged/sales_coo_plan.json",
+    "DOCS/sales_coo_operations.md"
+  ],
+  "testsRequired": [
+    "Service loads without error",
+    "Output files are generated",
+    "No production deployment occurs without approval",
+    "Approval package is created"
+  ],
+  "rollbackPlan": "Delete staged generated files and remove pending build queue entry before approval."
+}

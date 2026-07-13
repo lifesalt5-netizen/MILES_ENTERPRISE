@@ -1,0 +1,36 @@
+# Node
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Google Credentials
+CONFIG/Credentials/
+google_token.json
+google_oauth_client.json
+
+# Runtime output
+reports/
+status/
+output/
+outbound/
+tasks/
+
+# Logs
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+
+# Archives
+*.zip
+node_modules
+node_modules
+node_modules
+node_modules
+node_modules

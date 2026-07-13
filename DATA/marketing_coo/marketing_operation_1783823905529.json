@@ -1,0 +1,155 @@
+{
+  "ok": true,
+  "provider": "MarketingProvider",
+  "action": "auditMarketingOperations",
+  "status": "Watch",
+  "generatedAt": "2026-07-12T02:38:25.526Z",
+  "readOnly": true,
+  "metrics": {
+    "totalCampaigns": 2,
+    "healthyCampaigns": 1,
+    "warningCampaigns": 1,
+    "criticalCampaigns": 0,
+    "totalAccounts": 4,
+    "campaignSafeAccounts": 3,
+    "protectedAccounts": 1,
+    "warningAccounts": 1,
+    "criticalAccounts": 0,
+    "totalDailyCapacity": 100,
+    "averageWarmupScore": 95,
+    "lowestWarmupScore": 88,
+    "protectedAssignmentViolations": 0,
+    "campaignInventory": {
+      "total": 2,
+      "active": 1,
+      "paused": 1
+    },
+    "domainInventory": {
+      "total": 2,
+      "healthy": 2,
+      "protected": 1
+    },
+    "segmentInventory": {
+      "totalSegments": 2,
+      "totalLeads": 1100,
+      "verifiedEmails": 500,
+      "uploadReadySegments": 1,
+      "depletedSegments": 1
+    },
+    "queuedLeadUploads": 1
+  },
+  "exceptions": [
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment SAM_EMPTY has no campaign-ready verified email inventory."
+    }
+  ],
+  "recommendations": [
+    "Reduce sending volume for one warning account.",
+    "Queue verified lead upload for segment GSA_NO_SALES (500 verified emails).",
+    "Enrich or replenish segment SAM_EMPTY."
+  ],
+  "instantly": {
+    "ok": true,
+    "status": "WARNING",
+    "summary": {
+      "totalAccounts": 4,
+      "campaignSafeAccounts": 3,
+      "protectedAccounts": 1,
+      "healthyAccounts": 2,
+      "warningAccounts": 1,
+      "criticalAccounts": 0,
+      "totalCampaigns": 2,
+      "healthyCampaigns": 1,
+      "warningCampaigns": 1,
+      "criticalCampaigns": 0,
+      "totalDailyCapacity": 100,
+      "averageWarmupScore": 95,
+      "lowestWarmupScore": 88
+    },
+    "accounts": [],
+    "campaigns": [
+      {
+        "id": "campaign-1",
+        "name": "GSA No Sales",
+        "protectedAssignments": [],
+        "recommendations": []
+      }
+    ],
+    "recommendations": [
+      "Reduce sending volume for one warning account."
+    ],
+    "errors": []
+  },
+  "inventories": {
+    "campaigns": {
+      "total": 2,
+      "active": 1,
+      "paused": 1
+    },
+    "domains": {
+      "total": 2,
+      "healthy": 2,
+      "protected": 1
+    },
+    "segments": {
+      "totalSegments": 2,
+      "totalLeads": 1100,
+      "verifiedEmails": 500,
+      "uploadReadySegments": 1,
+      "depletedSegments": 1,
+      "uploadReady": [
+        {
+          "name": "GSA_NO_SALES",
+          "leadCount": 1000,
+          "verifiedEmailCount": 500,
+          "needsEnrichment": false,
+          "needsUpload": true,
+          "campaignStatus": "Ready"
+        }
+      ],
+      "depleted": [
+        {
+          "name": "SAM_EMPTY",
+          "leadCount": 100,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": true,
+          "needsUpload": false,
+          "campaignStatus": "Needs Enrichment"
+        }
+      ],
+      "segments": [
+        {
+          "name": "GSA_NO_SALES",
+          "leadCount": 1000,
+          "verifiedEmailCount": 500,
+          "needsEnrichment": false,
+          "needsUpload": true,
+          "campaignStatus": "Ready"
+        },
+        {
+          "name": "SAM_EMPTY",
+          "leadCount": 100,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": true,
+          "needsUpload": false,
+          "campaignStatus": "Needs Enrichment"
+        }
+      ]
+    },
+    "leadUploadQueue": [
+      {
+        "segment": "GSA_NO_SALES",
+        "status": "PENDING"
+      }
+    ]
+  },
+  "safety": {
+    "protectedWebsiteDomain": "pathways2gc.com",
+    "protectedAdminInbox": "info@pathways2gc.com",
+    "writesEnabled": false,
+    "automaticPauseResume": false,
+    "automaticLeadUpload": false
+  }
+}

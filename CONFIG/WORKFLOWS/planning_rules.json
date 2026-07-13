@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "approvalRequired": [
+    "pricing_change",
+    "client_proposal_send",
+    "legal_commitment",
+    "financial_commitment",
+    "domain_dns_change",
+    "website_publish",
+    "external_email_send"
+  ],
+  "defaultWorkflowStatus": "QUEUED",
+  "defaultOwner": "MILES",
+  "priorityScale": {
+    "CRITICAL": 100,
+    "HIGH": 80,
+    "MEDIUM": 50,
+    "LOW": 25
+  }
+}

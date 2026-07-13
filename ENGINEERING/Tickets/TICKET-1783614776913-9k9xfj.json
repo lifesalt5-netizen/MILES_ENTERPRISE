@@ -1,0 +1,17 @@
+{
+  "id": "TICKET-1783614776913-9k9xfj",
+  "missionId": "MISSION-1783614776905-8urwa0",
+  "title": "Prepare Executive Report",
+  "type": "ATLAS",
+  "owner": "ATLAS",
+  "priority": 3,
+  "authority": "AUTOMATIC_ENGINEERING",
+  "status": "QUEUED",
+  "createdAt": "2026-07-09T16:32:56.913Z",
+  "updatedAt": "2026-07-09T16:32:56.913Z",
+  "approvalRequired": false,
+  "payload": {
+    "missionTitle": "Build Google Workspace Provider",
+    "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+  }
+}

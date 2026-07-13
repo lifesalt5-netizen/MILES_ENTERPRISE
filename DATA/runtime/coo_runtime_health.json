@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "action": "RUNTIME_HEALTH",
+  "generatedAt": "2026-07-04T01:44:47.626Z",
+  "status": "HEALTHY",
+  "checks": [
+    {
+      "ok": true,
+      "name": "HEARTBEAT",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "QUEUE_RECOVERY",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "EXECUTIVE_BRAIN",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "COMPANY_STATE",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "TASK_ROUTER",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "ARCHIVE_CLOSED_WORK",
+      "severity": "INFO",
+      "message": "Step completed."
+    },
+    {
+      "ok": true,
+      "name": "PROCESS_ALIVE",
+      "severity": "INFO",
+      "message": "Node process 22360 is alive."
+    }
+  ],
+  "summary": {
+    "totalChecks": 7,
+    "failed": 0,
+    "warnings": 0
+  }
+}

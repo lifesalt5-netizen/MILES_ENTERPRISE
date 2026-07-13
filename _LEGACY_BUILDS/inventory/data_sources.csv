@@ -1,0 +1,4 @@
+Dataset,Path,Status,Notes
+ORION_DEMO_LIVE_READY,D:\P2GC_Intelligence\Orion Demo 6126\orion_live_demo_ready\ORION_DEMO_LIVE_READY.db,Active,Authoritative ORION database
+MASTER_DEDUPED_ALL_SEGMENTS,D:\P2GC_Intelligence\ARCHIVE_2026_REVIEW\Good Files to use\Good To Use and segmented\MASTER_DEDUPED_ALL_SEGMENTS.csv,Active Pending Validation,Only discovered copy
+SBS_VALIDATED_EMAIL_TARGETS,D:\P2GC_Intelligence\ARCHIVE_2026_REVIEW\Good Files to use\Good To Use and segmented\SBS_VALIDATED_EMAIL_TARGETS.csv,Active Pending Validation,Only discovered copy

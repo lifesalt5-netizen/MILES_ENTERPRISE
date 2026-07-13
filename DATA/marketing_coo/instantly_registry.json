@@ -1,0 +1,88 @@
+{
+  "ok": true,
+  "total": 10,
+  "active": 1,
+  "paused": 9,
+  "campaigns": [
+    {
+      "id": "f990817a-c420-4935-a159-7eda97dec196",
+      "name": "GSA 500k–3m",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:04:12.205Z",
+      "updated": "2026-05-28T21:04:12.205Z"
+    },
+    {
+      "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+      "name": "HubZone",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:10:21.044Z",
+      "updated": "2026-05-28T21:10:21.044Z"
+    },
+    {
+      "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+      "name": "Sam Low Sales",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:07:42.277Z",
+      "updated": "2026-05-28T21:07:42.277Z"
+    },
+    {
+      "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+      "name": "EXPIRED everything",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:12:53.239Z",
+      "updated": "2026-05-28T21:12:53.239Z"
+    },
+    {
+      "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+      "name": "GSA 3m–5m",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:04:32.690Z",
+      "updated": "2026-05-28T21:04:32.690Z"
+    },
+    {
+      "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+      "name": "FUTURE FOLLOW-UP",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:01:49.997Z",
+      "updated": "2026-05-28T21:01:49.997Z"
+    },
+    {
+      "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+      "name": "SBS Verified Email Targets",
+      "status": 1,
+      "dailyLimit": 240,
+      "created": "2026-05-14T17:58:18.525Z",
+      "updated": "2026-07-06T15:32:58.030Z"
+    },
+    {
+      "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+      "name": "VA No Sales",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:05:17.669Z",
+      "updated": "2026-05-28T21:05:17.669Z"
+    },
+    {
+      "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+      "name": "VA 3-5m",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:06:23.954Z",
+      "updated": "2026-05-28T21:06:23.954Z"
+    },
+    {
+      "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+      "name": "NURTURE - 14 DAY",
+      "status": 0,
+      "dailyLimit": 0,
+      "created": "2026-05-28T21:00:47.084Z",
+      "updated": "2026-05-28T21:00:47.084Z"
+    }
+  ]
+}

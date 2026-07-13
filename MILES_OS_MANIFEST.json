@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0-alpha",
+  "baseline": "MILES OS v1 runtime working",
+  "root": "D:\\P2GC_Intelligence\\MILES_OS",
+  "core_status": {
+    "supervisor": "working",
+    "runtime_controller": "working",
+    "command_gateway": "working",
+    "execution_engine": "working",
+    "autonomous_discovery": "working",
+    "autonomous_loop": "working",
+    "task_queue": "working",
+    "system_intelligence": "working",
+    "browser_os": "partial",
+    "recovery_intelligence": "next"
+  },
+  "do_not_overwrite_without_backup": [
+    "CORE/TaskQueue.js",
+    "CORE/Supervisor.js",
+    "CORE/RuntimeController.js",
+    "CORE/ExecutionEngine.js",
+    "CORE/AutonomousDiscoveryEngine.js",
+    "CORE/AutonomousLoop.js",
+    "CORE/SystemIntelligence.js",
+    "CORE/GATEWAY/CommandGateway.js"
+  ],
+  "next_subsystems": [
+    "Recovery Intelligence",
+    "Executive Memory",
+    "Decision Engine",
+    "Approval Engine",
+    "Engineering Manager",
+    "Self Builder"
+  ],
+  "rules": [
+    "Prefer APIs before browser automation.",
+    "Browser automation is fallback when API is unavailable.",
+    "Never overwrite core runtime files without backup.",
+    "Every new subsystem must expose status().",
+    "Every connector must expose healthCheck() and execute().",
+    "Any action involving spend, pricing, proposal submission, deletion, or legal commitment requires Kevin approval."
+  ]
+}

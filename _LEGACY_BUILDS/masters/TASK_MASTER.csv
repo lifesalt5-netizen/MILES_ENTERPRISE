@@ -1,0 +1,6 @@
+﻿task_id,client_id,task_name,assigned_to,priority,status,created_date,due_date,completion_date,blocker,notes
+TASK-0001,,Review CLIENT_MASTER for missing contacts,Miles,High,Not Started,2026-06-20,,,,"Client folders loaded; extract contacts next"
+TASK-0002,,Build ASSET_MASTER from existing inventories,Miles,High,Not Started,2026-06-20,,,,"Use FileInventory, FolderInventory, DATABASE_INVENTORY, ORION_FILE_INVENTORY"
+TASK-0003,,Build MILES_CONTROL_CENTER,Miles,Critical,Not Started,2026-06-20,,,,"Unify clients, segments, systems, tasks"
+TASK-0004,,Map Instantly campaigns to segments,Miles,Critical,Not Started,2026-06-20,,,,"Needs current campaign names and assigned source segments"
+TASK-0005,,Validate segment readiness queue,Miles,High,Not Started,2026-06-20,,,,"Use segment_priority_queue and segment_counts"

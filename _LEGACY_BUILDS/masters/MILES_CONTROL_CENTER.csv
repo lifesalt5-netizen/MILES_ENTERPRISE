@@ -1,0 +1,6 @@
+﻿work_item_id,category,source,owner,priority,status,next_action,due_date
+CTRL-0001,Client,CLIENT_MASTER,Miles,Critical,Active,Review missing client contact data,
+CTRL-0002,Task,TASK_MASTER,Miles,Critical,Active,Work highest priority open task,
+CTRL-0003,System,SYSTEM_REGISTRY,Miles,High,Active,Validate system health,
+CTRL-0004,Asset,ASSET_MASTER,Miles,High,Active,Expand assets from inventories,
+CTRL-0005,Outbound,SEGMENT_MASTER,Miles,Critical,Active,Map live campaigns to segments,

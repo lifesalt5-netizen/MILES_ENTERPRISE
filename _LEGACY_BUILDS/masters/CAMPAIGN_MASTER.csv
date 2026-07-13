@@ -1,0 +1,4 @@
+﻿campaign_id,segment_name,status,platform,domain,inboxes_assigned,daily_limit_total,daily_limit_per_inbox,send_schedule,last_sent_date,next_send_date,open_rate,reply_rate,bounce_rate,lead_source_file
+CAMP-0001,P2GC_SEGMENT_CONSULTING,DRAFT,Instantly,,,0,0,,,"","","","",D:\P2GC_Intelligence\SAM_Registry
+CAMP-0002,P2GC_SEGMENT_IT_SERVICES,DRAFT,Instantly,,,0,0,,,"","","","",D:\P2GC_Intelligence\SAM_Registry
+CAMP-0003,P2GC_SEGMENT_ENGINEERING,DRAFT,Instantly,,,0,0,,,"","","","",D:\P2GC_Intelligence\SAM_Registry

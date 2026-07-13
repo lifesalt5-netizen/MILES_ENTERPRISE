@@ -1,0 +1,16 @@
+{
+  "name": "miles-desktop-v2",
+  "version": "0.3.0",
+  "description": "MILES Desktop v2 - Digital COO runtime shell for P2GC",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node scripts/smoke-test.js",
+    "backup": "node scripts/backup-runtime.js"
+  },
+  "dependencies": {
+    "electron": "^31.7.7"
+  },
+  "devDependencies": {},
+  "license": "UNLICENSED"
+}

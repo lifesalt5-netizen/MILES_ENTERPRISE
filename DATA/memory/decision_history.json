@@ -1,0 +1,9 @@
+[
+  {
+    "provider": "MarketingProvider",
+    "originalConfidence": 100,
+    "adjustedConfidence": 100,
+    "modifier": 10,
+    "successRate": 100
+  }
+]

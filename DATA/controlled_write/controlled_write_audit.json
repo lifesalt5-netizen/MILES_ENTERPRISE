@@ -1,0 +1,74 @@
+[
+  {
+    "recordedAt": "2026-07-04T02:46:12.031Z",
+    "provider": "instantly",
+    "operation": "CREATE_TEST_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_CONTROLLED_WRITE",
+      "provider": "instantly",
+      "operation": "CREATE_TEST_CAMPAIGN",
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "executed": false,
+      "verified": false,
+      "dryRun": true,
+      "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
+      "payloadPreview": {
+        "name": "MILES_TEST_2026-07-04T02-46-12-026Z",
+        "description": "Controlled write test campaign created by MILES OS."
+      },
+      "durationMs": 5,
+      "generatedAt": "2026-07-04T02:46:12.031Z"
+    }
+  },
+  {
+    "recordedAt": "2026-07-04T02:46:19.915Z",
+    "provider": "instantly",
+    "operation": "CREATE_TEST_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_CONTROLLED_WRITE",
+      "provider": "instantly",
+      "operation": "CREATE_TEST_CAMPAIGN",
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "executed": false,
+      "verified": false,
+      "dryRun": true,
+      "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
+      "payloadPreview": {
+        "name": "MILES_TEST_2026-07-04T02-46-19-913Z",
+        "description": "Controlled write test campaign created by MILES OS."
+      },
+      "durationMs": 1,
+      "generatedAt": "2026-07-04T02:46:19.914Z"
+    }
+  },
+  {
+    "recordedAt": "2026-07-04T02:46:29.284Z",
+    "provider": "instantly",
+    "operation": "CREATE_TEST_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_CONTROLLED_WRITE",
+      "provider": "instantly",
+      "operation": "CREATE_TEST_CAMPAIGN",
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "executed": false,
+      "verified": false,
+      "dryRun": true,
+      "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
+      "payloadPreview": {
+        "name": "MILES_TEST_2026-07-04T02-46-29-283Z",
+        "description": "Controlled write test campaign created by MILES OS."
+      },
+      "durationMs": 2,
+      "generatedAt": "2026-07-04T02:46:29.284Z"
+    }
+  }
+]

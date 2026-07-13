@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "service": "WORKER_RUNTIME",
+  "version": "1.0.0",
+  "status": "WORKERS_DISCOVERED",
+  "generatedAt": "2026-07-08T20:06:39.801Z",
+  "workersDiscovered": 7,
+  "workersAvailable": 7,
+  "workersRunning": 0,
+  "workersCompleted": 0,
+  "workersFailed": 0,
+  "lastDiscoveryAt": "2026-07-08T20:06:39.801Z",
+  "lastExecutionAt": null,
+  "activeExecutions": {},
+  "lastError": null
+}

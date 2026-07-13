@@ -1,0 +1,36 @@
+﻿{
+    "ok":  true,
+    "build":  "021",
+    "name":  "Marketing COO",
+    "installedAt":  "2026-07-11T22:38:25.5664597-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_021_20260711_223824",
+    "changedFiles":  [
+                         "PROVIDERS\\providers\\MarketingProvider.js"
+                     ],
+    "reusedServices":  [
+                           "SERVICES\\digital_coo\\InstantlyCOOService.js",
+                           "SERVICES\\ProviderRouterService.js",
+                           "SERVICES\\CapabilityService.js",
+                           "SERVICES\\PlannerService.js",
+                           "SERVICES\\WorkflowService.js",
+                           "SERVICES\\ExecutionService.js"
+                       ],
+    "capabilities":  [
+                         "Campaign health",
+                         "Warmup health",
+                         "Daily sending capacity",
+                         "Protected domain and inbox enforcement",
+                         "Segment inventory",
+                         "Lead upload readiness",
+                         "Deliverability recommendations"
+                     ],
+    "safety":  [
+                   "Read-only operation",
+                   "No campaign pause or resume",
+                   "No automatic lead upload",
+                   "No account configuration changes",
+                   "pathways2gc.com remains protected",
+                   "info@pathways2gc.com remains protected"
+               ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_021\\build_021_test_20260711_223824.txt"
+}

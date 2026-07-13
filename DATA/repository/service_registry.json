@@ -1,0 +1,2533 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "services": [
+    {
+      "id": "bae91ea806c1",
+      "name": "ServiceRegistry.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 788,
+      "modifiedAt": "2026-06-28T21:46:40.000Z",
+      "componentTypes": [
+        "service",
+        "kernel"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "459025d43c60",
+      "name": "TaskManager.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/TaskManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.120Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "b9221add94b9",
+      "name": "ConnectorManager.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/ConnectorManager.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 0,
+      "modifiedAt": "2026-06-28T20:18:45.130Z",
+      "componentTypes": [
+        "service",
+        "connector"
+      ],
+      "capabilities": [
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Connector Layer"
+    },
+    {
+      "id": "f86539b07280",
+      "name": "MemoryService.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/SERVICES/MemoryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1240,
+      "modifiedAt": "2026-06-28T20:34:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "service_execution"
+      ],
+      "dependencies": [
+        "../CORE/Database"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "96c91ee1235f",
+      "name": "__init__.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/__init__.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T02:11:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "2eb5e109f44c",
+      "name": "__init__.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/__init__.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 0,
+      "modifiedAt": "2026-06-29T02:11:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "7a9635d6b264",
+      "name": "config.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/config.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 662,
+      "modifiedAt": "2026-06-29T02:12:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "7df604fa89ef",
+      "name": "client.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/client.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 3329,
+      "modifiedAt": "2026-06-29T02:12:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "runtime_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "d09806d5d583",
+      "name": "service.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/service.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 2539,
+      "modifiedAt": "2026-06-29T02:12:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "8a31acb96deb",
+      "name": "registry.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/miles_os/services/instantly/registry.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 366,
+      "modifiedAt": "2026-06-29T02:12:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "engineering_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "61ac39d4b643",
+      "name": "test_instantly_service.py",
+      "path": "miles_instantly_connector/miles_instantly_connector/tests/test_instantly_service.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 1449,
+      "modifiedAt": "2026-06-29T02:12:02.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "government_data",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "8946163dd134",
+      "name": "ServiceRegistry.js",
+      "path": "CORE/Kernel/ServiceRegistry.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 824,
+      "modifiedAt": "2026-06-29T18:43:06.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "c2454dc118dc",
+      "name": "service_registry.json",
+      "path": "DATA/repository/service_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 65563,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "fbb5e32f52a9",
+      "name": "MemoryService.js",
+      "path": "SERVICES/MemoryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1240,
+      "modifiedAt": "2026-06-29T18:43:06.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "service_execution"
+      ],
+      "dependencies": [
+        "../CORE/Database"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "ca6bf1ea0c4a",
+      "name": "ExecutionService.js",
+      "path": "SERVICES/ExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 9531,
+      "modifiedAt": "2026-07-02T19:35:32.000Z",
+      "componentTypes": [
+        "service",
+        "event_bus"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../CORE/TaskQueue",
+        "../CORE/ConnectorManager",
+        "../CORE/EventBus",
+        "../CORE/authority",
+        "../CORE/logger",
+        "./MemoryService",
+        "./Memory/OperationalMemoryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "40d85194f5ee",
+      "name": "SchedulerService.js",
+      "path": "SERVICES/SchedulerService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1401,
+      "modifiedAt": "2026-06-29T23:19:44.000Z",
+      "componentTypes": [
+        "service",
+        "automation"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ExecutionService",
+        "../CORE/TaskQueue",
+        "../CORE/EventBus",
+        "./DecisionEngine",
+        "./DashboardService"
+      ],
+      "events": {
+        "published": [
+          "SCHEDULER_STARTED",
+          "SCHEDULER_STOPPED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "7426f882450c",
+      "name": "DashboardService.js",
+      "path": "SERVICES/DashboardService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2470,
+      "modifiedAt": "2026-06-29T21:57:58.000Z",
+      "componentTypes": [
+        "service",
+        "dashboard"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "runtime_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "../CORE/TaskQueue",
+        "../CORE/ConnectorManager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "7818d2682152",
+      "name": "WorkforceService.js",
+      "path": "SERVICES/WorkforceService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2941,
+      "modifiedAt": "2026-06-30T00:15:44.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "orion_operations",
+        "government_data",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "98ae87bfe8aa",
+      "name": "ExecutiveStateService.js",
+      "path": "SERVICES/ExecutiveStateService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1079,
+      "modifiedAt": "2026-06-30T00:22:48.000Z",
+      "componentTypes": [
+        "service",
+        "executive"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "020fb31d3528",
+      "name": "CapabilityService.js",
+      "path": "SERVICES/CapabilityService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2131,
+      "modifiedAt": "2026-07-01T17:11:54.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "engineering_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./Planning/PlannerRegistry"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "7da1d6dc661d",
+      "name": "PlannerService.js",
+      "path": "SERVICES/PlannerService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4403,
+      "modifiedAt": "2026-07-02T01:09:20.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./CapabilityService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "1f42804dc406",
+      "name": "WorkPackageService.js",
+      "path": "SERVICES/WorkPackageService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2329,
+      "modifiedAt": "2026-06-30T00:33:38.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./PlannerService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "b6a78d76afb2",
+      "name": "WorkflowService.js",
+      "path": "SERVICES/WorkflowService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2359,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./WorkPackageService",
+        "./TaskManager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "4ec09f573ade",
+      "name": "WorkforceExecutionService.js",
+      "path": "SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "5598115b6f2e",
+      "name": "OutboundService.js",
+      "path": "SERVICES/OutboundService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18381,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "government_data",
+        "engineering_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "d5ae2c4b4162",
+      "name": "ExecutiveIntelligenceService.js",
+      "path": "SERVICES/ExecutiveIntelligenceService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 5213,
+      "modifiedAt": "2026-07-03T20:29:36.000Z",
+      "componentTypes": [
+        "service",
+        "executive"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./BusinessStateAggregator",
+        "../PROVIDERS/providers/WebsiteProvider",
+        "../PROVIDERS/providers/OrionProvider",
+        "../PROVIDERS/providers/CRMProvider",
+        "../PROVIDERS/providers/InstantlyProvider",
+        "../PROVIDERS/providers/GoogleProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "117986667136",
+      "name": "ExecutiveBriefService.js",
+      "path": "SERVICES/ExecutiveBriefService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 8390,
+      "modifiedAt": "2026-07-01T01:08:50.000Z",
+      "componentTypes": [
+        "service",
+        "executive"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "c746513a3162",
+      "name": "WorkQueueService.js",
+      "path": "SERVICES/WorkQueueService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 17231,
+      "modifiedAt": "2026-07-01T05:48:16.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "95e9e58c3474",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "SERVICES/AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 11122,
+      "modifiedAt": "2026-07-03T20:54:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "orion_operations",
+        "runtime_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./ExecutiveIntelligenceService",
+        "./WorkQueueService",
+        "./WorkflowService",
+        "../CORE/TaskQueue",
+        "./ExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "41bda7958497",
+      "name": "COOOrchestratorService.js",
+      "path": "SERVICES/COOOrchestratorService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4617,
+      "modifiedAt": "2026-07-01T05:31:42.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ExecutiveIntelligenceService",
+        "./ExecutiveBriefService",
+        "./WorkQueueService",
+        "./WorkflowService",
+        "./ExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "ca2d3303da9b",
+      "name": "ProviderRouterService.js",
+      "path": "SERVICES/ProviderRouterService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6278,
+      "modifiedAt": "2026-07-02T01:03:48.000Z",
+      "componentTypes": [
+        "service",
+        "provider"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../PROVIDERS/providers/MarketingProvider",
+        "../PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "f0a824d50cb5",
+      "name": "ExecutionPlanService.js",
+      "path": "SERVICES/ExecutionPlanService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1976,
+      "modifiedAt": "2026-07-01T17:38:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "1150a07229a3",
+      "name": "OperationalMemoryService.js",
+      "path": "SERVICES/Memory/OperationalMemoryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2464,
+      "modifiedAt": "2026-07-01T17:58:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "eb7b8f86f139",
+      "name": "EngineeringCOOService.js",
+      "path": "SERVICES/EngineeringCOOService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 11617,
+      "modifiedAt": "2026-07-02T19:08:20.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "../CORE/TaskQueue",
+        "../CORE/EventBus",
+        "../CORE/logger",
+        "./SelfEngineeringService"
+      ],
+      "events": {
+        "published": [
+          "ENGINEERING_COO_REPORT"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "54e39b0c8cae",
+      "name": "EngineeringPlannerService.js",
+      "path": "SERVICES/EngineeringPlannerService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7677,
+      "modifiedAt": "2026-07-02T18:30:32.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./CONNECTORS/WEBSITE/website",
+        "./PROVIDERS/providers/WebsiteProvider",
+        "./PROVIDERS/providers/MarketingProvider",
+        "./PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "78213cc1ed91",
+      "name": "CodeRepairService.js",
+      "path": "SERVICES/CodeRepairService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 5667,
+      "modifiedAt": "2026-07-02T19:02:26.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "bd0482076cc9",
+      "name": "TestRunnerService.js",
+      "path": "SERVICES/TestRunnerService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4580,
+      "modifiedAt": "2026-07-02T19:03:40.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "6268278e210f",
+      "name": "RuntimeRecoveryService.js",
+      "path": "SERVICES/RuntimeRecoveryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2580,
+      "modifiedAt": "2026-07-02T19:05:20.000Z",
+      "componentTypes": [
+        "service",
+        "runtime",
+        "event_bus"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "data",
+          "close"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "5410f4e9c17e",
+      "name": "SelfEngineeringService.js",
+      "path": "SERVICES/SelfEngineeringService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2423,
+      "modifiedAt": "2026-07-02T19:05:58.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./EngineeringPlannerService",
+        "./CodeRepairService",
+        "./TestRunnerService",
+        "./RuntimeRecoveryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "fe513b8e2218",
+      "name": "ExecutionRouterService.js",
+      "path": "SERVICES/ExecutionRouterService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2045,
+      "modifiedAt": "2026-07-02T23:54:12.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "73c923dda30a",
+      "name": "RepositoryRegistryService.js",
+      "path": "SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "6cdebed95102",
+      "name": "CapabilityRegistryService.js",
+      "path": "SERVICES/CapabilityRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 17894,
+      "modifiedAt": "2026-07-04T04:27:58.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "2a8d324dfdc2",
+      "name": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "path": "MILES_SPRINT2_EXECUTION_LAYER.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 19803,
+      "modifiedAt": "2026-06-29T19:18:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "website_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "path",
+        "./ExecutionService",
+        "express",
+        "../SERVICES/ExecutionService",
+        "../SERVICES/SchedulerService",
+        "dotenv",
+        "./SERVICES/ExecutionService"
+      ],
+      "events": {
+        "published": [
+          "TASK_CREATED",
+          "TASK_APPROVED",
+          "TASK_REJECTED",
+          "TASK_STARTED",
+          "TASK_COMPLETED",
+          "TASK_FAILED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "030caa7bf080",
+      "name": "INSTALL_MILES_BUILDER.ps1",
+      "path": "INSTALL_MILES_BUILDER.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 8358,
+      "modifiedAt": "2026-06-29T22:08:08.000Z",
+      "componentTypes": [
+        "service",
+        "engineering"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "child_process",
+        "./ProjectScanner",
+        "./GitManager",
+        "./RuntimeController",
+        "./BuilderService",
+        "../../BUILDER",
+        "../../SERVICES/SchedulerService",
+        "../../CONNECTORS/MILES/connector",
+        "../../SERVICES/DashboardService",
+        "./ConnectorManager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "86ce4ad650bf",
+      "name": "BuilderService.js",
+      "path": "BUILDER/BuilderService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2716,
+      "modifiedAt": "2026-07-04T04:27:58.000Z",
+      "componentTypes": [
+        "service",
+        "engineering"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ProjectScanner",
+        "./GitManager",
+        "./RuntimeController",
+        "./ProjectAnalyzer",
+        "./BuildPlanner",
+        "./ConnectorBuilder",
+        "../SERVICES/RepositoryRegistryService",
+        "../SERVICES/CapabilityRegistryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "96f7eec415f5",
+      "name": "INSTALL_MILES_LOCAL_AUTOMATION_AGENT.ps1",
+      "path": "INSTALL_MILES_LOCAL_AUTOMATION_AGENT.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 12292,
+      "modifiedAt": "2026-06-29T22:53:20.000Z",
+      "componentTypes": [
+        "service",
+        "automation"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./services/LocalAutomationAgent",
+        "child_process",
+        "./ProjectScanner",
+        "./GitManager",
+        "./RuntimeController",
+        "./ProjectAnalyzer",
+        "./BuildPlanner",
+        "./ConnectorBuilder"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "c127d2e19d5e",
+      "name": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+      "path": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 7876,
+      "modifiedAt": "2026-06-30T00:32:36.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./CapabilityService",
+        "./PlannerService",
+        "./WorkPackageService",
+        "./TaskManager",
+        "./SERVICES/PlannerService",
+        "./SERVICES/WorkflowService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "8d736374dfda",
+      "name": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+      "path": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 13975,
+      "modifiedAt": "2026-06-30T00:38:30.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "../CORE/logger",
+        "../CORE/TaskQueue",
+        "../CORE/ConnectorManager",
+        "../CORE/EventBus",
+        "../CORE/authority",
+        "./MemoryService",
+        "./WorkforceExecutionService",
+        "../SERVICES/WorkflowService",
+        "../SERVICES/ExecutionService"
+      ],
+      "events": {
+        "published": [
+          "TASK_AWAITING_APPROVAL",
+          "TASK_STARTED",
+          "TASK_COMPLETED",
+          "TASK_FAILED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "8bf46bd29f87",
+      "name": "OutboundService.js",
+      "path": "miles_build006_outbound_ops/build006_patch/payload/SERVICES/OutboundService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18381,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "government_data",
+        "engineering_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "fe7e778c29bf",
+      "name": "OutboundService.js",
+      "path": "build006_patch/payload/SERVICES/OutboundService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18381,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "government_data",
+        "engineering_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "2019ccd791dd",
+      "name": "SalesOperationsService.js",
+      "path": "miles_build007_sales_ops/BUILD_007/SERVICES/SalesOperationsService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7139,
+      "modifiedAt": "2026-07-01T01:40:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "orion_operations",
+        "government_data",
+        "approval_governance",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Revenue"
+    },
+    {
+      "id": "576dea03275f",
+      "name": "SalesOperationsService.js",
+      "path": "BUILD_007/SERVICES/SalesOperationsService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7139,
+      "modifiedAt": "2026-07-01T01:40:34.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "orion_operations",
+        "government_data",
+        "approval_governance",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Revenue"
+    },
+    {
+      "id": "5ccb58914196",
+      "name": "segment_inventory.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/services/segment_inventory.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 2432,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "government_data",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "fb674626e9c4",
+      "name": "bootstrap.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/services/bootstrap.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 2316,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "181a5efe6f55",
+      "name": "__init__.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/services/__init__.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 0,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "686426f11246",
+      "name": "WorkQueueService.js",
+      "path": "BUILD_012/BUILD_012/SERVICES/WorkQueueService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 11203,
+      "modifiedAt": "2026-07-01T05:26:16.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "runtime_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "e04d48de68d3",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "BUILD_012/BUILD_012/SERVICES/AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4717,
+      "modifiedAt": "2026-07-01T05:26:16.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./ExecutiveIntelligenceService",
+        "./ExecutiveBriefService",
+        "./WorkQueueService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "29a0391d2e9c",
+      "name": "COOOrchestratorService.js",
+      "path": "BUILD_013/BUILD_013/SERVICES/COOOrchestratorService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4617,
+      "modifiedAt": "2026-07-01T05:31:42.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ExecutiveIntelligenceService",
+        "./ExecutiveBriefService",
+        "./WorkQueueService",
+        "./WorkflowService",
+        "./ExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "b6f3e20e50d8",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "BUILD_013/BUILD_013/SERVICES/AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2552,
+      "modifiedAt": "2026-07-01T05:31:42.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./COOOrchestratorService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "80fdf9b3bbe1",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2552,
+      "modifiedAt": "2026-07-01T05:31:42.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./COOOrchestratorService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "bbba7b9cfb7b",
+      "name": "WorkQueueService.js",
+      "path": "BUILD_014/BUILD_014/SERVICES/WorkQueueService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 17231,
+      "modifiedAt": "2026-07-01T05:48:16.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "7de7de18d268",
+      "name": "COOOrchestratorService.js",
+      "path": "BUILD_015/BUILD_015/SERVICES/COOOrchestratorService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 7213,
+      "modifiedAt": "2026-07-01T05:55:52.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "data_provider_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ExecutiveIntelligenceService",
+        "./ExecutiveBriefService",
+        "./WorkQueueService",
+        "./WorkflowService",
+        "./ExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "8aa203281be0",
+      "name": "InstantlyCampaignOperator.js",
+      "path": "MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18610,
+      "modifiedAt": "2026-07-02T03:18:30.000Z",
+      "componentTypes": [
+        "service",
+        "worker"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution",
+        "worker_execution"
+      ],
+      "dependencies": [
+        "../BrowserSessionManager",
+        "../../Executive/CEOApprovalQueue",
+        "../../Decision/AuthorityEngine",
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "3677b1183a57",
+      "name": "InstantlyCampaignOperator.js",
+      "path": "MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 14620,
+      "modifiedAt": "2026-07-02T03:25:50.000Z",
+      "componentTypes": [
+        "service",
+        "worker"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "worker_execution"
+      ],
+      "dependencies": [
+        "../BrowserSessionManager",
+        "../../Executive/CEOApprovalQueue",
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "17796ef5d8b3",
+      "name": "InstantlyCampaignOperator.js",
+      "path": "MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 15491,
+      "modifiedAt": "2026-07-02T04:32:28.000Z",
+      "componentTypes": [
+        "service",
+        "worker"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "worker_execution"
+      ],
+      "dependencies": [
+        "../BrowserSessionManager",
+        "../../Executive/CEOApprovalQueue",
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "2a7c95eac63a",
+      "name": "WorkforceExecutionService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "f9725933d1eb",
+      "name": "WorkflowService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkflowService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2359,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./WorkPackageService",
+        "./TaskManager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "e46d659200ac",
+      "name": "ExecutionService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6024,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../CORE/TaskQueue",
+        "../CORE/ConnectorManager",
+        "../CORE/EventBus",
+        "../CORE/authority",
+        "../CORE/logger",
+        "./MemoryService",
+        "./Memory/OperationalMemoryService",
+        "./WorkforceExecutionService"
+      ],
+      "events": {
+        "published": [
+          "TASK_AWAITING_APPROVAL",
+          "TASK_STARTED",
+          "TASK_COMPLETED",
+          "TASK_FAILED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "4bbcad54fd41",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2229,
+      "modifiedAt": "2026-07-03T20:18:58.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "runtime_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "62e33992f82c",
+      "name": "ExecutiveIntelligenceService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2925,
+      "modifiedAt": "2026-07-02T20:36:50.000Z",
+      "componentTypes": [
+        "service",
+        "executive"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../PROVIDERS/providers/MarketingProvider",
+        "../PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "e3864ed0da34",
+      "name": "InstantlyCampaignOperator.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 12985,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "worker"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "worker_execution"
+      ],
+      "dependencies": [
+        "../BrowserSessionManager",
+        "../../Executive/CEOApprovalQueue",
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "d5225c57816f",
+      "name": "WorkforceExecutionService.js",
+      "path": "miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "850bcc1f63a5",
+      "name": "WorkflowService.js",
+      "path": "miles_autonomous_patch/SERVICES/WorkflowService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2359,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./WorkPackageService",
+        "./TaskManager"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "0422ee9ce07c",
+      "name": "ExecutionService.js",
+      "path": "miles_autonomous_patch/SERVICES/ExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 6024,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../CORE/TaskQueue",
+        "../CORE/ConnectorManager",
+        "../CORE/EventBus",
+        "../CORE/authority",
+        "../CORE/logger",
+        "./MemoryService",
+        "./Memory/OperationalMemoryService",
+        "./WorkforceExecutionService"
+      ],
+      "events": {
+        "published": [
+          "TASK_AWAITING_APPROVAL",
+          "TASK_STARTED",
+          "TASK_COMPLETED",
+          "TASK_FAILED"
+        ],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "56c33e208eab",
+      "name": "AutonomousCOOLoopService.js",
+      "path": "miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 31622,
+      "modifiedAt": "2026-07-02T20:37:16.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "runtime_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./ExecutiveIntelligenceService",
+        "./ExecutiveBriefService",
+        "./WorkQueueService",
+        "./WorkflowService",
+        "./Learning/LearningEngine",
+        "../CORE/TaskQueue",
+        "./ExecutionService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "c015a14f0639",
+      "name": "ExecutiveIntelligenceService.js",
+      "path": "miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2925,
+      "modifiedAt": "2026-07-02T20:36:50.000Z",
+      "componentTypes": [
+        "service",
+        "executive"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "../PROVIDERS/providers/MarketingProvider",
+        "../PROVIDERS/providers/OrionProvider"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Executive"
+    },
+    {
+      "id": "66ff5de1d7b2",
+      "name": "InstantlyCampaignOperator.js",
+      "path": "miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 12985,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "worker"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "worker_execution"
+      ],
+      "dependencies": [
+        "../BrowserSessionManager",
+        "../../Executive/CEOApprovalQueue",
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Marketing"
+    },
+    {
+      "id": "c68464b6d88d",
+      "name": "RepositoryRegistryService.js",
+      "path": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "113aac302f14",
+      "name": "BuilderService.js",
+      "path": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2575,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "engineering"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ProjectScanner",
+        "./GitManager",
+        "./RuntimeController",
+        "./ProjectAnalyzer",
+        "./BuildPlanner",
+        "./ConnectorBuilder",
+        "../SERVICES/RepositoryRegistryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    },
+    {
+      "id": "85f99a2970b2",
+      "name": "CapabilityRegistryService.js",
+      "path": "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/SERVICES/CapabilityRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 17894,
+      "modifiedAt": "2026-07-04T04:27:58.000Z",
+      "componentTypes": [
+        "service"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "learning_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "fs",
+        "path"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "c442e1e00e8e",
+      "name": "BuilderService.js",
+      "path": "MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2716,
+      "modifiedAt": "2026-07-04T04:27:58.000Z",
+      "componentTypes": [
+        "service",
+        "engineering"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "engineering_operations",
+        "connector_operations",
+        "service_execution"
+      ],
+      "dependencies": [
+        "./ProjectScanner",
+        "./GitManager",
+        "./RuntimeController",
+        "./ProjectAnalyzer",
+        "./BuildPlanner",
+        "./ConnectorBuilder",
+        "../SERVICES/RepositoryRegistryService",
+        "../SERVICES/CapabilityRegistryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Engineering"
+    }
+  ]
+}

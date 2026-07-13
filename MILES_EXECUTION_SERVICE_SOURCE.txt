@@ -1,0 +1,1312 @@
+
+============================================================
+FILE: .\SERVICES\ExecutionService.js
+============================================================
+"use strict";
+
+const taskQueue = require("../CORE/TaskQueue");
+const connectorManager = require("../CORE/ConnectorManager");
+const eventBus = require("../CORE/EventBus");
+const { requiresApproval } = require("../CORE/authority");
+const { log } = require("../CORE/logger");
+const memory = require("./MemoryService");
+
+let operationalMemory = null;
+
+try {
+  operationalMemory = require("./Memory/OperationalMemoryService");
+} catch {
+  operationalMemory = null;
+}
+
+const INTERNAL_TASKS = new Set([
+  "SELF_BUILD",
+  "SELF_TEST",
+  "SELF_ANALYZE",
+  "HEALTH_CHECK",
+  "BACKUP",
+  "RESTART_RUNTIME",
+  "GIT_COMMIT",
+  "BUILD_CONNECTOR",
+  "BUILD_PLAN",
+  "ANALYZE_PROJECT"
+]);
+
+const ENGINEERING_ACTIONS = new Set([
+  "ENGINEERING_IMPROVEMENT",
+  "ENGINEERING_ANALYZE",
+  "ENGINEERING_PLAN",
+  "ENGINEERING_IMPLEMENT",
+  "ENGINEERING_VALIDATE",
+  "ENGINEERING_REPORT",
+  
+]);
+
+function safePublish(eventName, payload = {}) {
+  try {
+    if (typeof eventBus.publish === "function") return eventBus.publish(eventName, payload);
+    if (typeof eventBus.emitEvent === "function") return eventBus.emitEvent(eventName, payload);
+    return eventBus.emit(eventName, payload);
+  } catch (err) {
+    log("ExecutionService", "Event publish", "Failed", err.message);
+    return null;
+  }
+}
+
+function getPlan(task = {}) {
+  const payload = task.payload || {};
+  const plan = payload.plan || task.plan || {};
+
+  return {
+    ok: plan.ok !== false,
+    intent: plan.intent || payload.intent || task.intent || "UNKNOWN_INTENT",
+    workflow: plan.workflow || payload.workflow || task.workflow || "UNKNOWN_WORKFLOW",
+    provider: plan.provider || payload.provider || task.provider || "UNKNOWN",
+    system: plan.system || payload.system || task.system || plan.provider || payload.provider || task.provider || "UNKNOWN",
+    connector: plan.connector || payload.connector || task.connector || plan.provider || payload.provider || task.provider || "UNKNOWN",
+    department: plan.department || payload.department || task.department || plan.provider || payload.provider || task.provider || "UNKNOWN",
+    action: plan.action || payload.action || task.action || task.type || "UNKNOWN_ACTION",
+    objective: plan.objective || payload.objective || payload.command || task.objective || task.title || "",
+    originalCommand: plan.originalCommand || payload.command || task.command || "",
+    steps: Array.isArray(plan.steps) ? plan.steps : []
+  };
+}
+
+function normalizeTask(task = {}) {
+  const payload = task.payload || {};
+  const plan = getPlan(task);
+
+  let action = plan.action;
+  let provider = plan.provider;
+  let connector = plan.connector;
+
+  if (ENGINEERING_ACTIONS.has(action)) {
+    provider = "MILES";
+    connector = "MILES";
+    plan.provider = "MILES";
+    plan.system = "MILES";
+    plan.connector = "MILES";
+    plan.department = "MILES";
+  }
+
+  return {
+    ...task,
+    type: task.type || action,
+    action,
+    intent: plan.intent,
+    workflow: plan.workflow,
+    provider,
+    system: plan.system,
+    connector,
+    department: plan.department,
+    payload: {
+      ...payload,
+      provider,
+      system: plan.system,
+      connector,
+      department: plan.department,
+      action,
+      intent: plan.intent,
+      workflow: plan.workflow,
+      objective: plan.objective,
+      originalCommand: plan.originalCommand,
+      plan
+    }
+  };
+}
+
+function classifyFailure(error) {
+  const message = String(error?.message || error || "").toLowerCase();
+
+  if (/execution_plan_invalid|invalid execution plan/.test(message)) {
+    return {
+      type: "EXECUTION_PLAN_INVALID",
+      retryable: false,
+      safeRepair: true,
+      recommendedAction: "Repair planner output before retrying"
+    };
+  }
+
+  if (/connector not found|does not implement execute|missing execute/.test(message)) {
+    return {
+      type: "MISSING_CAPABILITY",
+      retryable: false,
+      safeRepair: true,
+      recommendedAction: "Register missing provider or connector"
+    };
+  }
+
+  if (/timeout|navigation|browser|page|selector/.test(message)) {
+    return {
+      type: "TRANSIENT_FAILURE",
+      retryable: true,
+      safeRepair: true,
+      recommendedAction: "Retry once and escalate if repeated"
+    };
+  }
+
+  if (/auth|credential|unauthorized|forbidden/.test(message)) {
+    return {
+      type: "AUTH_FAILURE",
+      retryable: false,
+      safeRepair: false,
+      recommendedAction: "Credential review required"
+    };
+  }
+
+  if (/approval|authority|not allowed/.test(message)) {
+    return {
+      type: "GOVERNANCE_BLOCK",
+      retryable: false,
+      safeRepair: false,
+      recommendedAction: "Route to approval queue"
+    };
+  }
+
+  return {
+    type: "UNKNOWN_FAILURE",
+    retryable: false,
+    safeRepair: true,
+    recommendedAction: "Manual classification required"
+  };
+}
+
+class ExecutionService {
+  async execute(task) {
+    if (!task) {
+      return { ok: false, message: "No task provided" };
+    }
+
+    const enrichedTask = normalizeTask(task);
+    const plan = enrichedTask.payload.plan;
+
+    const provider = enrichedTask.provider || plan.provider;
+    const connectorName = enrichedTask.connector || plan.connector;
+    const action = enrichedTask.action || plan.action;
+
+    if (!provider || provider === "UNKNOWN" || !action || action === "UNKNOWN_ACTION") {
+      return this.handleFailure(
+        enrichedTask,
+        new Error("EXECUTION_PLAN_INVALID: Missing provider or action"),
+        provider || "UNKNOWN",
+        action || "UNKNOWN_ACTION"
+      );
+    }
+
+    log("ExecutionService", action, "Dispatching", `${provider}:${connectorName}`);
+
+    const authority = requiresApproval(provider, action);
+
+    if (!authority.allowed) {
+      taskQueue.update(enrichedTask.id, {
+        status: "AWAITING_APPROVAL",
+        provider,
+        connector: connectorName,
+        action,
+        authority
+      });
+
+      safePublish("TASK_AWAITING_APPROVAL", {
+        task: enrichedTask,
+        authority,
+        provider,
+        connector: connectorName,
+        action
+      });
+
+      return {
+        ok: false,
+        status: "AWAITING_APPROVAL",
+        provider,
+        connector: connectorName,
+        action,
+        authority
+      };
+    }
+
+    if (INTERNAL_TASKS.has(action) && !ENGINEERING_ACTIONS.has(action)) {
+      return this.executeInternalTask(enrichedTask, provider, action);
+    }
+
+    return this.executeConnectorTask(enrichedTask, provider, connectorName, action);
+  }
+
+  async executeInternalTask(task, provider = "Engineering", action = "INTERNAL_TASK") {
+    const plan = task.payload?.plan || {};
+
+    const result = {
+      ok: true,
+      internal: true,
+      provider,
+      action,
+      intent: plan.intent,
+      workflow: plan.workflow,
+      message: "Internal MILES system task executed.",
+      steps: plan.steps || [],
+      completedAt: new Date().toISOString()
+    };
+
+    taskQueue.update(task.id, {
+      status: "COMPLETED",
+      provider,
+      connector: "INTERNAL",
+      action,
+      result
+    });
+
+    memory.remember("execution:last_result", task.id, result);
+
+    safePublish("TASK_COMPLETED", {
+      task,
+      internal: true,
+      result,
+      provider,
+      connector: "INTERNAL",
+      action
+    });
+
+    log("ExecutionService", action, "Completed", `Internal:${provider}`);
+
+    return result;
+  }
+
+  async executeConnectorTask(task, provider, connectorName, action) {
+    if (!connectorName || connectorName === "UNKNOWN") {
+      return this.handleFailure(
+        task,
+        new Error("EXECUTION_PLAN_INVALID: Missing connector"),
+        provider,
+        action
+      );
+    }
+
+    const connector = connectorManager.get(connectorName);
+
+    if (!connector) {
+      return this.handleFailure(
+        task,
+        new Error(`Connector not found: ${connectorName}`),
+        provider,
+        action
+      );
+    }
+
+    if (typeof connector.execute !== "function") {
+      return this.handleFailure(
+        task,
+        new Error(`Connector missing execute(): ${connectorName}`),
+        provider,
+        action
+      );
+    }
+
+    try {
+      taskQueue.update(task.id, {
+        status: "RUNNING",
+        provider,
+        connector: connectorName,
+        action
+      });
+
+      safePublish("TASK_STARTED", {
+        task,
+        provider,
+        connector: connectorName,
+        action
+      });
+
+      log("ExecutionService", action, "Running", connectorName);
+
+      const result = await connector.execute(task);
+
+      const normalizedResult = {
+        ok: true,
+        status: "COMPLETED",
+        provider,
+        action,
+        connector: connectorName,
+        result,
+        completedAt: new Date().toISOString()
+      };
+
+      taskQueue.update(task.id, {
+        status: "COMPLETED",
+        provider,
+        connector: connectorName,
+        action,
+        result: normalizedResult
+      });
+
+      memory.remember("execution:last_result", task.id, normalizedResult);
+
+      safePublish("TASK_COMPLETED", {
+        task,
+        result: normalizedResult,
+        provider,
+        connector: connectorName,
+        action
+      });
+
+      log("ExecutionService", action, "Completed", connectorName);
+
+      return normalizedResult;
+    } catch (error) {
+      return this.handleFailure(task, error, provider, action);
+    }
+  }
+
+  handleFailure(task, error, provider = "UNKNOWN", action = "UNKNOWN") {
+    const failure = classifyFailure(error);
+
+    const result = {
+      ok: false,
+      status: "FAILED",
+      provider,
+      action,
+      error: error.message || String(error),
+      failure,
+      retryable: failure.retryable,
+      createdAt: new Date().toISOString()
+    };
+
+    taskQueue.update(task.id, {
+      status: "FAILED",
+      provider,
+      action,
+      error: result.error,
+      failure,
+      retryable: failure.retryable,
+      result
+    });
+
+    memory.remember("execution:last_result", task.id, result);
+
+    safePublish("TASK_FAILED", {
+      task,
+      provider,
+      action,
+      failure
+    });
+
+    log("ExecutionService", action, "Failed", provider);
+
+    return result;
+  }
+
+  async runNext() {
+    const queued = taskQueue.list("QUEUED");
+
+    if (!queued.length) {
+      return { ok: true, message: "No queued tasks" };
+    }
+
+    const sorted = queued.sort((a, b) => {
+      const ap = Number(a.priority || 99);
+      const bp = Number(b.priority || 99);
+      return ap - bp;
+    });
+
+    const task = sorted[0];
+    const normalizedTask = normalizeTask(task);
+
+    log(
+      "ExecutionService",
+      normalizedTask.action || normalizedTask.type,
+      "Dequeued",
+      normalizedTask.provider || "UNKNOWN"
+    );
+
+    return this.execute(normalizedTask);
+  }
+}
+
+module.exports = new ExecutionService();
+
+============================================================
+FILE: .\SERVICES\WorkforceExecutionService.js
+============================================================
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const eventBus = require("./Events/EventBus");
+const EventTypes = require("./Events/EventTypes");
+
+const workforce = require("./WorkforceService");
+const executiveState = require("./ExecutiveStateService");
+const providerRouter = require("./ProviderRouterService");
+const decisionEngine = require("./Decision/DecisionEngine");
+const executionPlanService = require("./ExecutionPlanService");
+const { log } = require("../CORE/logger");
+
+const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const RESULTS_DIR = path.join(ROOT, "DATA", "workforce_results");
+
+let instantlyOperator = null;
+
+try {
+  instantlyOperator = require("./Browser/Workers/InstantlyCampaignOperator");
+} catch {
+  instantlyOperator = null;
+}
+
+function safeId(value) {
+  return String(value || "UNKNOWN")
+    .replace(/[^a-z0-9_-]+/gi, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 120);
+}
+
+function ensureDirs() {
+  fs.mkdirSync(RESULTS_DIR, { recursive: true });
+}
+
+function findEmployee(name) {
+  const target = String(name || "").toLowerCase();
+
+  return workforce.all().find(e =>
+    String(e.name || e.employee || e.id || "").toLowerCase() === target
+  ) || null;
+}
+
+function publishSafe(type, payload = {}, metadata = {}) {
+  try {
+    eventBus.publish(type, payload, metadata);
+  } catch (err) {
+    log("WorkforceExecutionService", "Publish event", "Failed", err.message);
+  }
+}
+
+function textOf(task = {}) {
+  const payload = task.payload || task || {};
+
+  return [
+    task.id,
+    task.type,
+    payload.provider,
+    payload.capability,
+    payload.action,
+    payload.objective,
+    payload.expectedOutput,
+    payload.verification,
+    payload.department
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function isInstantlyTask(task = {}) {
+  const text = textOf(task);
+
+  return /instantly|campaign|deliverability|bounce|inbox|lead upload|email outreach|paused campaign|active campaign/.test(text);
+}
+
+function shouldRunInstantlyBrowserOperator(task = {}) {
+  const payload = task.payload || task || {};
+  const text = textOf(task);
+
+  if (!instantlyOperator) return false;
+
+  if (/generateexecutiveupdate|executive\.update\.generate/.test(text)) {
+    return false;
+  }
+
+  if (
+    String(payload.action || "").toLowerCase() === "readcampaigns" ||
+    String(payload.capability || "").toLowerCase().includes("instantly.read") ||
+    String(payload.capability || "").toLowerCase().includes("campaign.audit") ||
+    String(payload.capability || "").toLowerCase().includes("deliverability") ||
+    String(payload.provider || "").toLowerCase() === "instantly"
+  ) {
+    return true;
+  }
+
+  return /run instantly coo operator|campaign readiness|paused instantly|active instantly|audit campaigns/.test(text);
+}
+
+function defaultRecommendation(task, employee) {
+  const payload = task.payload || {};
+  const capability = payload.capability || task.type || "general";
+  const objective = payload.objective || "No objective provided";
+  const workerName = payload.assignedTo || employee?.name || employee?.employee || "MILES";
+  const expectedOutput = payload.expectedOutput || `${capability} recommendation`;
+
+  return {
+    summary: `${workerName} prepared ${expectedOutput} for: ${objective}`,
+    recommendation: `Proceed with the next operational step for ${capability}.`,
+    nextActions: [
+      `Review current state for ${capability}.`,
+      "Confirm available source data.",
+      "Escalate only if CEO approval rules are triggered."
+    ],
+    needsHumanInput: false,
+    ceoApprovalRequired: false
+  };
+}
+
+class WorkforceExecutionService {
+  constructor() {
+    this.operatorCache = {};
+  }
+
+  async executeStep(task = {}) {
+    ensureDirs();
+
+    const payload = task.payload || {};
+    const employee = findEmployee(payload.assignedTo);
+
+    publishSafe(EventTypes.EXECUTION_STARTED, {
+      taskId: task.id || null,
+      type: task.type || null,
+      payload
+    }, {
+      source: "WorkforceExecutionService",
+      taskId: task.id || null,
+      workPackageId: payload.workPackageId || null
+    });
+
+    let providerResult = null;
+    let automationResult = null;
+
+    if (payload.provider && providerRouter.hasProvider(payload.provider)) {
+      providerResult = await providerRouter.executeProviderTask(task);
+
+      publishSafe(EventTypes.PROVIDER_EXECUTED, {
+        taskId: task.id || null,
+        provider: payload.provider,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        providerResult
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+    }
+
+    if (shouldRunInstantlyBrowserOperator(task)) {
+      automationResult = await this.runInstantlyOperator(task);
+
+      publishSafe("provider.browser_operator.executed", {
+        taskId: task.id || null,
+        provider: payload.provider || null,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        automationResult
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      providerResult = this.mergeAutomationResult(providerResult, automationResult, task);
+    }
+
+    let decision = null;
+    let executionPlan = null;
+
+    if (providerResult) {
+      decision = decisionEngine.evaluate({
+        objective: payload.objective,
+        provider: payload.provider,
+        action: payload.action,
+        capability: payload.capability,
+        providerResult,
+        exceptions: providerResult.exceptions || [],
+        recommendations: providerResult.recommendations || []
+      });
+
+      publishSafe(EventTypes.DECISION_COMPLETED, {
+        taskId: task.id || null,
+        provider: payload.provider,
+        action: payload.action || null,
+        capability: payload.capability || null,
+        decision
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      executionPlan = executionPlanService.create({
+        taskId: task.id || null,
+        payload,
+        providerResult,
+        decision
+      });
+    }
+
+    const output = providerResult
+      ? {
+          summary: `${providerResult.provider || payload.provider} executed ${payload.action || "refresh"}.`,
+          recommendation: this.buildProviderRecommendation(providerResult, decision, executionPlan),
+          nextActions: executionPlan?.nextActions || providerResult.recommendations || [],
+          needsHumanInput: executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED",
+          ceoApprovalRequired: executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED",
+          providerResult,
+          automationResult,
+          decision,
+          executionPlan
+        }
+      : defaultRecommendation(task, employee);
+
+    const result = {
+      ok: providerResult ? Boolean(providerResult.ok && executionPlan?.canExecute) : true,
+      type: "WORKFORCE_STEP_RESULT",
+      executionMode: providerResult ? executionPlan.executionMode : "WORKFORCE_RECOMMENDATION",
+      taskId: task.id || null,
+      workPackageId: payload.workPackageId || null,
+      objective: payload.objective || null,
+      capability: payload.capability || null,
+      provider: payload.provider || null,
+      action: payload.action || null,
+      assignedTo: payload.assignedTo || null,
+      department: payload.department || employee?.department || null,
+      expectedOutput: payload.expectedOutput || null,
+      verification: payload.verification || null,
+      employeeFound: Boolean(employee),
+      employeeProfile: employee ? {
+        name: employee.name || employee.employee || employee.id,
+        department: employee.department || "",
+        mission: employee.mission || "",
+        authority: employee.authority || "Operational"
+      } : null,
+      output,
+      status: this.resolveStatus(providerResult, executionPlan),
+      createdAt: new Date().toISOString()
+    };
+
+    const fileName = `${safeId(result.workPackageId || "WP")}_${safeId(result.taskId || Date.now())}.json`;
+    const outFile = path.join(RESULTS_DIR, fileName);
+
+    fs.writeFileSync(outFile, JSON.stringify(result, null, 2));
+
+    this.updateExecutiveState(result, outFile);
+
+    publishSafe(EventTypes.EXECUTION_COMPLETED, {
+      taskId: result.taskId,
+      workPackageId: result.workPackageId,
+      provider: result.provider,
+      action: result.action,
+      capability: result.capability,
+      executionMode: result.executionMode,
+      status: result.status,
+      outFile
+    }, {
+      source: "WorkforceExecutionService",
+      taskId: result.taskId,
+      workPackageId: result.workPackageId
+    });
+
+    log("WorkforceExecutionService", "Execute workforce step", "Success", outFile);
+
+    return { ...result, outFile };
+  }
+
+  async runInstantlyOperator(task = {}) {
+    const payload = task.payload || task || {};
+    const cacheKey = payload.workPackageId || task.id || "GLOBAL_INSTANTLY_OPERATOR";
+
+    if (this.operatorCache[cacheKey]) {
+      return {
+        ...this.operatorCache[cacheKey],
+        cached: true
+      };
+    }
+
+    if (!instantlyOperator || typeof instantlyOperator.run !== "function") {
+      return {
+        ok: false,
+        provider: "InstantlyBrowserOperator",
+        status: "NOT_AVAILABLE",
+        exceptions: [
+          {
+            type: "InstantlyBrowserOperator",
+            severity: "Warning",
+            message: "InstantlyCampaignOperator is not available or does not expose run()."
+          }
+        ],
+        recommendations: [
+          "Verify SERVICES/Browser/Workers/InstantlyCampaignOperator.js exists and exports a runnable operator."
+        ]
+      };
+    }
+
+    try {
+      const operatorResult = await instantlyOperator.run({
+        execute: true,
+        headless: true,
+        sourceTaskId: task.id || null,
+        workPackageId: payload.workPackageId || null
+      });
+
+      const normalized = {
+        ok: Boolean(operatorResult.ok),
+        provider: "InstantlyBrowserOperator",
+        status: operatorResult.stage || (operatorResult.ok ? "COMPLETED" : "FAILED"),
+        campaigns: operatorResult.campaigns || [],
+        actions: operatorResult.actions || {},
+        diagnostics: operatorResult.diagnostics || {},
+        screenshots: operatorResult.screenshots || [],
+        file: operatorResult.file || null,
+        exceptions: (operatorResult.errors || []).map(error => ({
+          type: "InstantlyBrowserOperator",
+          severity: "Warning",
+          message: String(error)
+        })),
+        recommendations: this.buildInstantlyRecommendations(operatorResult),
+        raw: operatorResult
+      };
+
+      this.operatorCache[cacheKey] = normalized;
+      return normalized;
+    } catch (err) {
+      const failed = {
+        ok: false,
+        provider: "InstantlyBrowserOperator",
+        status: "FAILED",
+        exceptions: [
+          {
+            type: "InstantlyBrowserOperator",
+            severity: "Critical",
+            message: err.stack || err.message
+          }
+        ],
+        recommendations: [
+          "Review browser session, Instantly login state, and campaign operator output."
+        ]
+      };
+
+      this.operatorCache[cacheKey] = failed;
+      return failed;
+    }
+  }
+
+  buildInstantlyRecommendations(operatorResult = {}) {
+    const campaigns = operatorResult.campaigns || [];
+    const actions = operatorResult.actions || {};
+
+    const drafts = campaigns.filter(c => String(c.status).toLowerCase() === "draft");
+    const paused = campaigns.filter(c => String(c.status).toLowerCase() === "paused");
+    const active = campaigns.filter(c => String(c.status).toLowerCase() === "active");
+
+    const recommendations = [];
+
+    if (drafts.length > 0) {
+      recommendations.push(`Inspect ${drafts.length} draft Instantly campaign(s) for leads, inbox assignment, sequence, schedule, and launch readiness.`);
+    }
+
+    if (paused.length > 0) {
+      recommendations.push(`Diagnose ${paused.length} paused Instantly campaign(s) for bounce, domain, inbox, or lead issues before resuming.`);
+    }
+
+    if (active.length > 0) {
+      recommendations.push(`Monitor ${active.length} active Instantly campaign(s) for bounce rate, reply rate, lead exhaustion, and inbox capacity.`);
+    }
+
+    if ((actions.failed || []).length > 0) {
+      recommendations.push(`Review ${actions.failed.length} failed Instantly action(s).`);
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push("Instantly campaign inventory was captured successfully. Continue monitoring.");
+    }
+
+    return recommendations;
+  }
+
+  mergeAutomationResult(providerResult, automationResult, task = {}) {
+    const payload = task.payload || task || {};
+
+    if (!providerResult) {
+      return {
+        ok: Boolean(automationResult?.ok),
+        type: "PROVIDER_EXECUTION_RESULT",
+        provider: payload.provider || "Instantly",
+        action: payload.action || "runInstantlyOperator",
+        taskId: task.id || null,
+        workPackageId: payload.workPackageId || null,
+        objective: payload.objective || null,
+        capability: payload.capability || null,
+        assignedTo: payload.assignedTo || "MILES",
+        department: payload.department || null,
+        status: automationResult?.status || "UNKNOWN",
+        dataFreshness: "Live Browser",
+        lastRefresh: new Date().toISOString(),
+        metrics: {
+          browserCampaigns: automationResult?.campaigns?.length || 0,
+          browserActions: automationResult?.actions || {},
+          browserDiagnostics: automationResult?.diagnostics || {}
+        },
+        exceptions: automationResult?.exceptions || [],
+        recommendations: automationResult?.recommendations || [],
+        evidence: {
+          providerLoaded: true,
+          browserOperatorExecuted: true,
+          browserResultFile: automationResult?.file || null,
+          screenshots: automationResult?.screenshots || []
+        },
+        completedAt: new Date().toISOString()
+      };
+    }
+
+    return {
+      ...providerResult,
+      ok: Boolean(providerResult.ok && automationResult?.ok !== false),
+      metrics: {
+        ...(providerResult.metrics || {}),
+        browserCampaigns: automationResult?.campaigns?.length || 0,
+        browserActions: automationResult?.actions || {},
+        browserDiagnostics: automationResult?.diagnostics || {}
+      },
+      exceptions: [
+        ...(providerResult.exceptions || []),
+        ...(automationResult?.exceptions || [])
+      ],
+      recommendations: [
+        ...(providerResult.recommendations || []),
+        ...(automationResult?.recommendations || [])
+      ],
+      evidence: {
+        ...(providerResult.evidence || {}),
+        browserOperatorExecuted: true,
+        browserResultFile: automationResult?.file || null,
+        screenshots: automationResult?.screenshots || []
+      }
+    };
+  }
+
+  resolveStatus(providerResult, executionPlan) {
+    if (!providerResult) return "AWAITING_VERIFICATION";
+    if (!providerResult.ok) return "NEEDS_REVIEW";
+    if (executionPlan?.executionMode === "CEO_APPROVAL_REQUIRED") return "AWAITING_CEO_APPROVAL";
+    return "AWAITING_VERIFICATION";
+  }
+
+  buildProviderRecommendation(providerResult = {}, decision = {}, executionPlan = {}) {
+    if (!providerResult.ok) {
+      return `Provider execution failed or needs review: ${providerResult.provider}`;
+    }
+
+    if (decision?.decision === "ESCALATE") {
+      return "Provider executed, but MILES decision engine requires CEO approval before further action.";
+    }
+
+    const exceptions = providerResult.exceptions || [];
+
+    if (exceptions.length > 0) {
+      return `${providerResult.provider} executed successfully but returned ${exceptions.length} exception(s). Review before autonomous action.`;
+    }
+
+    return `${providerResult.provider} executed successfully. Decision approved for autonomous verification and reporting.`;
+  }
+
+  updateExecutiveState(result, outFile) {
+    const current = executiveState.get() || {};
+    const workforceResults = current.workforceResults || [];
+
+    workforceResults.push({
+      taskId: result.taskId,
+      workPackageId: result.workPackageId,
+      capability: result.capability,
+      provider: result.provider,
+      action: result.action,
+      assignedTo: result.assignedTo,
+      executionMode: result.executionMode,
+      status: result.status,
+      outFile,
+      createdAt: result.createdAt
+    });
+
+    executiveState.update("workforceResults", workforceResults.slice(-250));
+  }
+
+  verifyResult(result = {}) {
+    const hasRecommendation = Boolean(result.output && result.output.recommendation);
+    const providerFailed = result.executionMode === "AUTONOMOUS" && result.ok === false;
+    const needsApproval = result.executionMode === "CEO_APPROVAL_REQUIRED";
+
+    const verified = {
+      ok: hasRecommendation && !providerFailed && !needsApproval,
+      type: "WORKFORCE_STEP_VERIFICATION",
+      taskId: result.taskId || null,
+      workPackageId: result.workPackageId || null,
+      capability: result.capability || null,
+      provider: result.provider || null,
+      action: result.action || null,
+      assignedTo: result.assignedTo || null,
+      verified: hasRecommendation && !providerFailed && !needsApproval,
+      status:
+        needsApproval ? "AWAITING_CEO_APPROVAL" :
+        hasRecommendation && !providerFailed ? "COMPLETED" :
+        "NEEDS_REVIEW",
+      evidence: {
+        executionMode: result.executionMode || "UNKNOWN",
+        hasOutput: Boolean(result.output),
+        hasRecommendation,
+        providerFailed,
+        needsApproval
+      },
+      checkedAt: new Date().toISOString()
+    };
+
+    const current = executiveState.get() || {};
+    const verifications = current.verifications || [];
+
+    verifications.push(verified);
+    executiveState.update("verifications", verifications.slice(-250));
+
+    publishSafe(EventTypes.VERIFICATION_COMPLETED, verified, {
+      source: "WorkforceExecutionService",
+      taskId: verified.taskId,
+      workPackageId: verified.workPackageId
+    });
+
+    return verified;
+  }
+
+  async executeAndVerify(task = {}) {
+    try {
+      const result = await this.executeStep(task);
+      const verification = this.verifyResult(result);
+
+      return {
+        ok: verification.verified,
+        result,
+        verification,
+        status: verification.status
+      };
+    } catch (err) {
+      publishSafe(EventTypes.EXECUTION_FAILED, {
+        taskId: task.id || null,
+        workPackageId: task.payload?.workPackageId || null,
+        error: err.stack || err.message
+      }, {
+        source: "WorkforceExecutionService",
+        taskId: task.id || null,
+        workPackageId: task.payload?.workPackageId || null
+      });
+
+      throw err;
+    }
+  }
+}
+
+module.exports = new WorkforceExecutionService();
+
+============================================================
+FILE: .\CORE\TaskQueue.js
+============================================================
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const logger = require("./Logger");
+const eventBus = require("./EventBus");
+
+const ROOT = process.env.MILES_ROOT || process.cwd();
+
+function now() {
+    return new Date().toISOString();
+}
+
+function sleepSync(ms) {
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+class TaskQueue {
+    constructor() {
+        this.queuePath = path.join(ROOT, "DATA", "runtime", "task_queue.json");
+        this.lockPath = path.join(ROOT, "DATA", "runtime", "task_queue.lock");
+        this.backupDir = path.join(ROOT, "DATA", "runtime", "queue_backups");
+
+        this.ensureRuntime();
+        this.withLock(() => {
+            if (!fs.existsSync(this.queuePath)) {
+                this.writeJsonDirect([]);
+            }
+        });
+    }
+
+    ensureRuntime() {
+        const dir = path.dirname(this.queuePath);
+
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        if (!fs.existsSync(this.backupDir)) {
+            fs.mkdirSync(this.backupDir, { recursive: true });
+        }
+    }
+
+    acquireLock() {
+        this.ensureRuntime();
+
+        const maxAttempts = 100;
+
+        for (let i = 0; i < maxAttempts; i++) {
+            try {
+                fs.mkdirSync(this.lockPath);
+                fs.writeFileSync(
+                    path.join(this.lockPath, "owner.json"),
+                    JSON.stringify({
+                        pid: process.pid,
+                        acquiredAt: now()
+                    }, null, 2),
+                    "utf8"
+                );
+                return true;
+            } catch {
+                sleepSync(50);
+            }
+        }
+
+        try {
+            fs.rmSync(this.lockPath, { recursive: true, force: true });
+            fs.mkdirSync(this.lockPath);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    releaseLock() {
+        try {
+            fs.rmSync(this.lockPath, { recursive: true, force: true });
+        } catch {}
+    }
+
+    withLock(fn) {
+        const locked = this.acquireLock();
+
+        if (!locked) {
+            throw new Error("TaskQueue lock could not be acquired.");
+        }
+
+        try {
+            return fn();
+        } finally {
+            this.releaseLock();
+        }
+    }
+
+    sanitizeJsonText(text) {
+        return String(text || "")
+            .replace(/^\uFEFF/, "")
+            .trim();
+    }
+
+    backupCorruptQueue(reason) {
+        try {
+            if (!fs.existsSync(this.queuePath)) {
+                return null;
+            }
+
+            const stamp = new Date()
+                .toISOString()
+                .replace(/[-:.TZ]/g, "")
+                .slice(0, 14);
+
+            const backupPath = path.join(
+                this.backupDir,
+                `task_queue_corrupt_${reason}_${stamp}.json`
+            );
+
+            fs.copyFileSync(this.queuePath, backupPath);
+            console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+
+            return backupPath;
+        } catch (err) {
+            console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+            return null;
+        }
+    }
+
+    readJsonDirect() {
+        if (!fs.existsSync(this.queuePath)) {
+            return [];
+        }
+
+        let raw = fs.readFileSync(this.queuePath, "utf8");
+        raw = this.sanitizeJsonText(raw);
+
+        if (!raw) {
+            return [];
+        }
+
+        const parsed = JSON.parse(raw);
+
+        if (!Array.isArray(parsed)) {
+            throw new Error("Task queue root is not an array.");
+        }
+
+        return parsed;
+    }
+
+    writeJsonDirect(tasks) {
+        if (!Array.isArray(tasks)) {
+            tasks = [];
+        }
+
+        this.ensureRuntime();
+
+        const tmp = `${this.queuePath}.tmp_${process.pid}_${Date.now()}`;
+        const json = JSON.stringify(tasks, null, 2);
+
+        fs.writeFileSync(tmp, json, "utf8");
+
+        try {
+            fs.copyFileSync(tmp, this.queuePath);
+        } finally {
+            try {
+                fs.unlinkSync(tmp);
+            } catch {}
+        }
+    }
+
+    _read() {
+        return this.withLock(() => {
+            const maxRetries = 5;
+            let lastError = null;
+
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    return this.readJsonDirect();
+                } catch (err) {
+                    lastError = err;
+                    sleepSync(100);
+                }
+            }
+
+            this.backupCorruptQueue("parse_failure");
+
+            console.error(
+                "[TaskQueue] Read failed after retries; recovering with empty queue.",
+                lastError ? lastError.message : ""
+            );
+
+            this.writeJsonDirect([]);
+            return [];
+        });
+    }
+
+    _write(tasks) {
+        return this.withLock(() => {
+            this.writeJsonDirect(tasks);
+        });
+    }
+
+    calculateHealthScore() {
+        const tasks = this._read();
+        const current = Date.now();
+
+        let score = 100;
+
+        for (const t of tasks) {
+            const baseTime = t.updatedAt || t.createdAt || now();
+            const parsedTime = new Date(baseTime).getTime();
+
+            const ageHours =
+                Number.isFinite(parsedTime)
+                    ? (current - parsedTime) / 3600000
+                    : 0;
+
+            const decay =
+                ageHours < 6 ? 1.0 :
+                ageHours < 24 ? 0.6 :
+                ageHours < 72 ? 0.3 :
+                0.1;
+
+            if (t.status === "FAILED") score -= 6 * decay;
+            if (t.status === "COMPLETED") score += 1.5 * decay;
+            if (t.status === "RUNNING") score += 0.2;
+        }
+
+        return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    getStatus() {
+        const tasks = this._read();
+
+        return {
+            total: tasks.length,
+            pending: tasks.filter(t => t.status === "QUEUED").length,
+            running: tasks.filter(t => t.status === "RUNNING").length,
+            completed: tasks.filter(t => t.status === "COMPLETED").length,
+            failed: tasks.filter(t => t.status === "FAILED").length,
+            healthScore: this.calculateHealthScore()
+        };
+    }
+
+    add(type, payload = {}, priority = 50) {
+        const tasks = this._read();
+
+        const task = {
+            id: `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+            type,
+            payload,
+            priority,
+            status: "QUEUED",
+            createdAt: now(),
+            updatedAt: now()
+        };
+
+        tasks.push(task);
+        tasks.sort((a, b) => b.priority - a.priority);
+
+        this._write(tasks);
+
+        logger.info(`Task queued: ${task.id}`, task);
+        eventBus.publish("TASK_QUEUED", task);
+
+        return task;
+    }
+
+    list(status = null) {
+        const tasks = this._read();
+        return status ? tasks.filter(t => t.status === status) : tasks;
+    }
+
+    update(id, patch) {
+        const tasks = this._read();
+        const index = tasks.findIndex(t => t.id === id);
+
+        if (index === -1) {
+            throw new Error(`Task not found: ${id}`);
+        }
+
+        tasks[index] = {
+            ...tasks[index],
+            ...patch,
+            updatedAt: now()
+        };
+
+        this._write(tasks);
+
+        eventBus.publish("TASK_UPDATED", tasks[index]);
+
+        return tasks[index];
+    }
+}
+
+module.exports = new TaskQueue();
+
+============================================================
+FILE: .\CORE\authority.js
+============================================================
+function isProtectedOutboundDomain(text) {
+  return /pathways2gc\.com/i.test(text || '') && /outbound|instantly|campaign|send/i.test(text || '');
+}
+
+function requiresApproval(system, action) {
+  const combined = `${system} ${action}`;
+  if (isProtectedOutboundDomain(combined)) return { allowed: false, approval: 'Never allowed' };
+  if (/publish/i.test(combined)) return { allowed: false, approval: 'Kevin approval required' };
+  if (/delete|spend|buy domain|cancel domain|dns/i.test(combined)) return { allowed: false, approval: 'Kevin approval required' };
+  return { allowed: true, approval: 'No approval required unless protected asset involved' };
+}
+
+module.exports = { requiresApproval, isProtectedOutboundDomain };

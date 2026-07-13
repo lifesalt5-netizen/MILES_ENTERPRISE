@@ -1,0 +1,4 @@
+"campaign_id","segment_name","state","last_state_change","last_run","next_run","send_status","domain_lock","execution_count","error_count","notes","offer_strategy","estimated_value","performance_score"
+"CAMP-0001","P2GC_SEGMENT_CONSULTING","ACTIVE","2026-06-20T18:26:00","","2026-06-20","HOLD","ALLOWED","0","0","Message too complex - simplify","","",""
+"CAMP-0002","P2GC_SEGMENT_IT_SERVICES","ACTIVE","2026-06-20T18:26:00","","2026-06-20","HOLD","ALLOWED","0","0","Message too complex - simplify","","",""
+"CAMP-0003","P2GC_SEGMENT_ENGINEERING","ACTIVE","2026-06-20T18:26:00","","2026-06-20","HOLD","ALLOWED","0","0","Message too complex - simplify","","",""

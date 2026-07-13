@@ -1,0 +1,73 @@
+{
+  "ok": true,
+  "stage": "COMPLETED",
+  "campaigns": [
+    {
+      "name": "Welcome back",
+      "status": "unknown",
+      "source": "semantic"
+    },
+    {
+      "name": "Campaigns",
+      "status": "unknown",
+      "source": "semantic"
+    }
+  ],
+  "actions": {
+    "executed": [],
+    "paused": [],
+    "approvals": [
+      {
+        "id": "CEO-20260702000557-9473",
+        "status": "AWAITING_CEO_APPROVAL",
+        "priority": "HIGH",
+        "category": "Instantly COO Control",
+        "objective": "Welcome back",
+        "reason": "Requires COO validation",
+        "recommendation": "Review and decide.",
+        "risk": "MEDIUM",
+        "requestedBy": "MILES",
+        "provider": "InstantlyCOO",
+        "capability": "campaign.control",
+        "action": null,
+        "workPackageId": null,
+        "taskId": null,
+        "evidence": {
+          "name": "Welcome back",
+          "status": "unknown",
+          "source": "semantic"
+        },
+        "createdAt": "2026-07-02T00:05:57.278Z",
+        "updatedAt": "2026-07-02T00:05:57.278Z"
+      },
+      {
+        "id": "CEO-20260702000557-3640",
+        "status": "AWAITING_CEO_APPROVAL",
+        "priority": "HIGH",
+        "category": "Instantly COO Control",
+        "objective": "Campaigns",
+        "reason": "Requires COO validation",
+        "recommendation": "Review and decide.",
+        "risk": "MEDIUM",
+        "requestedBy": "MILES",
+        "provider": "InstantlyCOO",
+        "capability": "campaign.control",
+        "action": null,
+        "workPackageId": null,
+        "taskId": null,
+        "evidence": {
+          "name": "Campaigns",
+          "status": "unknown",
+          "source": "semantic"
+        },
+        "createdAt": "2026-07-02T00:05:57.282Z",
+        "updatedAt": "2026-07-02T00:05:57.282Z"
+      }
+    ],
+    "ignored": []
+  },
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaigns_opened_1782950757050.png"
+  ],
+  "errors": []
+}

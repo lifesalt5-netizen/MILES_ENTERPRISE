@@ -1,0 +1,23 @@
+﻿[
+    {
+        "action":  "MERGED_AND_ARCHIVED",
+        "source":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\orion",
+        "target":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\ORION",
+        "archivedTo":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MERGED_REFERENCES\\orion",
+        "at":  "2026-07-08T19:22:26.0693137-04:00"
+    },
+    {
+        "action":  "MERGED_AND_ARCHIVED",
+        "source":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\governance",
+        "target":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CORE\\Governance",
+        "archivedTo":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MERGED_REFERENCES\\governance",
+        "at":  "2026-07-08T19:22:26.1382247-04:00"
+    },
+    {
+        "action":  "MERGED_AND_ARCHIVED",
+        "source":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\miles_instantly_connector",
+        "target":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\INSTANTLY",
+        "archivedTo":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_LEGACY_BUILDS\\MERGED_REFERENCES\\miles_instantly_connector",
+        "at":  "2026-07-08T19:22:27.0078322-04:00"
+    }
+]

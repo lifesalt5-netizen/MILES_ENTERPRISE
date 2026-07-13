@@ -1,0 +1,4 @@
+{"eventType":"INSTANTLY_COO_SNAPSHOT_STARTED","payload":{"startedAt":"2026-07-11T18:48:49.594Z"},"generatedAt":"2026-07-11T18:48:49.594Z"}
+{"eventType":"INSTANTLY_COO_SNAPSHOT_COMPLETED","payload":{"status":"HEALTHY","totalAccounts":10,"totalCampaigns":35,"errors":0},"generatedAt":"2026-07-11T18:48:50.355Z"}
+{"eventType":"INSTANTLY_COO_SNAPSHOT_STARTED","payload":{"startedAt":"2026-07-12T03:27:38.103Z"},"generatedAt":"2026-07-12T03:27:38.103Z"}
+{"eventType":"INSTANTLY_COO_SNAPSHOT_COMPLETED","payload":{"status":"HEALTHY","totalAccounts":10,"totalCampaigns":35,"errors":0},"generatedAt":"2026-07-12T03:27:39.633Z"}

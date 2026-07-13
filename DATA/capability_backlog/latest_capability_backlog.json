@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "cycleId": "COO-20260713155633-001",
+  "generatedAt": "2026-07-13T15:56:39.717Z",
+  "openGaps": 4,
+  "gaps": [
+    {
+      "id": "CAP-1783958199717-0-87022",
+      "cycleId": "COO-20260713155633-001",
+      "status": "OPEN",
+      "priority": 2,
+      "createdAt": "2026-07-13T15:56:39.717Z",
+      "area": "LinkedIn COO",
+      "providerKey": "linkedin",
+      "title": "Build LinkedIn COO content and engagement operator",
+      "businessImpact": "High",
+      "removesManualWork": [
+        "profile audit",
+        "company page audit",
+        "post generation",
+        "comment drafting",
+        "engagement review"
+      ],
+      "recommendedAction": "Add LinkedIn provider and browser worker for audit, content queue, and governed posting."
+    },
+    {
+      "id": "CAP-1783958199717-1-24937",
+      "cycleId": "COO-20260713155633-001",
+      "status": "OPEN",
+      "priority": 1,
+      "createdAt": "2026-07-13T15:56:39.717Z",
+      "area": "Sales COO",
+      "providerKey": "sales",
+      "title": "Build Sales COO pipeline and follow-up operator",
+      "businessImpact": "Very High",
+      "removesManualWork": [
+        "pipeline review",
+        "follow-up reminders",
+        "proposal status checks",
+        "call prep",
+        "revenue forecast"
+      ],
+      "recommendedAction": "Add sales pipeline provider and recurring follow-up queue."
+    },
+    {
+      "id": "CAP-1783958199717-2-83638",
+      "cycleId": "COO-20260713155633-001",
+      "status": "OPEN",
+      "priority": 2,
+      "createdAt": "2026-07-13T15:56:39.717Z",
+      "area": "Government Data COO",
+      "providerKey": "government",
+      "title": "Build Government Data COO refresh monitor",
+      "businessImpact": "High",
+      "removesManualWork": [
+        "SAM checks",
+        "GSA checks",
+        "VA checks",
+        "RFI monitoring",
+        "source stale checks"
+      ],
+      "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought."
+    },
+    {
+      "id": "CAP-1783958199717-3-76037",
+      "cycleId": "COO-20260713155633-001",
+      "status": "OPEN",
+      "priority": 1,
+      "createdAt": "2026-07-13T15:56:39.717Z",
+      "area": "Engineering COO",
+      "providerKey": "engineering",
+      "title": "Build Engineering COO regression and self-repair loop",
+      "businessImpact": "Very High",
+      "removesManualWork": [
+        "runtime log review",
+        "failed task diagnosis",
+        "regression tests",
+        "safe rollback",
+        "capability backlog"
+      ],
+      "recommendedAction": "Add regression runner, repair evidence files, and guarded engineering backlog execution."
+    }
+  ]
+}

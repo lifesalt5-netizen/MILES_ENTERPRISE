@@ -1,0 +1,48 @@
+{
+  "build": "EXEC_009",
+  "name": "Namecheap Live Integration",
+  "provider": "NAMECHEAP",
+  "version": "1.0.0",
+  "compatible_with": [
+    "BUILD_031",
+    "BUILD_032",
+    "BUILD_033",
+    "BUILD_034",
+    "BUILD_035",
+    "BUILD_036",
+    "BUILD_037",
+    "BUILD_038",
+    "EXEC_001",
+    "EXEC_002",
+    "EXEC_003",
+    "EXEC_004",
+    "EXEC_005",
+    "EXEC_006",
+    "EXEC_007",
+    "EXEC_008"
+  ],
+  "controlled_writes_default": false,
+  "capabilities": [
+    "ListDomains",
+    "GetDomain",
+    "GetDNS",
+    "UpdateDNS",
+    "VerifyDNS",
+    "SPFManager",
+    "DKIMManager",
+    "DMARCManager",
+    "MXManager",
+    "HealthCheck",
+    "DomainInventory",
+    "SyncRegistry",
+    "DriftDetection"
+  ],
+  "governance_required": [
+    "PurchaseDomain",
+    "TransferDomain",
+    "DeleteDNSRecord",
+    "ChangeNameservers",
+    "DisableMailRouting",
+    "ApplyDNSMutationWhenWritesDisabled"
+  ]
+}

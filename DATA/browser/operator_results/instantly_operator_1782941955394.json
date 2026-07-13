@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "system": "instantly",
+  "stage": "COMPLETED",
+  "actions": [
+    "OPENED_CAMPAIGNS_PAGE"
+  ],
+  "approvals": [],
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaigns_opened_1782941954493.png",
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\campaigns_analyzed_1782941954727.png"
+  ],
+  "campaignsDetected": 0,
+  "pausedCampaigns": 0,
+  "executed": [],
+  "errors": []
+}

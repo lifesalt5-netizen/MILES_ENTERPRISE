@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-07-08T19:30:42.860Z",
+  "source": "COO_BUSINESS_STATE_ENGINE",
+  "lessonType": "BUSINESS_STATE",
+  "signal": {
+    "status": "READY",
+    "activeDomains": 7,
+    "blockedDomains": 0,
+    "openCEOApprovals": 0,
+    "openExecutiveAlerts": 0,
+    "canOperate": true,
+    "generatedAt": "2026-07-08T19:30:42.827Z"
+  },
+  "lesson": "Miles should use business state as the operational source of truth before creating COO work."
+}

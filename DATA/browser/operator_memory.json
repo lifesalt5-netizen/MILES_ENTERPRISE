@@ -1,0 +1,12 @@
+{
+  "patterns": {
+    "sbs verified email targets": {
+      "lastAction": "executed",
+      "status": "active",
+      "ts": "2026-07-04T23:49:47.466Z"
+    }
+  },
+  "performance": {
+    "sbs verified email targets": 4385
+  }
+}

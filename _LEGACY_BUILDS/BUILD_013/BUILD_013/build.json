@@ -1,0 +1,10 @@
+{
+  "build": 13,
+  "version": "0.13.0",
+  "name": "COO Orchestrator Integration",
+  "releaseDate": "2026-07-01",
+  "status": "development",
+  "requiresMigration": false,
+  "runtimeSchema": 2,
+  "objective": "Connect Executive Intelligence, WorkQueueService, WorkflowService, and ExecutionService into a coordinated COO orchestration pass."
+}

@@ -1,0 +1,114 @@
+{
+  "ok": true,
+  "cycleId": "COO-20260705023455-018",
+  "generatedAt": "2026-07-05T02:34:56.086Z",
+  "total": 2,
+  "ready": 2,
+  "awaitingApproval": 0,
+  "repairs": [
+    {
+      "id": "REPAIR-1783218896086-86011",
+      "cycleId": "COO-20260705023455-018",
+      "area": "Runtime",
+      "severity": "Warning",
+      "title": "Repair Runtime: TaskFailures",
+      "problem": "117 failed runtime task(s) detected.",
+      "safeAutonomous": true,
+      "requiresKevin": false,
+      "recommendedRepair": "Investigate issue, generate repair recommendation, and verify result.",
+      "verification": "Issue is resolved, downgraded, or escalated with evidence.",
+      "rollback": "Restore prior state if a safe repair changes system state.",
+      "status": "READY",
+      "source": "AutonomousCOOLoopService",
+      "createdAt": "2026-07-05T02:34:56.086Z",
+      "metadata": {
+        "system": {
+          "area": "Runtime",
+          "status": "Watch",
+          "score": 82,
+          "risk": "MEDIUM",
+          "confidence": "HIGH",
+          "lastSuccess": "2026-07-05T02:34:56.086Z",
+          "lastFailure": "2026-07-05T02:34:56.086Z",
+          "exceptions": [
+            {
+              "type": "TaskFailures",
+              "severity": "Warning",
+              "message": "117 failed runtime task(s) detected."
+            }
+          ],
+          "recommendations": [
+            "Review failed task details and queue safe repair work."
+          ],
+          "metrics": {
+            "total": 117,
+            "pending": 0,
+            "running": 0,
+            "completed": 0,
+            "failed": 117,
+            "healthScore": 0
+          }
+        },
+        "exception": {
+          "type": "TaskFailures",
+          "severity": "Warning",
+          "message": "117 failed runtime task(s) detected."
+        }
+      }
+    },
+    {
+      "id": "REPAIR-1783218896086-51576",
+      "cycleId": "COO-20260705023455-018",
+      "area": "WorkQueue",
+      "severity": "Warning",
+      "title": "Repair WorkQueue: Escalations",
+      "problem": "2 Kevin-level escalation(s) open.",
+      "safeAutonomous": true,
+      "requiresKevin": false,
+      "recommendedRepair": "Investigate issue, generate repair recommendation, and verify result.",
+      "verification": "Issue is resolved, downgraded, or escalated with evidence.",
+      "rollback": "Restore prior state if a safe repair changes system state.",
+      "status": "READY",
+      "source": "AutonomousCOOLoopService",
+      "createdAt": "2026-07-05T02:34:56.086Z",
+      "metadata": {
+        "system": {
+          "area": "WorkQueue",
+          "status": "Watch",
+          "score": 78,
+          "risk": "MEDIUM",
+          "confidence": "HIGH",
+          "lastSuccess": "2026-07-05T02:34:56.086Z",
+          "lastFailure": null,
+          "exceptions": [
+            {
+              "type": "Escalations",
+              "severity": "Warning",
+              "message": "2 Kevin-level escalation(s) open."
+            }
+          ],
+          "recommendations": [
+            "Review CEO approval queue and resolve blocked decisions."
+          ],
+          "metrics": {
+            "total": 72,
+            "open": 32,
+            "pending": 2,
+            "queued": 30,
+            "inProgress": 0,
+            "blocked": 0,
+            "awaitingApproval": 0,
+            "completed": 0,
+            "failed": 40,
+            "escalations": 2
+          }
+        },
+        "exception": {
+          "type": "Escalations",
+          "severity": "Warning",
+          "message": "2 Kevin-level escalation(s) open."
+        }
+      }
+    }
+  ]
+}

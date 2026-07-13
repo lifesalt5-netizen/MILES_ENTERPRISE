@@ -1,0 +1,1028 @@
+MILES ENTERPRISE DUPLICATE ANALYSIS
+==================================
+
+------------------------------------------------
+FILE: authority.js
+COPIES: 2
+
+1. CORE/authority.js
+2. _REFERENCE/MILES_OS_v1/CORE/authority.js
+
+------------------------------------------------
+FILE: connectormanager.js
+COPIES: 5
+
+1. CORE/ConnectorManager.js
+2. SERVICES/ConnectorManager.js
+3. miles_core_framework_dropin/CORE/ConnectorManager.js
+4. miles_desktop_v2_build003/miles_desktop_v2/src/main/connectors/connectorManager.js
+5. _REFERENCE/MILES_OS_v1/SERVICES/ConnectorManager.js
+
+------------------------------------------------
+FILE: database.js
+COPIES: 2
+
+1. CORE/Database.js
+2. _REFERENCE/MILES_OS_v1/CORE/Database.js
+
+------------------------------------------------
+FILE: eventbus.js
+COPIES: 5
+
+1. CORE/EventBus.js
+2. CORE/Kernel/EventBus.js
+3. SERVICES/Events/EventBus.js
+4. miles_core_framework_dropin/CORE/EventBus.js
+5. _REFERENCE/MILES_OS_v1/CORE/Kernel/EventBus.js
+
+------------------------------------------------
+FILE: healthdashboard.js
+COPIES: 2
+
+1. CORE/HealthDashboard.js
+2. miles_core_framework_dropin/CORE/HealthDashboard.js
+
+------------------------------------------------
+FILE: logger.js
+COPIES: 8
+
+1. CORE/logger.js
+2. CONNECTORS/WEBSITE_B12/modules/logger.js
+3. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/CORE/Logger.js
+4. miles_autonomous_patch/CORE/Logger.js
+5. miles_core_framework_dropin/CORE/Logger.js
+6. miles_desktop_v2_build003/miles_desktop_v2/src/main/logging/logger.js
+7. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/logger.js
+8. _REFERENCE/MILES_OS_v1/CORE/logger.js
+
+------------------------------------------------
+FILE: miles.js
+COPIES: 2
+
+1. CORE/miles.js
+2. _REFERENCE/MILES_OS_v1/CORE/miles.js
+
+------------------------------------------------
+FILE: runtimecontroller.js
+COPIES: 2
+
+1. CORE/RuntimeController.js
+2. BUILDER/RuntimeController.js
+
+------------------------------------------------
+FILE: supervisor.js
+COPIES: 2
+
+1. CORE/Supervisor.js
+2. miles_desktop_v2_build003/miles_desktop_v2/src/main/supervisor/supervisor.js
+
+------------------------------------------------
+FILE: taskqueue.js
+COPIES: 3
+
+1. CORE/TaskQueue.js
+2. miles_core_framework_dropin/CORE/TaskQueue.js
+3. miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/taskQueue.js
+
+------------------------------------------------
+FILE: healthmonitor.js
+COPIES: 2
+
+1. CORE/Kernel/HealthMonitor.js
+2. _REFERENCE/MILES_OS_v1/CORE/Kernel/HealthMonitor.js
+
+------------------------------------------------
+FILE: mileskernel.js
+COPIES: 2
+
+1. CORE/Kernel/MilesKernel.js
+2. _REFERENCE/MILES_OS_v1/CORE/Kernel/MilesKernel.js
+
+------------------------------------------------
+FILE: serviceregistry.js
+COPIES: 2
+
+1. CORE/Kernel/ServiceRegistry.js
+2. _REFERENCE/MILES_OS_v1/CORE/Kernel/ServiceRegistry.js
+
+------------------------------------------------
+FILE: startmiles.js
+COPIES: 6
+
+1. CORE/Kernel/StartMiles.js
+2. StartMiles.js
+3. build006_patch/payload/StartMiles.js
+4. miles_build005_exec_layer/miles_build005_exec_layer/StartMiles.js
+5. miles_build006_outbound_ops/build006_patch/payload/StartMiles.js
+6. _REFERENCE/MILES_OS_v1/CORE/Kernel/StartMiles.js
+
+------------------------------------------------
+FILE: milesruntime.js
+COPIES: 2
+
+1. CORE/Runtime/MilesRuntime.js
+2. miles_desktop_v2_build003/miles_desktop_v2/src/main/runtime/milesRuntime.js
+
+------------------------------------------------
+FILE: actionauditservice.js
+COPIES: 2
+
+1. SERVICES/ActionAuditService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionAuditService.js
+
+------------------------------------------------
+FILE: actiondispatcherservice.js
+COPIES: 2
+
+1. SERVICES/ActionDispatcherService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionDispatcherService.js
+
+------------------------------------------------
+FILE: actionengineservice.js
+COPIES: 2
+
+1. SERVICES/ActionEngineService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionEngineService.js
+
+------------------------------------------------
+FILE: actionhistoryservice.js
+COPIES: 2
+
+1. SERVICES/ActionHistoryService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionHistoryService.js
+
+------------------------------------------------
+FILE: actionretryservice.js
+COPIES: 2
+
+1. SERVICES/ActionRetryService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionRetryService.js
+
+------------------------------------------------
+FILE: actionverificationservice.js
+COPIES: 2
+
+1. SERVICES/ActionVerificationService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ActionVerificationService.js
+
+------------------------------------------------
+FILE: autonomouscooloopservice.js
+COPIES: 6
+
+1. SERVICES/AutonomousCOOLoopService.js
+2. AutonomousCOOLoopService.js
+3. BUILD_012/BUILD_012/SERVICES/AutonomousCOOLoopService.js
+4. BUILD_013/BUILD_013/SERVICES/AutonomousCOOLoopService.js
+5. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js
+6. miles_autonomous_patch/SERVICES/AutonomousCOOLoopService.js
+
+------------------------------------------------
+FILE: baseprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/BaseProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/BaseProviderController.js
+
+------------------------------------------------
+FILE: businessexecutionengineservice.js
+COPIES: 2
+
+1. SERVICES/BusinessExecutionEngineService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/BusinessExecutionEngineService.js
+
+------------------------------------------------
+FILE: capabilityregistryservice.js
+COPIES: 2
+
+1. SERVICES/CapabilityRegistryService.js
+2. MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/SERVICES/CapabilityRegistryService.js
+
+------------------------------------------------
+FILE: companystateservice.js
+COPIES: 2
+
+1. SERVICES/CompanyStateService.js
+2. MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/SERVICES/CompanyStateService.js
+
+------------------------------------------------
+FILE: confidencescoringservice.js
+COPIES: 2
+
+1. SERVICES/ConfidenceScoringService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/ConfidenceScoringService.js
+
+------------------------------------------------
+FILE: connectorruntimemanager.js
+COPIES: 2
+
+1. SERVICES/ConnectorRuntimeManager.js
+2. SERVICES/connector_runtime/ConnectorRuntimeManager.js
+
+------------------------------------------------
+FILE: continuouscooloopservice.js
+COPIES: 2
+
+1. SERVICES/ContinuousCOOLoopService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/ContinuousCOOLoopService.js
+
+------------------------------------------------
+FILE: controlledwriteauditservice.js
+COPIES: 2
+
+1. SERVICES/ControlledWriteAuditService.js
+2. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteAuditService.js
+
+------------------------------------------------
+FILE: controlledwritepolicyservice.js
+COPIES: 2
+
+1. SERVICES/ControlledWritePolicyService.js
+2. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWritePolicyService.js
+
+------------------------------------------------
+FILE: controlledwriteservice.js
+COPIES: 2
+
+1. SERVICES/ControlledWriteService.js
+2. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/ControlledWriteService.js
+
+------------------------------------------------
+FILE: cooorchestratorservice.js
+COPIES: 3
+
+1. SERVICES/COOOrchestratorService.js
+2. BUILD_013/BUILD_013/SERVICES/COOOrchestratorService.js
+3. BUILD_015/BUILD_015/SERVICES/COOOrchestratorService.js
+
+------------------------------------------------
+FILE: dashboarddataservice.js
+COPIES: 2
+
+1. SERVICES/DashboardDataService.js
+2. BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardDataService.js
+
+------------------------------------------------
+FILE: dashboardserverservice.js
+COPIES: 2
+
+1. SERVICES/DashboardServerService.js
+2. BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/DashboardServerService.js
+
+------------------------------------------------
+FILE: decisionengine.js
+COPIES: 2
+
+1. SERVICES/DecisionEngine.js
+2. SERVICES/Decision/DecisionEngine.js
+
+------------------------------------------------
+FILE: decisionlearningservice.js
+COPIES: 2
+
+1. SERVICES/DecisionLearningService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/DecisionLearningService.js
+
+------------------------------------------------
+FILE: escalationmanagerservice.js
+COPIES: 2
+
+1. SERVICES/EscalationManagerService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/EscalationManagerService.js
+
+------------------------------------------------
+FILE: executionauditservice.js
+COPIES: 2
+
+1. SERVICES/ExecutionAuditService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionAuditService.js
+
+------------------------------------------------
+FILE: executiondispatcherservice.js
+COPIES: 2
+
+1. SERVICES/ExecutionDispatcherService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionDispatcherService.js
+
+------------------------------------------------
+FILE: executionmonitorservice.js
+COPIES: 2
+
+1. SERVICES/ExecutionMonitorService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionMonitorService.js
+
+------------------------------------------------
+FILE: executionplannerservice.js
+COPIES: 2
+
+1. SERVICES/ExecutionPlannerService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionPlannerService.js
+
+------------------------------------------------
+FILE: executionschedulerservice.js
+COPIES: 2
+
+1. SERVICES/ExecutionSchedulerService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/ExecutionSchedulerService.js
+
+------------------------------------------------
+FILE: executionservice.js
+COPIES: 3
+
+1. SERVICES/ExecutionService.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutionService.js
+3. miles_autonomous_patch/SERVICES/ExecutionService.js
+
+------------------------------------------------
+FILE: executivebrainservice.js
+COPIES: 2
+
+1. SERVICES/ExecutiveBrainService.js
+2. MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/SERVICES/ExecutiveBrainService.js
+
+------------------------------------------------
+FILE: executivedashboardservice.js
+COPIES: 2
+
+1. SERVICES/ExecutiveDashboardService.js
+2. BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/SERVICES/ExecutiveDashboardService.js
+
+------------------------------------------------
+FILE: executiveintelligenceservice.js
+COPIES: 3
+
+1. SERVICES/ExecutiveIntelligenceService.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js
+3. miles_autonomous_patch/SERVICES/ExecutiveIntelligenceService.js
+
+------------------------------------------------
+FILE: failurelearningservice.js
+COPIES: 2
+
+1. SERVICES/FailureLearningService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/FailureLearningService.js
+
+------------------------------------------------
+FILE: filesystemprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/FileSystemProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/FileSystemProviderController.js
+
+------------------------------------------------
+FILE: googleworkspaceprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/GoogleWorkspaceProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/GoogleWorkspaceProviderController.js
+
+------------------------------------------------
+FILE: heartbeatservice.js
+COPIES: 2
+
+1. SERVICES/HeartbeatService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/HeartbeatService.js
+
+------------------------------------------------
+FILE: instantlyactionbridgeservice.js
+COPIES: 2
+
+1. SERVICES/InstantlyActionBridgeService.js
+2. EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyActionBridgeService.js
+
+------------------------------------------------
+FILE: instantlyapiclient.js
+COPIES: 2
+
+1. SERVICES/InstantlyApiClient.js
+2. EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyApiClient.js
+
+------------------------------------------------
+FILE: instantlycontrolledwriteservice.js
+COPIES: 2
+
+1. SERVICES/InstantlyControlledWriteService.js
+2. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/SERVICES/InstantlyControlledWriteService.js
+
+------------------------------------------------
+FILE: instantlyliveintegrationservice.js
+COPIES: 2
+
+1. SERVICES/InstantlyLiveIntegrationService.js
+2. EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveIntegrationService.js
+
+------------------------------------------------
+FILE: instantlyliveprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/InstantlyLiveProviderController.js
+2. EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/SERVICES/InstantlyLiveProviderController.js
+
+------------------------------------------------
+FILE: instantlyprovidercompatibilityservice.js
+COPIES: 2
+
+1. SERVICES/InstantlyProviderCompatibilityService.js
+2. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/InstantlyProviderCompatibilityService.js
+
+------------------------------------------------
+FILE: instantlyprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/InstantlyProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/InstantlyProviderController.js
+
+------------------------------------------------
+FILE: jsonfileservice.js
+COPIES: 2
+
+1. SERVICES/JsonFileService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/JsonFileService.js
+
+------------------------------------------------
+FILE: learningdataservice.js
+COPIES: 2
+
+1. SERVICES/LearningDataService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/LearningDataService.js
+
+------------------------------------------------
+FILE: loopschedulerservice.js
+COPIES: 2
+
+1. SERVICES/LoopSchedulerService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/LoopSchedulerService.js
+
+------------------------------------------------
+FILE: memoryservice.js
+COPIES: 2
+
+1. SERVICES/MemoryService.js
+2. _REFERENCE/MILES_OS_v1/SERVICES/MemoryService.js
+
+------------------------------------------------
+FILE: namecheapprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/NamecheapProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/NamecheapProviderController.js
+
+------------------------------------------------
+FILE: orionprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/OrionProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/OrionProviderController.js
+
+------------------------------------------------
+FILE: outboundservice.js
+COPIES: 3
+
+1. SERVICES/OutboundService.js
+2. build006_patch/payload/SERVICES/OutboundService.js
+3. miles_build006_outbound_ops/build006_patch/payload/SERVICES/OutboundService.js
+
+------------------------------------------------
+FILE: priorityoptimizationservice.js
+COPIES: 2
+
+1. SERVICES/PriorityOptimizationService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/PriorityOptimizationService.js
+
+------------------------------------------------
+FILE: providerauthorityregistryservice.js
+COPIES: 2
+
+1. SERVICES/ProviderAuthorityRegistryService.js
+2. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderAuthorityRegistryService.js
+
+------------------------------------------------
+FILE: providercapabilitybindingservice.js
+COPIES: 2
+
+1. SERVICES/ProviderCapabilityBindingService.js
+2. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderCapabilityBindingService.js
+
+------------------------------------------------
+FILE: providercontrollerexecutionservice.js
+COPIES: 2
+
+1. SERVICES/ProviderControllerExecutionService.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerExecutionService.js
+
+------------------------------------------------
+FILE: providercontrollerhealthservice.js
+COPIES: 2
+
+1. SERVICES/ProviderControllerHealthService.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerHealthService.js
+
+------------------------------------------------
+FILE: providercontrollerregistryservice.js
+COPIES: 2
+
+1. SERVICES/ProviderControllerRegistryService.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/ProviderControllerRegistryService.js
+
+------------------------------------------------
+FILE: providerinterfaceadapterservice.js
+COPIES: 2
+
+1. SERVICES/ProviderInterfaceAdapterService.js
+2. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderInterfaceAdapterService.js
+
+------------------------------------------------
+FILE: providerregistryservice.js
+COPIES: 2
+
+1. SERVICES/ProviderRegistryService.js
+2. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/SERVICES/ProviderRegistryService.js
+
+------------------------------------------------
+FILE: providersynchronizationservice.js
+COPIES: 2
+
+1. SERVICES/ProviderSynchronizationService.js
+2. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/SERVICES/ProviderSynchronizationService.js
+
+------------------------------------------------
+FILE: queuerecoveryservice.js
+COPIES: 2
+
+1. SERVICES/QueueRecoveryService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/QueueRecoveryService.js
+
+------------------------------------------------
+FILE: recommendationengineservice.js
+COPIES: 2
+
+1. SERVICES/RecommendationEngineService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RecommendationEngineService.js
+
+------------------------------------------------
+FILE: repositoryregistryservice.js
+COPIES: 2
+
+1. SERVICES/RepositoryRegistryService.js
+2. MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js
+
+------------------------------------------------
+FILE: restartguardianservice.js
+COPIES: 2
+
+1. SERVICES/RestartGuardianService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RestartGuardianService.js
+
+------------------------------------------------
+FILE: retrymanagerservice.js
+COPIES: 2
+
+1. SERVICES/RetryManagerService.js
+2. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/SERVICES/RetryManagerService.js
+
+------------------------------------------------
+FILE: routinglearningservice.js
+COPIES: 2
+
+1. SERVICES/RoutingLearningService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/RoutingLearningService.js
+
+------------------------------------------------
+FILE: runtimehealthservice.js
+COPIES: 2
+
+1. SERVICES/RuntimeHealthService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/RuntimeHealthService.js
+
+------------------------------------------------
+FILE: selflearningservice.js
+COPIES: 2
+
+1. SERVICES/SelfLearningService.js
+2. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/SERVICES/SelfLearningService.js
+
+------------------------------------------------
+FILE: startproductionsystem.js
+COPIES: 3
+
+1. SERVICES/StartProductionSystem.js
+2. PROVIDERS/StartProductionSystem.js
+3. StartProductionSystem.js
+
+------------------------------------------------
+FILE: taskmanager.js
+COPIES: 2
+
+1. SERVICES/TaskManager.js
+2. _REFERENCE/MILES_OS_v1/SERVICES/TaskManager.js
+
+------------------------------------------------
+FILE: taskrouterservice.js
+COPIES: 2
+
+1. SERVICES/TaskRouterService.js
+2. MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/SERVICES/TaskRouterService.js
+
+------------------------------------------------
+FILE: test_autonomous_coo_loop.js
+COPIES: 3
+
+1. SERVICES/test_autonomous_coo_loop.js
+2. BUILD_012/BUILD_012/TESTS/test_autonomous_coo_loop.js
+3. BUILD_013/BUILD_013/TESTS/test_autonomous_coo_loop.js
+
+------------------------------------------------
+FILE: timeutil.js
+COPIES: 2
+
+1. SERVICES/TimeUtil.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/SERVICES/TimeUtil.js
+
+------------------------------------------------
+FILE: websiteprovidercontroller.js
+COPIES: 2
+
+1. SERVICES/WebsiteProviderController.js
+2. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/SERVICES/WebsiteProviderController.js
+
+------------------------------------------------
+FILE: workflowservice.js
+COPIES: 3
+
+1. SERVICES/WorkflowService.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkflowService.js
+3. miles_autonomous_patch/SERVICES/WorkflowService.js
+
+------------------------------------------------
+FILE: workforceexecutionservice.js
+COPIES: 3
+
+1. SERVICES/WorkforceExecutionService.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js
+3. miles_autonomous_patch/SERVICES/WorkforceExecutionService.js
+
+------------------------------------------------
+FILE: workqueueservice.js
+COPIES: 3
+
+1. SERVICES/WorkQueueService.js
+2. BUILD_012/BUILD_012/SERVICES/WorkQueueService.js
+3. BUILD_014/BUILD_014/SERVICES/WorkQueueService.js
+
+------------------------------------------------
+FILE: instantlycampaignoperator.js
+COPIES: 6
+
+1. SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+3. miles_autonomous_patch/SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+4. MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+5. MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+6. MILES_BUILD_030_Minimum_Autonomous_COO_REAL_FIXED/MILES_OS/SERVICES/Browser/Workers/InstantlyCampaignOperator.js
+
+------------------------------------------------
+FILE: learningengine.js
+COPIES: 2
+
+1. SERVICES/Learning/LearningEngine.js
+2. SERVICES/learning_engine/LearningEngine.js
+
+------------------------------------------------
+FILE: operationexecutionkernel.js
+COPIES: 2
+
+1. SERVICES/operation_kernel/OperationExecutionKernel.js
+2. ROADMAP/SERVICES/operation_kernel/OperationExecutionKernel.js
+
+------------------------------------------------
+FILE: account_manager.js
+COPIES: 2
+
+1. CONNECTORS/GOOGLE/account_manager.js
+2. CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/account_manager.js
+
+------------------------------------------------
+FILE: auth.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/auth.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/auth.js
+3. Drop in/CONNECTORS/GOOGLE/auth.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/auth.js
+
+------------------------------------------------
+FILE: calendar.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/calendar.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/calendar.js
+3. Drop in/CONNECTORS/GOOGLE/calendar.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/calendar.js
+
+------------------------------------------------
+FILE: config.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/config.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/config.js
+3. Drop in/CONNECTORS/GOOGLE/config.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/config.js
+
+------------------------------------------------
+FILE: contacts.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/contacts.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/contacts.js
+3. Drop in/CONNECTORS/GOOGLE/contacts.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/contacts.js
+
+------------------------------------------------
+FILE: drive.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/drive.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/drive.js
+3. Drop in/CONNECTORS/GOOGLE/drive.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/drive.js
+
+------------------------------------------------
+FILE: gmail.js
+COPIES: 4
+
+1. CONNECTORS/GOOGLE/gmail.js
+2. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/gmail.js
+3. Drop in/CONNECTORS/GOOGLE/gmail.js
+4. _REFERENCE/MILES_OS_v1/CONNECTORS/GOOGLE/gmail.js
+
+------------------------------------------------
+FILE: index.js
+COPIES: 9
+
+1. CONNECTORS/GOOGLE/index.js
+2. CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/index.js
+3. CONNECTORS/GOOGLE/miles_google_connector_pack/miles_google_connector_pack/CONNECTORS/GOOGLE/index.js
+4. BUILDER/index.js
+5. Drop in/CONNECTORS/GOOGLE/index.js
+6. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/index.js
+7. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/index.js
+8. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/index.js
+9. miles_core_framework_dropin/CONNECTORS/GOOGLE/index.js
+
+------------------------------------------------
+FILE: workspace.js
+COPIES: 2
+
+1. CONNECTORS/GOOGLE/workspace.js
+2. CONNECTORS/GOOGLE/miles_google_account_manager_dropin/CONNECTORS/GOOGLE/workspace.js
+
+------------------------------------------------
+FILE: miles_google_accounts_health.js
+COPIES: 2
+
+1. CONNECTORS/GOOGLE/miles_google_account_manager_dropin/miles_google_accounts_health.js
+2. miles_google_accounts_health.js
+
+------------------------------------------------
+FILE: connector.js
+COPIES: 3
+
+1. CONNECTORS/INSTANTLY/connector.js
+2. CONNECTORS/MILES/connector.js
+3. CONNECTORS/ORION/connector.js
+
+------------------------------------------------
+FILE: controller.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/controller.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/controller.js
+
+------------------------------------------------
+FILE: audit.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/modules/audit.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/audit.js
+
+------------------------------------------------
+FILE: browser.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/modules/browser.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/browser.js
+
+------------------------------------------------
+FILE: paths.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/modules/paths.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/paths.js
+
+------------------------------------------------
+FILE: screenshots.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/modules/screenshots.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/screenshots.js
+
+------------------------------------------------
+FILE: session.js
+COPIES: 2
+
+1. CONNECTORS/WEBSITE_B12/modules/session.js
+2. _REFERENCE/MILES_OS_v1/CONNECTORS/WEBSITE_B12/modules/session.js
+
+------------------------------------------------
+FILE: server.js
+COPIES: 2
+
+1. API/server.js
+2. _REFERENCE/MILES_OS_v1/API/server.js
+
+------------------------------------------------
+FILE: memory.routes.js
+COPIES: 2
+
+1. API/API/memory.routes.js
+2. _REFERENCE/MILES_OS_v1/API/API/memory.routes.js
+
+------------------------------------------------
+FILE: milesbrain.js
+COPIES: 2
+
+1. AI/MilesBrain.js
+2. _REFERENCE/MILES_OS_v1/AI/MilesBrain.js
+
+------------------------------------------------
+FILE: scheduler.js
+COPIES: 3
+
+1. AUTOMATIONS/Scheduler.js
+2. miles_desktop_v2_build003/miles_desktop_v2/src/main/scheduler/scheduler.js
+3. _REFERENCE/MILES_OS_v1/AUTOMATIONS/Scheduler.js
+
+------------------------------------------------
+FILE: healthcheck.js
+COPIES: 4
+
+1. TESTS/healthcheck.js
+2. build006_patch/payload/TESTS/healthcheck.js
+3. miles_build005_exec_layer/miles_build005_exec_layer/TESTS/healthcheck.js
+4. miles_build006_outbound_ops/build006_patch/payload/TESTS/healthcheck.js
+
+------------------------------------------------
+FILE: outbound_audit.js
+COPIES: 3
+
+1. TESTS/outbound_audit.js
+2. build006_patch/payload/TESTS/outbound_audit.js
+3. miles_build006_outbound_ops/build006_patch/payload/TESTS/outbound_audit.js
+
+------------------------------------------------
+FILE: test_instantlycampaignoperator.js
+COPIES: 3
+
+1. TESTS/Test_InstantlyCampaignOperator.js
+2. MILES_BUILD_026_Instantly_COO_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js
+3. MILES_BUILD_027_Instantly_COO_Live_Patch/MILES_OS/TESTS/Test_InstantlyCampaignOperator.js
+
+------------------------------------------------
+FILE: miles_connector_health.js
+COPIES: 2
+
+1. miles_connector_health.js
+2. miles_core_framework_dropin/miles_connector_health.js
+
+------------------------------------------------
+FILE: startautonomouscoo.js
+COPIES: 3
+
+1. StartAutonomousCOO.js
+2. MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/StartAutonomousCOO.js
+3. miles_autonomous_patch/StartAutonomousCOO.js
+
+------------------------------------------------
+FILE: test_coo_orchestrator.js
+COPIES: 3
+
+1. test_coo_orchestrator.js
+2. BUILD_013/BUILD_013/TESTS/test_coo_orchestrator.js
+3. BUILD_015/BUILD_015/TESTS/test_coo_orchestrator.js
+
+------------------------------------------------
+FILE: test_work_queue.js
+COPIES: 2
+
+1. test_work_queue.js
+2. BUILD_014/BUILD_014/TESTS/test_work_queue.js
+
+------------------------------------------------
+FILE: architecturediscovery.js
+COPIES: 2
+
+1. BUILDER/ArchitectureDiscovery.js
+2. MILES_BUILDER_AUTONOMY_PATCH_v1/BUILDER/ArchitectureDiscovery.js
+
+------------------------------------------------
+FILE: builderservice.js
+COPIES: 15
+
+1. BUILDER/BuilderService.js
+2. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/BUILDER/BuilderService.js
+3. BUILD_037_EXECUTIVE_DASHBOARD/BUILD_037_EXECUTIVE_DASHBOARD/BUILDER/BuilderService.js
+4. BUILD_038_SELF_LEARNING_LAYER/BUILD_038_SELF_LEARNING_LAYER/BUILDER/BuilderService.js
+5. EXEC_001_UNIFIED_ACTION_ENGINE/EXEC_001_UNIFIED_ACTION_ENGINE/BUILDER/BuilderService.js
+6. EXEC_002_PROVIDER_CONTROLLERS/EXEC_002_PROVIDER_CONTROLLERS/BUILDER/BuilderService.js
+7. EXEC_003_INSTANTLY_LIVE_INTEGRATION/EXEC_003_INSTANTLY_LIVE_INTEGRATION/BUILDER/BuilderService.js
+8. EXEC_004_CONTROLLED_WRITE_MODE/EXEC_004_CONTROLLED_WRITE_MODE/BUILDER/BuilderService.js
+9. EXEC_005_BUSINESS_EXECUTION_ENGINE/EXEC_005_BUSINESS_EXECUTION_ENGINE/BUILDER/BuilderService.js
+10. EXEC_006_PROVIDER_SYNCHRONIZATION/EXEC_006_PROVIDER_SYNCHRONIZATION/BUILDER/BuilderService.js
+11. MILES_BUILD_033_EXECUTIVE_BRAIN_FULL_SCRIPTS/BUILDER/BuilderService.js
+12. MILES_BUILD_034_COMPANY_STATE_FULL_SCRIPTS/BUILDER/BuilderService.js
+13. MILES_BUILD_035_TASK_ROUTER_FULL_SCRIPTS/BUILDER/BuilderService.js
+14. MILES_CAPABILITY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js
+15. MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/BUILDER/BuilderService.js
+
+------------------------------------------------
+FILE: salesoperationsservice.js
+COPIES: 2
+
+1. BUILD_007/SERVICES/SalesOperationsService.js
+2. miles_build007_sales_ops/BUILD_007/SERVICES/SalesOperationsService.js
+
+------------------------------------------------
+FILE: sales_healthcheck.js
+COPIES: 2
+
+1. BUILD_007/TESTS/sales_healthcheck.js
+2. miles_build007_sales_ops/BUILD_007/TESTS/sales_healthcheck.js
+
+------------------------------------------------
+FILE: verify_coo_loop.js
+COPIES: 2
+
+1. BUILD_036_CONTINUOUS_COO_LOOP/BUILD_036_CONTINUOUS_COO_LOOP/VERIFY/VERIFY_COO_LOOP.js
+2. VERIFY/VERIFY_COO_LOOP.js
+
+------------------------------------------------
+FILE: backup-runtime.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/scripts/backup-runtime.js
+2. miles_desktop_v2_starter/miles_desktop_v2/scripts/backup-runtime.js
+
+------------------------------------------------
+FILE: run_build_043.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/scripts/run_build_043.js
+2. scripts/run_build_043.js
+
+------------------------------------------------
+FILE: smoke-test.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/scripts/smoke-test.js
+2. miles_desktop_v2_starter/miles_desktop_v2/scripts/smoke-test.js
+
+------------------------------------------------
+FILE: main.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/src/main/main.js
+2. miles_desktop_v2_starter/miles_desktop_v2/src/main/main.js
+
+------------------------------------------------
+FILE: preload.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/src/main/preload.js
+2. miles_desktop_v2_starter/miles_desktop_v2/src/main/preload.js
+
+------------------------------------------------
+FILE: app.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/src/renderer/app.js
+2. miles_desktop_v2_starter/miles_desktop_v2/src/renderer/app.js
+
+------------------------------------------------
+FILE: runtimehost.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/src/runtime/runtimeHost.js
+2. miles_desktop_v2_starter/miles_desktop_v2/src/runtime/runtimeHost.js
+
+------------------------------------------------
+FILE: state.js
+COPIES: 2
+
+1. miles_desktop_v2_build003/miles_desktop_v2/src/shared/state.js
+2. miles_desktop_v2_starter/miles_desktop_v2/src/shared/state.js
+
+------------------------------------------------
+FILE: dashboard.js
+COPIES: 2
+
+1. WEB/Dashboard.js
+2. _REFERENCE/MILES_OS_v1/WEB/Dashboard.js

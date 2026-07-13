@@ -1,0 +1,24 @@
+{
+  "module": "EXEC_011_ORION",
+  "name": "ORION Live Operations",
+  "version": "1.0.0",
+  "status": "scaffold_package_created",
+  "created_at": "2026-07-04T19:00:40.598117Z",
+  "governance": {
+    "automatic": [
+      "read_health",
+      "refresh_datasets",
+      "run_validation",
+      "refresh_segments",
+      "refresh_profiles",
+      "generate_reports",
+      "create_mission_triggers"
+    ],
+    "approval_required": [
+      "schema_breaking_changes",
+      "new_external_data_acquisitions",
+      "production_data_deletions",
+      "scoring_methodology_changes"
+    ]
+  }
+}

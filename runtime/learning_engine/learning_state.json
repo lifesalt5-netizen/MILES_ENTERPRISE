@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "service": "LEARNING_ENGINE",
+  "version": "1.0.0",
+  "status": "INITIALIZED",
+  "generatedAt": "2026-07-10T00:59:05.707Z",
+  "eventsRecorded": 0,
+  "workerExecutions": 0,
+  "connectorExecutions": 0,
+  "operationOutcomes": 0,
+  "successes": 0,
+  "failures": 0,
+  "repeatedFailures": {},
+  "successRates": {},
+  "recommendations": [],
+  "lastEventAt": null,
+  "lastRecommendationAt": null,
+  "lastError": null
+}

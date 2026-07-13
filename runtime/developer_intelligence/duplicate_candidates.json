@@ -1,0 +1,672 @@
+[
+  {
+    "baseName": "status",
+    "count": 8,
+    "files": [
+      "DEPARTMENTS\\ENGINEERING\\STATUS.json",
+      "DEPARTMENTS\\EXECUTIVE\\STATUS.json",
+      "DEPARTMENTS\\INFRASTRUCTURE\\STATUS.json",
+      "DEPARTMENTS\\OPERATIONS\\STATUS.json",
+      "DEPARTMENTS\\ORION\\STATUS.json",
+      "DEPARTMENTS\\PROPOSALS\\STATUS.json",
+      "DEPARTMENTS\\REVENUE\\STATUS.json",
+      "DEPARTMENTS\\RUNTIME\\STATUS.json"
+    ]
+  },
+  {
+    "baseName": "backlog",
+    "count": 8,
+    "files": [
+      "DEPARTMENTS\\ENGINEERING\\BACKLOG.json",
+      "DEPARTMENTS\\EXECUTIVE\\BACKLOG.json",
+      "DEPARTMENTS\\INFRASTRUCTURE\\BACKLOG.json",
+      "DEPARTMENTS\\OPERATIONS\\BACKLOG.json",
+      "DEPARTMENTS\\ORION\\BACKLOG.json",
+      "DEPARTMENTS\\PROPOSALS\\BACKLOG.json",
+      "DEPARTMENTS\\REVENUE\\BACKLOG.json",
+      "DEPARTMENTS\\RUNTIME\\BACKLOG.json"
+    ]
+  },
+  {
+    "baseName": "startproductionsystem",
+    "count": 7,
+    "files": [
+      "SERVICES\\StartProductionSystem.js",
+      "PROVIDERS\\StartProductionSystem.js",
+      "StartProductionSystem.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\StartProductionSystem.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\StartProductionSystem.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\StartProductionSystem.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\StartProductionSystem.js"
+    ]
+  },
+  {
+    "baseName": "workerregistry",
+    "count": 6,
+    "files": [
+      "SERVICES\\worker_runtime\\WorkerRegistry.js",
+      "SERVICES\\WorkerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\WorkerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\WorkerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRegistry.js"
+    ]
+  },
+  {
+    "baseName": "providerregistry",
+    "count": 6,
+    "files": [
+      "PROVIDERS\\registry\\ProviderRegistry.js",
+      "PROVIDERS\\ProviderRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\PROVIDERS\\ProviderRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\PROVIDERS\\registry\\ProviderRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\PROVIDERS\\ProviderRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\PROVIDERS\\registry\\ProviderRegistry.js"
+    ]
+  },
+  {
+    "baseName": "eventbus",
+    "count": 4,
+    "files": [
+      "CORE\\EventBus.js",
+      "CORE\\Kernel\\EventBus.js",
+      "CORE\\CANONICAL\\EventBus.js",
+      "SERVICES\\Events\\EventBus.js"
+    ]
+  },
+  {
+    "baseName": "registry",
+    "count": 4,
+    "files": [
+      "CORE\\CANONICAL\\Registry.js",
+      "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\instantly\\registry.py",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\CORE\\CANONICAL\\Registry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\CORE\\CANONICAL\\Registry.js"
+    ]
+  },
+  {
+    "baseName": "buildenterpriseregistry",
+    "count": 4,
+    "files": [
+      "MILES_Enterprise_Registry_Phase1_v1.0\\BuildEnterpriseRegistry.js",
+      "BuildEnterpriseRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\BuildEnterpriseRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\BuildEnterpriseRegistry.js"
+    ]
+  },
+  {
+    "baseName": "run_enterprise_registry",
+    "count": 4,
+    "files": [
+      "MILES_Enterprise_Registry_Phase1_v1.0\\RUN_ENTERPRISE_REGISTRY.ps1",
+      "RUN_ENTERPRISE_REGISTRY.ps1",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\RUN_ENTERPRISE_REGISTRY.ps1",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\RUN_ENTERPRISE_REGISTRY.ps1"
+    ]
+  },
+  {
+    "baseName": "logger",
+    "count": 3,
+    "files": [
+      "CORE\\logger.js",
+      "CORE\\CANONICAL\\Logger.js",
+      "CONNECTORS\\WEBSITE_B12\\modules\\logger.js"
+    ]
+  },
+  {
+    "baseName": "serviceregistry",
+    "count": 3,
+    "files": [
+      "CORE\\Kernel\\ServiceRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\CORE\\Kernel\\ServiceRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\CORE\\Kernel\\ServiceRegistry.js"
+    ]
+  },
+  {
+    "baseName": "departmentregistry",
+    "count": 3,
+    "files": [
+      "CORE\\DepartmentRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\CORE\\DepartmentRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\CORE\\DepartmentRegistry.js"
+    ]
+  },
+  {
+    "baseName": "capabilityregistryservice",
+    "count": 3,
+    "files": [
+      "SERVICES\\CapabilityRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\CapabilityRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\CapabilityRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "providerauthorityregistryservice",
+    "count": 3,
+    "files": [
+      "SERVICES\\ProviderAuthorityRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\ProviderAuthorityRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\ProviderAuthorityRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "providercontrollerregistryservice",
+    "count": 3,
+    "files": [
+      "SERVICES\\ProviderControllerRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\ProviderControllerRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\ProviderControllerRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "providerregistryservice",
+    "count": 3,
+    "files": [
+      "SERVICES\\ProviderRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\ProviderRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\ProviderRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "repositoryregistryservice",
+    "count": 3,
+    "files": [
+      "SERVICES\\RepositoryRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\RepositoryRegistryService.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\RepositoryRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "digitalcooruntimemanager",
+    "count": 3,
+    "files": [
+      "SERVICES\\digital_coo\\DigitalCOORuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\digital_coo\\DigitalCOORuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\digital_coo\\DigitalCOORuntimeManager.js"
+    ]
+  },
+  {
+    "baseName": "milescommandcenter",
+    "count": 3,
+    "files": [
+      "SERVICES\\digital_coo\\MilesCommandCenter.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+    ]
+  },
+  {
+    "baseName": "plannerregistry",
+    "count": 3,
+    "files": [
+      "SERVICES\\Planning\\PlannerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\Planning\\PlannerRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\Planning\\PlannerRegistry.js"
+    ]
+  },
+  {
+    "baseName": "workerruntime",
+    "count": 3,
+    "files": [
+      "SERVICES\\worker_runtime\\WorkerRuntime.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntime.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntime.js"
+    ]
+  },
+  {
+    "baseName": "workerruntimemanager",
+    "count": 3,
+    "files": [
+      "SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\worker_runtime\\WorkerRuntimeManager.js"
+    ]
+  },
+  {
+    "baseName": "capabilityregistry",
+    "count": 3,
+    "files": [
+      "SERVICES\\CapabilityRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\CapabilityRegistry.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\CapabilityRegistry.js"
+    ]
+  },
+  {
+    "baseName": "enterpriseruntimemanager",
+    "count": 3,
+    "files": [
+      "SERVICES\\EnterpriseRuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\SERVICES\\EnterpriseRuntimeManager.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\SERVICES\\EnterpriseRuntimeManager.js"
+    ]
+  },
+  {
+    "baseName": "config",
+    "count": 3,
+    "files": [
+      "CONNECTORS\\GOOGLE\\config.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\config.js",
+      "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\instantly\\config.py"
+    ]
+  },
+  {
+    "baseName": "index",
+    "count": 3,
+    "files": [
+      "CONNECTORS\\GOOGLE\\index.js",
+      "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\index.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\index.js"
+    ]
+  },
+  {
+    "baseName": "connector",
+    "count": 3,
+    "files": [
+      "CONNECTORS\\INSTANTLY\\connector.js",
+      "CONNECTORS\\MILES\\connector.js",
+      "CONNECTORS\\ORION\\connector.js"
+    ]
+  },
+  {
+    "baseName": "__init__",
+    "count": 3,
+    "files": [
+      "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\__init__.py",
+      "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\__init__.py",
+      "CONNECTORS\\INSTANTLY\\miles_instantly_connector\\miles_os\\services\\instantly\\__init__.py"
+    ]
+  },
+  {
+    "baseName": "startautonomouscoo",
+    "count": 3,
+    "files": [
+      "StartAutonomousCOO.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\StartAutonomousCOO.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\StartAutonomousCOO.js"
+    ]
+  },
+  {
+    "baseName": "startmilesproduction",
+    "count": 3,
+    "files": [
+      "StartMilesProduction.js",
+      "_REGISTRY_CONVERGENCE_20260710_192356\\StartMilesProduction.js",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\StartMilesProduction.js"
+    ]
+  },
+  {
+    "baseName": "connectormanager",
+    "count": 2,
+    "files": [
+      "CORE\\ConnectorManager.js",
+      "SERVICES\\ConnectorManager.js"
+    ]
+  },
+  {
+    "baseName": "taskqueue",
+    "count": 2,
+    "files": [
+      "CORE\\TaskQueue.js",
+      "CORE\\CANONICAL\\TaskQueue.js"
+    ]
+  },
+  {
+    "baseName": "startmiles",
+    "count": 2,
+    "files": [
+      "CORE\\Kernel\\StartMiles.js",
+      "StartMiles.js"
+    ]
+  },
+  {
+    "baseName": "autonomouscooloopservice",
+    "count": 2,
+    "files": [
+      "SERVICES\\AutonomousCOOLoopService.js",
+      "AutonomousCOOLoopService.js"
+    ]
+  },
+  {
+    "baseName": "connectorruntimemanager",
+    "count": 2,
+    "files": [
+      "SERVICES\\ConnectorRuntimeManager.js",
+      "SERVICES\\connector_runtime\\ConnectorRuntimeManager.js"
+    ]
+  },
+  {
+    "baseName": "decisionengine",
+    "count": 2,
+    "files": [
+      "SERVICES\\DecisionEngine.js",
+      "SERVICES\\Decision\\DecisionEngine.js"
+    ]
+  },
+  {
+    "baseName": "marketingcooservice",
+    "count": 2,
+    "files": [
+      "SERVICES\\digital_coo\\MarketingCOOService.js",
+      "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\MarketingCOOService.js"
+    ]
+  },
+  {
+    "baseName": "learningengine",
+    "count": 2,
+    "files": [
+      "SERVICES\\Learning\\LearningEngine.js",
+      "SERVICES\\learning_engine\\LearningEngine.js"
+    ]
+  },
+  {
+    "baseName": "instantlycooworker",
+    "count": 2,
+    "files": [
+      "SERVICES\\workers\\InstantlyCOOWorker.js",
+      "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js"
+    ]
+  },
+  {
+    "baseName": "enterprisecomponentregistryservice",
+    "count": 2,
+    "files": [
+      "SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+      "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseComponentRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "enterprisecapabilityregistryservice",
+    "count": 2,
+    "files": [
+      "SERVICES\\registry\\EnterpriseCapabilityRegistryService.js",
+      "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseCapabilityRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "runtimeregistryservice",
+    "count": 2,
+    "files": [
+      "SERVICES\\runtime_registry\\RuntimeRegistryService.js",
+      "MILES_Runtime_Registry_Service_V2_v2.0\\SERVICES\\runtime_registry\\RuntimeRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "runtimeregistryclient",
+    "count": 2,
+    "files": [
+      "SERVICES\\runtime_registry\\RuntimeRegistryClient.js",
+      "MILES_Runtime_Registry_Service_V2_v2.0\\SERVICES\\runtime_registry\\RuntimeRegistryClient.js"
+    ]
+  },
+  {
+    "baseName": "instantlyprovider",
+    "count": 2,
+    "files": [
+      "PROVIDERS\\providers\\InstantlyProvider.js",
+      "PROVIDERS\\InstantlyProvider.js"
+    ]
+  },
+  {
+    "baseName": "account_manager",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\account_manager.js",
+      "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\account_manager.js"
+    ]
+  },
+  {
+    "baseName": "auth",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\auth.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\auth.js"
+    ]
+  },
+  {
+    "baseName": "calendar",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\calendar.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\calendar.js"
+    ]
+  },
+  {
+    "baseName": "contacts",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\contacts.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\contacts.js"
+    ]
+  },
+  {
+    "baseName": "drive",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\drive.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\drive.js"
+    ]
+  },
+  {
+    "baseName": "gmail",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\gmail.js",
+      "CONNECTORS\\GOOGLE\\miles_google_connector_pack\\miles_google_connector_pack\\CONNECTORS\\GOOGLE\\gmail.js"
+    ]
+  },
+  {
+    "baseName": "workspace",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\workspace.js",
+      "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\CONNECTORS\\GOOGLE\\workspace.js"
+    ]
+  },
+  {
+    "baseName": "miles_google_accounts_health",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\GOOGLE\\miles_google_account_manager_dropin\\miles_google_accounts_health.js",
+      "miles_google_accounts_health.js"
+    ]
+  },
+  {
+    "baseName": "instantly",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\INSTANTLY\\instantly.js",
+      "DATA\\browser\\sessions\\instantly.json"
+    ]
+  },
+  {
+    "baseName": "package-lock",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\WEBSITE_B12\\package-lock.json",
+      "package-lock.json"
+    ]
+  },
+  {
+    "baseName": "package",
+    "count": 2,
+    "files": [
+      "CONNECTORS\\WEBSITE_B12\\package.json",
+      "package.json"
+    ]
+  },
+  {
+    "baseName": "executive_state",
+    "count": 2,
+    "files": [
+      "DATA\\executive_state.json",
+      "DATA\\state\\executive_state.json"
+    ]
+  },
+  {
+    "baseName": "provider_registry",
+    "count": 2,
+    "files": [
+      "DATA\\action_engine\\provider_registry.json",
+      "DATA\\repository\\provider_registry.json"
+    ]
+  },
+  {
+    "baseName": "metadata",
+    "count": 2,
+    "files": [
+      "DATA\\browser\\profiles\\miles-chrome\\component_crx_cache\\metadata.json",
+      "DATA\\browser\\profiles\\miles-chrome\\extensions_crx_cache\\metadata.json"
+    ]
+  },
+  {
+    "baseName": "capability_registry",
+    "count": 2,
+    "files": [
+      "DATA\\capability\\capability_registry.json",
+      "DATA\\runtime\\capability_registry.json"
+    ]
+  },
+  {
+    "baseName": "marketing_executive_brief",
+    "count": 2,
+    "files": [
+      "DATA\\digital_coo\\briefs\\marketing_executive_brief.json",
+      "DATA\\marketing_coo\\marketing_executive_brief.json"
+    ]
+  },
+  {
+    "baseName": "campaign_registry",
+    "count": 2,
+    "files": [
+      "DATA\\digital_coo\\registries\\campaign_registry.json",
+      "runtime\\instantly_coo\\campaign_registry.json"
+    ]
+  },
+  {
+    "baseName": "segment_registry",
+    "count": 2,
+    "files": [
+      "DATA\\digital_coo\\registries\\segment_registry.json",
+      "DATA\\marketing_coo\\segment_registry.json"
+    ]
+  },
+  {
+    "baseName": "latest_coo_cycle",
+    "count": 2,
+    "files": [
+      "DATA\\executive\\latest_coo_cycle.json",
+      "DATA\\runtime\\latest_coo_cycle.json"
+    ]
+  },
+  {
+    "baseName": "worker_registry",
+    "count": 2,
+    "files": [
+      "DATA\\repository\\worker_registry.json",
+      "DATA\\runtime\\worker_registry.json"
+    ]
+  },
+  {
+    "baseName": "task_queue",
+    "count": 2,
+    "files": [
+      "DATA\\runtime\\task_queue.json",
+      "DATA\\canonical_runtime\\task_queue.json"
+    ]
+  },
+  {
+    "baseName": "work_queue",
+    "count": 2,
+    "files": [
+      "DATA\\runtime\\work_queue.json",
+      "runtime\\coo_workers\\INSTANTLY_COO_WORKER\\work_queue.json"
+    ]
+  },
+  {
+    "baseName": "learning_recommendations",
+    "count": 2,
+    "files": [
+      "DATA\\self_learning\\learning_recommendations.json",
+      "runtime\\learning_engine\\learning_recommendations.json"
+    ]
+  },
+  {
+    "baseName": "enterprise_registry.test",
+    "count": 2,
+    "files": [
+      "TESTS\\enterprise_registry.test.js",
+      "MILES_Enterprise_Registry_Phase1_v1.0\\TESTS\\enterprise_registry.test.js"
+    ]
+  },
+  {
+    "baseName": "runtime_registry_v2.test",
+    "count": 2,
+    "files": [
+      "TESTS\\runtime_registry_v2.test.js",
+      "MILES_Runtime_Registry_Service_V2_v2.0\\TESTS\\runtime_registry_v2.test.js"
+    ]
+  },
+  {
+    "baseName": "heartbeat",
+    "count": 2,
+    "files": [
+      "runtime\\workers\\INSTANTLY_COO_WORKER\\heartbeat.json",
+      "runtime\\workers\\TASK_EXECUTION_WORKER\\heartbeat.json"
+    ]
+  },
+  {
+    "baseName": "worker_state",
+    "count": 2,
+    "files": [
+      "runtime\\workers\\INSTANTLY_COO_WORKER\\worker_state.json",
+      "runtime\\workers\\TASK_EXECUTION_WORKER\\worker_state.json"
+    ]
+  },
+  {
+    "baseName": "component_registry_summary",
+    "count": 2,
+    "files": [
+      "_REGISTRY_CONVERGENCE_20260710_192356\\runtime\\enterprise_registry\\component_registry_summary.json",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\runtime\\enterprise_registry\\component_registry_summary.json"
+    ]
+  },
+  {
+    "baseName": "component_registry_changes",
+    "count": 2,
+    "files": [
+      "_REGISTRY_CONVERGENCE_20260710_192356\\runtime\\enterprise_registry\\component_registry_changes.json",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\runtime\\enterprise_registry\\component_registry_changes.json"
+    ]
+  },
+  {
+    "baseName": "capability_registry_summary",
+    "count": 2,
+    "files": [
+      "_REGISTRY_CONVERGENCE_20260710_192356\\runtime\\enterprise_registry\\capability_registry_summary.json",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\runtime\\enterprise_registry\\capability_registry_summary.json"
+    ]
+  },
+  {
+    "baseName": "capability_routing_table",
+    "count": 2,
+    "files": [
+      "_REGISTRY_CONVERGENCE_20260710_192356\\runtime\\enterprise_registry\\capability_routing_table.json",
+      "_REGISTRY_CONVERGENCE_20260710_193412\\runtime\\enterprise_registry\\capability_routing_table.json"
+    ]
+  },
+  {
+    "baseName": "startruntimeregistryservice",
+    "count": 2,
+    "files": [
+      "MILES_Runtime_Registry_Service_V2_v2.0\\StartRuntimeRegistryService.js",
+      "StartRuntimeRegistryService.js"
+    ]
+  },
+  {
+    "baseName": "run_runtime_registry_service",
+    "count": 2,
+    "files": [
+      "MILES_Runtime_Registry_Service_V2_v2.0\\RUN_RUNTIME_REGISTRY_SERVICE.ps1",
+      "RUN_RUNTIME_REGISTRY_SERVICE.ps1"
+    ]
+  }
+]

@@ -1,0 +1,111 @@
+{
+  "ok": true,
+  "action": "PROVIDER_CONTROLLERS",
+  "type": "MILES_PROVIDER_CONTROLLER_REGISTRY",
+  "build": "EXEC_002",
+  "generatedAt": "2026-07-04T02:24:10.578Z",
+  "providers": [
+    {
+      "ok": true,
+      "provider": "instantly",
+      "providerName": "Instantly",
+      "executable": false,
+      "credentialsPresent": false,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "LIST_CAMPAIGNS",
+        "CREATE_CAMPAIGN",
+        "PAUSE_CAMPAIGN",
+        "RESUME_CAMPAIGN",
+        "UPLOAD_LEADS",
+        "ASSIGN_SENDING_ACCOUNTS",
+        "GENERATE_CAMPAIGN_REPORT"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    },
+    {
+      "ok": true,
+      "provider": "google_workspace",
+      "providerName": "Google Workspace",
+      "executable": false,
+      "credentialsPresent": false,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "CREATE_USER",
+        "CREATE_ALIAS",
+        "SUSPEND_USER",
+        "LIST_USERS",
+        "VERIFY_MAILBOX"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    },
+    {
+      "ok": true,
+      "provider": "namecheap",
+      "providerName": "Namecheap",
+      "executable": false,
+      "credentialsPresent": false,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "LIST_DOMAINS",
+        "UPDATE_DNS_OR_VERIFY_AUTH",
+        "VERIFY_SPF",
+        "VERIFY_DKIM",
+        "VERIFY_DMARC"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    },
+    {
+      "ok": true,
+      "provider": "website",
+      "providerName": "Website",
+      "executable": false,
+      "credentialsPresent": true,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "BACKUP_SITE",
+        "UPDATE_PAGE",
+        "PUBLISH_PAGE",
+        "VERIFY_PAGE",
+        "GENERATE_WEBSITE_REPORT"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    },
+    {
+      "ok": true,
+      "provider": "orion",
+      "providerName": "ORION",
+      "executable": true,
+      "credentialsPresent": true,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "REFRESH_DATASETS",
+        "RUN_INTELLIGENCE_JOB",
+        "GENERATE_ORION_REPORT",
+        "VERIFY_DATABASE"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    },
+    {
+      "ok": true,
+      "provider": "filesystem",
+      "providerName": "File System",
+      "executable": true,
+      "credentialsPresent": true,
+      "supportedOperations": [
+        "HEALTH_CHECK",
+        "ENSURE_DIRECTORY",
+        "WRITE_JSON",
+        "READ_JSON",
+        "VERIFY_PATH"
+      ],
+      "generatedAt": "2026-07-04T02:24:10.580Z"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "executable": 2,
+    "credentialsConfigured": 3
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\provider_controllers"
+}

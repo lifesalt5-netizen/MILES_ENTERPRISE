@@ -1,0 +1,32 @@
+[
+  {
+    "ok": true,
+    "action": "RESTART_GUARDIAN",
+    "generatedAt": "2026-07-04T01:44:24.091Z",
+    "cycleId": "COO-1783129459367-24676",
+    "consecutiveFailures": 0,
+    "restartRecommended": false,
+    "errors": [],
+    "recommendation": "Continue COO loop."
+  },
+  {
+    "ok": true,
+    "action": "RESTART_GUARDIAN",
+    "generatedAt": "2026-07-04T01:44:29.258Z",
+    "cycleId": "COO-1783129469115-39230",
+    "consecutiveFailures": 0,
+    "restartRecommended": false,
+    "errors": [],
+    "recommendation": "Continue COO loop."
+  },
+  {
+    "ok": true,
+    "action": "RESTART_GUARDIAN",
+    "generatedAt": "2026-07-04T01:44:47.654Z",
+    "cycleId": "COO-1783129478996-10665",
+    "consecutiveFailures": 0,
+    "restartRecommended": false,
+    "errors": [],
+    "recommendation": "Continue COO loop."
+  }
+]

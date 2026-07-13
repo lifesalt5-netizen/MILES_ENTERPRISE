@@ -1,0 +1,274 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_IMPLEMENT",
+  "proposalId": "proposal_1783437781301",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 050\n\nRuntime Dispatch Instrumentation\n\nObjective\n\nInstrument the live runtime dispatcher.\n\nThis is NOT an engineering improvement.\n\nThis is NOT a proposal.\n\nThis is NOT a planning task.\n\nRequirements\n\nModify the runtime dispatcher itself to emit a dispatch trace for every request.\n\nFor every command log:\n\nREQUEST RECEIVED\n\n↓\n\nPLANNER OUTPUT\n\n↓\n\nPROVIDER\n\n↓\n\nCONNECTOR\n\n↓\n\nBUILDER ACTION\n\n↓\n\nSERVICE NAME\n\n↓\n\nSERVICE FILE\n\n↓\n\nMETHOD INVOKED\n\n↓\n\nRESULT\n\nWrite each trace to:\n\nDATA/runtime_dispatch/runtime_dispatch.log\n\nDo not execute EngineeringImprovementService to generate this report.\n\nThe instrumentation must occur inside the dispatcher so that every future request automatically records its execution path.\n\nSuccess Criteria\n\nAfter installation, execute:\n\nSTATUS\n\nThe runtime log must show the complete dispatch path from command receipt through the final service invocation.",
+  "status": "PROPOSAL_CREATED",
+  "productionModified": false,
+  "approvalRequired": true,
+  "safeMode": true,
+  "executiveSummary": "Engineering proposal package created. No production files were modified.",
+  "analysis": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_ANALYZE",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 050\n\nRuntime Dispatch Instrumentation\n\nObjective\n\nInstrument the live runtime dispatcher.\n\nThis is NOT an engineering improvement.\n\nThis is NOT a proposal.\n\nThis is NOT a planning task.\n\nRequirements\n\nModify the runtime dispatcher itself to emit a dispatch trace for every request.\n\nFor every command log:\n\nREQUEST RECEIVED\n\n↓\n\nPLANNER OUTPUT\n\n↓\n\nPROVIDER\n\n↓\n\nCONNECTOR\n\n↓\n\nBUILDER ACTION\n\n↓\n\nSERVICE NAME\n\n↓\n\nSERVICE FILE\n\n↓\n\nMETHOD INVOKED\n\n↓\n\nRESULT\n\nWrite each trace to:\n\nDATA/runtime_dispatch/runtime_dispatch.log\n\nDo not execute EngineeringImprovementService to generate this report.\n\nThe instrumentation must occur inside the dispatcher so that every future request automatically records its execution path.\n\nSuccess Criteria\n\nAfter installation, execute:\n\nSTATUS\n\nThe runtime log must show the complete dispatch path from command receipt through the final service invocation.",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 8629,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.297Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 10679,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15241,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "SERVICES/SelfMaintenanceService.js",
+        "exists": true,
+        "size": 11109,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15103,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 5822,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "size": 6783,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T15:23:01.298Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": true,
+        "size": 477,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.299Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 526,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.299Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 7509,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.299Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T15:23:01.299Z"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "checkedAt": "2026-07-07T15:23:01.299Z"
+  },
+  "plan": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_PLAN",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 050\n\nRuntime Dispatch Instrumentation\n\nObjective\n\nInstrument the live runtime dispatcher.\n\nThis is NOT an engineering improvement.\n\nThis is NOT a proposal.\n\nThis is NOT a planning task.\n\nRequirements\n\nModify the runtime dispatcher itself to emit a dispatch trace for every request.\n\nFor every command log:\n\nREQUEST RECEIVED\n\n↓\n\nPLANNER OUTPUT\n\n↓\n\nPROVIDER\n\n↓\n\nCONNECTOR\n\n↓\n\nBUILDER ACTION\n\n↓\n\nSERVICE NAME\n\n↓\n\nSERVICE FILE\n\n↓\n\nMETHOD INVOKED\n\n↓\n\nRESULT\n\nWrite each trace to:\n\nDATA/runtime_dispatch/runtime_dispatch.log\n\nDo not execute EngineeringImprovementService to generate this report.\n\nThe instrumentation must occur inside the dispatcher so that every future request automatically records its execution path.\n\nSuccess Criteria\n\nAfter installation, execute:\n\nSTATUS\n\nThe runtime log must show the complete dispatch path from command receipt through the final service invocation.",
+    "status": "PLAN_CREATED",
+    "steps": [
+      {
+        "step": 1,
+        "action": "ENGINEERING_ANALYZE",
+        "description": "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        "step": 2,
+        "action": "ENGINEERING_PLAN",
+        "description": "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        "step": 3,
+        "action": "ENGINEERING_IMPLEMENT",
+        "description": "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        "step": 4,
+        "action": "ENGINEERING_VALIDATE",
+        "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        "step": 5,
+        "action": "ENGINEERING_REPORT",
+        "description": "Return an executive engineering report with evidence and recommended next action."
+      }
+    ],
+    "recommendations": [
+      {
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "severity": "HIGH",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "plannedAt": "2026-07-07T15:23:01.301Z"
+  },
+  "proposedChanges": [
+    {
+      "file": "SERVICES/CommandIntentPlannerService.js",
+      "exists": true,
+      "currentSize": 8629,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\CommandIntentPlannerService.js"
+    },
+    {
+      "file": "SERVICES/ExecutionService.js",
+      "exists": true,
+      "currentSize": 10679,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutionService.js"
+    },
+    {
+      "file": "BUILDER/BuilderService.js",
+      "exists": true,
+      "currentSize": 6783,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "exists": true,
+      "currentSize": 15103,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+    },
+    {
+      "file": "SERVICES/ExecutiveResponseService.js",
+      "exists": true,
+      "currentSize": 5822,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    }
+  ],
+  "validationCommands": [
+    "node --check .\\SERVICES\\CommandIntentPlannerService.js",
+    "node --check .\\SERVICES\\ExecutionService.js",
+    "node --check .\\BUILDER\\BuilderService.js",
+    "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "node --check .\\SERVICES\\ExecutiveResponseService.js"
+  ],
+  "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+  "createdAt": "2026-07-07T15:23:01.302Z"
+}

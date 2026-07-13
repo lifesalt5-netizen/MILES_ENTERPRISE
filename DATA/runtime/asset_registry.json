@@ -1,0 +1,43 @@
+{
+  "ORION": {
+    "type": "database",
+    "status": "healthy",
+    "owner": "Miles",
+    "description": "Contractor intelligence platform"
+  },
+
+  "Instantly": {
+    "type": "cloud",
+    "status": "healthy",
+    "owner": "Sales COO",
+    "description": "Outbound email platform"
+  },
+
+  "GoogleWorkspace": {
+    "type": "cloud",
+    "status": "healthy",
+    "owner": "Operations",
+    "description": "Email, Calendar, Drive"
+  },
+
+  "IONOS": {
+    "type": "hosting",
+    "status": "healthy",
+    "owner": "Website",
+    "description": "Website hosting"
+  },
+
+  "Namecheap": {
+    "type": "domain",
+    "status": "healthy",
+    "owner": "Infrastructure",
+    "description": "DNS and domains"
+  },
+
+  "Website": {
+    "type": "website",
+    "status": "healthy",
+    "owner": "Marketing",
+    "description": "P2GC website"
+  }
+}

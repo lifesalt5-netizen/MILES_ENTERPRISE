@@ -1,0 +1,1257 @@
+{
+  "ok": true,
+  "action": "INSTANTLY_ACTION_BRIDGE",
+  "build": "EXEC_003",
+  "generatedAt": "2026-07-04T02:30:24.622Z",
+  "durationMs": 9,
+  "normalizedAction": {
+    "id": "ACTION-1783131299432-76397",
+    "provider": "instantly",
+    "operation": "CREATE_CAMPAIGN",
+    "payload": {
+      "title": "Repair high-risk Website condition",
+      "description": "Website health score is 0.",
+      "area": "Website",
+      "recommendedAction": "Verify Instantly API connectivity.",
+      "route": null,
+      "sourceWorkItem": {
+        "id": "WORK-1783016649896-41651",
+        "signature": "Website::Repair high-risk Website condition::Website",
+        "createdAt": "2026-07-02T18:24:09.896Z",
+        "updatedAt": "2026-07-02T19:25:36.421Z",
+        "status": "Queued",
+        "priority": 1,
+        "area": "Website",
+        "title": "Repair high-risk Website condition",
+        "description": "Website health score is 0.",
+        "reason": "Website health score is 0.",
+        "source": "ExecutiveMissionPlanner",
+        "owner": "Miles",
+        "requiresKevin": false,
+        "recommendedAction": "Verify Instantly API connectivity.",
+        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+        "relatedProvider": "Website",
+        "executionType": "WORKFLOW",
+        "metadata": {
+          "missionItem": {
+            "id": "MISSION-1783016649895-15164",
+            "priority": 1,
+            "area": "Website",
+            "title": "Repair high-risk Website condition",
+            "reason": "Website health score is 0.",
+            "recommendedAction": "Verify Instantly API connectivity.",
+            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+            "owner": "Miles",
+            "requiresKevin": false,
+            "relatedProvider": "Website",
+            "businessImpactScore": 95,
+            "automationConfidence": "HIGH",
+            "metadata": {
+              "health": {
+                "area": "Website",
+                "status": "Critical",
+                "score": 0,
+                "risk": "HIGH",
+                "confidence": "HIGH",
+                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                "lastFailure": "2026-07-02T18:24:09.882Z",
+                "exceptions": [
+                  {
+                    "type": "InstantlyAPI",
+                    "severity": "Critical",
+                    "message": "instantly.listCampaigns is not a function"
+                  }
+                ],
+                "recommendations": [
+                  "Verify Instantly API connectivity.",
+                  "Verify INSTANTLY_API_KEY.",
+                  "Verify internet connectivity."
+                ],
+                "metrics": {},
+                "sourceSystems": [
+                  "CONNECTORSWEBSITE"
+                ],
+                "dependencies": [
+                  "Website"
+                ]
+              }
+            }
+          },
+          "automationConfidence": "HIGH",
+          "businessImpactScore": 95,
+          "queuedBy": "AutonomousCOOLoopService",
+          "queuedAt": "2026-07-02T18:24:10.160Z",
+          "workflowStatus": "QUEUED",
+          "workflowResult": {
+            "ok": true,
+            "status": "QUEUED",
+            "workPackage": {
+              "id": "WP-20260702182410-094",
+              "objective": "Repair high-risk Website condition",
+              "status": "QUEUED",
+              "owner": "MILES",
+              "priority": 1,
+              "priorityScore": 50,
+              "createdAt": "2026-07-02T18:24:10.024Z",
+              "updatedAt": "2026-07-02T18:24:10.024Z",
+              "plan": {
+                "ok": true,
+                "type": "PLAN",
+                "objective": "Repair high-risk Website condition",
+                "priority": 1,
+                "priorityScore": 50,
+                "createdAt": "2026-07-02T18:24:10.024Z",
+                "owner": "MILES",
+                "context": {
+                  "sourceWorkItemId": "WORK-1783016649896-41651",
+                  "area": "Website",
+                  "priority": 1,
+                  "description": "Website health score is 0.",
+                  "reason": "Website health score is 0.",
+                  "recommendedAction": "Verify Instantly API connectivity.",
+                  "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                  "relatedProvider": "Website",
+                  "metadata": {
+                    "missionItem": {
+                      "id": "MISSION-1783016649895-15164",
+                      "priority": 1,
+                      "area": "Website",
+                      "title": "Repair high-risk Website condition",
+                      "reason": "Website health score is 0.",
+                      "recommendedAction": "Verify Instantly API connectivity.",
+                      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                      "owner": "Miles",
+                      "requiresKevin": false,
+                      "relatedProvider": "Website",
+                      "businessImpactScore": 95,
+                      "automationConfidence": "HIGH",
+                      "metadata": {
+                        "health": {
+                          "area": "Website",
+                          "status": "Critical",
+                          "score": 0,
+                          "risk": "HIGH",
+                          "confidence": "HIGH",
+                          "lastSuccess": "2026-07-02T18:24:00.451Z",
+                          "lastFailure": "2026-07-02T18:24:09.882Z",
+                          "exceptions": [
+                            {
+                              "type": "InstantlyAPI",
+                              "severity": "Critical",
+                              "message": "instantly.listCampaigns is not a function"
+                            }
+                          ],
+                          "recommendations": [
+                            "Verify Instantly API connectivity.",
+                            "Verify INSTANTLY_API_KEY.",
+                            "Verify internet connectivity."
+                          ],
+                          "metrics": {},
+                          "sourceSystems": [
+                            "CONNECTORSWEBSITE"
+                          ],
+                          "dependencies": [
+                            "Website"
+                          ]
+                        }
+                      }
+                    },
+                    "automationConfidence": "HIGH",
+                    "businessImpactScore": 95
+                  },
+                  "runtimeCycleId": null
+                },
+                "domain": "executive",
+                "workforce": "Executive Operations Workforce",
+                "requiredCapabilities": [
+                  "executive.objective.evaluate",
+                  "executive.priority.route",
+                  "executive.update.generate"
+                ],
+                "assignments": [
+                  {
+                    "capability": "executive.objective.evaluate",
+                    "candidates": [],
+                    "bestWorker": {
+                      "employee": "MILES",
+                      "department": "Executive",
+                      "source": "fallback"
+                    }
+                  },
+                  {
+                    "capability": "executive.priority.route",
+                    "candidates": [],
+                    "bestWorker": {
+                      "employee": "MILES",
+                      "department": "Executive",
+                      "source": "fallback"
+                    }
+                  },
+                  {
+                    "capability": "executive.update.generate",
+                    "candidates": [],
+                    "bestWorker": {
+                      "employee": "MILES",
+                      "department": "Executive",
+                      "source": "fallback"
+                    }
+                  }
+                ],
+                "steps": [
+                  {
+                    "step": 1,
+                    "capability": "executive.objective.evaluate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "evaluateObjective",
+                    "expectedOutput": "Clear interpretation of the work objective.",
+                    "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                  },
+                  {
+                    "step": 2,
+                    "capability": "executive.priority.route",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "routeObjective",
+                    "expectedOutput": "Recommended department, priority, and execution path.",
+                    "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                  },
+                  {
+                    "step": 3,
+                    "capability": "executive.update.generate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "generateExecutiveUpdate",
+                    "expectedOutput": "Executive update for the planned work.",
+                    "verification": "Verify update contains status, owner, and next action."
+                  }
+                ],
+                "providers": [],
+                "executionAuthority": "MILES_AUTONOMOUS_COO",
+                "approvalRequired": false,
+                "verificationChecklist": [
+                  "Objective was interpreted.",
+                  "Priority was assigned.",
+                  "Execution path was created.",
+                  "Executive update was generated."
+                ],
+                "successCriteria": [
+                  "Work item is no longer ambiguous.",
+                  "MILES has a routed next action."
+                ],
+                "rulesVersion": "1.0.0"
+              },
+              "tasks": [
+                {
+                  "step": 1,
+                  "capability": "executive.objective.evaluate",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "status": "QUEUED",
+                  "dependsOn": [],
+                  "taskType": "WORKFORCE_STEP",
+                  "provider": null,
+                  "action": "evaluateObjective",
+                  "expectedOutput": "Clear interpretation of the work objective.",
+                  "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                },
+                {
+                  "step": 2,
+                  "capability": "executive.priority.route",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "status": "QUEUED",
+                  "dependsOn": [],
+                  "taskType": "WORKFORCE_STEP",
+                  "provider": null,
+                  "action": "routeObjective",
+                  "expectedOutput": "Recommended department, priority, and execution path.",
+                  "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                },
+                {
+                  "step": 3,
+                  "capability": "executive.update.generate",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "status": "QUEUED",
+                  "dependsOn": [],
+                  "taskType": "WORKFORCE_STEP",
+                  "provider": null,
+                  "action": "generateExecutiveUpdate",
+                  "expectedOutput": "Executive update for the planned work.",
+                  "verification": "Verify update contains status, owner, and next action."
+                }
+              ],
+              "approvals": [],
+              "results": [],
+              "verification": {
+                "required": true,
+                "status": "PENDING"
+              }
+            },
+            "queuedTasks": [
+              {
+                "id": "TASK-1783016650037",
+                "type": "WORKFORCE_STEP",
+                "payload": {
+                  "workPackageId": "WP-20260702182410-094",
+                  "objective": "Repair high-risk Website condition",
+                  "capability": "executive.objective.evaluate",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "provider": null,
+                  "action": "evaluateObjective",
+                  "expectedOutput": "Clear interpretation of the work objective.",
+                  "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+                  "system": "MILES",
+                  "sourceWorkflow": {
+                    "objective": "Repair high-risk Website condition",
+                    "domain": "executive",
+                    "workforce": "Executive Operations Workforce",
+                    "executionAuthority": "MILES_AUTONOMOUS_COO",
+                    "context": {
+                      "sourceWorkItemId": "WORK-1783016649896-41651",
+                      "area": "Website",
+                      "priority": 1,
+                      "description": "Website health score is 0.",
+                      "reason": "Website health score is 0.",
+                      "recommendedAction": "Verify Instantly API connectivity.",
+                      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                      "relatedProvider": "Website",
+                      "metadata": {
+                        "missionItem": {
+                          "id": "MISSION-1783016649895-15164",
+                          "priority": 1,
+                          "area": "Website",
+                          "title": "Repair high-risk Website condition",
+                          "reason": "Website health score is 0.",
+                          "recommendedAction": "Verify Instantly API connectivity.",
+                          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                          "owner": "Miles",
+                          "requiresKevin": false,
+                          "relatedProvider": "Website",
+                          "businessImpactScore": 95,
+                          "automationConfidence": "HIGH",
+                          "metadata": {
+                            "health": {
+                              "area": "Website",
+                              "status": "Critical",
+                              "score": 0,
+                              "risk": "HIGH",
+                              "confidence": "HIGH",
+                              "lastSuccess": "2026-07-02T18:24:00.451Z",
+                              "lastFailure": "2026-07-02T18:24:09.882Z",
+                              "exceptions": [
+                                {
+                                  "type": "InstantlyAPI",
+                                  "severity": "Critical",
+                                  "message": "instantly.listCampaigns is not a function"
+                                }
+                              ],
+                              "recommendations": [
+                                "Verify Instantly API connectivity.",
+                                "Verify INSTANTLY_API_KEY.",
+                                "Verify internet connectivity."
+                              ],
+                              "metrics": {},
+                              "sourceSystems": [
+                                "CONNECTORSWEBSITE"
+                              ],
+                              "dependencies": [
+                                "Website"
+                              ]
+                            }
+                          }
+                        },
+                        "automationConfidence": "HIGH",
+                        "businessImpactScore": 95
+                      },
+                      "runtimeCycleId": null
+                    }
+                  }
+                },
+                "priority": 50,
+                "status": "QUEUED",
+                "createdAt": "2026-07-02T18:24:10.037Z",
+                "updatedAt": "2026-07-02T18:24:10.037Z"
+              },
+              {
+                "id": "TASK-1783016650078",
+                "type": "WORKFORCE_STEP",
+                "payload": {
+                  "workPackageId": "WP-20260702182410-094",
+                  "objective": "Repair high-risk Website condition",
+                  "capability": "executive.priority.route",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "provider": null,
+                  "action": "routeObjective",
+                  "expectedOutput": "Recommended department, priority, and execution path.",
+                  "verification": "Verify the work is assigned to the right workforce or flagged for CEO review.",
+                  "system": "MILES",
+                  "sourceWorkflow": {
+                    "objective": "Repair high-risk Website condition",
+                    "domain": "executive",
+                    "workforce": "Executive Operations Workforce",
+                    "executionAuthority": "MILES_AUTONOMOUS_COO",
+                    "context": {
+                      "sourceWorkItemId": "WORK-1783016649896-41651",
+                      "area": "Website",
+                      "priority": 1,
+                      "description": "Website health score is 0.",
+                      "reason": "Website health score is 0.",
+                      "recommendedAction": "Verify Instantly API connectivity.",
+                      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                      "relatedProvider": "Website",
+                      "metadata": {
+                        "missionItem": {
+                          "id": "MISSION-1783016649895-15164",
+                          "priority": 1,
+                          "area": "Website",
+                          "title": "Repair high-risk Website condition",
+                          "reason": "Website health score is 0.",
+                          "recommendedAction": "Verify Instantly API connectivity.",
+                          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                          "owner": "Miles",
+                          "requiresKevin": false,
+                          "relatedProvider": "Website",
+                          "businessImpactScore": 95,
+                          "automationConfidence": "HIGH",
+                          "metadata": {
+                            "health": {
+                              "area": "Website",
+                              "status": "Critical",
+                              "score": 0,
+                              "risk": "HIGH",
+                              "confidence": "HIGH",
+                              "lastSuccess": "2026-07-02T18:24:00.451Z",
+                              "lastFailure": "2026-07-02T18:24:09.882Z",
+                              "exceptions": [
+                                {
+                                  "type": "InstantlyAPI",
+                                  "severity": "Critical",
+                                  "message": "instantly.listCampaigns is not a function"
+                                }
+                              ],
+                              "recommendations": [
+                                "Verify Instantly API connectivity.",
+                                "Verify INSTANTLY_API_KEY.",
+                                "Verify internet connectivity."
+                              ],
+                              "metrics": {},
+                              "sourceSystems": [
+                                "CONNECTORSWEBSITE"
+                              ],
+                              "dependencies": [
+                                "Website"
+                              ]
+                            }
+                          }
+                        },
+                        "automationConfidence": "HIGH",
+                        "businessImpactScore": 95
+                      },
+                      "runtimeCycleId": null
+                    }
+                  }
+                },
+                "priority": 50,
+                "status": "QUEUED",
+                "createdAt": "2026-07-02T18:24:10.078Z",
+                "updatedAt": "2026-07-02T18:24:10.078Z"
+              },
+              {
+                "id": "TASK-1783016650125",
+                "type": "WORKFORCE_STEP",
+                "payload": {
+                  "workPackageId": "WP-20260702182410-094",
+                  "objective": "Repair high-risk Website condition",
+                  "capability": "executive.update.generate",
+                  "assignedTo": "MILES",
+                  "department": "Executive",
+                  "provider": null,
+                  "action": "generateExecutiveUpdate",
+                  "expectedOutput": "Executive update for the planned work.",
+                  "verification": "Verify update contains status, owner, and next action.",
+                  "system": "MILES",
+                  "sourceWorkflow": {
+                    "objective": "Repair high-risk Website condition",
+                    "domain": "executive",
+                    "workforce": "Executive Operations Workforce",
+                    "executionAuthority": "MILES_AUTONOMOUS_COO",
+                    "context": {
+                      "sourceWorkItemId": "WORK-1783016649896-41651",
+                      "area": "Website",
+                      "priority": 1,
+                      "description": "Website health score is 0.",
+                      "reason": "Website health score is 0.",
+                      "recommendedAction": "Verify Instantly API connectivity.",
+                      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                      "relatedProvider": "Website",
+                      "metadata": {
+                        "missionItem": {
+                          "id": "MISSION-1783016649895-15164",
+                          "priority": 1,
+                          "area": "Website",
+                          "title": "Repair high-risk Website condition",
+                          "reason": "Website health score is 0.",
+                          "recommendedAction": "Verify Instantly API connectivity.",
+                          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                          "owner": "Miles",
+                          "requiresKevin": false,
+                          "relatedProvider": "Website",
+                          "businessImpactScore": 95,
+                          "automationConfidence": "HIGH",
+                          "metadata": {
+                            "health": {
+                              "area": "Website",
+                              "status": "Critical",
+                              "score": 0,
+                              "risk": "HIGH",
+                              "confidence": "HIGH",
+                              "lastSuccess": "2026-07-02T18:24:00.451Z",
+                              "lastFailure": "2026-07-02T18:24:09.882Z",
+                              "exceptions": [
+                                {
+                                  "type": "InstantlyAPI",
+                                  "severity": "Critical",
+                                  "message": "instantly.listCampaigns is not a function"
+                                }
+                              ],
+                              "recommendations": [
+                                "Verify Instantly API connectivity.",
+                                "Verify INSTANTLY_API_KEY.",
+                                "Verify internet connectivity."
+                              ],
+                              "metrics": {},
+                              "sourceSystems": [
+                                "CONNECTORSWEBSITE"
+                              ],
+                              "dependencies": [
+                                "Website"
+                              ]
+                            }
+                          }
+                        },
+                        "automationConfidence": "HIGH",
+                        "businessImpactScore": 95
+                      },
+                      "runtimeCycleId": null
+                    }
+                  }
+                },
+                "priority": 50,
+                "status": "QUEUED",
+                "createdAt": "2026-07-02T18:24:10.125Z",
+                "updatedAt": "2026-07-02T18:24:10.125Z"
+              }
+            ]
+          },
+          "lastDuplicateDetectedAt": "2026-07-02T19:25:36.421Z"
+        },
+        "lifecycle": [
+          {
+            "status": "Pending",
+            "timestamp": "2026-07-02T18:24:09.896Z",
+            "note": "Work item created."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T18:24:10.160Z",
+            "note": "Work item queued for execution."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T18:24:49.467Z",
+            "note": "Duplicate detected; existing open item reused."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T19:10:45.487Z",
+            "note": "Duplicate detected; existing open item reused."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T19:17:33.172Z",
+            "note": "Duplicate detected; existing open item reused."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T19:21:46.264Z",
+            "note": "Duplicate detected; existing open item reused."
+          },
+          {
+            "status": "Queued",
+            "timestamp": "2026-07-02T19:25:36.421Z",
+            "note": "Duplicate detected; existing open item reused."
+          }
+        ],
+        "duplicateDetected": true
+      }
+    },
+    "source": "InstantlyActionBridgeService",
+    "generatedAt": "2026-07-04T02:30:24.613Z"
+  },
+  "connection": {
+    "ok": true,
+    "provider": "instantly",
+    "providerName": "Instantly",
+    "executable": false,
+    "credentialsPresent": false,
+    "writeEnabled": false,
+    "safeMode": true,
+    "supportedOperations": [
+      "HEALTH_CHECK",
+      "LIST_CAMPAIGNS",
+      "GET_CAMPAIGN",
+      "CREATE_CAMPAIGN",
+      "PAUSE_CAMPAIGN",
+      "RESUME_CAMPAIGN",
+      "UPLOAD_LEADS",
+      "ASSIGN_SENDING_ACCOUNTS",
+      "GENERATE_CAMPAIGN_REPORT"
+    ],
+    "generatedAt": "2026-07-04T02:30:24.615Z",
+    "connected": false,
+    "status": "MISSING_CREDENTIALS",
+    "message": "INSTANTLY_API_KEY is not configured."
+  },
+  "execution": {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "CREATE_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "durationMs": 0,
+    "result": {
+      "ok": true,
+      "executed": false,
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "message": "Set INSTANTLY_WRITE_ENABLED=true to allow live write operations.",
+      "payloadPreview": {
+        "title": "Repair high-risk Website condition",
+        "description": "Website health score is 0.",
+        "area": "Website",
+        "recommendedAction": "Verify Instantly API connectivity.",
+        "route": null,
+        "sourceWorkItem": {
+          "id": "WORK-1783016649896-41651",
+          "signature": "Website::Repair high-risk Website condition::Website",
+          "createdAt": "2026-07-02T18:24:09.896Z",
+          "updatedAt": "2026-07-02T19:25:36.421Z",
+          "status": "Queued",
+          "priority": 1,
+          "area": "Website",
+          "title": "Repair high-risk Website condition",
+          "description": "Website health score is 0.",
+          "reason": "Website health score is 0.",
+          "source": "ExecutiveMissionPlanner",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "recommendedAction": "Verify Instantly API connectivity.",
+          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+          "relatedProvider": "Website",
+          "executionType": "WORKFLOW",
+          "metadata": {
+            "missionItem": {
+              "id": "MISSION-1783016649895-15164",
+              "priority": 1,
+              "area": "Website",
+              "title": "Repair high-risk Website condition",
+              "reason": "Website health score is 0.",
+              "recommendedAction": "Verify Instantly API connectivity.",
+              "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+              "owner": "Miles",
+              "requiresKevin": false,
+              "relatedProvider": "Website",
+              "businessImpactScore": 95,
+              "automationConfidence": "HIGH",
+              "metadata": {
+                "health": {
+                  "area": "Website",
+                  "status": "Critical",
+                  "score": 0,
+                  "risk": "HIGH",
+                  "confidence": "HIGH",
+                  "lastSuccess": "2026-07-02T18:24:00.451Z",
+                  "lastFailure": "2026-07-02T18:24:09.882Z",
+                  "exceptions": [
+                    {
+                      "type": "InstantlyAPI",
+                      "severity": "Critical",
+                      "message": "instantly.listCampaigns is not a function"
+                    }
+                  ],
+                  "recommendations": [
+                    "Verify Instantly API connectivity.",
+                    "Verify INSTANTLY_API_KEY.",
+                    "Verify internet connectivity."
+                  ],
+                  "metrics": {},
+                  "sourceSystems": [
+                    "CONNECTORSWEBSITE"
+                  ],
+                  "dependencies": [
+                    "Website"
+                  ]
+                }
+              }
+            },
+            "automationConfidence": "HIGH",
+            "businessImpactScore": 95,
+            "queuedBy": "AutonomousCOOLoopService",
+            "queuedAt": "2026-07-02T18:24:10.160Z",
+            "workflowStatus": "QUEUED",
+            "workflowResult": {
+              "ok": true,
+              "status": "QUEUED",
+              "workPackage": {
+                "id": "WP-20260702182410-094",
+                "objective": "Repair high-risk Website condition",
+                "status": "QUEUED",
+                "owner": "MILES",
+                "priority": 1,
+                "priorityScore": 50,
+                "createdAt": "2026-07-02T18:24:10.024Z",
+                "updatedAt": "2026-07-02T18:24:10.024Z",
+                "plan": {
+                  "ok": true,
+                  "type": "PLAN",
+                  "objective": "Repair high-risk Website condition",
+                  "priority": 1,
+                  "priorityScore": 50,
+                  "createdAt": "2026-07-02T18:24:10.024Z",
+                  "owner": "MILES",
+                  "context": {
+                    "sourceWorkItemId": "WORK-1783016649896-41651",
+                    "area": "Website",
+                    "priority": 1,
+                    "description": "Website health score is 0.",
+                    "reason": "Website health score is 0.",
+                    "recommendedAction": "Verify Instantly API connectivity.",
+                    "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                    "relatedProvider": "Website",
+                    "metadata": {
+                      "missionItem": {
+                        "id": "MISSION-1783016649895-15164",
+                        "priority": 1,
+                        "area": "Website",
+                        "title": "Repair high-risk Website condition",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "owner": "Miles",
+                        "requiresKevin": false,
+                        "relatedProvider": "Website",
+                        "businessImpactScore": 95,
+                        "automationConfidence": "HIGH",
+                        "metadata": {
+                          "health": {
+                            "area": "Website",
+                            "status": "Critical",
+                            "score": 0,
+                            "risk": "HIGH",
+                            "confidence": "HIGH",
+                            "lastSuccess": "2026-07-02T18:24:00.451Z",
+                            "lastFailure": "2026-07-02T18:24:09.882Z",
+                            "exceptions": [
+                              {
+                                "type": "InstantlyAPI",
+                                "severity": "Critical",
+                                "message": "instantly.listCampaigns is not a function"
+                              }
+                            ],
+                            "recommendations": [
+                              "Verify Instantly API connectivity.",
+                              "Verify INSTANTLY_API_KEY.",
+                              "Verify internet connectivity."
+                            ],
+                            "metrics": {},
+                            "sourceSystems": [
+                              "CONNECTORSWEBSITE"
+                            ],
+                            "dependencies": [
+                              "Website"
+                            ]
+                          }
+                        }
+                      },
+                      "automationConfidence": "HIGH",
+                      "businessImpactScore": 95
+                    },
+                    "runtimeCycleId": null
+                  },
+                  "domain": "executive",
+                  "workforce": "Executive Operations Workforce",
+                  "requiredCapabilities": [
+                    "executive.objective.evaluate",
+                    "executive.priority.route",
+                    "executive.update.generate"
+                  ],
+                  "assignments": [
+                    {
+                      "capability": "executive.objective.evaluate",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    },
+                    {
+                      "capability": "executive.priority.route",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    },
+                    {
+                      "capability": "executive.update.generate",
+                      "candidates": [],
+                      "bestWorker": {
+                        "employee": "MILES",
+                        "department": "Executive",
+                        "source": "fallback"
+                      }
+                    }
+                  ],
+                  "steps": [
+                    {
+                      "step": 1,
+                      "capability": "executive.objective.evaluate",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "evaluateObjective",
+                      "expectedOutput": "Clear interpretation of the work objective.",
+                      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                    },
+                    {
+                      "step": 2,
+                      "capability": "executive.priority.route",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "routeObjective",
+                      "expectedOutput": "Recommended department, priority, and execution path.",
+                      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                    },
+                    {
+                      "step": 3,
+                      "capability": "executive.update.generate",
+                      "assignedTo": "MILES",
+                      "department": "Executive",
+                      "status": "QUEUED",
+                      "dependsOn": [],
+                      "taskType": "WORKFORCE_STEP",
+                      "provider": null,
+                      "action": "generateExecutiveUpdate",
+                      "expectedOutput": "Executive update for the planned work.",
+                      "verification": "Verify update contains status, owner, and next action."
+                    }
+                  ],
+                  "providers": [],
+                  "executionAuthority": "MILES_AUTONOMOUS_COO",
+                  "approvalRequired": false,
+                  "verificationChecklist": [
+                    "Objective was interpreted.",
+                    "Priority was assigned.",
+                    "Execution path was created.",
+                    "Executive update was generated."
+                  ],
+                  "successCriteria": [
+                    "Work item is no longer ambiguous.",
+                    "MILES has a routed next action."
+                  ],
+                  "rulesVersion": "1.0.0"
+                },
+                "tasks": [
+                  {
+                    "step": 1,
+                    "capability": "executive.objective.evaluate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "evaluateObjective",
+                    "expectedOutput": "Clear interpretation of the work objective.",
+                    "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+                  },
+                  {
+                    "step": 2,
+                    "capability": "executive.priority.route",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "routeObjective",
+                    "expectedOutput": "Recommended department, priority, and execution path.",
+                    "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+                  },
+                  {
+                    "step": 3,
+                    "capability": "executive.update.generate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "status": "QUEUED",
+                    "dependsOn": [],
+                    "taskType": "WORKFORCE_STEP",
+                    "provider": null,
+                    "action": "generateExecutiveUpdate",
+                    "expectedOutput": "Executive update for the planned work.",
+                    "verification": "Verify update contains status, owner, and next action."
+                  }
+                ],
+                "approvals": [],
+                "results": [],
+                "verification": {
+                  "required": true,
+                  "status": "PENDING"
+                }
+              },
+              "queuedTasks": [
+                {
+                  "id": "TASK-1783016650037",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.objective.evaluate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "evaluateObjective",
+                    "expectedOutput": "Clear interpretation of the work objective.",
+                    "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.037Z",
+                  "updatedAt": "2026-07-02T18:24:10.037Z"
+                },
+                {
+                  "id": "TASK-1783016650078",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.priority.route",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "routeObjective",
+                    "expectedOutput": "Recommended department, priority, and execution path.",
+                    "verification": "Verify the work is assigned to the right workforce or flagged for CEO review.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.078Z",
+                  "updatedAt": "2026-07-02T18:24:10.078Z"
+                },
+                {
+                  "id": "TASK-1783016650125",
+                  "type": "WORKFORCE_STEP",
+                  "payload": {
+                    "workPackageId": "WP-20260702182410-094",
+                    "objective": "Repair high-risk Website condition",
+                    "capability": "executive.update.generate",
+                    "assignedTo": "MILES",
+                    "department": "Executive",
+                    "provider": null,
+                    "action": "generateExecutiveUpdate",
+                    "expectedOutput": "Executive update for the planned work.",
+                    "verification": "Verify update contains status, owner, and next action.",
+                    "system": "MILES",
+                    "sourceWorkflow": {
+                      "objective": "Repair high-risk Website condition",
+                      "domain": "executive",
+                      "workforce": "Executive Operations Workforce",
+                      "executionAuthority": "MILES_AUTONOMOUS_COO",
+                      "context": {
+                        "sourceWorkItemId": "WORK-1783016649896-41651",
+                        "area": "Website",
+                        "priority": 1,
+                        "description": "Website health score is 0.",
+                        "reason": "Website health score is 0.",
+                        "recommendedAction": "Verify Instantly API connectivity.",
+                        "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                        "relatedProvider": "Website",
+                        "metadata": {
+                          "missionItem": {
+                            "id": "MISSION-1783016649895-15164",
+                            "priority": 1,
+                            "area": "Website",
+                            "title": "Repair high-risk Website condition",
+                            "reason": "Website health score is 0.",
+                            "recommendedAction": "Verify Instantly API connectivity.",
+                            "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+                            "owner": "Miles",
+                            "requiresKevin": false,
+                            "relatedProvider": "Website",
+                            "businessImpactScore": 95,
+                            "automationConfidence": "HIGH",
+                            "metadata": {
+                              "health": {
+                                "area": "Website",
+                                "status": "Critical",
+                                "score": 0,
+                                "risk": "HIGH",
+                                "confidence": "HIGH",
+                                "lastSuccess": "2026-07-02T18:24:00.451Z",
+                                "lastFailure": "2026-07-02T18:24:09.882Z",
+                                "exceptions": [
+                                  {
+                                    "type": "InstantlyAPI",
+                                    "severity": "Critical",
+                                    "message": "instantly.listCampaigns is not a function"
+                                  }
+                                ],
+                                "recommendations": [
+                                  "Verify Instantly API connectivity.",
+                                  "Verify INSTANTLY_API_KEY.",
+                                  "Verify internet connectivity."
+                                ],
+                                "metrics": {},
+                                "sourceSystems": [
+                                  "CONNECTORSWEBSITE"
+                                ],
+                                "dependencies": [
+                                  "Website"
+                                ]
+                              }
+                            }
+                          },
+                          "automationConfidence": "HIGH",
+                          "businessImpactScore": 95
+                        },
+                        "runtimeCycleId": null
+                      }
+                    }
+                  },
+                  "priority": 50,
+                  "status": "QUEUED",
+                  "createdAt": "2026-07-02T18:24:10.125Z",
+                  "updatedAt": "2026-07-02T18:24:10.125Z"
+                }
+              ]
+            },
+            "lastDuplicateDetectedAt": "2026-07-02T19:25:36.421Z"
+          },
+          "lifecycle": [
+            {
+              "status": "Pending",
+              "timestamp": "2026-07-02T18:24:09.896Z",
+              "note": "Work item created."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T18:24:10.160Z",
+              "note": "Work item queued for execution."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T18:24:49.467Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:10:45.487Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:17:33.172Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:21:46.264Z",
+              "note": "Duplicate detected; existing open item reused."
+            },
+            {
+              "status": "Queued",
+              "timestamp": "2026-07-02T19:25:36.421Z",
+              "note": "Duplicate detected; existing open item reused."
+            }
+          ],
+          "duplicateDetected": true
+        }
+      }
+    },
+    "generatedAt": "2026-07-04T02:30:24.615Z"
+  },
+  "verification": {
+    "ok": true,
+    "verified": false,
+    "status": "SAFE_MODE_NOT_VERIFIED",
+    "provider": "instantly",
+    "operation": "CREATE_CAMPAIGN",
+    "message": "Write operation was not executed because safe mode is enabled."
+  },
+  "summary": {
+    "provider": "instantly",
+    "operation": "CREATE_CAMPAIGN",
+    "connected": false,
+    "executed": false,
+    "verified": false,
+    "status": "SAFE_MODE_NOT_VERIFIED"
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\instantly_live"
+}

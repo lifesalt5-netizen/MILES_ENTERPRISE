@@ -1,0 +1,168 @@
+[
+  {
+    "id": "CMD-1783114874562-h6zp5e",
+    "title": "Build MILES Self Development Engine",
+    "type": "SELF_DEVELOPMENT",
+    "priority": 1,
+    "status": "FAILED",
+    "authority": "AUTOMATIC",
+    "createdAt": "2026-07-03T21:41:14.562Z",
+    "updatedAt": "2026-07-09T16:37:36.017Z",
+    "payload": {
+      "mission": "Create Builder, Validator, Tester, Deployer, Recovery subsystems so Kevin only approves."
+    },
+    "history": [
+      {
+        "at": "2026-07-03T21:41:14.563Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T16:37:35.791Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T16:37:36.017Z",
+        "event": "FAILED",
+        "message": "No worker registered for SELF_DEVELOPMENT"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "error": {
+      "message": "No worker registered for SELF_DEVELOPMENT",
+      "stack": "Error: No worker registered for SELF_DEVELOPMENT\n    at WorkerExecutionBridge.executeNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkerExecutionBridge.js:48:17)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\TESTS\\TestWorkerExecutionBridge.js:46:8)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    "failedAt": "2026-07-09T16:37:36.017Z"
+  },
+  {
+    "id": "CMD-1783615055694-0l5tfk",
+    "title": "Analyze MILES Architecture",
+    "type": "ARCHITECT",
+    "priority": 1,
+    "status": "FAILED",
+    "authority": "AUTOMATIC",
+    "createdAt": "2026-07-09T16:37:35.694Z",
+    "updatedAt": "2026-07-09T16:46:40.715Z",
+    "payload": {},
+    "history": [
+      {
+        "at": "2026-07-09T16:37:35.702Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T16:46:40.694Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T16:46:40.715Z",
+        "event": "FAILED",
+        "message": "No worker registered for ARCHITECT"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "error": {
+      "message": "No worker registered for ARCHITECT",
+      "stack": "Error: No worker registered for ARCHITECT\n    at WorkerExecutionBridge.executeNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkerExecutionBridge.js:52:17)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\TESTS\\TestRealWorkerRegistration.js:17:8)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    "failedAt": "2026-07-09T16:46:40.715Z"
+  },
+  {
+    "id": "CMD-1783614776961-3n0v38",
+    "title": "Create Implementation Plan",
+    "type": "BUILDER",
+    "priority": 2,
+    "status": "FAILED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T16:32:56.961Z",
+    "updatedAt": "2026-07-09T16:49:08.843Z",
+    "payload": {
+      "id": "TICKET-1783614776913-ukflc6",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Create Implementation Plan",
+      "type": "BUILDER",
+      "owner": "BUILDER",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T16:32:56.961Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T16:49:08.766Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T16:49:08.843Z",
+        "event": "FAILED",
+        "message": "No worker registered for BUILDER"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "error": {
+      "message": "No worker registered for BUILDER",
+      "stack": "Error: No worker registered for BUILDER\n    at WorkerExecutionBridge.executeNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkerExecutionBridge.js:52:17)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\TESTS\\TestRealWorkerRegistration.js:17:8)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    "failedAt": "2026-07-09T16:49:08.843Z"
+  },
+  {
+    "id": "CMD-1783614776967-3o2nd2",
+    "title": "Validate Implementation Plan",
+    "type": "VALIDATOR",
+    "priority": 2,
+    "status": "FAILED",
+    "authority": "AUTOMATIC_ENGINEERING",
+    "createdAt": "2026-07-09T16:32:56.967Z",
+    "updatedAt": "2026-07-09T16:56:04.502Z",
+    "payload": {
+      "id": "TICKET-1783614776913-e9cau8",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Validate Implementation Plan",
+      "type": "VALIDATOR",
+      "owner": "VALIDATOR",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    "history": [
+      {
+        "at": "2026-07-09T16:32:56.967Z",
+        "event": "CREATED"
+      },
+      {
+        "at": "2026-07-09T16:56:04.485Z",
+        "event": "CLAIMED",
+        "worker": "WorkerExecutionBridge"
+      },
+      {
+        "at": "2026-07-09T16:56:04.502Z",
+        "event": "FAILED",
+        "message": "No worker registered for VALIDATOR"
+      }
+    ],
+    "worker": "WorkerExecutionBridge",
+    "error": {
+      "message": "No worker registered for VALIDATOR",
+      "stack": "Error: No worker registered for VALIDATOR\n    at WorkerExecutionBridge.executeNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkerExecutionBridge.js:52:17)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\TESTS\\TestRealWorkerRegistration.js:17:8)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)\n    at Object..js (node:internal/modules/cjs/loader:2002:10)\n    at Module.load (node:internal/modules/cjs/loader:1594:32)\n    at Module._load (node:internal/modules/cjs/loader:1396:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    },
+    "failedAt": "2026-07-09T16:56:04.502Z"
+  }
+]

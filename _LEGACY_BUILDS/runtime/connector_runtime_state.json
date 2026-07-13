@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "service": "CONNECTOR_RUNTIME",
+  "version": "1.0.0",
+  "status": "INITIALIZED",
+  "generatedAt": "2026-07-08T19:30:37.571Z",
+  "connectorDir": "D:\\P2GC_Intelligence\\MILES_OS\\connectors",
+  "connectorsDiscovered": 0,
+  "connectorsLoaded": 0,
+  "connectorsFailed": 0,
+  "executionsStarted": 0,
+  "executionsCompleted": 0,
+  "executionsFailed": 0,
+  "lastDiscoveryAt": null,
+  "lastLoadAt": null,
+  "lastExecutionAt": null,
+  "lastError": null,
+  "loadedConnectors": []
+}

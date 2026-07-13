@@ -1,0 +1,10 @@
+﻿system_name,owner,purpose,source_location,health_status,last_check,dependencies
+ORION,Miles,Contractor intelligence,D:\P2GC_Intelligence\Orion Demo 6126\orion_live_demo_ready,Active,2026-06-20,ORION database
+Instantly,Miles,Outbound campaigns,SaaS,Active,2026-06-20,Google Workspace
+Google Workspace,Miles,Email infrastructure,SaaS,Active,2026-06-20,Domains
+Namecheap,Miles,Domain management,SaaS,Active,2026-06-20,DNS
+IONOS,Miles,Website and domain hosting,SaaS,Active,2026-06-20,Website
+Calendly,Kevin,Appointment scheduling,SaaS,Active,2026-06-20,Google Calendar
+LinkedIn,Kevin,Relationship and marketing channel,SaaS,Active,2026-06-20,None
+OneDrive CRM,Miles,Client intelligence,C:\Users\lifes\OneDrive\Documents\Notes\CRM\Clients,Active,2026-06-20,None
+MillionVerifier,Miles,Email verification,SaaS,Active,2026-06-20,Outbound lists

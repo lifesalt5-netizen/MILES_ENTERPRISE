@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-07-04T01:53:02.291Z",
+  "executiveSummary": {
+    "companyHealthScore": 78,
+    "companyHealthStatus": "WATCH",
+    "revenueGoal": 10000,
+    "revenueCurrent": 0,
+    "pipeline": 0,
+    "openWork": 32,
+    "approvalQueue": 2,
+    "criticalAlerts": 0,
+    "warningAlerts": 2,
+    "runtimeStatus": "UNKNOWN"
+  },
+  "cooRuntime": {
+    "latestCycleId": "COO-20260704014740-101",
+    "latestCycleGeneratedAt": null,
+    "latestCycleCompletedAt": "2026-07-04T01:50:13.351Z",
+    "latestCycleStatus": "UNKNOWN",
+    "latestCycleDurationMs": null,
+    "cyclesInHistory": 3,
+    "runtimeHealthStatus": "UNKNOWN",
+    "restartRecommended": false,
+    "restartRecommendation": "Unknown",
+    "consecutiveFailures": 0,
+    "heartbeat": null
+  },
+  "revenue": {
+    "goal": 10000,
+    "current": 0,
+    "pipeline": 0,
+    "proposalsOutstanding": 0,
+    "status": "UNKNOWN",
+    "progressPct": 0
+  },
+  "workQueue": {
+    "total": 72,
+    "open": 32,
+    "pending": 12,
+    "queued": 20,
+    "blocked": 0,
+    "awaitingApproval": 0,
+    "failed": 40,
+    "archived": 42
+  }
+}

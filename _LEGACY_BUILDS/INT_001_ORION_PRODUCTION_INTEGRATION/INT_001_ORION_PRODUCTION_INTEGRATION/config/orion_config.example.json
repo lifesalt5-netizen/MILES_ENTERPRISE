@@ -1,0 +1,16 @@
+{
+  "orion_db_path": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+  "read_only": true,
+  "expected_tables": [
+    "contractors",
+    "buyers",
+    "prime_recs",
+    "opportunities",
+    "recompetes",
+    "contract_vehicle_health",
+    "contractor_recommendations_v2",
+    "persona_scores",
+    "revenue_leakage"
+  ],
+  "report_output_dir": "reports"
+}

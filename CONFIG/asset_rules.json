@@ -1,0 +1,18 @@
+{
+  "protected_assets": [
+    "pathways2gc.com"
+  ],
+  "website_rules": {
+    "publish_requires_kevin_approval": true,
+    "allow_draft_edits": true,
+    "allow_auto_publish": false
+  },
+  "email_rules": {
+    "pathways2gc.com": {
+      "outbound_allowed": false
+    }
+  },
+  "orion_rules": {
+    "schema_changes_require_backup": true
+  }
+}

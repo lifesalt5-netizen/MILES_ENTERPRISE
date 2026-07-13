@@ -1,0 +1,14 @@
+﻿{
+    "supervisor":  "Digital COO Autonomy Supervisor",
+    "version":  "1.0.0",
+    "production_repository":  "D:\\P2GC_Intelligence\\MILES_OS",
+    "generated_at":  "2026-07-05T22:23:03.4064618-04:00",
+    "cycle_count":  1,
+    "current_status":  "critical",
+    "previous_status":  "unknown",
+    "runtime_chain_verified":  false,
+    "health_file":  "D:\\P2GC_Intelligence\\MILES_OS\\health\\digital_coo_autonomy_supervisor_health.json",
+    "executive_feed_file":  "D:\\P2GC_Intelligence\\MILES_OS\\executive_intelligence\\digital_coo_autonomy_feed.json",
+    "learning_feed_file":  "D:\\P2GC_Intelligence\\MILES_OS\\learning\\digital_coo_learning_feed.json",
+    "recovery_plan_file":  "D:\\P2GC_Intelligence\\MILES_OS\\recovery\\digital_coo_recovery_plan.json"
+}

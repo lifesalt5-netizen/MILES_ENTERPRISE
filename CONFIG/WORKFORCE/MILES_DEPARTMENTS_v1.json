@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T00:24:42.994508Z",
+  "departments": {
+    "Capture": [
+      "cora"
+    ],
+    "Capture Systems": [
+      "jason"
+    ],
+    "Competitive Intelligence": [
+      "allison",
+      "jackson"
+    ],
+    "Forecasting": [
+      "olivia"
+    ],
+    "Market Intelligence": [
+      "aden",
+      "marcus"
+    ],
+    "Marketing": [
+      "aria"
+    ],
+    "Past Performance": [
+      "natalie"
+    ],
+    "Pricing": [
+      "derek"
+    ],
+    "Proposals": [
+      "keith"
+    ],
+    "SLED": [
+      "claudia"
+    ],
+    "Sales": [
+      "alexis",
+      "sophia"
+    ],
+    "Vehicles": [
+      "daniel",
+      "isabel",
+      "victoria"
+    ]
+  }
+}

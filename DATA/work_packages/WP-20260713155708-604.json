@@ -1,0 +1,295 @@
+{
+  "id": "WP-20260713155708-604",
+  "objective": "Identify depleted outreach segments and create enrichment work",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T15:57:08.048Z",
+  "updatedAt": "2026-07-13T15:57:08.048Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Identify depleted outreach segments and create enrichment work",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T15:57:08.047Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783958198430-33185",
+      "area": "Marketing",
+      "priority": 2,
+      "description": "Prevents campaign inventory exhaustion.",
+      "reason": "Executive COO identified this work as authorized and operationally valuable.",
+      "recommendedAction": "Identify depleted outreach segments and create enrichment work",
+      "expectedImpact": "Prevents campaign inventory exhaustion.",
+      "relatedProvider": "Marketing",
+      "metadata": {
+        "cycleId": "COO-20260713155633-001",
+        "executiveBriefItem": {
+          "priority": 2,
+          "area": "Marketing",
+          "action": "Replenish 14 depleted segment(s).",
+          "objective": "Identify depleted outreach segments and create enrichment work",
+          "impact": "Prevents campaign inventory exhaustion.",
+          "owner": "Marketing COO",
+          "requiresKevin": false,
+          "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\marketing_coo\\latest_marketing_operation.json"
+        },
+        "operationalObjective": "Identify depleted outreach segments and create enrichment work",
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-13T15:56:38.430Z"
+        }
+      },
+      "runtimeCycleId": "COO-20260713155633-001"
+    },
+    "domain": "marketing",
+    "workforce": "Marketing Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "marketing.segment.replenish"
+    ],
+    "assignments": [
+      {
+        "capability": "marketing.segment.replenish",
+        "provider": "MarketingProvider",
+        "department": "Marketing",
+        "action": "refresh",
+        "bestWorker": {
+          "employee": "InstantlyExecutiveAdvisor",
+          "department": "Marketing",
+          "mission": "Execute enterprise capabilities through SERVICES\\InstantlyExecutiveAdvisor.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_1398B10D43B2CE13",
+          "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "marketing.segment.replenish",
+            "employees": [
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "Operational",
+                "role": "Email Marketing & Conversion Architect",
+                "componentId": null,
+                "relativePath": null,
+                "score": 170,
+                "matchReasons": [
+                  "declared capability match: marketing.segment.replenish",
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Alexis",
+                "department": "Sales",
+                "mission": "Turn government contractors into paying P2GC clients through segmentation, targeting, offer strategy, pricing positioning, messaging, and conversion strategy.",
+                "authority": "Operational",
+                "role": "GovCon Growth & Client Acquisition Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "instantly_worker_1782934465971",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through DATA\\browser\\worker_results\\instantly_worker_1782934465971.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_6F119DFF7AEFB15E",
+                "relativePath": "DATA\\browser\\worker_results\\instantly_worker_1782934465971.json",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyCOOWorker",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4CE04D464E5B6E59",
+                "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyExecutiveAdvisor",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through SERVICES\\InstantlyExecutiveAdvisor.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1398B10D43B2CE13",
+                "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Sophia",
+                "department": "Sales",
+                "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+                "authority": "Operational",
+                "role": "Federal Sales Pipeline Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Test_Build049_InstantlyCOOWorkerExecution",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build049_InstantlyCOOWorkerExecution.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_02D5206999030175",
+                "relativePath": "TESTS\\Test_Build049_InstantlyCOOWorkerExecution.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_Build049_InstantlyWorkerTrace",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build049_InstantlyWorkerTrace.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_9926A979EBF9A508",
+                "relativePath": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_InstantlyWorker",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_InstantlyWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_00C6AC68BA3F93B6",
+                "relativePath": "TESTS\\Test_InstantlyWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "worker_state",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through runtime\\workers\\INSTANTLY_COO_WORKER\\worker_state.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1471C2FFE7E59BAF",
+                "relativePath": "runtime\\workers\\INSTANTLY_COO_WORKER\\worker_state.json",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "marketing.segment.replenish",
+        "assignedTo": "InstantlyExecutiveAdvisor",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "MarketingProvider",
+        "action": "refresh",
+        "expectedOutput": "Segment depletion assessment, campaign demand, verified-lead readiness, and enrichment or replenishment recommendations.",
+        "verification": "Verify MarketingProvider refreshed segment and campaign state and returned actionable replenishment evidence."
+      }
+    ],
+    "providers": [
+      "MarketingProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify MarketingProvider refreshed segment and campaign state and returned actionable replenishment evidence."
+    ],
+    "successCriteria": [
+      "MarketingProvider.refresh executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "marketing.segment.replenish",
+      "assignedTo": "InstantlyExecutiveAdvisor",
+      "department": "Marketing",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "MarketingProvider",
+      "action": "refresh",
+      "expectedOutput": "Segment depletion assessment, campaign demand, verified-lead readiness, and enrichment or replenishment recommendations.",
+      "verification": "Verify MarketingProvider refreshed segment and campaign state and returned actionable replenishment evidence."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

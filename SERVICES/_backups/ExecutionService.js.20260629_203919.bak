@@ -1,0 +1,158 @@
+const taskQueue = require("../CORE/TaskQueue");
+const connectorManager = require("../CORE/ConnectorManager");
+const eventBus = require("../CORE/EventBus");
+const { requiresApproval } = require("../CORE/authority");
+const { log } = require("../CORE/logger");
+const memory = require("./MemoryService");
+
+class ExecutionService {
+  async execute(task) {
+    if (!task) {
+      return { ok: false, message: "No task provided" };
+    }
+
+    const system = task.payload?.system || task.payload?.connector || task.type;
+    const action = task.payload?.action || task.type;
+    const authority = requiresApproval(system, action);
+
+    if (!authority.allowed) {
+      taskQueue.update(task.id, {
+        status: "AWAITING_APPROVAL",
+        authority,
+      });
+
+      eventBus.publish("TASK_AWAITING_APPROVAL", { task, authority });
+      log("ExecutionService", action, "Awaiting Approval", authority.approval);
+
+      return {
+        ok: false,
+        status: "AWAITING_APPROVAL",
+        authority,
+      };
+    }
+
+    const connectorName = task.payload?.connector || system;
+    const INTERNAL_TASKS = new Set([
+  "SELF_BUILD",
+  "SELF_TEST",
+  "SELF_ANALYZE",
+  "HEALTH_CHECK",
+  "BACKUP",
+  "RESTART_RUNTIME",
+  "GIT_COMMIT",
+  "BUILD_CONNECTOR",
+  "BUILD_PLAN",
+  "ANALYZE_PROJECT"
+]);
+
+if (INTERNAL_TASKS.has(task.type)) {
+
+    taskQueue.update(task.id, {
+        status: "COMPLETED",
+        result: {
+            internal: true,
+            action: task.type,
+            message: "Handled by internal runtime."
+        }
+    });
+
+    eventBus.publish("TASK_COMPLETED", {
+        task,
+        internal: true
+    });
+
+    log("ExecutionService", task.type, "Completed", "Internal Runtime");
+
+    return {
+        ok: true,
+        internal: true
+    };
+}
+    const connector = connectorManager.get(connectorName);
+
+    if (!connector) {
+      taskQueue.update(task.id, {
+        status: "FAILED",
+        error: `Connector not found: ${connectorName}`,
+      });
+
+      log("ExecutionService", action, "Failed", `Connector not found: ${connectorName}`);
+      eventBus.publish("TASK_FAILED", { task, error: `Connector not found: ${connectorName}` });
+
+      return {
+        ok: false,
+        status: "FAILED",
+        error: `Connector not found: ${connectorName}`,
+      };
+    }
+
+    if (typeof connector.execute !== "function") {
+      taskQueue.update(task.id, {
+        status: "FAILED",
+        error: `Connector ${connectorName} does not implement execute(task)`,
+      });
+
+      log("ExecutionService", action, "Failed", `Connector ${connectorName} missing execute(task)`);
+      eventBus.publish("TASK_FAILED", { task, error: `Connector ${connectorName} missing execute(task)` });
+
+      return {
+        ok: false,
+        status: "FAILED",
+        error: `Connector ${connectorName} missing execute(task)`,
+      };
+    }
+
+    try {
+      taskQueue.update(task.id, { status: "RUNNING" });
+      eventBus.publish("TASK_STARTED", task);
+      log("ExecutionService", action, "Started", connectorName);
+
+      const result = await connector.execute(task);
+
+      taskQueue.update(task.id, {
+        status: "COMPLETED",
+        result,
+      });
+
+      memory.remember("execution:last_result", task.id, result);
+
+      eventBus.publish("TASK_COMPLETED", { task, result });
+      log("ExecutionService", action, "Completed", connectorName);
+
+      return {
+        ok: true,
+        status: "COMPLETED",
+        result,
+      };
+    } catch (error) {
+      taskQueue.update(task.id, {
+        status: "FAILED",
+        error: error.message,
+      });
+
+      eventBus.publish("TASK_FAILED", { task, error: error.message });
+      log("ExecutionService", action, "Failed", error.message);
+
+      return {
+        ok: false,
+        status: "FAILED",
+        error: error.message,
+      };
+    }
+  }
+
+  async runNext() {
+    const queued = taskQueue.list("QUEUED");
+
+    if (!queued.length) {
+      return {
+        ok: true,
+        message: "No queued tasks",
+      };
+    }
+
+    return this.execute(queued[0]);
+  }
+}
+
+module.exports = new ExecutionService();

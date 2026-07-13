@@ -1,0 +1,40 @@
+{
+  "ORION": {
+    "required_env": [
+      "ORION_DB_PATH"
+    ],
+    "default_known_path": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+    "mode": "READY_READ_ONLY"
+  },
+  "INSTANTLY": {
+    "required_env": [
+      "INSTANTLY_API_KEY"
+    ],
+    "mode": "READY_READ_VERIFIED_WRITE_DISABLED"
+  },
+  "GOOGLE_WORKSPACE": {
+    "required_env": [
+      "GOOGLE_WORKSPACE_CUSTOMER_ID",
+      "GOOGLE_SERVICE_ACCOUNT_FILE",
+      "GOOGLE_DELEGATED_ADMIN"
+    ],
+    "mode": "CREDENTIAL_CONFIGURATION_PENDING"
+  },
+  "NAMECHEAP": {
+    "required_env": [
+      "NAMECHEAP_API_USER",
+      "NAMECHEAP_API_KEY",
+      "NAMECHEAP_CLIENT_IP",
+      "NAMECHEAP_USERNAME"
+    ],
+    "mode": "CREDENTIAL_CONFIGURATION_PENDING"
+  },
+  "WEBSITE": {
+    "required_env": [
+      "WEBSITE_BASE_URL",
+      "WEBSITE_ADMIN_MODE",
+      "WEBSITE_AUTH_METHOD"
+    ],
+    "mode": "CREDENTIAL_CONFIGURATION_PENDING"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "ok": true,
+  "service": "RUNTIME_REGISTRY_SERVICE_V2",
+  "version": "2.0.2",
+  "rootDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+  "services": [
+    {
+      "id": "COMMAND_CENTER",
+      "name": "Miles Command Center",
+      "type": "HTTP_SERVICE",
+      "domain": null,
+      "version": null,
+      "status": "RUNNING",
+      "pid": null,
+      "host": "127.0.0.1",
+      "port": 8787,
+      "protocol": "http",
+      "path": "/",
+      "fallbackPaths": [],
+      "capabilities": [
+        "COMMAND_AND_CONTROL"
+      ],
+      "dependencies": [],
+      "approvalRequiredActions": [],
+      "healthSource": "ACTIVE_PROBE",
+      "source": "RUNTIME_REGISTRY_API",
+      "startedAt": "2026-07-10T23:38:27.286Z",
+      "registeredAt": "2026-07-10T23:38:27.286Z",
+      "heartbeatAt": "2026-07-11T01:06:11.767Z",
+      "lastHealthyAt": "2026-07-11T01:06:11.767Z",
+      "lastError": null,
+      "lastFailureAt": "2026-07-11T01:00:59.660Z",
+      "restartCount": 0,
+      "consecutiveSuccesses": 21,
+      "consecutiveFailures": 0,
+      "metadata": {
+        "latencyMs": 2,
+        "httpStatus": 200,
+        "checkedAt": "2026-07-11T01:06:11.767Z",
+        "attempts": 1,
+        "successfulPath": "/",
+        "attemptedPath": null,
+        "attemptHistory": [
+          {
+            "attempt": 1,
+            "path": "/",
+            "ok": true,
+            "httpStatus": 200,
+            "error": null,
+            "latencyMs": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "DESKTOP_UI",
+      "name": "MILES Desktop UI",
+      "type": "HTTP_SERVICE",
+      "domain": null,
+      "version": null,
+      "status": "RUNNING",
+      "pid": null,
+      "host": "127.0.0.1",
+      "port": 3737,
+      "protocol": "http",
+      "path": "/api/status",
+      "fallbackPaths": [
+        "/"
+      ],
+      "capabilities": [
+        "DISPLAY_DASHBOARD"
+      ],
+      "dependencies": [],
+      "approvalRequiredActions": [],
+      "healthSource": "ACTIVE_PROBE",
+      "source": "RUNTIME_REGISTRY_API",
+      "startedAt": "2026-07-10T23:38:24.209Z",
+      "registeredAt": "2026-07-10T23:38:24.209Z",
+      "heartbeatAt": "2026-07-11T01:06:11.746Z",
+      "lastHealthyAt": "2026-07-11T01:06:11.746Z",
+      "lastError": null,
+      "lastFailureAt": "2026-07-11T01:00:57.610Z",
+      "restartCount": 0,
+      "consecutiveSuccesses": 21,
+      "consecutiveFailures": 0,
+      "metadata": {
+        "latencyMs": 4,
+        "httpStatus": 200,
+        "checkedAt": "2026-07-11T01:06:11.746Z",
+        "attempts": 1,
+        "successfulPath": "/api/status",
+        "attemptedPath": null,
+        "attemptHistory": [
+          {
+            "attempt": 1,
+            "path": "/api/status",
+            "ok": true,
+            "httpStatus": 200,
+            "error": null,
+            "latencyMs": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "MILES_API",
+      "name": "MILES API",
+      "type": "HTTP_SERVICE",
+      "domain": null,
+      "version": null,
+      "status": "RUNNING",
+      "pid": null,
+      "host": "127.0.0.1",
+      "port": 3000,
+      "protocol": "http",
+      "path": "/",
+      "fallbackPaths": [
+        "/health",
+        "/api/health"
+      ],
+      "capabilities": [
+        "SERVE_API"
+      ],
+      "dependencies": [],
+      "approvalRequiredActions": [],
+      "healthSource": "ACTIVE_PROBE",
+      "source": "RUNTIME_REGISTRY_API",
+      "startedAt": "2026-07-10T23:38:27.267Z",
+      "registeredAt": "2026-07-10T23:38:27.267Z",
+      "heartbeatAt": "2026-07-11T01:06:11.756Z",
+      "lastHealthyAt": "2026-07-11T01:06:11.756Z",
+      "lastError": null,
+      "lastFailureAt": "2026-07-11T01:00:58.641Z",
+      "restartCount": 0,
+      "consecutiveSuccesses": 21,
+      "consecutiveFailures": 0,
+      "metadata": {
+        "latencyMs": 2,
+        "httpStatus": 200,
+        "checkedAt": "2026-07-11T01:06:11.756Z",
+        "attempts": 1,
+        "successfulPath": "/",
+        "attemptedPath": null,
+        "attemptHistory": [
+          {
+            "attempt": 1,
+            "path": "/",
+            "ok": true,
+            "httpStatus": 200,
+            "error": null,
+            "latencyMs": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "RUNTIME_REGISTRY_SERVICE_V2",
+      "name": "MILES Runtime Registry Service V2",
+      "type": "REGISTRY_SERVICE",
+      "domain": null,
+      "version": "2.0.2",
+      "status": "RUNNING",
+      "pid": 18436,
+      "host": "127.0.0.1",
+      "port": 8791,
+      "protocol": "http",
+      "path": null,
+      "fallbackPaths": [],
+      "capabilities": [
+        "REGISTER_RUNTIME_SERVICE",
+        "TRACK_RUNTIME_HEALTH",
+        "RESOLVE_LIVE_CAPABILITY_PROVIDER",
+        "DISCOVER_LOCAL_SERVICE"
+      ],
+      "dependencies": [],
+      "approvalRequiredActions": [],
+      "healthSource": "SELF_REGISTERED",
+      "source": "SELF",
+      "startedAt": "2026-07-10T23:38:24.154Z",
+      "registeredAt": "2026-07-10T23:38:24.154Z",
+      "heartbeatAt": "2026-07-11T01:06:11.732Z",
+      "lastHealthyAt": "2026-07-11T01:06:11.732Z",
+      "lastError": null,
+      "lastFailureAt": null,
+      "restartCount": 0,
+      "consecutiveSuccesses": 24,
+      "consecutiveFailures": 0,
+      "metadata": {}
+    }
+  ],
+  "generatedAt": "2026-07-11T01:06:11.776Z"
+}

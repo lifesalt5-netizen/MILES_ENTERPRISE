@@ -1,0 +1,4 @@
+ApprovalID,ChangeID,Page,ChangeSummary,ScreenshotBefore,ScreenshotAfter,KevinApproval,PublishApproval,Status,Notes
+A001,W001,Home Hero,Rewrite hero for conversion,,,,No,No,Pending,
+A002,W002,Header Navigation,Clean navigation and add Schedule a Call,,,,No,No,Pending,
+A003,W003,Hero CTA,Update CTA to booking review,,,,No,No,Pending,

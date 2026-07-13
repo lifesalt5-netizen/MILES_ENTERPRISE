@@ -1,0 +1,10 @@
+# Secrets
+.env
+*.secret.json
+credentials/*.json
+config/local.*
+reports/*.private.json
+
+# Python
+__pycache__/
+*.pyc

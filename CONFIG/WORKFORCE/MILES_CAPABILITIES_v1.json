@@ -1,0 +1,578 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T00:24:42.994508Z",
+  "capabilities": {
+    "access without ownership": [
+      "victoria"
+    ],
+    "agency buying intelligence": [
+      "marcus"
+    ],
+    "agency buying map": [
+      "aden"
+    ],
+    "agency contact map": [
+      "aden"
+    ],
+    "agency entry strategy": [
+      "aden"
+    ],
+    "agency intelligence": [
+      "aden"
+    ],
+    "alignment engine": [
+      "jason"
+    ],
+    "application steps": [
+      "isabel"
+    ],
+    "budget intelligence": [
+      "aden"
+    ],
+    "buyer behavior mapping": [
+      "victoria"
+    ],
+    "buying offices": [
+      "aden"
+    ],
+    "campaign diagnosis": [
+      "aria"
+    ],
+    "campaign messaging": [
+      "aria"
+    ],
+    "capture": [
+      "cora"
+    ],
+    "capture alignment": [
+      "keith"
+    ],
+    "capture entry strategy": [
+      "cora"
+    ],
+    "capture infrastructure": [
+      "jason"
+    ],
+    "capture strategy": [
+      "cora"
+    ],
+    "certification continuity": [
+      "allison"
+    ],
+    "city bids": [
+      "claudia"
+    ],
+    "client acquisition": [
+      "alexis"
+    ],
+    "client expansion": [
+      "sophia"
+    ],
+    "close strategy": [
+      "alexis"
+    ],
+    "color team review": [
+      "keith"
+    ],
+    "commercial work translation": [
+      "natalie"
+    ],
+    "competitive": [
+      "jackson"
+    ],
+    "competitive displacement": [
+      "jackson"
+    ],
+    "competitive pricing": [
+      "derek"
+    ],
+    "competitive pricing position": [
+      "derek"
+    ],
+    "competitor profiles": [
+      "jackson"
+    ],
+    "compliance matrix": [
+      "keith"
+    ],
+    "contract expiration": [
+      "allison",
+      "olivia"
+    ],
+    "contract vehicle application": [
+      "isabel"
+    ],
+    "contract vehicle mapping": [
+      "aden"
+    ],
+    "contract vehicle strategy": [
+      "daniel"
+    ],
+    "contracting offices": [
+      "aden"
+    ],
+    "conversion optimization": [
+      "aria"
+    ],
+    "conversion strategy": [
+      "alexis"
+    ],
+    "cooperative purchasing": [
+      "daniel"
+    ],
+    "copywriting": [
+      "aria"
+    ],
+    "county bids": [
+      "claudia"
+    ],
+    "cta optimization": [
+      "aria"
+    ],
+    "displacement strategy": [
+      "jackson"
+    ],
+    "draft rfp": [
+      "allison"
+    ],
+    "early opportunity signals": [
+      "olivia"
+    ],
+    "education market": [
+      "claudia"
+    ],
+    "eligibility strategy": [
+      "natalie"
+    ],
+    "email": [
+      "aria"
+    ],
+    "email marketing": [
+      "aria"
+    ],
+    "emod": [
+      "isabel"
+    ],
+    "eoffer": [
+      "isabel"
+    ],
+    "expiration": [
+      "allison"
+    ],
+    "expiration heatmap": [
+      "allison"
+    ],
+    "fast revenue": [
+      "claudia"
+    ],
+    "federal market entry strategy": [
+      "aden"
+    ],
+    "federal market size": [
+      "marcus"
+    ],
+    "federal readiness score": [
+      "sophia"
+    ],
+    "federal sales": [
+      "sophia"
+    ],
+    "forecast": [
+      "olivia"
+    ],
+    "forecasting": [
+      "allison",
+      "olivia"
+    ],
+    "future pipeline": [
+      "olivia"
+    ],
+    "gap analysis": [
+      "jason"
+    ],
+    "gold team": [
+      "keith"
+    ],
+    "growth strategy": [
+      "alexis"
+    ],
+    "gsa no sales recovery": [
+      "victoria"
+    ],
+    "incumbent fragility": [
+      "allison"
+    ],
+    "incumbent identification": [
+      "jackson"
+    ],
+    "incumbent intelligence": [
+      "marcus"
+    ],
+    "incumbent weakness": [
+      "jackson",
+      "olivia"
+    ],
+    "lead qualification": [
+      "sophia"
+    ],
+    "lead strategy": [
+      "alexis"
+    ],
+    "local procurement": [
+      "claudia"
+    ],
+    "management volume": [
+      "keith"
+    ],
+    "margin strategy": [
+      "derek"
+    ],
+    "market entry report": [
+      "marcus"
+    ],
+    "market intelligence": [
+      "marcus"
+    ],
+    "market segmentation": [
+      "alexis"
+    ],
+    "marketing": [
+      "aria"
+    ],
+    "matching engine": [
+      "jason"
+    ],
+    "municipal bids": [
+      "claudia"
+    ],
+    "naics alignment": [
+      "natalie"
+    ],
+    "objection handling": [
+      "alexis"
+    ],
+    "offer strategy": [
+      "alexis"
+    ],
+    "offer-to-segment matching": [
+      "alexis"
+    ],
+    "opportunity density": [
+      "marcus"
+    ],
+    "opportunity expansion": [
+      "marcus"
+    ],
+    "opportunity forecast": [
+      "olivia"
+    ],
+    "opportunity forecast analysis": [
+      "aden"
+    ],
+    "opportunity-driven prospect targeting": [
+      "sophia"
+    ],
+    "outbound copy": [
+      "aria"
+    ],
+    "outreach strategy": [
+      "alexis"
+    ],
+    "partner strategy": [
+      "cora"
+    ],
+    "past performance": [
+      "natalie"
+    ],
+    "past performance gap": [
+      "natalie"
+    ],
+    "past performance match": [
+      "marcus"
+    ],
+    "past performance positioning": [
+      "keith"
+    ],
+    "pilot contracts": [
+      "natalie"
+    ],
+    "pipeline": [
+      "sophia"
+    ],
+    "pipeline dashboard": [
+      "olivia"
+    ],
+    "pipeline forecasting": [
+      "sophia"
+    ],
+    "pipeline intelligence": [
+      "alexis"
+    ],
+    "positioning": [
+      "cora"
+    ],
+    "post-award activation": [
+      "isabel"
+    ],
+    "ppe": [
+      "natalie"
+    ],
+    "premium pricing": [
+      "derek"
+    ],
+    "preview text": [
+      "aria"
+    ],
+    "price vulnerability": [
+      "derek",
+      "jackson"
+    ],
+    "pricing": [
+      "derek"
+    ],
+    "pricing positioning": [
+      "alexis"
+    ],
+    "pricing strategy": [
+      "derek"
+    ],
+    "prime capture": [
+      "cora"
+    ],
+    "prime intelligence": [
+      "marcus"
+    ],
+    "prime landscape": [
+      "cora"
+    ],
+    "prime outreach plan": [
+      "cora"
+    ],
+    "prime sub matching": [
+      "jason"
+    ],
+    "prime target list": [
+      "cora"
+    ],
+    "prime value": [
+      "jason"
+    ],
+    "prime vehicle holders": [
+      "daniel",
+      "victoria"
+    ],
+    "procurement continuity": [
+      "allison"
+    ],
+    "productization": [
+      "jason"
+    ],
+    "program intelligence": [
+      "aden"
+    ],
+    "proposal": [
+      "keith"
+    ],
+    "proposal authority": [
+      "keith"
+    ],
+    "proposal compliance": [
+      "keith"
+    ],
+    "proposal qa": [
+      "keith"
+    ],
+    "prospect pipeline": [
+      "sophia"
+    ],
+    "psc alignment": [
+      "natalie"
+    ],
+    "recompete": [
+      "allison"
+    ],
+    "recompete identification": [
+      "olivia"
+    ],
+    "recompete timing": [
+      "jackson"
+    ],
+    "recovery pathways": [
+      "victoria"
+    ],
+    "red team": [
+      "keith"
+    ],
+    "renewal scoring": [
+      "allison"
+    ],
+    "reply conversion": [
+      "aria"
+    ],
+    "required documents": [
+      "isabel"
+    ],
+    "requirement processing": [
+      "jason"
+    ],
+    "revenue conversion": [
+      "sophia"
+    ],
+    "revenue growth": [
+      "alexis"
+    ],
+    "rfi": [
+      "allison",
+      "olivia"
+    ],
+    "sales": [
+      "alexis",
+      "sophia"
+    ],
+    "sales pipeline": [
+      "sophia"
+    ],
+    "scoring alignment": [
+      "keith"
+    ],
+    "section l and m": [
+      "keith"
+    ],
+    "segment messaging": [
+      "aria"
+    ],
+    "set-aside mapping": [
+      "daniel"
+    ],
+    "sip": [
+      "isabel"
+    ],
+    "sled": [
+      "claudia"
+    ],
+    "sled data integration": [
+      "claudia"
+    ],
+    "sled opportunity intelligence": [
+      "claudia"
+    ],
+    "sled pipeline": [
+      "claudia"
+    ],
+    "small business entry points": [
+      "jackson"
+    ],
+    "small business reality": [
+      "marcus"
+    ],
+    "sources sought": [
+      "allison",
+      "olivia"
+    ],
+    "spend analysis": [
+      "marcus"
+    ],
+    "spending trend": [
+      "olivia"
+    ],
+    "stacking strategy": [
+      "natalie"
+    ],
+    "state procurement": [
+      "claudia"
+    ],
+    "state targeting": [
+      "claudia"
+    ],
+    "state vehicle portals": [
+      "isabel"
+    ],
+    "sub readiness": [
+      "jason"
+    ],
+    "subcontract positioning": [
+      "cora"
+    ],
+    "subcontracting entry points": [
+      "victoria"
+    ],
+    "subcontracting path": [
+      "natalie"
+    ],
+    "subject lines": [
+      "aria"
+    ],
+    "submission strategy": [
+      "isabel"
+    ],
+    "system architecture": [
+      "jason"
+    ],
+    "team assembly": [
+      "jason"
+    ],
+    "teaming position": [
+      "cora"
+    ],
+    "teaming strategy": [
+      "cora",
+      "jackson"
+    ],
+    "technical volume": [
+      "keith"
+    ],
+    "university procurement": [
+      "claudia"
+    ],
+    "vehicle": [
+      "daniel"
+    ],
+    "vehicle activation": [
+      "isabel"
+    ],
+    "vehicle displacement": [
+      "jackson"
+    ],
+    "vehicle failure diagnosis": [
+      "victoria"
+    ],
+    "vehicle feasibility": [
+      "daniel"
+    ],
+    "vehicle go no-go": [
+      "isabel",
+      "victoria"
+    ],
+    "vehicle landscape": [
+      "daniel"
+    ],
+    "vehicle pathway": [
+      "daniel"
+    ],
+    "vehicle readiness": [
+      "daniel"
+    ],
+    "vehicle renewal": [
+      "allison"
+    ],
+    "vehicle revenue mapping": [
+      "daniel"
+    ],
+    "vehicle revenue strategy": [
+      "isabel"
+    ],
+    "vehicle strategy": [
+      "aden",
+      "victoria"
+    ],
+    "vehicle timing": [
+      "daniel"
+    ],
+    "weekly pipeline report": [
+      "sophia"
+    ],
+    "win probability": [
+      "derek"
+    ]
+  }
+}

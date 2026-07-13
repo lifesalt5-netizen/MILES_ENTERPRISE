@@ -1,0 +1,57 @@
+[
+  {
+    "id": "ENG-1782843591041",
+    "name": "Recovery Intelligence",
+    "priority": "CRITICAL",
+    "status": "PLANNED",
+    "owner": "MILES",
+    "reason": "Classify and reduce failed task backlog.",
+    "dependencies": [
+      "TaskQueue",
+      "ExecutionEngine",
+      "AutonomousLoop"
+    ],
+    "tests": [
+      "Recovery classification",
+      "Retry policy",
+      "Failure reporting"
+    ],
+    "createdAt": "2026-06-30T18:19:51.041Z",
+    "updatedAt": "2026-06-30T18:19:51.041Z"
+  },
+  {
+    "id": "ENG-1782843591044",
+    "name": "Executive Memory",
+    "priority": "HIGH",
+    "status": "PLANNED",
+    "owner": "MILES",
+    "reason": "Track historical state and trends.",
+    "dependencies": [
+      "AutonomousLoop"
+    ],
+    "tests": [
+      "State history",
+      "Trend detection"
+    ],
+    "createdAt": "2026-06-30T18:19:51.044Z",
+    "updatedAt": "2026-06-30T18:19:51.044Z"
+  },
+  {
+    "id": "ENG-1782843591046",
+    "name": "Decision Engine",
+    "priority": "HIGH",
+    "status": "PLANNED",
+    "owner": "MILES",
+    "reason": "Allow autonomous decision making.",
+    "dependencies": [
+      "Recovery Intelligence",
+      "Executive Memory"
+    ],
+    "tests": [
+      "Decision routing",
+      "Approval rules"
+    ],
+    "createdAt": "2026-06-30T18:19:51.046Z",
+    "updatedAt": "2026-06-30T18:19:51.046Z"
+  }
+]

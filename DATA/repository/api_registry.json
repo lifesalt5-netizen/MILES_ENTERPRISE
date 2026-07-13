@@ -1,0 +1,924 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "apis": [
+    {
+      "id": "120696db0c05",
+      "name": "server.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/API/server.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 247,
+      "modifiedAt": "2026-06-28T20:20:42.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [
+        "express"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "facf3a26a990",
+      "name": "memory.routes.js",
+      "path": "MILES_OS_v1/MILES_OS_v1/API/API/memory.routes.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 627,
+      "modifiedAt": "2026-06-28T20:39:28.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [
+        "express",
+        "../SERVICES/MemoryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "4b4fd3b948ee",
+      "name": "MilesRuntime.js",
+      "path": "CORE/Runtime/MilesRuntime.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 8404,
+      "modifiedAt": "2026-07-01T19:02:52.000Z",
+      "componentTypes": [
+        "api",
+        "runtime"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "approval_governance",
+        "data_provider_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../../SERVICES/WorkflowService",
+        "../../SERVICES/WorkforceExecutionService",
+        "../../SERVICES/Events/EventBus",
+        "../../SERVICES/Learning/LearningEngine",
+        "../../SERVICES/Memory/OperationalMemoryService",
+        "../../SERVICES/ProviderRouterService",
+        "../../SERVICES/Supervisor/ExecutiveSupervisor"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "SIGINT"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "0b93e2289dfd",
+      "name": "provider_registry.json",
+      "path": "DATA/repository/provider_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 7965,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "provider",
+        "api"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "27523b354f95",
+      "name": "api_registry.json",
+      "path": "DATA/repository/api_registry.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 22207,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "ca1d4dd5972e",
+      "name": "capability_execution_map.json",
+      "path": "DATA/capability/capability_execution_map.json",
+      "extension": ".json",
+      "fileType": "json",
+      "bytes": 220614,
+      "modifiedAt": "2026-07-04T00:34:48.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "engineering_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "ebfa3963e03d",
+      "name": "memory.routes.js",
+      "path": "API/API/memory.routes.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 627,
+      "modifiedAt": "2026-06-29T18:43:06.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [
+        "express",
+        "../SERVICES/MemoryService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "b111e877e801",
+      "name": "server.js",
+      "path": "API/server.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 247,
+      "modifiedAt": "2026-06-29T18:43:06.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [
+        "express"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "4ec09f573ade",
+      "name": "WorkforceExecutionService.js",
+      "path": "SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "3643acabb40a",
+      "name": "DesktopServer.js",
+      "path": "SERVICES/DesktopServer.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 761,
+      "modifiedAt": "2026-06-30T19:57:18.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "runtime_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "express",
+        "path",
+        "../CORE/Runtime/MilesRuntime"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "09f10f1172c5",
+      "name": "MarketingDiscovery.js",
+      "path": "SERVICES/Discovery/MarketingDiscovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1782,
+      "modifiedAt": "2026-07-01T18:27:02.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "89e5fb9adfaa",
+      "name": "OrionDiscovery.js",
+      "path": "SERVICES/Discovery/OrionDiscovery.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 1625,
+      "modifiedAt": "2026-07-01T18:27:38.000Z",
+      "componentTypes": [
+        "api",
+        "database"
+      ],
+      "capabilities": [
+        "orion_operations",
+        "data_provider_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "ORION"
+    },
+    {
+      "id": "73c923dda30a",
+      "name": "RepositoryRegistryService.js",
+      "path": "SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "3b1d09182614",
+      "name": "Test_Build017_ProviderRouter.js",
+      "path": "TESTS/Test_Build017_ProviderRouter.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 2664,
+      "modifiedAt": "2026-07-01T17:26:36.000Z",
+      "componentTypes": [
+        "provider",
+        "api",
+        "database"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "../SERVICES/ProviderRouterService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Provider Layer"
+    },
+    {
+      "id": "b4cf1565f90a",
+      "name": "StartMiles.js",
+      "path": "StartMiles.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3839,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "dotenv",
+        "express",
+        "path",
+        "fs",
+        "./SERVICES/OutboundService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "c52f8285c5b2",
+      "name": "APPLY_BUILD_004.ps1",
+      "path": "miles_build004_patch/miles_build004_patch/APPLY_BUILD_004.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 14028,
+      "modifiedAt": "2026-07-01T00:01:10.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "express",
+        "dotenv",
+        "http",
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "data",
+          "end",
+          "error"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "4b054b176ee2",
+      "name": "APPLY_BUILD_004.ps1",
+      "path": "miles_build004_patch/APPLY_BUILD_004.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 14028,
+      "modifiedAt": "2026-07-01T00:01:10.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "marketing_operations",
+        "orion_operations",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "express",
+        "dotenv",
+        "http",
+        "child_process"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": [
+          "data",
+          "end",
+          "error"
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "26b4a81f725c",
+      "name": "StartMiles.js",
+      "path": "miles_build006_outbound_ops/build006_patch/payload/StartMiles.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3839,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "dotenv",
+        "express",
+        "path",
+        "fs",
+        "./SERVICES/OutboundService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "f7489902a2a4",
+      "name": "StartMiles.js",
+      "path": "build006_patch/payload/StartMiles.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 3839,
+      "modifiedAt": "2026-07-01T01:20:20.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "government_data",
+        "runtime_operations",
+        "approval_governance",
+        "website_operations",
+        "email_outbound_operations",
+        "connector_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "dotenv",
+        "express",
+        "path",
+        "fs",
+        "./SERVICES/OutboundService"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "12aefcb7ea56",
+      "name": "app.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/api/app.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 2520,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "9c9912e8f9b1",
+      "name": "__init__.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/api/__init__.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 0,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "5e8d9aac80ca",
+      "name": "router.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/core/router.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 807,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "orion_operations",
+        "engineering_operations",
+        "website_operations",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "53fe5b4e434b",
+      "name": "work_queue.py",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/miles_desktop/core/work_queue.py",
+      "extension": ".py",
+      "fileType": "python",
+      "bytes": 2676,
+      "modifiedAt": "2026-07-01T02:13:32.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "approval_governance",
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Runtime"
+    },
+    {
+      "id": "6169e8ac1d71",
+      "name": "start_miles_api.ps1",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/scripts/start_miles_api.ps1",
+      "extension": ".ps1",
+      "fileType": "powershell",
+      "bytes": 540,
+      "modifiedAt": "2026-07-01T02:14:14.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "989998f84fd2",
+      "name": "api.js",
+      "path": "MILES_OS_patch_007/MILES_OS_patch_007/ui/src/lib/api.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 731,
+      "modifiedAt": "2026-07-01T02:14:14.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "api_surface"
+      ],
+      "dependencies": [],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "32ef04ee982e",
+      "name": "StartProductionSystem.js",
+      "path": "PROVIDERS/StartProductionSystem.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 4052,
+      "modifiedAt": "2026-07-03T00:17:38.000Z",
+      "componentTypes": [
+        "api"
+      ],
+      "capabilities": [
+        "revenue_operations",
+        "marketing_operations",
+        "runtime_operations",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "api_surface"
+      ],
+      "dependencies": [
+        "dotenv",
+        "./SERVICES/ProductionCOOEngine",
+        "./SERVICES/ExecutionRouterService",
+        "./SERVICES/AutonomousRevenueClosureLoop",
+        "./CONNECTORS"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Unknown"
+    },
+    {
+      "id": "2a7c95eac63a",
+      "name": "WorkforceExecutionService.js",
+      "path": "MILES_AUTONOMOUS_COO_PATCH/miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "d5225c57816f",
+      "name": "WorkforceExecutionService.js",
+      "path": "miles_autonomous_patch/SERVICES/WorkforceExecutionService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 18971,
+      "modifiedAt": "2026-07-02T20:34:18.000Z",
+      "componentTypes": [
+        "service",
+        "api"
+      ],
+      "capabilities": [
+        "marketing_operations",
+        "orion_operations",
+        "approval_governance",
+        "email_outbound_operations",
+        "data_provider_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "./Events/EventBus",
+        "./Events/EventTypes",
+        "./WorkforceService",
+        "./ExecutiveStateService",
+        "./ProviderRouterService",
+        "./Decision/DecisionEngine",
+        "./ExecutionPlanService",
+        "../CORE/logger",
+        "./Browser/Workers/InstantlyCampaignOperator"
+      ],
+      "events": {
+        "published": [],
+        "subscribed": []
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    },
+    {
+      "id": "c68464b6d88d",
+      "name": "RepositoryRegistryService.js",
+      "path": "MILES_REPOSITORY_REGISTRY_FULL_SCRIPTS/SERVICES/RepositoryRegistryService.js",
+      "extension": ".js",
+      "fileType": "code",
+      "bytes": 21035,
+      "modifiedAt": "2026-07-04T04:18:54.000Z",
+      "componentTypes": [
+        "service",
+        "api",
+        "runtime",
+        "event_bus",
+        "automation",
+        "database"
+      ],
+      "capabilities": [
+        "executive_intelligence",
+        "runtime_operations",
+        "engineering_operations",
+        "data_provider_operations",
+        "connector_operations",
+        "learning_operations",
+        "service_execution",
+        "api_surface"
+      ],
+      "dependencies": [
+        "fs",
+        "path",
+        "crypto"
+      ],
+      "events": {
+        "published": [
+          ") || haystack.includes("
+        ],
+        "subscribed": [
+          ")) types.push("
+        ]
+      },
+      "status": "active_candidate",
+      "owner": "Service Layer"
+    }
+  ]
+}

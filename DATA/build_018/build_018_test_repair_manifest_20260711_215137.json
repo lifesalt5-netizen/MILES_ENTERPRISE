@@ -1,0 +1,13 @@
+﻿{
+    "ok":  true,
+    "build":  "018",
+    "repair":  "TEST_ONLY",
+    "repairedAt":  "2026-07-11T21:51:40.4357197-04:00",
+    "runtimeServicesModified":  [
+
+                                ],
+    "testFileModified":  "TESTS\\Test_Build018_EnterpriseAssignment.js",
+    "backupDir":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_018_TEST_REPAIR_20260711_215137",
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_018\\build_018_repaired_test_20260711_215137.txt",
+    "executiveWorkerPolicy":  "Accept enterprise-selected executive-capable worker"
+}

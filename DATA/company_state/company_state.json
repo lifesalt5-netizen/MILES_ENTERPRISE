@@ -1,0 +1,134 @@
+{
+  "ok": true,
+  "type": "MILES_COMPANY_STATE",
+  "generatedAt": "2026-07-04T01:44:40.791Z",
+  "mission": "MILES operates P2GC autonomously except CEO-governed decisions.",
+  "business": {
+    "revenue": {
+      "goal": 10000,
+      "current": 0,
+      "pipeline": 0,
+      "proposalsOutstanding": 0,
+      "status": "UNKNOWN"
+    },
+    "marketing": {
+      "totalCampaigns": 0,
+      "activeCampaigns": 0,
+      "pausedCampaigns": 0,
+      "emailsSentToday": 0,
+      "status": "UNKNOWN"
+    },
+    "orion": {
+      "status": "UNKNOWN",
+      "lastRefresh": null,
+      "datasetsReady": false
+    },
+    "clients": {
+      "active": 0,
+      "pendingDeliverables": 0,
+      "status": "UNKNOWN"
+    },
+    "exceptions": []
+  },
+  "operations": {
+    "workQueue": {
+      "total": 73,
+      "open": 33,
+      "pending": 13,
+      "queued": 20,
+      "inProgress": 0,
+      "blocked": 0,
+      "awaitingApproval": 0,
+      "completed": 0,
+      "failed": 40
+    },
+    "latestExecutiveDecision": {
+      "decision": "PROCEED",
+      "approvalRequired": false,
+      "workItemId": "WORK-1783129480070-6748",
+      "nextAction": "Task is authorized for MILES workflow execution."
+    },
+    "latestCOOCycle": {
+      "generatedAt": "2026-07-04T01:44:29.115Z",
+      "status": "OK",
+      "summary": {
+        "steps": 8,
+        "errors": 0,
+        "runtimeHealth": "HEALTHY",
+        "restartRecommended": false
+      }
+    }
+  },
+  "systems": {
+    "repository": {
+      "healthScore": 60,
+      "healthStatus": "NEEDS_ATTENTION",
+      "totalFiles": 8110,
+      "totalComponents": 304,
+      "services": 81,
+      "workers": 19,
+      "providers": 11,
+      "connectors": 61,
+      "duplicateRisks": 370,
+      "orphanRisks": 103
+    },
+    "capability": {
+      "autonomyScore": 95,
+      "autonomyStatus": "AUTONOMY_READY",
+      "totalCapabilities": 22,
+      "executableCapabilities": 21,
+      "gaps": 1
+    }
+  },
+  "risks": [
+    {
+      "severity": "MEDIUM",
+      "area": "Engineering",
+      "message": "Repository has 370 duplicate risks.",
+      "action": "Track but do not stop COO build."
+    },
+    {
+      "severity": "MEDIUM",
+      "area": "Engineering",
+      "message": "Repository has 103 orphan risks.",
+      "action": "Track for future cleanup."
+    },
+    {
+      "severity": "LOW",
+      "area": "Capability",
+      "message": "Capability registry reports 1 gap(s).",
+      "action": "Continue COO build sequence."
+    }
+  ],
+  "priorities": [
+    {
+      "priority": 2,
+      "area": "Revenue",
+      "title": "Continue revenue-generation workflows",
+      "reason": "Revenue growth remains the highest business objective."
+    },
+    {
+      "priority": 3,
+      "area": "Engineering",
+      "title": "Continue autonomous COO build sequence",
+      "reason": "Task Router and COO Loop are the next required builds."
+    }
+  ],
+  "health": {
+    "score": 78,
+    "status": "WATCH",
+    "riskCount": 3,
+    "openWork": 33,
+    "awaitingApproval": 0
+  },
+  "inputs": {
+    "repositoryRegistryGeneratedAt": "2026-07-04T00:37:15.316Z",
+    "capabilityRegistryGeneratedAt": "2026-07-04T00:38:36.033Z",
+    "latestExecutiveBrainGeneratedAt": "2026-07-04T01:44:40.775Z",
+    "latestCOOCycleGeneratedAt": "2026-07-04T01:44:29.115Z"
+  },
+  "metadata": {
+    "source": "ContinuousCOOLoopService",
+    "build": "BUILD_034"
+  }
+}

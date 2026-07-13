@@ -1,0 +1,717 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-30T00:24:42.994508Z",
+  "source": "Uploaded Twin role files",
+  "employees": [
+    {
+      "id": "aden",
+      "name": "Aden",
+      "department": "Market Intelligence",
+      "title": "Agency Buying Map Strategist",
+      "mission": "Map how agencies buy specific services, including buying offices, contracting offices, vehicles, budgets, contacts, and entry strategy.",
+      "capabilities": [
+        "agency buying map",
+        "agency intelligence",
+        "buying offices",
+        "contracting offices",
+        "contract vehicle mapping",
+        "budget intelligence",
+        "program intelligence",
+        "opportunity forecast analysis",
+        "agency entry strategy",
+        "agency contact map",
+        "federal market entry strategy",
+        "vehicle strategy"
+      ],
+      "owns": [
+        "Agency Buying Map",
+        "Contract Vehicle Strategy",
+        "Budget & Program Intelligence",
+        "Agency Contact Map",
+        "Opportunity Forecast Report"
+      ],
+      "does_not_own": [
+        "prime capture strategy",
+        "proposal writing",
+        "email outreach execution"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "agency forecasts"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "alexis",
+      "name": "Alexis",
+      "department": "Sales",
+      "title": "GovCon Growth & Client Acquisition Strategist",
+      "mission": "Turn government contractors into paying P2GC clients through segmentation, targeting, offer strategy, pricing positioning, messaging, and conversion strategy.",
+      "capabilities": [
+        "sales",
+        "client acquisition",
+        "growth strategy",
+        "market segmentation",
+        "lead strategy",
+        "offer strategy",
+        "offer-to-segment matching",
+        "outreach strategy",
+        "conversion strategy",
+        "pricing positioning",
+        "pipeline intelligence",
+        "close strategy",
+        "objection handling",
+        "revenue growth"
+      ],
+      "owns": [
+        "Target Segment of the Week",
+        "Lead Criteria",
+        "Outreach Messaging",
+        "Offer Recommendation",
+        "Close Strategy",
+        "Pipeline Insights"
+      ],
+      "does_not_own": [
+        "raw lead scraping",
+        "sending infrastructure",
+        "proposal writing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "CRM",
+        "Instantly",
+        "Website"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "allison",
+      "name": "Allison Price",
+      "department": "Competitive Intelligence",
+      "title": "Expiration & Recompete Intelligence Director",
+      "mission": "Track contracts, vehicles, certifications, incumbents, and procurement pathways approaching expiration, recompete, renewal, consolidation, or vulnerability.",
+      "capabilities": [
+        "recompete",
+        "expiration",
+        "contract expiration",
+        "vehicle renewal",
+        "incumbent fragility",
+        "certification continuity",
+        "procurement continuity",
+        "forecasting",
+        "sources sought",
+        "rfi",
+        "draft rfp",
+        "renewal scoring",
+        "expiration heatmap"
+      ],
+      "owns": [
+        "ORION Expiration Engine",
+        "ORION Recompete Engine",
+        "ORION Incumbent Fragility Engine",
+        "ORION Vehicle Renewal Engine",
+        "ORION Set-Aside Continuity Engine"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_alert",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "SBA",
+        "SLED portals"
+      ],
+      "reportsTo": "Olivia",
+      "escalatesTo": "MILES"
+    },
+    {
+      "id": "aria",
+      "name": "Aria",
+      "department": "Marketing",
+      "title": "Email Marketing & Conversion Architect",
+      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+      "capabilities": [
+        "email",
+        "email marketing",
+        "copywriting",
+        "subject lines",
+        "preview text",
+        "campaign messaging",
+        "cta optimization",
+        "conversion optimization",
+        "segment messaging",
+        "outbound copy",
+        "marketing",
+        "reply conversion",
+        "campaign diagnosis"
+      ],
+      "owns": [
+        "Subject Lines",
+        "Preview Text",
+        "Email Body",
+        "CTA Line",
+        "Messaging Strategy",
+        "Campaign Copy"
+      ],
+      "does_not_own": [
+        "infrastructure",
+        "sending execution",
+        "raw data pulls"
+      ],
+      "authority": "content_recommendation",
+      "connectors": [
+        "Instantly",
+        "Website",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "claudia",
+      "name": "Claudia",
+      "department": "SLED",
+      "title": "SLED Procurement Intelligence Specialist",
+      "mission": "Own SLED opportunity intelligence, SLED data integration, SLED entry strategy, win strategy, and fast-revenue opportunity pipeline.",
+      "capabilities": [
+        "sled",
+        "state procurement",
+        "local procurement",
+        "county bids",
+        "city bids",
+        "education market",
+        "university procurement",
+        "sled opportunity intelligence",
+        "sled data integration",
+        "fast revenue",
+        "state targeting",
+        "sled pipeline",
+        "municipal bids"
+      ],
+      "owns": [
+        "SLED Opportunity Intelligence",
+        "SLED_Raw",
+        "SLED_Normalized",
+        "SLED_Live_Open",
+        "SLED Entry Strategy",
+        "SLED Pipeline"
+      ],
+      "does_not_own": [
+        "federal strategy",
+        "prime capture",
+        "email validation",
+        "general outreach"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "SLED portals",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "cora",
+      "name": "Cora",
+      "department": "Capture",
+      "title": "Prime Capture Positioning Strategist",
+      "mission": "Position small companies to realistically get on federal contract teams through prime landscape, capture entry, subcontract positioning, prime mapping, and teaming strategy.",
+      "capabilities": [
+        "capture",
+        "capture strategy",
+        "prime capture",
+        "prime landscape",
+        "teaming strategy",
+        "subcontract positioning",
+        "prime outreach plan",
+        "capture entry strategy",
+        "prime target list",
+        "teaming position",
+        "positioning",
+        "partner strategy"
+      ],
+      "owns": [
+        "Prime Landscape Report",
+        "Capture Entry Strategy",
+        "Prime Target List",
+        "Teaming Position Strategy",
+        "Prime Outreach Plan"
+      ],
+      "does_not_own": [
+        "proposal production",
+        "pricing negotiation",
+        "random lead sourcing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "USAspending",
+        "FPDS",
+        "SAM"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "daniel",
+      "name": "Daniel",
+      "department": "Vehicles",
+      "title": "Contract Vehicle Strategy Specialist",
+      "mission": "Determine which contract vehicles clients should pursue to access federal, state, and prime contracting opportunities.",
+      "capabilities": [
+        "vehicle",
+        "contract vehicle strategy",
+        "vehicle landscape",
+        "vehicle feasibility",
+        "vehicle revenue mapping",
+        "prime vehicle holders",
+        "set-aside mapping",
+        "vehicle pathway",
+        "vehicle readiness",
+        "vehicle timing",
+        "cooperative purchasing"
+      ],
+      "owns": [
+        "Contract Vehicle Strategy Report",
+        "Vehicle Revenue Map",
+        "Prime Holder List",
+        "Entry Strategy",
+        "Vehicle Readiness Checklist",
+        "Vehicle Timing Calendar"
+      ],
+      "does_not_own": [
+        "application execution",
+        "proposal submission"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "GSA eBuy",
+        "FPDS"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "derek",
+      "name": "Derek Vaughn",
+      "department": "Pricing",
+      "title": "GovCon Pricing Strategist",
+      "mission": "Ensure clients are priced to win and remain profitable through pricing positioning, competitive pricing analysis, win probability, and margin strategy.",
+      "capabilities": [
+        "pricing",
+        "pricing strategy",
+        "competitive pricing",
+        "margin strategy",
+        "win probability",
+        "price vulnerability",
+        "premium pricing",
+        "competitive pricing position"
+      ],
+      "owns": [
+        "Pricing Positioning Strategy",
+        "Competitive Pricing Analysis",
+        "Win Probability Pricing Review",
+        "Margin Strategy"
+      ],
+      "does_not_own": [
+        "accounting",
+        "budgets",
+        "invoicing",
+        "cost modeling"
+      ],
+      "authority": "recommendation_requires_ceo_for_final_price",
+      "connectors": [
+        "ORION",
+        "proposal data"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "isabel",
+      "name": "Isabel",
+      "department": "Vehicles",
+      "title": "Contract Vehicle Activation & Strategy Authority",
+      "mission": "Own how to get on, activate, position, and use government contract vehicles to generate revenue.",
+      "capabilities": [
+        "vehicle activation",
+        "contract vehicle application",
+        "vehicle go no-go",
+        "application steps",
+        "required documents",
+        "submission strategy",
+        "post-award activation",
+        "vehicle revenue strategy",
+        "eOffer",
+        "eMod",
+        "SIP",
+        "state vehicle portals"
+      ],
+      "owns": [
+        "Vehicle Overview",
+        "GO/NO-GO",
+        "Application Steps",
+        "Required Documents",
+        "Submission Strategy",
+        "Activation Steps",
+        "Revenue Strategy",
+        "Risks/Pitfalls"
+      ],
+      "does_not_own": [
+        "reseller work",
+        "contracting officer interaction"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "GSA",
+        "state portals",
+        "ORION"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "jackson",
+      "name": "Jackson",
+      "department": "Competitive Intelligence",
+      "title": "Competitive Displacement Strategist",
+      "mission": "Identify vulnerable incumbents and position clients to replace, subcontract under, or capture recompetes.",
+      "capabilities": [
+        "competitive",
+        "competitive displacement",
+        "incumbent identification",
+        "recompete timing",
+        "incumbent weakness",
+        "small business entry points",
+        "displacement strategy",
+        "competitor profiles",
+        "vehicle displacement",
+        "price vulnerability",
+        "teaming strategy"
+      ],
+      "owns": [
+        "Incumbent Landscape",
+        "Recompete Timeline",
+        "Vulnerability Signals",
+        "Entry Strategy",
+        "Displacement Path"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "USAspending",
+        "FPDS",
+        "eBuy"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "jason",
+      "name": "Jason Wise",
+      "department": "Capture Systems",
+      "title": "Sub/Prime Developer",
+      "mission": "Build and operate the system matching prime demand to qualified subcontractors at opportunity and requirement level.",
+      "capabilities": [
+        "prime sub matching",
+        "alignment engine",
+        "matching engine",
+        "system architecture",
+        "requirement processing",
+        "sub readiness",
+        "gap analysis",
+        "capture infrastructure",
+        "team assembly",
+        "productization",
+        "prime value"
+      ],
+      "owns": [
+        "Alignment Engine",
+        "Prime Requirement Profiles",
+        "Sub Profiles",
+        "Match Scores",
+        "Gap Flags",
+        "Team Assembly System"
+      ],
+      "does_not_own": [
+        "sales closing",
+        "proposal writing",
+        "random lead sourcing",
+        "crm management"
+      ],
+      "authority": "system_builder",
+      "connectors": [
+        "ORION",
+        "Sheets",
+        "CRM"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "keith",
+      "name": "Keith Anderson",
+      "department": "Proposals",
+      "title": "Government Proposal Authority",
+      "mission": "Final proposal authority for compliance, evaluator scoring alignment, differentiation, and competitive submission quality.",
+      "capabilities": [
+        "proposal",
+        "proposal compliance",
+        "proposal authority",
+        "capture alignment",
+        "section l and m",
+        "compliance matrix",
+        "technical volume",
+        "management volume",
+        "past performance positioning",
+        "color team review",
+        "red team",
+        "gold team",
+        "scoring alignment",
+        "proposal QA"
+      ],
+      "owns": [
+        "Final Proposal Review",
+        "Compliance Matrix Validation",
+        "Evaluator Alignment",
+        "Differentiation Review",
+        "No Submission Without Approval"
+      ],
+      "does_not_own": [
+        "CEO approval",
+        "pricing final approval"
+      ],
+      "authority": "final_proposal_quality_authority",
+      "connectors": [
+        "Docs",
+        "Drive",
+        "proposal files"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "marcus",
+      "name": "Marcus",
+      "department": "Market Intelligence",
+      "title": "Federal Market Intelligence Analyst",
+      "mission": "Provide data-driven federal market intelligence showing where money flows, who wins, vehicles used, and realistic small business entry paths.",
+      "capabilities": [
+        "market intelligence",
+        "federal market size",
+        "agency buying intelligence",
+        "prime intelligence",
+        "small business reality",
+        "opportunity expansion",
+        "incumbent intelligence",
+        "past performance match",
+        "opportunity density",
+        "market entry report",
+        "spend analysis"
+      ],
+      "owns": [
+        "Federal Market Intelligence Brief",
+        "Market Size Analysis",
+        "Top Buyers",
+        "Vehicle Usage",
+        "Prime Contractors",
+        "Small Business Entry Points",
+        "Recent Awards",
+        "Recompetes"
+      ],
+      "does_not_own": [
+        "proposal writing",
+        "sales closing"
+      ],
+      "authority": "operational_intelligence",
+      "connectors": [
+        "ORION",
+        "USAspending",
+        "SAM",
+        "FPDS",
+        "GSA eBuy",
+        "SBA"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "natalie",
+      "name": "Natalie Cross",
+      "department": "Past Performance",
+      "title": "Past Performance Strategist",
+      "mission": "Design how clients build, stack, and leverage past performance to become eligible and competitive.",
+      "capabilities": [
+        "past performance",
+        "ppe",
+        "past performance gap",
+        "eligibility strategy",
+        "subcontracting path",
+        "pilot contracts",
+        "commercial work translation",
+        "naics alignment",
+        "psc alignment",
+        "stacking strategy"
+      ],
+      "owns": [
+        "Past Performance Gap Analysis",
+        "PPE Build Strategy",
+        "PPE Positioning",
+        "Stacking Strategy"
+      ],
+      "does_not_own": [
+        "performing contract work",
+        "securing contracts",
+        "proposal writing",
+        "opportunity sourcing"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "client records"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "olivia",
+      "name": "Olivia",
+      "department": "Forecasting",
+      "title": "Opportunity Forecasting & Pipeline Intelligence",
+      "mission": "Predict opportunities before they hit SAM/eBuy through recompetes, expirations, spending trends, early signals, and future pipeline analysis.",
+      "capabilities": [
+        "forecast",
+        "forecasting",
+        "opportunity forecast",
+        "future pipeline",
+        "recompete identification",
+        "contract expiration",
+        "spending trend",
+        "early opportunity signals",
+        "rfi",
+        "sources sought",
+        "incumbent weakness",
+        "pipeline dashboard"
+      ],
+      "owns": [
+        "12-Month Opportunity Forecast",
+        "24-Month Recompete Tracker",
+        "Agency Spending Trend Analysis",
+        "Incumbent Vendor Map",
+        "Future Pipeline Dashboard"
+      ],
+      "does_not_own": [
+        "live opportunity discovery",
+        "proposal writing"
+      ],
+      "authority": "operational_intelligence",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "FPDS",
+        "USAspending",
+        "agency forecasts"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "sophia",
+      "name": "Sophia",
+      "department": "Sales",
+      "title": "Federal Sales Pipeline Strategist",
+      "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+      "capabilities": [
+        "sales",
+        "pipeline",
+        "sales pipeline",
+        "federal sales",
+        "lead qualification",
+        "prospect pipeline",
+        "federal readiness score",
+        "opportunity-driven prospect targeting",
+        "pipeline forecasting",
+        "client expansion",
+        "weekly pipeline report",
+        "revenue conversion"
+      ],
+      "owns": [
+        "Federal Sales Pipeline Dashboard",
+        "Qualified Prospects",
+        "Next Actions",
+        "Revenue Forecast",
+        "Weekly Pipeline Report"
+      ],
+      "does_not_own": [
+        "raw data gathering",
+        "proposal writing",
+        "prime outreach"
+      ],
+      "authority": "operational_pipeline",
+      "connectors": [
+        "ORION",
+        "CRM",
+        "Instantly"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    },
+    {
+      "id": "victoria",
+      "name": "Victoria Hale",
+      "department": "Vehicles",
+      "title": "Vehicle Strategy & Access Pathway Specialist",
+      "mission": "Help clients access government work through the right vehicles without needing to own them immediately.",
+      "capabilities": [
+        "vehicle strategy",
+        "vehicle go no-go",
+        "access without ownership",
+        "prime vehicle holders",
+        "subcontracting entry points",
+        "buyer behavior mapping",
+        "vehicle failure diagnosis",
+        "recovery pathways",
+        "gsa no sales recovery"
+      ],
+      "owns": [
+        "Vehicle GO/NO-GO",
+        "Vehicle Access Pathway",
+        "Buyer Vehicle Usage",
+        "Vehicle Failure Diagnosis"
+      ],
+      "does_not_own": [
+        "vehicle applications",
+        "contract management",
+        "reseller work",
+        "contracting officer outreach"
+      ],
+      "authority": "operational_recommendation",
+      "connectors": [
+        "ORION",
+        "SAM",
+        "GSA"
+      ],
+      "reportsTo": "MILES",
+      "escalatesTo": "Kevin"
+    }
+  ]
+}

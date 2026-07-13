@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-07-10T00:59:05.807Z",
+  "source": "COO_GOAL_ENGINE",
+  "priorities": [
+    {
+      "rank": 1,
+      "area": "sales",
+      "action": "Increase qualified calls and proposal opportunities"
+    },
+    {
+      "rank": 2,
+      "area": "outbound",
+      "action": "Keep Instantly campaigns supplied, monitored, and corrected"
+    },
+    {
+      "rank": 3,
+      "area": "website",
+      "action": "Maintain conversion path for GovCon Win Probability Review"
+    },
+    {
+      "rank": 4,
+      "area": "orion",
+      "action": "Use ORION intelligence to support targeting and sales execution"
+    },
+    {
+      "rank": 5,
+      "area": "operations",
+      "action": "Coordinate workers, connectors, recovery, and executive reporting"
+    }
+  ]
+}

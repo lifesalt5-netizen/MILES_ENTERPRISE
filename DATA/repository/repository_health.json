@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-07-04T00:37:15.316Z",
+  "health": {
+    "score": 60,
+    "status": "NEEDS_ATTENTION",
+    "summary": {
+      "duplicateRisks": 370,
+      "orphanRisks": 103,
+      "hasRuntime": true,
+      "hasServices": true,
+      "hasConnectors": true,
+      "hasProviders": true
+    }
+  }
+}

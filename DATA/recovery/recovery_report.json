@@ -1,0 +1,124 @@
+{
+  "generated": "2026-07-13T15:58:56.207Z",
+  "total": 2,
+  "items": [
+    {
+      "task": {
+        "id": "TASK-1783376444160-78961",
+        "type": "BUSINESS_OPERATION",
+        "payload": {
+          "id": "op_1783376441779_c3tziu",
+          "source": "business_operations_queue",
+          "type": "BUSINESS_OPERATION",
+          "status": "READY",
+          "priority": 1,
+          "worker": "atlasWorker",
+          "area": "atlas",
+          "title": "Miles, check ORION system health and produce an executive status report.",
+          "command": "Miles, check ORION system health and produce an executive status report.",
+          "action": "Miles, check ORION system health and produce an executive status report.",
+          "approvalRequired": false,
+          "ceoEscalationOnly": false,
+          "createdAt": "2026-07-06T22:20:41.779Z",
+          "updatedAt": "2026-07-06T22:20:41.779Z",
+          "result": null,
+          "provider": "ORION",
+          "system": "ORION",
+          "department": "ORION",
+          "connector": "ORION",
+          "objective": "Miles, check ORION system health and produce an executive status report.",
+          "sourceOperationId": "op_1783376441779_c3tziu"
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-06T22:20:44.160Z",
+        "updatedAt": "2026-07-06T22:20:48.376Z",
+        "provider": "ORION",
+        "error": "Connector not found: ORION",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "ORION",
+          "action": "Miles, check ORION system health and produce an executive status report.",
+          "error": "Connector not found: ORION",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-06T22:20:48.357Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-13T15:58:56.207Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1783378969521-83595",
+        "type": "BUSINESS_OPERATION",
+        "payload": {
+          "id": "op_1783378968489_l10lu8",
+          "source": "business_operations_queue",
+          "type": "BUSINESS_OPERATION",
+          "status": "READY",
+          "priority": 1,
+          "worker": "atlasWorker",
+          "area": "atlas",
+          "title": "Miles, check ORION system health and produce an executive status report.",
+          "command": "Miles, check ORION system health and produce an executive status report.",
+          "action": "Miles, check ORION system health and produce an executive status report.",
+          "approvalRequired": false,
+          "ceoEscalationOnly": false,
+          "createdAt": "2026-07-06T23:02:48.489Z",
+          "updatedAt": "2026-07-06T23:02:48.489Z",
+          "result": null,
+          "provider": "ORION",
+          "system": "ORION",
+          "department": "ORION",
+          "connector": "ORION",
+          "objective": "Miles, check ORION system health and produce an executive status report.",
+          "sourceOperationId": "op_1783378968489_l10lu8"
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-06T23:02:49.521Z",
+        "updatedAt": "2026-07-06T23:02:53.392Z",
+        "provider": "ORION",
+        "error": "Connector not found: ORION",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "ORION",
+          "action": "Miles, check ORION system health and produce an executive status report.",
+          "error": "Connector not found: ORION",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-06T23:02:53.377Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-13T15:58:56.207Z"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "build": "EXEC_006",
+  "name": "Provider Synchronization & Capability Binding",
+  "purpose": "Unify provider status, credentials, capabilities, and interface adapters across Action Engine, Provider Controllers, and Business Execution Engine.",
+  "files": {
+    "services": [
+      "ProviderAuthorityRegistryService.js",
+      "ProviderInterfaceAdapterService.js",
+      "ProviderCapabilityBindingService.js",
+      "ProviderSynchronizationService.js",
+      "InstantlyProviderCompatibilityService.js"
+    ],
+    "builder": ["BuilderService.js"],
+    "scripts": [
+      "INSTALL_PROVIDER_SYNC.ps1",
+      "VERIFY_PROVIDER_SYNC.ps1",
+      "RUN_PROVIDER_SYNC.ps1",
+      "RUN_INSTANTLY_READ_BINDING_TEST.ps1"
+    ]
+  },
+  "outputs": [
+    "DATA/provider_sync/provider_authority_registry.json",
+    "DATA/provider_sync/provider_interface_adapters.json",
+    "DATA/provider_sync/provider_capability_bindings.json",
+    "DATA/provider_sync/provider_synchronization.json",
+    "DATA/provider_sync/provider_synchronization_report.md"
+  ],
+  "safety": {
+    "write_operations": "disabled by default",
+    "instant_read_test": "read-only campaign list endpoint"
+  }
+}

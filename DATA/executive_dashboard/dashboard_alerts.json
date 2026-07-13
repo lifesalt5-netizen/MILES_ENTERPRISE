@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-07-04T01:53:02.291Z",
+  "alerts": [
+    {
+      "severity": "WARNING",
+      "area": "Executive",
+      "title": "Kevin approval queue",
+      "message": "2 item(s) require approval.",
+      "action": "Review approval queue."
+    },
+    {
+      "severity": "WARNING",
+      "area": "Operations",
+      "title": "Failed work exists",
+      "message": "40 failed item(s) remain in queue.",
+      "action": "Archive closed work or review failures."
+    },
+    {
+      "severity": "INFO",
+      "area": "Engineering",
+      "title": "Repository has 370 duplicate risks.",
+      "message": "Repository has 370 duplicate risks.",
+      "action": "Track but do not stop COO build."
+    },
+    {
+      "severity": "INFO",
+      "area": "Engineering",
+      "title": "Repository has 103 orphan risks.",
+      "message": "Repository has 103 orphan risks.",
+      "action": "Track for future cleanup."
+    },
+    {
+      "severity": "INFO",
+      "area": "Capability",
+      "title": "Capability registry reports 1 gap(s).",
+      "message": "Capability registry reports 1 gap(s).",
+      "action": "Continue COO build sequence."
+    }
+  ]
+}

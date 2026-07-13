@@ -1,0 +1,20 @@
+{
+  "build": "EXEC_002",
+  "name": "Provider Controllers",
+  "status": "complete_package",
+  "services": [
+    "BaseProviderController.js",
+    "ProviderControllerRegistryService.js",
+    "ProviderControllerExecutionService.js",
+    "ProviderControllerHealthService.js",
+    "InstantlyProviderController.js",
+    "GoogleWorkspaceProviderController.js",
+    "NamecheapProviderController.js",
+    "WebsiteProviderController.js",
+    "OrionProviderController.js",
+    "FileSystemProviderController.js"
+  ],
+  "runners": ["RUN_PROVIDER_CONTROLLERS.ps1", "RUN_PROVIDER_CONTROLLER_HEALTH.ps1"],
+  "installer": "INSTALL_PROVIDER_CONTROLLERS.ps1",
+  "verification": "VERIFY_PROVIDER_CONTROLLERS.ps1"
+}

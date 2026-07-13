@@ -1,0 +1,16 @@
+AssetID,AssetType,AssetName,Platform,Owner,Status,Criticality,AutomationLevel,AccessMethod,Notes
+A001,Website,pathways2gc.com,B12,Kevin,Active,Critical,Manual+AI,B12 Login,Primary website
+A002,Domain,pathways2gc.com,IONOS,Kevin,Active,Critical,Manual,IONOS,Website only no outbound
+A003,Domain,pathwaysgovcon.com,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A004,Domain,pathwaysgsa.com,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A005,Domain,pathwaysgov.com,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A006,Domain,pathwaysfederal.com,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A007,Domain,pathwaystogc.com,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A008,Domain,pathways2gc.co,IONOS,Kevin,Active,High,Automated,IONOS+Instantly,Outbound domain
+A009,Email Platform,Instantly,Instantly,Kevin,Active,Critical,Automated,API/UI,Outbound engine
+A010,CRM,P2GC CRM,Internal,Kevin,Active,Critical,Automated,CSV/Database,Lead management
+A011,Calendar,Calendly,Calendly,Kevin,Active,High,Automated,API,Booking engine
+A012,Workspace,Google Workspace,Google,Kevin,Active,Critical,Automated,Admin Console,Email infrastructure
+A013,Database,ORION,SQLite,Kevin,Active,Critical,Automated,Local DB,Contractor intelligence
+A014,Segmentation,Segmentation V3,Internal,Kevin,Active,Critical,Automated,CSV,Lead routing
+A015,Website Ops,MILES Website Ops,Internal,Miles,Active,High,Automated,Local Files,Website governance

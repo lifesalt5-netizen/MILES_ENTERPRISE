@@ -1,0 +1,5 @@
+ChangeID,Page,ChangeType,Priority,Status,OldValue,NewValue,ApprovedByKevin,DateQueued,DateCompleted,Notes
+W001,Home Hero,Copy Update,P1,Queued,"You're not losing because you aren't bidding","Win More Government Contracts Without Chasing the Wrong Opportunities",No,2026-06-20,,"Hero conversion rewrite"
+W002,Header Navigation,Navigation Update,P1,Queued,"Reference Policy/Federal Gov Sales Report visible","Services/Success Stories/Resources/About/Schedule a Call",No,2026-06-20,,"Make site sales-focused"
+W003,Hero CTA,CTA Update,P1,Queued,"Identify why you're not winning","Book Your GovCon Win Probability Review",No,2026-06-20,,"Route to Calendly"
+W004,Homepage,Section Add,P2,Queued,"No Who We Help section","Add Who We Help section",No,2026-06-20,,"Clarify audience"

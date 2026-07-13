@@ -1,0 +1,11 @@
+WorkID,System,WorkItem,Priority,Status,Owner,RevenueImpact,Dependency,CreatedDate,TargetDate,Notes
+W001,Website,Homepage Hero Rewrite,P1,Queued,Miles,High,None,2026-06-20,,
+W002,Website,Navigation Cleanup,P1,Queued,Miles,High,None,2026-06-20,,
+W003,Website,Hero CTA Conversion,P1,Queued,Miles,High,None,2026-06-20,,
+W004,Website,Who We Help Section,P2,Queued,Miles,Medium,None,2026-06-20,,
+W005,Instantly,SBS Campaign Upload,P1,Active,Miles,High,Verified Leads,2026-06-20,,
+W006,Instantly,Bounce Monitoring,P1,Active,Miles,High,None,2026-06-20,,
+W007,ORION,Contractor Profile Engine,P1,Active,Eleanor,High,Schema Updates,2026-06-20,,
+W008,ORION,Recommendation Reasoning Table,P1,Queued,Eleanor,Medium,None,2026-06-20,,
+W009,Dreamers,Opportunity Review Queue,P1,Active,Victor,High,Workbook Refresh,2026-06-20,,
+W010,Systems,Asset Registry Expansion,P2,Queued,Miles,Medium,None,2026-06-20,,

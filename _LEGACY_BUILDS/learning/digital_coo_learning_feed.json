@@ -1,0 +1,84 @@
+﻿{
+    "generated_at":  "2026-07-05T22:23:03.4064618-04:00",
+    "source":  "Digital COO Autonomy Supervisor",
+    "health":  "critical",
+    "lessons":  [
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4059731-04:00",
+                        "subject":  "WorkerRegistry",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "WorkerDispatcher",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "WorkerRuntime",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "WorkerRuntimeManager",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "ConnectorRuntime",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "ConnectorRuntimeManager",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "AutonomousWorkOrchestrator",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "AutonomousWorkOrchestratorManager",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "DigitalCOORuntime",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "DigitalCOORuntimeManager",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    },
+                    {
+                        "timestamp":  "2026-07-05T22:23:03.4064618-04:00",
+                        "subject":  "DigitalCOOHost",
+                        "signal":  "missing",
+                        "risk":  "high",
+                        "lesson":  "Runtime supervision should verify active implementation files dynamically before assuming interface availability."
+                    }
+                ]
+}

@@ -1,0 +1,16 @@
+{
+  "module": "PROD_001_CREDENTIAL_VAULT",
+  "name": "Credential Vault + Provider Validation Harness",
+  "version": "1.0.0",
+  "status": "production_bridge_scaffold_created",
+  "created_at": "2026-07-04T19:04:38.509901+00:00",
+  "purpose": "Detect local provider credentials, validate provider readiness, and produce Miles production readiness reports without committing secrets.",
+  "providers": [
+    "ORION",
+    "INSTANTLY",
+    "GOOGLE_WORKSPACE",
+    "NAMECHEAP",
+    "WEBSITE"
+  ],
+  "secrets_policy": "No secrets stored in source code. Secrets loaded from local environment variables or ignored local credential files."
+}

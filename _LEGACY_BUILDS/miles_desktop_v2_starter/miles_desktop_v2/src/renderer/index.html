@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>MILES Desktop v2</title>
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">MILES</div>
+        <div class="subtitle">Digital COO</div>
+        <nav>
+          <button data-view="ceo" class="active">CEO Dashboard</button>
+          <button data-view="chat">Executive Chat</button>
+          <button data-view="runtime">Runtime</button>
+          <button data-view="workers">Workers</button>
+          <button data-view="engineering">Engineering</button>
+          <button data-view="tasks">Tasks</button>
+          <button data-view="approvals">Approvals</button>
+          <button data-view="notifications">Notifications</button>
+        </nav>
+      </aside>
+      <main>
+        <header>
+          <div>
+            <h1 id="page-title">CEO Dashboard</h1>
+            <p id="runtime-line">Runtime status loading...</p>
+          </div>
+          <div class="controls">
+            <button id="start-runtime">Start</button>
+            <button id="restart-runtime">Restart</button>
+            <button id="stop-runtime">Stop</button>
+          </div>
+        </header>
+
+        <section id="view-ceo" class="view active">
+          <div class="grid cards">
+            <div class="card"><span>Pending Tasks</span><strong id="pendingTasks">0</strong></div>
+            <div class="card"><span>Completed</span><strong id="completedTasks">0</strong></div>
+            <div class="card"><span>Failed</span><strong id="failedTasks">0</strong></div>
+            <div class="card"><span>Active Workers</span><strong id="activeWorkers">0</strong></div>
+          </div>
+          <div class="panel"><h2>Today’s CEO Attention</h2><ul id="ceoAttention"></ul></div>
+        </section>
+
+        <section id="view-chat" class="view">
+          <div class="chat-box" id="chatLog"><div class="message miles">Ask me what needs your attention, or give me work.</div></div>
+          <div class="chat-input"><input id="commandInput" placeholder="Miles, what needs my attention?" /><button id="sendCommand">Send</button></div>
+        </section>
+
+        <section id="view-runtime" class="view"><div class="panel"><h2>Runtime Status</h2><pre id="runtimeJson"></pre></div></section>
+        <section id="view-workers" class="view"><div class="panel"><h2>Workers</h2><ul id="workersList"></ul></div></section>
+        <section id="view-engineering" class="view"><div class="panel"><h2>Engineering Dashboard</h2><p>Build Manager and Self Builder hooks are staged here.</p></div></section>
+        <section id="view-tasks" class="view"><div class="panel"><h2>Task Queue</h2><ul id="taskList"></ul></div></section>
+        <section id="view-approvals" class="view"><div class="panel"><h2>Approval Queue</h2><ul id="approvalList"></ul></div></section>
+        <section id="view-notifications" class="view"><div class="panel"><h2>Notifications</h2><ul id="notificationList"></ul></div></section>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

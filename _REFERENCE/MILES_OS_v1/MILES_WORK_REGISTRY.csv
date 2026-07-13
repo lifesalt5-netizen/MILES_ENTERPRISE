@@ -1,0 +1,7 @@
+WorkID,System,WorkItem,Priority,Status,Owner,RevenueImpact,Dependency,CreatedDate,TargetDate,Notes
+W001,Website,Homepage Hero Rewrite,P1,Queued,Miles,High,None,2026-06-28,,Draft before publish
+W002,Website,Navigation Cleanup,P1,Queued,Miles,High,None,2026-06-28,,Make Schedule a Call visible
+W003,Website,Hero CTA Conversion,P1,Queued,Miles,High,None,2026-06-28,,Route to booking
+W004,Website,Who We Help Section,P2,Queued,Miles,Medium,None,2026-06-28,,Clarify audience
+W005,Instantly,Bounce Monitoring,P1,Active,Miles,High,None,2026-06-28,,Protect deliverability
+W006,ORION,Contractor Profile Engine,P1,Active,Eleanor,High,Schema Updates,2026-06-28,,Demo engine priority

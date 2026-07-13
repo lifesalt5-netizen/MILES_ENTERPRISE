@@ -1,0 +1,4 @@
+﻿execution_date,segment_name,campaign_id,domain,primary_inbox,leads_to_send,daily_limit_applied,priority_score,send_status,bounce_risk,notes
+2026-06-20,P2GC_SEGMENT_CONSULTING,CAMP-0001,pathwaysgovcon.com,cora@,40,40,1,HOLD,LOW,Initial rollout batch
+2026-06-20,P2GC_SEGMENT_IT_SERVICES,CAMP-0002,pathwaysgsa.com,info@,30,30,2,HOLD,LOW,Staged send
+2026-06-20,P2GC_SEGMENT_ENGINEERING,CAMP-0003,pathwaysgov.com,kevin@,20,20,3,HOLD,LOW,Low volume test

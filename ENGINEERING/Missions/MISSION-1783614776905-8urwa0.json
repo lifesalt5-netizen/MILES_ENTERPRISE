@@ -1,0 +1,84 @@
+{
+  "id": "MISSION-1783614776905-8urwa0",
+  "title": "Build Google Workspace Provider",
+  "objective": "Create autonomous Google Workspace provisioning capability for MILES",
+  "priority": 1,
+  "authority": "ENGINEERING_AUTOMATIC",
+  "status": "IN_PROGRESS",
+  "createdAt": "2026-07-09T16:32:56.905Z",
+  "updatedAt": "2026-07-09T16:32:56.913Z",
+  "tasks": [
+    {
+      "id": "TICKET-1783614776913-vwkb65",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Analyze Mission Requirements",
+      "type": "ARCHITECT",
+      "owner": "ARCHITECT",
+      "priority": 1,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    {
+      "id": "TICKET-1783614776913-ukflc6",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Create Implementation Plan",
+      "type": "BUILDER",
+      "owner": "BUILDER",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    {
+      "id": "TICKET-1783614776913-e9cau8",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Validate Implementation Plan",
+      "type": "VALIDATOR",
+      "owner": "VALIDATOR",
+      "priority": 2,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    },
+    {
+      "id": "TICKET-1783614776913-9k9xfj",
+      "missionId": "MISSION-1783614776905-8urwa0",
+      "title": "Prepare Executive Report",
+      "type": "ATLAS",
+      "owner": "ATLAS",
+      "priority": 3,
+      "authority": "AUTOMATIC_ENGINEERING",
+      "status": "QUEUED",
+      "createdAt": "2026-07-09T16:32:56.913Z",
+      "updatedAt": "2026-07-09T16:32:56.913Z",
+      "approvalRequired": false,
+      "payload": {
+        "missionTitle": "Build Google Workspace Provider",
+        "objective": "Create autonomous Google Workspace provisioning capability for MILES"
+      }
+    }
+  ],
+  "progress": {
+    "completed": 2,
+    "total": 4
+  }
+}

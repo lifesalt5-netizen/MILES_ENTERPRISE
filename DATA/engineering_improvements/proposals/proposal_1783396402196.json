@@ -1,0 +1,254 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_IMPLEMENT",
+  "proposalId": "proposal_1783396402196",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nCode Writer Capability Audit\n\nUse the active production runtime.\n\nDo not modify any files.\n\nDo not generate proposals.\n\nDetermine whether MILES currently contains any component capable of generating complete replacement source files.\n\nSearch the entire MILES OS repository.\n\nLook for classes, services, or modules that perform any of the following:\n\n• writeFile\n• fs.writeFile\n• fs.writeFileSync\n• createWriteStream\n• patch generation\n• replacement generation\n• code generation\n• source generation\n• template generation\n\nAlso search for services named similarly to:\n\nCodeWriter\nReplacementWriter\nReplacementGenerator\nPatchEngine\nPatchGenerator\nCodeGenerator\nEngineeringWriter\nRuntimeWriter\nTemplateEngine\n\nFor every match report:\n\n- file\n- function\n- purpose\n- whether it is currently invoked by EngineeringImprovementService\n\nFinally answer:\n\n1. Does a production code-generation engine exist?\n\n2. If yes, why is EngineeringImprovementService not calling it?\n\n3. If no, explicitly state:\n\n\"The current MILES runtime has no code-generation engine. EngineeringImprovementService can only generate engineering proposals.\"\n\nDo not recommend changes.\n\nReturn evidence only.",
+  "status": "PROPOSAL_CREATED",
+  "productionModified": false,
+  "approvalRequired": true,
+  "safeMode": true,
+  "executiveSummary": "Engineering proposal package created. No production files were modified.",
+  "analysis": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_ANALYZE",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nCode Writer Capability Audit\n\nUse the active production runtime.\n\nDo not modify any files.\n\nDo not generate proposals.\n\nDetermine whether MILES currently contains any component capable of generating complete replacement source files.\n\nSearch the entire MILES OS repository.\n\nLook for classes, services, or modules that perform any of the following:\n\n• writeFile\n• fs.writeFile\n• fs.writeFileSync\n• createWriteStream\n• patch generation\n• replacement generation\n• code generation\n• source generation\n• template generation\n\nAlso search for services named similarly to:\n\nCodeWriter\nReplacementWriter\nReplacementGenerator\nPatchEngine\nPatchGenerator\nCodeGenerator\nEngineeringWriter\nRuntimeWriter\nTemplateEngine\n\nFor every match report:\n\n- file\n- function\n- purpose\n- whether it is currently invoked by EngineeringImprovementService\n\nFinally answer:\n\n1. Does a production code-generation engine exist?\n\n2. If yes, why is EngineeringImprovementService not calling it?\n\n3. If no, explicitly state:\n\n\"The current MILES runtime has no code-generation engine. EngineeringImprovementService can only generate engineering proposals.\"\n\nDo not recommend changes.\n\nReturn evidence only.",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 8629,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.191Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 10679,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.191Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15241,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:53:22.191Z"
+      },
+      {
+        "file": "SERVICES/SelfMaintenanceService.js",
+        "exists": true,
+        "size": 11109,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:53:22.192Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15103,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.192Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 5822,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.192Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "size": 6427,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:53:22.192Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": true,
+        "size": 477,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.193Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 526,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.193Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 7509,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.193Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:53:22.193Z"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "checkedAt": "2026-07-07T03:53:22.193Z"
+  },
+  "plan": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_PLAN",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 044\n\nCode Writer Capability Audit\n\nUse the active production runtime.\n\nDo not modify any files.\n\nDo not generate proposals.\n\nDetermine whether MILES currently contains any component capable of generating complete replacement source files.\n\nSearch the entire MILES OS repository.\n\nLook for classes, services, or modules that perform any of the following:\n\n• writeFile\n• fs.writeFile\n• fs.writeFileSync\n• createWriteStream\n• patch generation\n• replacement generation\n• code generation\n• source generation\n• template generation\n\nAlso search for services named similarly to:\n\nCodeWriter\nReplacementWriter\nReplacementGenerator\nPatchEngine\nPatchGenerator\nCodeGenerator\nEngineeringWriter\nRuntimeWriter\nTemplateEngine\n\nFor every match report:\n\n- file\n- function\n- purpose\n- whether it is currently invoked by EngineeringImprovementService\n\nFinally answer:\n\n1. Does a production code-generation engine exist?\n\n2. If yes, why is EngineeringImprovementService not calling it?\n\n3. If no, explicitly state:\n\n\"The current MILES runtime has no code-generation engine. EngineeringImprovementService can only generate engineering proposals.\"\n\nDo not recommend changes.\n\nReturn evidence only.",
+    "status": "PLAN_CREATED",
+    "steps": [
+      {
+        "step": 1,
+        "action": "ENGINEERING_ANALYZE",
+        "description": "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        "step": 2,
+        "action": "ENGINEERING_PLAN",
+        "description": "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        "step": 3,
+        "action": "ENGINEERING_IMPLEMENT",
+        "description": "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        "step": 4,
+        "action": "ENGINEERING_VALIDATE",
+        "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        "step": 5,
+        "action": "ENGINEERING_REPORT",
+        "description": "Return an executive engineering report with evidence and recommended next action."
+      }
+    ],
+    "recommendations": [
+      {
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "severity": "HIGH",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "plannedAt": "2026-07-07T03:53:22.196Z"
+  },
+  "proposedChanges": [
+    {
+      "file": "BUILDER/BuilderService.js",
+      "exists": true,
+      "currentSize": 6427,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "exists": true,
+      "currentSize": 15103,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+    },
+    {
+      "file": "SERVICES/ExecutiveResponseService.js",
+      "exists": true,
+      "currentSize": 5822,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    }
+  ],
+  "validationCommands": [
+    "node --check .\\BUILDER\\BuilderService.js",
+    "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "node --check .\\SERVICES\\ExecutiveResponseService.js"
+  ],
+  "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+  "createdAt": "2026-07-07T03:53:22.197Z"
+}

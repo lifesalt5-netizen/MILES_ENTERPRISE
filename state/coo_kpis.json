@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-07-10T00:59:05.804Z",
+  "source": "COO_GOAL_ENGINE",
+  "kpis": {
+    "revenueTarget30Days": 10000,
+    "monthlyClientTarget": 5,
+    "salesCallsTargetWeekly": 10,
+    "proposalsTargetWeekly": 5,
+    "positiveRepliesTargetWeekly": 20,
+    "operationalEscalationTarget": "CEO-only decisions only"
+  }
+}

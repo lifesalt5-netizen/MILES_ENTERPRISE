@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-13T01:44:49.966Z",
+  "capability": "Sales COO",
+  "status": "ARTIFACTS_STAGED_ONLY",
+  "productionModified": false,
+  "artifacts": [
+    {
+      "file": "SERVICES/SalesCOOService.js",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    },
+    {
+      "file": "DATA/capability_builder/staged/sales_coo_plan.json",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    },
+    {
+      "file": "DOCS/sales_coo_operations.md",
+      "action": "PROPOSE_CREATE",
+      "staged": true
+    }
+  ]
+}

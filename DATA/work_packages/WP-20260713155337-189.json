@@ -1,0 +1,120 @@
+{
+  "id": "WP-20260713155337-189",
+  "objective": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T15:53:37.257Z",
+  "updatedAt": "2026-07-13T15:53:37.257Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T15:53:37.257Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783957993772-4163",
+      "area": "Engineering",
+      "priority": 2,
+      "description": "Missing capability: Government Data COO. Removes manual work: SAM checks, GSA checks, VA checks, RFI monitoring, source stale checks.",
+      "reason": "Capability gap blocks higher autonomy.",
+      "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought.",
+      "expectedImpact": "High",
+      "relatedProvider": "Engineering",
+      "metadata": {
+        "capabilityGap": {
+          "id": "CAP-1783957967083-2-43093",
+          "cycleId": "COO-20260713155232-004",
+          "status": "OPEN",
+          "priority": 2,
+          "createdAt": "2026-07-13T15:52:47.083Z",
+          "area": "Government Data COO",
+          "providerKey": "government",
+          "title": "Build Government Data COO refresh monitor",
+          "businessImpact": "High",
+          "removesManualWork": [
+            "SAM checks",
+            "GSA checks",
+            "VA checks",
+            "RFI monitoring",
+            "source stale checks"
+          ],
+          "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought."
+        },
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-13T15:53:13.773Z"
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "orion",
+    "workforce": "ORION Data Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "government.data.refresh.monitor"
+    ],
+    "assignments": [
+      {
+        "capability": "government.data.refresh.monitor",
+        "provider": "OrionProvider",
+        "department": "ORION",
+        "action": "refresh",
+        "bestWorker": null,
+        "candidates": []
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "government.data.refresh.monitor",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "refresh",
+        "expectedOutput": "Refreshed government-data source state, database freshness, exceptions, and source-monitor recommendations.",
+        "verification": "Verify OrionProvider completed refresh and returned source and database evidence."
+      }
+    ],
+    "providers": [
+      "OrionProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify OrionProvider completed refresh and returned source and database evidence."
+    ],
+    "successCriteria": [
+      "OrionProvider.refresh executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "government.data.refresh.monitor",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "refresh",
+      "expectedOutput": "Refreshed government-data source state, database freshness, exceptions, and source-monitor recommendations.",
+      "verification": "Verify OrionProvider completed refresh and returned source and database evidence."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

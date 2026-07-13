@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "service": "WORKER_REGISTRY",
+  "version": "1.1.0",
+  "status": "READY",
+  "rootDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+  "workersRegistered": 3,
+  "lastRegisteredAt": "2026-07-13T15:56:26.596Z",
+  "lastUnregisteredAt": null,
+  "lastError": null,
+  "generatedAt": "2026-07-13T15:56:26.599Z"
+}

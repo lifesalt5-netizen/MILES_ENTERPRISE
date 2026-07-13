@@ -1,0 +1,14 @@
+﻿{
+    "AuditGeneratedUtc":  "2026-07-10T23:11:52.9411835Z",
+    "Root":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+    "OutputDir":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_MILES_AUDIT_20260710_190911",
+    "DirectoryCount":  830,
+    "FileCount":  14754,
+    "SourceFileCount":  11489,
+    "ImportantComponentCount":  1368,
+    "SymbolCount":  5646,
+    "TodoFixmeStubCount":  18,
+    "IntegrationReferenceCount":  125574,
+    "PackageJsonCount":  11,
+    "SensitiveFilesExcluded":  true
+}

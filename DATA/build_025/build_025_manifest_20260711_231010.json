@@ -1,0 +1,34 @@
+﻿{
+    "ok":  true,
+    "build":  "025",
+    "name":  "Executive COO",
+    "installedAt":  "2026-07-11T23:10:11.4929691-04:00",
+    "backupRoot":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\_BACKUPS\\BUILD_025_20260711_231010",
+    "changedFiles":  [
+                         "SERVICES\\ExecutiveBriefService.js"
+                     ],
+    "preservedServices":  [
+                              "SERVICES\\AutonomousCOOLoopService.js",
+                              "SERVICES\\ExecutiveIntelligenceService.js",
+                              "SERVICES\\PlannerService.js",
+                              "SERVICES\\WorkflowService.js",
+                              "SERVICES\\ExecutionService.js",
+                              "SERVICES\\WorkforceExecutionService.js"
+                          ],
+    "departmentEvidence":  [
+                               "Sales COO",
+                               "Marketing COO",
+                               "ORION COO",
+                               "Website COO",
+                               "Google Workspace COO"
+                           ],
+    "capabilities":  [
+                         "Cross-department evidence aggregation",
+                         "Revenue-first prioritization",
+                         "Business health scoring",
+                         "Authorized work separation",
+                         "CEO-protected decision separation",
+                         "Executive markdown brief"
+                     ],
+    "report":  "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\build_025\\build_025_test_20260711_231010.txt"
+}

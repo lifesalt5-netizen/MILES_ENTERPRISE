@@ -1,0 +1,423 @@
+{
+  "ok": true,
+  "status": "AWAITING_APPROVAL",
+  "service": "BusinessExecutionEngineService",
+  "executionId": "BIZ-1783909854360-b37w0f",
+  "objective": "Own Instantly end to end.",
+  "originalCommand": "Miles, own Instantly end to end.",
+  "startedAt": "2026-07-13T02:30:54.361Z",
+  "completedAt": "2026-07-13T02:30:54.369Z",
+  "stepCount": 5,
+  "completedSteps": 4,
+  "failedSteps": 0,
+  "approvalSteps": 1,
+  "blockedSteps": 0,
+  "results": [
+    {
+      "step": 1,
+      "action": "PROVIDER_AUTHORITY",
+      "provider": "MILES",
+      "connector": "MILES",
+      "objective": "Verify authority.",
+      "executionId": "BIZ-1783909854360-b37w0f",
+      "startedAt": "2026-07-13T02:30:54.368Z",
+      "completedAt": "2026-07-13T02:30:54.369Z",
+      "attempts": 1,
+      "status": "COMPLETED",
+      "result": {
+        "action": "PROVIDER_AUTHORITY",
+        "ok": true,
+        "observedPayload": {
+          "command": "Miles, own Instantly end to end.",
+          "plan": {
+            "objective": "Own Instantly end to end.",
+            "originalCommand": "Miles, own Instantly end to end.",
+            "steps": [
+              {
+                "step": 1,
+                "action": "PROVIDER_AUTHORITY",
+                "capability": "PROVIDER_AUTHORITY",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Verify authority."
+              },
+              {
+                "step": 2,
+                "action": "PROVIDER_SYNC",
+                "capability": "PROVIDER_SYNC",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Synchronize providers."
+              },
+              {
+                "step": 3,
+                "action": "INSTANTLY_LIVE",
+                "capability": "INSTANTLY_LIVE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Assess Instantly."
+              },
+              {
+                "step": 4,
+                "action": "BUSINESS_EXECUTION",
+                "capability": "BUSINESS_EXECUTION",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Execute authorized work."
+              },
+              {
+                "step": 5,
+                "action": "CONTROLLED_WRITE",
+                "capability": "CONTROLLED_WRITE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Stage protected writes."
+              }
+            ]
+          },
+          "action": "PROVIDER_AUTHORITY",
+          "capability": "PROVIDER_AUTHORITY",
+          "provider": "MILES",
+          "connector": "MILES",
+          "objective": "Verify authority.",
+          "originalObjective": "Own Instantly end to end.",
+          "executionId": "BIZ-1783909854360-b37w0f",
+          "dryRun": false,
+          "stageOnly": false,
+          "requiresApproval": false
+        }
+      },
+      "error": null
+    },
+    {
+      "step": 2,
+      "action": "PROVIDER_SYNC",
+      "provider": "MILES",
+      "connector": "MILES",
+      "objective": "Synchronize providers.",
+      "executionId": "BIZ-1783909854360-b37w0f",
+      "startedAt": "2026-07-13T02:30:54.369Z",
+      "completedAt": "2026-07-13T02:30:54.369Z",
+      "attempts": 1,
+      "status": "COMPLETED",
+      "result": {
+        "action": "PROVIDER_SYNC",
+        "ok": true,
+        "observedPayload": {
+          "command": "Miles, own Instantly end to end.",
+          "plan": {
+            "objective": "Own Instantly end to end.",
+            "originalCommand": "Miles, own Instantly end to end.",
+            "steps": [
+              {
+                "step": 1,
+                "action": "PROVIDER_AUTHORITY",
+                "capability": "PROVIDER_AUTHORITY",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Verify authority."
+              },
+              {
+                "step": 2,
+                "action": "PROVIDER_SYNC",
+                "capability": "PROVIDER_SYNC",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Synchronize providers."
+              },
+              {
+                "step": 3,
+                "action": "INSTANTLY_LIVE",
+                "capability": "INSTANTLY_LIVE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Assess Instantly."
+              },
+              {
+                "step": 4,
+                "action": "BUSINESS_EXECUTION",
+                "capability": "BUSINESS_EXECUTION",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Execute authorized work."
+              },
+              {
+                "step": 5,
+                "action": "CONTROLLED_WRITE",
+                "capability": "CONTROLLED_WRITE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Stage protected writes."
+              }
+            ]
+          },
+          "action": "PROVIDER_SYNC",
+          "capability": "PROVIDER_SYNC",
+          "provider": "MILES",
+          "connector": "MILES",
+          "objective": "Synchronize providers.",
+          "originalObjective": "Own Instantly end to end.",
+          "executionId": "BIZ-1783909854360-b37w0f",
+          "dryRun": false,
+          "stageOnly": false,
+          "requiresApproval": false
+        }
+      },
+      "error": null
+    },
+    {
+      "step": 3,
+      "action": "INSTANTLY_LIVE",
+      "provider": "MILES",
+      "connector": "MILES",
+      "objective": "Assess Instantly.",
+      "executionId": "BIZ-1783909854360-b37w0f",
+      "startedAt": "2026-07-13T02:30:54.369Z",
+      "completedAt": "2026-07-13T02:30:54.369Z",
+      "attempts": 1,
+      "status": "COMPLETED",
+      "result": {
+        "action": "INSTANTLY_LIVE",
+        "ok": true,
+        "observedPayload": {
+          "command": "Miles, own Instantly end to end.",
+          "plan": {
+            "objective": "Own Instantly end to end.",
+            "originalCommand": "Miles, own Instantly end to end.",
+            "steps": [
+              {
+                "step": 1,
+                "action": "PROVIDER_AUTHORITY",
+                "capability": "PROVIDER_AUTHORITY",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Verify authority."
+              },
+              {
+                "step": 2,
+                "action": "PROVIDER_SYNC",
+                "capability": "PROVIDER_SYNC",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Synchronize providers."
+              },
+              {
+                "step": 3,
+                "action": "INSTANTLY_LIVE",
+                "capability": "INSTANTLY_LIVE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Assess Instantly."
+              },
+              {
+                "step": 4,
+                "action": "BUSINESS_EXECUTION",
+                "capability": "BUSINESS_EXECUTION",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Execute authorized work."
+              },
+              {
+                "step": 5,
+                "action": "CONTROLLED_WRITE",
+                "capability": "CONTROLLED_WRITE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Stage protected writes."
+              }
+            ]
+          },
+          "action": "INSTANTLY_LIVE",
+          "capability": "INSTANTLY_LIVE",
+          "provider": "MILES",
+          "connector": "MILES",
+          "objective": "Assess Instantly.",
+          "originalObjective": "Own Instantly end to end.",
+          "executionId": "BIZ-1783909854360-b37w0f",
+          "dryRun": false,
+          "stageOnly": false,
+          "requiresApproval": false
+        }
+      },
+      "error": null
+    },
+    {
+      "step": 4,
+      "action": "BUSINESS_EXECUTION",
+      "provider": "MILES",
+      "connector": "MILES",
+      "objective": "Execute authorized work.",
+      "executionId": "BIZ-1783909854360-b37w0f",
+      "startedAt": "2026-07-13T02:30:54.369Z",
+      "completedAt": "2026-07-13T02:30:54.369Z",
+      "attempts": 1,
+      "status": "COMPLETED",
+      "result": {
+        "ok": true,
+        "action": "BUSINESS_EXECUTION",
+        "orchestrationCheckpoint": true,
+        "objective": "Own Instantly end to end.",
+        "message": "Executive objective was decomposed into governed provider steps. No recursive execution was invoked."
+      },
+      "error": null
+    },
+    {
+      "step": 5,
+      "action": "CONTROLLED_WRITE",
+      "provider": "MILES",
+      "connector": "MILES",
+      "objective": "Stage protected writes.",
+      "executionId": "BIZ-1783909854360-b37w0f",
+      "startedAt": "2026-07-13T02:30:54.369Z",
+      "completedAt": "2026-07-13T02:30:54.369Z",
+      "attempts": 1,
+      "status": "AWAITING_APPROVAL",
+      "result": {
+        "action": "CONTROLLED_WRITE",
+        "ok": true,
+        "observedPayload": {
+          "command": "Miles, own Instantly end to end.",
+          "plan": {
+            "objective": "Own Instantly end to end.",
+            "originalCommand": "Miles, own Instantly end to end.",
+            "steps": [
+              {
+                "step": 1,
+                "action": "PROVIDER_AUTHORITY",
+                "capability": "PROVIDER_AUTHORITY",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Verify authority."
+              },
+              {
+                "step": 2,
+                "action": "PROVIDER_SYNC",
+                "capability": "PROVIDER_SYNC",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Synchronize providers."
+              },
+              {
+                "step": 3,
+                "action": "INSTANTLY_LIVE",
+                "capability": "INSTANTLY_LIVE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Assess Instantly."
+              },
+              {
+                "step": 4,
+                "action": "BUSINESS_EXECUTION",
+                "capability": "BUSINESS_EXECUTION",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Execute authorized work."
+              },
+              {
+                "step": 5,
+                "action": "CONTROLLED_WRITE",
+                "capability": "CONTROLLED_WRITE",
+                "provider": "MILES",
+                "connector": "MILES",
+                "objective": "Stage protected writes."
+              }
+            ]
+          },
+          "action": "CONTROLLED_WRITE",
+          "capability": "CONTROLLED_WRITE",
+          "provider": "MILES",
+          "connector": "MILES",
+          "objective": "Stage protected writes.",
+          "originalObjective": "Own Instantly end to end.",
+          "executionId": "BIZ-1783909854360-b37w0f",
+          "dryRun": true,
+          "stageOnly": true,
+          "requiresApproval": true
+        }
+      },
+      "error": null
+    }
+  ],
+  "executiveSummary": {
+    "objective": "Own Instantly end to end.",
+    "status": "AWAITING_APPROVAL",
+    "completedWork": [
+      "PROVIDER_AUTHORITY",
+      "PROVIDER_SYNC",
+      "INSTANTLY_LIVE",
+      "BUSINESS_EXECUTION"
+    ],
+    "activeWork": [],
+    "blockers": [],
+    "ceoApprovals": [
+      {
+        "action": "CONTROLLED_WRITE",
+        "objective": "Stage protected writes.",
+        "result": {
+          "action": "CONTROLLED_WRITE",
+          "ok": true,
+          "observedPayload": {
+            "command": "Miles, own Instantly end to end.",
+            "plan": {
+              "objective": "Own Instantly end to end.",
+              "originalCommand": "Miles, own Instantly end to end.",
+              "steps": [
+                {
+                  "step": 1,
+                  "action": "PROVIDER_AUTHORITY",
+                  "capability": "PROVIDER_AUTHORITY",
+                  "provider": "MILES",
+                  "connector": "MILES",
+                  "objective": "Verify authority."
+                },
+                {
+                  "step": 2,
+                  "action": "PROVIDER_SYNC",
+                  "capability": "PROVIDER_SYNC",
+                  "provider": "MILES",
+                  "connector": "MILES",
+                  "objective": "Synchronize providers."
+                },
+                {
+                  "step": 3,
+                  "action": "INSTANTLY_LIVE",
+                  "capability": "INSTANTLY_LIVE",
+                  "provider": "MILES",
+                  "connector": "MILES",
+                  "objective": "Assess Instantly."
+                },
+                {
+                  "step": 4,
+                  "action": "BUSINESS_EXECUTION",
+                  "capability": "BUSINESS_EXECUTION",
+                  "provider": "MILES",
+                  "connector": "MILES",
+                  "objective": "Execute authorized work."
+                },
+                {
+                  "step": 5,
+                  "action": "CONTROLLED_WRITE",
+                  "capability": "CONTROLLED_WRITE",
+                  "provider": "MILES",
+                  "connector": "MILES",
+                  "objective": "Stage protected writes."
+                }
+              ]
+            },
+            "action": "CONTROLLED_WRITE",
+            "capability": "CONTROLLED_WRITE",
+            "provider": "MILES",
+            "connector": "MILES",
+            "objective": "Stage protected writes.",
+            "originalObjective": "Own Instantly end to end.",
+            "executionId": "BIZ-1783909854360-b37w0f",
+            "dryRun": true,
+            "stageOnly": true,
+            "requiresApproval": true
+          }
+        }
+      }
+    ],
+    "message": "Miles completed authorized work and staged protected changes for CEO approval."
+  }
+}

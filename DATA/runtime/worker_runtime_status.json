@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "service": "MILES_WORKER_RUNTIME",
+  "pid": 21408,
+  "started": true,
+  "shuttingDown": false,
+  "executionLoopRunning": true,
+  "generatedAt": "2026-07-13T15:59:21.674Z",
+  "configuration": {
+    "executionIntervalMs": 1000,
+    "heartbeatMs": 15000,
+    "briefIntervalMs": 3600000,
+    "maxRetries": 2,
+    "retriesEnabled": true,
+    "staleRunningMinutes": 15,
+    "reconciliationIntervalMs": 5000,
+    "archiveIntervalMs": 900000
+  },
+  "queue": {
+    "total": 169,
+    "pending": 25,
+    "running": 8,
+    "completed": 133,
+    "failed": 2,
+    "healthScore": 100
+  },
+  "metrics": {
+    "startedAt": "2026-07-13T15:57:25.026Z",
+    "lastExecutionAt": "2026-07-13T15:57:37.799Z",
+    "lastExecutionResult": null,
+    "lastHeartbeatAt": "2026-07-13T15:59:12.503Z",
+    "lastExecutiveBriefAt": "2026-07-13T15:57:25.333Z",
+    "executionPasses": 1,
+    "completed": 0,
+    "failed": 0,
+    "retried": 0,
+    "staleRecovered": 0,
+    "loopErrors": 0,
+    "workItemsReconciled": 22,
+    "workItemsCompleted": 8,
+    "workItemsFailed": 0,
+    "workItemsAwaitingApproval": 0,
+    "staleCapabilityWorkSuppressed": 6,
+    "archivedWorkItems": 0,
+    "throughputPerMinute": 0,
+    "lastReconciliationAt": "2026-07-13T15:59:21.565Z",
+    "lastArchiveAt": null
+  }
+}

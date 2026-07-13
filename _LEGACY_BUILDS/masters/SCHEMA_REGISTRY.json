@@ -1,0 +1,22 @@
+﻿{
+  "STATE_ENGINE_MASTER": {
+    "version": "v3.0",
+    "columns": [
+      "campaign_id",
+      "segment_name",
+      "state",
+      "last_state_change",
+      "last_run",
+      "next_run",
+      "send_status",
+      "domain_lock",
+      "execution_count",
+      "error_count",
+      "notes",
+      "offer_strategy",
+      "estimated_value",
+      "performance_score"
+    ],
+    "auto_discovered_columns": []
+  }
+}

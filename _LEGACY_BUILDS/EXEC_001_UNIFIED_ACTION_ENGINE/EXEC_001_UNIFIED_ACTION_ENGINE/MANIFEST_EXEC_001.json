@@ -1,0 +1,41 @@
+{
+  "build": "EXEC_001",
+  "name": "Unified Action Engine",
+  "purpose": "Turn routed MILES work into controlled, verified action execution.",
+  "packageStructure": [
+    "BUILDER",
+    "SERVICES",
+    "RUNNERS",
+    "VERIFY",
+    "DATA",
+    "DOCS"
+  ],
+  "services": [
+    "ProviderRegistryService.js",
+    "ActionAuditService.js",
+    "ActionHistoryService.js",
+    "ActionVerificationService.js",
+    "ActionRetryService.js",
+    "ActionDispatcherService.js",
+    "ActionEngineService.js"
+  ],
+  "builderActions": [
+    "PROVIDER_REGISTRY",
+    "ACTION_ENGINE",
+    "ACTION_HISTORY",
+    "ACTION_AUDIT"
+  ],
+  "governance": {
+    "safeByDefault": true,
+    "externalProvidersExecutable": false,
+    "destructiveActionsRequireKevin": true,
+    "secretsStoredInPackage": false
+  },
+  "outputs": [
+    "DATA/action_engine/provider_registry.json",
+    "DATA/action_engine/latest_action_engine_run.json",
+    "DATA/action_engine/action_history.json",
+    "DATA/action_engine/action_audit_log.json",
+    "DATA/action_engine/action_engine_report.md"
+  ]
+}

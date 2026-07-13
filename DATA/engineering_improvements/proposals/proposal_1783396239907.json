@@ -1,0 +1,284 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_IMPLEMENT",
+  "proposalId": "proposal_1783396239907",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 042\n\nRuntime Execution Trace Engine\n\nObjective\n\nImplement a runtime execution tracing capability for MILES OS.\n\nCurrent engineering analysis relies primarily on static file inspection.\n\nMILES must now observe and report the actual runtime execution path of every operation.\n\nRequirements\n\nInstrument the active runtime.\n\nFor every operation, capture and report:\n\n1. Operation ID\n2. Timestamp\n3. Command received\n4. Planner\n   - intent\n   - workflow\n   - provider\n   - connector\n   - action\n5. ExecutionService\n   - input\n   - output\n   - routing decision\n6. ConnectorManager\n   - connector requested\n   - connector selected\n7. Connector\n   - task received\n   - task dispatched\n8. Builder\n   - action received\n   - capability matched\n9. Service\n   - service invoked\n   - execution result\n10. Completion\n    - duration\n    - success/failure\n    - recovery attempts\n\nFor every transition record:\n\n• Input\n• Output\n• Decision\n• Evidence\n\nStore every trace as structured JSON.\n\nMaintain a rolling history of the most recent execution traces.\n\nValidation\n\nRun live traces for:\n\n- Improve MILES OS\n- Check ORION Health\n- Review Website\n- Executive Integration Audit\n\nDemonstrate that every stage preserves the planned action unless an intentional transformation occurs.\n\nIf any stage changes the action, provider, workflow, or connector:\n\nReport:\n\n- exact file\n- exact function\n- reason\n- evidence\n\nDo not rely solely on source code inspection.\n\nUse the active running runtime.\n\nDeliverables\n\n- Runtime Trace Engine\n- Runtime Trace Repository\n- Executive Trace Report\n- Validation Results\n\nDo not modify production routing logic unless explicitly approved.\n\nThis capability becomes part of MILES Developer Mode.",
+  "status": "PROPOSAL_CREATED",
+  "productionModified": false,
+  "approvalRequired": true,
+  "safeMode": true,
+  "executiveSummary": "Engineering proposal package created. No production files were modified.",
+  "analysis": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_ANALYZE",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 042\n\nRuntime Execution Trace Engine\n\nObjective\n\nImplement a runtime execution tracing capability for MILES OS.\n\nCurrent engineering analysis relies primarily on static file inspection.\n\nMILES must now observe and report the actual runtime execution path of every operation.\n\nRequirements\n\nInstrument the active runtime.\n\nFor every operation, capture and report:\n\n1. Operation ID\n2. Timestamp\n3. Command received\n4. Planner\n   - intent\n   - workflow\n   - provider\n   - connector\n   - action\n5. ExecutionService\n   - input\n   - output\n   - routing decision\n6. ConnectorManager\n   - connector requested\n   - connector selected\n7. Connector\n   - task received\n   - task dispatched\n8. Builder\n   - action received\n   - capability matched\n9. Service\n   - service invoked\n   - execution result\n10. Completion\n    - duration\n    - success/failure\n    - recovery attempts\n\nFor every transition record:\n\n• Input\n• Output\n• Decision\n• Evidence\n\nStore every trace as structured JSON.\n\nMaintain a rolling history of the most recent execution traces.\n\nValidation\n\nRun live traces for:\n\n- Improve MILES OS\n- Check ORION Health\n- Review Website\n- Executive Integration Audit\n\nDemonstrate that every stage preserves the planned action unless an intentional transformation occurs.\n\nIf any stage changes the action, provider, workflow, or connector:\n\nReport:\n\n- exact file\n- exact function\n- reason\n- evidence\n\nDo not rely solely on source code inspection.\n\nUse the active running runtime.\n\nDeliverables\n\n- Runtime Trace Engine\n- Runtime Trace Repository\n- Executive Trace Report\n- Validation Results\n\nDo not modify production routing logic unless explicitly approved.\n\nThis capability becomes part of MILES Developer Mode.",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 8629,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.900Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 10679,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.900Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15241,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:50:39.901Z"
+      },
+      {
+        "file": "SERVICES/SelfMaintenanceService.js",
+        "exists": true,
+        "size": 11109,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:50:39.901Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15103,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.902Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 5822,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.902Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "size": 6427,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-07T03:50:39.903Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": true,
+        "size": 477,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.903Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 526,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.903Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 7509,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.904Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-07T03:50:39.904Z"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "checkedAt": "2026-07-07T03:50:39.904Z"
+  },
+  "plan": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_PLAN",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 042\n\nRuntime Execution Trace Engine\n\nObjective\n\nImplement a runtime execution tracing capability for MILES OS.\n\nCurrent engineering analysis relies primarily on static file inspection.\n\nMILES must now observe and report the actual runtime execution path of every operation.\n\nRequirements\n\nInstrument the active runtime.\n\nFor every operation, capture and report:\n\n1. Operation ID\n2. Timestamp\n3. Command received\n4. Planner\n   - intent\n   - workflow\n   - provider\n   - connector\n   - action\n5. ExecutionService\n   - input\n   - output\n   - routing decision\n6. ConnectorManager\n   - connector requested\n   - connector selected\n7. Connector\n   - task received\n   - task dispatched\n8. Builder\n   - action received\n   - capability matched\n9. Service\n   - service invoked\n   - execution result\n10. Completion\n    - duration\n    - success/failure\n    - recovery attempts\n\nFor every transition record:\n\n• Input\n• Output\n• Decision\n• Evidence\n\nStore every trace as structured JSON.\n\nMaintain a rolling history of the most recent execution traces.\n\nValidation\n\nRun live traces for:\n\n- Improve MILES OS\n- Check ORION Health\n- Review Website\n- Executive Integration Audit\n\nDemonstrate that every stage preserves the planned action unless an intentional transformation occurs.\n\nIf any stage changes the action, provider, workflow, or connector:\n\nReport:\n\n- exact file\n- exact function\n- reason\n- evidence\n\nDo not rely solely on source code inspection.\n\nUse the active running runtime.\n\nDeliverables\n\n- Runtime Trace Engine\n- Runtime Trace Repository\n- Executive Trace Report\n- Validation Results\n\nDo not modify production routing logic unless explicitly approved.\n\nThis capability becomes part of MILES Developer Mode.",
+    "status": "PLAN_CREATED",
+    "steps": [
+      {
+        "step": 1,
+        "action": "ENGINEERING_ANALYZE",
+        "description": "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        "step": 2,
+        "action": "ENGINEERING_PLAN",
+        "description": "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        "step": 3,
+        "action": "ENGINEERING_IMPLEMENT",
+        "description": "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        "step": 4,
+        "action": "ENGINEERING_VALIDATE",
+        "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        "step": 5,
+        "action": "ENGINEERING_REPORT",
+        "description": "Return an executive engineering report with evidence and recommended next action."
+      }
+    ],
+    "recommendations": [
+      {
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "severity": "HIGH",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      }
+    ],
+    "plannedAt": "2026-07-07T03:50:39.907Z"
+  },
+  "proposedChanges": [
+    {
+      "file": "SERVICES/CommandIntentPlannerService.js",
+      "exists": true,
+      "currentSize": 8629,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\CommandIntentPlannerService.js"
+    },
+    {
+      "file": "SERVICES/ExecutionService.js",
+      "exists": true,
+      "currentSize": 10679,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutionService.js"
+    },
+    {
+      "file": "BUILDER/BuilderService.js",
+      "exists": true,
+      "currentSize": 6427,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+    },
+    {
+      "file": "SERVICES/SelfMaintenanceService.js",
+      "exists": true,
+      "currentSize": 11109,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\SelfMaintenanceService.js"
+    },
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "exists": true,
+      "currentSize": 15103,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+    },
+    {
+      "file": "SERVICES/ExecutiveResponseService.js",
+      "exists": true,
+      "currentSize": 5822,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    }
+  ],
+  "validationCommands": [
+    "node --check .\\SERVICES\\CommandIntentPlannerService.js",
+    "node --check .\\SERVICES\\ExecutionService.js",
+    "node --check .\\BUILDER\\BuilderService.js",
+    "node --check .\\SERVICES\\SelfMaintenanceService.js",
+    "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "node --check .\\SERVICES\\ExecutiveResponseService.js"
+  ],
+  "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+  "createdAt": "2026-07-07T03:50:39.908Z"
+}

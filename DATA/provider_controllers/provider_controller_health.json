@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "action": "PROVIDER_CONTROLLER_HEALTH",
+  "build": "EXEC_002",
+  "generatedAt": "2026-07-04T02:23:59.337Z",
+  "status": "READY",
+  "checks": [
+    {
+      "ok": true,
+      "provider": "instantly",
+      "providerName": "Instantly",
+      "executable": false,
+      "credentialsPresent": false,
+      "status": "INSTALLED_SAFE_MODE"
+    },
+    {
+      "ok": true,
+      "provider": "google_workspace",
+      "providerName": "Google Workspace",
+      "executable": false,
+      "credentialsPresent": false,
+      "status": "INSTALLED_SAFE_MODE"
+    },
+    {
+      "ok": true,
+      "provider": "namecheap",
+      "providerName": "Namecheap",
+      "executable": false,
+      "credentialsPresent": false,
+      "status": "INSTALLED_SAFE_MODE"
+    },
+    {
+      "ok": true,
+      "provider": "website",
+      "providerName": "Website",
+      "executable": false,
+      "credentialsPresent": true,
+      "status": "INSTALLED_SAFE_MODE"
+    },
+    {
+      "ok": true,
+      "provider": "orion",
+      "providerName": "ORION",
+      "executable": true,
+      "credentialsPresent": true,
+      "status": "READY"
+    },
+    {
+      "ok": true,
+      "provider": "filesystem",
+      "providerName": "File System",
+      "executable": true,
+      "credentialsPresent": true,
+      "status": "READY"
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "ready": 2,
+    "safeMode": 4
+  }
+}

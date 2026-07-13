@@ -1,0 +1,14 @@
+{
+  "name": "website_b12",
+  "version": "1.0.0",
+  "description": "MILES B12 website connector",
+  "main": "controller.js",
+  "scripts": {
+    "start": "node controller.js",
+    "observe": "node controller.js observe",
+    "audit": "node controller.js audit"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}

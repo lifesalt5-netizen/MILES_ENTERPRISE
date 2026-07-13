@@ -1,0 +1,12 @@
+[
+  {
+    "department": "Marketing",
+    "priority": 1,
+    "title": "Review paused Instantly campaigns",
+    "requiresKevin": true,
+    "payload": {
+      "activeCampaigns": 1,
+      "pausedCampaigns": 9
+    }
+  }
+]

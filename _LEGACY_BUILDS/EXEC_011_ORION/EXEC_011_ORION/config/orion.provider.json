@@ -1,0 +1,8 @@
+{
+  "provider": "ORION",
+  "mode": "READY_READ_ONLY",
+  "controlled_writes": "DISABLED",
+  "database_path_env": "ORION_DB_PATH",
+  "verification_required": true,
+  "audit_required": true
+}

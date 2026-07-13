@@ -1,0 +1,321 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_REPORT",
+  "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 043\n\nEngineering Writer Mode\n\nCurrent behavior:\n\nEngineeringImprovementService analyzes the system and generates proposals.\n\nNew capability:\n\nEngineeringImprovementService shall become capable of generating production-ready replacement scripts.\n\nWhen an approved engineering proposal exists:\n\n1. Generate the complete replacement file.\n2. Preserve all existing functionality.\n3. Apply only the approved engineering changes.\n4. Validate syntax.\n5. Produce rollback instructions.\n6. Do NOT write directly into production.\n7. Save the replacement script into:\n\nDATA/engineering_replacements/\n\nEach replacement shall include:\n\n- target file\n- complete replacement source\n- validation commands\n- rollback instructions\n- summary of changes\n\nEngineeringImprovementService shall never return only a proposal when \"Generate Replacement Script\" is requested.\n\nInstead, it shall generate the complete production-ready replacement.\n\nDo not modify production automatically.\n\nOnly generate the replacement package.",
+  "executiveSummary": "MILES engineering workflow executed. The service analyzed the runtime, generated a safe implementation proposal, validated key files, and produced this report.",
+  "rootCauseSummary": "One or more engineering issues remain. See findings for evidence and recommended fixes.",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "area": "Planner",
+      "file": "SERVICES/CommandIntentPlannerService.js",
+      "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+      "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+      "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+    }
+  ],
+  "improvementPlan": [
+    {
+      "step": 1,
+      "action": "ENGINEERING_ANALYZE",
+      "description": "Inspect active MILES runtime files and identify architectural gaps."
+    },
+    {
+      "step": 2,
+      "action": "ENGINEERING_PLAN",
+      "description": "Create the smallest safe implementation plan while preserving production architecture."
+    },
+    {
+      "step": 3,
+      "action": "ENGINEERING_IMPLEMENT",
+      "description": "Create a controlled proposal package. Do not modify production files directly."
+    },
+    {
+      "step": 4,
+      "action": "ENGINEERING_VALIDATE",
+      "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+    },
+    {
+      "step": 5,
+      "action": "ENGINEERING_REPORT",
+      "description": "Return an executive engineering report with evidence and recommended next action."
+    }
+  ],
+  "implementation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_IMPLEMENT",
+    "proposalId": "proposal_1783396326477",
+    "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 043\n\nEngineering Writer Mode\n\nCurrent behavior:\n\nEngineeringImprovementService analyzes the system and generates proposals.\n\nNew capability:\n\nEngineeringImprovementService shall become capable of generating production-ready replacement scripts.\n\nWhen an approved engineering proposal exists:\n\n1. Generate the complete replacement file.\n2. Preserve all existing functionality.\n3. Apply only the approved engineering changes.\n4. Validate syntax.\n5. Produce rollback instructions.\n6. Do NOT write directly into production.\n7. Save the replacement script into:\n\nDATA/engineering_replacements/\n\nEach replacement shall include:\n\n- target file\n- complete replacement source\n- validation commands\n- rollback instructions\n- summary of changes\n\nEngineeringImprovementService shall never return only a proposal when \"Generate Replacement Script\" is requested.\n\nInstead, it shall generate the complete production-ready replacement.\n\nDo not modify production automatically.\n\nOnly generate the replacement package.",
+    "status": "PROPOSAL_CREATED",
+    "productionModified": false,
+    "approvalRequired": true,
+    "safeMode": true,
+    "executiveSummary": "Engineering proposal package created. No production files were modified.",
+    "analysis": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_ANALYZE",
+      "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 043\n\nEngineering Writer Mode\n\nCurrent behavior:\n\nEngineeringImprovementService analyzes the system and generates proposals.\n\nNew capability:\n\nEngineeringImprovementService shall become capable of generating production-ready replacement scripts.\n\nWhen an approved engineering proposal exists:\n\n1. Generate the complete replacement file.\n2. Preserve all existing functionality.\n3. Apply only the approved engineering changes.\n4. Validate syntax.\n5. Produce rollback instructions.\n6. Do NOT write directly into production.\n7. Save the replacement script into:\n\nDATA/engineering_replacements/\n\nEach replacement shall include:\n\n- target file\n- complete replacement source\n- validation commands\n- rollback instructions\n- summary of changes\n\nEngineeringImprovementService shall never return only a proposal when \"Generate Replacement Script\" is requested.\n\nInstead, it shall generate the complete production-ready replacement.\n\nDo not modify production automatically.\n\nOnly generate the replacement package.",
+      "files": [
+        {
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "exists": true,
+          "size": 8629,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.473Z"
+        },
+        {
+          "file": "SERVICES/ExecutionService.js",
+          "exists": true,
+          "size": 10679,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.473Z"
+        },
+        {
+          "file": "SERVICES/EngineeringImprovementService.js",
+          "exists": true,
+          "size": 15241,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:06.473Z"
+        },
+        {
+          "file": "SERVICES/SelfMaintenanceService.js",
+          "exists": true,
+          "size": 11109,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": false,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:06.473Z"
+        },
+        {
+          "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+          "exists": true,
+          "size": 15103,
+          "hasModuleExport": false,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "SERVICES/ExecutiveResponseService.js",
+          "exists": true,
+          "size": 5822,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "BUILDER/BuilderService.js",
+          "exists": true,
+          "size": 6427,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": true,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "BUILDER/index.js",
+          "exists": true,
+          "size": 477,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "CONNECTORS/MILES/connector.js",
+          "exists": true,
+          "size": 526,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "CORE/TaskQueue.js",
+          "exists": true,
+          "size": 7509,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.474Z"
+        },
+        {
+          "file": "CORE/ConnectorManager.js",
+          "exists": true,
+          "size": 1096,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-07T03:52:06.475Z"
+        }
+      ],
+      "findings": [
+        {
+          "severity": "HIGH",
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+          "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        }
+      ],
+      "checkedAt": "2026-07-07T03:52:06.475Z"
+    },
+    "plan": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_PLAN",
+      "objective": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 043\n\nEngineering Writer Mode\n\nCurrent behavior:\n\nEngineeringImprovementService analyzes the system and generates proposals.\n\nNew capability:\n\nEngineeringImprovementService shall become capable of generating production-ready replacement scripts.\n\nWhen an approved engineering proposal exists:\n\n1. Generate the complete replacement file.\n2. Preserve all existing functionality.\n3. Apply only the approved engineering changes.\n4. Validate syntax.\n5. Produce rollback instructions.\n6. Do NOT write directly into production.\n7. Save the replacement script into:\n\nDATA/engineering_replacements/\n\nEach replacement shall include:\n\n- target file\n- complete replacement source\n- validation commands\n- rollback instructions\n- summary of changes\n\nEngineeringImprovementService shall never return only a proposal when \"Generate Replacement Script\" is requested.\n\nInstead, it shall generate the complete production-ready replacement.\n\nDo not modify production automatically.\n\nOnly generate the replacement package.",
+      "status": "PLAN_CREATED",
+      "steps": [
+        {
+          "step": 1,
+          "action": "ENGINEERING_ANALYZE",
+          "description": "Inspect active MILES runtime files and identify architectural gaps."
+        },
+        {
+          "step": 2,
+          "action": "ENGINEERING_PLAN",
+          "description": "Create the smallest safe implementation plan while preserving production architecture."
+        },
+        {
+          "step": 3,
+          "action": "ENGINEERING_IMPLEMENT",
+          "description": "Create a controlled proposal package. Do not modify production files directly."
+        },
+        {
+          "step": 4,
+          "action": "ENGINEERING_VALIDATE",
+          "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+        },
+        {
+          "step": 5,
+          "action": "ENGINEERING_REPORT",
+          "description": "Return an executive engineering report with evidence and recommended next action."
+        }
+      ],
+      "recommendations": [
+        {
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "severity": "HIGH",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        }
+      ],
+      "plannedAt": "2026-07-07T03:52:06.477Z"
+    },
+    "proposedChanges": [
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": true,
+        "currentSize": 6427,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "currentSize": 15103,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "currentSize": 5822,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+      }
+    ],
+    "validationCommands": [
+      "node --check .\\BUILDER\\BuilderService.js",
+      "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+      "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    ],
+    "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+    "createdAt": "2026-07-07T03:52:06.477Z",
+    "proposalPath": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\engineering_improvements\\proposals\\proposal_1783396326477.json"
+  },
+  "validation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_VALIDATE",
+    "filesChecked": 11,
+    "missingFiles": [],
+    "filesWithoutModuleExports": [],
+    "validation": {
+      "requiredFilesPresent": true,
+      "moduleExportsValid": true,
+      "builderHasEngineeringImprovement": true,
+      "builderHasSelfMaintenance": true,
+      "plannerRecognizesEngineering": true,
+      "executionHasNoProviderByCapability": true,
+      "executionHasConnectorDispatch": true
+    },
+    "validationStatus": "PASSED",
+    "checkedAt": "2026-07-07T03:52:06.483Z"
+  },
+  "recommendedNextAction": "Review the engineering proposal package and approve specific replacement scripts before production modification.",
+  "completedAt": "2026-07-07T03:52:06.484Z"
+}

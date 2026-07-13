@@ -1,0 +1,59 @@
+[
+  {
+    "ok": true,
+    "action": "HEARTBEAT",
+    "generatedAt": "2026-07-04T01:44:19.367Z",
+    "cycleId": "COO-1783129459367-24676",
+    "loopMode": "ONCE",
+    "pid": 27752,
+    "hostname": "KC-55",
+    "platform": "win32",
+    "nodeVersion": "v24.18.0",
+    "uptimeSeconds": 0,
+    "memory": {
+      "rss": 47996928,
+      "heapTotal": 6791168,
+      "heapUsed": 5203080,
+      "external": 1927718,
+      "arrayBuffers": 137503
+    }
+  },
+  {
+    "ok": true,
+    "action": "HEARTBEAT",
+    "generatedAt": "2026-07-04T01:44:29.115Z",
+    "cycleId": "COO-1783129469115-39230",
+    "loopMode": "ONCE",
+    "pid": 20208,
+    "hostname": "KC-55",
+    "platform": "win32",
+    "nodeVersion": "v24.18.0",
+    "uptimeSeconds": 0,
+    "memory": {
+      "rss": 47792128,
+      "heapTotal": 6791168,
+      "heapUsed": 5209936,
+      "external": 1927718,
+      "arrayBuffers": 137503
+    }
+  },
+  {
+    "ok": true,
+    "action": "HEARTBEAT",
+    "generatedAt": "2026-07-04T01:44:38.997Z",
+    "cycleId": "COO-1783129478996-10665",
+    "loopMode": "ONCE",
+    "pid": 22360,
+    "hostname": "KC-55",
+    "platform": "win32",
+    "nodeVersion": "v24.18.0",
+    "uptimeSeconds": 1,
+    "memory": {
+      "rss": 48312320,
+      "heapTotal": 6791168,
+      "heapUsed": 5440800,
+      "external": 2026732,
+      "arrayBuffers": 137503
+    }
+  }
+]

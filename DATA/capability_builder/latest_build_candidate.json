@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "generatedAt": "2026-07-13T01:44:49.966Z",
+  "name": "Sales COO",
+  "score": 69,
+  "status": "SELECTED_FOR_PLANNING",
+  "reason": "Highest combined score across business priority, revenue impact, technical readiness, and governance risk.",
+  "scoring": [
+    {
+      "name": "Sales COO",
+      "businessPriority": 95,
+      "revenueImpact": 95,
+      "technicalReadiness": 65,
+      "risk": 40,
+      "score": 69
+    },
+    {
+      "name": "Website COO",
+      "businessPriority": 90,
+      "revenueImpact": 85,
+      "technicalReadiness": 70,
+      "risk": 35,
+      "score": 66
+    },
+    {
+      "name": "Government Data COO",
+      "businessPriority": 90,
+      "revenueImpact": 90,
+      "technicalReadiness": 75,
+      "risk": 50,
+      "score": 66
+    },
+    {
+      "name": "LinkedIn COO",
+      "businessPriority": 80,
+      "revenueImpact": 75,
+      "technicalReadiness": 60,
+      "risk": 45,
+      "score": 56
+    }
+  ],
+  "sourceInputs": [
+    "latest_capability_backlog.json",
+    "latest_repair_plan.json",
+    "latest_mission_plan.json",
+    "latest_universal_health.json",
+    "latest_coo_cycle.json"
+  ]
+}

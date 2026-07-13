@@ -1,0 +1,44 @@
+{
+  "ok": false,
+  "worker": "InstantlyWorker",
+  "system": "Instantly",
+  "action": "inspectCampaigns",
+  "mode": "smoke-test",
+  "startedAt": "2026-07-01T19:34:24.852Z",
+  "completedAt": "2026-07-01T19:34:25.970Z",
+  "screenshots": [
+    "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\instantly_opened_1782934465691.png"
+  ],
+  "evidence": {
+    "urlAfterOpen": "https://app.instantly.ai/auth/login",
+    "titleAfterOpen": "",
+    "loginDetected": true
+  },
+  "recommendation": "Login required. CEO approval queue item created for Instantly session authorization.",
+  "ceoApprovalRequired": true,
+  "approvalRequest": {
+    "id": "CEO-20260701193425-1746",
+    "status": "AWAITING_CEO_APPROVAL",
+    "priority": "HIGH",
+    "category": "Credential / Interactive Login",
+    "objective": "Authorize Instantly browser session",
+    "reason": "MILES opened Instantly but login or MFA is required before autonomous inspection can continue.",
+    "recommendation": "Kevin should complete the browser login once, then rerun the worker so MILES can reuse the saved session.",
+    "risk": "LOW",
+    "requestedBy": "MILES",
+    "provider": "Instantly",
+    "capability": "browser.instantly.session",
+    "action": "loginRequired",
+    "workPackageId": null,
+    "taskId": null,
+    "evidence": {
+      "url": "https://app.instantly.ai/auth/login",
+      "title": "",
+      "screenshot": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\browser\\screenshots\\instantly_opened_1782934465691.png"
+    },
+    "createdAt": "2026-07-01T19:34:25.884Z",
+    "updatedAt": "2026-07-01T19:34:25.884Z"
+  },
+  "error": null,
+  "status": "LOGIN_REQUIRED"
+}

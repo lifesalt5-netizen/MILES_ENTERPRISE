@@ -1,0 +1,200 @@
+{
+  "id": "WP-20260712003300-044",
+  "objective": "Critical exception: WebsiteProviderLoadFailure",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-12T00:33:00.313Z",
+  "updatedAt": "2026-07-12T00:33:00.313Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Critical exception: WebsiteProviderLoadFailure",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-12T00:33:00.313Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783019853192-33665",
+      "area": "WebsiteProviderLoadFailure",
+      "priority": 1,
+      "description": "Error: Cannot find module '../contracts/IDataProvider'\nRequire stack:\n- D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js\n- D:\\P2GC_Intelligence\\MILES_OS\\PROVIDERS\\providers\\WebsiteProvider.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\ExecutiveIntelligenceService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\AutonomousCOOLoopService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\StartAutonomousCOO.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\n    at require (node:internal/modules/helpers:153:16)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js:3:23)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)",
+      "reason": "Error: Cannot find module '../contracts/IDataProvider'\nRequire stack:\n- D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js\n- D:\\P2GC_Intelligence\\MILES_OS\\PROVIDERS\\providers\\WebsiteProvider.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\ExecutiveIntelligenceService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\AutonomousCOOLoopService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\StartAutonomousCOO.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\n    at require (node:internal/modules/helpers:153:16)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js:3:23)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)",
+      "recommendedAction": "Investigate immediately and repair if within governance.",
+      "expectedImpact": "Prevents interruption to autonomous operations.",
+      "relatedProvider": "Website",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1783019853171-54819",
+          "priority": 1,
+          "area": "WebsiteProviderLoadFailure",
+          "title": "Critical exception: WebsiteProviderLoadFailure",
+          "reason": "Error: Cannot find module '../contracts/IDataProvider'\nRequire stack:\n- D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js\n- D:\\P2GC_Intelligence\\MILES_OS\\PROVIDERS\\providers\\WebsiteProvider.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\ExecutiveIntelligenceService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\AutonomousCOOLoopService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\StartAutonomousCOO.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\n    at require (node:internal/modules/helpers:153:16)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js:3:23)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)",
+          "recommendedAction": "Investigate immediately and repair if within governance.",
+          "expectedImpact": "Prevents interruption to autonomous operations.",
+          "owner": "Miles",
+          "requiresKevin": true,
+          "relatedProvider": "Website",
+          "businessImpactScore": 95,
+          "automationConfidence": "MEDIUM",
+          "metadata": {
+            "exception": {
+              "type": "WebsiteProviderLoadFailure",
+              "severity": "Critical",
+              "provider": "Website",
+              "message": "Error: Cannot find module '../contracts/IDataProvider'\nRequire stack:\n- D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js\n- D:\\P2GC_Intelligence\\MILES_OS\\PROVIDERS\\providers\\WebsiteProvider.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\ExecutiveIntelligenceService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\SERVICES\\AutonomousCOOLoopService.js\n- D:\\P2GC_Intelligence\\MILES_OS\\StartAutonomousCOO.js\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\n    at require (node:internal/modules/helpers:153:16)\n    at Object.<anonymous> (D:\\P2GC_Intelligence\\MILES_OS\\CONNECTORS\\WEBSITE\\website.js:3:23)\n    at Module._compile (node:internal/modules/cjs/loader:1871:14)"
+            }
+          }
+        },
+        "automationConfidence": "MEDIUM",
+        "businessImpactScore": 95,
+        "lastDuplicateDetectedAt": "2026-07-02T19:25:36.445Z",
+        "governanceClassification": {
+          "source": "migration",
+          "reason": "Operational diagnosis and repair may proceed autonomously.",
+          "classifiedAt": "2026-07-12T00:32:42.583Z"
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "requiredCapabilities": [
+      "executive.objective.evaluate",
+      "executive.priority.route",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.priority.route",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      },
+      {
+        "step": 2,
+        "capability": "executive.priority.route",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "routeObjective",
+        "expectedOutput": "Recommended department, priority, and execution path.",
+        "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+      },
+      {
+        "step": 3,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive update for the planned work.",
+        "verification": "Verify update contains status, owner, and next action."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Objective was interpreted.",
+      "Priority was assigned.",
+      "Execution path was created.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Work item is no longer ambiguous.",
+      "MILES has a routed next action."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+    },
+    {
+      "step": 2,
+      "capability": "executive.priority.route",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "routeObjective",
+      "expectedOutput": "Recommended department, priority, and execution path.",
+      "verification": "Verify the work is assigned to the right workforce or flagged for CEO review."
+    },
+    {
+      "step": 3,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive update for the planned work.",
+      "verification": "Verify update contains status, owner, and next action."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

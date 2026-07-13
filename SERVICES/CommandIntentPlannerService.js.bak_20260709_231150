@@ -1,0 +1,359 @@
+"use strict";
+
+/*
+  MILES OS
+  File: SERVICES/CommandIntentPlannerService.js
+  Purpose:
+    Hierarchical CEO command planner.
+
+  Architecture:
+    1. Intent classification
+    2. Workflow selection
+    3. Capability selection
+    4. Provider selection
+    5. Connector selection
+    6. Builder action selection
+
+  Critical Rule:
+    Connector selection happens last.
+
+  Critical Fix:
+    Engineering intent does NOT always equal ENGINEERING_IMPROVEMENT.
+    Engineering requests may route to repository search, dispatch diagnostics,
+    self-maintenance, code-writer audits, or engineering improvement.
+*/
+
+class CommandIntentPlannerService {
+  plan(operation = {}) {
+    const command =
+      operation.command ||
+      operation.action ||
+      operation.title ||
+      "";
+
+    const raw = String(command || "").trim();
+    const text = raw.toLowerCase();
+
+    const intent = this.resolveIntent(text, operation);
+    const workflow = this.resolveWorkflow(text, intent, operation);
+    const capability = this.resolveCapability(text, intent, workflow, operation);
+    const provider = this.resolveProvider(text, intent, workflow, capability, operation);
+    const action = this.resolveAction(text, intent, workflow, capability, provider, operation);
+    const connector = this.resolveConnector(provider, action, capability, operation);
+
+    return {
+      ok: true,
+      intent,
+      workflow,
+      capability,
+      provider,
+      system: provider,
+      connector,
+      department: provider,
+      action,
+      objective: raw,
+      originalCommand: raw,
+      steps: this.resolveSteps(intent, workflow, capability, provider, connector, action),
+      plannedAt: new Date().toISOString()
+    };
+  }
+
+  resolveIntent(text, operation = {}) {
+    if (operation.intent) return String(operation.intent);
+
+    if (
+      /^miles executive directive/i.test(text) ||
+      /^miles engineering directive/i.test(text) ||
+      /build\s+\d+/i.test(text) ||
+      /current planner/.test(text) ||
+      /command intent planner/.test(text) ||
+      /replace keyword routing/.test(text) ||
+      /hierarchical intent/.test(text) ||
+      /execution layer/.test(text) ||
+      /execution service/.test(text) ||
+      /dispatch/.test(text) ||
+      /dispatcher/.test(text) ||
+      /repository search/.test(text) ||
+      /code writer/.test(text) ||
+      /runtime diagnostic/.test(text) ||
+      /runtime trace/.test(text) ||
+      /diagnostic harness/.test(text) ||
+      /improve miles/.test(text) ||
+      /fix miles/.test(text) ||
+      /repair miles/.test(text) ||
+      /maintain miles/.test(text) ||
+      /upgrade miles/.test(text) ||
+      /self improve/.test(text) ||
+      /self maintenance/.test(text) ||
+      /autonomous improvement/.test(text) ||
+      /engineering improvement/.test(text)
+    ) {
+      return "ENGINEERING";
+    }
+
+    if (
+      /executive integration audit/.test(text) ||
+      /integration audit/.test(text) ||
+      /audit.*pipeline/.test(text) ||
+      /verify.*pipeline/.test(text) ||
+      /full ceo command pipeline/.test(text) ||
+      /wire existing services/.test(text)
+    ) {
+      return "EXECUTIVE_AUDIT";
+    }
+
+    if (
+      /check orion/.test(text) ||
+      /orion health/.test(text) ||
+      /orion system health/.test(text) ||
+      /check.*orion.*health/.test(text)
+    ) {
+      return "CONNECTOR_OPERATION";
+    }
+
+    if (
+      /review website/.test(text) ||
+      /website review/.test(text) ||
+      /check website/.test(text) ||
+      /website health/.test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /review instantly/.test(text) ||
+      /instantly health/.test(text) ||
+      /deliverability/.test(text) ||
+      /bounce/.test(text) ||
+      /campaign/.test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /google workspace/.test(text) ||
+      /gmail/.test(text) ||
+      /calendar/.test(text) ||
+      /drive/.test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /linkedin/.test(text) ||
+      /post/.test(text) ||
+      /engagement/.test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    return "GENERAL_EXECUTIVE_COMMAND";
+  }
+
+  resolveWorkflow(text, intent, operation = {}) {
+    if (operation.workflow) return String(operation.workflow);
+
+    if (intent === "ENGINEERING") {
+      if (/repository|search repository|repo search|code search/.test(text)) {
+        return "ENGINEERING_REPOSITORY_SEARCH";
+      }
+
+      if (/code writer|writer capability|replacement source|replacement script|patch generator|code generation/.test(text)) {
+        return "ENGINEERING_CODE_WRITER_AUDIT";
+      }
+
+      if (/runtime dispatch|dispatch diagnostic|dispatch trace|dispatcher|diagnostic harness|execution path|execution trace/.test(text)) {
+        return "ENGINEERING_RUNTIME_DISPATCH_DIAGNOSTIC";
+      }
+
+      if (/self maintenance|self-maintenance|maintenance|health|degraded|repair myself|diagnose miles/.test(text)) {
+        return "ENGINEERING_SELF_MAINTENANCE";
+      }
+
+      return "ENGINEERING_IMPROVEMENT";
+    }
+
+    if (intent === "EXECUTIVE_AUDIT") {
+      return "EXECUTIVE_INTEGRATION_AUDIT";
+    }
+
+    if (intent === "CONNECTOR_OPERATION") {
+      if (/orion/.test(text)) return "ORION_HEALTH_CHECK";
+      if (/instantly/.test(text)) return "INSTANTLY_REVIEW";
+      if (/google|gmail|workspace/.test(text)) return "GOOGLE_WORKSPACE_REVIEW";
+      return "CONNECTOR_OPERATION";
+    }
+
+    if (intent === "BUSINESS_OPERATION") {
+      if (/website/.test(text)) return "WEBSITE_REVIEW";
+      if (/instantly|campaign|deliverability|bounce/.test(text)) return "INSTANTLY_REVIEW";
+      if (/linkedin/.test(text)) return "LINKEDIN_REVIEW";
+      if (/google|gmail|workspace/.test(text)) return "GOOGLE_WORKSPACE_REVIEW";
+      return "BUSINESS_REVIEW";
+    }
+
+    return "GENERAL_EXECUTIVE_WORKFLOW";
+  }
+
+  resolveCapability(text, intent, workflow, operation = {}) {
+    if (operation.capability) return String(operation.capability);
+
+    if (intent === "ENGINEERING") {
+      if (
+        workflow === "ENGINEERING_REPOSITORY_SEARCH" ||
+        /repository search|search repository|repo search|code search|search the repository|perform a repository evidence search/.test(text)
+      ) {
+        return "REPOSITORY_SEARCH";
+      }
+
+      if (
+        workflow === "ENGINEERING_CODE_WRITER_AUDIT" ||
+        /code writer capability|code-writer capability|writer capability|replacement generator|patch generator|code generation engine/.test(text)
+      ) {
+        return "CODE_WRITER_CAPABILITY_AUDIT";
+      }
+
+      if (
+        workflow === "ENGINEERING_RUNTIME_DISPATCH_DIAGNOSTIC" ||
+        /runtime dispatch diagnostic|runtime dispatch|dispatch diagnostic|dispatch trace|dispatch test harness|diagnostic harness|execution dispatch audit|trace the runtime dispatch/.test(text)
+      ) {
+        return "RUNTIME_DISPATCH_DIAGNOSTIC";
+      }
+
+      if (
+        workflow === "ENGINEERING_SELF_MAINTENANCE" ||
+        /self maintenance|self-maintenance|maintenance|health engine|degraded|diagnose miles|repair myself/.test(text)
+      ) {
+        return "SELF_MAINTENANCE";
+      }
+
+      return "ENGINEERING_IMPROVEMENT";
+    }
+
+    if (intent === "EXECUTIVE_AUDIT") {
+      return "ENGINEERING_REPORT";
+    }
+
+    if (workflow === "ORION_HEALTH_CHECK") return "ORION_HEALTH";
+    if (workflow === "WEBSITE_REVIEW") return "WEBSITE_REVIEW";
+    if (workflow === "INSTANTLY_REVIEW") return "INSTANTLY_HEALTH";
+    if (workflow === "LINKEDIN_REVIEW") return "LINKEDIN_REVIEW";
+    if (workflow === "GOOGLE_WORKSPACE_REVIEW") return "GOOGLE_WORKSPACE_STATUS";
+
+    return null;
+  }
+
+  resolveProvider(text, intent, workflow, capability, operation = {}) {
+    if (operation.provider && intent === "CONNECTOR_OPERATION") {
+      return String(operation.provider);
+    }
+
+    if (intent === "ENGINEERING") return "MILES";
+    if (intent === "EXECUTIVE_AUDIT") return "MILES";
+
+    if (workflow === "ORION_HEALTH_CHECK") return "ORION";
+    if (workflow === "INSTANTLY_REVIEW") return "INSTANTLY";
+    if (workflow === "WEBSITE_REVIEW") return "Website";
+    if (workflow === "LINKEDIN_REVIEW") return "LinkedIn";
+    if (workflow === "GOOGLE_WORKSPACE_REVIEW") return "GOOGLE";
+
+    return "MILES";
+  }
+
+  resolveAction(text, intent, workflow, capability, provider, operation = {}) {
+    if (operation.action && operation.forceAction === true) {
+      return String(operation.action).toUpperCase();
+    }
+
+    if (intent === "ENGINEERING") {
+      if (capability) return capability;
+      return "ENGINEERING_IMPROVEMENT";
+    }
+
+    if (intent === "EXECUTIVE_AUDIT") {
+      return "ENGINEERING_REPORT";
+    }
+
+    if (provider === "ORION") {
+      if (/table|schema/.test(text)) return "ORION_TABLES";
+      if (/contractor/.test(text)) return "ORION_CONTRACTORS";
+      if (/buyer/.test(text)) return "ORION_BUYERS";
+      if (/opportunit/.test(text)) return "ORION_OPPORTUNITIES";
+      if (/recompete|expiration|expiring/.test(text)) return "ORION_RECOMPETES";
+      if (/recommend/.test(text)) return "ORION_RECOMMENDATIONS";
+      if (/persona/.test(text)) return "ORION_PERSONAS";
+      if (/summary|executive|report|brief/.test(text)) return "ORION_SUMMARY";
+      return "ORION_HEALTH";
+    }
+
+    if (provider === "INSTANTLY") {
+      if (/campaign/.test(text)) return "INSTANTLY_CAMPAIGNS";
+      if (/lead|upload/.test(text)) return "INSTANTLY_LEADS";
+      return "INSTANTLY_HEALTH";
+    }
+
+    if (provider === "Website") return "WEBSITE_REVIEW";
+    if (provider === "LinkedIn") return "LINKEDIN_REVIEW";
+    if (provider === "GOOGLE") return "GOOGLE_WORKSPACE_STATUS";
+
+    return "MILES_EXECUTE";
+  }
+
+  resolveConnector(provider, action, capability, operation = {}) {
+    if (operation.connector && operation.forceConnector === true) {
+      return String(operation.connector);
+    }
+
+    if (provider === "ORION") return "ORION";
+    if (provider === "INSTANTLY") return "INSTANTLY";
+
+    if (
+      provider === "MILES" ||
+      provider === "Website" ||
+      provider === "LinkedIn" ||
+      provider === "GOOGLE"
+    ) {
+      return "MILES";
+    }
+
+    return "MILES";
+  }
+
+  resolveSteps(intent, workflow, capability, provider, connector, action) {
+    if (intent === "ENGINEERING") {
+      return [
+        {
+          step: 1,
+          provider: "MILES",
+          connector: "MILES",
+          capability,
+          action
+        }
+      ];
+    }
+
+    if (intent === "EXECUTIVE_AUDIT") {
+      return [
+        {
+          step: 1,
+          provider: "MILES",
+          connector: "MILES",
+          capability: "ENGINEERING_REPORT",
+          action: "ENGINEERING_REPORT"
+        }
+      ];
+    }
+
+    return [
+      {
+        step: 1,
+        provider,
+        connector,
+        capability,
+        action
+      }
+    ];
+  }
+}
+
+module.exports = new CommandIntentPlannerService();

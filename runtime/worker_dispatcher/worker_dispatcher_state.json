@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "service": "WORKER_DISPATCHER",
+  "version": "1.1.0",
+  "status": "INITIALIZED",
+  "rootDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
+  "dispatchesAttempted": 0,
+  "dispatchesCompleted": 0,
+  "dispatchesFailed": 0,
+  "lastDispatchAt": null,
+  "lastWorker": null,
+  "lastOperation": null,
+  "lastError": null,
+  "generatedAt": "2026-07-13T15:56:25.880Z"
+}

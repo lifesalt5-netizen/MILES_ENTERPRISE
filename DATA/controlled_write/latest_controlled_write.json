@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "action": "CONTROLLED_WRITE",
+  "type": "MILES_CONTROLLED_WRITE_RESULT",
+  "build": "EXEC_004",
+  "generatedAt": "2026-07-04T02:46:29.288Z",
+  "durationMs": 6,
+  "provider": "instantly",
+  "operation": "CREATE_TEST_CAMPAIGN",
+  "result": {
+    "ok": true,
+    "action": "INSTANTLY_CONTROLLED_WRITE",
+    "provider": "instantly",
+    "operation": "CREATE_TEST_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "verified": false,
+    "dryRun": true,
+    "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
+    "payloadPreview": {
+      "name": "MILES_TEST_2026-07-04T02-46-29-283Z",
+      "description": "Controlled write test campaign created by MILES OS."
+    },
+    "durationMs": 2,
+    "generatedAt": "2026-07-04T02:46:29.284Z"
+  },
+  "summary": {
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "verified": false,
+    "dryRun": true
+  },
+  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\controlled_write"
+}

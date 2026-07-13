@@ -1,0 +1,274 @@
+{
+  "id": "WP-20260713155333-687",
+  "objective": "Investigate issue, generate repair recommendation, and verify result.",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": 2,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T15:53:33.716Z",
+  "updatedAt": "2026-07-13T15:53:33.716Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Investigate issue, generate repair recommendation, and verify result.",
+    "priority": 2,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T15:53:33.716Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783957988963-74631",
+      "area": "ORION",
+      "priority": 2,
+      "description": "ORION database is 570.29 hours old.",
+      "reason": "Autonomous repair candidate detected during COO health check.",
+      "recommendedAction": "Investigate issue, generate repair recommendation, and verify result.",
+      "expectedImpact": "Restores or protects autonomous operating capability.",
+      "relatedProvider": "ORION",
+      "metadata": {
+        "repair": {
+          "id": "REPAIR-1783957967083-69154",
+          "cycleId": "COO-20260713155232-004",
+          "area": "ORION",
+          "severity": "Warning",
+          "title": "Repair ORION: DatabaseFreshness",
+          "objective": "Refresh ORION data and verify contractor and opportunity intelligence",
+          "problem": "ORION database is 570.29 hours old.",
+          "safeAutonomous": true,
+          "requiresKevin": false,
+          "recommendedRepair": "Investigate issue, generate repair recommendation, and verify result.",
+          "verification": "Issue is resolved, downgraded, or escalated with evidence.",
+          "rollback": "Restore prior state if a safe repair changes system state.",
+          "status": "READY",
+          "source": "AutonomousCOOLoopService",
+          "createdAt": "2026-07-13T15:52:47.083Z",
+          "metadata": {
+            "system": {
+              "area": "ORION",
+              "status": "Watch",
+              "score": 63,
+              "risk": "MEDIUM",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-13T15:52:35.494Z",
+              "lastFailure": null,
+              "exceptions": [
+                {
+                  "type": "DatabaseFreshness",
+                  "severity": "Warning",
+                  "message": "ORION database is 570.29 hours old."
+                }
+              ],
+              "recommendations": [
+                "Run the authorized ORION dataset refresh and verify database modification time afterward."
+              ],
+              "metrics": {
+                "database": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+                "tableCount": 66,
+                "contractors": 361873,
+                "buyers": 36137,
+                "opportunities": 835015,
+                "recompetes": 831804,
+                "recommendations": 361873,
+                "personas": 361873,
+                "recommendationCoverage": 100,
+                "personaCoverage": 100,
+                "databaseFreshness": {
+                  "exists": true,
+                  "modifiedAt": "2026-06-19T21:35:18.000Z",
+                  "ageHours": 570.29,
+                  "stale": true,
+                  "thresholdHours": 24
+                },
+                "sampleSizes": {
+                  "contractors": 100,
+                  "buyers": 100,
+                  "opportunities": 100,
+                  "recompetes": 100,
+                  "recommendations": 100,
+                  "personas": 100
+                }
+              },
+              "sourceSystems": [],
+              "dependencies": []
+            },
+            "exception": {
+              "type": "DatabaseFreshness",
+              "severity": "Warning",
+              "message": "ORION database is 570.29 hours old."
+            }
+          }
+        },
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-13T15:53:08.963Z"
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "orion",
+    "workforce": "ORION Data Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "orion.refresh"
+    ],
+    "assignments": [
+      {
+        "capability": "orion.refresh",
+        "provider": "OrionProvider",
+        "department": "ORION",
+        "action": "refresh",
+        "bestWorker": {
+          "employee": "Aden",
+          "department": "Market Intelligence",
+          "mission": "Map how agencies buy specific services, including buying offices, contracting offices, vehicles, budgets, contacts, and entry strategy.",
+          "authority": "Operational",
+          "role": "Agency Buying Map Strategist",
+          "componentId": null,
+          "relativePath": null,
+          "score": 50,
+          "matchReasons": [
+            "ORION department"
+          ],
+          "registrySources": [
+            "MILES_WORKFORCE_REGISTRY"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "orion.refresh",
+            "employees": [
+              {
+                "employee": "Aden",
+                "department": "Market Intelligence",
+                "mission": "Map how agencies buy specific services, including buying offices, contracting offices, vehicles, budgets, contacts, and entry strategy.",
+                "authority": "Operational",
+                "role": "Agency Buying Map Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "ORION department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Allison Price",
+                "department": "Competitive Intelligence",
+                "mission": "Track contracts, vehicles, certifications, incumbents, and procurement pathways approaching expiration, recompete, renewal, consolidation, or vulnerability.",
+                "authority": "Operational",
+                "role": "Expiration & Recompete Intelligence Director",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "ORION department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Jackson",
+                "department": "Competitive Intelligence",
+                "mission": "Identify vulnerable incumbents and position clients to replace, subcontract under, or capture recompetes.",
+                "authority": "Operational",
+                "role": "Competitive Displacement Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "ORION department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Marcus",
+                "department": "Market Intelligence",
+                "mission": "Provide data-driven federal market intelligence showing where money flows, who wins, vehicles used, and realistic small business entry paths.",
+                "authority": "Operational",
+                "role": "Federal Market Intelligence Analyst",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "ORION department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Sophia",
+                "department": "Sales",
+                "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+                "authority": "Operational",
+                "role": "Federal Sales Pipeline Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 35,
+                "matchReasons": [
+                  "registry text: score opportunity"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "orion.refresh",
+        "assignedTo": "Aden",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "refresh",
+        "expectedOutput": "Refreshed ORION provider state, metrics, exceptions, and recommendations.",
+        "verification": "Verify OrionProvider completed refresh and returned provider evidence."
+      }
+    ],
+    "providers": [
+      "OrionProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify OrionProvider completed refresh and returned provider evidence."
+    ],
+    "successCriteria": [
+      "OrionProvider.refresh executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "orion.refresh",
+      "assignedTo": "Aden",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "refresh",
+      "expectedOutput": "Refreshed ORION provider state, metrics, exceptions, and recommendations.",
+      "verification": "Verify OrionProvider completed refresh and returned provider evidence."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "updatedAt": "2026-06-30T21:07:44.509Z",
+  "workers": [
+    {
+      "id": "WF-001",
+      "name": "MILES",
+      "role": "Digital COO / AI Workforce Manager",
+      "department": "Executive Operations",
+      "status": "Running",
+      "health": "Healthy",
+      "currentTask": "Generate Executive Brief",
+      "queueDepth": 4,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.508Z"
+    },
+    {
+      "id": "WF-002",
+      "name": "Eleanor",
+      "role": "ORION Director / Data Architecture",
+      "department": "ORION Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.508Z"
+    },
+    {
+      "id": "WF-003",
+      "name": "Sophia",
+      "role": "Segmentation & Sales Intelligence Director",
+      "department": "Outbound Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-004",
+      "name": "Jeff",
+      "role": "Opportunity Intelligence Director",
+      "department": "Government Intelligence",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-005",
+      "name": "Claudia",
+      "role": "SLED Intelligence Director",
+      "department": "Government Intelligence",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-006",
+      "name": "Victoria",
+      "role": "Vehicle Intelligence Director",
+      "department": "ORION Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-007",
+      "name": "Olivia",
+      "role": "Forecasting Director",
+      "department": "Government Intelligence",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-008",
+      "name": "Allison",
+      "role": "Recompete Intelligence Director",
+      "department": "ORION Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-009",
+      "name": "Cora",
+      "role": "Capture Strategy Director",
+      "department": "Executive Demo Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    },
+    {
+      "id": "WF-010",
+      "name": "Lucas",
+      "role": "Strategic Evaluation Director",
+      "department": "Sales Operations",
+      "status": "Ready",
+      "health": "Healthy",
+      "currentTask": "Monitor queue and assist assigned department",
+      "queueDepth": 1,
+      "completedToday": 0,
+      "lastUpdated": "2026-06-30T21:07:44.509Z"
+    }
+  ]
+}

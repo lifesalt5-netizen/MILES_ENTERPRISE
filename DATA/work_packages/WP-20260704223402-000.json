@@ -1,0 +1,209 @@
+{
+  "id": "WP-20260704223402-000",
+  "objective": "Check government data refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled pulls.",
+  "status": "QUEUED",
+  "owner": "MILES",
+  "priority": "HIGH",
+  "priorityScore": 88,
+  "createdAt": "2026-07-04T22:34:02.374Z",
+  "updatedAt": "2026-07-04T22:34:02.374Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Check government data refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled pulls.",
+    "priority": "HIGH",
+    "priorityScore": 88,
+    "createdAt": "2026-07-04T22:34:02.374Z",
+    "owner": "MILES",
+    "context": {
+      "source": "ExecutiveSupervisor",
+      "cycleId": "MILES-COO-CYCLE-1783204389642",
+      "provider": "GovernmentData",
+      "domain": "Intelligence Operations",
+      "priority": "HIGH",
+      "priorityScore": 88,
+      "discoveredWorkId": "GOVDATA-REFRESH-CHECK",
+      "discoveryReason": "ORION must stay current with awards, contractors, vehicles, and new procurement activity."
+    },
+    "domain": "orion",
+    "workforce": "ORION Workforce",
+    "requiredCapabilities": [
+      "government_data.refresh.status",
+      "government_data.source.health.audit",
+      "orion.data.inventory.evaluate",
+      "executive.update.generate"
+    ],
+    "assignments": [
+      {
+        "capability": "government_data.refresh.status",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "government_data.source.health.audit",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "orion.data.inventory.evaluate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      },
+      {
+        "capability": "executive.update.generate",
+        "candidates": [],
+        "bestWorker": {
+          "employee": "MILES",
+          "department": "Executive",
+          "source": "fallback"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "government_data.refresh.status",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "GovernmentData",
+        "action": "checkGovernmentDataRefreshStatus",
+        "expectedOutput": "Current refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled intelligence pulls.",
+        "verification": "Verify last refresh, next refresh, source availability, failures, and records changed are captured."
+      },
+      {
+        "step": 2,
+        "capability": "government_data.source.health.audit",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "GovernmentData",
+        "action": "auditGovernmentDataSources",
+        "expectedOutput": "Government data source health assessment.",
+        "verification": "Verify source availability, connector readiness, stale data, and failed pulls are identified."
+      },
+      {
+        "step": 3,
+        "capability": "orion.data.inventory.evaluate",
+        "assignedTo": "MILES",
+        "department": "ORION",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "evaluateDataReadiness",
+        "expectedOutput": "ORION readiness impact from current government data status.",
+        "verification": "Verify the output identifies stale intelligence, missing source refreshes, and blocked ORION updates."
+      },
+      {
+        "step": 4,
+        "capability": "executive.update.generate",
+        "assignedTo": "MILES",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "action": "generateExecutiveUpdate",
+        "expectedOutput": "Executive government intelligence status update.",
+        "verification": "Verify update explains current data status, failures, risks, and next autonomous actions."
+      }
+    ],
+    "providers": [
+      "GovernmentData",
+      "OrionProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Government data refresh status was checked.",
+      "USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, and sources sought were evaluated.",
+      "Source freshness and connector health were reviewed.",
+      "ORION impact was identified.",
+      "Executive update was generated."
+    ],
+    "successCriteria": [
+      "Government intelligence status is current.",
+      "Stale or failed data pulls are identified.",
+      "Next autonomous refresh action is available.",
+      "No CEO approval is required for routine data refresh checks."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "government_data.refresh.status",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "GovernmentData",
+      "action": "checkGovernmentDataRefreshStatus",
+      "expectedOutput": "Current refresh status for USAspending, GSA eLibrary, VA FSS, SAM, forecasts, RFIs, sources sought, and other scheduled intelligence pulls.",
+      "verification": "Verify last refresh, next refresh, source availability, failures, and records changed are captured."
+    },
+    {
+      "step": 2,
+      "capability": "government_data.source.health.audit",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "GovernmentData",
+      "action": "auditGovernmentDataSources",
+      "expectedOutput": "Government data source health assessment.",
+      "verification": "Verify source availability, connector readiness, stale data, and failed pulls are identified."
+    },
+    {
+      "step": 3,
+      "capability": "orion.data.inventory.evaluate",
+      "assignedTo": "MILES",
+      "department": "ORION",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "evaluateDataReadiness",
+      "expectedOutput": "ORION readiness impact from current government data status.",
+      "verification": "Verify the output identifies stale intelligence, missing source refreshes, and blocked ORION updates."
+    },
+    {
+      "step": 4,
+      "capability": "executive.update.generate",
+      "assignedTo": "MILES",
+      "department": "Executive",
+      "status": "QUEUED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "OrionProvider",
+      "action": "generateExecutiveUpdate",
+      "expectedOutput": "Executive government intelligence status update.",
+      "verification": "Verify update explains current data status, failures, risks, and next autonomous actions."
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PENDING"
+  }
+}
