@@ -7,6 +7,7 @@ const DigitalCOOHost = require('./DigitalCOOHost');
 const CommandIntentPlannerService = require('../CommandIntentPlannerService');
 const ExecutiveResponseService = require('../ExecutiveResponseService');
 const ExecutiveConversationService = require('../ExecutiveConversationService');
+const CEOIntentEngineService = require('../CEOIntentEngineService');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const PORT = Number(process.env.MILES_COMMAND_PORT || 8787);
@@ -338,7 +339,7 @@ function esc(value) {
 function statusClass(status) {
   const s = String(status || '').toUpperCase();
 
-  if (s === 'COMPLETED' || s === 'COMMAND_ACCEPTED' || s === 'READY') return 'ok';
+  if (s === 'COMPLETED' || s === 'COMMAND_ACCEPTED' || s === 'EXECUTIVE_RESPONSE' || s === 'READY') return 'ok';
   if (s === 'FAILED' || s === 'ERROR') return 'bad';
   return 'warn';
 }
@@ -521,5 +522,6 @@ start().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
 
 
