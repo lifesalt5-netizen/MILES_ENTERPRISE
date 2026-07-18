@@ -6,6 +6,7 @@ const path = require('path');
 const DigitalCOOHost = require('./DigitalCOOHost');
 const CommandIntentPlannerService = require('../CommandIntentPlannerService');
 const ExecutiveResponseService = require('../ExecutiveResponseService');
+const ExecutiveConversationService = require('../ExecutiveConversationService');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const PORT = Number(process.env.MILES_COMMAND_PORT || 8787);
@@ -520,3 +521,5 @@ start().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+
