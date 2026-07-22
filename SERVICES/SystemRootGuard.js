@@ -1,5 +1,5 @@
 "use strict";
-const systemRootGuard = require("./SERVICES/SystemRootGuard");
+const systemRootGuard = require("./SystemRootGuard");
 systemRootGuard.enforce();
 const guardResult = systemRootGuard.enforce();
 

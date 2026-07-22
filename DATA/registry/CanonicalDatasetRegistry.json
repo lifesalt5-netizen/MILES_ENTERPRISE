@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "name": "MILES Enterprise Canonical Dataset Registry",
+  "description": "Single source of truth for all production datasets, outbound segments, verified repositories, campaign mappings, and operational assets.",
+  "environment": "production",
+  "lastUpdated": "2026-07-22T00:00:00Z",
+
+  "segments": {
+    "GSA No Sales": {
+      "id": "gsa_no_sales",
+      "enabled": true,
+      "primary": "D:\\P2GC_Intelligence\\ORION\\Outbound_Segments\\GSA_No_Sales.csv",
+      "fallback": "D:\\P2GC_Intelligence\\CONSOLIDATION OF LEADS\\SEGMENTS\\GSA_NO_SALES.csv",
+      "campaign": "GSA No Sales",
+      "domain": "pathwaysgsa.com",
+      "status": "ACTIVE"
+    },
+
+    "SAM No Sales": {
+      "id": "sam_no_sales",
+      "enabled": true,
+      "primary": "D:\\P2GC_Intelligence\\ORION\\Outbound_Segments\\SAM_No_Sales.csv",
+      "fallback": "D:\\P2GC_Intelligence\\CONSOLIDATION OF LEADS\\SEGMENTS\\SAM_NO_SALES.csv",
+      "campaign": "SAM No Sales",
+      "domain": "pathwaysgov.com",
+      "status": "ACTIVE"
+    },
+
+    "VA No Sales": {
+      "id": "va_no_sales",
+      "enabled": true,
+      "primary": "D:\\P2GC_Intelligence\\ORION\\Outbound_Segments\\VA_No_Sales.csv",
+      "fallback": "D:\\P2GC_Intelligence\\CONSOLIDATION OF LEADS\\SEGMENTS\\VA_NO_SALES.csv",
+      "campaign": "VA No Sales",
+      "domain": "pathwaysgovcon.com",
+      "status": "ACTIVE"
+    },
+
+    "Expired Everything": {
+      "id": "expired_everything",
+      "enabled": true,
+      "primary": "D:\\P2GC_Intelligence\\ORION\\Outbound_Segments\\Expired_Everything.csv",
+      "fallback": "",
+      "campaign": "Expired Everything",
+      "domain": "pathwaystogc.com",
+      "status": "ACTIVE"
+    }
+  },
+
+  "verifiedRepositories": {
+    "primary": {
+      "id": "millionverifier_verified",
+      "path": "D:\\P2GC_Intelligence\\CONSOLIDATION OF LEADS\\MASTER\\SBS_FILTERED_TARGETS_OK_ONLY_MILLIONVERIFIER.csv",
+      "type": "MillionVerifier",
+      "status": "ACTIVE"
+    },
+
+    "secondary": {
+      "id": "validated_targets",
+      "path": "D:\\P2GC_Intelligence\\ARCHIVE_2026_REVIEW\\Good Files to use\\Good To Use and segmented\\SBS_VALIDATED_EMAIL_TARGETS.csv",
+      "type": "Validated Repository",
+      "status": "FALLBACK"
+    }
+  },
+
+  "campaignMappings": {
+    "GSA No Sales": {
+      "segment": "GSA No Sales",
+      "campaign": "GSA No Sales"
+    },
+
+    "SAM No Sales": {
+      "segment": "SAM No Sales",
+      "campaign": "SAM No Sales"
+    },
+
+    "VA No Sales": {
+      "segment": "VA No Sales",
+      "campaign": "VA No Sales"
+    },
+
+    "Expired Everything": {
+      "segment": "Expired Everything",
+      "campaign": "Expired Everything"
+    }
+  },
+
+  "domains": {
+    "pathwaysgsa.com": {
+      "enabled": true,
+      "purpose": "GSA"
+    },
+
+    "pathwaysgov.com": {
+      "enabled": true,
+      "purpose": "SAM"
+    },
+
+    "pathwaysgovcon.com": {
+      "enabled": true,
+      "purpose": "VA"
+    },
+
+    "pathwaystogc.com": {
+      "enabled": true,
+      "purpose": "Expired"
+    },
+
+    "pathwaysfederal.com": {
+      "enabled": true,
+      "purpose": "Federal"
+    },
+
+    "pathways2gc.com": {
+      "enabled": false,
+      "protected": true,
+      "purpose": "Corporate"
+    }
+  },
+
+  "rules": {
+    "preferPrimaryDatasets": true,
+    "allowFallbackDatasets": true,
+    "failIfDatasetMissing": false,
+    "verifyDatasetExists": true,
+    "verifyFileReadable": true,
+    "calculateCountsLive": true,
+    "neverStoreStaticCounts": true
+  },
+
+  "healthChecks": {
+    "verifySegmentFiles": true,
+    "verifyVerifiedRepositories": true,
+    "verifyCampaignMappings": true,
+    "verifyDomains": true
+  }
+}

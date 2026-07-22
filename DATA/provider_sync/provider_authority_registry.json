@@ -3,7 +3,7 @@
   "action": "PROVIDER_AUTHORITY_REGISTRY",
   "type": "MILES_PROVIDER_AUTHORITY_REGISTRY",
   "build": "EXEC_006",
-  "generatedAt": "2026-07-13T15:59:24.672Z",
+  "generatedAt": "2026-07-22T20:13:30.742Z",
   "providers": [
     {
       "key": "instantly",
@@ -62,7 +62,7 @@
         "ASSIGN_SENDING_ACCOUNTS",
         "GENERATE_CAMPAIGN_REPORT"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     },
     {
       "key": "google_workspace",
@@ -117,7 +117,7 @@
         "SUSPEND_USER",
         "VERIFY_MAILBOX"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     },
     {
       "key": "namecheap",
@@ -174,7 +174,7 @@
         "VERIFY_DKIM",
         "VERIFY_DMARC"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     },
     {
       "key": "website",
@@ -227,7 +227,7 @@
         "VERIFY_PAGE",
         "GENERATE_WEBSITE_REPORT"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     },
     {
       "key": "orion",
@@ -278,7 +278,7 @@
         "RUN_INTELLIGENCE_JOB",
         "GENERATE_ORION_REPORT"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     },
     {
       "key": "filesystem",
@@ -327,7 +327,7 @@
         "READ_JSON",
         "VERIFY_PATH"
       ],
-      "generatedAt": "2026-07-13T15:59:24.672Z"
+      "generatedAt": "2026-07-22T20:13:30.743Z"
     }
   ],
   "summary": {

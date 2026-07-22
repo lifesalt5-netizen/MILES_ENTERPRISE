@@ -1,22 +1,245 @@
 {
   "ok": true,
-  "cycleId": "COO-20260713155633-001",
-  "generatedAt": "2026-07-13T15:56:39.717Z",
+  "cycleId": "COO-20260722180712-013",
+  "generatedAt": "2026-07-22T18:07:33.832Z",
   "objective": "Move MILES closer to autonomous Digital COO operation for P2GC today.",
   "priorities": [
     {
-      "id": "MISSION-1783958199716-5850",
+      "id": "MISSION-1784743653524-78805",
+      "priority": 1,
+      "area": "Marketing",
+      "title": "Increase safe outbound operating coverage",
+      "objective": "Audit Instantly campaign health, deliverability, bounce risk, and inbox capacity",
+      "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+      "recommendedAction": "Audit paused Instantly campaigns, deliverability risk, inbox capacity, and safe resume options.",
+      "expectedImpact": "Improves lead generation and revenue pipeline.",
+      "owner": "Miles",
+      "requiresKevin": false,
+      "relatedProvider": "Marketing",
+      "businessImpactScore": 86.75,
+      "automationConfidence": "HIGH",
+      "metadata": {
+        "marketing": {
+          "totalCampaigns": 67,
+          "activeCampaigns": 1
+        },
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 142.5,
+      "urgency": 90,
+      "customerImpact": 85,
+      "strategicValue": 80,
+      "risk": 30,
+      "executionConfidence": 70,
+      "provider": "Marketing",
+      "department": "Marketing",
+      "requiresCEO": false,
+      "score": 86.75,
+      "rank": 1,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 142.5, customer impact of 85, strategic value of 80."
+    },
+    {
+      "id": "MISSION-1784743653524-85227",
+      "priority": 2,
+      "area": "ORION",
+      "title": "Investigate ORION watch condition",
+      "objective": "Refresh ORION data and verify contractor and opportunity intelligence",
+      "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+      "recommendedAction": "Run the authorized ORION dataset refresh and verify database modification time afterward.",
+      "expectedImpact": "Prevents small operational issues from becoming business blockers.",
+      "owner": "Miles",
+      "requiresKevin": false,
+      "relatedProvider": "ORION",
+      "businessImpactScore": 85.25,
+      "automationConfidence": "HIGH",
+      "metadata": {
+        "health": {
+          "area": "ORION",
+          "status": "Watch",
+          "score": 63,
+          "risk": "MEDIUM",
+          "confidence": "HIGH",
+          "lastSuccess": "2026-07-22T18:07:30.125Z",
+          "lastFailure": null,
+          "exceptions": [
+            {
+              "type": "DatabaseFreshness",
+              "severity": "Warning",
+              "message": "ORION database is 788.54 hours old."
+            }
+          ],
+          "recommendations": [
+            "Run the authorized ORION dataset refresh and verify database modification time afterward."
+          ],
+          "metrics": {
+            "database": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+            "tableCount": 66,
+            "contractors": 361873,
+            "buyers": 36137,
+            "opportunities": 835015,
+            "recompetes": 831804,
+            "recommendations": 361873,
+            "personas": 361873,
+            "recommendationCoverage": 100,
+            "personaCoverage": 100,
+            "databaseFreshness": {
+              "exists": true,
+              "modifiedAt": "2026-06-19T21:35:18.000Z",
+              "ageHours": 788.54,
+              "stale": true,
+              "thresholdHours": 24
+            },
+            "sampleSizes": {
+              "contractors": 100,
+              "buyers": 100,
+              "opportunities": 100,
+              "recompetes": 100,
+              "recommendations": 100,
+              "personas": 100
+            }
+          },
+          "sourceSystems": [],
+          "dependencies": []
+        },
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 80,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "ORION",
+      "department": "ORION",
+      "requiresCEO": false,
+      "score": 85.25,
+      "rank": 2,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80."
+    },
+    {
+      "id": "MISSION-1784743653524-63453",
+      "priority": 2,
+      "area": "ORION",
+      "title": "Keep ORION intelligence fresh for revenue decisions",
+      "objective": "Refresh ORION data and verify contractor and opportunity intelligence",
+      "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+      "recommendedAction": "Audit ORION health, counts, recommendations, personas, and missing intelligence layers.",
+      "expectedImpact": "Protects demo readiness, opportunity intelligence, and contractor recommendations.",
+      "owner": "Miles",
+      "requiresKevin": false,
+      "relatedProvider": "ORION",
+      "businessImpactScore": 85.25,
+      "automationConfidence": "HIGH",
+      "metadata": {
+        "orion": {
+          "contractors": 100,
+          "opportunities": 100
+        },
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 80,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "ORION",
+      "department": "ORION",
+      "requiresCEO": false,
+      "score": 85.25,
+      "rank": 3,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80."
+    },
+    {
+      "id": "MISSION-1784743653524-47450",
+      "priority": 2,
+      "area": "Sales",
+      "title": "Review active revenue pipeline",
+      "objective": "Review active deals and generate overdue follow-up and next-action work",
+      "reason": "This mission ranked with a score of 83.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +6 because Proposal urgency is elevated.",
+      "recommendedAction": "Prioritize deals by value, probability, recency, and missing next action.",
+      "expectedImpact": "Improves close rate and revenue visibility.",
+      "owner": "Miles",
+      "requiresKevin": false,
+      "relatedProvider": null,
+      "businessImpactScore": 83.25,
+      "automationConfidence": "HIGH",
+      "metadata": {
+        "dealCount": 2,
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 80,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "Sales",
+      "department": "Sales",
+      "requiresCEO": false,
+      "score": 83.25,
+      "rank": 4,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80."
+    },
+    {
+      "id": "MISSION-1784743653524-25261",
+      "priority": 2,
+      "area": "Revenue Operations",
+      "title": "Restore minimum outbound campaign coverage",
+      "objective": "Audit paused Instantly campaigns and prepare the next safe campaign action",
+      "reason": "This mission ranked with a score of 77.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+      "recommendedAction": "Determine whether paused campaigns can safely resume and identify the next verified segment and available inbox capacity.",
+      "expectedImpact": "Maintains consistent lead generation and pipeline creation.",
+      "owner": "Miles",
+      "requiresKevin": false,
+      "relatedProvider": "MarketingProvider",
+      "businessImpactScore": 77.25,
+      "automationConfidence": "HIGH",
+      "metadata": {
+        "revenueMetrics": {
+          "campaignsTotal": 67,
+          "campaignsActive": 1,
+          "campaignsPausedOrFailed": 0,
+          "repliesTotal": 0,
+          "repliesPositive": 0,
+          "repliesUnclassified": 0,
+          "dealsTotal": 2,
+          "mailboxesTotal": 0,
+          "mailboxesUnhealthy": 0,
+          "segmentsTotal": 48,
+          "segmentsDepleted": 0,
+          "sentObserved": 0,
+          "bouncesObserved": 0,
+          "bounceRate": 0
+        },
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 80,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "MarketingProvider",
+      "department": "Revenue Operations",
+      "requiresCEO": false,
+      "score": 77.25,
+      "rank": 5,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80."
+    },
+    {
+      "id": "MISSION-1784743653524-33832",
       "priority": 2,
       "area": "Runtime",
       "title": "Investigate Runtime watch condition",
       "objective": "Evaluate operating issue and create an authorized repair plan: Investigate Runtime watch condition",
-      "reason": "Runtime is in Watch status with score 82.",
+      "reason": "This mission ranked with a score of 72.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
       "recommendedAction": "Review failed task details and queue safe repair work.",
       "expectedImpact": "Prevents small operational issues from becoming business blockers.",
       "owner": "Miles",
       "requiresKevin": false,
       "relatedProvider": "Runtime",
-      "businessImpactScore": 80,
+      "businessImpactScore": 72.75,
       "automationConfidence": "HIGH",
       "metadata": {
         "health": {
@@ -25,58 +248,75 @@
           "score": 82,
           "risk": "MEDIUM",
           "confidence": "HIGH",
-          "lastSuccess": "2026-07-13T15:56:38.313Z",
-          "lastFailure": "2026-07-13T15:56:38.314Z",
+          "lastSuccess": "2026-07-22T18:07:31.467Z",
+          "lastFailure": "2026-07-22T18:07:31.467Z",
           "exceptions": [
             {
               "type": "TaskFailures",
               "severity": "Warning",
-              "message": "2 failed runtime task(s) detected."
+              "message": "25 failed runtime task(s) detected."
             }
           ],
           "recommendations": [
             "Review failed task details and queue safe repair work."
           ],
           "metrics": {
-            "total": 132,
+            "total": 328,
             "pending": 0,
-            "running": 5,
-            "completed": 124,
-            "failed": 2,
-            "healthScore": 100
+            "running": 2,
+            "completed": 151,
+            "failed": 25,
+            "healthScore": 95
           }
         },
-        "cycleId": "COO-20260713155633-001"
-      }
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 50,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "Runtime",
+      "department": "Runtime",
+      "requiresCEO": false,
+      "score": 72.75,
+      "rank": 6,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 50."
     },
     {
-      "id": "MISSION-1783958199716-56890",
+      "id": "MISSION-1784743653524-58793",
       "priority": 2,
       "area": "Website",
       "title": "Investigate Website watch condition",
       "objective": "Verify website health, CTA, form, Calendly, SSL, and availability",
-      "reason": "Website is in Watch status with score 63.",
+      "reason": "This mission ranked with a score of 72.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
       "recommendedAction": "Verify the approved Calendly link is present and reachable.",
       "expectedImpact": "Prevents small operational issues from becoming business blockers.",
       "owner": "Miles",
       "requiresKevin": false,
       "relatedProvider": "Website",
-      "businessImpactScore": 80,
+      "businessImpactScore": 72.75,
       "automationConfidence": "HIGH",
       "metadata": {
         "health": {
           "area": "Website",
           "status": "Watch",
-          "score": 63,
+          "score": 51,
           "risk": "MEDIUM",
           "confidence": "HIGH",
-          "lastSuccess": "2026-07-13T15:56:33.279Z",
+          "lastSuccess": "2026-07-22T18:07:12.235Z",
           "lastFailure": null,
           "exceptions": [
             {
               "type": "Conversion",
               "severity": "Warning",
               "message": "Calendly integration was not detected."
+            },
+            {
+              "type": "BrokenLinks",
+              "severity": "Warning",
+              "message": "1 broken internal link(s) detected."
             },
             {
               "type": "ContentDrift",
@@ -86,12 +326,13 @@
           ],
           "recommendations": [
             "Verify the approved Calendly link is present and reachable.",
+            "Repair broken internal links through the approved website change queue.",
             "Review content drift against approved website changes before publishing or rollback."
           ],
           "metrics": {
             "homepageReachable": true,
             "statusCode": 200,
-            "loadMs": 1358,
+            "loadMs": 1152,
             "title": "Unlock Government Contract Opportunities",
             "h1": "Federal &amp; SLED Market Entry Advisory",
             "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
@@ -122,7 +363,7 @@
             "linksDiscovered": 19,
             "internalLinks": 13,
             "linksChecked": 13,
-            "brokenLinks": 0,
+            "brokenLinks": 1,
             "hasCanonical": true,
             "hasViewport": true,
             "hasLang": true,
@@ -138,143 +379,196 @@
             "Website"
           ]
         },
-        "cycleId": "COO-20260713155633-001"
-      }
-    },
-    {
-      "id": "MISSION-1783958199716-64748",
-      "priority": 2,
-      "area": "ORION",
-      "title": "Investigate ORION watch condition",
-      "objective": "Refresh ORION data and verify contractor and opportunity intelligence",
-      "reason": "ORION is in Watch status with score 63.",
-      "recommendedAction": "Run the authorized ORION dataset refresh and verify database modification time afterward.",
-      "expectedImpact": "Prevents small operational issues from becoming business blockers.",
-      "owner": "Miles",
-      "requiresKevin": false,
-      "relatedProvider": "ORION",
-      "businessImpactScore": 80,
-      "automationConfidence": "HIGH",
-      "metadata": {
-        "health": {
-          "area": "ORION",
-          "status": "Watch",
-          "score": 63,
-          "risk": "MEDIUM",
-          "confidence": "HIGH",
-          "lastSuccess": "2026-07-13T15:56:37.275Z",
-          "lastFailure": null,
-          "exceptions": [
-            {
-              "type": "DatabaseFreshness",
-              "severity": "Warning",
-              "message": "ORION database is 570.36 hours old."
-            }
-          ],
-          "recommendations": [
-            "Run the authorized ORION dataset refresh and verify database modification time afterward."
-          ],
-          "metrics": {
-            "database": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
-            "tableCount": 66,
-            "contractors": 361873,
-            "buyers": 36137,
-            "opportunities": 835015,
-            "recompetes": 831804,
-            "recommendations": 361873,
-            "personas": 361873,
-            "recommendationCoverage": 100,
-            "personaCoverage": 100,
-            "databaseFreshness": {
-              "exists": true,
-              "modifiedAt": "2026-06-19T21:35:18.000Z",
-              "ageHours": 570.36,
-              "stale": true,
-              "thresholdHours": 24
-            },
-            "sampleSizes": {
-              "contractors": 100,
-              "buyers": 100,
-              "opportunities": 100,
-              "recompetes": 100,
-              "recommendations": 100,
-              "personas": 100
-            }
-          },
-          "sourceSystems": [],
-          "dependencies": []
-        },
-        "cycleId": "COO-20260713155633-001"
-      }
-    },
-    {
-      "id": "MISSION-1783958199717-43732",
-      "priority": 2,
-      "area": "ORION",
-      "title": "Keep ORION intelligence fresh for revenue decisions",
-      "objective": "Refresh ORION data and verify contractor and opportunity intelligence",
-      "reason": "ORION has usable contractor and opportunity data and should remain current.",
-      "recommendedAction": "Audit ORION health, counts, recommendations, personas, and missing intelligence layers.",
-      "expectedImpact": "Protects demo readiness, opportunity intelligence, and contractor recommendations.",
-      "owner": "Miles",
-      "requiresKevin": false,
-      "relatedProvider": "ORION",
-      "businessImpactScore": 80,
-      "automationConfidence": "HIGH",
-      "metadata": {
-        "orion": {
-          "contractors": 100,
-          "opportunities": 100
-        },
-        "cycleId": "COO-20260713155633-001"
-      }
+        "cycleId": "COO-20260722180712-013"
+      },
+      "expectedRevenue": 120,
+      "urgency": 70,
+      "customerImpact": 65,
+      "strategicValue": 50,
+      "risk": 45,
+      "executionConfidence": 60,
+      "provider": "Website",
+      "department": "Website",
+      "requiresCEO": false,
+      "score": 72.75,
+      "rank": 7,
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 50."
     }
   ],
   "topPriority": {
-    "id": "MISSION-1783958199716-5850",
-    "priority": 2,
-    "area": "Runtime",
-    "title": "Investigate Runtime watch condition",
-    "objective": "Evaluate operating issue and create an authorized repair plan: Investigate Runtime watch condition",
-    "reason": "Runtime is in Watch status with score 82.",
-    "recommendedAction": "Review failed task details and queue safe repair work.",
-    "expectedImpact": "Prevents small operational issues from becoming business blockers.",
+    "id": "MISSION-1784743653524-78805",
+    "priority": 1,
+    "area": "Marketing",
+    "title": "Increase safe outbound operating coverage",
+    "objective": "Audit Instantly campaign health, deliverability, bounce risk, and inbox capacity",
+    "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+    "recommendedAction": "Audit paused Instantly campaigns, deliverability risk, inbox capacity, and safe resume options.",
+    "expectedImpact": "Improves lead generation and revenue pipeline.",
     "owner": "Miles",
     "requiresKevin": false,
-    "relatedProvider": "Runtime",
-    "businessImpactScore": 80,
+    "relatedProvider": "Marketing",
+    "businessImpactScore": 86.75,
     "automationConfidence": "HIGH",
     "metadata": {
-      "health": {
-        "area": "Runtime",
-        "status": "Watch",
-        "score": 82,
-        "risk": "MEDIUM",
-        "confidence": "HIGH",
-        "lastSuccess": "2026-07-13T15:56:38.313Z",
-        "lastFailure": "2026-07-13T15:56:38.314Z",
-        "exceptions": [
-          {
-            "type": "TaskFailures",
-            "severity": "Warning",
-            "message": "2 failed runtime task(s) detected."
-          }
-        ],
-        "recommendations": [
-          "Review failed task details and queue safe repair work."
-        ],
-        "metrics": {
-          "total": 132,
-          "pending": 0,
-          "running": 5,
-          "completed": 124,
-          "failed": 2,
-          "healthScore": 100
-        }
+      "marketing": {
+        "totalCampaigns": 67,
+        "activeCampaigns": 1
       },
-      "cycleId": "COO-20260713155633-001"
-    }
+      "cycleId": "COO-20260722180712-013"
+    },
+    "expectedRevenue": 142.5,
+    "urgency": 90,
+    "customerImpact": 85,
+    "strategicValue": 80,
+    "risk": 30,
+    "executionConfidence": 70,
+    "provider": "Marketing",
+    "department": "Marketing",
+    "requiresCEO": false,
+    "score": 86.75,
+    "rank": 1,
+    "expectedBusinessImpact": "Supports business execution by expected revenue impact of 142.5, customer impact of 85, strategic value of 80."
   },
-  "autonomousCount": 4,
-  "escalationCount": 0
+  "autonomousCount": 7,
+  "escalationCount": 0,
+  "executiveAgenda": {
+    "generatedAt": "2026-07-22T18:07:33.832Z",
+    "executiveScore": 86.75,
+    "topPriority": {
+      "id": "MISSION-1784743653524-78805",
+      "title": "Increase safe outbound operating coverage",
+      "score": 86.75,
+      "rank": 1,
+      "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+      "expectedBusinessImpact": "Supports business execution by expected revenue impact of 142.5, customer impact of 85, strategic value of 80.",
+      "requiresCEO": false,
+      "provider": "Marketing",
+      "department": "Marketing"
+    },
+    "agenda": [
+      {
+        "id": "MISSION-1784743653524-78805",
+        "title": "Increase safe outbound operating coverage",
+        "score": 86.75,
+        "rank": 1,
+        "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 142.5, customer impact of 85, strategic value of 80.",
+        "requiresCEO": false,
+        "provider": "Marketing",
+        "department": "Marketing"
+      },
+      {
+        "id": "MISSION-1784743653524-85227",
+        "title": "Investigate ORION watch condition",
+        "score": 85.25,
+        "rank": 2,
+        "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80.",
+        "requiresCEO": false,
+        "provider": "ORION",
+        "department": "ORION"
+      },
+      {
+        "id": "MISSION-1784743653524-63453",
+        "title": "Keep ORION intelligence fresh for revenue decisions",
+        "score": 85.25,
+        "rank": 3,
+        "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80.",
+        "requiresCEO": false,
+        "provider": "ORION",
+        "department": "ORION"
+      },
+      {
+        "id": "MISSION-1784743653524-47450",
+        "title": "Review active revenue pipeline",
+        "score": 83.25,
+        "rank": 4,
+        "reason": "This mission ranked with a score of 83.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +6 because Proposal urgency is elevated.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80.",
+        "requiresCEO": false,
+        "provider": "Sales",
+        "department": "Sales"
+      },
+      {
+        "id": "MISSION-1784743653524-25261",
+        "title": "Restore minimum outbound campaign coverage",
+        "score": 77.25,
+        "rank": 5,
+        "reason": "This mission ranked with a score of 77.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 80.",
+        "requiresCEO": false,
+        "provider": "MarketingProvider",
+        "department": "Revenue Operations"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "MISSION-1784743653524-33832",
+        "title": "Investigate Runtime watch condition",
+        "score": 72.75,
+        "rank": 6,
+        "reason": "This mission ranked with a score of 72.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 50.",
+        "requiresCEO": false
+      },
+      {
+        "id": "MISSION-1784743653524-58793",
+        "title": "Investigate Website watch condition",
+        "score": 72.75,
+        "rank": 7,
+        "reason": "This mission ranked with a score of 72.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "expectedBusinessImpact": "Supports business execution by expected revenue impact of 120, customer impact of 65, strategic value of 50.",
+        "requiresCEO": false
+      }
+    ],
+    "requiresCEO": false
+  },
+  "executiveLog": {
+    "executiveScore": 86.75,
+    "topPriority": {
+      "title": "Increase safe outbound operating coverage",
+      "score": 86.75,
+      "rank": 1,
+      "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+      "requiresCEO": false
+    },
+    "rankedMissions": [
+      {
+        "title": "Increase safe outbound operating coverage",
+        "score": 86.75,
+        "rank": 1,
+        "reason": "This mission ranked with a score of 86.75 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "requiresCEO": false
+      },
+      {
+        "title": "Investigate ORION watch condition",
+        "score": 85.25,
+        "rank": 2,
+        "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+        "requiresCEO": false
+      },
+      {
+        "title": "Keep ORION intelligence fresh for revenue decisions",
+        "score": 85.25,
+        "rank": 3,
+        "reason": "This mission ranked with a score of 85.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +8 because ORION data needs refresh.",
+        "requiresCEO": false
+      },
+      {
+        "title": "Review active revenue pipeline",
+        "score": 83.25,
+        "rank": 4,
+        "reason": "This mission ranked with a score of 83.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue. Context added +6 because Proposal urgency is elevated.",
+        "requiresCEO": false
+      },
+      {
+        "title": "Restore minimum outbound campaign coverage",
+        "score": 77.25,
+        "rank": 5,
+        "reason": "This mission ranked with a score of 77.25 because it creates revenue, has urgent timing, supports customer value, supports strategic priorities, has low execution risk and supports Generate consistent recurring revenue.",
+        "requiresCEO": false
+      }
+    ]
+  }
 }

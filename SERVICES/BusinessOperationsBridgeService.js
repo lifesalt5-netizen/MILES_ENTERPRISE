@@ -1,7 +1,10 @@
-﻿"use strict";
+"use strict";
+
+const RevenueMissionSourceService = require("./RevenueMissionSourceService");
 
 const fs = require("fs");
 const path = require("path");
+const ProviderRegistry = require("./ProviderRegistry");
 
 let taskQueue = null;
 
@@ -61,6 +64,12 @@ class BusinessOperationsBridgeService {
     this.lastRun = null;
     this.bridgedCount = 0;
     this.failedCount = 0;
+
+    this.revenueMissionSource =
+      options.revenueMissionSource ||
+      new RevenueMissionSourceService({
+        rootDir: this.rootDir
+      });
   }
 
   log(message) {
@@ -258,6 +267,104 @@ class BusinessOperationsBridgeService {
     };
   }
 
+
+  importRevenueWork() {
+    if (
+      !this.revenueMissionSource ||
+      typeof this.revenueMissionSource.readCandidates !== "function"
+    ) {
+      return {
+        found: 0,
+        imported: 0,
+        updated: 0,
+        sources: []
+      };
+    }
+
+    const revenueRead =
+      this.revenueMissionSource.readCandidates();
+
+    const candidates =
+      Array.isArray(revenueRead.candidates)
+        ? revenueRead.candidates
+        : [];
+
+    if (!candidates.length) {
+      return {
+        found: 0,
+        imported: 0,
+        updated: 0,
+        sources: revenueRead.sourceSummary || []
+      };
+    }
+
+    const businessQueue = this.readQueue();
+
+    businessQueue.operations =
+      Array.isArray(businessQueue.operations)
+        ? businessQueue.operations
+        : [];
+
+    const existingById = new Map(
+      businessQueue.operations
+        .filter((operation) => operation && operation.id)
+        .map((operation) => [operation.id, operation])
+    );
+
+    const terminalStates = [
+      "BRIDGED",
+      "COMPLETED",
+      "EXECUTED",
+      "CANCELLED",
+      "REJECTED"
+    ];
+
+    let imported = 0;
+    let updated = 0;
+
+    for (const incoming of candidates) {
+      const existing =
+        existingById.get(incoming.id);
+
+      if (!existing) {
+        businessQueue.operations.push(incoming);
+        existingById.set(incoming.id, incoming);
+        imported++;
+        continue;
+      }
+
+      const existingStatus =
+        String(existing.status || "").toUpperCase();
+
+      if (terminalStates.includes(existingStatus)) {
+        continue;
+      }
+
+      Object.assign(existing, {
+        ...incoming,
+        importedAt:
+          existing.importedAt ||
+          incoming.importedAt,
+        updatedAt: now()
+      });
+
+      updated++;
+    }
+
+    this.writeQueue(businessQueue);
+
+    this.log(
+      `Revenue import found=${candidates.length} imported=${imported} updated=${updated}`
+    );
+
+    return {
+      found: candidates.length,
+      imported,
+      updated,
+      sources: revenueRead.sourceSummary || []
+    };
+  }
+
   isPending(operation) {
     return ["READY", "PENDING", "NEW"].includes(
       String(operation.status || "").toUpperCase()
@@ -265,66 +372,8 @@ class BusinessOperationsBridgeService {
   }
 
   resolveProvider(operation = {}) {
-    const planned = operation.plan || {};
-
-    const explicitProvider =
-      operation.provider ||
-      planned.provider ||
-      operation.system ||
-      operation.connector ||
-      operation.department;
-
-    if (explicitProvider) {
-      const p = String(explicitProvider).trim();
-      if (p.toUpperCase() === "MILES") return "MILES";
-      if (p.toUpperCase() === "ORION") return "ORION";
-      if (p.toUpperCase() === "INSTANTLY") return "INSTANTLY";
-      if (p.toLowerCase() === "website") return "Website";
-      if (p.toLowerCase() === "linkedin") return "LinkedIn";
-      if (p.toUpperCase() === "GOOGLE") return "GOOGLE";
-      return p;
-    }
-
-    const text = [
-      operation.provider,
-      operation.system,
-      operation.connector,
-      operation.department,
-      operation.area,
-      operation.worker,
-      operation.command,
-      operation.action,
-      operation.title
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    if (/instantly|campaign|email|lead|outbound|revenue|sales|crm|pipeline|proposal|deal/.test(text)) {
-      return "Sales";
-    }
-
-    if (/orion|contractor|buyer|persona|recommendation|database/.test(text)) {
-      return "ORION";
-    }
-
-    if (/sam|gsa|va|rfi|sources sought|forecast|sled|government|contract|opportunit/.test(text)) {
-      return "Government";
-    }
-
-    if (/website|b12|seo|cta|form|conversion/.test(text)) {
-      return "Website";
-    }
-
-    if (/linkedin|post|article|comment|engagement/.test(text)) {
-      return "LinkedIn";
-    }
-
-    if (/engineering|runtime|repair|regression|log|self|repository|dispatch/.test(text)) {
-      return "MILES";
-    }
-
-    return "Executive";
+      const provider = ProviderRegistry.resolve(operation);
+      return provider ? provider.id : "MILES";
   }
 
   normalizePriority(value) {
@@ -492,6 +541,10 @@ class BusinessOperationsBridgeService {
     // business operations queue before looking for executable work.
     const marketingImport = this.importMarketingWork();
 
+    // BUILD130: Import revenue work into the same canonical
+    // business operations queue before dispatch.
+    const revenueImport = this.importRevenueWork();
+
     const queue = this.readQueue();
     queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
 
@@ -508,6 +561,7 @@ class BusinessOperationsBridgeService {
         queueFile: this.queueFile,
         marketingQueueFile: this.marketingQueueFile,
         marketingImport,
+        revenueImport,
         operationsFound: 0,
         operationsQueued: 0,
         operationsFailed: 0
@@ -555,6 +609,7 @@ class BusinessOperationsBridgeService {
       queueFile: this.queueFile,
       marketingQueueFile: this.marketingQueueFile,
       marketingImport,
+      revenueImport,
       operationsFound: pending.length,
       operationsQueued: queued,
       operationsFailed: failed,

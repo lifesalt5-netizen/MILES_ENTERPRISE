@@ -347,7 +347,21 @@ async function runMarketingCOO() {
   const work = createMarketingWork({ instantly, segments });
 
   for (const item of work) {
-    taskQueue.add(item);
+
+    taskQueue.add(
+      "WORKFORCE_STEP",
+      {
+        provider: "MarketingProvider",
+        connector: "WORKFORCE",
+        department: item.department,
+        action: "executeMarketingWork",
+        title: item.title,
+        requiresKevin: item.requiresKevin,
+        ...item.payload
+      },
+      item.priority || 3
+    );
+
   }
 
   const brief = {

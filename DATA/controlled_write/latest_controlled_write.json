@@ -3,8 +3,8 @@
   "action": "CONTROLLED_WRITE",
   "type": "MILES_CONTROLLED_WRITE_RESULT",
   "build": "EXEC_004",
-  "generatedAt": "2026-07-04T02:46:29.288Z",
-  "durationMs": 6,
+  "generatedAt": "2026-07-22T01:38:28.371Z",
+  "durationMs": 1403,
   "provider": "instantly",
   "operation": "CREATE_TEST_CAMPAIGN",
   "result": {
@@ -18,11 +18,23 @@
     "dryRun": true,
     "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
     "payloadPreview": {
-      "name": "MILES_TEST_2026-07-04T02-46-29-283Z",
-      "description": "Controlled write test campaign created by MILES OS."
+      "name": "MILES_TEST_2026-07-22T01-38-26-968Z",
+      "description": "Controlled write test campaign created by MILES OS.",
+      "objective": "Stage protected external changes for approval.",
+      "originalCommand": "Own Instantly",
+      "action": "CONTROLLED_WRITE",
+      "capability": "CONTROLLED_WRITE",
+      "provider": "instantly",
+      "connector": "instantly",
+      "operation": "CREATE_TEST_CAMPAIGN",
+      "originalObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+      "executionId": "BIZ-1784684272443-ywgbnr",
+      "dryRun": true,
+      "stageOnly": true,
+      "requiresApproval": true
     },
-    "durationMs": 2,
-    "generatedAt": "2026-07-04T02:46:29.284Z"
+    "durationMs": 336,
+    "generatedAt": "2026-07-22T01:38:27.304Z"
   },
   "summary": {
     "status": "SAFE_MODE_WRITE_DISABLED",
@@ -30,5 +42,5 @@
     "verified": false,
     "dryRun": true
   },
-  "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\controlled_write"
+  "outDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\controlled_write"
 }

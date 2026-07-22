@@ -1,5 +1,5 @@
-"use strict";
-
+﻿"use strict";
+require("dotenv").config();
 /**
  * EXEC_003 Instantly Live Provider Controller
  * Complete replacement file.
@@ -131,7 +131,34 @@ class InstantlyLiveProviderController {
             case "RESUME_CAMPAIGN":
                 return await this.client.patch(`/campaigns/${encodeURIComponent(payload.campaignId || payload.id)}`, { status: "active" });
             case "UPLOAD_LEADS":
-                return await this.client.post(`/campaigns/${encodeURIComponent(payload.campaignId)}/leads`, { leads: payload.leads || [] });
+
+                const uploaded = [];
+
+                for (const lead of (payload.leads || [])) {
+
+                    const result = await this.client.post(
+                        "/leads",
+                        {
+                            email: lead.email,
+                            first_name: lead.first_name || "",
+                            company_name: lead.company_name || "",
+                            campaign_id: payload.campaignId
+                        }
+                    );
+
+                    uploaded.push(result);
+
+                    if (!result.ok) {
+                        return result;
+                    }
+                }
+
+                return {
+                    ok:true,
+                    status:"LEADS_UPLOADED",
+                    uploaded:uploaded.length,
+                    results:uploaded
+                };
             case "ASSIGN_SENDING_ACCOUNTS":
                 return await this.client.post(`/campaigns/${encodeURIComponent(payload.campaignId)}/accounts`, { accounts: payload.accounts || [] });
             case "GENERATE_CAMPAIGN_REPORT":
@@ -149,6 +176,21 @@ class InstantlyLiveProviderController {
         if (execution.status === "SAFE_MODE_WRITE_DISABLED") {
             return { ok: true, verified: false, status: "SAFE_MODE_NOT_VERIFIED", provider: this.provider, operation, message: "Write operation was not executed because safe mode is enabled." };
         }
+
+        if (operation === "UPLOAD_LEADS") {
+
+            return {
+                ok: execution.ok,
+                verified: execution.ok,
+                status: execution.ok
+                    ? "LEADS_UPLOADED"
+                    : "UPLOAD_FAILED",
+                provider: this.provider,
+                operation
+            };
+
+        }
+
         if (operation === "CREATE_CAMPAIGN") {
             const campaignId = execution.result?.data?.id || execution.result?.data?.campaign?.id || execution.result?.data?.campaignId;
             if (!campaignId) return { ok: true, verified: false, status: "NO_CAMPAIGN_ID_RETURNED", provider: this.provider, operation };
@@ -164,3 +206,5 @@ class InstantlyLiveProviderController {
 }
 
 module.exports = new InstantlyLiveProviderController();
+
+

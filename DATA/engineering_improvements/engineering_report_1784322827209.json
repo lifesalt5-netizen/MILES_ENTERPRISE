@@ -1,0 +1,404 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_REPORT",
+  "objective": "BUILD 052 — BUSINESS CAPABILITY AUDIT\n\nMISSION\n\nDetermine the single highest-value business capability to implement next.\n\nDO NOT assume the answer is Sales COO.\n\nYour job is to analyze the entire MILES platform and produce evidence.\n\nOBJECTIVES\n\n1. Inventory every current business capability.\n2. Determine implementation status:\n   - Complete\n   - Operational\n   - Partial\n   - Planned\n   - Missing\n\n3. Score each capability on:\n   • Revenue Impact\n   • CEO Time Saved\n   • Operational Risk Reduction\n   • Technical Readiness\n   • Dependency Readiness\n\n4. Produce an overall maturity score (0–100).\n\n5. Rank every capability by business value.\n\n6. Recommend ONE capability to build next.\n\n7. Explain WHY it is the highest priority.\n\n8. List every dependency that must exist before implementation.\n\n9. Define measurable success criteria.\n\n10. DO NOT generate code.\n\nOUTPUT\n\nExecutive Summary\n\nCapability Inventory\n\nBusiness Value Scorecard\n\nDependency Analysis\n\nRecommended Next Build\n\nImplementation Plan\n\nValidation Plan\n\nGOVERNANCE\n\nBusiness value takes priority over engineering elegance.\n\nDo not recommend infrastructure work unless it blocks a core COO business capability.\n\nThe goal is to maximize:\n- Revenue generation\n- CEO time reduction\n- Autonomous business execution\n\nNOT:\n- New frameworks\n- Refactoring\n- Cosmetic improvements\n- Technical enhancements without measurable business value.",
+  "executiveSummary": "MILES engineering workflow executed. The service analyzed the runtime, generated a safe implementation proposal, validated key files, and produced this report.",
+  "rootCauseSummary": "One or more engineering issues remain. See findings for evidence and recommended fixes.",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "area": "Planner",
+      "file": "SERVICES/CommandIntentPlannerService.js",
+      "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+      "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+      "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+    },
+    {
+      "severity": "HIGH",
+      "area": "Builder",
+      "file": "BUILDER/BuilderService.js",
+      "issue": "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+      "evidence": "BuilderService does not contain the ENGINEERING_IMPROVEMENT action.",
+      "recommendation": "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+    },
+    {
+      "severity": "MEDIUM",
+      "area": "Builder",
+      "file": "BUILDER/BuilderService.js",
+      "issue": "BuilderService does not expose SELF_MAINTENANCE.",
+      "evidence": "BuilderService does not contain SELF_MAINTENANCE.",
+      "recommendation": "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+    }
+  ],
+  "improvementPlan": [
+    {
+      "step": 1,
+      "action": "ENGINEERING_ANALYZE",
+      "description": "Inspect active MILES runtime files and identify architectural gaps."
+    },
+    {
+      "step": 2,
+      "action": "ENGINEERING_PLAN",
+      "description": "Create the smallest safe implementation plan while preserving production architecture."
+    },
+    {
+      "step": 3,
+      "action": "ENGINEERING_IMPLEMENT",
+      "description": "Create a controlled proposal package. Do not modify production files directly."
+    },
+    {
+      "step": 4,
+      "action": "ENGINEERING_VALIDATE",
+      "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+    },
+    {
+      "step": 5,
+      "action": "ENGINEERING_REPORT",
+      "description": "Return an executive engineering report with evidence and recommended next action."
+    }
+  ],
+  "implementation": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_IMPLEMENT",
+    "proposalId": "proposal_1784322827203",
+    "objective": "BUILD 052 — BUSINESS CAPABILITY AUDIT\n\nMISSION\n\nDetermine the single highest-value business capability to implement next.\n\nDO NOT assume the answer is Sales COO.\n\nYour job is to analyze the entire MILES platform and produce evidence.\n\nOBJECTIVES\n\n1. Inventory every current business capability.\n2. Determine implementation status:\n   - Complete\n   - Operational\n   - Partial\n   - Planned\n   - Missing\n\n3. Score each capability on:\n   • Revenue Impact\n   • CEO Time Saved\n   • Operational Risk Reduction\n   • Technical Readiness\n   • Dependency Readiness\n\n4. Produce an overall maturity score (0–100).\n\n5. Rank every capability by business value.\n\n6. Recommend ONE capability to build next.\n\n7. Explain WHY it is the highest priority.\n\n8. List every dependency that must exist before implementation.\n\n9. Define measurable success criteria.\n\n10. DO NOT generate code.\n\nOUTPUT\n\nExecutive Summary\n\nCapability Inventory\n\nBusiness Value Scorecard\n\nDependency Analysis\n\nRecommended Next Build\n\nImplementation Plan\n\nValidation Plan\n\nGOVERNANCE\n\nBusiness value takes priority over engineering elegance.\n\nDo not recommend infrastructure work unless it blocks a core COO business capability.\n\nThe goal is to maximize:\n- Revenue generation\n- CEO time reduction\n- Autonomous business execution\n\nNOT:\n- New frameworks\n- Refactoring\n- Cosmetic improvements\n- Technical enhancements without measurable business value.",
+    "status": "PROPOSAL_CREATED",
+    "productionModified": false,
+    "approvalRequired": true,
+    "safeMode": true,
+    "executiveSummary": "Engineering proposal package created. No production files were modified.",
+    "analysis": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_ANALYZE",
+      "objective": "BUILD 052 — BUSINESS CAPABILITY AUDIT\n\nMISSION\n\nDetermine the single highest-value business capability to implement next.\n\nDO NOT assume the answer is Sales COO.\n\nYour job is to analyze the entire MILES platform and produce evidence.\n\nOBJECTIVES\n\n1. Inventory every current business capability.\n2. Determine implementation status:\n   - Complete\n   - Operational\n   - Partial\n   - Planned\n   - Missing\n\n3. Score each capability on:\n   • Revenue Impact\n   • CEO Time Saved\n   • Operational Risk Reduction\n   • Technical Readiness\n   • Dependency Readiness\n\n4. Produce an overall maturity score (0–100).\n\n5. Rank every capability by business value.\n\n6. Recommend ONE capability to build next.\n\n7. Explain WHY it is the highest priority.\n\n8. List every dependency that must exist before implementation.\n\n9. Define measurable success criteria.\n\n10. DO NOT generate code.\n\nOUTPUT\n\nExecutive Summary\n\nCapability Inventory\n\nBusiness Value Scorecard\n\nDependency Analysis\n\nRecommended Next Build\n\nImplementation Plan\n\nValidation Plan\n\nGOVERNANCE\n\nBusiness value takes priority over engineering elegance.\n\nDo not recommend infrastructure work unless it blocks a core COO business capability.\n\nThe goal is to maximize:\n- Revenue generation\n- CEO time reduction\n- Autonomous business execution\n\nNOT:\n- New frameworks\n- Refactoring\n- Cosmetic improvements\n- Technical enhancements without measurable business value.",
+      "files": [
+        {
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "exists": true,
+          "size": 18370,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-17T21:13:47.200Z"
+        },
+        {
+          "file": "SERVICES/ExecutionService.js",
+          "exists": true,
+          "size": 28523,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.200Z"
+        },
+        {
+          "file": "SERVICES/EngineeringImprovementService.js",
+          "exists": true,
+          "size": 15712,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": true,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-17T21:13:47.200Z"
+        },
+        {
+          "file": "SERVICES/SelfMaintenanceService.js",
+          "exists": true,
+          "size": 11109,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": true,
+          "hasPlan": false,
+          "hasKeywordRouting": true,
+          "hasEngineeringImprovement": true,
+          "hasSelfMaintenance": true,
+          "checkedAt": "2026-07-17T21:13:47.200Z"
+        },
+        {
+          "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+          "exists": true,
+          "size": 15121,
+          "hasModuleExport": false,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": true,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "SERVICES/ExecutiveResponseService.js",
+          "exists": true,
+          "size": 5822,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "BUILDER/BuilderService.js",
+          "exists": false,
+          "size": 0,
+          "hasModuleExport": false,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "BUILDER/index.js",
+          "exists": false,
+          "size": 0,
+          "hasModuleExport": false,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "CONNECTORS/MILES/connector.js",
+          "exists": true,
+          "size": 1634,
+          "hasModuleExport": true,
+          "hasExecute": true,
+          "hasRun": true,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "CORE/TaskQueue.js",
+          "exists": true,
+          "size": 13455,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.201Z"
+        },
+        {
+          "file": "CORE/ConnectorManager.js",
+          "exists": true,
+          "size": 1096,
+          "hasModuleExport": true,
+          "hasExecute": false,
+          "hasRun": false,
+          "hasPlan": false,
+          "hasKeywordRouting": false,
+          "hasEngineeringImprovement": false,
+          "hasSelfMaintenance": false,
+          "checkedAt": "2026-07-17T21:13:47.202Z"
+        }
+      ],
+      "findings": [
+        {
+          "severity": "HIGH",
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+          "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        },
+        {
+          "severity": "HIGH",
+          "area": "Builder",
+          "file": "BUILDER/BuilderService.js",
+          "issue": "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+          "evidence": "BuilderService does not contain the ENGINEERING_IMPROVEMENT action.",
+          "recommendation": "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+        },
+        {
+          "severity": "MEDIUM",
+          "area": "Builder",
+          "file": "BUILDER/BuilderService.js",
+          "issue": "BuilderService does not expose SELF_MAINTENANCE.",
+          "evidence": "BuilderService does not contain SELF_MAINTENANCE.",
+          "recommendation": "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+        }
+      ],
+      "checkedAt": "2026-07-17T21:13:47.202Z"
+    },
+    "plan": {
+      "ok": true,
+      "service": "EngineeringImprovementService",
+      "action": "ENGINEERING_PLAN",
+      "objective": "BUILD 052 — BUSINESS CAPABILITY AUDIT\n\nMISSION\n\nDetermine the single highest-value business capability to implement next.\n\nDO NOT assume the answer is Sales COO.\n\nYour job is to analyze the entire MILES platform and produce evidence.\n\nOBJECTIVES\n\n1. Inventory every current business capability.\n2. Determine implementation status:\n   - Complete\n   - Operational\n   - Partial\n   - Planned\n   - Missing\n\n3. Score each capability on:\n   • Revenue Impact\n   • CEO Time Saved\n   • Operational Risk Reduction\n   • Technical Readiness\n   • Dependency Readiness\n\n4. Produce an overall maturity score (0–100).\n\n5. Rank every capability by business value.\n\n6. Recommend ONE capability to build next.\n\n7. Explain WHY it is the highest priority.\n\n8. List every dependency that must exist before implementation.\n\n9. Define measurable success criteria.\n\n10. DO NOT generate code.\n\nOUTPUT\n\nExecutive Summary\n\nCapability Inventory\n\nBusiness Value Scorecard\n\nDependency Analysis\n\nRecommended Next Build\n\nImplementation Plan\n\nValidation Plan\n\nGOVERNANCE\n\nBusiness value takes priority over engineering elegance.\n\nDo not recommend infrastructure work unless it blocks a core COO business capability.\n\nThe goal is to maximize:\n- Revenue generation\n- CEO time reduction\n- Autonomous business execution\n\nNOT:\n- New frameworks\n- Refactoring\n- Cosmetic improvements\n- Technical enhancements without measurable business value.",
+      "status": "PLAN_CREATED",
+      "steps": [
+        {
+          "step": 1,
+          "action": "ENGINEERING_ANALYZE",
+          "description": "Inspect active MILES runtime files and identify architectural gaps."
+        },
+        {
+          "step": 2,
+          "action": "ENGINEERING_PLAN",
+          "description": "Create the smallest safe implementation plan while preserving production architecture."
+        },
+        {
+          "step": 3,
+          "action": "ENGINEERING_IMPLEMENT",
+          "description": "Create a controlled proposal package. Do not modify production files directly."
+        },
+        {
+          "step": 4,
+          "action": "ENGINEERING_VALIDATE",
+          "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+        },
+        {
+          "step": 5,
+          "action": "ENGINEERING_REPORT",
+          "description": "Return an executive engineering report with evidence and recommended next action."
+        }
+      ],
+      "recommendations": [
+        {
+          "area": "Planner",
+          "file": "SERVICES/CommandIntentPlannerService.js",
+          "severity": "HIGH",
+          "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+          "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+        },
+        {
+          "area": "Builder",
+          "file": "BUILDER/BuilderService.js",
+          "severity": "HIGH",
+          "issue": "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+          "recommendedAction": "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+        },
+        {
+          "area": "Builder",
+          "file": "BUILDER/BuilderService.js",
+          "severity": "MEDIUM",
+          "issue": "BuilderService does not expose SELF_MAINTENANCE.",
+          "recommendedAction": "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+        }
+      ],
+      "plannedAt": "2026-07-17T21:13:47.203Z"
+    },
+    "proposedChanges": [
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "currentSize": 28523,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\ExecutionService.js"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": false,
+        "currentSize": 0,
+        "proposedChangeType": "CREATE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\BUILDER\\BuilderService.js"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "currentSize": 15121,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "currentSize": 5822,
+        "proposedChangeType": "REPLACE_FILE",
+        "productionWriteAllowed": false,
+        "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+      }
+    ],
+    "validationCommands": [
+      "node --check .\\SERVICES\\ExecutionService.js",
+      "node --check .\\BUILDER\\BuilderService.js",
+      "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+      "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    ],
+    "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+    "createdAt": "2026-07-17T21:13:47.204Z",
+    "proposalPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\engineering_improvements\\proposals\\proposal_1784322827203.json"
+  },
+  "validation": {
+    "ok": false,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_VALIDATE",
+    "filesChecked": 11,
+    "missingFiles": [
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-17T21:13:47.208Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-17T21:13:47.208Z"
+      }
+    ],
+    "filesWithoutModuleExports": [],
+    "validation": {
+      "requiredFilesPresent": false,
+      "moduleExportsValid": true,
+      "builderHasEngineeringImprovement": false,
+      "builderHasSelfMaintenance": false,
+      "plannerRecognizesEngineering": true,
+      "executionHasNoProviderByCapability": true,
+      "executionHasConnectorDispatch": true
+    },
+    "validationStatus": "FAILED",
+    "checkedAt": "2026-07-17T21:13:47.209Z"
+  },
+  "recommendedNextAction": "Review the engineering proposal package and approve specific replacement scripts before production modification.",
+  "completedAt": "2026-07-17T21:13:47.209Z"
+}

@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-07-13T15:57:56.305Z",
+  "generatedAt": "2026-07-22T18:08:06.696Z",
   "title": "MILES Executive COO Brief",
   "businessHealth": "Watch",
-  "businessHealthScore": 78,
+  "businessHealthScore": 76,
   "executiveSummary": {
     "overallStatus": "Watch",
-    "score": 78,
-    "providerCoverage": "4/5 department evidence sources available",
+    "score": 76,
+    "providerCoverage": "5/5 department evidence sources available",
     "criticalDepartments": 0,
     "authorizedActions": 2,
-    "ceoDecisions": 1,
+    "ceoDecisions": 2,
     "summary": [
-      "Business health is Watch with a score of 78.",
-      "4 of 5 department evidence sources are available.",
+      "Business health is Watch with a score of 76.",
+      "5 of 5 department evidence sources are available.",
       "2 action(s) can proceed without CEO approval.",
-      "1 decision(s) require CEO review."
+      "2 decision(s) require CEO review."
     ]
   },
   "todayPriorities": [
@@ -47,10 +47,20 @@
       "owner": "ORION COO",
       "requiresKevin": false,
       "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\orion_coo\\latest_orion_operation.json"
+    },
+    {
+      "priority": 2,
+      "area": "Website",
+      "action": "Prepare repairs for 1 broken internal link(s).",
+      "objective": "Review website broken links and prepare an approved repair plan",
+      "impact": "Protects conversion paths and credibility.",
+      "owner": "Website COO",
+      "requiresKevin": true,
+      "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
     }
   ],
   "operatingPlan": {
-    "generatedAt": "2026-07-13T15:57:56.305Z",
+    "generatedAt": "2026-07-22T18:08:06.696Z",
     "priorities": [
       {
         "priority": 1,
@@ -81,6 +91,16 @@
         "owner": "ORION COO",
         "requiresKevin": false,
         "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\orion_coo\\latest_orion_operation.json"
+      },
+      {
+        "priority": 2,
+        "area": "Website",
+        "action": "Prepare repairs for 1 broken internal link(s).",
+        "objective": "Review website broken links and prepare an approved repair plan",
+        "impact": "Protects conversion paths and credibility.",
+        "owner": "Website COO",
+        "requiresKevin": true,
+        "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
       }
     ],
     "authorizedNow": [
@@ -115,12 +135,22 @@
         "owner": "Website COO",
         "requiresKevin": true,
         "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
+      },
+      {
+        "priority": 2,
+        "area": "Website",
+        "action": "Prepare repairs for 1 broken internal link(s).",
+        "objective": "Review website broken links and prepare an approved repair plan",
+        "impact": "Protects conversion paths and credibility.",
+        "owner": "Website COO",
+        "requiresKevin": true,
+        "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
       }
     ],
     "counts": {
-      "total": 3,
+      "total": 4,
       "authorized": 2,
-      "protected": 1,
+      "protected": 2,
       "priorityOne": 1
     }
   },
@@ -128,8 +158,8 @@
     "sales": {
       "available": true,
       "status": "Healthy",
-      "generatedAt": "2026-07-13T15:54:41.494Z",
-      "ageHours": 0.05,
+      "generatedAt": "2026-07-15T20:37:02.756Z",
+      "ageHours": 165.52,
       "exceptionCount": 0,
       "recommendationCount": 0,
       "metrics": {
@@ -143,24 +173,24 @@
     },
     "marketing": {
       "available": true,
-      "status": "Healthy",
-      "generatedAt": "2026-07-12T03:27:38.045Z",
-      "ageHours": 36.51,
-      "exceptionCount": 14,
+      "status": "Watch",
+      "generatedAt": "2026-07-22T18:03:31.544Z",
+      "ageHours": 0.08,
+      "exceptionCount": 15,
       "recommendationCount": 15,
       "metrics": {
         "totalCampaigns": 35,
         "healthyCampaigns": 35,
         "warningCampaigns": 0,
         "criticalCampaigns": 0,
-        "totalAccounts": 10,
-        "campaignSafeAccounts": 9,
-        "protectedAccounts": 1,
+        "totalAccounts": 0,
+        "campaignSafeAccounts": 0,
+        "protectedAccounts": 0,
         "warningAccounts": 0,
         "criticalAccounts": 0,
-        "totalDailyCapacity": 205,
-        "averageWarmupScore": 100,
-        "lowestWarmupScore": 100,
+        "totalDailyCapacity": 0,
+        "averageWarmupScore": null,
+        "lowestWarmupScore": null,
         "protectedAssignmentViolations": 0,
         "campaignInventory": {
           "total": 14,
@@ -185,7 +215,7 @@
     "orion": {
       "available": true,
       "status": "Watch",
-      "generatedAt": "2026-07-13T15:57:54.585Z",
+      "generatedAt": "2026-07-22T18:08:04.857Z",
       "ageHours": 0,
       "exceptionCount": 1,
       "recommendationCount": 1,
@@ -203,7 +233,7 @@
         "databaseFreshness": {
           "exists": true,
           "modifiedAt": "2026-06-19T21:35:18.000Z",
-          "ageHours": 570.38,
+          "ageHours": 788.55,
           "stale": true,
           "thresholdHours": 24
         },
@@ -220,14 +250,14 @@
     "website": {
       "available": true,
       "status": "Watch",
-      "generatedAt": "2026-07-13T15:57:51.118Z",
-      "ageHours": 0,
-      "exceptionCount": 2,
-      "recommendationCount": 2,
+      "generatedAt": "2026-07-22T18:07:41.359Z",
+      "ageHours": 0.01,
+      "exceptionCount": 3,
+      "recommendationCount": 3,
       "metrics": {
         "homepageReachable": true,
         "statusCode": 200,
-        "loadMs": 452,
+        "loadMs": 1322,
         "title": "Unlock Government Contract Opportunities",
         "h1": "Federal &amp; SLED Market Entry Advisory",
         "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
@@ -258,7 +288,7 @@
         "linksDiscovered": 19,
         "internalLinks": 13,
         "linksChecked": 13,
-        "brokenLinks": 0,
+        "brokenLinks": 1,
         "hasCanonical": true,
         "hasViewport": true,
         "hasLang": true,
@@ -269,22 +299,30 @@
       }
     },
     "googleWorkspace": {
-      "available": false,
-      "status": "Unknown",
-      "generatedAt": null,
-      "ageHours": null,
-      "exceptionCount": 0,
-      "recommendationCount": 0,
-      "metrics": {}
+      "available": true,
+      "status": "Watch",
+      "generatedAt": "2026-07-22T18:03:53.928Z",
+      "ageHours": 0.07,
+      "exceptionCount": 1,
+      "recommendationCount": 1,
+      "metrics": {
+        "registeredAccounts": 0,
+        "healthyAccounts": 0,
+        "failedAccounts": 0,
+        "inboxEstimate": 0,
+        "recentInboxCount": 0,
+        "upcomingEventsCount": 0,
+        "recentDriveFilesCount": 0
+      }
     }
   },
   "revenueAndMarketing": {
-    "status": "Healthy",
+    "status": "Watch",
     "totalCampaigns": 35,
     "healthyCampaigns": 35,
     "warningCampaigns": 0,
     "criticalCampaigns": 0,
-    "totalDailyCapacity": 205,
+    "totalDailyCapacity": 0,
     "segmentInventory": {
       "totalSegments": 14,
       "totalLeads": 0,
@@ -320,7 +358,7 @@
     "databaseFreshness": {
       "exists": true,
       "modifiedAt": "2026-06-19T21:35:18.000Z",
-      "ageHours": 570.38,
+      "ageHours": 788.55,
       "stale": true,
       "thresholdHours": 24
     },
@@ -337,7 +375,7 @@
     "status": "Watch",
     "homepageReachable": true,
     "statusCode": 200,
-    "loadMs": 452,
+    "loadMs": 1322,
     "title": "Unlock Government Contract Opportunities",
     "h1": "Federal &amp; SLED Market Entry Advisory",
     "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
@@ -368,7 +406,7 @@
     "linksDiscovered": 19,
     "internalLinks": 13,
     "linksChecked": 13,
-    "brokenLinks": 0,
+    "brokenLinks": 1,
     "hasCanonical": true,
     "hasViewport": true,
     "hasLang": true,
@@ -378,9 +416,22 @@
     "hasAria": true
   },
   "googleWorkspace": {
-    "status": "Unknown"
+    "status": "Watch",
+    "registeredAccounts": 0,
+    "healthyAccounts": 0,
+    "failedAccounts": 0,
+    "inboxEstimate": 0,
+    "recentInboxCount": 0,
+    "upcomingEventsCount": 0,
+    "recentDriveFilesCount": 0
   },
   "exceptions": [
+    {
+      "department": "marketing",
+      "severity": "Warning",
+      "type": "InstantlyAudit",
+      "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+    },
     {
       "department": "marketing",
       "severity": "Info",
@@ -469,7 +520,7 @@
       "department": "orion",
       "severity": "Warning",
       "type": "DatabaseFreshness",
-      "message": "ORION database is 570.38 hours old."
+      "message": "ORION database is 788.55 hours old."
     },
     {
       "department": "website",
@@ -479,13 +530,25 @@
     },
     {
       "department": "website",
+      "severity": "Warning",
+      "type": "BrokenLinks",
+      "message": "1 broken internal link(s) detected."
+    },
+    {
+      "department": "website",
       "severity": "Info",
       "type": "ContentDrift",
       "message": "4 monitored content field(s) changed from baseline."
+    },
+    {
+      "department": "googleWorkspace",
+      "severity": "Info",
+      "type": "GoogleAccountRegistry",
+      "message": "No valid Google Workspace accounts are registered."
     }
   ],
   "recommendations": [
-    "marketing: Current campaign-safe sending capacity is approximately 205 emails per day before campaign-level restrictions.",
+    "marketing: No campaign-safe sending accounts were found. Do not launch new outbound work.",
     "marketing: Enrich or replenish segment Unknown.",
     "marketing: Enrich or replenish segment Unknown.",
     "marketing: Enrich or replenish segment Unknown.",
@@ -502,7 +565,9 @@
     "marketing: Enrich or replenish segment Unknown.",
     "orion: Run the authorized ORION dataset refresh and verify database modification time afterward.",
     "website: Verify the approved Calendly link is present and reachable.",
-    "website: Review content drift against approved website changes before publishing or rollback."
+    "website: Repair broken internal links through the approved website change queue.",
+    "website: Review content drift against approved website changes before publishing or rollback.",
+    "googleWorkspace: Register approved Google Workspace accounts through the existing account manager."
   ],
   "executiveDecisionsNeeded": [
     {
@@ -511,6 +576,16 @@
       "action": "Restore or verify primary scheduling conversion paths.",
       "objective": "Review website CTA and Calendly availability and prepare an approved repair plan",
       "impact": "Protects lead conversion and call bookings.",
+      "owner": "Website COO",
+      "requiresKevin": true,
+      "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
+    },
+    {
+      "priority": 2,
+      "area": "Website",
+      "action": "Prepare repairs for 1 broken internal link(s).",
+      "objective": "Review website broken links and prepare an approved repair plan",
+      "impact": "Protects conversion paths and credibility.",
       "owner": "Website COO",
       "requiresKevin": true,
       "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"

@@ -1,0 +1,126 @@
+﻿{
+  "version": "1.0.0",
+  "description": "Canonical campaign and segment aliases for P2GC marketing reconciliation.",
+  "aliases": {
+    "expired everything": "EXPIRED_EVERYTHING",
+    "expired_everything": "EXPIRED_EVERYTHING",
+
+    "expiring within 6 months": "EXPIRING_6_MONTHS",
+    "expiring 6 months": "EXPIRING_6_MONTHS",
+    "expiring_6_months": "EXPIRING_6_MONTHS",
+
+    "expiring within 12 months": "EXPIRING_12_MONTHS",
+    "expiring 12 months": "EXPIRING_12_MONTHS",
+    "expiring_12_months": "EXPIRING_12_MONTHS",
+
+    "gsa no sales": "GSA_NO_SALES",
+    "gsa_no_sales": "GSA_NO_SALES",
+
+    "gsa 0 500k": "GSA_0_500K",
+    "gsa 0–500k": "GSA_0_500K",
+    "gsa 0-500k": "GSA_0_500K",
+
+    "gsa 500k 3m": "GSA_500K_3M",
+    "gsa 500k–3m": "GSA_500K_3M",
+    "gsa 500k-3m": "GSA_500K_3M",
+
+    "gsa 3m 5m": "GSA_3M_5M",
+    "gsa 3m–5m": "GSA_3M_5M",
+    "gsa 3m-5m": "GSA_3M_5M",
+
+    "gsa 5m": "GSA_5M_PLUS",
+    "gsa 5m+": "GSA_5M_PLUS",
+
+    "va no sales": "VA_NO_SALES",
+    "va_no_sales": "VA_NO_SALES",
+
+    "va 0 500k": "VA_0_500K",
+    "va 0-500k": "VA_0_500K",
+
+    "va 501k 3m": "VA_501K_3M",
+    "va 501k-3m": "VA_501K_3M",
+
+    "va 3 5m": "VA_3M_5M",
+    "va 3-5m": "VA_3M_5M",
+
+    "va 5m": "VA_5M_PLUS",
+    "va 5m+": "VA_5M_PLUS",
+
+    "sam no sales": "SAM_NO_SALES",
+    "sam_no_sales": "SAM_NO_SALES",
+
+    "sam low sales": "SAM_LOW_SALES",
+    "sam_low_sales": "SAM_LOW_SALES",
+
+    "sam growth": "SAM_GROWTH",
+    "sam_growth": "SAM_GROWTH",
+
+    "sam high growth": "SAM_HIGH_GROWTH",
+    "sam_high_growth": "SAM_HIGH_GROWTH",
+
+    "sbs no vehicle": "SBS_NO_VEHICLE",
+    "sbs_no_vehicle": "SBS_NO_VEHICLE",
+
+    "sbs low sales": "SBS_LOW_SALES",
+    "sbs_low_sales": "SBS_LOW_SALES",
+
+    "sbs growth": "SBS_GROWTH",
+    "sbs_growth": "SBS_GROWTH",
+
+    "sbs verified email targets": "SBS_VERIFIED_EMAIL_TARGETS",
+
+    "8a firms": "CERT_8A",
+    "8 a firms": "CERT_8A",
+    "8a": "CERT_8A",
+
+    "hubzone": "CERT_HUBZONE",
+    "hub zone": "CERT_HUBZONE",
+
+    "wosb": "CERT_WOSB",
+    "sdvosb": "CERT_SDVOSB",
+    "vosb": "CERT_VOSB",
+
+    "active pipeline": "CRM_ACTIVE_PIPELINE",
+    "meeting booked": "CRM_MEETING_BOOKED",
+    "technical suppression": "CRM_TECHNICAL_SUPPRESSION",
+    "future follow up": "CRM_FUTURE_FOLLOW_UP",
+    "future follow-up": "CRM_FUTURE_FOLLOW_UP",
+    "no suppressed": "CRM_NO_SUPPRESSED",
+    "no - suppressed": "CRM_NO_SUPPRESSED",
+    "nurture 14 day": "CRM_NURTURE_14_DAY",
+    "nurture - 14 day": "CRM_NURTURE_14_DAY",
+    "nurture 30 day": "CRM_NURTURE_30_DAY",
+    "nurture - 30 day": "CRM_NURTURE_30_DAY",
+
+    "p2gc high value copy copy": "P2GC_HIGH_VALUE",
+    "p2gc - high value copy copy": "P2GC_HIGH_VALUE"
+  },
+  "priority": [
+    "EXPIRED_EVERYTHING",
+    "EXPIRING_6_MONTHS",
+    "EXPIRING_12_MONTHS",
+    "GSA_NO_SALES",
+    "GSA_0_500K",
+    "GSA_500K_3M",
+    "GSA_3M_5M",
+    "GSA_5M_PLUS",
+    "VA_NO_SALES",
+    "VA_0_500K",
+    "VA_501K_3M",
+    "VA_3M_5M",
+    "VA_5M_PLUS",
+    "SAM_NO_SALES",
+    "SAM_LOW_SALES",
+    "SAM_GROWTH",
+    "SAM_HIGH_GROWTH",
+    "CERT_8A",
+    "CERT_HUBZONE",
+    "CERT_WOSB",
+    "CERT_SDVOSB",
+    "CERT_VOSB",
+    "SBS_NO_VEHICLE",
+    "SBS_LOW_SALES",
+    "SBS_GROWTH",
+    "SBS_VERIFIED_EMAIL_TARGETS"
+  ]
+}

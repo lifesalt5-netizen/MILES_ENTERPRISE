@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /*
   MILES Enterprise
@@ -271,17 +271,66 @@ class InstantlyCOOService {
     connectorAction,
     payload = {}
   ) {
-    const result =
-      await this.runtime.execute({
-        connectorId: 'INSTANTLY',
-        connectorAction,
-        payload
+    const timeoutMs =
+      Number(
+        process.env.MILES_INSTANTLY_ACTION_TIMEOUT_MS ||
+        10000
+      );
+
+    const startedAt =
+      Date.now();
+
+    let timeoutHandle = null;
+
+    const timeoutPromise =
+      new Promise((resolve, reject) => {
+        timeoutHandle =
+          setTimeout(() => {
+            reject(
+              new Error(
+                `Instantly action ${connectorAction} timed out after ${timeoutMs} ms`
+              )
+            );
+          }, timeoutMs);
+
+        if (
+          timeoutHandle &&
+          typeof timeoutHandle.unref === 'function'
+        ) {
+          timeoutHandle.unref();
+        }
       });
 
-    if (!result.ok) {
+    console.log(
+      `[INSTANTLY_COO] ${connectorAction} START timeout=${timeoutMs}ms`
+    );
+
+    let result;
+
+    try {
+      result =
+        await Promise.race([
+          this.runtime.execute({
+            connectorId: 'INSTANTLY',
+            connectorAction,
+            payload
+          }),
+          timeoutPromise
+        ]);
+    } finally {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+
+      console.log(
+        `[INSTANTLY_COO] ${connectorAction} EXIT elapsed=${Date.now() - startedAt}ms`
+      );
+    }
+
+    if (!result || !result.ok) {
       throw new Error(
-        result.error ||
-        result.result?.error ||
+        result?.error ||
+        result?.result?.error ||
         `Instantly action failed: ${connectorAction}`
       );
     }

@@ -1,12 +1,12 @@
 {
   "id": "WP-20260713031338-830",
   "objective": "Build Sales COO pipeline and follow-up operator",
-  "status": "QUEUED",
+  "status": "COMPLETED",
   "owner": "MILES",
   "priority": 1,
   "priorityScore": 50,
   "createdAt": "2026-07-13T03:13:38.592Z",
-  "updatedAt": "2026-07-13T03:13:38.592Z",
+  "updatedAt": "2026-07-17T02:28:11.909Z",
   "plan": {
     "ok": true,
     "type": "PLAN",
@@ -1356,19 +1356,41 @@
       "capability": "executive.objective.evaluate",
       "assignedTo": "EngineeringOrchestrator",
       "department": "Executive",
-      "status": "QUEUED",
+      "status": "COMPLETED",
       "dependsOn": [],
       "taskType": "WORKFORCE_STEP",
       "provider": null,
       "action": "evaluateObjective",
       "expectedOutput": "Clear interpretation of the work objective.",
-      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+      "taskId": "TASK-1783912419086-88953",
+      "startedAt": null,
+      "completedAt": "2026-07-13T03:13:41.974Z",
+      "failedAt": null,
+      "result": {
+        "ok": true,
+        "status": "COMPLETED",
+        "reason": "Capability already installed through SalesProvider.",
+        "suppressedAsStaleCapabilityWork": true,
+        "completedAt": "2026-07-13T03:13:41.936Z"
+      },
+      "updatedAt": "2026-07-13T03:13:41.974Z"
     }
   ],
   "approvals": [],
   "results": [],
   "verification": {
     "required": true,
-    "status": "PENDING"
-  }
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T02:28:11.908Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T02:28:11.908Z"
+  },
+  "completedAt": "2026-07-17T02:28:11.908Z"
 }

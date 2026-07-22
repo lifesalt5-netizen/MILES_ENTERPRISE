@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-07-13T15:56:26.596Z",
+  "generatedAt": "2026-07-22T20:12:53.740Z",
   "source": "WORKER_REGISTRY",
   "workers": [
     {
       "name": "revenueWorker",
       "status": "REGISTERED",
-      "registeredAt": "2026-07-13T15:56:26.488Z",
+      "registeredAt": "2026-07-22T20:12:53.268Z",
       "metadata": {
         "service": "INSTANTLY_COO_WORKER",
         "version": "1.0.0"
@@ -14,7 +14,7 @@
     {
       "name": "InstantlyCOOWorker",
       "status": "REGISTERED",
-      "registeredAt": "2026-07-13T15:56:26.557Z",
+      "registeredAt": "2026-07-22T20:12:53.730Z",
       "metadata": {
         "service": "INSTANTLY_COO_WORKER",
         "version": "1.0.0"
@@ -23,7 +23,7 @@
     {
       "name": "INSTANTLY_COO_WORKER",
       "status": "REGISTERED",
-      "registeredAt": "2026-07-13T15:56:26.596Z",
+      "registeredAt": "2026-07-22T20:12:53.740Z",
       "metadata": {
         "service": "INSTANTLY_COO_WORKER",
         "version": "1.0.0"

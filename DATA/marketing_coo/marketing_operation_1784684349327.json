@@ -1,0 +1,630 @@
+{
+  "ok": true,
+  "provider": "MarketingProvider",
+  "action": "auditMarketingOperations",
+  "status": "Watch",
+  "generatedAt": "2026-07-22T01:36:57.988Z",
+  "readOnly": true,
+  "metrics": {
+    "totalCampaigns": 0,
+    "healthyCampaigns": 0,
+    "warningCampaigns": 0,
+    "criticalCampaigns": 0,
+    "totalAccounts": 10,
+    "campaignSafeAccounts": 9,
+    "protectedAccounts": 1,
+    "warningAccounts": 0,
+    "criticalAccounts": 0,
+    "totalDailyCapacity": 205,
+    "averageWarmupScore": 99.11,
+    "lowestWarmupScore": 96,
+    "protectedAssignmentViolations": 0,
+    "campaignInventory": {
+      "total": 14,
+      "active": 0,
+      "paused": 0
+    },
+    "domainInventory": {
+      "total": 7,
+      "healthy": 3,
+      "protected": 1
+    },
+    "segmentInventory": {
+      "totalSegments": 14,
+      "totalLeads": 0,
+      "verifiedEmails": 0,
+      "uploadReadySegments": 0,
+      "depletedSegments": 14
+    },
+    "queuedLeadUploads": 0
+  },
+  "exceptions": [
+    {
+      "type": "InstantlyAudit",
+      "severity": "Warning",
+      "message": "CAMPAIGNS: Instantly action listCampaigns timed out after 10000 ms"
+    },
+    {
+      "type": "InstantlyAudit",
+      "severity": "Warning",
+      "message": "CAMPAIGN_ANALYTICS: Instantly action getCampaignAnalytics timed out after 10000 ms"
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    },
+    {
+      "type": "SegmentDepleted",
+      "severity": "Info",
+      "message": "Segment Unknown has no campaign-ready verified email inventory."
+    }
+  ],
+  "recommendations": [
+    "Current campaign-safe sending capacity is approximately 205 emails per day before campaign-level restrictions.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown.",
+    "Enrich or replenish segment Unknown."
+  ],
+  "instantly": {
+    "ok": false,
+    "service": "INSTANTLY_COO_SERVICE",
+    "version": "1.0.0",
+    "status": "DEGRADED",
+    "readOnly": true,
+    "startedAt": "2026-07-22T01:36:57.989Z",
+    "completedAt": "2026-07-22T01:39:09.307Z",
+    "protectionPolicy": {
+      "protectedDomains": [
+        "pathways2gc.com"
+      ],
+      "protectedInboxes": [
+        "info@pathways2gc.com"
+      ]
+    },
+    "summary": {
+      "totalAccounts": 10,
+      "campaignSafeAccounts": 9,
+      "protectedAccounts": 1,
+      "healthyAccounts": 9,
+      "warningAccounts": 0,
+      "criticalAccounts": 0,
+      "totalCampaigns": 0,
+      "healthyCampaigns": 0,
+      "warningCampaigns": 0,
+      "criticalCampaigns": 0,
+      "totalDailyCapacity": 205,
+      "averageWarmupScore": 99.11,
+      "lowestWarmupScore": 96,
+      "accountStatusCounts": {
+        "1": 9,
+        "-1": 1
+      },
+      "campaignStatusCounts": {}
+    },
+    "accounts": [
+      {
+        "email": "maya@pathwaysgovcon.com",
+        "domain": "pathwaysgovcon.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 25,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "silvia@pathwaysgovcon.com",
+        "domain": "pathwaysgovcon.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 98,
+        "dailyLimit": 25,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "victoria@pathwaysgovcon.com",
+        "domain": "pathwaysgovcon.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 98,
+        "dailyLimit": 25,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "cora@pathwaysgovcon.com",
+        "domain": "pathwaysgovcon.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 96,
+        "dailyLimit": 25,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "evan@pathwaysgovcon.com",
+        "domain": "pathwaysgovcon.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 25,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "info@pathways2gc.com",
+        "domain": "pathways2gc.com",
+        "protected": true,
+        "severity": "PROTECTED",
+        "accountEnabled": false,
+        "setupPending": false,
+        "warmupEnabled": false,
+        "warmupScore": 0,
+        "dailyLimit": null,
+        "sendingGap": null,
+        "slowRamp": null,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": -1,
+        "rawWarmupStatus": 0
+      },
+      {
+        "email": "kevin@pathwaysgov.com",
+        "domain": "pathwaysgov.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 20,
+        "sendingGap": 1,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "contacts@pathwaysgsa.com",
+        "domain": "pathwaysgsa.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 20,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "kevin@pathwaysgsa.com",
+        "domain": "pathwaysgsa.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 20,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      },
+      {
+        "email": "info@pathwaysgsa.com",
+        "domain": "pathwaysgsa.com",
+        "protected": false,
+        "severity": "HEALTHY",
+        "accountEnabled": true,
+        "setupPending": false,
+        "warmupEnabled": true,
+        "warmupScore": 100,
+        "dailyLimit": 20,
+        "sendingGap": 2,
+        "slowRamp": true,
+        "providerCode": 2,
+        "issues": [],
+        "recommendations": [],
+        "rawStatus": 1,
+        "rawWarmupStatus": 1
+      }
+    ],
+    "campaigns": [],
+    "campaignAnalytics": null,
+    "recommendations": [
+      "Current campaign-safe sending capacity is approximately 205 emails per day before campaign-level restrictions."
+    ],
+    "errors": [
+      {
+        "area": "CAMPAIGNS",
+        "error": "Instantly action listCampaigns timed out after 10000 ms"
+      },
+      {
+        "area": "CAMPAIGN_ANALYTICS",
+        "error": "Instantly action getCampaignAnalytics timed out after 10000 ms"
+      }
+    ]
+  },
+  "inventories": {
+    "campaigns": {
+      "total": 14,
+      "active": 0,
+      "paused": 0
+    },
+    "domains": {
+      "total": 7,
+      "healthy": 3,
+      "protected": 1
+    },
+    "segments": {
+      "totalSegments": 14,
+      "totalLeads": 0,
+      "verifiedEmails": 0,
+      "uploadReadySegments": 0,
+      "depletedSegments": 14,
+      "uploadReady": [],
+      "depleted": [
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        }
+      ],
+      "segments": [
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        },
+        {
+          "name": "Unknown",
+          "leadCount": 0,
+          "verifiedEmailCount": 0,
+          "needsEnrichment": false,
+          "needsUpload": false,
+          "campaignStatus": "Unknown"
+        }
+      ]
+    },
+    "leadUploadQueue": []
+  },
+  "safety": {
+    "protectedWebsiteDomain": "pathways2gc.com",
+    "protectedAdminInbox": "info@pathways2gc.com",
+    "writesEnabled": false,
+    "automaticPauseResume": false,
+    "automaticLeadUpload": false
+  }
+}

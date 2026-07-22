@@ -1,0 +1,234 @@
+{
+  "id": "WP-20260714155135-334",
+  "objective": "Evaluate and repair critical website operating issue: Homepage returned status 0.",
+  "status": "COMPLETED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-14T15:51:35.555Z",
+  "updatedAt": "2026-07-17T18:10:36.933Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Evaluate and repair critical website operating issue: Homepage returned status 0.",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-14T15:51:35.555Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1784044275395-52934",
+      "area": "website",
+      "priority": 1,
+      "description": "Protects business continuity and revenue operations.",
+      "reason": "Executive COO identified this work as authorized and operationally valuable.",
+      "recommendedAction": "Evaluate and repair critical website operating issue: Homepage returned status 0.",
+      "expectedImpact": "Protects business continuity and revenue operations.",
+      "relatedProvider": "website",
+      "metadata": {
+        "cycleId": "COO-20260714154411-013",
+        "executiveBriefItem": {
+          "priority": 1,
+          "area": "website",
+          "action": "Investigate critical website exception: Homepage returned status 0.",
+          "objective": "Evaluate and repair critical website operating issue: Homepage returned status 0.",
+          "impact": "Protects business continuity and revenue operations.",
+          "owner": "MILES",
+          "requiresKevin": false,
+          "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
+        },
+        "operationalObjective": "Evaluate and repair critical website operating issue: Homepage returned status 0.",
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-14T15:51:15.395Z"
+        }
+      },
+      "runtimeCycleId": "COO-20260714154411-013"
+    },
+    "domain": "website",
+    "workforce": "Website Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "website.health.repair"
+    ],
+    "assignments": [
+      {
+        "capability": "website.health.repair",
+        "provider": "WebsiteProvider",
+        "department": "Website",
+        "action": "verifyWebsite",
+        "bestWorker": {
+          "employee": "WebsiteCOOWorker",
+          "department": "Website",
+          "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_37E389177AC91708",
+          "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "website.health.repair",
+            "employees": [
+              {
+                "employee": "BrowserWorker.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyCampaignOperator.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "worker_registry.json",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "workerManager.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "WebsiteCOOWorker",
+                "department": "Website",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_37E389177AC91708",
+                "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "website department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "website.health.repair",
+        "assignedTo": "WebsiteCOOWorker",
+        "department": "Website",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "WebsiteProvider",
+        "action": "verifyWebsite",
+        "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+        "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+      }
+    ],
+    "providers": [
+      "WebsiteProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+    ],
+    "successCriteria": [
+      "WebsiteProvider.verifyWebsite executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "website.health.repair",
+      "assignedTo": "WebsiteCOOWorker",
+      "department": "Website",
+      "status": "COMPLETED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "WebsiteProvider",
+      "action": "verifyWebsite",
+      "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+      "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure.",
+      "taskId": "TASK-1784044295744-20329",
+      "startedAt": null,
+      "completedAt": "2026-07-17T18:10:35.458Z",
+      "failedAt": null,
+      "updatedAt": "2026-07-17T18:10:35.458Z"
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T18:10:36.917Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T18:10:36.917Z"
+  },
+  "startedAt": "2026-07-17T02:32:10.646Z",
+  "completedAt": "2026-07-17T18:10:36.917Z"
+}

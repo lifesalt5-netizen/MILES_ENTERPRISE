@@ -1,0 +1,141 @@
+BUILD132 TaskManager Trace
+
+==================================================
+TASK MANAGER
+FILE: .\SERVICES\TaskManager.js
+==================================================
+1: const taskQueue = require("../CORE/TaskQueue");
+2: const { requiresApproval } = require("../CORE/authority");
+3: 
+4: class TaskManager {
+5:   create(type, payload = {}, priority = 50) {
+6:     return taskQueue.add(type, payload, priority);
+7:   }
+8: 
+9:   list(status = null) {
+10:     return taskQueue.list(status);
+11:   }
+12: 
+13:   next() {
+14:     return taskQueue.list("QUEUED")[0] || null;
+15:   }
+16: 
+17:   complete(id, result = {}) {
+18:     return taskQueue.update(id, { status: "COMPLETED", result });
+19:   }
+20: 
+21:   fail(id, error) {
+22:     return taskQueue.update(id, { status: "FAILED", error: String(error) });
+23:   }
+24: 
+25:   approvalCheck(system, action) {
+26:     return requiresApproval(system, action);
+27:   }
+28: }
+29: 
+30: module.exports = new TaskManager();
+
+==================================================
+TASKQUEUE ADD COMPLETION
+FILE: .\CORE\TaskQueue.js
+==================================================
+470:                 activeStatuses.has(String(existing.status || ""))
+471:             );
+472:         });
+473: 
+474:         if (existingTask) {
+475:             return {
+476:                 ...existingTask,
+477:                 duplicateSuppressed: true,
+478:                 duplicateRequestedAt: now()
+479:             };
+480:         }
+481:     }
+482: 
+483:     tasks.push(task);
+484: 
+485:     tasks.sort(
+486:         (a, b) =>
+487:             Number(b.priority || 0) -
+488:             Number(a.priority || 0)
+489:     );// BUILD126_TRACE
+490:         if (patch.status) {
+491:             console.log(
+492:                 "[BUILD126_TRACE]",
+493:                 id,
+494:                 "=>",
+495:                 patch.status
+496:             );
+497:         }
+498: 
+499: 
+500: 
+501:     this.writeJsonDirect(tasks);
+502: 
+503:     logger.info(
+504:         `Task queued: ${task.id}`,
+505:         task
+506:     );
+507: 
+508:     eventBus.publish(
+509:         "TASK_QUEUED",
+510:         task
+511:     );
+512: 
+513:     return task;
+514:     });
+515: }
+516: 
+517:     list(status = null) {
+518:         const tasks = this._read();
+519:         return status ? tasks.filter(t => t.status === status) : tasks;
+520:     }
+521: 
+522:     update(id, patch) {
+523:         const updatedTask = this.withLock(() => {
+524:             const tasks = this.readJsonDirect();
+525:             const index = tasks.findIndex(task => task.id === id);
+526: 
+527:             if (index === -1) {
+528:                 throw new Error(`Task not found: ${id}`);
+529:             }
+530: 
+531:             tasks[index] = {
+532:                 ...tasks[index],
+533:                 ...patch,
+534:                 updatedAt: now()
+535:             };
+536: 
+537:             this.writeJsonDirect(tasks);
+538: 
+539:             return tasks[index];
+540:         });
+541: 
+542:         if (patch.status) {
+543:             console.log(
+544:                 "[BUILD127_ATOMIC_UPDATE]",
+545:                 id,
+546:                 "=>",
+547:                 patch.status
+548:             );
+549:         }
+550: 
+551:         eventBus.publish(
+552:             "TASK_UPDATED",
+553:             updatedTask
+554:         );
+555: 
+556:         return updatedTask;
+557:     }
+558: }
+559: module.exports = new TaskQueue();
+560: 
+1: const taskQueue = require("../CORE/TaskQueue");
+5: create(type, payload = {}, priority = 50) {
+6: return taskQueue.add(type, payload, priority);
+10: return taskQueue.list(status);
+14: return taskQueue.list("QUEUED")[0] || null;
+18: return taskQueue.update(id, { status: "COMPLETED", result });
+22: return taskQueue.update(id, { status: "FAILED", error: String(error) });
+26: return requiresApproval(system, action);
+30: module.exports = new TaskManager();

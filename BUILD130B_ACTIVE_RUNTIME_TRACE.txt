@@ -1,0 +1,767 @@
+============================================================
+BUILD130B — ACTIVE RUNTIME TRACE
+Generated: 2026-07-17 17:45:55
+============================================================
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\StartAutonomousCOO.js
+============================================================
+STATUS: FOUND
+SIZE: 3540
+MODIFIED: 07/06/2026 19:10:00
+SHA256: A03C6A7D3937B078C795C4DE120D63C5F0AA1E0A0EA230CB474986A3871EDE4B
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: require("dotenv").config();
+5: const supervisor = require("./CORE/Supervisor");
+6: const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
+31: require("./CORE/ConnectorManager").list()
+88: const result = await loop.start();
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+45: const queueWorkflows =
+47: "MILES_AUTONOMOUS_QUEUE_WORKFLOWS",
+68: enableWorkflowQueueing: queueWorkflows,
+85: console.log(`[MILES] Workflow queueing: ${queueWorkflows ? "enabled" : "disabled"}`);
+117: workflowsQueued:
+118: result.workflowResults?.length || 0,
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\StartProductionSystem.js
+============================================================
+STATUS: FOUND
+SIZE: 27254
+MODIFIED: 07/17/2026 16:38:30
+SHA256: BE8033856100CAB138E513D00DEA6C8892F0872D959E9878E3314EA01B82924B
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: require("dotenv").config();
+5: const fs = require("fs");
+6: const path = require("path");
+65: require("./CORE/TaskQueue");
+68: require("./CORE/Supervisor");
+71: require("./SERVICES/ExecutionService");
+74: require("./SERVICES/InfrastructureRegistryService");
+77: require("./SERVICES/CredentialAuthorityService");
+80: require("./SERVICES/InfrastructureHealthManagerService");
+83: require("./SERVICES/AutonomousWorkGenerationService");
+86: require("./SERVICES/ProviderRouterService");
+89: safeRequire(
+113: function safeRequire(
+117: return require(modulePath);
+126: setTimeout(
+1136: setInterval(
+1160: setInterval(
+1173: setTimeout(
+1189: setInterval(
+1210: setTimeout(
+1218: setInterval(
+1250: await supervisor.start();
+1411: require("./api/server");
+1413: require("./workers/cooWorker");
+1414: require("./workers/revenueWorker");
+1415: require("./workers/replyWorker");
+1416: require("./workers/dealWorker");
+1417: require("./workers/atlasWorker");
+1554: module.exports = {
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+64: const taskQueue =
+65: require("./CORE/TaskQueue");
+206: typeof taskQueue.list ===
+208: ? taskQueue.list()
+262: typeof taskQueue.getStatus ===
+267: taskQueue.getStatus();
+654: taskQueue.list(
+1312: clearInterval(
+1316: clearTimeout(
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\AutonomousCOOLoopService.js
+============================================================
+STATUS: FOUND
+SIZE: 2561
+MODIFIED: 07/15/2026 19:09:04
+SHA256: 157987695BBC2DFC410F1A5F222C4B15E6EAEC5802E538D5650D85CC09E89BCC
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+1: const fs = require("fs");
+2: const path = require("path");
+4: const COOOrchestratorService = require("./SERVICES/COOOrchestratorService");
+101: return new Promise(resolve => setTimeout(resolve, ms));
+105: module.exports = AutonomousCOOLoopService;
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\SERVICES\AutonomousCOOLoopService.js
+============================================================
+STATUS: FOUND
+SIZE: 53528
+MODIFIED: 07/14/2026 23:09:32
+SHA256: DA4555C00B47DB14F98BE7122834D6D9B8D514DA58B02A2CE82F6936BCF55CBA
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: const fs = require("fs");
+4: const path = require("path");
+6: const ExecutiveIntelligenceService = require("./ExecutiveIntelligenceService");
+7: const ExecutiveBriefService = require("./ExecutiveBriefService");
+8: const WorkQueueService = require("./WorkQueueService");
+9: const WorkflowService = require("./WorkflowService");
+10: const BusinessOperationsBridgeService = require("./BusinessOperationsBridgeService");
+11: const LiveBusinessStateService = require("./LiveBusinessStateService");
+12: const RevenueCOOService = require("./RevenueCOOService");
+13: const RuntimeMetricsService = require("./RuntimeMetricsService");
+19: learningEngine = require("./Learning/LearningEngine");
+25: taskQueue = require("../CORE/TaskQueue");
+1464: this.executionService || require("./ExecutionService");
+1730: return new Promise(resolve => setTimeout(resolve, ms));
+1734: module.exports = AutonomousCOOLoopService;
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+9: const WorkflowService = require("./WorkflowService");
+16: let taskQueue = null;
+25: taskQueue = require("../CORE/TaskQueue");
+27: taskQueue = null;
+68: this.enableWorkflowQueueing = options.enableWorkflowQueueing !== false;
+82: this.workflowService = options.workflowService || WorkflowService;
+94: this.businessBridge =
+95: options.businessBridge ||
+97: taskQueue
+136: const workflowResults = this.enableWorkflowQueueing ? this.queueAuthorizedWorkflows() : [];
+160: workflowQueueing: this.enableWorkflowQueueing,
+175: workflowResults,
+208: this.businessBridge &&
+209: typeof this.businessBridge.runOnce === "function"
+211: const result = await this.businessBridge.runOnce();
+283: taskQueue && typeof taskQueue.getStatus === "function"
+284: ? taskQueue.getStatus()
+381: // the existing WorkQueue -> WorkflowService -> ExecutionService pipeline.
+405: objective: `Review and classify ${replies.length} inbound replies and create required follow-up work`,
+429: objective: `Review urgent proposal deadlines and prepare compliance and submission readiness actions`,
+446: objective: "Review active deals and generate overdue follow-up and next-action work",
+615: objective:
+635: objective: input.objective || this.operationalObjectiveFor(input),
+651: operationalObjectiveFor(input = {}) {
+672: return input.objective || `Evaluate revenue operation: ${title}`;
+679: return input.objective || `Evaluate objective: ${title}`;
+711: objective: this.operationalObjectiveFor({
+766: "Provider refresh succeeds or a clear escalation is recorded.",
+923: item.objective ||
+927: item.objective ||
+937: item.objective ||
+945: executionType: "WORKFLOW",
+949: operationalObjective:
+950: item.objective ||
+975: item.objective ||
+979: item.objective ||
+989: item.objective ||
+1002: operationalObjective:
+1003: item.objective ||
+1039: source: "ExecutiveMissionPlanner",
+1045: executionType: item.requiresKevin ? "APPROVAL_REQUIRED" : "WORKFLOW",
+1048: operationalObjective: item.objective,
+1072: executionType: repair.requiresKevin ? "APPROVAL_REQUIRED" : "WORKFLOW",
+1094: executionType: "WORKFLOW",
+1109: queueAuthorizedWorkflows() {
+1111: console.log("[D015] queueAuthorizedWorkflows() entered");
+1164: const existingWorkflowResult =
+1165: item.metadata && item.metadata.workflowResult
+1166: ? item.metadata.workflowResult
+1169: const existingWorkPackageId =
+1170: existingWorkflowResult?.workPackage?.id ||
+1171: existingWorkflowResult?.workPackageId ||
+1172: item.metadata?.workPackageId ||
+1175: if (existingWorkPackageId) {
+1177: `[D015] SKIPPED ${item.id}; workflow already exists as ${existingWorkPackageId}.`
+1183: workflowStatus:
+1184: existingWorkflowResult?.status || "QUEUED",
+1185: workPackageId: existingWorkPackageId,
+1186: workflowResult: existingWorkflowResult,
+1188: "Existing workflow package detected before dispatch."
+1196: workPackageId: existingWorkPackageId
+1202: const objective =
+1228: `[D015] Calling WorkflowService.createWorkflow("${objective}")`
+1231: const workflowResult =
+1232: this.workflowService.createWorkflow(objective, context);
+1234: const workPackageId =
+1235: workflowResult?.workPackage?.id ||
+1236: workflowResult?.workPackageId ||
+1240: Array.isArray(workflowResult?.queuedTasks)
+1241: ? workflowResult.queuedTasks.length
+1242: : Number(workflowResult?.queuedTasks || 0);
+1245: "[D015] Workflow Result:",
+1248: status: workflowResult?.status,
+1250: workPackageId
+1261: workflowStatus: workflowResult?.status || "QUEUED",
+1262: workPackageId,
+1263: workflowResult,
+1269: `Failed to persist work item ${item.id} as Queued after workflow creation.`
+1277: workflowStatus: workflowResult?.status || "UNKNOWN",
+1279: workPackageId,
+1309: `[D015] queueAuthorizedWorkflows() complete. Results=${results.length}`
+1387: "Workflow created and queued exactly once."
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\SERVICES\StartProductionSystem.js
+============================================================
+STATUS: FOUND
+SIZE: 27161
+MODIFIED: 07/17/2026 16:31:36
+SHA256: 05B9E775A1D7386F79241A94C3B6AA9EBE13BDBA93229EDE9AD5EFB12BC15580
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: require("dotenv").config();
+5: const fs = require("fs");
+6: const path = require("path");
+65: require("./CORE/TaskQueue");
+68: require("../CORE/Supervisor");
+71: require("./ExecutionService");
+74: require("./InfrastructureRegistryService");
+77: require("./CredentialAuthorityService");
+80: require("./InfrastructureHealthManagerService");
+83: require("./AutonomousWorkGenerationService");
+86: require("./ProviderRouterService");
+89: safeRequire(
+113: function safeRequire(
+117: return require(modulePath);
+126: setTimeout(
+1136: setInterval(
+1160: setInterval(
+1173: setTimeout(
+1189: setInterval(
+1210: setTimeout(
+1218: setInterval(
+1250: await supervisor.start();
+1411: require("./api/server");
+1413: require("../WORKERS/cooWorker");
+1414: require("../WORKERS/revenueWorker");
+1415: require("../WORKERS/replyWorker");
+1416: require("../WORKERS/dealWorker");
+1417: require("../WORKERS/atlasWorker");
+1554: module.exports = {
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+64: const taskQueue =
+65: require("./CORE/TaskQueue");
+206: typeof taskQueue.list ===
+208: ? taskQueue.list()
+262: typeof taskQueue.getStatus ===
+267: taskQueue.getStatus();
+654: taskQueue.list(
+1312: clearInterval(
+1316: clearTimeout(
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\PROVIDERS\StartProductionSystem.js
+============================================================
+STATUS: FOUND
+SIZE: 4055
+MODIFIED: 07/15/2026 19:09:04
+SHA256: EB81FD0AA3EB62AA2599363F791641B0AFDAA114A018AEE4FDF7D452278CD8E2
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: require("dotenv").config();
+5: const ProductionCOOEngine = require("../SERVICES/ProductionCOOEngine");
+6: const ExecutionRouterService = require("../SERVICES/ExecutionRouterService");
+7: const AutonomousRevenueClosureLoop = require("../SERVICES/AutonomousRevenueClosureLoop");
+9: const buildConnectors = require("./CONNECTORS");
+12: return new Promise(res => setTimeout(res, ms));
+92: const revenue = await revenueLoop.run(result);
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\CORE\TaskQueue.js
+============================================================
+STATUS: FOUND
+SIZE: 13457
+MODIFIED: 07/17/2026 17:11:56
+SHA256: 71F2C0B88B7FBB6FC1896068B32FE3530EA4B1FA1A0088F94A722238B089D9B4
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: const fs = require("fs");
+4: const path = require("path");
+5: const logger = require("./Logger");
+6: const eventBus = require("./EventBus");
+559: module.exports = new TaskQueue();
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+18: class TaskQueue {
+85: throw new Error("TaskQueue lock could not be acquired.");
+118: console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+122: console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+327: "[TaskQueue] Read failed after retries; recovering with empty queue.",
+336: _write(tasks) {
+559: module.exports = new TaskQueue();
+
+============================================================
+FILE: D:\P2GC_Intelligence\MILES_ENTERPRISE\.\CORE\CANONICAL\TaskQueue.js
+============================================================
+STATUS: FOUND
+SIZE: 1853
+MODIFIED: 07/14/2026 17:45:54
+SHA256: EC4DE250D01F79830F134F7ADCFE61FB4A0800167C1583BD5D5DD167B38A5D34
+
+IMPORTS / REQUIRE / EXPORTS / START CALLS
+------------------------------------------------------------
+3: const fs = require("fs");
+4: const path = require("path");
+5: const logger = require("./Logger");
+75: module.exports = new CanonicalTaskQueue();
+
+TASK / WORKFLOW / QUEUE REFERENCES
+------------------------------------------------------------
+31: class CanonicalTaskQueue {
+75: module.exports = new CanonicalTaskQueue();
+
+============================================================
+ACTIVE STARTUP REFERENCES ACROSS ROOT PRODUCTION FILES
+============================================================
+D:\P2GC_Intelligence\MILES_ENTERPRISE\AutonomousCOOLoopService.js:6: class AutonomousCOOLoopService {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\AutonomousCOOLoopService.js:105: module.exports = AutonomousCOOLoopService;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartAutonomousCOO.js:6: const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartAutonomousCOO.js:64: new AutonomousCOOLoopService({
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartMilesProduction.js:35: file: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:64: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:65: require("./CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:206: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:208: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:262: typeof taskQueue.getStatus ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:267: taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.js:654: taskQueue.list(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\TestExecutionEngine.js:2: const taskQueue = require("./CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\TestExecutionEngine.js:10: const task = taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\RunCanonicalCoreTest.js:3: const runtime = require("./CORE/CANONICAL/Runtime");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\RunCanonicalCoreTest.js:4: const taskQueue = require("./CORE/CANONICAL/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\RunCanonicalCoreTest.js:8: taskQueue.add({
+D:\P2GC_Intelligence\MILES_ENTERPRISE\RunEnterpriseStoreTest.js:3: const store = require("./CORE/CANONICAL/EnterpriseStore");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\Trace-MilesQueueBinding.js:59: "AutonomousCOOLoopService.js"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\Trace-MilesQueueBinding.js:111: "./SERVICES/AutonomousCOOLoopService"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:191: this.taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:192: options.taskQueue ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:193: require("./CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:340: this.taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:414: this.taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:438: this.taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:544: this.taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:641: this.taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:653: this.taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:717: this.taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:1074: this.taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:64: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:65: require("./CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:206: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:208: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:262: typeof taskQueue.getStatus ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:267: taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem_NEW.js:654: taskQueue.list(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:72: const TaskQueue = require(path.join(ROOT, "CORE", "TaskQueue"));
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:73: const before = TaskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:76: throw new Error("TaskQueue.list() did not return an array.");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:106: TaskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:122: TaskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:138: TaskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:157: TaskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:173: const repaired = TaskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:174: TaskQueue._write(repaired);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:176: const after = TaskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:4: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:70: const status = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:74: const status = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:95: const status = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:99: const status = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:248: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:314: const task = taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:331: queue: taskQueue.getStatus()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:345: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:6: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:46: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:62: queueBefore: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:72: report.queueAfter = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:87: report.queueAfter = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousLoop.js:148: queue: taskQueue.getStatus()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:1: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:16: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:44: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:77: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:87: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:92: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:102: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:109: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:122: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionEngine.js:147: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:1: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:28: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:52: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:58: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:79: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:84: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:91: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:103: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:108: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:118: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:141: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:2: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:40: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:86: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:92: const task = taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:106: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:125: task = taskQueue.list().find(t => t.id === taskId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:127: task = taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:139: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:146: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:156: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:160: taskQueue.update(task.id, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:169: queue: taskQueue.getStatus(),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\Supervisor.js:2: const taskQueue = require("./TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\Supervisor.js:45: const queue = taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\Supervisor.js:85: const failedTasks = taskQueue.list("FAILED");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:18: class TaskQueue {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:85: throw new Error("TaskQueue lock could not be acquired.");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:118: console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:122: console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:327: "[TaskQueue] Read failed after retries; recovering with empty queue.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:559: module.exports = new TaskQueue();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:18: class TaskQueue {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:85: throw new Error("TaskQueue lock could not be acquired.");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:118: console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:122: console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:186: "[TaskQueue] Read failed after retries; recovering with empty queue.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:346: module.exports = new TaskQueue();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:18: class TaskQueue {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:85: throw new Error("TaskQueue lock could not be acquired.");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:118: console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:122: console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:186: "[TaskQueue] Read failed after retries; recovering with empty queue.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:411: module.exports = new TaskQueue();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:18: class TaskQueue {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:85: throw new Error("TaskQueue lock could not be acquired.");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:118: console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:122: console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:186: "[TaskQueue] Read failed after retries; recovering with empty queue.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:418: module.exports = new TaskQueue();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:117: path.join(ROOT, "StartProductionSystem.js")
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:122: startupFile: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:143: cooWorker.includes("AutonomousCOOLoopService"),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:153: cooWorker.includes("AutonomousCOOLoopService")
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:155: ? "AutonomousCOOLoopService"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:176: exists("StartProductionSystem.js"),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:200: exists("SERVICES/AutonomousCOOLoopService.js"),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:232: "COO worker is not using AutonomousCOOLoopService"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:248: "COO worker contains ProductionCOOEngine fallback, but AutonomousCOOLoopService is primary"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:317: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ATLASRuntimeInspector.js:320: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup.js:15: let taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup.js:18: taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup.js:39: class AutonomousCOOLoopService {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup.js:313: const failed = taskQueue?.getStatus?.()?.failed || 0;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup.js:475: module.exports = AutonomousCOOLoopService;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:16: let taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:25: taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:27: taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:62: class AutonomousCOOLoopService {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:97: taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:283: taskQueue && typeof taskQueue.getStatus === "function"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:284: ? taskQueue.getStatus()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:723: source: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1181: queuedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1259: queuedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1293: failedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1734: module.exports = AutonomousCOOLoopService;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:6: let taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:9: taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:11: taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:41: this.taskQueue = options.taskQueue || taskQueue;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:443: if (!this.taskQueue) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:444: throw new Error("TaskQueue unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:453: if (typeof this.taskQueue.add !== "function") {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:454: throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:457: return this.taskQueue.add(task.type, task.payload, task.priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:529: taskQueueStatus: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:536: this.log(`Bridged operation to TaskQueue: ${operation.title || operation.command}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:541: taskQueueStatus: "FAILED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:572: taskQueueAvailable: Boolean(this.taskQueue),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\COOOrchestratorService.js:15: TaskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DashboardService.js:3: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DashboardService.js:16: const tasks = taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringCOOService.js:6: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringCOOService.js:120: const allTasks = taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringCOOService.js:268: taskQueue.update(retry.taskId, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringCOOService.js:308: taskQueue.update(item.taskId, {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringImprovementService.js:70: "CORE/TaskQueue.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:5: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:492: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:559: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:620: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:742: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:824: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:860: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:927: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:1062: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:1151: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:1200: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:1299: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.js:1341: taskQueue.list("QUEUED");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveBrainService.js:15: * - AutonomousCOOLoopService
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveResponseService.js:13: this.taskQueueFile =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveResponseService.js:14: options.taskQueueFile ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveResponseService.js:37: const tasks = this.readJson(this.taskQueueFile, []);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RepositoryRegistryService.js:225: ["runtime_operations", ["pm2", "runtime", "heartbeat", "autonomouscooloopservice", "loop"]],
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RepositoryRegistryService.js:330: activeRuntime: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RepositoryRegistryService.js:587: AutonomousCOOLoopService remains the active COO runtime.
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SchedulerService.js:2: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:48: this.taskQueueFile = path.join(this.runtimeDir, "task_queue.json");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:63: "CORE/TaskQueue.js"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:87: inspectTaskQueue() {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:88: const tasks = safeReadJson(this.taskQueueFile, []);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:171: const taskQueue = this.inspectTaskQueue();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:199: if (taskQueue.failed > 0) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:202: area: "TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:203: issue: `${taskQueue.failed} failed task(s) found in runtime task queue.`,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:223: taskQueue,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:242: finding.area === "TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SelfMaintenanceService.js:269: taskQueueReadable: typeof diagnosis.taskQueue.total === "number",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:64: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:65: require("./CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:206: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:208: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:262: typeof taskQueue.getStatus ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:267: taskQueue.getStatus();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\StartProductionSystem.js:654: taskQueue.list(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:1: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:6: return taskQueue.add(type, payload, priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:10: return taskQueue.list(status);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:14: return taskQueue.list("QUEUED")[0] || null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:18: return taskQueue.update(id, { status: "COMPLETED", result });
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:22: return taskQueue.update(id, { status: "FAILED", error: String(error) });
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\test_autonomous_coo_loop.js:1: const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\test_autonomous_coo_loop.js:4: const loop = new AutonomousCOOLoopService({
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:6: let taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:9: taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:11: taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:41: this.taskQueue = options.taskQueue || taskQueue;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:252: if (!this.taskQueue) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:253: throw new Error("TaskQueue unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:262: if (typeof this.taskQueue.add !== "function") {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:263: throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:266: return this.taskQueue.add(task.type, task.payload, task.priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:332: taskQueueStatus: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:339: this.log(`Bridged operation to TaskQueue: ${operation.title || operation.command}`);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:344: taskQueueStatus: "FAILED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:372: taskQueueAvailable: Boolean(this.taskQueue),
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\CapabilityDispatcherService.js:20: - Does not modify TaskQueue status.
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessSnapshotService.js:877: taskQueue:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessSnapshotService.js:955: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessSnapshotService.js:958: sourcePaths.taskQueue,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessSnapshotService.js:1269: taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeProfilerBootstrap.js:1030: "TaskQueueService.js": {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeProfilerBootstrap.js:1035: "TaskQueueService.list"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeProfilerBootstrap.js:1040: "TaskQueueService.update"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeProfilerBootstrap.js:1045: "TaskQueueService.getStatus"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\RuntimeProfilerBootstrap.js:1050: "TaskQueueService.reload"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:7: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:8: require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:516: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:520: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:544: typeof taskQueue[method] ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:548: taskQueue[method](task);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:560: "TaskQueue exposes none of the supported insertion methods: enqueue, add, create, push, submit."
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:16: let taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:25: taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:27: taskQueue = null;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:62: class AutonomousCOOLoopService {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:97: taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:283: taskQueue && typeof taskQueue.getStatus === "function"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:284: ? taskQueue.getStatus()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:723: source: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1181: queuedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1259: queuedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1293: failedBy: "AutonomousCOOLoopService",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1740: module.exports = AutonomousCOOLoopService;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:5: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:393: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:475: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:511: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:578: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:713: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:802: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:851: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:950: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BUILD108_BACKUP_20260715_160958.js:992: taskQueue.list("QUEUED");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:5: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:393: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:475: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:511: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:578: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:713: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:802: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:851: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:950: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionService.BEFORE_BUILD110_20260715_162948.js:992: taskQueue.list("QUEUED");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:51: /StartProductionSystem_NEW\.js$/i,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:59: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:322: function classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:328: /taskQueue\s*\.\s*add\s*\(([\s\S]{0,800}?)\)\s*;?/g;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:423: const taskQueueAdds =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:424: classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:455: taskQueueAdds,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:457: taskQueueImports:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:460: /(?:^|\/)TaskQueue(?:\.js)?$/
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:490: /taskQueue\s*\.\s*list\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:495: /taskQueue\s*\.\s*update\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:500: /taskQueue\s*\.\s*claimNext\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:692: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:697: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:702: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:704: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:858: of item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:874: "TaskQueue.add is called with one object argument. Verify the authoritative TaskQueue supports complete task objects.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:952: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:968: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1037: `- TaskQueue.add call sites: ${report.summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1307: taskQueueAddCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1315: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1320: taskQueueSingleArgumentCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1327: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1391: taskQueueCallSites:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1396: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1403: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1483: `TaskQueue.add calls: ${summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js:1487: `Single-object queue calls: ${summary.taskQueueSingleArgumentCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:10: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:15: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:129: "Malformed task wrapper created before TaskQueue object-task compatibility was installed."
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:325: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:375: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:413: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:438: taskQueue.update(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:466: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:51: /StartProductionSystem_NEW\.js$/i
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:56: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:311: function classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:317: /taskQueue\s*\.\s*add\s*\(([\s\S]{0,800}?)\)\s*;?/g;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:412: const taskQueueAdds =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:413: classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:444: taskQueueAdds,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:446: taskQueueImports:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:449: /(?:^|\/)TaskQueue(?:\.js)?$/
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:479: /taskQueue\s*\.\s*list\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:484: /taskQueue\s*\.\s*update\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:489: /taskQueue\s*\.\s*claimNext\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:681: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:686: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:691: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:693: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:847: of item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:863: "TaskQueue.add is called with one object argument. Verify the authoritative TaskQueue supports complete task objects.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:941: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:957: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1026: `- TaskQueue.add call sites: ${report.summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1296: taskQueueAddCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1304: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1309: taskQueueSingleArgumentCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1316: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1380: taskQueueCallSites:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1385: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1392: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1472: `TaskQueue.add calls: ${summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD117_BACKUP_20260715_190151.js:1476: `Single-object queue calls: ${summary.taskQueueSingleArgumentCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build118DeterministicImportRepair.js:126: /StartProductionSystem_NEW\.js$/i.test(rel) ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build119ProductionReachabilityRepair.js:49: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build119ProductionReachabilityRepair.js:132: /StartProductionSystem_NEW\.js$/i.test(value) ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:51: /StartProductionSystem_NEW\.js$/i,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:59: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:322: function classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:328: /taskQueue\s*\.\s*add\s*\(([\s\S]{0,800}?)\)\s*;?/g;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:423: const taskQueueAdds =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:424: classifyTaskQueueAdd(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:455: taskQueueAdds,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:457: taskQueueImports:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:460: /(?:^|\/)TaskQueue(?:\.js)?$/
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:490: /taskQueue\s*\.\s*list\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:495: /taskQueue\s*\.\s*update\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:500: /taskQueue\s*\.\s*claimNext\s*\(/g
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:692: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:697: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:702: typeof taskQueue.list ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:704: ? taskQueue.list()
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:858: of item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:874: "TaskQueue.add is called with one object argument. Verify the authoritative TaskQueue supports complete task objects.",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:952: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:968: "CORE/TaskQueue",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1037: `- TaskQueue.add call sites: ${report.summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1307: taskQueueAddCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1315: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1320: taskQueueSingleArgumentCalls:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1327: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1391: taskQueueCallSites:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1396: .taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1403: item.taskQueueAdds
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1483: `TaskQueue.add calls: ${summary.taskQueueAddCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\SystemArchitectureAudit.js.BUILD120_BACKUP_20260715_192653.js:1487: `Single-object queue calls: ${summary.taskQueueSingleArgumentCalls}`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build119ProductionReachabilityRepair.js.BUILD120_BACKUP_20260715_192654.js:49: "StartProductionSystem.js",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build119ProductionReachabilityRepair.js.BUILD120_BACKUP_20260715_192654.js:132: /StartProductionSystem_NEW\.js$/i.test(value) ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:360: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:404: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:733: taskQueue.add(task)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:360: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:404: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:733: taskQueue.add(task)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:391: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:542: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:718: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:750: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:355: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:506: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:682: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:714: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:362: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:513: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:689: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:721: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:19: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:21: path.join(ROOT, "CORE", "TaskQueue")
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:235: // Trace TaskQueue status transitions.
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:239: taskQueue.update.bind(taskQueue);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:241: taskQueue.update =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:244: taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:252: "TaskQueue.update",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:534: taskQueue.add(task);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:570: taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:10: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:15: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:44: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:32: const taskQueue =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:37: "TaskQueue"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:391: return taskQueue
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:542: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:718: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:750: taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:5: const taskQueue = require("../CORE/TaskQueue");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:390: : taskQueue.list();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:562: const allTasks = taskQueue.list();

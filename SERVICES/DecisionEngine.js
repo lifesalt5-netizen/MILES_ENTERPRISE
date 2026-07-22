@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 const fs = require("fs");
 const path = require("path");
@@ -145,14 +145,21 @@ class DecisionEngine {
     const state = this.observe();
     const decisions = [];
 
-    if ((state.runtime.failedTasks || state.queue.failed || 0) > 0) {
+    // BUILD123A - Prefer live queue state over stale runtime snapshots
+    const failedTaskCount = Number(
+      state.queue?.failed ??
+      state.runtime?.failedTasks ??
+      0
+    );
+
+    if (failedTaskCount > 0) {
       decisions.push({
         priority: 95,
         type: "ENGINEERING_REPAIR",
         system: "Engineering",
         connector: "Engineering",
         capability: "engineering.runtime.repair",
-        reason: `${state.runtime.failedTasks || state.queue.failed} failed task(s) detected. Engineering COO should classify, repair, archive, or escalate.`,
+        reason: `${failedTaskCount} failed task(s) detected. Engineering COO should classify, repair, archive, or escalate.`,
         businessImpact: "Very High"
       });
     }

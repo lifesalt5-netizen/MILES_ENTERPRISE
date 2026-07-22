@@ -1,5 +1,7 @@
-﻿"use strict";
+"use strict";
 
+const capabilityDispatcher =
+    require("./CapabilityDispatcherService");
 const taskQueue = require("../CORE/TaskQueue");
 const connectorManager = require("../CORE/ConnectorManager");
 const eventBus = require("../CORE/EventBus");
@@ -7,6 +9,8 @@ const { requiresApproval } = require("../CORE/authority");
 const { log } = require("../CORE/logger");
 const memory = require("./MemoryService");
 const workforceExecutionService = require("./WorkforceExecutionService");
+const constitutionalGuardian = require("./governance/ConstitutionalGuardianService");
+const governanceAudit = require("./governance/GovernanceAuditService");
 
 let operationalMemory = null;
 
@@ -149,48 +153,193 @@ function normalizeTask(task = {}) {
   const payload = task.payload || {};
   const plan = getPlan(task);
 
-  let action = plan.action;
-  let provider = plan.provider;
-  let connector = plan.connector;
+  const taskType = String(
+    task.type ||
+    payload.type ||
+    ""
+  ).toUpperCase();
 
-  if (ENGINEERING_ACTIONS.has(action)) {
-    provider = "MILES";
-    connector = "MILES";
+  const existingProvider =
+    payload.provider ||
+    task.provider ||
+    plan.provider;
 
-    plan.provider = "MILES";
-    plan.system = "MILES";
-    plan.connector = "MILES";
-    plan.department = "MILES";
+  const existingAction =
+    payload.action ||
+    task.action ||
+    plan.action ||
+    task.type;
+
+  const existingConnector =
+    payload.connector ||
+    task.connector ||
+    plan.connector;
+
+  const existingDepartment =
+    payload.department ||
+    task.department ||
+    plan.department;
+
+  /*
+    WORKFORCE_STEP tasks are already routed by WorkflowService.
+    Preserve their provider, action, department, and identity exactly.
+    WorkforceExecutionService owns the provider execution path.
+  */
+  if (
+    taskType === "WORKFORCE_STEP" &&
+    existingProvider &&
+    existingProvider !== "UNKNOWN" &&
+    existingAction &&
+    existingAction !== "UNKNOWN_ACTION"
+  ) {
+    const preservedPlan = {
+      ...plan,
+      provider: existingProvider,
+      system:
+        payload.system ||
+        task.system ||
+        plan.system ||
+        existingProvider,
+      connector:
+        existingConnector &&
+        existingConnector !== "UNKNOWN"
+          ? existingConnector
+          : "WORKFORCE",
+      department:
+        existingDepartment &&
+        existingDepartment !== "UNKNOWN"
+          ? existingDepartment
+          : "Workforce",
+      action: existingAction
+    };
+
+    return {
+      ...task,
+      capabilityDispatch: {
+        ok: true,
+        resolved: true,
+        mode: "WORKFORCE",
+        action: existingAction,
+        provider: existingProvider,
+        system: preservedPlan.system,
+        connector: "WORKFORCE",
+        department: preservedPlan.department,
+        serviceName: null,
+        reason: "Preserved already-routed WORKFORCE_STEP task."
+      },
+      type: task.type || "WORKFORCE_STEP",
+      action: existingAction,
+      intent: preservedPlan.intent,
+      workflow: preservedPlan.workflow,
+      provider: existingProvider,
+      system: preservedPlan.system,
+      connector: "WORKFORCE",
+      department: preservedPlan.department,
+      payload: {
+        ...payload,
+        provider: existingProvider,
+        system: preservedPlan.system,
+        connector: "WORKFORCE",
+        department: preservedPlan.department,
+        action: existingAction,
+        intent: preservedPlan.intent,
+        workflow: preservedPlan.workflow,
+        objective: preservedPlan.objective,
+        originalCommand: preservedPlan.originalCommand,
+        plan: preservedPlan
+      }
+    };
   }
+
+  const dispatch =
+    capabilityDispatcher.resolve(
+      {
+        ...task,
+        action: existingAction,
+        provider: existingProvider,
+        connector: existingConnector,
+        department: existingDepartment,
+        payload: {
+          ...payload,
+          action: existingAction,
+          provider: existingProvider,
+          connector: existingConnector,
+          department: existingDepartment,
+          plan
+        }
+      },
+      {
+        action: existingAction,
+        workflow: plan.workflow,
+        capability:
+          payload.capability ||
+          task.capability ||
+          plan.capability,
+        provider: existingProvider,
+        connector: existingConnector,
+        department: existingDepartment,
+        plan
+      }
+    );
+
+  const provider =
+    dispatch?.provider ||
+    existingProvider ||
+    "UNKNOWN";
+
+  const connector =
+    dispatch?.connector ||
+    existingConnector ||
+    provider ||
+    "UNKNOWN";
+
+  const department =
+    dispatch?.department ||
+    existingDepartment ||
+    provider ||
+    "UNKNOWN";
+
+  const action =
+    dispatch?.action ||
+    existingAction ||
+    "UNKNOWN_ACTION";
+
+  const normalizedPlan = {
+    ...plan,
+    provider,
+    system:
+      dispatch?.system ||
+      plan.system ||
+      provider,
+    connector,
+    department,
+    action,
+    capabilityDispatch: dispatch
+  };
 
   return {
     ...task,
-
-    type:
-      task.type ||
-      action,
-
+    capabilityDispatch: dispatch,
+    type: task.type || action,
     action,
-    intent: plan.intent,
-    workflow: plan.workflow,
+    intent: normalizedPlan.intent,
+    workflow: normalizedPlan.workflow,
     provider,
-    system: plan.system,
+    system: normalizedPlan.system,
     connector,
-    department: plan.department,
-
+    department,
     payload: {
       ...payload,
-
       provider,
-      system: plan.system,
+      system: normalizedPlan.system,
       connector,
-      department: plan.department,
+      department,
       action,
-      intent: plan.intent,
-      workflow: plan.workflow,
-      objective: plan.objective,
-      originalCommand: plan.originalCommand,
-      plan
+      intent: normalizedPlan.intent,
+      workflow: normalizedPlan.workflow,
+      objective: normalizedPlan.objective,
+      originalCommand: normalizedPlan.originalCommand,
+      plan: normalizedPlan
     }
   };
 }
@@ -303,6 +452,230 @@ class ExecutionService {
     }
 
     const enrichedTask = normalizeTask(task);
+
+    const guardian =
+      constitutionalGuardian.guard(
+        enrichedTask,
+        {
+          actor:
+            enrichedTask.actor ||
+            enrichedTask.payload?.actor ||
+            "MILES",
+          role:
+            enrichedTask.role ||
+            enrichedTask.payload?.role ||
+            process.env.MILES_ACTOR_ROLE ||
+            "MILES"
+        }
+      );
+
+    enrichedTask.governance = {
+      ...(enrichedTask.governance || {}),
+      policy: guardian.policy,
+      approval: guardian.approval,
+      guardian
+    };
+
+    enrichedTask.payload = {
+      ...(enrichedTask.payload || {}),
+      governance:
+        enrichedTask.governance
+    };
+
+    if (!guardian.allowed) {
+      const blockedStatus =
+        guardian.status ===
+          "AWAITING_APPROVAL"
+          ? "AWAITING_APPROVAL"
+          : "BLOCKED";
+
+      taskQueue.update(
+        enrichedTask.id,
+        {
+          status: blockedStatus,
+          governance:
+            enrichedTask.governance,
+          error:
+            guardian.reason
+        }
+      );
+
+      safePublish(
+        blockedStatus ===
+          "AWAITING_APPROVAL"
+          ? "TASK_AWAITING_APPROVAL"
+          : "TASK_GOVERNANCE_BLOCKED",
+        {
+          task: enrichedTask,
+          governance:
+            enrichedTask.governance
+        }
+      );
+
+      const blockedResult = {
+        ok: false,
+        status: blockedStatus,
+        governance:
+          enrichedTask.governance,
+        reason:
+          guardian.reason
+      };
+
+      governanceAudit.executionResult(
+        enrichedTask,
+        blockedResult
+      );
+
+      return blockedResult;
+    }
+    /*
+----------------------------------------------------------
+Capability Dispatcher
+
+Execute local MILES services before connector routing.
+----------------------------------------------------------
+*/
+
+if (
+      enrichedTask.capabilityDispatch &&
+      enrichedTask.capabilityDispatch.mode === "SERVICE"
+    ) {
+      const route =
+        enrichedTask.capabilityDispatch;
+
+      const serviceProvider =
+        route.provider ||
+        route.serviceName ||
+        enrichedTask.provider ||
+        "MILES_SERVICE";
+
+      const serviceAction =
+        route.action ||
+        enrichedTask.action ||
+        enrichedTask.type ||
+        "SERVICE_EXECUTION";
+
+      try {
+        taskQueue.update(
+          enrichedTask.id,
+          {
+            status: "RUNNING",
+            provider: serviceProvider,
+            connector: "LOCAL_SERVICE",
+            department:
+              route.department ||
+              enrichedTask.department ||
+              "Engineering",
+            action: serviceAction,
+            startedAt:
+              new Date().toISOString()
+          }
+        );
+
+        safePublish(
+          "TASK_STARTED",
+          {
+            task: enrichedTask,
+            provider: serviceProvider,
+            connector: "LOCAL_SERVICE",
+            action: serviceAction
+          }
+        );
+
+        const serviceResult =
+          await capabilityDispatcher.executeService(
+            route,
+            enrichedTask
+          );
+
+        const awaitingApproval =
+          serviceResult?.status ===
+            "AWAITING_APPROVAL" ||
+          serviceResult?.status ===
+            "AWAITING_CEO_APPROVAL";
+
+        const succeeded =
+          serviceResult?.ok !== false;
+
+        const finalStatus =
+          awaitingApproval
+            ? "AWAITING_APPROVAL"
+            : succeeded
+              ? "COMPLETED"
+              : "FAILED";
+
+        const normalizedResult = {
+          ...(serviceResult || {}),
+          ok:
+            finalStatus === "COMPLETED",
+          status: finalStatus,
+          taskId: enrichedTask.id,
+          provider: serviceProvider,
+          connector: "LOCAL_SERVICE",
+          action: serviceAction,
+          completedAt:
+            new Date().toISOString()
+        };
+
+        taskQueue.update(
+          enrichedTask.id,
+          {
+            status: finalStatus,
+            provider: serviceProvider,
+            connector: "LOCAL_SERVICE",
+            department:
+              route.department ||
+              enrichedTask.department ||
+              "Engineering",
+            action: serviceAction,
+            error:
+              finalStatus === "FAILED"
+                ? serviceResult?.error ||
+                  serviceResult?.message ||
+                  "Local service execution failed."
+                : null,
+            result: normalizedResult
+          }
+        );
+
+        memory.remember(
+          "execution:last_result",
+          enrichedTask.id,
+          normalizedResult
+        );
+
+        safePublish(
+          finalStatus === "COMPLETED"
+            ? "TASK_COMPLETED"
+            : finalStatus === "AWAITING_APPROVAL"
+              ? "TASK_AWAITING_APPROVAL"
+              : "TASK_FAILED",
+          {
+            task: enrichedTask,
+            provider: serviceProvider,
+            connector: "LOCAL_SERVICE",
+            action: serviceAction,
+            result: normalizedResult
+          }
+        );
+
+        log(
+          "ExecutionService",
+          serviceAction,
+          finalStatus,
+          serviceProvider
+        );
+
+        return normalizedResult;
+      } catch (error) {
+        return this.handleFailure(
+          enrichedTask,
+          error,
+          serviceProvider,
+          serviceAction
+        );
+      }
+    }
 
     /*
       WORKFORCE_STEP tasks do not execute through ConnectorManager.
@@ -964,6 +1337,33 @@ class ExecutionService {
   }
 
   async runNext() {
+    /*
+     * BUILD141_STALE_TASK_RECOVERY
+     *
+     * A process termination, service restart or machine shutdown can leave
+     * a task persisted as RUNNING even though no worker still owns it.
+     *
+     * Recover stale tasks before selecting the next executable task.
+     */
+    if (
+      typeof taskQueue.recoverStaleRunningTasks ===
+      "function"
+    ) {
+      try {
+        taskQueue.recoverStaleRunningTasks({
+          recoveredBy:
+            "ExecutionService.runNext"
+        });
+      } catch (error) {
+        log(
+          "ExecutionService",
+          "recoverStaleRunningTasks",
+          "Failed",
+          error.message
+        );
+      }
+    }
+
     const queued =
       taskQueue.list("QUEUED");
 
@@ -976,23 +1376,25 @@ class ExecutionService {
     }
 
     const sorted =
-      queued.sort(
-        (a, b) => {
-          const ap =
-            Number(
-              a.priority ||
-              99
-            );
+      queued
+        .slice()
+        .sort(
+          (a, b) => {
+            const ap =
+              Number(
+                a.priority ||
+                99
+              );
 
-          const bp =
-            Number(
-              b.priority ||
-              99
-            );
+            const bp =
+              Number(
+                b.priority ||
+                99
+              );
 
-          return ap - bp;
-        }
-      );
+            return ap - bp;
+          }
+        );
 
     const task =
       sorted[0];
@@ -1013,7 +1415,9 @@ class ExecutionService {
       normalizedTask
     );
   }
+
 }
 
 module.exports =
   new ExecutionService();
+

@@ -1,19 +1,26 @@
 {
-  "generatedAt": "2026-07-04T01:53:02.291Z",
+  "generatedAt": "2026-07-22T20:12:52.821Z",
   "alerts": [
     {
       "severity": "WARNING",
       "area": "Executive",
       "title": "Kevin approval queue",
       "message": "2 item(s) require approval.",
-      "action": "Review approval queue."
+      "action": "Review the approval queue."
     },
     {
       "severity": "WARNING",
       "area": "Operations",
       "title": "Failed work exists",
-      "message": "40 failed item(s) remain in queue.",
-      "action": "Archive closed work or review failures."
+      "message": "1 failed item(s) remain in the queue.",
+      "action": "Review or archive historical failures."
+    },
+    {
+      "severity": "WARNING",
+      "area": "ORION",
+      "title": "DatabaseFreshness",
+      "message": "ORION database is 790.01 hours old.",
+      "action": "Run the authorized ORION dataset refresh and verify database modification time afterward."
     },
     {
       "severity": "INFO",

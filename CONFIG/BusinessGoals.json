@@ -1,0 +1,51 @@
+﻿{
+  "version": "1.0",
+  "company": "Pathways 2 Government Contracting",
+  "primaryGoal": {
+    "name": "Generate consistent recurring revenue",
+    "minimumMonthlyRevenue": 10000,
+    "stretchWeeklyRevenue": 10000,
+    "targetNewClientsPerMonth": 5,
+    "targetQualifiedMeetingsPerWeek": 5
+  },
+  "priorityOrder": [
+    "RespondToInterestedProspects",
+    "CloseQualifiedRevenue",
+    "GenerateQualifiedMeetings",
+    "ProtectExistingClients",
+    "CompleteRevenueCriticalDeliverables",
+    "MaintainSafeOutboundOperations",
+    "ReduceCEOManualWork",
+    "ImproveMiles"
+  ],
+  "protectedActions": [
+    "SendProposal",
+    "ApproveOrChangePricing",
+    "SignContract",
+    "SpendMoney",
+    "HireOrTerminate",
+    "DeleteCriticalFile",
+    "SendLegallyBindingCommunication"
+  ],
+  "autonomousActions": [
+    "ReadEmail",
+    "ClassifyEmail",
+    "ArchiveSpam",
+    "CreateReplyDraft",
+    "UpdateCRM",
+    "UpdateORION",
+    "PauseRespondedLead",
+    "AuditCampaign",
+    "RefreshProviderData",
+    "CreateWorkItem",
+    "OrganizeNonCriticalFiles"
+  ],
+  "scoringWeights": {
+    "revenueImpact": 30,
+    "urgency": 20,
+    "customerImpact": 15,
+    "strategicAlignment": 15,
+    "ceoTimeSaved": 10,
+    "executionConfidence": 10
+  }
+}

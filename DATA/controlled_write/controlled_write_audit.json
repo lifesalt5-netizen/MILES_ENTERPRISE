@@ -70,5 +70,42 @@
       "durationMs": 2,
       "generatedAt": "2026-07-04T02:46:29.284Z"
     }
+  },
+  {
+    "recordedAt": "2026-07-22T01:38:27.688Z",
+    "provider": "instantly",
+    "operation": "CREATE_TEST_CAMPAIGN",
+    "status": "SAFE_MODE_WRITE_DISABLED",
+    "executed": false,
+    "verified": false,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_CONTROLLED_WRITE",
+      "provider": "instantly",
+      "operation": "CREATE_TEST_CAMPAIGN",
+      "status": "SAFE_MODE_WRITE_DISABLED",
+      "executed": false,
+      "verified": false,
+      "dryRun": true,
+      "reason": "Set MILES_CONTROLLED_WRITE_ENABLED=true and provider write flag to allow controlled writes.",
+      "payloadPreview": {
+        "name": "MILES_TEST_2026-07-22T01-38-26-968Z",
+        "description": "Controlled write test campaign created by MILES OS.",
+        "objective": "Stage protected external changes for approval.",
+        "originalCommand": "Own Instantly",
+        "action": "CONTROLLED_WRITE",
+        "capability": "CONTROLLED_WRITE",
+        "provider": "instantly",
+        "connector": "instantly",
+        "operation": "CREATE_TEST_CAMPAIGN",
+        "originalObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+        "executionId": "BIZ-1784684272443-ywgbnr",
+        "dryRun": true,
+        "stageOnly": true,
+        "requiresApproval": true
+      },
+      "durationMs": 336,
+      "generatedAt": "2026-07-22T01:38:27.304Z"
+    }
   }
 ]

@@ -1,6 +1,6 @@
 "use strict";
 
-const { emitEvent } = require("../../event-bus/emitter");
+const { emitEvent } = require("../../../event-bus/emitter");
 
 class GmailIngestor {
 

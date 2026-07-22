@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const COOOrchestratorService = require("./COOOrchestratorService");
+const COOOrchestratorService = require("./SERVICES/COOOrchestratorService");
 
 class AutonomousCOOLoopService {
     constructor(options = {}) {

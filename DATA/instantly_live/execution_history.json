@@ -2287,5 +2287,1912 @@
       "message": "Instantly API request succeeded."
     },
     "generatedAt": "2026-07-09T23:38:27.706Z"
+  },
+  {
+    "ok": false,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "UPLOAD_LEADS",
+    "status": "HTTP_ERROR",
+    "executed": false,
+    "durationMs": 247,
+    "result": {
+      "ok": false,
+      "status": "HTTP_ERROR",
+      "httpStatus": 404,
+      "provider": "instantly",
+      "method": "POST",
+      "endpoint": "/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55/leads",
+      "url": "https://api.instantly.ai/api/v2/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55/leads",
+      "data": {
+        "message": "Route POST:/api/v2/campaigns/d032b6e9-57fa-46f7-b603-b9015e0e8d55/leads not found",
+        "error": "Not Found",
+        "statusCode": 404
+      },
+      "message": "Instantly API request failed."
+    },
+    "generatedAt": "2026-07-21T20:42:26.735Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "LIST_CAMPAIGNS",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 286,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns?limit=5",
+      "url": "https://api.instantly.ai/api/v2/campaigns?limit=5",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:21.044Z",
+            "timestamp_updated": "2026-05-28T21:10:21.044Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:42.277Z",
+            "timestamp_updated": "2026-05-28T21:07:42.277Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:12:53.239Z",
+            "timestamp_updated": "2026-05-28T21:12:53.239Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:32.690Z",
+            "timestamp_updated": "2026-05-28T21:04:32.690Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "e6200ed3-1620-4fff-a4fe-92df20615fd1"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-21T20:44:08.847Z"
+  },
+  {
+    "ok": false,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "UPLOAD_LEADS",
+    "status": "HTTP_ERROR",
+    "executed": false,
+    "durationMs": 410,
+    "result": {
+      "ok": false,
+      "status": "HTTP_ERROR",
+      "httpStatus": 400,
+      "provider": "instantly",
+      "method": "POST",
+      "endpoint": "/leads",
+      "url": "https://api.instantly.ai/api/v2/leads",
+      "data": {
+        "statusCode": 400,
+        "error": "Bad Request",
+        "message": "Email is required when creating a lead"
+      },
+      "message": "Instantly API request failed."
+    },
+    "generatedAt": "2026-07-21T20:52:22.406Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "UPLOAD_LEADS",
+    "status": "LEADS_UPLOADED",
+    "executed": true,
+    "durationMs": 741,
+    "result": {
+      "ok": true,
+      "status": "LEADS_UPLOADED",
+      "uploaded": 5,
+      "results": [
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8674-ec9f-7304-841e-f7c65a086bf3",
+            "timestamp_created": "2026-07-21T20:53:57.536Z",
+            "timestamp_updated": "2026-07-21T20:53:57.536Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "btsmith1184@icloud.com",
+            "status_summary": {},
+            "email": "btsmith1184@icloud.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "Brian Smith",
+            "company_name": "BT SMITH CONSULTING LLC",
+            "payload": {
+              "firstName": "Brian Smith",
+              "lastName": "",
+              "companyName": "BT SMITH CONSULTING LLC",
+              "website": "",
+              "personalization": "",
+              "email": "btsmith1184@icloud.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8674-ed11-7b22-9438-6494aade3d6a",
+            "timestamp_created": "2026-07-21T20:53:57.650Z",
+            "timestamp_updated": "2026-07-21T20:53:57.650Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "sprague517@gmail.com",
+            "status_summary": {},
+            "email": "sprague517@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "RICHARD SPRAGUE",
+            "company_name": "SPRAGUE PROPERTY MANAGEMENT LLC",
+            "payload": {
+              "firstName": "RICHARD SPRAGUE",
+              "lastName": "",
+              "companyName": "SPRAGUE PROPERTY MANAGEMENT LLC",
+              "website": "",
+              "personalization": "",
+              "email": "sprague517@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8674-ed84-76d9-a192-453428089709",
+            "timestamp_created": "2026-07-21T20:53:57.764Z",
+            "timestamp_updated": "2026-07-21T20:53:57.764Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "fayettevillehvac.com",
+            "status_summary": {},
+            "email": "michael@fayettevillehvac.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "MICHAEL JOHNSON",
+            "company_name": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+            "payload": {
+              "firstName": "MICHAEL JOHNSON",
+              "lastName": "",
+              "companyName": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+              "website": "",
+              "personalization": "",
+              "email": "michael@fayettevillehvac.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8674-edef-747d-9e84-792d6423682b",
+            "timestamp_created": "2026-07-21T20:53:57.875Z",
+            "timestamp_updated": "2026-07-21T20:53:57.875Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "propertiesg2g@gmail.com",
+            "status_summary": {},
+            "email": "propertiesg2g@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "BARRY SIEVERS",
+            "company_name": "G2G PROPERTIES LLC",
+            "payload": {
+              "firstName": "BARRY SIEVERS",
+              "lastName": "",
+              "companyName": "G2G PROPERTIES LLC",
+              "website": "",
+              "personalization": "",
+              "email": "propertiesg2g@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8674-ee5f-7e75-9627-02a3f4628f01",
+            "timestamp_created": "2026-07-21T20:53:57.985Z",
+            "timestamp_updated": "2026-07-21T20:53:57.985Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "angelelectricllc.com",
+            "status_summary": {},
+            "email": "arocasio@angelelectricllc.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "ANGEL OCASIO",
+            "company_name": "ANGEL ELECTRIC, LLC",
+            "payload": {
+              "firstName": "ANGEL OCASIO",
+              "lastName": "",
+              "companyName": "ANGEL ELECTRIC, LLC",
+              "website": "",
+              "personalization": "",
+              "email": "arocasio@angelelectricllc.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        }
+      ]
+    },
+    "generatedAt": "2026-07-21T20:53:58.068Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "LIST_CAMPAIGNS",
+    "status": "OK",
+    "executed": true,
+    "durationMs": 257,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns?limit=100",
+      "url": "https://api.instantly.ai/api/v2/campaigns?limit=100",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "f33f2df4-6235-4daa-9945-2832afedbb49",
+            "name": "HubZone",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:21.044Z",
+            "timestamp_updated": "2026-05-28T21:10:21.044Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ee309fba-2292-4d16-a2cf-b81e5a7f541b",
+            "name": "Sam Low Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:42.277Z",
+            "timestamp_updated": "2026-05-28T21:07:42.277Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "ed62cb8e-96bb-4a9f-95e4-5c326d1d11d3",
+            "name": "EXPIRED everything",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:12:53.239Z",
+            "timestamp_updated": "2026-05-28T21:12:53.239Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e6200ed3-1620-4fff-a4fe-92df20615fd1",
+            "name": "GSA 3m–5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:32.690Z",
+            "timestamp_updated": "2026-05-28T21:04:32.690Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "e576391d-2506-49fb-8cf4-7f53a08bbaa8",
+            "name": "FUTURE FOLLOW-UP",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:49.997Z",
+            "timestamp_updated": "2026-05-28T21:01:49.997Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "d032b6e9-57fa-46f7-b603-b9015e0e8d55",
+            "name": "SBS Verified Email Targets",
+            "status": 1,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-14T17:58:18.525Z",
+            "timestamp_updated": "2026-07-06T15:32:58.030Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 0,
+                    "variants": [
+                      {
+                        "subject": "Are you actively pursuing federal contracts?",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Federal contracting expansion",
+                        "body": "<div>Hi,</div><div>I came across your company and noticed your capabilities appear aligned with areas currently seeing active federal demand.</div><div><br /></div><div>A lot of companies registered in SAM or even holding a GSA Schedule struggle to identify:</div><div>• which agencies actually buy their services</div><div>• which primes they should partner with</div><div>• where they realistically fit in the market</div><div>• and which opportunities are actually winnable</div><div><br /></div><div>That’s specifically what we help companies solve at Pathways 2 Government Contracting.</div><div><br /></div><div>Would it make sense to schedule a brief 15–20 minute conversation to discuss whether there may be viable federal growth paths?</div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "Following up",
+                        "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case my last email got buried.</div><div><br /></div><div>Based on your capabilities, there may be viable federal contracting opportunities worth exploring — especially with agencies actively buying in your space.</div><div><br /></div><div>A lot of companies we speak with are unsure:</div><div>- where they realistically fit</div><div>- which agencies align best</div><div>- and whether pursuing GSA or VA paths even makes sense</div><div><br /></div><div>That’s typically where we help.</div><div><br /></div><div>Would a quick 15–20 minute conversation make sense next week?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "Potential federal fit",
+                        "body": "<div>Hi,</div><div><br /></div><div>One thing we consistently see is companies technically capable of federal work but missing visibility into:</div><div><br /></div><div>- which agencies are actively spending</div><div>- who the incumbent primes are</div><div>- whether they align competitively</div><div>- and which opportunities are realistically winnable</div><div><br /></div><div>That usually leads to companies chasing bids that were never a strong fit to begin with.</div><div><br /></div><div>We help companies identify where they actually fit in the market before they invest heavily into bidding.</div><div><br /></div><div>Happy to do a quick review if useful.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "Close the loop",
+                        "body": "<div>Hi,</div><div><br /></div><div>I know priorities shift and timing may not be right, so this will be my last follow-up for now.</div><div><br /></div><div>If federal growth becomes a bigger priority later this year, feel free to reach back out and I’d be happy to reconnect.</div><div><br /></div><div>Wishing you continued success either way.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a target=\"_blank\" rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "email_gap": 5,
+            "random_wait_max": 7,
+            "text_only": true,
+            "first_email_text_only": true,
+            "email_list": [
+              "contacts@pathwaysgsa.com",
+              "info@pathwaysgsa.com",
+              "kevin@pathwaysgov.com",
+              "kevin@pathwaysgsa.com"
+            ],
+            "daily_limit": 240,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": false,
+            "stop_on_auto_reply": true,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": true,
+            "custom_variables": {
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": false,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "c9495996-ba29-4611-919e-c083fcd07ee7",
+            "name": "VA No Sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:05:17.669Z",
+            "timestamp_updated": "2026-05-28T21:05:17.669Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c7adf755-9035-478a-9efc-f69064e927c2",
+            "name": "VA 3-5m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:23.954Z",
+            "timestamp_updated": "2026-05-28T21:06:23.954Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
+            "name": "NURTURE - 14 DAY",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:00:47.084Z",
+            "timestamp_updated": "2026-05-28T21:00:47.084Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "c3922868-37da-4e99-838a-9d0289ff475f",
+            "name": "WOSB",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:36.554Z",
+            "timestamp_updated": "2026-05-28T21:10:36.554Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "b8eb01f1-a5d7-4218-b309-2225e2a3035f",
+            "name": "VA 501k-3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:01.391Z",
+            "timestamp_updated": "2026-05-28T21:06:01.391Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "b57f0758-00ce-4215-9d84-1d38bbcdadbf",
+            "name": "expiring within 12 months",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:11:51.418Z",
+            "timestamp_updated": "2026-05-28T21:11:51.418Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "b091d89a-781b-45b6-9d7f-a2ab1d85f7cc",
+            "name": "MEETING BOOKED",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:02:27.177Z",
+            "timestamp_updated": "2026-05-28T21:02:27.177Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "core_variables": {
+              "website": true,
+              "companyName": true
+            },
+            "custom_variables": {
+              "email": true,
+              "pause_until": true
+            },
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "a9b11a37-62f4-4854-843a-a09fda27eb06",
+            "name": "VOSB",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:11:07.192Z",
+            "timestamp_updated": "2026-05-28T21:11:07.192Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "9c29ca4c-93c4-4ec2-bf76-6ab2e3e9ded2",
+            "name": "NURTURE - 30 DAY",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:13.398Z",
+            "timestamp_updated": "2026-05-28T21:01:13.398Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "980f57b2-1836-4b55-8bc1-91cfaeb1fde5",
+            "name": "VA 5m+",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:06:37.026Z",
+            "timestamp_updated": "2026-05-28T21:06:37.026Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "94d86933-03b0-46b0-91b9-2c30c925a8a3",
+            "name": "SAM no sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:11.461Z",
+            "timestamp_updated": "2026-05-28T21:07:11.461Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "8ee91917-11b9-4f0d-87c2-06be29558fe3",
+            "name": "SBS low sales",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:08:59.342Z",
+            "timestamp_updated": "2026-05-28T21:08:59.342Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "83ea2d84-1142-43f1-860d-c9c426ea6c98",
+            "name": "NO - SUPPRESSED",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:01:32.047Z",
+            "timestamp_updated": "2026-05-28T21:01:32.047Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "core_variables": {
+              "website": true,
+              "companyName": true
+            },
+            "custom_variables": {
+              "email": true,
+              "pause_until": true
+            },
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "791399f8-8e5e-4050-b01a-7c6a435f986b",
+            "name": "[AI SDR] Pathways 2 Government Contracting AI Sales Agent - Fully Personalized Campaign",
+            "status": -1,
+            "campaign_schedule": {
+              "schedules": [
+                {
+                  "name": "Weekdays",
+                  "timing": {
+                    "from": "00:00",
+                    "to": "23:59"
+                  },
+                  "days": {
+                    "0": false,
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                    "6": false
+                  },
+                  "timezone": "Etc/GMT+12"
+                }
+              ]
+            },
+            "timestamp_created": "2026-04-14T21:53:33.589Z",
+            "timestamp_updated": "2026-04-14T21:53:33.753Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "{{791399f8-8e5e-4050-b01a-7c6a435f986b_subject_1}}",
+                        "body": "{{791399f8-8e5e-4050-b01a-7c6a435f986b_email_1}}"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "{{791399f8-8e5e-4050-b01a-7c6a435f986b_email_followup_1}}"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "{{791399f8-8e5e-4050-b01a-7c6a435f986b_email_followup_2}}"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "{{791399f8-8e5e-4050-b01a-7c6a435f986b_email_followup_3}}"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "first_email_text_only": true,
+            "email_list": [],
+            "daily_limit": 10,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "open_tracking": false,
+            "prioritize_new_leads": true,
+            "match_lead_esp": true,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "ai_sdr_id": "019d8dfc-2909-755e-b44f-7e6f7285e2ba"
+          },
+          {
+            "id": "671bc274-ecc7-48eb-a693-f3a771af010e",
+            "name": "8a firms",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:00.934Z",
+            "timestamp_updated": "2026-05-28T21:10:00.934Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "4ca3d49a-e138-4871-85a8-5aa7ed8924df",
+            "name": "Sam High Growth",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:08:09.003Z",
+            "timestamp_updated": "2026-05-28T21:08:09.003Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "45f31d6a-914d-4d12-835c-02e3bce44c8d",
+            "name": "expiring within 6 months",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:11:35.001Z",
+            "timestamp_updated": "2026-05-28T21:11:35.001Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "4238bbff-6571-4a54-91f4-f7574eeb96ec",
+            "name": "GSA No Sales",
+            "status": -2,
+            "campaign_schedule": {
+              "schedules": [
+                {
+                  "name": "New schedule",
+                  "timing": {
+                    "from": "08:30",
+                    "to": "16:30"
+                  },
+                  "days": {
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true
+                  },
+                  "timezone": "America/Detroit"
+                }
+              ],
+              "start_date": null,
+              "end_date": null
+            },
+            "timestamp_created": "2026-05-19T21:58:12.031Z",
+            "timestamp_updated": "2026-06-16T18:02:03.828Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 0,
+                    "variants": [
+                      {
+                        "subject": "Your GSA Schedule",
+                        "body": "<div>Hi,</div><div><br /></div><div>I came across your company and noticed you currently hold a GSA Schedule.</div><div><br /></div><div>One thing we regularly see is companies investing heavily into obtaining a Schedule but struggling to translate it into actual contract activity or consistent sales.</div><div><br /></div><div>In many cases, the issue is not the Schedule itself — it’s:</div><div>- agency alignment</div><div>- positioning</div><div>- buyer visibility</div><div>- prime relationships</div><div>- or targeting the wrong opportunities</div><div><br /></div><div>That’s specifically where we help companies at Pathways 2 Government Contracting.</div><div><br /></div><div>Would you be open to a brief 15–20 minute conversation to discuss whether there may be untapped federal growth opportunities within your current GSA positioning?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Quick question about your GSA contract",
+                        "body": "<div>Hi,</div><div><br /></div><div>I noticed your company currently holds a GSA Schedule but appears to have limited recent contract sales activity.</div><div><br /></div><div>That’s actually more common than most companies realize.</div><div><br /></div><div>A lot of contractors obtain a Schedule but never receive meaningful traction because they were never shown:</div><div>- where they fit best</div><div>- which agencies are actively buying</div><div>- or how to position competitively</div><div><br /></div><div>That’s typically where we help companies improve federal growth visibility and opportunity alignment.</div><div><br /></div><div>Would a short conversation next week make sense?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 2,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "<div>Hi,</div><div><br /></div><div>Wanted to follow up in case this got buried.</div><div><br /></div><div>We work with companies that already have GSA Schedules but are not seeing the level of federal traction they expected.</div><div><br /></div><div>Usually the issue is not the contract itself — it is:</div><div>• agency alignment</div><div>• positioning</div><div>• partner strategy</div><div>• or targeting the wrong opportunities</div><div><br /></div><div>Would it make sense to have a quick discussion to see whether there may be untapped federal growth paths for your company?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "<div>Just circling back here.</div><div><br /></div><div>One thing we often uncover is that many GSA contractors are targeting opportunities that look relevant on paper but are not aligned with how agencies are actually buying.</div><div><br /></div><div>Sometimes small positioning adjustments can completely change traction.</div><div><br /></div><div>Happy to share a few observations specific to your market if helpful.</div><div><br /></div><div>Worth a brief conversation?</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "",
+                        "body": "<div>I know federal growth is probably one of many priorities right now, so this will be my last outreach.</div><div><br /></div><div>That said, if improving GSA utilization, agency targeting, or federal positioning becomes a focus later this year, I’d be happy to connect.</div><div><br /></div><div>Either way, wishing your team continued success.</div><div><br /></div><div>Best,</div><div>Kevin Carter</div><div>Pathways 2 Government Contracting</div><div><a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "email_gap": 2,
+            "random_wait_max": 5,
+            "text_only": false,
+            "first_email_text_only": false,
+            "email_list": [
+              "cora@pathwaysgovcon.com",
+              "evan@pathwaysgovcon.com",
+              "maya@pathwaysgovcon.com",
+              "silvia@pathwaysgovcon.com",
+              "victoria@pathwaysgovcon.com"
+            ],
+            "daily_limit": 100,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": false,
+            "stop_on_auto_reply": false,
+            "daily_max_leads": 150,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": false,
+            "custom_variables": {
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": false,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "40576bbf-d5bf-4a25-863d-f9bd246612e8",
+            "name": "VA 0-500k",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:05:38.243Z",
+            "timestamp_updated": "2026-05-28T21:05:38.243Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "3f32c0c7-83dc-4726-800a-900c5bb15b8e",
+            "name": "SDVOSB",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:10:53.811Z",
+            "timestamp_updated": "2026-05-28T21:10:53.811Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "3b178b26-4449-4217-9369-946ad9542ac2",
+            "name": "P2GC - HIGH VALUE (copy) (copy)",
+            "status": -2,
+            "campaign_schedule": {
+              "schedules": [
+                {
+                  "name": "New schedule",
+                  "timing": {
+                    "from": "09:00",
+                    "to": "18:00"
+                  },
+                  "days": {
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true
+                  },
+                  "timezone": "America/Detroit"
+                }
+              ],
+              "start_date": null,
+              "end_date": null
+            },
+            "timestamp_created": "2026-05-04T16:32:57.909Z",
+            "timestamp_updated": "2026-06-16T18:01:56.190Z",
+            "pl_value": 2500,
+            "sequences": [
+              {
+                "steps": [
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": "Quick question ",
+                        "body": "<div>Hey</div><div><br /></div><div>Quick question—</div><div><br /></div><div>Are you actively pursuing federal contracts right now, or mainly staying in the open market?</div><div><br /></div><div>I was reviewing companies in your space and noticed many are eligible for contract vehicles and buying channels they never pursue.</div><div><br /></div><div>Sometimes it's a contract vehicle issue.</div><div>Sometimes it's a positioning issue.</div><div>Sometimes they're simply chasing the wrong opportunities.</div><div><br /></div><div>Worth a quick conversation?</div><div><br /></div><div>Kevin<br />Pathways 2 Government Contracting<br />813-803-0212 </div><div>or</div><div> just pick a time <a rel=\"noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "You may be leaving revenue on the table",
+                        "body": "<div>Hey —</div><div><br /></div><div>Quick question —<br /><br />Are you currently going after federal contracts, or mostly staying in SAM/open market?<br /><br />We’ve been reviewing companies in your space, and based on NAICS + scope, a lot look like potential fits for GSA/VA — but haven’t validated it or pursued it.<br /><br />That usually leaves them competing in the hardest lane.<br /><br />If helpful, I can take a quick look and tell you whether that path is actually viable for you (and what it would take).<br /><br />Worth checking?</div><div>KevinPathways 2 Government Contracting813-803-0212 </div><div>or</div><div> just pick a time <a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Question about your NAICS",
+                        "body": "<div>Hey —</div><div><br /></div><div>Quick question —<br /><br />Are you currently going after federal contracts, or mostly staying in SAM/open market?<br /><br />We’ve been reviewing companies in your space, and based on NAICS + scope, a lot look like potential fits for GSA/VA — but haven’t validated it or pursued it.<br /><br />That usually leaves them competing in the hardest lane.<br /><br />If helpful, I can take a quick look and tell you whether that path is actually viable for you (and what it would take).<br /><br />Worth checking?</div><div>KevinPathways 2 Government Contracting813-803-0212 </div><div>or</div><div> just pick a time <a rel=\"noopener noreferrer noopener noreferrer noopener noreferrer noopener noreferrer\" href=\"https://calendly.com/kevin-pathways2gc/30min\">https://calendly.com/kevin-pathways2gc/30min</a></div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 3,
+                    "variants": [
+                      {
+                        "subject": "Most firms miss this",
+                        "body": "<div><br /></div><div>Hey —</div><div><br /></div><div>One thing we see often:</div><div><br /></div><div>Companies that are fully capable of winning federal work stay in SAM/open market because they never pursue the contract vehicles or buying channels that fit them best.</div><div><br /></div><div>Usually nobody ever points it out.</div><div><br /></div><div>Worth a quick conversation?</div><div><br /></div><div>Kevin</div><div>Pathways 2 Government Contracting</div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Wrong opportunities",
+                        "body": "<div>Hey —</div><div><br /></div><div>We've been reviewing firms in your space and noticed many are competing in crowded lanes while ignoring opportunities that better match their certifications, NAICS, past performance, or contract vehicles.</div><div><br /></div><div>Not sure if that's true for you, but worth checking.</div><div><br /></div><div>Kevin</div><div><br /></div>"
+                      },
+                      {
+                        "subject": "Worth checking?",
+                        "body": "<div>Hey —</div><div><br /></div><div>If you're pursuing federal work this year, I'd be happy to spend five minutes showing you where I think the biggest growth opportunity is.</div><div><br /></div><div>No pitch.</div><div><br /></div><div>Just an outside perspective.</div><div><br /></div><div>Kevin</div><div><br /></div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 6,
+                    "variants": [
+                      {
+                        "subject": " Quick note ",
+                        "body": "<div>Hey —</div><div><br /></div><div>Quick note —<br /><br />Even when companies *are* a fit for contract vehicles, the bigger issue is not knowing how to move forward or what’s actually required.<br /><br />That’s where most get stuck.<br /><br />If it makes sense, I can walk you through what that would look like for your situation.</div>"
+                      },
+                      {
+                        "subject": "One thing I noticed",
+                        "body": "<div>Hey —</div><div><br /></div><div>After reviewing companies in your space, one pattern keeps showing up:</div><div><br /></div><div>The firms growing fastest are usually using contract vehicles, agency relationships, and positioning strategies that most competitors never pursue.</div><div><br /></div><div>Might it be worth comparing notes?</div><div><br /></div><div>Kevin</div>"
+                      },
+                      {
+                        "subject": "Should I close the file?",
+                        "body": "<div>Hey —</div><div><br /></div><div id=\"isPasted\">I've reached out a few times and don't want to clutter your inbox.</div><div><br /></div><div>If federal growth isn't a priority right now, no worries.</div><div><br /></div><div>If it is, I'm happy to take a quick look and tell you what I see.</div><div><br /></div><div>Either way, just let me know.</div><div><br /></div><div>Kevin</div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  },
+                  {
+                    "type": "email",
+                    "delay": 1,
+                    "variants": [
+                      {
+                        "subject": " should I close this out?",
+                        "body": "<div>Not sure if this is relevant right now —<br /><br />If federal work isn’t something you’re focused on, no worries at all — just let me know and I’ll close this out.<br /><br />If it is, happy to connect briefly and show what we’re seeing in your space.<br /><br />-Pathways 2 GC</div>"
+                      },
+                      {
+                        "subject": " should I close this out?",
+                        "body": "<div>Not sure if this is relevant right now —<br /><br />If federal work isn’t something you’re focused on, no worries at all — just let me know and I’ll close this out.<br /><br />If it is, happy to connect briefly and show what we’re seeing in your space.<br /><br />-Pathways 2 GC</div>"
+                      },
+                      {
+                        "subject": " should I close this out?",
+                        "body": "<div>Not sure if this is relevant right now —<br /><br />If federal work isn’t something you’re focused on, no worries at all — just let me know and I’ll close this out.<br /><br />If it is, happy to connect briefly and show what we’re seeing in your space.<br /><br />-Pathways 2 GC</div>"
+                      }
+                    ],
+                    "delay_unit": "days",
+                    "pre_delay_unit": "days"
+                  }
+                ]
+              }
+            ],
+            "text_only": false,
+            "first_email_text_only": false,
+            "email_list": [
+              "contacts@pathwaysgsa.com",
+              "info@pathwaysgsa.com",
+              "kevin@pathwaysgov.com"
+            ],
+            "daily_limit": 40,
+            "stop_on_reply": true,
+            "email_tag_list": [],
+            "link_tracking": false,
+            "open_tracking": true,
+            "stop_on_auto_reply": false,
+            "prioritize_new_leads": true,
+            "match_lead_esp": false,
+            "stop_for_company": false,
+            "core_variables": {
+              "website": true,
+              "companyName": true
+            },
+            "custom_variables": {
+              "email": true,
+              "pause_until": true
+            },
+            "insert_unsubscribe_header": true,
+            "allow_risky_contacts": false,
+            "disable_bounce_protect": false,
+            "cc_list": [],
+            "bcc_list": [],
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "provider_routing_rules": []
+          },
+          {
+            "id": "39e2cec7-ca99-4390-a87e-110c5c18ed01",
+            "name": "SBS no vehicle",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:08:36.025Z",
+            "timestamp_updated": "2026-05-28T21:08:36.025Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "33645020-93e5-4404-ac99-b45e12bad9aa",
+            "name": "GSA 5m+",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:50.728Z",
+            "timestamp_updated": "2026-05-28T21:04:50.728Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "32dbde1b-6b39-4374-9ce1-afd47fb0a346",
+            "name": "Sam Growth",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:07:55.097Z",
+            "timestamp_updated": "2026-05-28T21:07:55.097Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "0ed2d60d-64d8-4885-8b77-cc3c712bcbc1",
+            "name": "TECHNICAL SUPPRESSION",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:02:10.229Z",
+            "timestamp_updated": "2026-05-28T21:02:10.229Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "core_variables": {
+              "website": true,
+              "companyName": true
+            },
+            "custom_variables": {
+              "email": true,
+              "pause_until": true
+            },
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "0e1df2e7-d85e-49ae-82a4-ea7043466c4b",
+            "name": "ACTIVE PIPELINE",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:02:51.077Z",
+            "timestamp_updated": "2026-05-28T21:02:51.077Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "core_variables": {
+              "website": true,
+              "companyName": true
+            },
+            "custom_variables": {
+              "email": true,
+              "pause_until": true
+            },
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "0c181c36-3e79-4220-a234-0946fbe24ecb",
+            "name": "SBS Growth",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:09:12.316Z",
+            "timestamp_updated": "2026-05-28T21:09:12.316Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          },
+          {
+            "id": "089cd9b5-1e1e-4886-ab49-d574f3bfc449",
+            "name": "GSA 0–500k",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:03:52.581Z",
+            "timestamp_updated": "2026-05-28T21:03:52.581Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "089cd9b5-1e1e-4886-ab49-d574f3bfc449"
+      },
+      "message": "Instantly API request succeeded."
+    },
+    "generatedAt": "2026-07-21T21:03:49.902Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "UPLOAD_LEADS",
+    "status": "LEADS_UPLOADED",
+    "executed": true,
+    "durationMs": 754,
+    "result": {
+      "ok": true,
+      "status": "LEADS_UPLOADED",
+      "uploaded": 5,
+      "results": [
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8685-6915-74a5-b5dd-d8b3adf2ba23",
+            "timestamp_created": "2026-07-21T21:11:57.970Z",
+            "timestamp_updated": "2026-07-21T21:11:57.970Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "btsmith1184@icloud.com",
+            "status_summary": {},
+            "email": "btsmith1184@icloud.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "Brian Smith",
+            "company_name": "BT SMITH CONSULTING LLC",
+            "payload": {
+              "firstName": "Brian Smith",
+              "lastName": "",
+              "companyName": "BT SMITH CONSULTING LLC",
+              "website": "",
+              "personalization": "",
+              "email": "btsmith1184@icloud.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8685-69c3-7a42-a46d-f5d81ab9da12",
+            "timestamp_created": "2026-07-21T21:11:58.148Z",
+            "timestamp_updated": "2026-07-21T21:11:58.148Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "sprague517@gmail.com",
+            "status_summary": {},
+            "email": "sprague517@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "RICHARD SPRAGUE",
+            "company_name": "SPRAGUE PROPERTY MANAGEMENT LLC",
+            "payload": {
+              "firstName": "RICHARD SPRAGUE",
+              "lastName": "",
+              "companyName": "SPRAGUE PROPERTY MANAGEMENT LLC",
+              "website": "",
+              "personalization": "",
+              "email": "sprague517@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8685-6a2f-7288-9e16-4e2ee04679f9",
+            "timestamp_created": "2026-07-21T21:11:58.253Z",
+            "timestamp_updated": "2026-07-21T21:11:58.253Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "fayettevillehvac.com",
+            "status_summary": {},
+            "email": "michael@fayettevillehvac.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "MICHAEL JOHNSON",
+            "company_name": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+            "payload": {
+              "firstName": "MICHAEL JOHNSON",
+              "lastName": "",
+              "companyName": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+              "website": "",
+              "personalization": "",
+              "email": "michael@fayettevillehvac.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8685-6a8c-73e3-9a01-14da2d88f75a",
+            "timestamp_created": "2026-07-21T21:11:58.349Z",
+            "timestamp_updated": "2026-07-21T21:11:58.349Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "propertiesg2g@gmail.com",
+            "status_summary": {},
+            "email": "propertiesg2g@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "BARRY SIEVERS",
+            "company_name": "G2G PROPERTIES LLC",
+            "payload": {
+              "firstName": "BARRY SIEVERS",
+              "lastName": "",
+              "companyName": "G2G PROPERTIES LLC",
+              "website": "",
+              "personalization": "",
+              "email": "propertiesg2g@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8685-6b0e-7f19-bdbf-25513b157b77",
+            "timestamp_created": "2026-07-21T21:11:58.479Z",
+            "timestamp_updated": "2026-07-21T21:11:58.479Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "angelelectricllc.com",
+            "status_summary": {},
+            "email": "arocasio@angelelectricllc.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "ANGEL OCASIO",
+            "company_name": "ANGEL ELECTRIC, LLC",
+            "payload": {
+              "firstName": "ANGEL OCASIO",
+              "lastName": "",
+              "companyName": "ANGEL ELECTRIC, LLC",
+              "website": "",
+              "personalization": "",
+              "email": "arocasio@angelelectricllc.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        }
+      ]
+    },
+    "generatedAt": "2026-07-21T21:11:58.597Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "UPLOAD_LEADS",
+    "status": "LEADS_UPLOADED",
+    "executed": true,
+    "durationMs": 1415,
+    "result": {
+      "ok": true,
+      "status": "LEADS_UPLOADED",
+      "uploaded": 5,
+      "results": [
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8688-738f-744e-a810-b47f7e1a0f57",
+            "timestamp_created": "2026-07-21T21:15:17.262Z",
+            "timestamp_updated": "2026-07-21T21:15:17.262Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "btsmith1184@icloud.com",
+            "status_summary": {},
+            "email": "btsmith1184@icloud.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "Brian Smith",
+            "company_name": "BT SMITH CONSULTING LLC",
+            "payload": {
+              "firstName": "Brian Smith",
+              "lastName": "",
+              "companyName": "BT SMITH CONSULTING LLC",
+              "website": "",
+              "personalization": "",
+              "email": "btsmith1184@icloud.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8688-746a-7d7e-857c-90da9e243839",
+            "timestamp_created": "2026-07-21T21:15:17.484Z",
+            "timestamp_updated": "2026-07-21T21:15:17.484Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "sprague517@gmail.com",
+            "status_summary": {},
+            "email": "sprague517@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "RICHARD SPRAGUE",
+            "company_name": "SPRAGUE PROPERTY MANAGEMENT LLC",
+            "payload": {
+              "firstName": "RICHARD SPRAGUE",
+              "lastName": "",
+              "companyName": "SPRAGUE PROPERTY MANAGEMENT LLC",
+              "website": "",
+              "personalization": "",
+              "email": "sprague517@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8688-751b-77ee-b779-940bff330d01",
+            "timestamp_created": "2026-07-21T21:15:17.660Z",
+            "timestamp_updated": "2026-07-21T21:15:17.660Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "fayettevillehvac.com",
+            "status_summary": {},
+            "email": "michael@fayettevillehvac.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "MICHAEL JOHNSON",
+            "company_name": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+            "payload": {
+              "firstName": "MICHAEL JOHNSON",
+              "lastName": "",
+              "companyName": "AC MAN HEATING AND AIR CONDITIONING, INC.",
+              "website": "",
+              "personalization": "",
+              "email": "michael@fayettevillehvac.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8688-75b1-7d35-a36b-6aa2d4bacb0b",
+            "timestamp_created": "2026-07-21T21:15:17.811Z",
+            "timestamp_updated": "2026-07-21T21:15:17.811Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "propertiesg2g@gmail.com",
+            "status_summary": {},
+            "email": "propertiesg2g@gmail.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "BARRY SIEVERS",
+            "company_name": "G2G PROPERTIES LLC",
+            "payload": {
+              "firstName": "BARRY SIEVERS",
+              "lastName": "",
+              "companyName": "G2G PROPERTIES LLC",
+              "website": "",
+              "personalization": "",
+              "email": "propertiesg2g@gmail.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        },
+        {
+          "ok": true,
+          "status": "OK",
+          "httpStatus": 200,
+          "provider": "instantly",
+          "method": "POST",
+          "endpoint": "/leads",
+          "url": "https://api.instantly.ai/api/v2/leads",
+          "data": {
+            "id": "019f8688-7667-7237-b488-99a7e8bab718",
+            "timestamp_created": "2026-07-21T21:15:17.991Z",
+            "timestamp_updated": "2026-07-21T21:15:17.991Z",
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "status": 1,
+            "email_open_count": 0,
+            "email_reply_count": 0,
+            "email_click_count": 0,
+            "company_domain": "angelelectricllc.com",
+            "status_summary": {},
+            "email": "arocasio@angelelectricllc.com",
+            "personalization": "",
+            "website": "",
+            "last_name": "",
+            "first_name": "ANGEL OCASIO",
+            "company_name": "ANGEL ELECTRIC, LLC",
+            "payload": {
+              "firstName": "ANGEL OCASIO",
+              "lastName": "",
+              "companyName": "ANGEL ELECTRIC, LLC",
+              "website": "",
+              "personalization": "",
+              "email": "arocasio@angelelectricllc.com"
+            },
+            "upload_method": "api"
+          },
+          "message": "Instantly API request succeeded."
+        }
+      ]
+    },
+    "generatedAt": "2026-07-21T21:15:18.106Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 160,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": true,
+      "durationMs": 156,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-21T22:36:28.356Z"
+    },
+    "generatedAt": "2026-07-21T22:36:28.359Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 82,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": true,
+      "durationMs": 79,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-21T22:37:43.556Z"
+    },
+    "generatedAt": "2026-07-21T22:37:43.559Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 530,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": true,
+      "durationMs": 87,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-22T01:37:55.107Z"
+    },
+    "generatedAt": "2026-07-22T01:37:55.550Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 3105,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": false,
+      "durationMs": 3102,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-22T03:23:37.257Z"
+    },
+    "generatedAt": "2026-07-22T03:23:37.260Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 8176,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": false,
+      "durationMs": 8172,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-22T03:23:40.532Z"
+    },
+    "generatedAt": "2026-07-22T03:23:40.535Z"
+  },
+  {
+    "ok": true,
+    "action": "INSTANTLY_PROVIDER_EXECUTION",
+    "provider": "instantly",
+    "operation": "HEALTH_CHECK",
+    "status": "READY",
+    "executed": true,
+    "durationMs": 604,
+    "result": {
+      "ok": true,
+      "action": "INSTANTLY_HEALTH_CHECK",
+      "provider": "instantly",
+      "status": "READY",
+      "credentialsPresent": true,
+      "writeEnabled": true,
+      "durationMs": 300,
+      "result": {
+        "ok": true,
+        "status": "OK",
+        "httpStatus": 200,
+        "provider": "instantly",
+        "method": "GET",
+        "endpoint": "/campaigns?limit=1",
+        "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+        "data": {
+          "items": [
+            {
+              "id": "f990817a-c420-4935-a159-7eda97dec196",
+              "name": "GSA 500k–3m",
+              "status": 0,
+              "campaign_schedule": {},
+              "timestamp_created": "2026-05-28T21:04:12.205Z",
+              "timestamp_updated": "2026-05-28T21:04:12.205Z",
+              "pl_value": 2500,
+              "open_tracking": false,
+              "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+              "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+            }
+          ],
+          "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+        },
+        "message": "Instantly API request succeeded."
+      },
+      "generatedAt": "2026-07-22T03:28:18.155Z"
+    },
+    "generatedAt": "2026-07-22T03:28:18.459Z"
   }
 ]

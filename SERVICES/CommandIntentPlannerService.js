@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 /*
   MILES ENTERPRISE
@@ -191,7 +191,17 @@ class CommandIntentPlannerService {
       originalCommand: raw,
       steps,
       plannedAt:
-        new Date().toISOString()
+        new Date().toISOString(),
+      governance: {
+        policyStatus: "UNASSESSED",
+        risk: "UNKNOWN",
+        approval: {
+          status: "NOT_EVALUATED"
+        },
+        guardianChecked: false,
+        auditRequired: true,
+        constitutionVersion: "1.0.0"
+      }
     };
   }
 
@@ -348,11 +358,16 @@ class CommandIntentPlannerService {
       return "BUSINESS_OPERATION";
     }
 
+    /* Actionable CEO objectives become executable missions before chat fallback. */
+    if (this.isActionableExecutiveMission(text)) {
+      return "EXECUTIVE_MISSION";
+    }
+
+    // Executive conversation and advisory requests
     if (
-      /what can you do|supported action/
-        .test(text)
+      /what can you do|supported action|who are you|hello|hi|help|how can you help|explain|what do you think|should we|recommend|why|how\b|what\b/i.test(text)
     ) {
-      return "EXECUTIVE_STATUS";
+      return "CONVERSATION";
     }
 
     /*
@@ -362,6 +377,19 @@ class CommandIntentPlannerService {
     */
 
     return "GENERAL_EXECUTIVE_COMMAND";
+  }
+
+  isActionableExecutiveMission(text) {
+    const hasBusinessObjective =
+      /revenue|sales|pipeline|prospect|client|customer|business|opportunit|growth|marketing|outbound|proposal|deal|priority|department|action plan|work package|assign work|execute|implementation|mission/.test(text);
+
+    const hasExecutionVerb =
+      /review|assess|audit|analyze|identify|prioritize|rank|select|assign|create|build|produce|develop|execute|launch|manage|operate|improve|increase|reduce|plan|coordinate|implement/.test(text);
+
+    const hasMissionSignal =
+      /assign.*(work|department|team)|executive action plan|highest-priority|highest priority|top \d+|three highest|multi-step|across.*department|appropriate department|create.*work package|produce.*plan|identify.*opportunit/.test(text);
+
+    return hasMissionSignal || (hasBusinessObjective && hasExecutionVerb);
   }
 
   isRevenueOperationsMission(text) {
@@ -434,6 +462,13 @@ class CommandIntentPlannerService {
       "REVENUE_OPERATIONS"
     ) {
       return "REVENUE_OPERATIONS_MISSION";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_MISSION"
+    ) {
+      return "EXECUTIVE_MISSION_PLANNING";
     }
 
     if (
@@ -551,6 +586,13 @@ class CommandIntentPlannerService {
 
     if (
       intent ===
+      "EXECUTIVE_MISSION"
+    ) {
+      return "BUSINESS_EXECUTION";
+    }
+
+    if (
+      intent ===
       "EXECUTIVE_STATUS"
     ) {
       return "STATUS";
@@ -640,6 +682,7 @@ class CommandIntentPlannerService {
     if (
       [
         "REVENUE_OPERATIONS",
+        "EXECUTIVE_MISSION",
         "EXECUTIVE_STATUS",
         "ENGINEERING",
         "EXECUTIVE_AUDIT"
@@ -689,6 +732,13 @@ class CommandIntentPlannerService {
     if (
       intent ===
       "REVENUE_OPERATIONS"
+    ) {
+      return "BUSINESS_EXECUTION";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_MISSION"
     ) {
       return "BUSINESS_EXECUTION";
     }
@@ -829,6 +879,13 @@ class CommandIntentPlannerService {
     }
 
     if (
+      intent ===
+      "EXECUTIVE_MISSION"
+    ) {
+      return "Executive Operations";
+    }
+
+    if (
       intent === "ENGINEERING"
     ) {
       return "Engineering";
@@ -852,6 +909,18 @@ class CommandIntentPlannerService {
     connector,
     action
   ) {
+    if (
+      intent ===
+      "EXECUTIVE_MISSION"
+    ) {
+      return [
+        { step: 1, provider: "MILES", connector: "MILES", capability: "COMPANY_STATE", action: "COMPANY_STATE", objective: "Review current business state, priorities, pipeline, work queues, constraints, and operating data." },
+        { step: 2, provider: "MILES", connector: "MILES", capability: "BUSINESS_EXECUTION", action: "BUSINESS_EXECUTION", objective: "Identify and prioritize the highest-impact opportunities required by the CEO objective." },
+        { step: 3, provider: "MILES", connector: "MILES", capability: "TASK_ROUTER", action: "TASK_ROUTER", objective: "Assign executable work to the appropriate departments, workers, and providers with dependencies and expected outputs." },
+        { step: 4, provider: "MILES", connector: "MILES", capability: "EXECUTIVE_DASHBOARD", action: "EXECUTIVE_DASHBOARD", objective: "Produce an executive action plan showing priorities, assignments, next actions, risks, and completion criteria." }
+      ];
+    }
+
     if (
       intent ===
       "REVENUE_OPERATIONS"

@@ -2,9 +2,9 @@
 
 require("dotenv").config();
 
-const ProductionCOOEngine = require("./SERVICES/ProductionCOOEngine");
-const ExecutionRouterService = require("./SERVICES/ExecutionRouterService");
-const AutonomousRevenueClosureLoop = require("./SERVICES/AutonomousRevenueClosureLoop");
+const ProductionCOOEngine = require("../SERVICES/ProductionCOOEngine");
+const ExecutionRouterService = require("../SERVICES/ExecutionRouterService");
+const AutonomousRevenueClosureLoop = require("../SERVICES/AutonomousRevenueClosureLoop");
 
 const buildConnectors = require("./CONNECTORS");
 

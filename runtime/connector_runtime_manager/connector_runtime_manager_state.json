@@ -3,10 +3,10 @@
   "service": "CONNECTOR_RUNTIME_MANAGER",
   "version": "1.1.0",
   "status": "RUNNING",
-  "startedAt": "2026-07-13T15:56:26.664Z",
+  "startedAt": "2026-07-22T20:12:53.932Z",
   "stoppedAt": null,
-  "cycleCount": 7,
-  "lastCycleAt": "2026-07-13T15:59:26.724Z",
+  "cycleCount": 3,
+  "lastCycleAt": "2026-07-22T20:13:53.939Z",
   "connectorsDiscovered": 0,
   "connectorsHealthy": 0,
   "connectorsFailed": 0,
@@ -28,7 +28,7 @@
       "service": "CONNECTOR_RUNTIME",
       "version": "1.1.0",
       "status": "INITIALIZED",
-      "generatedAt": "2026-07-13T15:59:26.724Z",
+      "generatedAt": "2026-07-22T20:13:53.939Z",
       "connectorDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS",
       "connectorsDiscovered": 0,
       "connectorsLoaded": 0,
@@ -45,9 +45,9 @@
       "lastExecutionAt": null,
       "lastError": null
     },
-    "generatedAt": "2026-07-13T15:59:26.724Z"
+    "generatedAt": "2026-07-22T20:13:53.939Z"
   },
   "lastError": null,
-  "generatedAt": "2026-07-13T15:59:26.724Z",
+  "generatedAt": "2026-07-22T20:13:53.939Z",
   "running": true
 }

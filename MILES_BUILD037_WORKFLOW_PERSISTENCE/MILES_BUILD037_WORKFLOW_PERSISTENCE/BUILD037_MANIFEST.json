@@ -1,0 +1,11 @@
+{
+  "build": "037",
+  "name": "Workflow Persistence and Duplicate Task Prevention",
+  "files": [
+    "SERVICES/WorkQueueService.js",
+    "SERVICES/AutonomousCOOLoopService.js",
+    "TESTS/Test_Build037_WorkflowPersistence.js",
+    "INSTALL_BUILD037.ps1"
+  ],
+  "validated": true
+}

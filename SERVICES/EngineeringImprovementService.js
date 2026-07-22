@@ -459,6 +459,12 @@ class EngineeringImprovementService {
     if (action === "ENGINEERING_IMPLEMENT") return this.implement(task);
     if (action === "ENGINEERING_VALIDATE") return this.validate(task);
     if (action === "ENGINEERING_REPORT") return this.report(task);
+        // BUILD122B - Action aliases for planner-generated engineering tasks
+    if (action === "ENGINEERING_REPAIR")
+      return this.implement(task);
+
+    if (action === "CAPABILITY_GAP_REVIEW")
+      return this.analyze(task);
 
     if (action === "ENGINEERING_IMPROVEMENT") {
       const analysis = this.analyze(task);
@@ -483,7 +489,16 @@ class EngineeringImprovementService {
         completedAt: now()
       };
     }
-
+supportedActions: [
+  "ENGINEERING_IMPROVEMENT",
+  "ENGINEERING_ANALYZE",
+  "ENGINEERING_PLAN",
+  "ENGINEERING_IMPLEMENT",
+  "ENGINEERING_VALIDATE",
+  "ENGINEERING_REPORT",
+  "ENGINEERING_REPAIR",
+  "CAPABILITY_GAP_REVIEW"
+]
     return {
       ok: false,
       service: "EngineeringImprovementService",

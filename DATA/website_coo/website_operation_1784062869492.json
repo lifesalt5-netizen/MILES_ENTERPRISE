@@ -1,0 +1,169 @@
+{
+  "ok": false,
+  "provider": "WebsiteProvider",
+  "action": "verifyWebsite",
+  "status": "Critical",
+  "generatedAt": "2026-07-14T20:57:21.891Z",
+  "verifiedAt": "2026-07-14T20:57:21.891Z",
+  "readOnly": true,
+  "url": "https://pathways2gc.com",
+  "metrics": {
+    "homepageReachable": false,
+    "statusCode": 0,
+    "loadMs": 124466,
+    "title": "",
+    "h1": "",
+    "metaDescription": "",
+    "https": true,
+    "hasCTA": false,
+    "hasContact": false,
+    "hasCalendly": false,
+    "hasServices": false,
+    "hasPhone": false,
+    "hasEmail": false,
+    "finalUrl": "https://pathways2gc.com",
+    "titleLength": 0,
+    "h1Count": 0,
+    "headingCounts": {
+      "h1": 0,
+      "h2": 0,
+      "h3": 0,
+      "h4": 0,
+      "h5": 0,
+      "h6": 0
+    },
+    "metaDescriptionLength": 0,
+    "formCount": 0,
+    "validFormCount": 0,
+    "imageCount": 0,
+    "imagesMissingAlt": 0,
+    "inputLabelCoverage": 100,
+    "linksDiscovered": 0,
+    "internalLinks": 0,
+    "linksChecked": 0,
+    "brokenLinks": 0,
+    "hasCanonical": false,
+    "hasViewport": false,
+    "hasLang": false,
+    "hasMainLandmark": false,
+    "hasNavigation": false,
+    "hasSkipLink": false,
+    "hasAria": false
+  },
+  "exceptions": [
+    {
+      "type": "WebsiteUnavailable",
+      "severity": "Critical",
+      "message": "Website audit failed."
+    },
+    {
+      "type": "HTTPStatus",
+      "severity": "Critical",
+      "message": "Homepage returned status 0."
+    },
+    {
+      "type": "SEO",
+      "severity": "Warning",
+      "message": "Page title is missing or too short."
+    },
+    {
+      "type": "SEO",
+      "severity": "Warning",
+      "message": "Meta description is missing or too short."
+    },
+    {
+      "type": "ContentStructure",
+      "severity": "Warning",
+      "message": "Expected exactly one H1; found 0."
+    },
+    {
+      "type": "Conversion",
+      "severity": "Warning",
+      "message": "No clear call-to-action was detected."
+    },
+    {
+      "type": "Conversion",
+      "severity": "Warning",
+      "message": "Calendly integration was not detected."
+    },
+    {
+      "type": "Accessibility",
+      "severity": "Warning",
+      "message": "The HTML language attribute was not detected."
+    },
+    {
+      "type": "ContentDrift",
+      "severity": "Info",
+      "message": "9 monitored content field(s) changed from baseline."
+    }
+  ],
+  "recommendations": [
+    "Add or restore a clear primary scheduling CTA.",
+    "Verify the approved Calendly link is present and reachable.",
+    "Review content drift against approved website changes before publishing or rollback."
+  ],
+  "details": {
+    "forms": [],
+    "brokenLinks": [],
+    "linkResults": [],
+    "contentDrift": {
+      "baselineExists": true,
+      "changed": true,
+      "changes": [
+        {
+          "field": "title",
+          "before": "Pathways 2 Government Contracting",
+          "after": ""
+        },
+        {
+          "field": "h1",
+          "before": "Federal and SLED Growth Advisory",
+          "after": ""
+        },
+        {
+          "field": "metaDescription",
+          "before": "Government contracting advisory services for companies seeking federal and SLED growth opportunities.",
+          "after": ""
+        },
+        {
+          "field": "hasCTA",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasCalendly",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasContact",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasServices",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasPhone",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasEmail",
+          "before": true,
+          "after": false
+        }
+      ]
+    }
+  },
+  "safety": {
+    "websiteMode": "READ_ONLY",
+    "writesEnabled": false,
+    "publishingEnabled": false,
+    "formSubmissionEnabled": false,
+    "contentChangesEnabled": false,
+    "b12WritesEnabled": false
+  }
+}

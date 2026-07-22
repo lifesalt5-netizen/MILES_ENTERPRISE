@@ -244,7 +244,10 @@ class AutonomousWorkOrchestrator {
       workerId:
         operation.workerId ||
         operation.worker ||
+        operation.workerName ||
         operation.assignedWorker ||
+        operation.assignedTo ||
+        operation.area ||
         null,
 
       connectorId:
@@ -729,14 +732,20 @@ class AutonomousWorkOrchestrator {
 
       if (typeof this.workerRegistry.listWorkers === 'function') {
         const workers = await this.workerRegistry.listWorkers();
-        if (Array.isArray(workers) && workers.length > 0) {
-          return {
-            ok: true,
-            service: this.service,
-            status: 'WORKER_RESOLVED_FROM_LIST',
-            worker: workers[0]
-          };
-        }
+
+        this.appendJsonLine(this.executionLogPath, {
+          operationId: operation.operationId,
+          status: 'WORKER_REGISTRY_LIST_INSPECTED',
+          requestedWorkerId: operation.workerId || null,
+          availableWorkerIds: Array.isArray(workers)
+            ? workers.map((worker) =>
+                worker.workerId ||
+                worker.id ||
+                worker.name ||
+                null
+              ).filter(Boolean)
+            : []
+        });
       }
     }
 
@@ -769,6 +778,10 @@ class AutonomousWorkOrchestrator {
     const workerRequest = {
       ...operation,
       workerId,
+      worker: workerId,
+      workerName: workerId,
+      assignedWorker: workerId,
+      assignedTo: operation.assignedTo || workerId,
       payload: operation.payload || {},
       metadata: {
         ...operation.metadata,

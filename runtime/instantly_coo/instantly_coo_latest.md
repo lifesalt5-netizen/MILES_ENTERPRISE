@@ -1,6 +1,6 @@
 # MILES Instantly COO Report
 
-Generated: 2026-07-12T03:27:39.612Z
+Generated: 2026-07-22T22:11:28.080Z
 
 ## Executive Status
 
@@ -21,8 +21,8 @@ Generated: 2026-07-12T03:27:39.612Z
 | Warning Campaigns | 0 |
 | Critical Campaigns | 0 |
 | Estimated Daily Capacity | 205 |
-| Average Warmup Score | 100 |
-| Lowest Warmup Score | 100 |
+| Average Warmup Score | 99.22 |
+| Lowest Warmup Score | 97 |
 
 ## Protected Assets
 
@@ -39,9 +39,9 @@ Protected inboxes:
 | Account | Status | Protected | Warmup Score | Daily Limit |
 |---|---|---:|---:|---:|
 | maya@pathwaysgovcon.com | HEALTHY | NO | 100 | 25 |
-| silvia@pathwaysgovcon.com | HEALTHY | NO | 100 | 25 |
-| victoria@pathwaysgovcon.com | HEALTHY | NO | 100 | 25 |
-| cora@pathwaysgovcon.com | HEALTHY | NO | 100 | 25 |
+| silvia@pathwaysgovcon.com | HEALTHY | NO | 98 | 25 |
+| victoria@pathwaysgovcon.com | HEALTHY | NO | 98 | 25 |
+| cora@pathwaysgovcon.com | HEALTHY | NO | 97 | 25 |
 | evan@pathwaysgovcon.com | HEALTHY | NO | 100 | 25 |
 | info@pathways2gc.com | PROTECTED | YES | 0 | N/A |
 | kevin@pathwaysgov.com | HEALTHY | NO | 100 | 20 |

@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "provider": "GoogleWorkspaceProvider",
+  "action": "auditWorkspace",
+  "status": "Watch",
+  "generatedAt": "2026-07-20T00:39:01.120Z",
+  "readOnly": true,
+  "metrics": {
+    "registeredAccounts": 0,
+    "healthyAccounts": 0,
+    "failedAccounts": 0,
+    "inboxEstimate": 0,
+    "recentInboxCount": 0,
+    "upcomingEventsCount": 0,
+    "recentDriveFilesCount": 0
+  },
+  "exceptions": [
+    {
+      "type": "GoogleAccountRegistry",
+      "severity": "Info",
+      "message": "No valid Google Workspace accounts are registered."
+    }
+  ],
+  "recommendations": [
+    "Register approved Google Workspace accounts through the existing account manager."
+  ],
+  "accounts": [],
+  "snapshots": [],
+  "safety": {
+    "workspaceMode": "READ_ONLY",
+    "emailSendingEnabled": false,
+    "emailModificationEnabled": false,
+    "calendarWritesEnabled": false,
+    "driveWritesEnabled": false,
+    "userProvisioningEnabled": false,
+    "aliasChangesEnabled": false
+  }
+}

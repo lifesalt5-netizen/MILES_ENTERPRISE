@@ -1,0 +1,837 @@
+{
+  "ok": false,
+  "type": "INFRASTRUCTURE_HEALTH_STATE",
+  "generatedAt": "2026-07-22T18:04:16.672Z",
+  "durationMs": 45621,
+  "credentialState": {
+    "status": "PARTIAL",
+    "summary": {
+      "total": 6,
+      "valid": 2,
+      "partial": 1,
+      "missing": 3
+    }
+  },
+  "runtime": {
+    "infrastructureId": "miles_runtime",
+    "ok": true,
+    "status": "HEALTHY",
+    "score": 100,
+    "message": "MILES runtime is operational.",
+    "checks": [
+      {
+        "name": "PROCESS_RUNNING",
+        "ok": true,
+        "pid": 10424
+      },
+      {
+        "name": "ROOT_EXISTS",
+        "ok": true,
+        "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE"
+      },
+      {
+        "name": "NODE_VERSION",
+        "ok": true,
+        "value": "v24.18.0"
+      },
+      {
+        "name": "MEMORY_RSS",
+        "ok": true,
+        "rssMb": 868.24
+      }
+    ],
+    "metrics": {
+      "pid": 10424,
+      "uptimeSeconds": 55,
+      "rssMb": 868.24,
+      "heapUsedMb": 493.2,
+      "platform": "win32",
+      "architecture": "x64",
+      "hostname": "KC-55",
+      "nodeVersion": "v24.18.0"
+    },
+    "durationMs": 3,
+    "checkedAt": "2026-07-22T18:03:31.100Z"
+  },
+  "filesystems": [
+    {
+      "infrastructureId": "filesystem_c",
+      "path": "C:\\",
+      "exists": true,
+      "readable": true,
+      "writable": true,
+      "freeBytes": 195097292800,
+      "totalBytes": 510932283392,
+      "usedPercent": 61.82,
+      "checks": [
+        {
+          "name": "PATH_EXISTS",
+          "ok": true
+        },
+        {
+          "name": "PATH_READABLE",
+          "ok": true
+        },
+        {
+          "name": "PATH_WRITABLE",
+          "ok": true
+        },
+        {
+          "name": "DISK_CAPACITY",
+          "ok": true,
+          "usedPercent": 61.82
+        }
+      ],
+      "errors": [],
+      "durationMs": 4,
+      "ok": true,
+      "score": 100,
+      "status": "HEALTHY"
+    },
+    {
+      "infrastructureId": "filesystem_d",
+      "path": "D:\\",
+      "exists": true,
+      "readable": true,
+      "writable": true,
+      "freeBytes": 107566202880,
+      "totalBytes": 1000170586112,
+      "usedPercent": 89.25,
+      "checks": [
+        {
+          "name": "PATH_EXISTS",
+          "ok": true
+        },
+        {
+          "name": "PATH_READABLE",
+          "ok": true
+        },
+        {
+          "name": "PATH_WRITABLE",
+          "ok": true
+        },
+        {
+          "name": "DISK_CAPACITY",
+          "ok": true,
+          "usedPercent": 89.25
+        }
+      ],
+      "errors": [],
+      "durationMs": 5,
+      "ok": true,
+      "score": 100,
+      "status": "HEALTHY"
+    }
+  ],
+  "domains": {
+    "infrastructureId": "domains",
+    "ok": false,
+    "status": "CRITICAL",
+    "score": 35,
+    "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+    "checks": [
+      {
+        "name": "DOMAIN_CREDENTIAL_AUTHORITY",
+        "ok": false,
+        "credentialStatus": "MISSING"
+      }
+    ],
+    "checkedAt": "2026-07-22T18:03:31.129Z"
+  },
+  "providers": [
+    {
+      "infrastructureId": "orion",
+      "provider": "OrionProvider",
+      "action": "refresh",
+      "ok": true,
+      "status": "WATCH",
+      "providerStatus": "Watch",
+      "score": 75,
+      "message": "ORION database is 788.47 hours old.",
+      "checks": [
+        {
+          "name": "PROVIDER_INVOCATION",
+          "ok": true,
+          "provider": "OrionProvider",
+          "action": "refresh",
+          "providerStatus": "Watch"
+        }
+      ],
+      "metrics": {
+        "database": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+        "tableCount": 66,
+        "contractors": 361873,
+        "buyers": 36137,
+        "opportunities": 835015,
+        "recompetes": 831804,
+        "recommendations": 361873,
+        "personas": 361873,
+        "recommendationCoverage": 100,
+        "personaCoverage": 100,
+        "databaseFreshness": {
+          "exists": true,
+          "modifiedAt": "2026-06-19T21:35:18.000Z",
+          "ageHours": 788.47,
+          "stale": true,
+          "thresholdHours": 24
+        },
+        "sampleSizes": {
+          "contractors": 100,
+          "buyers": 100,
+          "opportunities": 100,
+          "recompetes": 100,
+          "recommendations": 100,
+          "personas": 100
+        }
+      },
+      "exceptions": [
+        {
+          "type": "DatabaseFreshness",
+          "severity": "Warning",
+          "message": "ORION database is 788.47 hours old."
+        }
+      ],
+      "recommendations": [
+        "Run the authorized ORION dataset refresh and verify database modification time afterward."
+      ],
+      "performance": {
+        "stages": {
+          "normalizeProvider": 0,
+          "authorityLookup": 16,
+          "providerResolution": 0,
+          "providerInvocation": 374,
+          "resultAssembly": 0,
+          "total": 390
+        },
+        "providerInstanceCached": false,
+        "registryCached": false,
+        "providerCacheSize": 1,
+        "registryCacheTtlMs": 60000
+      },
+      "durationMs": 391,
+      "checkedAt": "2026-07-22T18:03:31.526Z"
+    },
+    {
+      "infrastructureId": "instantly",
+      "provider": "MarketingProvider",
+      "action": "refresh",
+      "ok": true,
+      "status": "WATCH",
+      "providerStatus": "Watch",
+      "score": 75,
+      "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+      "checks": [
+        {
+          "name": "PROVIDER_INVOCATION",
+          "ok": true,
+          "provider": "MarketingProvider",
+          "action": "refresh",
+          "providerStatus": "Watch"
+        }
+      ],
+      "metrics": {
+        "totalCampaigns": 35,
+        "healthyCampaigns": 35,
+        "warningCampaigns": 0,
+        "criticalCampaigns": 0,
+        "totalAccounts": 0,
+        "campaignSafeAccounts": 0,
+        "protectedAccounts": 0,
+        "warningAccounts": 0,
+        "criticalAccounts": 0,
+        "totalDailyCapacity": 0,
+        "averageWarmupScore": null,
+        "lowestWarmupScore": null,
+        "protectedAssignmentViolations": 0,
+        "campaignInventory": {
+          "total": 14,
+          "active": 0,
+          "paused": 0
+        },
+        "domainInventory": {
+          "total": 7,
+          "healthy": 3,
+          "protected": 1
+        },
+        "segmentInventory": {
+          "totalSegments": 14,
+          "totalLeads": 0,
+          "verifiedEmails": 0,
+          "uploadReadySegments": 0,
+          "depletedSegments": 14
+        },
+        "queuedLeadUploads": 0
+      },
+      "exceptions": [
+        {
+          "type": "InstantlyAudit",
+          "severity": "Warning",
+          "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        },
+        {
+          "type": "SegmentDepleted",
+          "severity": "Info",
+          "message": "Segment Unknown has no campaign-ready verified email inventory."
+        }
+      ],
+      "recommendations": [
+        "No campaign-safe sending accounts were found. Do not launch new outbound work.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown.",
+        "Enrich or replenish segment Unknown."
+      ],
+      "performance": {
+        "stages": {
+          "normalizeProvider": 0,
+          "authorityLookup": 0,
+          "providerResolution": 6,
+          "providerInvocation": 22377,
+          "resultAssembly": 0,
+          "total": 22383
+        },
+        "providerInstanceCached": false,
+        "registryCached": true,
+        "providerCacheSize": 3,
+        "registryCacheTtlMs": 60000
+      },
+      "durationMs": 22383,
+      "checkedAt": "2026-07-22T18:03:53.916Z"
+    },
+    {
+      "infrastructureId": "google_workspace",
+      "provider": "GoogleWorkspaceProvider",
+      "action": "auditWorkspace",
+      "ok": true,
+      "status": "WATCH",
+      "providerStatus": "Watch",
+      "score": 75,
+      "message": "No valid Google Workspace accounts are registered.",
+      "checks": [
+        {
+          "name": "PROVIDER_INVOCATION",
+          "ok": true,
+          "provider": "GoogleWorkspaceProvider",
+          "action": "auditWorkspace",
+          "providerStatus": "Watch"
+        }
+      ],
+      "metrics": {
+        "registeredAccounts": 0,
+        "healthyAccounts": 0,
+        "failedAccounts": 0,
+        "inboxEstimate": 0,
+        "recentInboxCount": 0,
+        "upcomingEventsCount": 0,
+        "recentDriveFilesCount": 0
+      },
+      "exceptions": [
+        {
+          "type": "GoogleAccountRegistry",
+          "severity": "Info",
+          "message": "No valid Google Workspace accounts are registered."
+        }
+      ],
+      "recommendations": [
+        "Register approved Google Workspace accounts through the existing account manager."
+      ],
+      "performance": {
+        "stages": {
+          "normalizeProvider": 0,
+          "authorityLookup": 0,
+          "providerResolution": 0,
+          "providerInvocation": 12,
+          "resultAssembly": 0,
+          "total": 12
+        },
+        "providerInstanceCached": true,
+        "registryCached": true,
+        "providerCacheSize": 3,
+        "registryCacheTtlMs": 60000
+      },
+      "durationMs": 12,
+      "checkedAt": "2026-07-22T18:03:53.935Z"
+    },
+    {
+      "infrastructureId": "website",
+      "provider": "WebsiteProvider",
+      "action": "verifyWebsite",
+      "ok": true,
+      "status": "WATCH",
+      "providerStatus": "Watch",
+      "score": 75,
+      "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+      "checks": [
+        {
+          "name": "PROVIDER_INVOCATION",
+          "ok": true,
+          "provider": "WebsiteProvider",
+          "action": "verifyWebsite",
+          "providerStatus": "Watch"
+        }
+      ],
+      "metrics": {
+        "homepageReachable": true,
+        "statusCode": 200,
+        "loadMs": 690,
+        "title": "Unlock Government Contract Opportunities",
+        "h1": "Federal &amp; SLED Market Entry Advisory",
+        "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+        "https": true,
+        "hasCTA": true,
+        "hasContact": true,
+        "hasCalendly": false,
+        "hasServices": true,
+        "hasPhone": true,
+        "hasEmail": true,
+        "finalUrl": "https://pathways2gc.com",
+        "titleLength": 40,
+        "h1Count": 1,
+        "headingCounts": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "metaDescriptionLength": 84,
+        "formCount": 1,
+        "validFormCount": 1,
+        "imageCount": 7,
+        "imagesMissingAlt": 0,
+        "inputLabelCoverage": 100,
+        "linksDiscovered": 19,
+        "internalLinks": 13,
+        "linksChecked": 13,
+        "brokenLinks": 0,
+        "hasCanonical": true,
+        "hasViewport": true,
+        "hasLang": true,
+        "hasMainLandmark": false,
+        "hasNavigation": true,
+        "hasSkipLink": false,
+        "hasAria": true
+      },
+      "exceptions": [
+        {
+          "type": "Conversion",
+          "severity": "Warning",
+          "message": "Calendly integration was not detected."
+        },
+        {
+          "type": "ContentDrift",
+          "severity": "Info",
+          "message": "4 monitored content field(s) changed from baseline."
+        }
+      ],
+      "recommendations": [
+        "Verify the approved Calendly link is present and reachable.",
+        "Review content drift against approved website changes before publishing or rollback."
+      ],
+      "performance": {
+        "stages": {
+          "normalizeProvider": 0,
+          "authorityLookup": 0,
+          "providerResolution": 0,
+          "providerInvocation": 22723,
+          "resultAssembly": 0,
+          "total": 22723
+        },
+        "providerInstanceCached": false,
+        "registryCached": true,
+        "providerCacheSize": 4,
+        "registryCacheTtlMs": 60000
+      },
+      "durationMs": 22724,
+      "checkedAt": "2026-07-22T18:04:16.666Z"
+    }
+  ],
+  "registry": {
+    "ok": false,
+    "type": "INFRASTRUCTURE_REGISTRY_SUMMARY",
+    "generatedAt": "2026-07-22T18:04:16.672Z",
+    "totals": {
+      "systems": 8,
+      "ready": 7,
+      "healthy": 3,
+      "credentialReady": 2,
+      "degraded": 1,
+      "protected": 8,
+      "activeOperations": 0
+    },
+    "readySystems": [
+      "google_workspace",
+      "instantly",
+      "miles_runtime",
+      "orion",
+      "filesystem_d",
+      "website",
+      "filesystem_c"
+    ],
+    "degradedSystems": [
+      {
+        "id": "domains",
+        "status": "CRITICAL",
+        "score": 35,
+        "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+      }
+    ],
+    "systems": [
+      {
+        "id": "google_workspace",
+        "name": "Google Workspace",
+        "owner": "GoogleWorkspaceOwner",
+        "provider": "GoogleWorkspaceProvider",
+        "health": {
+          "status": "WATCH",
+          "score": 75,
+          "checkedAt": "2026-07-22T18:03:53.935Z",
+          "message": "No valid Google Workspace accounts are registered.",
+          "checks": [
+            {
+              "name": "PROVIDER_INVOCATION",
+              "ok": true,
+              "provider": "GoogleWorkspaceProvider",
+              "action": "auditWorkspace",
+              "providerStatus": "Watch"
+            }
+          ]
+        },
+        "credentials": "MISSING",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "instantly",
+        "name": "Instantly",
+        "owner": "InstantlyOwner",
+        "provider": "MarketingProvider",
+        "health": {
+          "status": "WATCH",
+          "score": 75,
+          "checkedAt": "2026-07-22T18:03:53.916Z",
+          "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "checks": [
+            {
+              "name": "PROVIDER_INVOCATION",
+              "ok": true,
+              "provider": "MarketingProvider",
+              "action": "refresh",
+              "providerStatus": "Watch"
+            }
+          ]
+        },
+        "credentials": "PARTIAL",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "miles_runtime",
+        "name": "MILES Enterprise Runtime",
+        "owner": "EngineeringOwner",
+        "provider": "MILES",
+        "health": {
+          "status": "HEALTHY",
+          "score": 100,
+          "checkedAt": "2026-07-22T18:03:31.100Z",
+          "message": "MILES runtime is operational.",
+          "checks": [
+            {
+              "name": "PROCESS_RUNNING",
+              "ok": true,
+              "pid": 10424
+            },
+            {
+              "name": "ROOT_EXISTS",
+              "ok": true,
+              "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE"
+            },
+            {
+              "name": "NODE_VERSION",
+              "ok": true,
+              "value": "v24.18.0"
+            },
+            {
+              "name": "MEMORY_RSS",
+              "ok": true,
+              "rssMb": 868.24
+            }
+          ]
+        },
+        "credentials": "VALID",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": true,
+          "execute": true,
+          "admin": true,
+          "delete": false
+        }
+      },
+      {
+        "id": "orion",
+        "name": "ORION Intelligence",
+        "owner": "OrionOwner",
+        "provider": "OrionProvider",
+        "health": {
+          "status": "WATCH",
+          "score": 75,
+          "checkedAt": "2026-07-22T18:03:31.526Z",
+          "message": "ORION database is 788.47 hours old.",
+          "checks": [
+            {
+              "name": "PROVIDER_INVOCATION",
+              "ok": true,
+              "provider": "OrionProvider",
+              "action": "refresh",
+              "providerStatus": "Watch"
+            }
+          ]
+        },
+        "credentials": "VALID",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "filesystem_d",
+        "name": "P2GC D Drive",
+        "owner": "FileSystemOwner",
+        "provider": "FileSystemProvider",
+        "health": {
+          "status": "HEALTHY",
+          "score": 100,
+          "checkedAt": "2026-07-22T18:03:31.123Z",
+          "message": "D drive is readable, writable in the MILES runtime area, and operational.",
+          "checks": [
+            {
+              "name": "PATH_EXISTS",
+              "ok": true
+            },
+            {
+              "name": "PATH_READABLE",
+              "ok": true
+            },
+            {
+              "name": "PATH_WRITABLE",
+              "ok": true
+            },
+            {
+              "name": "DISK_CAPACITY",
+              "ok": true,
+              "usedPercent": 89.25
+            }
+          ]
+        },
+        "credentials": "UNKNOWN",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": true,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "domains",
+        "name": "P2GC Domains and DNS",
+        "owner": "DomainOwner",
+        "provider": "DomainProvider",
+        "health": {
+          "status": "CRITICAL",
+          "score": 35,
+          "checkedAt": "2026-07-22T18:03:31.129Z",
+          "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "checks": [
+            {
+              "name": "DOMAIN_CREDENTIAL_AUTHORITY",
+              "ok": false,
+              "credentialStatus": "MISSING"
+            }
+          ]
+        },
+        "credentials": "MISSING",
+        "ready": false,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "website",
+        "name": "P2GC Website",
+        "owner": "WebsiteOwner",
+        "provider": "WebsiteProvider",
+        "health": {
+          "status": "WATCH",
+          "score": 75,
+          "checkedAt": "2026-07-22T18:04:16.666Z",
+          "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "checks": [
+            {
+              "name": "PROVIDER_INVOCATION",
+              "ok": true,
+              "provider": "WebsiteProvider",
+              "action": "verifyWebsite",
+              "providerStatus": "Watch"
+            }
+          ]
+        },
+        "credentials": "MISSING",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": true,
+          "admin": false,
+          "delete": false
+        }
+      },
+      {
+        "id": "filesystem_c",
+        "name": "Windows C Drive",
+        "owner": "FileSystemOwner",
+        "provider": "FileSystemProvider",
+        "health": {
+          "status": "HEALTHY",
+          "score": 100,
+          "checkedAt": "2026-07-22T18:03:31.116Z",
+          "message": "C drive is readable and operational.",
+          "checks": [
+            {
+              "name": "PATH_EXISTS",
+              "ok": true
+            },
+            {
+              "name": "PATH_READABLE",
+              "ok": true
+            },
+            {
+              "name": "PATH_WRITABLE",
+              "ok": true
+            },
+            {
+              "name": "DISK_CAPACITY",
+              "ok": true,
+              "usedPercent": 61.82
+            }
+          ]
+        },
+        "credentials": "UNKNOWN",
+        "ready": true,
+        "authority": {
+          "read": true,
+          "write": false,
+          "execute": false,
+          "admin": false,
+          "delete": false
+        }
+      }
+    ]
+  },
+  "failures": [
+    {
+      "infrastructureId": "domains",
+      "status": "CRITICAL",
+      "score": 35,
+      "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 "use strict";
+// BUILD E002A PHASE 1
+// Refactor shared API helpers before implementing new controlled write operations.
 
 const policyService = require("./ControlledWritePolicyService");
 const audit = require("./ControlledWriteAuditService");

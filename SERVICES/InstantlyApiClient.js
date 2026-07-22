@@ -1,5 +1,5 @@
 "use strict";
-
+require("dotenv").config();
 /**
  * EXEC_003 Instantly API Client
  * Complete replacement file.

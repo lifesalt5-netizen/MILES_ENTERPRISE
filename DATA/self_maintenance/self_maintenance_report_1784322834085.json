@@ -1,0 +1,392 @@
+{
+  "ok": true,
+  "service": "SelfMaintenanceService",
+  "action": "SELF_MAINTENANCE_REPORT",
+  "status": "DEGRADED",
+  "executiveSummary": "MILES OS self-maintenance check completed. One or more issues require attention.",
+  "diagnosis": {
+    "ok": true,
+    "service": "SelfMaintenanceService",
+    "action": "SELF_MAINTENANCE_DIAGNOSE",
+    "status": "DEGRADED",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 18370,
+        "hasModuleExport": true,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 28523,
+        "hasModuleExport": true,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15712,
+        "hasModuleExport": true,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 5822,
+        "hasModuleExport": true,
+        "hasRunOrExecute": false,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15121,
+        "hasModuleExport": false,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasRunOrExecute": false,
+        "checkedAt": "2026-07-17T21:13:53.724Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasRunOrExecute": false,
+        "checkedAt": "2026-07-17T21:13:53.725Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 1634,
+        "hasModuleExport": true,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.725Z"
+      },
+      {
+        "file": "CONNECTORS/ORION/connector.js",
+        "exists": true,
+        "size": 8311,
+        "hasModuleExport": true,
+        "hasRunOrExecute": true,
+        "checkedAt": "2026-07-17T21:13:53.725Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasRunOrExecute": false,
+        "checkedAt": "2026-07-17T21:13:53.725Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 13455,
+        "hasModuleExport": true,
+        "hasRunOrExecute": false,
+        "checkedAt": "2026-07-17T21:13:53.725Z"
+      }
+    ],
+    "taskQueue": {
+      "total": 587,
+      "queued": 109,
+      "running": 4,
+      "completed": 292,
+      "failed": 0,
+      "awaitingApproval": 14,
+      "recentFailed": []
+    },
+    "businessQueue": {
+      "total": 22,
+      "ready": 0,
+      "waitingForApproval": 5,
+      "completed": 0,
+      "failed": 0,
+      "newest": [
+        {
+          "id": "op_1784313337141_27uopk",
+          "type": "ENGINEERING_IMPROVEMENT",
+          "status": "BRIDGED",
+          "provider": "MILES",
+          "connector": "MILES",
+          "action": "ENGINEERING_IMPROVEMENT",
+          "title": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 056\n\nEXECUTION AUTHORITY MAP\n\nMISSION\n\nIdentify every component participating in autono",
+          "createdAt": "2026-07-17T18:35:37.141Z"
+        },
+        {
+          "id": "op_1784312848713_gsmpms",
+          "type": "ENGINEERING_IMPROVEMENT",
+          "status": "BRIDGED",
+          "provider": "MILES",
+          "connector": "MILES",
+          "action": "ENGINEERING_IMPROVEMENT",
+          "title": "Why has operation\nop_1784312759235_szmcke\n\nnot transitioned from\n\nQUEUED\n\nto\n\nRUNNING?\n\nShow evidence from:\n\n- Business ",
+          "createdAt": "2026-07-17T18:27:28.713Z"
+        },
+        {
+          "id": "op_1784312759235_szmcke",
+          "type": "BUSINESS_EXECUTION",
+          "status": "BRIDGED",
+          "provider": "MILES",
+          "connector": "MILES",
+          "action": "BUSINESS_EXECUTION",
+          "title": "STATUS APPROVAL\n\nOperation:\nop_1784312668170_q2uza3\n\nReport:\n\nWhy was CEO approval required?\n\nWhich governance rule trig",
+          "createdAt": "2026-07-17T18:25:59.235Z"
+        },
+        {
+          "id": "op_1784312668170_q2uza3",
+          "type": "CEO_APPROVAL_OPERATION",
+          "status": "WAITING_FOR_CEO_APPROVAL",
+          "provider": "MILES",
+          "connector": "MILES",
+          "action": "SELF_MAINTENANCE",
+          "title": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 056\n\nQUEUE CONSUMPTION VERIFICATION\n\nMISSION\n\nVerify that queued business operations ar",
+          "createdAt": "2026-07-17T18:24:28.170Z"
+        },
+        {
+          "id": "op_1784312608021_miey43",
+          "type": "SELF_MAINTENANCE",
+          "status": "BRIDGED",
+          "provider": "MILES",
+          "connector": "MILES",
+          "action": "SELF_MAINTENANCE",
+          "title": "MILES EXECUTIVE DIRECTIVE\n\nBUILD 055\n\nAUTONOMOUS EXECUTION VERIFICATION\n\nMISSION\n\nVerify that every READY business opera",
+          "createdAt": "2026-07-17T18:23:28.021Z"
+        }
+      ]
+    },
+    "capabilities": [
+      {
+        "action": "ENGINEERING_IMPROVEMENT",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "ENGINEERING_ANALYZE",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "ENGINEERING_PLAN",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "ENGINEERING_IMPLEMENT",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "ENGINEERING_VALIDATE",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "ENGINEERING_REPORT",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": true
+      },
+      {
+        "action": "WEBSITE_REVIEW",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": false
+      },
+      {
+        "action": "ORION_HEALTH",
+        "inBuilder": false,
+        "inPlanner": true,
+        "inExecution": false
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Files",
+        "issue": "Missing required file: BUILDER/BuilderService.js",
+        "recommendedAction": "Restore or recreate the missing file."
+      },
+      {
+        "severity": "HIGH",
+        "area": "Files",
+        "issue": "Missing required file: BUILDER/index.js",
+        "recommendedAction": "Restore or recreate the missing file."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_IMPROVEMENT is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_IMPROVEMENT in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_ANALYZE is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_ANALYZE in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_PLAN is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_PLAN in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_IMPLEMENT is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_IMPLEMENT in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_VALIDATE is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_VALIDATE in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "ENGINEERING_REPORT is not registered in BuilderService.",
+        "recommendedAction": "Register ENGINEERING_REPORT in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Capabilities",
+        "issue": "WEBSITE_REVIEW is not registered in BuilderService.",
+        "recommendedAction": "Register WEBSITE_REVIEW in BuilderService."
+      },
+      {
+        "severity": "LOW",
+        "area": "BusinessQueue",
+        "issue": "5 operation(s) waiting for CEO approval.",
+        "recommendedAction": "Review approval queue."
+      }
+    ],
+    "checkedAt": "2026-07-17T21:13:53.847Z"
+  },
+  "repairPlan": [
+    {
+      "step": 1,
+      "severity": "HIGH",
+      "area": "Files",
+      "issue": "Missing required file: BUILDER/BuilderService.js",
+      "recommendedAction": "Restore or recreate the missing file.",
+      "safeToAutoRepair": false,
+      "requiresApproval": true
+    },
+    {
+      "step": 2,
+      "severity": "HIGH",
+      "area": "Files",
+      "issue": "Missing required file: BUILDER/index.js",
+      "recommendedAction": "Restore or recreate the missing file.",
+      "safeToAutoRepair": false,
+      "requiresApproval": true
+    },
+    {
+      "step": 3,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_IMPROVEMENT is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_IMPROVEMENT in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 4,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_ANALYZE is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_ANALYZE in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 5,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_PLAN is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_PLAN in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 6,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_IMPLEMENT is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_IMPLEMENT in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 7,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_VALIDATE is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_VALIDATE in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 8,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "ENGINEERING_REPORT is not registered in BuilderService.",
+      "recommendedAction": "Register ENGINEERING_REPORT in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 9,
+      "severity": "MEDIUM",
+      "area": "Capabilities",
+      "issue": "WEBSITE_REVIEW is not registered in BuilderService.",
+      "recommendedAction": "Register WEBSITE_REVIEW in BuilderService.",
+      "safeToAutoRepair": true,
+      "requiresApproval": false
+    },
+    {
+      "step": 10,
+      "severity": "LOW",
+      "area": "BusinessQueue",
+      "issue": "5 operation(s) waiting for CEO approval.",
+      "recommendedAction": "Review approval queue.",
+      "safeToAutoRepair": false,
+      "requiresApproval": false
+    }
+  ],
+  "validation": {
+    "ok": false,
+    "service": "SelfMaintenanceService",
+    "action": "SELF_MAINTENANCE_VALIDATE",
+    "validation": {
+      "requiredFilesPresent": false,
+      "builderHasEngineeringImprovement": false,
+      "plannerHasEngineeringImprovement": true,
+      "executionHasEngineeringImprovement": true,
+      "taskQueueReadable": true,
+      "businessQueueReadable": true
+    },
+    "checkedAt": "2026-07-17T21:13:54.085Z"
+  },
+  "recommendedNextAction": "Restore or recreate the missing file.",
+  "completedAt": "2026-07-17T21:13:54.085Z"
+}

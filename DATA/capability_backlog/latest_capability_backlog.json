@@ -1,15 +1,15 @@
 {
   "ok": true,
-  "cycleId": "COO-20260713155633-001",
-  "generatedAt": "2026-07-13T15:56:39.717Z",
+  "cycleId": "COO-20260722180712-013",
+  "generatedAt": "2026-07-22T18:07:33.832Z",
   "openGaps": 4,
   "gaps": [
     {
-      "id": "CAP-1783958199717-0-87022",
-      "cycleId": "COO-20260713155633-001",
+      "id": "CAP-1784743653832-0-85440",
+      "cycleId": "COO-20260722180712-013",
       "status": "OPEN",
       "priority": 2,
-      "createdAt": "2026-07-13T15:56:39.717Z",
+      "createdAt": "2026-07-22T18:07:33.832Z",
       "area": "LinkedIn COO",
       "providerKey": "linkedin",
       "title": "Build LinkedIn COO content and engagement operator",
@@ -24,11 +24,11 @@
       "recommendedAction": "Add LinkedIn provider and browser worker for audit, content queue, and governed posting."
     },
     {
-      "id": "CAP-1783958199717-1-24937",
-      "cycleId": "COO-20260713155633-001",
+      "id": "CAP-1784743653832-1-96838",
+      "cycleId": "COO-20260722180712-013",
       "status": "OPEN",
       "priority": 1,
-      "createdAt": "2026-07-13T15:56:39.717Z",
+      "createdAt": "2026-07-22T18:07:33.832Z",
       "area": "Sales COO",
       "providerKey": "sales",
       "title": "Build Sales COO pipeline and follow-up operator",
@@ -43,11 +43,11 @@
       "recommendedAction": "Add sales pipeline provider and recurring follow-up queue."
     },
     {
-      "id": "CAP-1783958199717-2-83638",
-      "cycleId": "COO-20260713155633-001",
+      "id": "CAP-1784743653832-2-50319",
+      "cycleId": "COO-20260722180712-013",
       "status": "OPEN",
       "priority": 2,
-      "createdAt": "2026-07-13T15:56:39.717Z",
+      "createdAt": "2026-07-22T18:07:33.832Z",
       "area": "Government Data COO",
       "providerKey": "government",
       "title": "Build Government Data COO refresh monitor",
@@ -62,11 +62,11 @@
       "recommendedAction": "Add source monitors for SAM, GSA, VA, forecasts, RFIs, and Sources Sought."
     },
     {
-      "id": "CAP-1783958199717-3-76037",
-      "cycleId": "COO-20260713155633-001",
+      "id": "CAP-1784743653832-3-7892",
+      "cycleId": "COO-20260722180712-013",
       "status": "OPEN",
       "priority": 1,
-      "createdAt": "2026-07-13T15:56:39.717Z",
+      "createdAt": "2026-07-22T18:07:33.832Z",
       "area": "Engineering COO",
       "providerKey": "engineering",
       "title": "Build Engineering COO regression and self-repair loop",

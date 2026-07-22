@@ -1,0 +1,1811 @@
+
+====================================================
+FILE: .\SERVICES\CommandIntentPlannerService.js
+====================================================
+
+"use strict";
+
+/*
+  MILES ENTERPRISE
+  File: SERVICES/CommandIntentPlannerService.js
+  Purpose:
+    Translate CEO-level natural-language commands into supported,
+    governed MILES operations.
+
+  Routing rules:
+    1. Explicit supported actions are honored only when they are the whole
+       instruction, such as "Miles, run STATUS."
+    2. Executive revenue missions take precedence over operational reviews.
+    3. Instantly reviews route to INSTANTLY_LIVE.
+    4. Broad revenue objectives route to BUSINESS_EXECUTION.
+    5. The unsupported MILES_EXECUTE action is never emitted.
+    6. Connector selection happens after intent, workflow, capability,
+       provider, and action selection.
+*/
+
+const SUPPORTED_MILES_ACTIONS = new Set([
+  "SCAN_PROJECT",
+  "STATUS",
+  "SMOKE_TEST",
+  "ANALYZE_PROJECT",
+  "BUILD_PLAN",
+  "TEST_RUNTIME",
+  "BUILD_CONNECTOR",
+  "REPOSITORY_REGISTRY",
+  "CAPABILITY_REGISTRY",
+  "EXECUTIVE_BRAIN",
+  "COMPANY_STATE",
+  "TASK_ROUTER",
+  "COO_LOOP",
+  "EXECUTIVE_DASHBOARD",
+  "SELF_LEARNING",
+  "ACTION_ENGINE",
+  "PROVIDER_CONTROLLERS",
+  "PROVIDER_CONTROLLER_HEALTH",
+  "PROVIDER_CONTROLLER_EXECUTE",
+  "INSTANTLY_LIVE",
+  "CONTROLLED_WRITE",
+  "BUSINESS_EXECUTION",
+  "PROVIDER_AUTHORITY",
+  "PROVIDER_INTERFACE_ADAPTERS",
+  "PROVIDER_CAPABILITY_BINDINGS",
+  "PROVIDER_SYNC",
+  "ENGINEERING_IMPROVEMENT",
+  "ENGINEERING_ANALYZE",
+  "ENGINEERING_PLAN",
+  "ENGINEERING_IMPLEMENT",
+  "ENGINEERING_VALIDATE",
+  "ENGINEERING_REPORT",
+  "SELF_MAINTENANCE",
+  "SELF_MAINTENANCE_DIAGNOSE",
+  "SELF_MAINTENANCE_PLAN",
+  "SELF_MAINTENANCE_VALIDATE",
+  "SELF_MAINTENANCE_REPORT",
+  "WEBSITE_REVIEW"
+]);
+
+class CommandIntentPlannerService {
+  plan(operation = {}) {
+    const raw = String(
+      operation.command ||
+      operation.action ||
+      operation.title ||
+      ""
+    ).trim();
+
+    const text = raw.toLowerCase();
+
+    const directAction =
+      this.resolveExplicitMilesAction(raw);
+
+    if (directAction) {
+      return this.buildPlan({
+        raw,
+        intent: this.intentForAction(directAction),
+        workflow: directAction,
+        capability: directAction,
+        provider: "MILES",
+        connector: "MILES",
+        action: directAction,
+        steps: [
+          {
+            step: 1,
+            provider: "MILES",
+            connector: "MILES",
+            capability: directAction,
+            action: directAction,
+            objective: raw
+          }
+        ]
+      });
+    }
+
+    const intent =
+      this.resolveIntent(text, operation);
+
+    const workflow =
+      this.resolveWorkflow(
+        text,
+        intent,
+        operation
+      );
+
+    const capability =
+      this.resolveCapability(
+        text,
+        intent,
+        workflow,
+        operation
+      );
+
+    const provider =
+      this.resolveProvider(
+        text,
+        intent,
+        workflow,
+        capability,
+        operation
+      );
+
+    const action =
+      this.resolveAction(
+        text,
+        intent,
+        workflow,
+        capability,
+        provider,
+        operation
+      );
+
+    const connector =
+      this.resolveConnector(
+        provider,
+        action,
+        capability,
+        operation
+      );
+
+    const steps =
+      this.resolveSteps(
+        text,
+        intent,
+        workflow,
+        capability,
+        provider,
+        connector,
+        action
+      );
+
+    return this.buildPlan({
+      raw,
+      intent,
+      workflow,
+      capability,
+      provider,
+      connector,
+      action,
+      steps
+    });
+  }
+
+  buildPlan({
+    raw,
+    intent,
+    workflow,
+    capability,
+    provider,
+    connector,
+    action,
+    steps
+  }) {
+    return {
+      ok: true,
+      intent,
+      workflow,
+      capability,
+      provider,
+      system: provider,
+      connector,
+      department:
+        this.resolveDepartment(
+          intent,
+          provider
+        ),
+      action,
+      objective: raw,
+      originalCommand: raw,
+      steps,
+      plannedAt:
+        new Date().toISOString()
+    };
+  }
+
+  resolveExplicitMilesAction(raw) {
+    const normalized =
+      String(raw || "")
+        .trim()
+        .toUpperCase()
+        .replace(/[.!?]+$/g, "")
+        .trim();
+
+    /*
+      Only treat a capability as explicit when the complete command reduces
+      to that capability name after removing harmless command prefixes.
+
+      Valid:
+        STATUS
+        Run STATUS
+        Miles, run STATUS
+        Miles: PROVIDER_AUTHORITY
+
+      Not explicit:
+        Review campaign status and execute the work.
+        Identify every campaign and its status.
+    */
+
+    const explicit =
+      normalized
+        .replace(/^MILES[\s,:-]*/i, "")
+        .replace(/^PLEASE[\s,:-]*/i, "")
+        .replace(/^RUN[\s,:-]*/i, "")
+        .trim();
+
+    if (
+      SUPPORTED_MILES_ACTIONS.has(
+        explicit
+      )
+    ) {
+      return explicit;
+    }
+
+    return null;
+  }
+
+  intentForAction(action) {
+    if (
+      action.startsWith("ENGINEERING_") ||
+      action.startsWith(
+        "SELF_MAINTENANCE"
+      )
+    ) {
+      return "ENGINEERING";
+    }
+
+    if (
+      [
+        "INSTANTLY_LIVE",
+        "BUSINESS_EXECUTION",
+        "CONTROLLED_WRITE"
+      ].includes(action)
+    ) {
+      return "REVENUE_OPERATIONS";
+    }
+
+    return "EXECUTIVE_COMMAND";
+  }
+
+  resolveIntent(
+    text,
+    operation = {}
+  ) {
+    if (operation.intent) {
+      return String(
+        operation.intent
+      );
+    }
+
+    /*
+      Mission classification must happen before operational review
+      classification. A command such as "own Instantly end to end" may also
+      mention replies, warmup, deliverability, and campaign status.
+    */
+
+    if (
+      this.isRevenueOperationsMission(
+        text
+      )
+    ) {
+      return "REVENUE_OPERATIONS";
+    }
+
+    if (
+      this.isInstantlyOperationalReview(
+        text
+      )
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /^miles executive directive/i
+        .test(text) ||
+      /^miles engineering directive/i
+        .test(text) ||
+      /build\s+\d+/i.test(text) ||
+      /current planner|command intent planner|replace keyword routing|hierarchical intent/
+        .test(text) ||
+      /execution layer|execution service|dispatch|dispatcher/
+        .test(text) ||
+      /repository search|code writer|runtime diagnostic|runtime trace|diagnostic harness/
+        .test(text) ||
+      /improve miles|fix miles|repair miles|maintain miles|upgrade miles/
+        .test(text) ||
+      /self improve|self maintenance|autonomous improvement|engineering improvement/
+        .test(text)
+    ) {
+      return "ENGINEERING";
+    }
+
+    if (
+      /executive integration audit|integration audit|audit.*pipeline|verify.*pipeline/
+        .test(text) ||
+      /full ceo command pipeline|wire existing services/
+        .test(text)
+    ) {
+      return "EXECUTIVE_AUDIT";
+    }
+
+    if (
+      /check orion|orion health|orion system health|check.*orion.*health/
+        .test(text)
+    ) {
+      return "CONNECTOR_OPERATION";
+    }
+
+    if (
+      /review website|website review|check website|website health/
+        .test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /google workspace|gmail|calendar|google drive/
+        .test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /linkedin|company page|engagement/
+        .test(text)
+    ) {
+      return "BUSINESS_OPERATION";
+    }
+
+    if (
+      /what can you do|supported action/
+        .test(text)
+    ) {
+      return "EXECUTIVE_STATUS";
+    }
+
+    /*
+      A generic use of the word "status" is not enough to force STATUS.
+      Explicit STATUS commands are already handled by
+      resolveExplicitMilesAction().
+    */
+
+    return "GENERAL_EXECUTIVE_COMMAND";
+  }
+
+  isRevenueOperationsMission(text) {
+    return (
+      /own.*(outbound|revenue|instantly|campaign)/
+        .test(text) ||
+      /(take over|manage|operate).*(instantly|outbound|campaign|revenue)/
+        .test(text) ||
+      /expand outbound/
+        .test(text) ||
+      /increase booked meetings/
+        .test(text) ||
+      /increase.*outbound capacity/
+        .test(text) ||
+      /create.*mailbox/
+        .test(text) ||
+      /create.*email.*domain/
+        .test(text) ||
+      /provision.*mailbox/
+        .test(text) ||
+      /assign.*campaign/
+        .test(text) ||
+      /upload.*lead/
+        .test(text) ||
+      /match.*lead.*segment/
+        .test(text) ||
+      /track.*response/
+        .test(text) ||
+      /run.*campaign/
+        .test(text) ||
+      /launch.*campaign/
+        .test(text)
+    );
+  }
+
+  isInstantlyOperationalReview(text) {
+    const hasReviewVerb =
+      /review|assess|audit|inspect|check|analyze|report/
+        .test(text);
+
+    const hasInstantlyTopic =
+      /instantly|campaign health|deliverability|bounce|warmup|reply|replies/
+        .test(text);
+
+    return (
+      /review instantly/
+        .test(text) ||
+      /instantly health/
+        .test(text) ||
+      (
+        hasReviewVerb &&
+        hasInstantlyTopic
+      )
+    );
+  }
+
+  resolveWorkflow(
+    text,
+    intent,
+    operation = {}
+  ) {
+    if (operation.workflow) {
+      return String(
+        operation.workflow
+      );
+    }
+
+    if (
+      intent ===
+      "REVENUE_OPERATIONS"
+    ) {
+      return "REVENUE_OPERATIONS_MISSION";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_STATUS"
+    ) {
+      return "EXECUTIVE_STATUS";
+    }
+
+    if (
+      intent === "ENGINEERING"
+    ) {
+      if (
+        /repository|search repository|repo search|code search/
+          .test(text)
+      ) {
+        return "ENGINEERING_REPOSITORY_SEARCH";
+      }
+
+      if (
+        /code writer|writer capability|replacement source|replacement script|patch generator|code generation/
+          .test(text)
+      ) {
+        return "ENGINEERING_CODE_WRITER_AUDIT";
+      }
+
+      if (
+        /runtime dispatch|dispatch diagnostic|dispatch trace|dispatcher|diagnostic harness|execution path|execution trace/
+          .test(text)
+      ) {
+        return "ENGINEERING_RUNTIME_DISPATCH_DIAGNOSTIC";
+      }
+
+      if (
+        /self maintenance|self-maintenance|maintenance|health|degraded|repair myself|diagnose miles/
+          .test(text)
+      ) {
+        return "ENGINEERING_SELF_MAINTENANCE";
+      }
+
+      return "ENGINEERING_IMPROVEMENT";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_AUDIT"
+    ) {
+      return "EXECUTIVE_INTEGRATION_AUDIT";
+    }
+
+    if (
+      intent ===
+        "CONNECTOR_OPERATION" &&
+      /orion/.test(text)
+    ) {
+      return "ORION_HEALTH_CHECK";
+    }
+
+    if (
+      intent ===
+      "BUSINESS_OPERATION"
+    ) {
+      if (
+        /website/
+          .test(text)
+      ) {
+        return "WEBSITE_REVIEW";
+      }
+
+      if (
+        /instantly|campaign|deliverability|bounce|warmup|reply|replies/
+          .test(text)
+      ) {
+        return "INSTANTLY_LIVE_REVIEW";
+      }
+
+      if (
+        /linkedin/
+          .test(text)
+      ) {
+        return "LINKEDIN_REVIEW";
+      }
+
+      if (
+        /google|gmail|workspace|calendar|drive/
+          .test(text)
+      ) {
+        return "GOOGLE_WORKSPACE_REVIEW";
+      }
+
+      return "BUSINESS_REVIEW";
+    }
+
+    return "GENERAL_EXECUTIVE_WORKFLOW";
+  }
+
+  resolveCapability(
+    text,
+    intent,
+    workflow,
+    operation = {}
+  ) {
+    if (operation.capability) {
+      return String(
+        operation.capability
+      );
+    }
+
+    if (
+      intent ===
+      "REVENUE_OPERATIONS"
+    ) {
+      return "BUSINESS_EXECUTION";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_STATUS"
+    ) {
+      return "STATUS";
+    }
+
+    if (
+      intent === "ENGINEERING"
+    ) {
+      if (
+        workflow ===
+        "ENGINEERING_REPOSITORY_SEARCH"
+      ) {
+        return "REPOSITORY_REGISTRY";
+      }
+
+      if (
+        workflow ===
+        "ENGINEERING_CODE_WRITER_AUDIT"
+      ) {
+        return "ENGINEERING_ANALYZE";
+      }
+
+      if (
+        workflow ===
+        "ENGINEERING_RUNTIME_DISPATCH_DIAGNOSTIC"
+      ) {
+        return "TEST_RUNTIME";
+      }
+
+      if (
+        workflow ===
+        "ENGINEERING_SELF_MAINTENANCE"
+      ) {
+        return "SELF_MAINTENANCE";
+      }
+
+      return "ENGINEERING_IMPROVEMENT";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_AUDIT"
+    ) {
+      return "ENGINEERING_REPORT";
+    }
+
+    if (
+      workflow ===
+      "ORION_HEALTH_CHECK"
+    ) {
+      return "ORION_HEALTH";
+    }
+
+    if (
+      workflow ===
+      "WEBSITE_REVIEW"
+    ) {
+      return "WEBSITE_REVIEW";
+    }
+
+    if (
+      workflow ===
+      "INSTANTLY_LIVE_REVIEW"
+    ) {
+      return "INSTANTLY_LIVE";
+    }
+
+    return "BUSINESS_EXECUTION";
+  }
+
+  resolveProvider(
+    text,
+    intent,
+    workflow,
+    capability,
+    operation = {}
+  ) {
+    if (
+      operation.provider &&
+      operation.forceProvider === true
+    ) {
+      return String(
+        operation.provider
+      );
+    }
+
+    if (
+      [
+        "REVENUE_OPERATIONS",
+        "EXECUTIVE_STATUS",
+        "ENGINEERING",
+        "EXECUTIVE_AUDIT"
+      ].includes(intent)
+    ) {
+      return "MILES";
+    }
+
+    if (
+      workflow ===
+      "ORION_HEALTH_CHECK"
+    ) {
+      return "ORION";
+    }
+
+    /*
+      Business reviews are executed through the MILES builder/controller
+      actions already registered in the local system.
+    */
+
+    return "MILES";
+  }
+
+  resolveAction(
+    text,
+    intent,
+    workflow,
+    capability,
+    provider,
+    operation = {}
+  ) {
+    if (
+      operation.action &&
+      operation.forceAction === true
+    ) {
+      const forced =
+        String(
+          operation.action
+        ).toUpperCase();
+
+      return forced ===
+        "MILES_EXECUTE"
+        ? "BUSINESS_EXECUTION"
+        : forced;
+    }
+
+    if (
+      intent ===
+      "REVENUE_OPERATIONS"
+    ) {
+      return "BUSINESS_EXECUTION";
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_STATUS"
+    ) {
+      return "STATUS";
+    }
+
+    if (
+      intent === "ENGINEERING"
+    ) {
+      return (
+        capability ||
+        "ENGINEERING_IMPROVEMENT"
+      );
+    }
+
+    if (
+      intent ===
+      "EXECUTIVE_AUDIT"
+    ) {
+      return "ENGINEERING_REPORT";
+    }
+
+    if (
+      provider === "ORION"
+    ) {
+      if (
+        /table|schema/
+          .test(text)
+      ) {
+        return "ORION_TABLES";
+      }
+
+      if (
+        /contractor/
+          .test(text)
+      ) {
+        return "ORION_CONTRACTORS";
+      }
+
+      if (
+        /buyer/
+          .test(text)
+      ) {
+        return "ORION_BUYERS";
+      }
+
+      if (
+        /opportunit/
+          .test(text)
+      ) {
+        return "ORION_OPPORTUNITIES";
+      }
+
+      if (
+        /recompete|expiration|expiring/
+          .test(text)
+      ) {
+        return "ORION_RECOMPETES";
+      }
+
+      if (
+        /recommend/
+          .test(text)
+      ) {
+        return "ORION_RECOMMENDATIONS";
+      }
+
+      if (
+        /persona/
+          .test(text)
+      ) {
+        return "ORION_PERSONAS";
+      }
+
+      if (
+        /summary|executive|report|brief/
+          .test(text)
+      ) {
+        return "ORION_SUMMARY";
+      }
+
+      return "ORION_HEALTH";
+    }
+
+    if (
+      workflow ===
+      "INSTANTLY_LIVE_REVIEW"
+    ) {
+      return "INSTANTLY_LIVE";
+    }
+
+    if (
+      workflow ===
+      "WEBSITE_REVIEW"
+    ) {
+      return "WEBSITE_REVIEW";
+    }
+
+    return "BUSINESS_EXECUTION";
+  }
+
+  resolveConnector(
+    provider,
+    action,
+    capability,
+    operation = {}
+  ) {
+    if (
+      operation.connector &&
+      operation.forceConnector === true
+    ) {
+      return String(
+        operation.connector
+      );
+    }
+
+    return (
+      provider === "ORION"
+        ? "ORION"
+        : "MILES"
+    );
+  }
+
+  resolveDepartment(
+    intent,
+    provider
+  ) {
+    if (
+      intent ===
+      "REVENUE_OPERATIONS"
+    ) {
+      return "Revenue Operations";
+    }
+
+    if (
+      intent === "ENGINEERING"
+    ) {
+      return "Engineering";
+    }
+
+    if (
+      provider === "ORION"
+    ) {
+      return "ORION";
+    }
+
+    return "Executive";
+  }
+
+  resolveSteps(
+    text,
+    intent,
+    workflow,
+    capability,
+    provider,
+    connector,
+    action
+  ) {
+    if (
+      intent ===
+      "REVENUE_OPERATIONS"
+    ) {
+      return [
+        {
+          step: 1,
+          provider: "MILES",
+          connector: "MILES",
+          capability:
+            "PROVIDER_AUTHORITY",
+          action:
+            "PROVIDER_AUTHORITY",
+          objective:
+            "Verify authority, credentials, and write permissions for Instantly, Google Workspace, Namecheap, LinkedIn, ORION, and supporting systems."
+        },
+        {
+          step: 2,
+          provider: "MILES",
+          connector: "MILES",
+          capability:
+            "PROVIDER_SYNC",
+          action:
+            "PROVIDER_SYNC",
+          objective:
+            "Synchronize domains, mailboxes, campaigns, segments, replies, and platform state."
+        },
+        {
+          step: 3,
+          provider: "MILES",
+          connector: "MILES",
+          capability:
+            "INSTANTLY_LIVE",
+          action:
+            "INSTANTLY_LIVE",
+          objective:
+            "Perform live Instantly inventory, campaign, inbox, warmup, capacity, lead, reply, and deliverability assessment."
+        },
+        {
+          step: 4,
+          provider: "MILES",
+          connector: "MILES",
+          capability:
+            "BUSINESS_EXECUTION",
+          action:
+            "BUSINESS_EXECUTION",
+          objective:
+            "Create and execute the authorized revenue-operations work required by the CEO objective."
+        },
+        {
+          step: 5,
+          provider: "MILES",
+          connector: "MILES",
+          capability:
+            "CONTROLLED_WRITE",
+          action:
+            "CONTROLLED_WRITE",
+          objective:
+            "Stage protected external changes for governance approval before any customer-facing or paid action."
+        }
+      ];
+    }
+
+    return [
+      {
+        step: 1,
+        provider,
+        connector,
+        capability,
+        action,
+        objective: text
+      }
+    ];
+  }
+}
+
+module.exports =
+  new CommandIntentPlannerService();
+
+====================================================
+FILE: .\SERVICES\EngineeringImprovementService.js
+====================================================
+
+"use strict";
+
+/*
+  MILES OS
+  File: SERVICES/EngineeringImprovementService.js
+  Purpose:
+    Controlled engineering improvement workflow.
+
+  This service does NOT directly modify production files.
+  It analyzes, plans, creates a controlled proposal package,
+  validates assumptions, and reports to the CEO.
+*/
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || process.cwd();
+
+function now() {
+  return new Date().toISOString();
+}
+
+function exists(filePath) {
+  try {
+    return fs.existsSync(filePath);
+  } catch {
+    return false;
+  }
+}
+
+function readText(filePath) {
+  try {
+    if (!exists(filePath)) return "";
+    return fs.readFileSync(filePath, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+function writeJson(filePath, data) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+}
+
+class EngineeringImprovementService {
+  constructor(options = {}) {
+    this.rootDir = options.rootDir || ROOT;
+
+    this.reportDir = path.join(
+      this.rootDir,
+      "DATA",
+      "engineering_improvements"
+    );
+
+    this.proposalDir = path.join(
+      this.reportDir,
+      "proposals"
+    );
+
+    this.requiredFiles = [
+      "SERVICES/CommandIntentPlannerService.js",
+      "SERVICES/ExecutionService.js",
+      "SERVICES/EngineeringImprovementService.js",
+      "SERVICES/SelfMaintenanceService.js",
+      "SERVICES/digital_coo/MilesCommandCenter.js",
+      "SERVICES/ExecutiveResponseService.js",
+      "BUILDER/BuilderService.js",
+      "BUILDER/index.js",
+      "CONNECTORS/MILES/connector.js",
+      "CORE/TaskQueue.js",
+      "CORE/ConnectorManager.js"
+    ];
+  }
+
+  getObjective(task = {}) {
+    const payload = task.payload || {};
+    const plan = payload.plan || task.plan || {};
+
+    return (
+      plan.objective ||
+      plan.originalCommand ||
+      payload.objective ||
+      payload.command ||
+      task.objective ||
+      task.command ||
+      task.title ||
+      ""
+    );
+  }
+
+  filePath(relativePath) {
+    return path.join(this.rootDir, relativePath);
+  }
+
+  inspectFile(relativePath) {
+    const fullPath = this.filePath(relativePath);
+    const text = readText(fullPath);
+
+    return {
+      file: relativePath,
+      exists: exists(fullPath),
+      size: text.length,
+      hasModuleExport: /module\.exports/.test(text),
+      hasExecute: /execute\s*\(/.test(text),
+      hasRun: /run\s*\(/.test(text),
+      hasPlan: /plan\s*\(/.test(text),
+      hasKeywordRouting:
+        /PROVIDER_BY_CAPABILITY|resolveProvider|\/orion|\/website|\/instantly/i.test(text),
+      hasEngineeringImprovement: /ENGINEERING_IMPROVEMENT/.test(text),
+      hasSelfMaintenance: /SELF_MAINTENANCE/.test(text),
+      checkedAt: now()
+    };
+  }
+
+  analyze(task = {}) {
+    const objective = this.getObjective(task);
+    const files = this.requiredFiles.map((file) => this.inspectFile(file));
+    const findings = [];
+
+    const planner = files.find(
+      (f) => f.file === "SERVICES/CommandIntentPlannerService.js"
+    );
+
+    const execution = files.find(
+      (f) => f.file === "SERVICES/ExecutionService.js"
+    );
+
+    const builder = files.find(
+      (f) => f.file === "BUILDER/BuilderService.js"
+    );
+
+    if (planner && planner.hasKeywordRouting) {
+      findings.push({
+        severity: "HIGH",
+        area: "Planner",
+        file: planner.file,
+        issue: "CommandIntentPlannerService still contains keyword/regex routing.",
+        evidence:
+          "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        recommendation:
+          "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      });
+    }
+
+    if (execution && execution.hasKeywordRouting) {
+      findings.push({
+        severity: "HIGH",
+        area: "Execution",
+        file: execution.file,
+        issue: "ExecutionService appears to contain provider inference.",
+        evidence:
+          "Execution inspection detected provider routing patterns that should not exist in execution.",
+        recommendation:
+          "ExecutionService should consume the planner output and avoid provider selection."
+      });
+    }
+
+    if (builder && !builder.hasEngineeringImprovement) {
+      findings.push({
+        severity: "HIGH",
+        area: "Builder",
+        file: builder.file,
+        issue: "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+        evidence:
+          "BuilderService does not contain the ENGINEERING_IMPROVEMENT action.",
+        recommendation:
+          "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+      });
+    }
+
+    if (builder && !builder.hasSelfMaintenance) {
+      findings.push({
+        severity: "MEDIUM",
+        area: "Builder",
+        file: builder.file,
+        issue: "BuilderService does not expose SELF_MAINTENANCE.",
+        evidence:
+          "BuilderService does not contain SELF_MAINTENANCE.",
+        recommendation:
+          "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+      });
+    }
+
+    return {
+      ok: true,
+      service: "EngineeringImprovementService",
+      action: "ENGINEERING_ANALYZE",
+      objective,
+      files,
+      findings,
+      checkedAt: now()
+    };
+  }
+
+  plan(task = {}) {
+    const analysis = this.analyze(task);
+
+    const steps = [
+      {
+        step: 1,
+        action: "ENGINEERING_ANALYZE",
+        description:
+          "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        step: 2,
+        action: "ENGINEERING_PLAN",
+        description:
+          "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        step: 3,
+        action: "ENGINEERING_IMPLEMENT",
+        description:
+          "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        step: 4,
+        action: "ENGINEERING_VALIDATE",
+        description:
+          "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        step: 5,
+        action: "ENGINEERING_REPORT",
+        description:
+          "Return an executive engineering report with evidence and recommended next action."
+      }
+    ];
+
+    const recommendations = analysis.findings.map((finding) => ({
+      area: finding.area,
+      file: finding.file,
+      severity: finding.severity,
+      issue: finding.issue,
+      recommendedAction: finding.recommendation
+    }));
+
+    return {
+      ok: true,
+      service: "EngineeringImprovementService",
+      action: "ENGINEERING_PLAN",
+      objective: analysis.objective,
+      status: recommendations.length ? "PLAN_CREATED" : "NO_ACTION_REQUIRED",
+      steps,
+      recommendations,
+      plannedAt: now()
+    };
+  }
+
+  determineTargetFiles(objective = "") {
+    const text = String(objective || "").toLowerCase();
+    const targets = new Set();
+
+    if (
+      /planner|intent|routing|classif|commandintentplanner/.test(text)
+    ) {
+      targets.add("SERVICES/CommandIntentPlannerService.js");
+    }
+
+    if (
+      /execution|executionservice|connector selection|connector routing/.test(text)
+    ) {
+      targets.add("SERVICES/ExecutionService.js");
+    }
+
+    if (
+      /builder|unsupported action|builder action|capability/.test(text)
+    ) {
+      targets.add("BUILDER/BuilderService.js");
+    }
+
+    if (
+      /health|maintenance|degraded|self maintenance|diagnose/.test(text)
+    ) {
+      targets.add("SERVICES/SelfMaintenanceService.js");
+      targets.add("BUILDER/BuilderService.js");
+    }
+
+    if (
+      /command center|ui|response|executive response/.test(text)
+    ) {
+      targets.add("SERVICES/digital_coo/MilesCommandCenter.js");
+      targets.add("SERVICES/ExecutiveResponseService.js");
+    }
+
+    if (!targets.size) {
+      targets.add("SERVICES/CommandIntentPlannerService.js");
+      targets.add("SERVICES/ExecutionService.js");
+      targets.add("BUILDER/BuilderService.js");
+    }
+
+    return Array.from(targets);
+  }
+
+  createProposal(task = {}) {
+    const objective = this.getObjective(task);
+    const analysis = this.analyze(task);
+    const plan = this.plan(task);
+    const targetFiles = this.determineTargetFiles(objective);
+
+    const proposalId = `proposal_${Date.now()}`;
+    const proposalPath = path.join(this.proposalDir, `${proposalId}.json`);
+
+    const proposedChanges = targetFiles.map((relativePath) => {
+      const fullPath = this.filePath(relativePath);
+      const currentText = readText(fullPath);
+
+      return {
+        file: relativePath,
+        exists: exists(fullPath),
+        currentSize: currentText.length,
+        proposedChangeType: exists(fullPath) ? "REPLACE_FILE" : "CREATE_FILE",
+        productionWriteAllowed: false,
+        reason:
+          "Controlled engineering proposal only. Production replacement requires CEO approval.",
+        validationCommand:
+          relativePath.endsWith(".js")
+            ? `node --check .\\${relativePath.replace(/\//g, "\\")}`
+            : null
+      };
+    });
+
+    const proposal = {
+      ok: true,
+      service: "EngineeringImprovementService",
+      action: "ENGINEERING_IMPLEMENT",
+      proposalId,
+      objective,
+      status: "PROPOSAL_CREATED",
+      productionModified: false,
+      approvalRequired: true,
+      safeMode: true,
+      executiveSummary:
+        "Engineering proposal package created. No production files were modified.",
+      analysis,
+      plan,
+      proposedChanges,
+      validationCommands: proposedChanges
+        .map((c) => c.validationCommand)
+        .filter(Boolean),
+      approvalInstructions:
+        "Review this proposal. If approved, request a full replacement script for each target file.",
+      createdAt: now()
+    };
+
+    writeJson(proposalPath, proposal);
+
+    return {
+      ...proposal,
+      proposalPath
+    };
+  }
+
+  implement(task = {}) {
+    return this.createProposal(task);
+  }
+
+  validate(task = {}) {
+    const files = this.requiredFiles.map((file) => this.inspectFile(file));
+
+    const missing = files.filter((f) => !f.exists);
+    const invalidExports = files.filter(
+      (f) =>
+        f.exists &&
+        !f.hasModuleExport &&
+        f.file !== "SERVICES/digital_coo/MilesCommandCenter.js"
+    );
+
+    const builderText = readText(this.filePath("BUILDER/BuilderService.js"));
+    const plannerText = readText(
+      this.filePath("SERVICES/CommandIntentPlannerService.js")
+    );
+    const executionText = readText(
+      this.filePath("SERVICES/ExecutionService.js")
+    );
+
+    const validation = {
+      requiredFilesPresent: missing.length === 0,
+      moduleExportsValid: invalidExports.length === 0,
+      builderHasEngineeringImprovement:
+        /ENGINEERING_IMPROVEMENT/.test(builderText),
+      builderHasSelfMaintenance:
+        /SELF_MAINTENANCE/.test(builderText),
+      plannerRecognizesEngineering:
+        /ENGINEERING_IMPROVEMENT/.test(plannerText),
+      executionHasNoProviderByCapability:
+        !/PROVIDER_BY_CAPABILITY/.test(executionText),
+      executionHasConnectorDispatch:
+        /executeConnectorTask/.test(executionText)
+    };
+
+    return {
+      ok: Object.values(validation).every(Boolean),
+      service: "EngineeringImprovementService",
+      action: "ENGINEERING_VALIDATE",
+      filesChecked: files.length,
+      missingFiles: missing,
+      filesWithoutModuleExports: invalidExports,
+      validation,
+      validationStatus:
+        Object.values(validation).every(Boolean) ? "PASSED" : "FAILED",
+      checkedAt: now()
+    };
+  }
+
+  report(task = {}) {
+    const analysis = this.analyze(task);
+    const plan = this.plan(task);
+    const implementation = this.implement(task);
+    const validation = this.validate(task);
+
+    const report = {
+      ok: true,
+      service: "EngineeringImprovementService",
+      action: "ENGINEERING_REPORT",
+      objective: this.getObjective(task),
+      executiveSummary:
+        "MILES engineering workflow executed. The service analyzed the runtime, generated a safe implementation proposal, validated key files, and produced this report.",
+      rootCauseSummary:
+        analysis.findings.length
+          ? "One or more engineering issues remain. See findings for evidence and recommended fixes."
+          : "No high-priority engineering issues were detected in the inspected files.",
+      findings: analysis.findings,
+      improvementPlan: plan.steps,
+      implementation,
+      validation,
+      recommendedNextAction:
+        implementation.approvalRequired
+          ? "Review the engineering proposal package and approve specific replacement scripts before production modification."
+          : "Continue normal operations.",
+      completedAt: now()
+    };
+
+    const outFile = path.join(
+      this.reportDir,
+      `engineering_report_${Date.now()}.json`
+    );
+
+    writeJson(outFile, report);
+
+    return {
+      ...report,
+      outFile
+    };
+  }
+
+  run(task = {}) {
+    const action = String(
+      task.action ||
+      task.type ||
+      task.payload?.action ||
+      task.payload?.plan?.action ||
+      "ENGINEERING_IMPROVEMENT"
+    ).toUpperCase();
+
+    if (action === "ENGINEERING_ANALYZE") return this.analyze(task);
+    if (action === "ENGINEERING_PLAN") return this.plan(task);
+    if (action === "ENGINEERING_IMPLEMENT") return this.implement(task);
+    if (action === "ENGINEERING_VALIDATE") return this.validate(task);
+    if (action === "ENGINEERING_REPORT") return this.report(task);
+
+    if (action === "ENGINEERING_IMPROVEMENT") {
+      const analysis = this.analyze(task);
+      const plan = this.plan(task);
+      const implementation = this.implement(task);
+      const validation = this.validate(task);
+      const report = this.report(task);
+
+      return {
+        ok: true,
+        service: "EngineeringImprovementService",
+        action: "ENGINEERING_IMPROVEMENT",
+        objective: this.getObjective(task),
+        status: "COMPLETED",
+        productionModified: false,
+        approvalRequired: true,
+        analysis,
+        plan,
+        implementation,
+        validation,
+        report,
+        completedAt: now()
+      };
+    }
+
+    return {
+      ok: false,
+      service: "EngineeringImprovementService",
+      action,
+      error: `Unsupported engineering action: ${action}`,
+      supportedActions: [
+        "ENGINEERING_IMPROVEMENT",
+        "ENGINEERING_ANALYZE",
+        "ENGINEERING_PLAN",
+        "ENGINEERING_IMPLEMENT",
+        "ENGINEERING_VALIDATE",
+        "ENGINEERING_REPORT"
+      ]
+    };
+  }
+}
+
+module.exports = new EngineeringImprovementService();
+
+====================================================
+FILE: .\SERVICES\RepositorySearchService.js
+====================================================
+
+"use strict";
+
+/*
+  MILES Enterprise
+  File: SERVICES/RepositorySearchService.js
+  Purpose:
+    Fast repository-wide source search without traversing generated data,
+    dependencies, backups, or archived builds.
+*/
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = process.env.MILES_ROOT || process.cwd();
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
+
+const EXCLUDED_DIRECTORIES = new Set([
+  "node_modules",
+  ".git",
+  "DATA",
+  "BACKUPS",
+  "backup",
+  "backups",
+  "runtime",
+  "_REFERENCE",
+  "_LEGACY_BUILDS",
+  "_REGISTRY_CONVERGENCE_20260710_192356",
+  "_REGISTRY_CONVERGENCE_20260710_193412",
+  "MILES_Runtime_Registry_Service_V2_v2.0"
+]);
+
+const ALLOWED_EXTENSIONS = new Set([
+  ".js",
+  ".json",
+  ".ps1",
+  ".md",
+  ".txt",
+  ".yml",
+  ".yaml"
+]);
+
+function now() {
+  return new Date().toISOString();
+}
+
+function safeRead(file) {
+  try {
+    const stat = fs.statSync(file);
+    if (!stat.isFile() || stat.size > MAX_FILE_BYTES) return "";
+    return fs.readFileSync(file, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+function walk(dir, results = []) {
+  if (!fs.existsSync(dir)) return results;
+
+  let entries = [];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return results;
+  }
+
+  for (const entry of entries) {
+    if (entry.isDirectory() && EXCLUDED_DIRECTORIES.has(entry.name)) {
+      continue;
+    }
+
+    const full = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      walk(full, results);
+      continue;
+    }
+
+    if (ALLOWED_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      results.push(full);
+    }
+  }
+
+  return results;
+}
+
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function extractSearchPatterns(task = {}) {
+  const payload = task.payload || {};
+  const plan = payload.plan || task.plan || {};
+
+  const source =
+    task.query ||
+    task.pattern ||
+    payload.query ||
+    payload.pattern ||
+    plan.originalCommand ||
+    plan.objective ||
+    payload.objective ||
+    payload.command ||
+    task.command ||
+    "";
+
+  if (Array.isArray(source)) {
+    return source.map(String).map(v => v.trim()).filter(Boolean).slice(0, 30);
+  }
+
+  const text = String(source);
+  const quoted = [...text.matchAll(/["'`](.+?)["'`]/g)]
+    .map(match => match[1].trim())
+    .filter(Boolean);
+
+  const lines = text
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .filter(line => !/^search the repository/i.test(line))
+    .filter(line => !/^return:/i.test(line))
+    .filter(line => !/^\d+\./.test(line))
+    .filter(line => line.length <= 160);
+
+  const candidates = [...quoted, ...lines];
+  const unique = [];
+
+  for (const candidate of candidates) {
+    if (!unique.includes(candidate)) unique.push(candidate);
+  }
+
+  return unique.slice(0, 30);
+}
+
+class RepositorySearchService {
+  constructor(options = {}) {
+    this.rootDir = options.rootDir || ROOT;
+    this.outDir = path.join(this.rootDir, "DATA", "repository_search");
+  }
+
+  relative(file) {
+    return path.relative(this.rootDir, file).replace(/\\/g, "/");
+  }
+
+  searchPatterns(patterns = []) {
+    const normalized = patterns
+      .map(pattern => pattern instanceof RegExp ? pattern : String(pattern).trim())
+      .filter(Boolean);
+
+    const compiled = normalized.map(pattern => ({
+      source: String(pattern),
+      regex: pattern instanceof RegExp
+        ? pattern
+        : new RegExp(escapeRegex(pattern), "i")
+    }));
+
+    if (!compiled.length) return [];
+
+    const files = walk(this.rootDir);
+    const matches = [];
+
+    for (const file of files) {
+      const text = safeRead(file);
+      if (!text) continue;
+
+      const lines = text.split(/\r?\n/);
+
+      for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+
+        for (const pattern of compiled) {
+          if (pattern.regex.test(line)) {
+            matches.push({
+              file: this.relative(file),
+              line: index + 1,
+              pattern: pattern.source,
+              text: line.trim()
+            });
+          }
+        }
+      }
+    }
+
+    return matches;
+  }
+
+  findWriteCapabilities() {
+    return this.searchPatterns([
+      "writeFile",
+      "writeFileSync",
+      "createWriteStream",
+      "CodeWriter",
+      "ReplacementWriter",
+      "ReplacementGenerator",
+      "PatchEngine",
+      "PatchGenerator",
+      "CodeGenerator",
+      "EngineeringWriter",
+      "RuntimeWriter",
+      "TemplateEngine",
+      "PROPOSAL_CREATED",
+      "productionModified",
+      "approvalRequired",
+      "safeMode"
+    ]);
+  }
+
+  inspectEngineeringService() {
+    const file = path.join(
+      this.rootDir,
+      "SERVICES",
+      "EngineeringImprovementService.js"
+    );
+
+    const text = safeRead(file);
+    const lines = text.split(/\r?\n/);
+    const methods = [];
+
+    for (let index = 0; index < lines.length; index++) {
+      const match = lines[index].match(/^\s*(\w+)\s*\([^)]*\)\s*\{/);
+
+      if (match) {
+        methods.push({
+          method: match[1],
+          line: index + 1,
+          text: lines[index].trim()
+        });
+      }
+    }
+
+    return {
+      file: "SERVICES/EngineeringImprovementService.js",
+      exists: fs.existsSync(file),
+      methods,
+      containsWriteFile: /writeFile|writeFileSync|createWriteStream/.test(text),
+      containsProposalCreated: /PROPOSAL_CREATED/.test(text),
+      containsProductionModifiedFalse: /productionModified:\s*false/.test(text),
+      containsApprovalRequiredTrue: /approvalRequired:\s*true/.test(text),
+      containsSafeModeTrue: /safeMode:\s*true/.test(text)
+    };
+  }
+
+  auditCodeWriterCapability() {
+    const matches = this.findWriteCapabilities();
+    const engineering = this.inspectEngineeringService();
+
+    const codeWriterNamedMatches = matches.filter(match =>
+      /CodeWriter|ReplacementWriter|ReplacementGenerator|PatchEngine|PatchGenerator|CodeGenerator|EngineeringWriter|RuntimeWriter|TemplateEngine/i.test(
+        match.text
+      )
+    );
+
+    const writeMatches = matches.filter(match =>
+      /writeFile|writeFileSync|createWriteStream/i.test(match.text)
+    );
+
+    return {
+      ok: true,
+      service: "RepositorySearchService",
+      action: "CODE_WRITER_CAPABILITY_AUDIT",
+      rootDir: this.rootDir,
+      generatedAt: now(),
+      productionCodeGenerationEngineExists: codeWriterNamedMatches.length > 0,
+      engineeringService: engineering,
+      counts: {
+        totalMatches: matches.length,
+        writeMatches: writeMatches.length,
+        codeWriterNamedMatches: codeWriterNamedMatches.length
+      },
+      writeMatches,
+      codeWriterNamedMatches,
+      allMatches: matches
+    };
+  }
+
+  search(task = {}) {
+    const patterns = extractSearchPatterns(task);
+    const matches = this.searchPatterns(patterns);
+
+    return {
+      ok: true,
+      service: "RepositorySearchService",
+      action: "REPOSITORY_SEARCH",
+      query: patterns,
+      count: matches.length,
+      matches,
+      searchedAt: now()
+    };
+  }
+
+  report(task = {}) {
+    const payload = task.payload || {};
+    const plan = payload.plan || task.plan || {};
+
+    const action = String(
+      task.action ||
+      plan.action ||
+      payload.action ||
+      task.type ||
+      "CODE_WRITER_CAPABILITY_AUDIT"
+    ).toUpperCase();
+
+    const result =
+      action === "REPOSITORY_SEARCH"
+        ? this.search(task)
+        : this.auditCodeWriterCapability(task);
+
+    fs.mkdirSync(this.outDir, { recursive: true });
+
+    const outFile = path.join(
+      this.outDir,
+      `${action.toLowerCase()}_${Date.now()}.json`
+    );
+
+    fs.writeFileSync(outFile, JSON.stringify(result, null, 2), "utf8");
+
+    return {
+      ...result,
+      outFile
+    };
+  }
+
+  run(task = {}) {
+    const payload = task.payload || {};
+    const plan = payload.plan || task.plan || {};
+
+    const action = String(
+      task.action ||
+      plan.action ||
+      payload.action ||
+      task.type ||
+      "CODE_WRITER_CAPABILITY_AUDIT"
+    ).toUpperCase();
+
+    if (
+      action === "REPOSITORY_SEARCH" ||
+      action === "CODE_WRITER_CAPABILITY_AUDIT" ||
+      action === "REPOSITORY_EVIDENCE_REPORT"
+    ) {
+      return this.report(task);
+    }
+
+    return {
+      ok: false,
+      service: "RepositorySearchService",
+      action,
+      error: `Unsupported repository search action: ${action}`,
+      supportedActions: [
+        "REPOSITORY_SEARCH",
+        "CODE_WRITER_CAPABILITY_AUDIT",
+        "REPOSITORY_EVIDENCE_REPORT"
+      ]
+    };
+  }
+
+  async execute(task = {}) {
+    return this.run(task);
+  }
+}
+
+module.exports = new RepositorySearchService();

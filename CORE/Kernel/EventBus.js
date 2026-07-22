@@ -1,12 +1,7 @@
-const EventEmitter = require("events");
+﻿const EventEmitter = require("events");
 const path = require("path");
-const { Logger } = require("./Logger");
+const logger = require("../Logger");
 
-const ROOT =
-    process.env.MILES_ROOT ||
-    path.resolve(__dirname, "..");
-
-const logger = new Logger(ROOT);
 
 class MilesEventBus extends EventEmitter {
 
@@ -40,3 +35,4 @@ class MilesEventBus extends EventEmitter {
 }
 
 module.exports = new MilesEventBus();
+

@@ -1,0 +1,195 @@
+{
+  "id": "WP-20260714184059-861",
+  "objective": "Add sales pipeline provider and recurring follow-up queue.",
+  "status": "COMPLETED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-14T18:40:59.332Z",
+  "updatedAt": "2026-07-17T02:28:21.972Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Add sales pipeline provider and recurring follow-up queue.",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-14T18:40:59.332Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1784054456740-59376",
+      "area": "Engineering",
+      "priority": 1,
+      "description": "Missing capability: Sales COO. Removes manual work: pipeline review, follow-up reminders, proposal status checks, call prep, revenue forecast.",
+      "reason": "Capability gap blocks higher autonomy.",
+      "recommendedAction": "Add sales pipeline provider and recurring follow-up queue.",
+      "expectedImpact": "Very High",
+      "relatedProvider": "Engineering",
+      "metadata": {
+        "capabilityGap": {
+          "id": "CAP-1784054449671-1-49072",
+          "cycleId": "COO-20260714183938-001",
+          "status": "OPEN",
+          "priority": 1,
+          "createdAt": "2026-07-14T18:40:49.671Z",
+          "area": "Sales COO",
+          "providerKey": "sales",
+          "title": "Build Sales COO pipeline and follow-up operator",
+          "businessImpact": "Very High",
+          "removesManualWork": [
+            "pipeline review",
+            "follow-up reminders",
+            "proposal status checks",
+            "call prep",
+            "revenue forecast"
+          ],
+          "recommendedAction": "Add sales pipeline provider and recurring follow-up queue."
+        },
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Safe operational review, audit, refresh, verification, analysis, or planning authorized autonomously.",
+          "classifiedAt": "2026-07-14T18:40:56.740Z"
+        }
+      },
+      "runtimeCycleId": null
+    },
+    "domain": "sales",
+    "workforce": "Sales Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "sales.pipeline.followup"
+    ],
+    "assignments": [
+      {
+        "capability": "sales.pipeline.followup",
+        "provider": "SalesProvider",
+        "department": "Sales",
+        "action": "reviewPipeline",
+        "bestWorker": {
+          "employee": "EngineeringOrchestrator",
+          "department": "Executive",
+          "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_982B533911E0FCD1",
+          "relativePath": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "sales.pipeline.followup",
+            "employees": [
+              {
+                "employee": "Alexis",
+                "department": "Sales",
+                "mission": "Turn government contractors into paying P2GC clients through segmentation, targeting, offer strategy, pricing positioning, messaging, and conversion strategy.",
+                "authority": "Operational",
+                "role": "GovCon Growth & Client Acquisition Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 120,
+                "matchReasons": [
+                  "declared capability match: sales.pipeline.followup"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Sophia",
+                "department": "Sales",
+                "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+                "authority": "Operational",
+                "role": "Federal Sales Pipeline Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 120,
+                "matchReasons": [
+                  "declared capability match: sales.pipeline.followup"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "sales.pipeline.followup",
+        "assignedTo": "EngineeringOrchestrator",
+        "department": "Sales",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "SalesProvider",
+        "action": "reviewPipeline",
+        "expectedOutput": "Current pipeline value, stalled deals, overdue follow-up recommendations, and prioritized next actions.",
+        "verification": "Verify SalesProvider executed reviewPipeline and returned pipeline evidence and next-action recommendations."
+      }
+    ],
+    "providers": [
+      "SalesProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify SalesProvider executed reviewPipeline and returned pipeline evidence and next-action recommendations."
+    ],
+    "successCriteria": [
+      "SalesProvider.reviewPipeline executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "sales.pipeline.followup",
+      "assignedTo": "EngineeringOrchestrator",
+      "department": "Sales",
+      "status": "COMPLETED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "SalesProvider",
+      "action": "reviewPipeline",
+      "expectedOutput": "Current pipeline value, stalled deals, overdue follow-up recommendations, and prioritized next actions.",
+      "verification": "Verify SalesProvider executed reviewPipeline and returned pipeline evidence and next-action recommendations.",
+      "taskId": "TASK-1784054459624-63641",
+      "startedAt": null,
+      "completedAt": "2026-07-14T18:41:03.137Z",
+      "failedAt": null,
+      "result": {
+        "ok": true,
+        "status": "COMPLETED",
+        "reason": "Capability already installed through SalesProvider.",
+        "suppressedAsStaleCapabilityWork": true,
+        "completedAt": "2026-07-14T18:41:02.463Z"
+      },
+      "updatedAt": "2026-07-14T18:41:03.137Z"
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T02:28:21.972Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T02:28:21.972Z"
+  },
+  "completedAt": "2026-07-17T02:28:21.972Z"
+}

@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "provider": "SalesProvider",
+  "action": "reviewPipeline",
+  "generatedAt": "2026-07-15T20:36:55.782Z",
+  "analysis": {
+    "timestamp": "2026-07-15T20:36:55.782Z",
+    "summary": {
+      "processed": 0,
+      "hot": 0,
+      "warm": 0,
+      "cold": 0,
+      "closed": 0
+    },
+    "outputs": []
+  },
+  "metrics": {
+    "activeDeals": 0,
+    "pipelineValue": 0,
+    "weightedForecast": 0,
+    "stalledDeals": 0,
+    "hotDeals": 0,
+    "warmDeals": 0
+  },
+  "recommendations": []
+}

@@ -1,0 +1,204 @@
+===================================================
+.\SERVICES\WorkflowService.js
+===================================================
+3: const workPackages = require("./WorkPackageService");
+7: if (typeof value === "number") return value;
+11: if (text === "CRITICAL") return 100;
+12: if (text === "HIGH") return 85;
+13: if (text === "MEDIUM") return 60;
+14: if (text === "LOW") return 35;
+16: return 50;
+20: createWorkflow(objective, context = {}) {
+21: console.log("[D012] createWorkflow:", objective);
+22: const wp = workPackages.create(objective, context);
+24: if (wp.status === "AWAITING_APPROVAL") {
+25: return {
+27: status: "AWAITING_APPROVAL",
+28: workPackage: wp,
+33: const queuedTasks = [];
+41: workPackageId: wp.id,
+56: queuedTasks.push(task);
+59: return {
+61: status: "QUEUED",
+62: workPackage: wp,
+63: queuedTasks
+67: status() {
+68: const packages = workPackages.list();
+70: return {
+73: queued: packages.filter(p => p.status === "QUEUED").length,
+74: awaitingApproval: packages.filter(p => p.status === "AWAITING_APPROVAL").length,
+75: completed: packages.filter(p => p.status === "COMPLETED").length,
+
+===================================================
+.\SERVICES\BusinessOperationsBridgeService.js
+===================================================
+17: return new Date().toISOString();
+26: if (!fs.existsSync(file)) return fallback;
+27: return JSON.parse(fs.readFileSync(file, "utf8"));
+29: return fallback;
+71: return readJson(this.queueFile, {
+87: return queue;
+91: return queue.operations;
+95: return queue.items;
+99: return queue.workItems;
+102: return [];
+133: let status = String(
+134: item.status ||
+141: ["READY", "PENDING", "NEW"].includes(status)
+143: status = "AWAITING_APPROVAL";
+162: return {
+180: status,
+190: return {
+220: return;
+233: const existingStatus = String(existing.status || "").toUpperCase();
+235: if (terminalStates.includes(existingStatus)) {
+236: return;
+254: return {
+262: return ["READY", "PENDING", "NEW"].includes(
+263: String(operation.status || "").toUpperCase()
+279: if (p.toUpperCase() === "MILES") return "MILES";
+280: if (p.toUpperCase() === "ORION") return "ORION";
+281: if (p.toUpperCase() === "INSTANTLY") return "INSTANTLY";
+282: if (p.toLowerCase() === "website") return "Website";
+283: if (p.toLowerCase() === "linkedin") return "LinkedIn";
+284: if (p.toUpperCase() === "GOOGLE") return "GOOGLE";
+285: return p;
+304: return "Sales";
+308: return "ORION";
+312: return "Government";
+316: return "Website";
+320: return "LinkedIn";
+324: return "MILES";
+327: return "Executive";
+331: if (value === 1 || value === "1") return 1;
+332: if (value === 2 || value === "2") return 2;
+333: if (value === 3 || value === "3") return 3;
+334: if (value === 4 || value === "4") return 4;
+338: if (text === "CRITICAL") return 1;
+339: if (text === "HIGH") return 2;
+340: if (text === "MEDIUM" || text === "NORMAL") return 3;
+341: if (text === "LOW") return 4;
+343: return 3;
+435: return {
+453: if (typeof this.taskQueue.add !== "function") {
+454: throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+457: return this.taskQueue.add(task.type, task.payload, task.priority);
+466: if (operation.id !== operationId) return operation;
+468: return {
+480: return {
+482: status: "DISABLED",
+505: return {
+507: status: "NO_PENDING_OPERATIONS",
+527: status: "BRIDGED",
+529: taskQueueStatus: "QUEUED",
+539: status: "BRIDGE_FAILED",
+541: taskQueueStatus: "FAILED",
+552: return {
+554: status: failed === 0 ? "BRIDGE_COMPLETED" : "BRIDGE_COMPLETED_WITH_FAILURES",
+566: getStatus() {
+567: return {
+
+===================================================
+.\SERVICES\AutonomousWorkGenerationService.js
+===================================================
+56: const ACTIVE_TASK_STATUSES =
+79: return (
+97: return new Date()
+109: return fallback;
+112: return JSON.parse(
+124: return fallback;
+165: return true;
+183: return String(
+194: return normalizeText(value)
+211: return crypto
+223: function statusUpper(value) {
+224: return String(
+232: status,
+237: statusUpper(status);
+245: return PRIORITY.CRITICAL;
+253: return PRIORITY.HIGH;
+261: return PRIORITY.MEDIUM;
+264: return PRIORITY.LOW;
+275: return label;
+279: return "LOW";
+288: return {
+315: return {
+335: "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations.",
+342: return {
+362: "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot.",
+369: return {
+396: return {
+429: return {
+449: "Verify runtime health returns HEALTHY after the proposed repair.",
+457: return {
+484: return {
+522: return Array.isArray(tasks)
+528: return [];
+550: return {
+570: return null;
+573: return (
+579: ACTIVE_TASK_STATUSES.has(
+580: statusUpper(
+581: existing.status
+592: return healthManager
+596: return safeReadJson(
+612: return (
+616: item.status !== "VALID"
+628: status:
+629: item.status,
+632: item.status === "PARTIAL"
+637: item.status === "PARTIAL"
+656: return [];
+675: status:
+676: failure.status,
+694: provider.status ===
+710: status:
+711: provider.status,
+718: `${provider.provider} reported ${provider.providerStatus}.`,
+724: providerStatus:
+725: provider.providerStatus,
+744: filesystem.status ===
+760: status:
+761: filesystem.status,
+776: return findings;
+794: status:
+795: finding.status,
+807: seen.add(key);
+815: return output;
+860: finding.status,
+948: status:
+961: return {
+968: status:
+1040: workPackageId:
+1075: return dedupeFindings([
+1092: return {
+1120: return {
+1141: return {
+1143: status:
+1169: a.status,
+1174: b.status,
+1198: return this.submitTask(
+1205: return {
+1310: return state;
+1321: status:
+1355: return state;
+1363: return {
+1365: status:
+1404: return {
+1406: status:
+1426: return {
+1428: status:
+1435: status() {
+1436: return {
+1484: return {
+1492: status:
+1520: "status"
+1530: return this.runCycle(
+1535: return this.start(
+1541: return this.stop();
+1543: case "status":
+1544: return this.status();
+1548: return this.healthCheck();
+1551: return {
+1553: status:
+

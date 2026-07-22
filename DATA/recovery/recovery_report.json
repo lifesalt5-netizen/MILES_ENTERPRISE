@@ -1,99 +1,2185 @@
 {
-  "generated": "2026-07-13T15:58:56.207Z",
-  "total": 2,
+  "generated": "2026-07-22T20:13:20.868Z",
+  "total": 25,
   "items": [
     {
       "task": {
-        "id": "TASK-1783376444160-78961",
-        "type": "BUSINESS_OPERATION",
+        "id": "TASK-1784326093643-52142",
+        "type": "WORKFORCE_STEP",
         "payload": {
-          "id": "op_1783376441779_c3tziu",
-          "source": "business_operations_queue",
-          "type": "BUSINESS_OPERATION",
-          "status": "READY",
-          "priority": 1,
-          "worker": "atlasWorker",
-          "area": "atlas",
-          "title": "Miles, check ORION system health and produce an executive status report.",
-          "command": "Miles, check ORION system health and produce an executive status report.",
-          "action": "Miles, check ORION system health and produce an executive status report.",
-          "approvalRequired": false,
-          "ceoEscalationOnly": false,
-          "createdAt": "2026-07-06T22:20:41.779Z",
-          "updatedAt": "2026-07-06T22:20:41.779Z",
-          "result": null,
-          "provider": "ORION",
-          "system": "ORION",
-          "department": "ORION",
-          "connector": "ORION",
-          "objective": "Miles, check ORION system health and produce an executive status report.",
-          "sourceOperationId": "op_1783376441779_c3tziu"
+          "workPackageId": "WP-20260702182410-897",
+          "step": 1,
+          "objective": "Act on recommendation: Verify INSTANTLY_API_KEY.",
+          "capability": "marketing.instantly.read",
+          "assignedTo": "MILES",
+          "department": "Marketing",
+          "provider": "MarketingProvider",
+          "action": "readCampaigns",
+          "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+          "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured.",
+          "reconciliation": {
+            "source": "BUILD136",
+            "reconciliationId": "RECON-1784326088900-7606FA",
+            "stepIdentity": "5c6969039176df7008f0f6de93e3a93497cbdd6544b967d4ccbc90242438cad1",
+            "recoveredAt": "2026-07-17T22:08:13.633Z",
+            "reason": "Canonical active work-package step had no corresponding active queue task."
+          }
         },
-        "priority": 1,
+        "priority": 50,
         "status": "FAILED",
-        "createdAt": "2026-07-06T22:20:44.160Z",
-        "updatedAt": "2026-07-06T22:20:48.376Z",
-        "provider": "ORION",
-        "error": "Connector not found: ORION",
-        "failure": {
-          "type": "MISSING_CAPABILITY",
-          "retryable": false,
-          "safeRepair": true,
-          "recommendedAction": "Register missing provider or connector"
-        },
-        "retryable": false,
+        "createdAt": "2026-07-17T22:08:13.643Z",
+        "updatedAt": "2026-07-17T22:52:25.148Z",
+        "provider": "MarketingProvider",
+        "connector": "WORKFORCE",
+        "department": "Marketing",
+        "action": "readCampaigns",
+        "recoveredFromStatus": "RUNNING",
+        "recoveryReason": "Recovered stale RUNNING task after runtime restart.",
+        "recoveredAt": "2026-07-17T22:50:10.051Z",
+        "startedAt": null,
+        "completedAt": null,
+        "failedAt": "2026-07-17T22:52:25.085Z",
+        "error": "Orphaned legacy BUILD136 reconciliation task retired after successful current-runtime processing.",
         "result": {
           "ok": false,
-          "status": "FAILED",
-          "provider": "ORION",
-          "action": "Miles, check ORION system health and produce an executive status report.",
-          "error": "Connector not found: ORION",
-          "failure": {
-            "type": "MISSING_CAPABILITY",
-            "retryable": false,
-            "safeRepair": true,
-            "recommendedAction": "Register missing provider or connector"
+          "status": "AWAITING_APPROVAL",
+          "provider": "MarketingProvider",
+          "connector": "WORKFORCE",
+          "department": "Marketing",
+          "action": "readCampaigns",
+          "workforceResult": {
+            "ok": false,
+            "result": {
+              "ok": false,
+              "type": "WORKFORCE_STEP_RESULT",
+              "executionMode": "CEO_APPROVAL_REQUIRED",
+              "taskId": "TASK-1784326093643-52142",
+              "workPackageId": "WP-20260702182410-897",
+              "objective": "Act on recommendation: Verify INSTANTLY_API_KEY.",
+              "capability": "marketing.instantly.read",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "assignedTo": "MILES",
+              "department": "Marketing",
+              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
+              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured.",
+              "employeeFound": true,
+              "employeeProfile": {
+                "name": "MILES",
+                "department": "Executive",
+                "mission": "Operate as the autonomous Digital COO for Pathways 2 Government Contracting.",
+                "authority": "Operational"
+              },
+              "output": {
+                "summary": "MarketingProvider executed readCampaigns.",
+                "recommendation": "Provider execution failed or needs review: MarketingProvider",
+                "nextActions": [
+                  "Hold autonomous execution.",
+                  "Route to Kevin for CEO approval.",
+                  "Include authority, risk, confidence, and provider evidence."
+                ],
+                "needsHumanInput": true,
+                "ceoApprovalRequired": true,
+                "providerResult": {
+                  "ok": false,
+                  "type": "PROVIDER_EXECUTION_RESULT",
+                  "requestedProvider": "MarketingProvider",
+                  "provider": "MarketingProvider",
+                  "routedTo": "MarketingProvider",
+                  "action": "readCampaigns",
+                  "taskId": "TASK-1784326093643-52142",
+                  "workPackageId": "WP-20260702182410-897",
+                  "objective": "Act on recommendation: Verify INSTANTLY_API_KEY.",
+                  "capability": "marketing.instantly.read",
+                  "assignedTo": "MILES",
+                  "department": "Marketing",
+                  "status": "FAILED",
+                  "metrics": {
+                    "browserCampaigns": 32,
+                    "browserActions": {
+                      "executed": [
+                        {
+                          "ok": true,
+                          "campaign": "SBS Verified Email Targets",
+                          "action": "audit_active_campaign",
+                          "mode": "SAFE_AUDIT_EXECUTION",
+                          "reason": "Active campaign should be monitored for health and capacity.",
+                          "ts": "2026-07-17T22:51:28.866Z",
+                          "url": "https://app.instantly.ai/app/campaigns",
+                          "verified": true
+                        }
+                      ],
+                      "verified": [
+                        {
+                          "ok": true,
+                          "campaign": "SBS Verified Email Targets",
+                          "action": "audit_active_campaign",
+                          "mode": "SAFE_AUDIT_EXECUTION",
+                          "reason": "Active campaign should be monitored for health and capacity.",
+                          "ts": "2026-07-17T22:51:28.866Z",
+                          "url": "https://app.instantly.ai/app/campaigns",
+                          "verified": true
+                        }
+                      ],
+                      "failed": [],
+                      "paused": [],
+                      "approvals": [],
+                      "ignored": [
+                        {
+                          "campaign": "EXPIRED everything",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "expiring within 12 months",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "expiring within 6 months",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SDVOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "WOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "HubZone",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "8a firms",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS low sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS no vehicle",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam High Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam Low Sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SAM no sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 5m+",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 3-5m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 501k-3m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 0-500k",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA No Sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 5m+",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 3m–5m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 500k–3m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 0–500k",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "ACTIVE PIPELINE",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "MEETING BOOKED",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "TECHNICAL SUPPRESSION",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "FUTURE FOLLOW-UP",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NO - SUPPRESSED",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NURTURE - 30 DAY",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NURTURE - 14 DAY",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      ]
+                    },
+                    "browserDiagnostics": {
+                      "campaignCount": 32,
+                      "url": "https://app.instantly.ai/app/campaigns",
+                      "title": "Instantly"
+                    }
+                  },
+                  "exceptions": [
+                    {
+                      "type": "ProviderRouter",
+                      "severity": "Critical",
+                      "message": "Error: Unsupported MarketingProvider action: readCampaigns\n    at MarketingProvider.executeTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\PROVIDERS\\providers\\MarketingProvider.js:621:13)\n    at ProviderRouterService.invokeProvider (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ProviderRouterService.js:630:10)\n    at ProviderRouterService.executeProviderTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ProviderRouterService.js:889:20)\n    at WorkforceExecutionService.executeStep (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:149:45)\n    at WorkforceExecutionService.executeAndVerify (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:607:33)\n    at ExecutionService.executeWorkforceTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:890:41)\n    at ExecutionService.execute (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:693:19)\n    at ExecutionService.runNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:1387:17)\n    at AutonomousCOOLoopService.runExecutionPasses (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\AutonomousCOOLoopService.js:1466:45)\n    at AutonomousCOOLoopService.runOnce (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\AutonomousCOOLoopService.js:137:64)"
+                    }
+                  ],
+                  "recommendations": [
+                    "Verify provider action and connector configuration for MarketingProvider.",
+                    "Inspect 31 draft Instantly campaign(s) for leads, inbox assignment, sequence, schedule, and launch readiness.",
+                    "Monitor 1 active Instantly campaign(s) for bounce rate, reply rate, lead exhaustion, and inbox capacity."
+                  ],
+                  "authority": {
+                    "providerKey": "instantly",
+                    "operation": null,
+                    "authority": {
+                      "key": "instantly",
+                      "provider": "instantly",
+                      "name": "Instantly",
+                      "providerName": "Instantly",
+                      "module": "InstantlyProviderCompatibilityService",
+                      "executable": true,
+                      "credentialsPresent": true,
+                      "credentials": {
+                        "present": true,
+                        "requiredEnv": [
+                          "INSTANTLY_API_KEY"
+                        ],
+                        "missingEnv": []
+                      },
+                      "safeMode": true,
+                      "status": "READY_READ_ONLY",
+                      "capabilities": {
+                        "read": {
+                          "enabled": true,
+                          "operations": [
+                            "HEALTH_CHECK",
+                            "LIST_CAMPAIGNS",
+                            "GET_CAMPAIGN",
+                            "GENERATE_CAMPAIGN_REPORT"
+                          ]
+                        },
+                        "write": {
+                          "enabled": false,
+                          "operations": [
+                            "CREATE_CAMPAIGN",
+                            "PAUSE_CAMPAIGN",
+                            "RESUME_CAMPAIGN",
+                            "UPLOAD_LEADS",
+                            "ASSIGN_SENDING_ACCOUNTS"
+                          ],
+                          "flag": "INSTANTLY_WRITE_ENABLED"
+                        },
+                        "rollback": {
+                          "enabled": false,
+                          "operations": []
+                        },
+                        "verify": {
+                          "enabled": true
+                        }
+                      },
+                      "supportedOperations": [
+                        "HEALTH_CHECK",
+                        "LIST_CAMPAIGNS",
+                        "GET_CAMPAIGN",
+                        "CREATE_CAMPAIGN",
+                        "PAUSE_CAMPAIGN",
+                        "RESUME_CAMPAIGN",
+                        "UPLOAD_LEADS",
+                        "ASSIGN_SENDING_ACCOUNTS",
+                        "GENERATE_CAMPAIGN_REPORT"
+                      ],
+                      "generatedAt": "2026-07-17T22:50:22.805Z"
+                    },
+                    "binding": {
+                      "provider": "instantly",
+                      "providerName": "Instantly",
+                      "executable": true,
+                      "status": "READY_READ_ONLY",
+                      "credentialsPresent": true,
+                      "readOperations": [
+                        "HEALTH_CHECK",
+                        "LIST_CAMPAIGNS",
+                        "GET_CAMPAIGN",
+                        "GENERATE_CAMPAIGN_REPORT"
+                      ],
+                      "writeOperations": [
+                        "CREATE_CAMPAIGN",
+                        "PAUSE_CAMPAIGN",
+                        "RESUME_CAMPAIGN",
+                        "UPLOAD_LEADS",
+                        "ASSIGN_SENDING_ACCOUNTS"
+                      ],
+                      "writeEnabled": false,
+                      "operations": {
+                        "HEALTH_CHECK": {
+                          "provider": "instantly",
+                          "operation": "HEALTH_CHECK",
+                          "executable": true,
+                          "readOnly": true,
+                          "write": false,
+                          "authorized": true
+                        },
+                        "LIST_CAMPAIGNS": {
+                          "provider": "instantly",
+                          "operation": "LIST_CAMPAIGNS",
+                          "executable": true,
+                          "readOnly": true,
+                          "write": false,
+                          "authorized": true
+                        },
+                        "GET_CAMPAIGN": {
+                          "provider": "instantly",
+                          "operation": "GET_CAMPAIGN",
+                          "executable": true,
+                          "readOnly": true,
+                          "write": false,
+                          "authorized": true
+                        },
+                        "CREATE_CAMPAIGN": {
+                          "provider": "instantly",
+                          "operation": "CREATE_CAMPAIGN",
+                          "executable": true,
+                          "readOnly": false,
+                          "write": true,
+                          "authorized": false
+                        },
+                        "PAUSE_CAMPAIGN": {
+                          "provider": "instantly",
+                          "operation": "PAUSE_CAMPAIGN",
+                          "executable": true,
+                          "readOnly": false,
+                          "write": true,
+                          "authorized": false
+                        },
+                        "RESUME_CAMPAIGN": {
+                          "provider": "instantly",
+                          "operation": "RESUME_CAMPAIGN",
+                          "executable": true,
+                          "readOnly": false,
+                          "write": true,
+                          "authorized": false
+                        },
+                        "UPLOAD_LEADS": {
+                          "provider": "instantly",
+                          "operation": "UPLOAD_LEADS",
+                          "executable": true,
+                          "readOnly": false,
+                          "write": true,
+                          "authorized": false
+                        },
+                        "ASSIGN_SENDING_ACCOUNTS": {
+                          "provider": "instantly",
+                          "operation": "ASSIGN_SENDING_ACCOUNTS",
+                          "executable": true,
+                          "readOnly": false,
+                          "write": true,
+                          "authorized": false
+                        },
+                        "GENERATE_CAMPAIGN_REPORT": {
+                          "provider": "instantly",
+                          "operation": "GENERATE_CAMPAIGN_REPORT",
+                          "executable": true,
+                          "readOnly": true,
+                          "write": false,
+                          "authorized": true
+                        }
+                      }
+                    },
+                    "operationBinding": null,
+                    "registryAvailable": true,
+                    "registryCached": false,
+                    "registryLoadedAt": "2026-07-17T22:50:22.820Z"
+                  },
+                  "evidence": {
+                    "providerLoaded": true,
+                    "initialized": false,
+                    "providerInstanceCached": true,
+                    "requestedProvider": "MarketingProvider",
+                    "routedProvider": "MarketingProvider",
+                    "requestedAction": "readCampaigns",
+                    "authorityRegistryConsulted": true,
+                    "authorityRegistryCached": false,
+                    "credentialAwarenessApplied": true,
+                    "error": "Error: Unsupported MarketingProvider action: readCampaigns\n    at MarketingProvider.executeTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\PROVIDERS\\providers\\MarketingProvider.js:621:13)\n    at ProviderRouterService.invokeProvider (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ProviderRouterService.js:630:10)\n    at ProviderRouterService.executeProviderTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ProviderRouterService.js:889:20)\n    at WorkforceExecutionService.executeStep (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:149:45)\n    at WorkforceExecutionService.executeAndVerify (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\WorkforceExecutionService.js:607:33)\n    at ExecutionService.executeWorkforceTask (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:890:41)\n    at ExecutionService.execute (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:693:19)\n    at ExecutionService.runNext (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\ExecutionService.js:1387:17)\n    at AutonomousCOOLoopService.runExecutionPasses (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\AutonomousCOOLoopService.js:1466:45)\n    at AutonomousCOOLoopService.runOnce (D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\SERVICES\\AutonomousCOOLoopService.js:137:64)",
+                    "browserOperatorExecuted": true,
+                    "browserResultFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\operator_results\\instantly_coo_mode_live_1784328689171.json",
+                    "screenshots": [
+                      "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\screenshots\\campaigns_opened_1784328676114.png"
+                    ]
+                  },
+                  "performance": {
+                    "stages": {
+                      "normalizeProvider": 0,
+                      "authorityLookup": 16,
+                      "providerResolution": 0,
+                      "total": 19
+                    },
+                    "providerInstanceCached": true,
+                    "registryCached": false,
+                    "providerCacheSize": 4,
+                    "registryCacheTtlMs": 60000
+                  },
+                  "startedAt": "2026-07-17T22:50:22.820Z",
+                  "completedAt": "2026-07-17T22:50:22.823Z"
+                },
+                "automationResult": {
+                  "ok": true,
+                  "provider": "InstantlyBrowserOperator",
+                  "status": "COMPLETED",
+                  "campaigns": [
+                    {
+                      "name": "EXPIRED everything",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "OPPORTUNITIES | EXPIRED everything | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "expiring within 12 months",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | expiring within 12 months | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "expiring within 6 months",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | expiring within 6 months | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VOSB",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VOSB | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SDVOSB",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SDVOSB | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "WOSB",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | WOSB | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "HubZone",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | HubZone | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "8a firms",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | 8a firms | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SBS Growth",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SBS Growth | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SBS low sales",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SBS low sales | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SBS no vehicle",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SBS no vehicle | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "Sam High Growth",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | Sam High Growth | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "Sam Growth",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | Sam Growth | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "Sam Low Sales",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | Sam Low Sales | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SAM no sales",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SAM no sales | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VA 5m+",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VA 5m+ | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VA 3-5m",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VA 3-5m | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VA 501k-3m",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VA 501k-3m | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VA 0-500k",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VA 0-500k | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "VA No Sales",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | VA No Sales | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "GSA 5m+",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | GSA 5m+ | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "GSA 3m–5m",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | GSA 3m–5m | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "GSA 500k–3m",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | GSA 500k–3m | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "GSA 0–500k",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | GSA 0–500k | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "ACTIVE PIPELINE",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | ACTIVE PIPELINE | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "MEETING BOOKED",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | MEETING BOOKED | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "TECHNICAL SUPPRESSION",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | TECHNICAL SUPPRESSION | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "FUTURE FOLLOW-UP",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | FUTURE FOLLOW-UP | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "NO - SUPPRESSED",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | NO - SUPPRESSED | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "NURTURE - 30 DAY",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | NURTURE - 30 DAY | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "NURTURE - 14 DAY",
+                      "status": "draft",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | NURTURE - 14 DAY | Draft | -",
+                      "decision": {
+                        "action": "IGNORE",
+                        "intent": "draft_review",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    },
+                    {
+                      "name": "SBS Verified Email Targets",
+                      "status": "active",
+                      "progress": null,
+                      "sent": null,
+                      "click": null,
+                      "replied": null,
+                      "opportunities": null,
+                      "source": "body-line-status-neighbor",
+                      "rawText": "0 | SBS Verified Email Targets | Active | 2%",
+                      "decision": {
+                        "action": "EXECUTE",
+                        "intent": "audit_active_campaign",
+                        "reason": "Active campaign should be monitored for health and capacity."
+                      }
+                    }
+                  ],
+                  "actions": {
+                    "executed": [
+                      {
+                        "ok": true,
+                        "campaign": "SBS Verified Email Targets",
+                        "action": "audit_active_campaign",
+                        "mode": "SAFE_AUDIT_EXECUTION",
+                        "reason": "Active campaign should be monitored for health and capacity.",
+                        "ts": "2026-07-17T22:51:28.866Z",
+                        "url": "https://app.instantly.ai/app/campaigns",
+                        "verified": true
+                      }
+                    ],
+                    "verified": [
+                      {
+                        "ok": true,
+                        "campaign": "SBS Verified Email Targets",
+                        "action": "audit_active_campaign",
+                        "mode": "SAFE_AUDIT_EXECUTION",
+                        "reason": "Active campaign should be monitored for health and capacity.",
+                        "ts": "2026-07-17T22:51:28.866Z",
+                        "url": "https://app.instantly.ai/app/campaigns",
+                        "verified": true
+                      }
+                    ],
+                    "failed": [],
+                    "paused": [],
+                    "approvals": [],
+                    "ignored": [
+                      {
+                        "campaign": "EXPIRED everything",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "expiring within 12 months",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "expiring within 6 months",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VOSB",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "SDVOSB",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "WOSB",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "HubZone",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "8a firms",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "SBS Growth",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "SBS low sales",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "SBS no vehicle",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "Sam High Growth",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "Sam Growth",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "Sam Low Sales",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "SAM no sales",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VA 5m+",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VA 3-5m",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VA 501k-3m",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VA 0-500k",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "VA No Sales",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "GSA 5m+",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "GSA 3m–5m",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "GSA 500k–3m",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "GSA 0–500k",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "ACTIVE PIPELINE",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "MEETING BOOKED",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "TECHNICAL SUPPRESSION",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "FUTURE FOLLOW-UP",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "NO - SUPPRESSED",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "NURTURE - 30 DAY",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      },
+                      {
+                        "campaign": "NURTURE - 14 DAY",
+                        "reason": "Draft campaign detected. No automatic send action taken."
+                      }
+                    ]
+                  },
+                  "diagnostics": {
+                    "campaignCount": 32,
+                    "url": "https://app.instantly.ai/app/campaigns",
+                    "title": "Instantly"
+                  },
+                  "screenshots": [
+                    "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\screenshots\\campaigns_opened_1784328676114.png"
+                  ],
+                  "file": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\operator_results\\instantly_coo_mode_live_1784328689171.json",
+                  "exceptions": [],
+                  "recommendations": [
+                    "Inspect 31 draft Instantly campaign(s) for leads, inbox assignment, sequence, schedule, and launch readiness.",
+                    "Monitor 1 active Instantly campaign(s) for bounce rate, reply rate, lead exhaustion, and inbox capacity."
+                  ],
+                  "raw": {
+                    "ok": true,
+                    "stage": "COMPLETED",
+                    "mode": "EXECUTE",
+                    "campaigns": [
+                      {
+                        "name": "EXPIRED everything",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "OPPORTUNITIES | EXPIRED everything | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "expiring within 12 months",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | expiring within 12 months | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "expiring within 6 months",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | expiring within 6 months | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VOSB",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VOSB | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SDVOSB",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SDVOSB | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "WOSB",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | WOSB | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "HubZone",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | HubZone | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "8a firms",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | 8a firms | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SBS Growth",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SBS Growth | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SBS low sales",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SBS low sales | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SBS no vehicle",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SBS no vehicle | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "Sam High Growth",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | Sam High Growth | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "Sam Growth",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | Sam Growth | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "Sam Low Sales",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | Sam Low Sales | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SAM no sales",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SAM no sales | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VA 5m+",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VA 5m+ | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VA 3-5m",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VA 3-5m | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VA 501k-3m",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VA 501k-3m | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VA 0-500k",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VA 0-500k | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "VA No Sales",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | VA No Sales | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "GSA 5m+",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | GSA 5m+ | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "GSA 3m–5m",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | GSA 3m–5m | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "GSA 500k–3m",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | GSA 500k–3m | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "GSA 0–500k",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | GSA 0–500k | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "ACTIVE PIPELINE",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | ACTIVE PIPELINE | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "MEETING BOOKED",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | MEETING BOOKED | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "TECHNICAL SUPPRESSION",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | TECHNICAL SUPPRESSION | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "FUTURE FOLLOW-UP",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | FUTURE FOLLOW-UP | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "NO - SUPPRESSED",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | NO - SUPPRESSED | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "NURTURE - 30 DAY",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | NURTURE - 30 DAY | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "NURTURE - 14 DAY",
+                        "status": "draft",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | NURTURE - 14 DAY | Draft | -",
+                        "decision": {
+                          "action": "IGNORE",
+                          "intent": "draft_review",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      },
+                      {
+                        "name": "SBS Verified Email Targets",
+                        "status": "active",
+                        "progress": null,
+                        "sent": null,
+                        "click": null,
+                        "replied": null,
+                        "opportunities": null,
+                        "source": "body-line-status-neighbor",
+                        "rawText": "0 | SBS Verified Email Targets | Active | 2%",
+                        "decision": {
+                          "action": "EXECUTE",
+                          "intent": "audit_active_campaign",
+                          "reason": "Active campaign should be monitored for health and capacity."
+                        }
+                      }
+                    ],
+                    "actions": {
+                      "executed": [
+                        {
+                          "ok": true,
+                          "campaign": "SBS Verified Email Targets",
+                          "action": "audit_active_campaign",
+                          "mode": "SAFE_AUDIT_EXECUTION",
+                          "reason": "Active campaign should be monitored for health and capacity.",
+                          "ts": "2026-07-17T22:51:28.866Z",
+                          "url": "https://app.instantly.ai/app/campaigns",
+                          "verified": true
+                        }
+                      ],
+                      "verified": [
+                        {
+                          "ok": true,
+                          "campaign": "SBS Verified Email Targets",
+                          "action": "audit_active_campaign",
+                          "mode": "SAFE_AUDIT_EXECUTION",
+                          "reason": "Active campaign should be monitored for health and capacity.",
+                          "ts": "2026-07-17T22:51:28.866Z",
+                          "url": "https://app.instantly.ai/app/campaigns",
+                          "verified": true
+                        }
+                      ],
+                      "failed": [],
+                      "paused": [],
+                      "approvals": [],
+                      "ignored": [
+                        {
+                          "campaign": "EXPIRED everything",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "expiring within 12 months",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "expiring within 6 months",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SDVOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "WOSB",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "HubZone",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "8a firms",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS low sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SBS no vehicle",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam High Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam Growth",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "Sam Low Sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "SAM no sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 5m+",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 3-5m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 501k-3m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA 0-500k",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "VA No Sales",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 5m+",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 3m–5m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 500k–3m",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "GSA 0–500k",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "ACTIVE PIPELINE",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "MEETING BOOKED",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "TECHNICAL SUPPRESSION",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "FUTURE FOLLOW-UP",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NO - SUPPRESSED",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NURTURE - 30 DAY",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        },
+                        {
+                          "campaign": "NURTURE - 14 DAY",
+                          "reason": "Draft campaign detected. No automatic send action taken."
+                        }
+                      ]
+                    },
+                    "diagnostics": {
+                      "campaignCount": 32,
+                      "url": "https://app.instantly.ai/app/campaigns",
+                      "title": "Instantly"
+                    },
+                    "screenshots": [
+                      "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\screenshots\\campaigns_opened_1784328676114.png"
+                    ],
+                    "errors": [],
+                    "file": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\browser\\operator_results\\instantly_coo_mode_live_1784328689171.json"
+                  }
+                },
+                "decision": {
+                  "ok": false,
+                  "type": "MILES_DECISION",
+                  "decision": "ESCALATE",
+                  "authority": {
+                    "ok": true,
+                    "authority": "MILES_OPERATIONAL",
+                    "approvalRequired": false,
+                    "provider": "marketingprovider",
+                    "reason": "Action is within MILES operational authority."
+                  },
+                  "risk": {
+                    "ok": false,
+                    "risk": "HIGH",
+                    "criticalCount": 1,
+                    "warningCount": 0,
+                    "reason": "Critical provider exceptions detected."
+                  },
+                  "policy": {
+                    "ok": true,
+                    "policies": [
+                      {
+                        "policy": "Marketing Safety",
+                        "status": "ACTIVE",
+                        "rule": "MILES may review campaign health and recommend action, but unsafe sending changes require approval."
+                      }
+                    ],
+                    "policyCount": 1
+                  },
+                  "confidence": {
+                    "ok": true,
+                    "confidenceScore": 30,
+                    "confidence": "LOW"
+                  },
+                  "approval": {
+                    "ok": false,
+                    "approvalRequired": true,
+                    "status": "AWAITING_CEO_APPROVAL",
+                    "reason": "Decision requires CEO approval due to authority, risk, or confidence."
+                  },
+                  "createdAt": "2026-07-17T22:51:29.338Z"
+                },
+                "executionPlan": {
+                  "ok": false,
+                  "type": "AUTONOMOUS_EXECUTION_PLAN",
+                  "decision": "ESCALATE",
+                  "executionMode": "CEO_APPROVAL_REQUIRED",
+                  "provider": "MarketingProvider",
+                  "action": "readCampaigns",
+                  "capability": "marketing.instantly.read",
+                  "workPackageId": "WP-20260702182410-897",
+                  "taskId": "TASK-1784326093643-52142",
+                  "objective": "Act on recommendation: Verify INSTANTLY_API_KEY.",
+                  "canExecute": false,
+                  "verificationRequired": true,
+                  "reportToExecutive": true,
+                  "nextActions": [
+                    "Hold autonomous execution.",
+                    "Route to Kevin for CEO approval.",
+                    "Include authority, risk, confidence, and provider evidence."
+                  ],
+                  "approval": {
+                    "ok": false,
+                    "approvalRequired": true,
+                    "status": "AWAITING_CEO_APPROVAL",
+                    "reason": "Decision requires CEO approval due to authority, risk, or confidence."
+                  },
+                  "risk": {
+                    "ok": false,
+                    "risk": "HIGH",
+                    "criticalCount": 1,
+                    "warningCount": 0,
+                    "reason": "Critical provider exceptions detected."
+                  },
+                  "confidence": {
+                    "ok": true,
+                    "confidenceScore": 30,
+                    "confidence": "LOW"
+                  },
+                  "createdAt": "2026-07-17T22:51:29.341Z"
+                }
+              },
+              "status": "NEEDS_REVIEW",
+              "createdAt": "2026-07-17T22:51:29.341Z",
+              "outFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\workforce_results\\WP-20260702182410-897_TASK-1784326093643-52142.json"
+            },
+            "verification": {
+              "ok": false,
+              "type": "WORKFORCE_STEP_VERIFICATION",
+              "taskId": "TASK-1784326093643-52142",
+              "workPackageId": "WP-20260702182410-897",
+              "capability": "marketing.instantly.read",
+              "provider": "MarketingProvider",
+              "action": "readCampaigns",
+              "assignedTo": "MILES",
+              "verified": false,
+              "status": "AWAITING_CEO_APPROVAL",
+              "evidence": {
+                "executionMode": "CEO_APPROVAL_REQUIRED",
+                "hasOutput": true,
+                "hasRecommendation": true,
+                "providerFailed": false,
+                "needsApproval": true
+              },
+              "checkedAt": "2026-07-17T22:51:29.374Z"
+            },
+            "status": "AWAITING_CEO_APPROVAL",
+            "governance": {
+              "policy": {
+                "ok": true,
+                "evaluated": true,
+                "decision": "ALLOW",
+                "allowed": true,
+                "canExecute": true,
+                "approvalRequired": false,
+                "approver": null,
+                "risk": "LOW",
+                "reason": "Read-only or low-risk action is authorized.",
+                "matches": {
+                  "neverAllowedPattern": null,
+                  "approvalPattern": null,
+                  "autonomousPattern": "READ",
+                  "protectedDomain": null
+                },
+                "dataAccess": {
+                  "allowed": true,
+                  "role": "MILES",
+                  "provider": "MARKETINGPROVIDER",
+                  "classification": "CONFIDENTIAL",
+                  "roleAllowed": true,
+                  "entitlementRequired": false,
+                  "entitled": true,
+                  "clientIsolated": true,
+                  "reason": "Data access policy satisfied.",
+                  "policyVersion": "1.0.0"
+                },
+                "demoProtection": {
+                  "allowed": true,
+                  "demoMode": false,
+                  "reason": "Demo protection not active.",
+                  "policyVersion": "1.0.0"
+                },
+                "constitutionVersion": "1.0.0",
+                "policyVersion": "1.0.0",
+                "evaluatedAt": "2026-07-17T22:50:21.748Z"
+              },
+              "approval": {
+                "allowed": true,
+                "status": "NOT_REQUIRED",
+                "approvalRequired": false,
+                "reason": "No approval required."
+              },
+              "guardian": {
+                "checked": true,
+                "allowed": true,
+                "status": "AUTHORIZED",
+                "reason": "Constitutional policy, data access, demo protection, and approval checks passed.",
+                "policy": {
+                  "ok": true,
+                  "evaluated": true,
+                  "decision": "ALLOW",
+                  "allowed": true,
+                  "canExecute": true,
+                  "approvalRequired": false,
+                  "approver": null,
+                  "risk": "LOW",
+                  "reason": "Read-only or low-risk action is authorized.",
+                  "matches": {
+                    "neverAllowedPattern": null,
+                    "approvalPattern": null,
+                    "autonomousPattern": "READ",
+                    "protectedDomain": null
+                  },
+                  "dataAccess": {
+                    "allowed": true,
+                    "role": "MILES",
+                    "provider": "MARKETINGPROVIDER",
+                    "classification": "CONFIDENTIAL",
+                    "roleAllowed": true,
+                    "entitlementRequired": false,
+                    "entitled": true,
+                    "clientIsolated": true,
+                    "reason": "Data access policy satisfied.",
+                    "policyVersion": "1.0.0"
+                  },
+                  "demoProtection": {
+                    "allowed": true,
+                    "demoMode": false,
+                    "reason": "Demo protection not active.",
+                    "policyVersion": "1.0.0"
+                  },
+                  "constitutionVersion": "1.0.0",
+                  "policyVersion": "1.0.0",
+                  "evaluatedAt": "2026-07-17T22:50:21.748Z"
+                },
+                "approval": {
+                  "allowed": true,
+                  "status": "NOT_REQUIRED",
+                  "approvalRequired": false,
+                  "reason": "No approval required."
+                },
+                "checkedAt": "2026-07-17T22:50:21.988Z"
+              }
+            }
           },
-          "retryable": false,
-          "createdAt": "2026-07-06T22:20:48.357Z"
-        }
+          "completedAt": "2026-07-17T22:51:29.473Z"
+        },
+        "failureType": "STALE_RECOVERED_TASK",
+        "retryable": false
       },
-      "type": "UNKNOWN",
-      "timestamp": "2026-07-13T15:58:56.207Z"
+      "type": "AUTH_FAILURE",
+      "timestamp": "2026-07-22T20:13:20.868Z"
     },
     {
       "task": {
-        "id": "TASK-1783378969521-83595",
-        "type": "BUSINESS_OPERATION",
+        "id": "TASK-1784582532527-15522",
+        "type": "QUEUE_DIAGNOSTIC",
         "payload": {
-          "id": "op_1783378968489_l10lu8",
-          "source": "business_operations_queue",
-          "type": "BUSINESS_OPERATION",
-          "status": "READY",
-          "priority": 1,
-          "worker": "atlasWorker",
-          "area": "atlas",
-          "title": "Miles, check ORION system health and produce an executive status report.",
-          "command": "Miles, check ORION system health and produce an executive status report.",
-          "action": "Miles, check ORION system health and produce an executive status report.",
-          "approvalRequired": false,
-          "ceoEscalationOnly": false,
-          "createdAt": "2026-07-06T23:02:48.489Z",
-          "updatedAt": "2026-07-06T23:02:48.489Z",
-          "result": null,
-          "provider": "ORION",
-          "system": "ORION",
-          "department": "ORION",
-          "connector": "ORION",
-          "objective": "Miles, check ORION system health and produce an executive status report.",
-          "sourceOperationId": "op_1783378968489_l10lu8"
+          "diagnostic": true
         },
         "priority": 1,
         "status": "FAILED",
-        "createdAt": "2026-07-06T23:02:49.521Z",
-        "updatedAt": "2026-07-06T23:02:53.392Z",
-        "provider": "ORION",
-        "error": "Connector not found: ORION",
+        "createdAt": "2026-07-20T21:22:12.529Z",
+        "updatedAt": "2026-07-20T21:22:41.508Z",
+        "provider": "UNKNOWN",
+        "action": "QUEUE_DIAGNOSTIC",
+        "error": "EXECUTION_PLAN_INVALID: Missing provider or action",
+        "failure": {
+          "type": "EXECUTION_PLAN_INVALID",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Repair planner output before retrying"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "UNKNOWN",
+          "action": "QUEUE_DIAGNOSTIC",
+          "error": "EXECUTION_PLAN_INVALID: Missing provider or action",
+          "failure": {
+            "type": "EXECUTION_PLAN_INVALID",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Repair planner output before retrying"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-20T21:22:41.365Z"
+        }
+      },
+      "type": "VALIDATION",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784582560105-68100",
+        "type": "QUEUE_DIAGNOSTIC",
+        "payload": {
+          "diagnostic": true
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-20T21:22:40.105Z",
+        "updatedAt": "2026-07-20T21:36:58.345Z",
+        "provider": "UNKNOWN",
+        "action": "QUEUE_DIAGNOSTIC",
+        "error": "EXECUTION_PLAN_INVALID: Missing provider or action",
+        "failure": {
+          "type": "EXECUTION_PLAN_INVALID",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Repair planner output before retrying"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "UNKNOWN",
+          "action": "QUEUE_DIAGNOSTIC",
+          "error": "EXECUTION_PLAN_INVALID: Missing provider or action",
+          "failure": {
+            "type": "EXECUTION_PLAN_INVALID",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Repair planner output before retrying"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-20T21:36:58.166Z"
+        }
+      },
+      "type": "VALIDATION",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673389257-51000",
+        "type": "LIST_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-001",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "capability": "LIST_CAMPAIGNS",
+          "type": "REFRESH_CAMPAIGN_INVENTORY",
+          "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+          "title": "Refresh live campaign inventory.",
+          "command": "Refresh live campaign inventory.",
+          "objective": "Refresh live campaign inventory.",
+          "description": "Refresh live campaign inventory.",
+          "priority": 1,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 1,
+            "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_CAMPAIGNS",
+            "description": "Refresh live campaign inventory.",
+            "objective": "Refresh live campaign inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_CAMPAIGNS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-001"
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:29.257Z",
+        "updatedAt": "2026-07-21T22:36:41.436Z",
+        "provider": "Instantly",
+        "action": "LIST_CAMPAIGNS",
+        "error": "Connector not found: Instantly",
         "failure": {
           "type": "MISSING_CAPABILITY",
           "retryable": false,
@@ -104,9 +2190,9 @@
         "result": {
           "ok": false,
           "status": "FAILED",
-          "provider": "ORION",
-          "action": "Miles, check ORION system health and produce an executive status report.",
-          "error": "Connector not found: ORION",
+          "provider": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "error": "Connector not found: Instantly",
           "failure": {
             "type": "MISSING_CAPABILITY",
             "retryable": false,
@@ -114,11 +2200,1660 @@
             "recommendedAction": "Register missing provider or connector"
           },
           "retryable": false,
-          "createdAt": "2026-07-06T23:02:53.377Z"
+          "createdAt": "2026-07-21T22:36:41.298Z"
         }
       },
       "type": "UNKNOWN",
-      "timestamp": "2026-07-13T15:58:56.207Z"
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673392936-11840",
+        "type": "LIST_SENDING_ACCOUNTS",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-002",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "capability": "LIST_SENDING_ACCOUNTS",
+          "type": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "title": "Refresh mailbox inventory.",
+          "command": "Refresh mailbox inventory.",
+          "objective": "Refresh mailbox inventory.",
+          "description": "Refresh mailbox inventory.",
+          "priority": 2,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 2,
+            "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_SENDING_ACCOUNTS",
+            "description": "Refresh mailbox inventory.",
+            "objective": "Refresh mailbox inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_SENDING_ACCOUNTS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-002"
+        },
+        "priority": 2,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:32.936Z",
+        "updatedAt": "2026-07-21T22:36:43.720Z",
+        "provider": "Instantly",
+        "action": "LIST_SENDING_ACCOUNTS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:43.565Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673394349-99375",
+        "type": "LOAD_SEGMENTS",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-003",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "capability": "LOAD_SEGMENTS",
+          "type": "REFRESH_SEGMENT_INVENTORY",
+          "taskType": "REFRESH_SEGMENT_INVENTORY",
+          "title": "Load lead segment inventory.",
+          "command": "Load lead segment inventory.",
+          "objective": "Load lead segment inventory.",
+          "description": "Load lead segment inventory.",
+          "priority": 3,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 3,
+            "taskType": "REFRESH_SEGMENT_INVENTORY",
+            "provider": "Revenue",
+            "action": "LOAD_SEGMENTS",
+            "description": "Load lead segment inventory.",
+            "objective": "Load lead segment inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "LOAD_SEGMENTS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-003"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:34.349Z",
+        "updatedAt": "2026-07-21T22:36:45.181Z",
+        "provider": "Revenue",
+        "action": "LOAD_SEGMENTS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:45.066Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673395743-71123",
+        "type": "COMPARE",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-004",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "COMPARE",
+          "capability": "COMPARE",
+          "type": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "title": "Determine campaign coverage.",
+          "command": "Determine campaign coverage.",
+          "objective": "Determine campaign coverage.",
+          "description": "Determine campaign coverage.",
+          "priority": 4,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 4,
+            "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "COMPARE",
+            "description": "Determine campaign coverage.",
+            "objective": "Determine campaign coverage.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "COMPARE",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-004"
+        },
+        "priority": 4,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:35.743Z",
+        "updatedAt": "2026-07-21T22:36:54.906Z",
+        "provider": "Revenue",
+        "action": "COMPARE",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "COMPARE",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:54.753Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673397722-61908",
+        "type": "DISCOVER_MISSING_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-005",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "capability": "DISCOVER_MISSING_CAMPAIGNS",
+          "type": "IDENTIFY_MISSING_CAMPAIGNS",
+          "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+          "title": "Identify segments needing campaigns.",
+          "command": "Identify segments needing campaigns.",
+          "objective": "Identify segments needing campaigns.",
+          "description": "Identify segments needing campaigns.",
+          "priority": 5,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 5,
+            "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "DISCOVER_MISSING_CAMPAIGNS",
+            "description": "Identify segments needing campaigns.",
+            "objective": "Identify segments needing campaigns.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "DISCOVER_MISSING_CAMPAIGNS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-005"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:37.722Z",
+        "updatedAt": "2026-07-21T22:36:46.691Z",
+        "provider": "Revenue",
+        "action": "DISCOVER_MISSING_CAMPAIGNS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:46.577Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673398668-37308",
+        "type": "CHECK_CAMPAIGN_INBOXES",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-006",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "capability": "CHECK_CAMPAIGN_INBOXES",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "title": "Locate campaigns without sending accounts.",
+          "command": "Locate campaigns without sending accounts.",
+          "objective": "Locate campaigns without sending accounts.",
+          "description": "Locate campaigns without sending accounts.",
+          "priority": 6,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 6,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_INBOXES",
+            "description": "Locate campaigns without sending accounts.",
+            "objective": "Locate campaigns without sending accounts.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_INBOXES",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-006"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:38.668Z",
+        "updatedAt": "2026-07-21T22:36:48.202Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_INBOXES",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:48.086Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673400185-55332",
+        "type": "CHECK_CAMPAIGN_LEADS",
+        "payload": {
+          "id": "BIZ-1784673386894-or5hbk-WORK-007",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673386894-or5hbk",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "capability": "CHECK_CAMPAIGN_LEADS",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "title": "Locate campaigns with no leads.",
+          "command": "Locate campaigns with no leads.",
+          "objective": "Locate campaigns with no leads.",
+          "description": "Locate campaigns with no leads.",
+          "priority": 7,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 7,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_LEADS",
+            "description": "Locate campaigns with no leads.",
+            "objective": "Locate campaigns with no leads.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_LEADS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:36:28.973Z",
+          "updatedAt": "2026-07-21T22:36:28.973Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673386894-or5hbk-WORK-007"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:36:40.185Z",
+        "updatedAt": "2026-07-21T22:36:49.580Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_LEADS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:36:49.460Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673465532-28556",
+        "type": "LIST_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-001",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "capability": "LIST_CAMPAIGNS",
+          "type": "REFRESH_CAMPAIGN_INVENTORY",
+          "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+          "title": "Refresh live campaign inventory.",
+          "command": "Refresh live campaign inventory.",
+          "objective": "Refresh live campaign inventory.",
+          "description": "Refresh live campaign inventory.",
+          "priority": 1,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 1,
+            "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_CAMPAIGNS",
+            "description": "Refresh live campaign inventory.",
+            "objective": "Refresh live campaign inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_CAMPAIGNS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-001"
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:45.533Z",
+        "updatedAt": "2026-07-21T22:37:57.070Z",
+        "provider": "Instantly",
+        "action": "LIST_CAMPAIGNS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:37:55.854Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673466487-33907",
+        "type": "LIST_SENDING_ACCOUNTS",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-002",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "capability": "LIST_SENDING_ACCOUNTS",
+          "type": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "title": "Refresh mailbox inventory.",
+          "command": "Refresh mailbox inventory.",
+          "objective": "Refresh mailbox inventory.",
+          "description": "Refresh mailbox inventory.",
+          "priority": 2,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 2,
+            "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_SENDING_ACCOUNTS",
+            "description": "Refresh mailbox inventory.",
+            "objective": "Refresh mailbox inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_SENDING_ACCOUNTS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-002"
+        },
+        "priority": 2,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:46.487Z",
+        "updatedAt": "2026-07-21T22:38:01.340Z",
+        "provider": "Instantly",
+        "action": "LIST_SENDING_ACCOUNTS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:01.099Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673467892-30414",
+        "type": "LOAD_SEGMENTS",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-003",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "capability": "LOAD_SEGMENTS",
+          "type": "REFRESH_SEGMENT_INVENTORY",
+          "taskType": "REFRESH_SEGMENT_INVENTORY",
+          "title": "Load lead segment inventory.",
+          "command": "Load lead segment inventory.",
+          "objective": "Load lead segment inventory.",
+          "description": "Load lead segment inventory.",
+          "priority": 3,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 3,
+            "taskType": "REFRESH_SEGMENT_INVENTORY",
+            "provider": "Revenue",
+            "action": "LOAD_SEGMENTS",
+            "description": "Load lead segment inventory.",
+            "objective": "Load lead segment inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "LOAD_SEGMENTS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-003"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:47.892Z",
+        "updatedAt": "2026-07-21T22:38:23.866Z",
+        "provider": "Revenue",
+        "action": "LOAD_SEGMENTS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:23.715Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673469589-36094",
+        "type": "COMPARE",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-004",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "COMPARE",
+          "capability": "COMPARE",
+          "type": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "title": "Determine campaign coverage.",
+          "command": "Determine campaign coverage.",
+          "objective": "Determine campaign coverage.",
+          "description": "Determine campaign coverage.",
+          "priority": 4,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 4,
+            "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "COMPARE",
+            "description": "Determine campaign coverage.",
+            "objective": "Determine campaign coverage.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "COMPARE",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-004"
+        },
+        "priority": 4,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:49.589Z",
+        "updatedAt": "2026-07-21T22:38:37.322Z",
+        "provider": "Revenue",
+        "action": "COMPARE",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "COMPARE",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:37.185Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673470730-56309",
+        "type": "DISCOVER_MISSING_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-005",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "capability": "DISCOVER_MISSING_CAMPAIGNS",
+          "type": "IDENTIFY_MISSING_CAMPAIGNS",
+          "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+          "title": "Identify segments needing campaigns.",
+          "command": "Identify segments needing campaigns.",
+          "objective": "Identify segments needing campaigns.",
+          "description": "Identify segments needing campaigns.",
+          "priority": 5,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 5,
+            "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "DISCOVER_MISSING_CAMPAIGNS",
+            "description": "Identify segments needing campaigns.",
+            "objective": "Identify segments needing campaigns.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "DISCOVER_MISSING_CAMPAIGNS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-005"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:50.730Z",
+        "updatedAt": "2026-07-21T22:38:30.363Z",
+        "provider": "Revenue",
+        "action": "DISCOVER_MISSING_CAMPAIGNS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:30.236Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673471847-95525",
+        "type": "CHECK_CAMPAIGN_INBOXES",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-006",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "capability": "CHECK_CAMPAIGN_INBOXES",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "title": "Locate campaigns without sending accounts.",
+          "command": "Locate campaigns without sending accounts.",
+          "objective": "Locate campaigns without sending accounts.",
+          "description": "Locate campaigns without sending accounts.",
+          "priority": 6,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 6,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_INBOXES",
+            "description": "Locate campaigns without sending accounts.",
+            "objective": "Locate campaigns without sending accounts.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_INBOXES",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-006"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:51.847Z",
+        "updatedAt": "2026-07-21T22:38:32.344Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_INBOXES",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:32.201Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784673472946-75039",
+        "type": "CHECK_CAMPAIGN_LEADS",
+        "payload": {
+          "id": "BIZ-1784673463142-nkj3j7-WORK-007",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784673463142-nkj3j7",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "capability": "CHECK_CAMPAIGN_LEADS",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "title": "Locate campaigns with no leads.",
+          "command": "Locate campaigns with no leads.",
+          "objective": "Locate campaigns with no leads.",
+          "description": "Locate campaigns with no leads.",
+          "priority": 7,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 7,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_LEADS",
+            "description": "Locate campaigns with no leads.",
+            "objective": "Locate campaigns with no leads.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_LEADS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-21T22:37:43.577Z",
+          "updatedAt": "2026-07-21T22:37:43.577Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784673463142-nkj3j7-WORK-007"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-21T22:37:52.946Z",
+        "updatedAt": "2026-07-21T22:38:34.169Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_LEADS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-21T22:38:34.035Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684276953-39993",
+        "type": "LIST_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-001",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "capability": "LIST_CAMPAIGNS",
+          "type": "REFRESH_CAMPAIGN_INVENTORY",
+          "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+          "title": "Refresh live campaign inventory.",
+          "command": "Refresh live campaign inventory.",
+          "objective": "Refresh live campaign inventory.",
+          "description": "Refresh live campaign inventory.",
+          "priority": 1,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 1,
+            "taskType": "REFRESH_CAMPAIGN_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_CAMPAIGNS",
+            "description": "Refresh live campaign inventory.",
+            "objective": "Refresh live campaign inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_CAMPAIGNS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-001"
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:37:56.953Z",
+        "updatedAt": "2026-07-22T01:38:17.737Z",
+        "provider": "Instantly",
+        "action": "LIST_CAMPAIGNS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "LIST_CAMPAIGNS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:16.219Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684284221-50289",
+        "type": "LIST_SENDING_ACCOUNTS",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-002",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "capability": "LIST_SENDING_ACCOUNTS",
+          "type": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+          "title": "Refresh mailbox inventory.",
+          "command": "Refresh mailbox inventory.",
+          "objective": "Refresh mailbox inventory.",
+          "description": "Refresh mailbox inventory.",
+          "priority": 2,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 2,
+            "taskType": "REFRESH_SENDING_ACCOUNT_INVENTORY",
+            "provider": "Instantly",
+            "action": "LIST_SENDING_ACCOUNTS",
+            "description": "Refresh mailbox inventory.",
+            "objective": "Refresh mailbox inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "LIST_SENDING_ACCOUNTS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-002"
+        },
+        "priority": 2,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:04.221Z",
+        "updatedAt": "2026-07-22T01:38:30.100Z",
+        "provider": "Instantly",
+        "action": "LIST_SENDING_ACCOUNTS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "LIST_SENDING_ACCOUNTS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:29.976Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684290074-11543",
+        "type": "LOAD_SEGMENTS",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-003",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "capability": "LOAD_SEGMENTS",
+          "type": "REFRESH_SEGMENT_INVENTORY",
+          "taskType": "REFRESH_SEGMENT_INVENTORY",
+          "title": "Load lead segment inventory.",
+          "command": "Load lead segment inventory.",
+          "objective": "Load lead segment inventory.",
+          "description": "Load lead segment inventory.",
+          "priority": 3,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 3,
+            "taskType": "REFRESH_SEGMENT_INVENTORY",
+            "provider": "Revenue",
+            "action": "LOAD_SEGMENTS",
+            "description": "Load lead segment inventory.",
+            "objective": "Load lead segment inventory.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "LOAD_SEGMENTS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-003"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:10.074Z",
+        "updatedAt": "2026-07-22T01:38:39.598Z",
+        "provider": "Revenue",
+        "action": "LOAD_SEGMENTS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "LOAD_SEGMENTS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:39.477Z"
+        }
+      },
+      "type": "RATE_LIMIT",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684296335-9270",
+        "type": "COMPARE",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-004",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "COMPARE",
+          "capability": "COMPARE",
+          "type": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+          "title": "Determine campaign coverage.",
+          "command": "Determine campaign coverage.",
+          "objective": "Determine campaign coverage.",
+          "description": "Determine campaign coverage.",
+          "priority": 4,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 4,
+            "taskType": "COMPARE_SEGMENTS_TO_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "COMPARE",
+            "description": "Determine campaign coverage.",
+            "objective": "Determine campaign coverage.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "COMPARE",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-004"
+        },
+        "priority": 4,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:16.335Z",
+        "updatedAt": "2026-07-22T01:39:05.982Z",
+        "provider": "Revenue",
+        "action": "COMPARE",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "COMPARE",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:39:05.831Z"
+        }
+      },
+      "type": "RATE_LIMIT",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684300036-92469",
+        "type": "DISCOVER_MISSING_CAMPAIGNS",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-005",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Revenue",
+          "provider": "Revenue",
+          "connector": "Revenue",
+          "system": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "capability": "DISCOVER_MISSING_CAMPAIGNS",
+          "type": "IDENTIFY_MISSING_CAMPAIGNS",
+          "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+          "title": "Identify segments needing campaigns.",
+          "command": "Identify segments needing campaigns.",
+          "objective": "Identify segments needing campaigns.",
+          "description": "Identify segments needing campaigns.",
+          "priority": 5,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 5,
+            "taskType": "IDENTIFY_MISSING_CAMPAIGNS",
+            "provider": "Revenue",
+            "action": "DISCOVER_MISSING_CAMPAIGNS",
+            "description": "Identify segments needing campaigns.",
+            "objective": "Identify segments needing campaigns.",
+            "originalCommand": "Own Instantly",
+            "connector": "Revenue",
+            "capability": "DISCOVER_MISSING_CAMPAIGNS",
+            "system": "Revenue",
+            "department": "Revenue",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-005"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:20.036Z",
+        "updatedAt": "2026-07-22T01:38:42.071Z",
+        "provider": "Revenue",
+        "action": "DISCOVER_MISSING_CAMPAIGNS",
+        "error": "Connector not found: Revenue",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Revenue",
+          "action": "DISCOVER_MISSING_CAMPAIGNS",
+          "error": "Connector not found: Revenue",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:41.953Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684302409-97962",
+        "type": "CHECK_CAMPAIGN_INBOXES",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-006",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "capability": "CHECK_CAMPAIGN_INBOXES",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+          "title": "Locate campaigns without sending accounts.",
+          "command": "Locate campaigns without sending accounts.",
+          "objective": "Locate campaigns without sending accounts.",
+          "description": "Locate campaigns without sending accounts.",
+          "priority": 6,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 6,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_INBOXES",
+            "description": "Locate campaigns without sending accounts.",
+            "objective": "Locate campaigns without sending accounts.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_INBOXES",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-006"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:22.409Z",
+        "updatedAt": "2026-07-22T01:38:44.970Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_INBOXES",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_INBOXES",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:44.842Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784684304550-60459",
+        "type": "CHECK_CAMPAIGN_LEADS",
+        "payload": {
+          "id": "BIZ-1784684272443-ywgbnr-WORK-007",
+          "source": "BusinessExecutionEngineService",
+          "sourceExecutionId": "BIZ-1784684272443-ywgbnr",
+          "sourceObjective": "Own Instantly and expand outbound capacity using campaigns, mailboxes, segments, and verified leads.",
+          "department": "Instantly",
+          "provider": "Instantly",
+          "connector": "Instantly",
+          "system": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "capability": "CHECK_CAMPAIGN_LEADS",
+          "type": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+          "title": "Locate campaigns with no leads.",
+          "command": "Locate campaigns with no leads.",
+          "objective": "Locate campaigns with no leads.",
+          "description": "Locate campaigns with no leads.",
+          "priority": 7,
+          "requiresKevin": false,
+          "status": "READY",
+          "plan": {
+            "priority": 7,
+            "taskType": "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
+            "provider": "Instantly",
+            "action": "CHECK_CAMPAIGN_LEADS",
+            "description": "Locate campaigns with no leads.",
+            "objective": "Locate campaigns with no leads.",
+            "originalCommand": "Own Instantly",
+            "connector": "Instantly",
+            "capability": "CHECK_CAMPAIGN_LEADS",
+            "system": "Instantly",
+            "department": "Instantly",
+            "workflow": null,
+            "intent": null
+          },
+          "createdAt": "2026-07-22T01:37:56.026Z",
+          "updatedAt": "2026-07-22T01:37:56.026Z",
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BIZ-1784684272443-ywgbnr-WORK-007"
+        },
+        "priority": 3,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T01:38:24.550Z",
+        "updatedAt": "2026-07-22T01:38:47.321Z",
+        "provider": "Instantly",
+        "action": "CHECK_CAMPAIGN_LEADS",
+        "error": "Connector not found: Instantly",
+        "failure": {
+          "type": "MISSING_CAPABILITY",
+          "retryable": false,
+          "safeRepair": true,
+          "recommendedAction": "Register missing provider or connector"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "Instantly",
+          "action": "CHECK_CAMPAIGN_LEADS",
+          "error": "Connector not found: Instantly",
+          "failure": {
+            "type": "MISSING_CAPABILITY",
+            "retryable": false,
+            "safeRepair": true,
+            "recommendedAction": "Register missing provider or connector"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T01:38:47.193Z"
+        }
+      },
+      "type": "UNKNOWN",
+      "timestamp": "2026-07-22T20:13:20.868Z"
+    },
+    {
+      "task": {
+        "id": "TASK-1784741174159-79946",
+        "type": "PREPARE_PROSPECT_RESPONSE",
+        "payload": {
+          "id": "BUILD130_TEST_INTERESTED_PROSPECT",
+          "title": "Prepare follow-up for interested prospect",
+          "objective": "Prepare the next response and recommended sales action.",
+          "revenueStage": "INTERESTED_REPLY",
+          "provider": "MILES",
+          "action": "PREPARE_PROSPECT_RESPONSE",
+          "status": "READY",
+          "expectedRevenue": 90,
+          "urgency": 100,
+          "customerImpact": 90,
+          "strategicValue": 95,
+          "executionConfidence": 95,
+          "requiresKevin": false,
+          "source": "revenue_work_queue",
+          "sourceQueue": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\revenue\\revenue_work_queue.json",
+          "sourceIndex": 0,
+          "department": "Revenue Operations",
+          "connector": "MILES",
+          "system": "MILES",
+          "capability": "PREPARE_PROSPECT_RESPONSE",
+          "type": "PREPARE_PROSPECT_RESPONSE",
+          "command": "Prepare follow-up for interested prospect",
+          "reason": "Prepare the next response and recommended sales action.",
+          "risk": 10,
+          "priority": 1,
+          "requiresCEO": false,
+          "dueDate": null,
+          "importedAt": "2026-07-22T16:14:52.745Z",
+          "updatedAt": "2026-07-22T16:31:35.975Z",
+          "metadata": {
+            "revenueStage": "INTERESTED_REPLY",
+            "source": "revenue_work_queue",
+            "sourceFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\revenue\\revenue_work_queue.json"
+          },
+          "workflow": null,
+          "intent": null,
+          "sourceOperationId": "BUILD130_TEST_INTERESTED_PROSPECT",
+          "plan": {
+            "provider": "MILES",
+            "system": "MILES",
+            "department": "Revenue Operations",
+            "connector": "MILES",
+            "action": "PREPARE_PROSPECT_RESPONSE",
+            "capability": "PREPARE_PROSPECT_RESPONSE",
+            "workflow": null,
+            "intent": null,
+            "objective": "Prepare the next response and recommended sales action.",
+            "originalCommand": "Prepare follow-up for interested prospect"
+          }
+        },
+        "priority": 1,
+        "status": "FAILED",
+        "createdAt": "2026-07-22T17:26:14.159Z",
+        "updatedAt": "2026-07-22T17:26:20.092Z",
+        "provider": "MILES",
+        "connector": "MILES",
+        "action": "PREPARE_PROSPECT_RESPONSE",
+        "error": "Unsupported MILES connector action: PREPARE_PROSPECT_RESPONSE. Supported actions: AUTONOMOUS_CAPABILITY_BUILD, BUILD_CAPABILITY, BUSINESS_EXECUTION, CAPABILITY_BUILD, CODE_WRITER_CAPABILITY_AUDIT, CONTROLLED_WRITE, INSTANTLY_LIVE, PROVIDER_AUTHORITY, PROVIDER_AUTHORITY_REGISTRY, PROVIDER_SYNC, PROVIDER_SYNCHRONIZATION, REPOSITORY_EVIDENCE_REPORT, REPOSITORY_SEARCH",
+        "failure": {
+          "type": "AUTH_FAILURE",
+          "retryable": false,
+          "safeRepair": false,
+          "recommendedAction": "Credential review required"
+        },
+        "retryable": false,
+        "result": {
+          "ok": false,
+          "status": "FAILED",
+          "provider": "MILES",
+          "action": "PREPARE_PROSPECT_RESPONSE",
+          "error": "Unsupported MILES connector action: PREPARE_PROSPECT_RESPONSE. Supported actions: AUTONOMOUS_CAPABILITY_BUILD, BUILD_CAPABILITY, BUSINESS_EXECUTION, CAPABILITY_BUILD, CODE_WRITER_CAPABILITY_AUDIT, CONTROLLED_WRITE, INSTANTLY_LIVE, PROVIDER_AUTHORITY, PROVIDER_AUTHORITY_REGISTRY, PROVIDER_SYNC, PROVIDER_SYNCHRONIZATION, REPOSITORY_EVIDENCE_REPORT, REPOSITORY_SEARCH",
+          "failure": {
+            "type": "AUTH_FAILURE",
+            "retryable": false,
+            "safeRepair": false,
+            "recommendedAction": "Credential review required"
+          },
+          "retryable": false,
+          "createdAt": "2026-07-22T17:26:19.918Z"
+        }
+      },
+      "type": "RATE_LIMIT",
+      "timestamp": "2026-07-22T20:13:20.868Z"
     }
   ]
 }

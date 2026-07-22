@@ -1,5 +1,9 @@
 ﻿"use strict";
+const BusinessWorkPlannerService =
+    require("./BusinessWorkPlannerService");
 
+const BusinessOperationsBridgeService =
+    require("./BusinessOperationsBridgeService");
 const fs = require("fs");
 const path = require("path");
 
@@ -175,6 +179,12 @@ class BusinessExecutionEngineService {
           "./ControlledWriteService"
         )
     };
+
+    this.businessOperationsBridge =
+      options.businessOperationsBridge ||
+      new BusinessOperationsBridgeService({
+        rootDir: ROOT
+      });
 
     this.maxStepAttempts =
       Number(
@@ -368,11 +378,13 @@ class BusinessExecutionEngineService {
         Number(step.step || 0),
       action,
       provider:
-        step.provider ||
-        "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.provider || "MILES"),
       connector:
-        step.connector ||
-        "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.connector || "MILES"),
       objective:
         step.objective ||
         task.objective ||
@@ -386,26 +398,257 @@ class BusinessExecutionEngineService {
       result: null,
       error: null
     };
-
-    if (
-      action ===
-      "BUSINESS_EXECUTION"
-    ) {
+    if (action === "BUSINESS_EXECUTION") {
       base.attempts = 1;
+
+      /*
+       * BUILD E005
+       *
+       * BusinessWorkPlannerService determines what work should exist.
+       * BusinessOperationsBridgeService converts that work into TaskQueue
+       * tasks for the existing execution runtime.
+       */
+
+      const workPlan =
+        await BusinessWorkPlannerService.plan({
+          objective:
+            task.objective,
+          payload:
+            task.payload || {}
+        });
+
+      const workPackages =
+        Array.isArray(
+          workPlan.workPackages
+        )
+          ? workPlan.workPackages
+          : [];
+
+      if (workPackages.length === 0) {
+        base.status = "FAILED";
+        base.error =
+          "BusinessWorkPlannerService returned no executable work packages.";
+        base.completedAt = now();
+        return base;
+      }
+
+      const bridge =
+        this.businessOperationsBridge;
+
+      if (
+        !bridge ||
+        typeof bridge.readQueue !==
+          "function" ||
+        typeof bridge.writeQueue !==
+          "function" ||
+        typeof bridge.runOnce !==
+          "function"
+      ) {
+        base.status = "FAILED";
+        base.error =
+          "BusinessOperationsBridgeService is unavailable or incomplete.";
+        base.completedAt = now();
+        return base;
+      }
+
+      const queue =
+        bridge.readQueue();
+
+      queue.operations =
+        Array.isArray(
+          queue.operations
+        )
+          ? queue.operations
+          : [];
+
+      const createdOperations =
+        workPackages.map(
+          (
+            workPackage,
+            index
+          ) => {
+            const packageNumber =
+              index + 1;
+
+            const packageId =
+              `${executionId}-WORK-${String(
+                packageNumber
+              ).padStart(3, "0")}`;
+
+            const provider =
+              workPackage.provider ||
+              workPackage.connector ||
+              "MILES";
+
+            const actionName =
+              workPackage.action ||
+              workPackage.taskType ||
+              "BUSINESS_OPERATION";
+
+            return {
+              id:
+                packageId,
+              source:
+                "BusinessExecutionEngineService",
+              sourceExecutionId:
+                executionId,
+              sourceObjective:
+                task.objective,
+              department:
+                workPackage.department ||
+                provider,
+              provider,
+              connector:
+                workPackage.connector ||
+                provider,
+              system:
+                workPackage.system ||
+                provider,
+              action:
+                actionName,
+              capability:
+                workPackage.capability ||
+                actionName,
+              type:
+                workPackage.taskType ||
+                actionName,
+              taskType:
+                workPackage.taskType ||
+                actionName,
+              title:
+                workPackage.title ||
+                workPackage.description ||
+                actionName,
+              command:
+                workPackage.command ||
+                workPackage.description ||
+                task.objective,
+              objective:
+                workPackage.objective ||
+                workPackage.description ||
+                task.objective,
+              description:
+                workPackage.description ||
+                "",
+              priority:
+                workPackage.priority ||
+                packageNumber,
+              requiresKevin:
+                workPackage.requiresKevin ===
+                true,
+              status:
+                workPackage.requiresKevin ===
+                true
+                  ? "AWAITING_APPROVAL"
+                  : "READY",
+              plan: {
+                ...workPackage,
+                objective:
+                  workPackage.objective ||
+                  workPackage.description ||
+                  task.objective,
+                originalCommand:
+                  task.originalCommand ||
+                  task.objective,
+                provider,
+                connector:
+                  workPackage.connector ||
+                  provider,
+                action:
+                  actionName,
+                capability:
+                  workPackage.capability ||
+                  actionName
+              },
+              createdAt:
+                now(),
+              updatedAt:
+                now()
+            };
+          }
+        );
+
+      queue.operations.push(
+        ...createdOperations
+      );
+
+      bridge.writeQueue(
+        queue
+      );
+
+      const bridgeResult =
+        await bridge.runOnce();
+
+      const queuedCount =
+        Number(
+          bridgeResult.operationsQueued ||
+          bridgeResult.bridged ||
+          0
+        );
+
+      const failedCount =
+        Number(
+          bridgeResult.operationsFailed ||
+          bridgeResult.failed ||
+          0
+        );
+
       base.status =
-        "COMPLETED";
+        failedCount > 0
+          ? "FAILED"
+          : queuedCount > 0
+            ? "COMPLETED"
+            : "BLOCKED";
+
       base.result = {
-        ok: true,
+        ok:
+          failedCount === 0 &&
+          queuedCount > 0,
         action:
           "BUSINESS_EXECUTION",
-        orchestrationCheckpoint:
-          true,
         objective:
           task.objective,
+        planner:
+          workPlan.service,
+        workPackageCount:
+          workPlan.workPackageCount ||
+          workPackages.length,
+        workPackages,
+        operationsCreated:
+          createdOperations.length,
+        operationsQueued:
+          queuedCount,
+        operationsFailed:
+          failedCount,
+        bridgeStatus:
+          bridgeResult.status,
+        queueFile:
+          bridgeResult.queueFile ||
+          bridge.queueFile,
+        generatedAt:
+          workPlan.generatedAt,
+        bridgeResult,
         message:
-          "Executive objective was decomposed into governed provider steps. No recursive execution was invoked."
+          failedCount > 0
+            ? "Business work packages were created, but one or more failed to enter the execution queue."
+            : queuedCount > 0
+              ? "Business work packages were generated and submitted to the execution queue."
+              : "Business work packages were generated, but none entered the execution queue."
       };
-      base.completedAt = now();
+
+      if (base.status === "FAILED") {
+        base.error =
+          `${failedCount} business operation(s) failed while entering the execution queue.`;
+      }
+
+      if (base.status === "BLOCKED") {
+        base.error =
+          "No business operations entered the execution queue.";
+      }
+
+      base.completedAt =
+        now();
+
       return base;
     }
 
@@ -421,8 +664,7 @@ class BusinessExecutionEngineService {
     }
 
     const protectedWrite =
-      action ===
-      "CONTROLLED_WRITE";
+      action === "CONTROLLED_WRITE";
 
     const stepTask = {
       ...task,
@@ -431,14 +673,20 @@ class BusinessExecutionEngineService {
         step.capability ||
         action,
       provider:
-        step.provider ||
-        "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.provider || "MILES"),
       connector:
-        step.connector ||
-        "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.connector || "MILES"),
       objective:
-        step.objective ||
-        task.objective,
+    step.objective || task.objective,
+
+operation:
+    action === "CONTROLLED_WRITE"
+        ? "CREATE_TEST_CAMPAIGN"
+        : undefined,
       payload: {
         ...(task.payload || {}),
         action,
@@ -446,14 +694,20 @@ class BusinessExecutionEngineService {
           step.capability ||
           action,
         provider:
-          step.provider ||
-          "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.provider || "MILES"),
         connector:
-          step.connector ||
-          "MILES",
+    action === "CONTROLLED_WRITE"
+        ? "instantly"
+        : (step.connector || "MILES"),
         objective:
-          step.objective ||
-          task.objective,
+    step.objective || task.objective,
+
+operation:
+    action === "CONTROLLED_WRITE"
+        ? "CREATE_TEST_CAMPAIGN"
+        : undefined,
         originalObjective:
           task.objective,
         executionId,
@@ -705,7 +959,7 @@ class BusinessExecutionEngineService {
       of record.results
     ) {
       lines.push(
-        `- Step ${step.step}: ${step.action} â€” ${step.status}`
+        `- Step ${step.step}: ${step.action} Ã¢â‚¬â€ ${step.status}`
       );
 
       if (step.error) {
@@ -776,4 +1030,5 @@ module.exports =
 
 module.exports.BusinessExecutionEngineService =
   BusinessExecutionEngineService;
+
 

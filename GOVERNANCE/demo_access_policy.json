@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "demoModeEnvironmentVariable": "MILES_DEMO_MODE",
+  "denyImplementationDetails": true,
+  "denyInternalArchitecture": true,
+  "denyAdminTools": true,
+  "denyDebugPanels": true,
+  "denyRawEnterpriseData": true,
+  "denyOtherClientData": true,
+  "denyUnlicensedPremiumIntelligence": true,
+  "blockedPatterns": [
+    "DEBUG", "STACK_TRACE", "RAW_SQL", "SCHEMA_DUMP", "ADMIN",
+    "INTERNAL_ARCHITECTURE", "ALGORITHM", "SOURCE_CODE", "CREDENTIAL"
+  ]
+}

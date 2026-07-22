@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T15:59:22.803Z",
+  "generatedAt": "2026-07-22T20:13:00.174Z",
   "runtime": {},
   "workforce": {
     "ok": true,
@@ -5881,41 +5881,5 @@
   "tasks": {},
   "business": {},
   "approvals": [],
-  "risks": [],
-  "workforceResults": [
-    {
-      "taskId": "TASK-1783958214308-29568",
-      "workPackageId": "WP-20260713155654-405",
-      "capability": "website.health.repair",
-      "provider": "WebsiteProvider",
-      "action": "verifyWebsite",
-      "assignedTo": "WebsiteCOOWorker",
-      "executionMode": "AUTONOMOUS",
-      "status": "AWAITING_VERIFICATION",
-      "outFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\workforce_results\\WP-20260713155654-405_TASK-1783958214308-29568.json",
-      "createdAt": "2026-07-13T15:59:22.786Z"
-    }
-  ],
-  "verifications": [
-    {
-      "ok": true,
-      "type": "WORKFORCE_STEP_VERIFICATION",
-      "taskId": "TASK-1783958214308-29568",
-      "workPackageId": "WP-20260713155654-405",
-      "capability": "website.health.repair",
-      "provider": "WebsiteProvider",
-      "action": "verifyWebsite",
-      "assignedTo": "WebsiteCOOWorker",
-      "verified": true,
-      "status": "COMPLETED",
-      "evidence": {
-        "executionMode": "AUTONOMOUS",
-        "hasOutput": true,
-        "hasRecommendation": true,
-        "providerFailed": false,
-        "needsApproval": false
-      },
-      "checkedAt": "2026-07-13T15:59:22.803Z"
-    }
-  ]
+  "risks": []
 }

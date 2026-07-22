@@ -1,0 +1,289 @@
+{
+  "ok": false,
+  "provider": "WebsiteProvider",
+  "action": "verifyWebsite",
+  "status": "Critical",
+  "generatedAt": "2026-07-19T00:21:18.726Z",
+  "verifiedAt": "2026-07-19T00:21:18.726Z",
+  "readOnly": true,
+  "url": "https://pathways2gc.com",
+  "metrics": {
+    "homepageReachable": false,
+    "statusCode": 200,
+    "loadMs": 19799,
+    "title": "",
+    "h1": "",
+    "metaDescription": "",
+    "https": true,
+    "hasCTA": false,
+    "hasContact": false,
+    "hasCalendly": false,
+    "hasServices": false,
+    "hasPhone": false,
+    "hasEmail": false,
+    "finalUrl": "https://pathways2gc.com",
+    "titleLength": 0,
+    "h1Count": 1,
+    "headingCounts": {
+      "h1": 1,
+      "h2": 1,
+      "h3": 3,
+      "h4": 0,
+      "h5": 0,
+      "h6": 0
+    },
+    "metaDescriptionLength": 0,
+    "formCount": 1,
+    "validFormCount": 1,
+    "imageCount": 7,
+    "imagesMissingAlt": 0,
+    "inputLabelCoverage": 100,
+    "linksDiscovered": 19,
+    "internalLinks": 13,
+    "linksChecked": 13,
+    "brokenLinks": 4,
+    "hasCanonical": true,
+    "hasViewport": true,
+    "hasLang": true,
+    "hasMainLandmark": false,
+    "hasNavigation": true,
+    "hasSkipLink": false,
+    "hasAria": true
+  },
+  "exceptions": [
+    {
+      "type": "WebsiteUnavailable",
+      "severity": "Critical",
+      "message": "Website audit failed."
+    },
+    {
+      "type": "SEO",
+      "severity": "Warning",
+      "message": "Page title is missing or too short."
+    },
+    {
+      "type": "SEO",
+      "severity": "Warning",
+      "message": "Meta description is missing or too short."
+    },
+    {
+      "type": "Conversion",
+      "severity": "Warning",
+      "message": "No clear call-to-action was detected."
+    },
+    {
+      "type": "Conversion",
+      "severity": "Warning",
+      "message": "Calendly integration was not detected."
+    },
+    {
+      "type": "BrokenLinks",
+      "severity": "Warning",
+      "message": "4 broken internal link(s) detected."
+    },
+    {
+      "type": "ContentDrift",
+      "severity": "Info",
+      "message": "9 monitored content field(s) changed from baseline."
+    }
+  ],
+  "recommendations": [
+    "Add or restore a clear primary scheduling CTA.",
+    "Verify the approved Calendly link is present and reachable.",
+    "Repair broken internal links through the approved website change queue.",
+    "Review content drift against approved website changes before publishing or rollback."
+  ],
+  "details": {
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "hasSubmit": true,
+        "inputCount": 1,
+        "textareaCount": 0
+      }
+    ],
+    "brokenLinks": [
+      {
+        "url": "https://pathways2gc.com/index#home",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13075,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/proposal-development-assistance-3",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 10459,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/one-on-one-contracting-consultation",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13512,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13430,
+        "error": "timeout"
+      }
+    ],
+    "linkResults": [
+      {
+        "url": "https://pathways2gc.com/index",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 261,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/success-stories",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 9246,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/index#home",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13075,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/about-us",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 2421,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/reference-policy",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 393,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/intake-form",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 339,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/government-contracting-101",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 427,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/proposal-development-assistance-3",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 10459,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/compliance-and-regulatory-guidance",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 1929,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/government-contracting-workshops",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 627,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/contract-proposal-review",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 941,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/one-on-one-contracting-consultation",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13512,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 13430,
+        "error": "timeout"
+      }
+    ],
+    "contentDrift": {
+      "baselineExists": true,
+      "changed": true,
+      "changes": [
+        {
+          "field": "title",
+          "before": "Pathways 2 Government Contracting",
+          "after": ""
+        },
+        {
+          "field": "h1",
+          "before": "Federal and SLED Growth Advisory",
+          "after": ""
+        },
+        {
+          "field": "metaDescription",
+          "before": "Government contracting advisory services for companies seeking federal and SLED growth opportunities.",
+          "after": ""
+        },
+        {
+          "field": "hasCTA",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasCalendly",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasContact",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasServices",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasPhone",
+          "before": true,
+          "after": false
+        },
+        {
+          "field": "hasEmail",
+          "before": true,
+          "after": false
+        }
+      ]
+    }
+  },
+  "safety": {
+    "websiteMode": "READ_ONLY",
+    "writesEnabled": false,
+    "publishingEnabled": false,
+    "formSubmissionEnabled": false,
+    "contentChangesEnabled": false,
+    "b12WritesEnabled": false
+  }
+}

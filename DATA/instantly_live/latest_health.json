@@ -4,8 +4,8 @@
   "provider": "instantly",
   "status": "READY",
   "credentialsPresent": true,
-  "writeEnabled": false,
-  "durationMs": 427,
+  "writeEnabled": true,
+  "durationMs": 300,
   "result": {
     "ok": true,
     "status": "OK",
@@ -33,5 +33,5 @@
     },
     "message": "Instantly API request succeeded."
   },
-  "generatedAt": "2026-07-09T23:25:25.587Z"
+  "generatedAt": "2026-07-22T03:28:18.155Z"
 }

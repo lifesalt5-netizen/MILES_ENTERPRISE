@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "defaultApprover": "CEO",
+  "autonomousPatterns": [
+    "READ", "LIST", "GET", "STATUS", "HEALTH", "VERIFY", "ANALYZE",
+    "AUDIT", "REPORT", "DISCOVER", "SCORE", "REFRESH", "SYNC",
+    "RECOMMEND", "PLAN", "TEST"
+  ],
+  "approvalPatterns": [
+    "SEND", "PUBLISH", "POST", "SUBMIT", "DELETE", "REMOVE", "PURCHASE",
+    "BUY", "SPEND", "PAY", "CANCEL", "DNS", "DOMAIN", "CREDENTIAL",
+    "PASSWORD", "DEPLOY", "PRODUCTION", "LAUNCH", "RESUME", "PAUSE",
+    "UPLOAD", "WRITE", "MODIFY", "UPDATE", "CREATE", "FORWARD", "REPLY",
+    "CONTROLLED_WRITE", "FINANCIAL_COMMITMENT", "CLIENT_SUBMISSION"
+  ],
+  "neverAllowedPatterns": [
+    "BYPASS_GOVERNANCE",
+    "DISABLE_GOVERNANCE",
+    "DELETE_AUDIT_LOG",
+    "EXPOSE_OTHER_CLIENT_DATA",
+    "EXPOSE_INTERNAL_ALGORITHM"
+  ],
+  "protectedAssets": {
+    "pathways2gc.com": {
+      "outboundUse": "DENY",
+      "reason": "Primary company/admin domain is protected from outbound campaign use."
+    }
+  }
+}

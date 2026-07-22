@@ -1,11 +1,11 @@
 # EXEC_003 Instantly Live Integration Report
 
-Generated: 2026-07-09T23:38:27.720Z
+Generated: 2026-07-22T03:28:18.470Z
 
 Credentials Present: true
-Write Enabled: false
+Write Enabled: true
 Executable: true
-Result Status: OK
+Result Status: READY
 
 ## Notes
 

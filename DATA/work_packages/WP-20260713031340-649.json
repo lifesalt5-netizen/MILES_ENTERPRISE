@@ -1,12 +1,12 @@
 {
   "id": "WP-20260713031340-649",
   "objective": "Build Government Data COO refresh monitor",
-  "status": "QUEUED",
+  "status": "COMPLETED",
   "owner": "MILES",
   "priority": 2,
   "priorityScore": 50,
   "createdAt": "2026-07-13T03:13:40.054Z",
-  "updatedAt": "2026-07-13T03:13:40.054Z",
+  "updatedAt": "2026-07-17T02:28:11.954Z",
   "plan": {
     "ok": true,
     "type": "PLAN",
@@ -207,19 +207,41 @@
       "capability": "orion.refresh",
       "assignedTo": "Aden",
       "department": "ORION",
-      "status": "QUEUED",
+      "status": "COMPLETED",
       "dependsOn": [],
       "taskType": "WORKFORCE_STEP",
       "provider": "OrionProvider",
       "action": "refresh",
       "expectedOutput": "Refreshed ORION provider state, metrics, exceptions, and recommendations.",
-      "verification": "Verify OrionProvider completed refresh and returned provider evidence."
+      "verification": "Verify OrionProvider completed refresh and returned provider evidence.",
+      "taskId": "TASK-1783912420231-14206",
+      "startedAt": null,
+      "completedAt": "2026-07-13T03:13:42.803Z",
+      "failedAt": null,
+      "result": {
+        "ok": true,
+        "status": "COMPLETED",
+        "reason": "Capability already installed through OrionProvider.",
+        "suppressedAsStaleCapabilityWork": true,
+        "completedAt": "2026-07-13T03:13:42.766Z"
+      },
+      "updatedAt": "2026-07-13T03:13:42.803Z"
     }
   ],
   "approvals": [],
   "results": [],
   "verification": {
     "required": true,
-    "status": "PENDING"
-  }
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T02:28:11.954Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T02:28:11.954Z"
+  },
+  "completedAt": "2026-07-17T02:28:11.954Z"
 }

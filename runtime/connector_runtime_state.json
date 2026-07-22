@@ -2,21 +2,108 @@
   "ok": true,
   "service": "CONNECTOR_RUNTIME",
   "version": "1.1.0",
-  "status": "INITIALIZED",
-  "generatedAt": "2026-07-13T15:56:26.628Z",
+  "status": "CONNECTOR_EXECUTION_COMPLETED",
+  "generatedAt": "2026-07-22T22:11:28.072Z",
   "connectorDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS",
-  "connectorsDiscovered": 0,
-  "connectorsLoaded": 0,
+  "connectorsDiscovered": 5,
+  "connectorsLoaded": 5,
   "connectorsFailed": 0,
-  "connectorsSkipped": 0,
-  "discoveredConnectors": [],
-  "skippedConnectors": [],
-  "loadedConnectors": [],
-  "executionsStarted": 0,
-  "executionsCompleted": 0,
+  "connectorsSkipped": 4,
+  "discoveredConnectors": [
+    {
+      "connectorId": "GOOGLE",
+      "connectorName": "GOOGLE",
+      "connectorPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\GOOGLE\\index.js",
+      "type": "DIRECTORY_INDEX",
+      "status": "DISCOVERED"
+    },
+    {
+      "connectorId": "INSTANTLY",
+      "connectorName": "INSTANTLY",
+      "connectorPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\INSTANTLY\\connector.js",
+      "type": "DIRECTORY_CONNECTOR",
+      "status": "DISCOVERED"
+    },
+    {
+      "connectorId": "MILES",
+      "connectorName": "MILES",
+      "connectorPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\MILES\\connector.js",
+      "type": "DIRECTORY_CONNECTOR",
+      "status": "DISCOVERED"
+    },
+    {
+      "connectorId": "ORION",
+      "connectorName": "ORION",
+      "connectorPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\ORION\\connector.js",
+      "type": "DIRECTORY_CONNECTOR",
+      "status": "DISCOVERED"
+    },
+    {
+      "connectorId": "WEBSITE",
+      "connectorName": "WEBSITE",
+      "connectorPath": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\WEBSITE\\WEBSITE.js",
+      "type": "DIRECTORY_NAMED_FILE",
+      "status": "DISCOVERED"
+    }
+  ],
+  "skippedConnectors": [
+    {
+      "name": "CALENDLY",
+      "directory": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\CALENDLY",
+      "reason": "NO_SUPPORTED_CONNECTOR_ENTRYPOINT",
+      "searchedFor": [
+        "index.js",
+        "connector.js",
+        "CALENDLY.js",
+        "calendly.js"
+      ]
+    },
+    {
+      "name": "IONOS",
+      "directory": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\IONOS",
+      "reason": "NO_SUPPORTED_CONNECTOR_ENTRYPOINT",
+      "searchedFor": [
+        "index.js",
+        "connector.js",
+        "IONOS.js",
+        "ionos.js"
+      ]
+    },
+    {
+      "name": "Real",
+      "directory": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\Real",
+      "reason": "NO_SUPPORTED_CONNECTOR_ENTRYPOINT",
+      "searchedFor": [
+        "index.js",
+        "connector.js",
+        "Real.js",
+        "real.js"
+      ]
+    },
+    {
+      "name": "WEBSITE_B12",
+      "directory": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\CONNECTORS\\WEBSITE_B12",
+      "reason": "NO_SUPPORTED_CONNECTOR_ENTRYPOINT",
+      "searchedFor": [
+        "index.js",
+        "connector.js",
+        "WEBSITE_B12.js",
+        "website_b12.js"
+      ]
+    }
+  ],
+  "loadedConnectors": [
+    "GOOGLE",
+    "INSTANTLY",
+    "MILES",
+    "ORION",
+    "WEBSITE"
+  ],
+  "executionsStarted": 3,
+  "executionsCompleted": 3,
   "executionsFailed": 0,
-  "lastDiscoveryAt": null,
-  "lastLoadAt": null,
-  "lastExecutionAt": null,
+  "lastDiscoveryAt": "2026-07-22T22:11:25.123Z",
+  "lastLoadAt": "2026-07-22T22:11:27.272Z",
+  "lastExecutionAt": "2026-07-22T22:11:27.803Z",
   "lastError": null
 }

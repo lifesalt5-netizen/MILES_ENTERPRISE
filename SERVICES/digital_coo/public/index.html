@@ -1,0 +1,111 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <title>Miles Command Center</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">P2GC DIGITAL COO</div>
+        <h1>Miles Command Center</h1>
+        <p>
+          Tell Miles what needs to be done. Miles will interpret the request,
+          create or execute the appropriate operation, assign the work, track
+          progress, and report back.
+        </p>
+      </div>
+
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span id="systemStatus">Miles is ready</span>
+      </div>
+    </header>
+
+    <section class="command-panel">
+      <label for="cmd">CEO Command</label>
+
+      <textarea
+        id="cmd"
+        placeholder="Example: Miles, audit ORION system health and produce an executive status report."
+        spellcheck="true"
+      ></textarea>
+
+      <div class="command-actions">
+        <button id="sendButton" type="button">
+          Send to Miles
+        </button>
+
+        <button id="clearButton" type="button" class="secondary">
+          Clear
+        </button>
+      </div>
+    </section>
+
+    <section id="operationSummary" class="summary-grid hidden">
+      <article class="metric-card">
+        <div class="metric-label">Operation</div>
+        <div id="operationId" class="metric-value">—</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-label">Provider</div>
+        <div id="provider" class="metric-value">—</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-label">Action</div>
+        <div id="action" class="metric-value">—</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-label">Status</div>
+        <div id="operationStatus" class="metric-value">—</div>
+      </article>
+    </section>
+
+    <section class="response-panel">
+      <div class="panel-heading">
+        <div>
+          <div class="eyebrow">EXECUTIVE RESPONSE</div>
+          <h2>Miles</h2>
+        </div>
+
+        <span id="responseBadge" class="badge ready">READY</span>
+      </div>
+
+      <div id="out" class="response-body">
+        Miles is ready.
+      </div>
+
+      <div id="approvalActions" class="approval-actions hidden">
+        <button id="approveButton" type="button">
+          Approve
+        </button>
+
+        <button id="rejectButton" type="button" class="danger">
+          Reject
+        </button>
+
+        <button id="refreshButton" type="button" class="secondary">
+          Refresh Status
+        </button>
+      </div>
+
+      <details id="technicalDetails" class="technical-details hidden">
+        <summary>Technical details</summary>
+        <pre id="rawJson">{}</pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

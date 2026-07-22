@@ -9,8 +9,16 @@
 
 require("dotenv").config();
 
+process.env.MILES_ROOT = __dirname;
+
+console.log(
+  "[MILES BOOTSTRAP] MILES_ROOT:",
+  process.env.MILES_ROOT
+);
+
 const { spawn } = require("child_process");
 const path = require("path");
+
 
 const ROOT = __dirname;
 const RESTART_DELAY_MS = Number(process.env.MILES_RESTART_DELAY_MS || 5000);
@@ -36,6 +44,11 @@ const processes = [
   {
     name: "Miles Command Center",
     file: path.join("SERVICES", "digital_coo", "MilesCommandCenter.js"),
+    enabled: true
+  },
+  {
+    name: "Executive Dashboard",
+    file: "StartExecutiveDashboard.js",
     enabled: true
   }
 ];
@@ -196,11 +209,12 @@ log("=======================================");
 startAll();
 
 log("All enabled MILES production runtimes launched.");
-log("Desktop UI + Worker Runtime + Autonomous COO + Command Center are now supervised.");
+log("Desktop UI + Worker Runtime + Autonomous COO + Command Center + Executive Dashboard are now supervised.");
 log("Expected ports:");
 log("- Desktop UI: http://localhost:3737");
 log("- API: http://localhost:3000");
 log("- Command Center: http://localhost:8787");
+log("- Executive Dashboard: http://localhost:8737");
 
 setInterval(() => {
   const snapshot = statusSnapshot();

@@ -2,7 +2,7 @@
   "ok": true,
   "action": "PROVIDER_CAPABILITY_BINDINGS",
   "build": "EXEC_006",
-  "generatedAt": "2026-07-13T15:59:24.677Z",
+  "generatedAt": "2026-07-22T20:13:30.755Z",
   "bindings": {
     "instantly": {
       "provider": "instantly",

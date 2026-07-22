@@ -1,0 +1,222 @@
+{
+  "ok": true,
+  "provider": "WebsiteProvider",
+  "action": "verifyWebsite",
+  "status": "Watch",
+  "generatedAt": "2026-07-17T22:41:28.795Z",
+  "verifiedAt": "2026-07-17T22:41:28.795Z",
+  "readOnly": true,
+  "url": "https://pathways2gc.com",
+  "metrics": {
+    "homepageReachable": true,
+    "statusCode": 200,
+    "loadMs": 653,
+    "title": "Unlock Government Contract Opportunities",
+    "h1": "Federal &amp; SLED Market Entry Advisory",
+    "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+    "https": true,
+    "hasCTA": true,
+    "hasContact": true,
+    "hasCalendly": false,
+    "hasServices": true,
+    "hasPhone": true,
+    "hasEmail": true,
+    "finalUrl": "https://pathways2gc.com",
+    "titleLength": 40,
+    "h1Count": 1,
+    "headingCounts": {
+      "h1": 1,
+      "h2": 1,
+      "h3": 3,
+      "h4": 0,
+      "h5": 0,
+      "h6": 0
+    },
+    "metaDescriptionLength": 84,
+    "formCount": 1,
+    "validFormCount": 1,
+    "imageCount": 7,
+    "imagesMissingAlt": 0,
+    "inputLabelCoverage": 100,
+    "linksDiscovered": 19,
+    "internalLinks": 13,
+    "linksChecked": 13,
+    "brokenLinks": 1,
+    "hasCanonical": true,
+    "hasViewport": true,
+    "hasLang": true,
+    "hasMainLandmark": false,
+    "hasNavigation": true,
+    "hasSkipLink": false,
+    "hasAria": true
+  },
+  "exceptions": [
+    {
+      "type": "Conversion",
+      "severity": "Warning",
+      "message": "Calendly integration was not detected."
+    },
+    {
+      "type": "BrokenLinks",
+      "severity": "Warning",
+      "message": "1 broken internal link(s) detected."
+    },
+    {
+      "type": "ContentDrift",
+      "severity": "Info",
+      "message": "4 monitored content field(s) changed from baseline."
+    }
+  ],
+  "recommendations": [
+    "Verify the approved Calendly link is present and reachable.",
+    "Repair broken internal links through the approved website change queue.",
+    "Review content drift against approved website changes before publishing or rollback."
+  ],
+  "details": {
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "hasSubmit": true,
+        "inputCount": 1,
+        "textareaCount": 0
+      }
+    ],
+    "brokenLinks": [
+      {
+        "url": "https://pathways2gc.com/reference-policy",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 12346,
+        "error": "timeout"
+      }
+    ],
+    "linkResults": [
+      {
+        "url": "https://pathways2gc.com/index",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 506,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/success-stories",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 82,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/index#home",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 762,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/about-us",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 488,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/reference-policy",
+        "ok": false,
+        "statusCode": 0,
+        "loadMs": 12346,
+        "error": "timeout"
+      },
+      {
+        "url": "https://pathways2gc.com/intake-form",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 11166,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/government-contracting-101",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 236,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/proposal-development-assistance-3",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 156,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/compliance-and-regulatory-guidance",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 186,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/government-contracting-workshops",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 172,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/contract-proposal-review",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 232,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/one-on-one-contracting-consultation",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 143,
+        "error": null
+      },
+      {
+        "url": "https://pathways2gc.com/",
+        "ok": true,
+        "statusCode": 200,
+        "loadMs": 165,
+        "error": null
+      }
+    ],
+    "contentDrift": {
+      "baselineExists": true,
+      "changed": true,
+      "changes": [
+        {
+          "field": "title",
+          "before": "Pathways 2 Government Contracting",
+          "after": "Unlock Government Contract Opportunities"
+        },
+        {
+          "field": "h1",
+          "before": "Federal and SLED Growth Advisory",
+          "after": "Federal & SLED Market Entry Advisory"
+        },
+        {
+          "field": "metaDescription",
+          "before": "Government contracting advisory services for companies seeking federal and SLED growth opportunities.",
+          "after": "Discover the pathway to successful government contracting and elevate your business."
+        },
+        {
+          "field": "hasCalendly",
+          "before": true,
+          "after": false
+        }
+      ]
+    }
+  },
+  "safety": {
+    "websiteMode": "READ_ONLY",
+    "writesEnabled": false,
+    "publishingEnabled": false,
+    "formSubmissionEnabled": false,
+    "contentChangesEnabled": false,
+    "b12WritesEnabled": false
+  }
+}

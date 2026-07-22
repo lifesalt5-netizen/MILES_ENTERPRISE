@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const fs = require("fs");
 const path = require("path");
@@ -12,6 +12,8 @@ const providerRouter = require("./ProviderRouterService");
 const decisionEngine = require("./Decision/DecisionEngine");
 const executionPlanService = require("./ExecutionPlanService");
 const { log } = require("../CORE/logger");
+const constitutionalGuardian = require("./governance/ConstitutionalGuardianService");
+const governanceAudit = require("./governance/GovernanceAuditService");
 
 const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
 const RESULTS_DIR = path.join(ROOT, "DATA", "workforce_results");
@@ -542,15 +544,86 @@ class WorkforceExecutionService {
 
   async executeAndVerify(task = {}) {
     try {
+      const guardian =
+        constitutionalGuardian.guard(
+          task,
+          {
+            actor:
+              task.actor ||
+              task.payload?.actor ||
+              "MILES",
+            role:
+              task.role ||
+              task.payload?.role ||
+              process.env.MILES_ACTOR_ROLE ||
+              "MILES"
+          }
+        );
+
+      task.governance = {
+        ...(task.governance || {}),
+        policy: guardian.policy,
+        approval: guardian.approval,
+        guardian
+      };
+
+      task.payload = {
+        ...(task.payload || {}),
+        governance:
+          task.governance
+      };
+
+      if (!guardian.allowed) {
+        const blocked = {
+          ok: false,
+          result: null,
+          verification: {
+            verified: false,
+            status:
+              guardian.status ===
+                "AWAITING_APPROVAL"
+                ? "AWAITING_CEO_APPROVAL"
+                : "GOVERNANCE_BLOCKED",
+            governance:
+              task.governance
+          },
+          status:
+            guardian.status ===
+              "AWAITING_APPROVAL"
+              ? "AWAITING_CEO_APPROVAL"
+              : "GOVERNANCE_BLOCKED",
+          governance:
+            task.governance
+        };
+
+        governanceAudit.executionResult(
+          task,
+          blocked
+        );
+
+        return blocked;
+      }
+
       const result = await this.executeStep(task);
       const verification = this.verifyResult(result);
 
-      return {
+      const completed = {
         ok: verification.verified,
         result,
         verification,
-        status: verification.status
+        status: verification.status,
+        governance:
+          task.governance ||
+          task.payload?.governance ||
+          null
       };
+
+      governanceAudit.executionResult(
+        task,
+        completed
+      );
+
+      return completed;
     } catch (err) {
       publishSafe(EventTypes.EXECUTION_FAILED, {
         taskId: task.id || null,

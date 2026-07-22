@@ -1,0 +1,2004 @@
+{
+  "ok": true,
+  "service": "RepositorySearchService",
+  "action": "REPOSITORY_SEARCH",
+  "query": [
+    "process.env.MILES_ROOT"
+  ],
+  "count": 332,
+  "matches": [
+    {
+      "file": "CORE/CommandQueue.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "CORE/logger.js",
+      "line": 4,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || 'D:\\\\P2GC_Intelligence\\\\MILES_OS';"
+    },
+    {
+      "file": "CORE/TaskQueue.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "CORE/Kernel/EventBus.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/ActionAuditService.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ActionDispatcherService.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ActionEngineService.js",
+      "line": 24,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ActionHistoryService.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ATLASRuntimeInspector.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/AutonomousCOOLoopService.backup.js",
+      "line": 21,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/AutonomousCOOLoopService.js",
+      "line": 30,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/BusinessExecutionEngineService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/BusinessOperationsBridgeService.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/CapabilityRegistryService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/CompanyStateService.js",
+      "line": 28,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ContinuousCOOLoopService.js",
+      "line": 22,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ControlledWriteAuditService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ControlledWritePolicyService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ControlledWriteService.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/COOExecutiveLoopService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/DashboardDataService.js",
+      "line": 32,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/DashboardServerService.js",
+      "line": 17,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/DashboardService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/DecisionEngine.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/EngineeringCOOService.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/EngineeringImprovementService.js",
+      "line": 17,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/EngineeringPlannerService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ExecutionAuditService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ExecutionPlannerService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ExecutiveBrainService.js",
+      "line": 25,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ExecutiveBriefService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/ExecutiveDashboardService.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ExecutiveDispatcher.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/ExecutiveStateService.js",
+      "line": 4,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/FileSystemProviderController.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/HeartbeatService.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/InstantlyActionBridgeService.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/InstantlyLiveIntegrationService.js",
+      "line": 10,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/InstantlyLiveProviderController.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/LearningDataService.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/PlannerService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/ProviderAuthorityRegistryService.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderCapabilityBindingService.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderControllerExecutionService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderControllerHealthService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderControllerRegistryService.js",
+      "line": 4,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderInterfaceAdapterService.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderRegistryService.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/ProviderSynchronizationService.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/QueueRecoveryService.js",
+      "line": 17,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/RepositoryRegistryService.js",
+      "line": 32,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/RepositorySearchService.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/RestartGuardianService.js",
+      "line": 17,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/RuntimeHealthService.js",
+      "line": 13,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/SelfLearningService.js",
+      "line": 20,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/SelfMaintenanceService.js",
+      "line": 13,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/TaskRouterService.js",
+      "line": 26,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/TestRunnerService.js",
+      "line": 22,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.root = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/WorkforceExecutionService.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/WorkforceService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/WorkPackageService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Browser/BrowserSessionEnroller.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Browser/BrowserSessionManager.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Browser/Workers/InstantlyCampaignOperator.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/capability_builder/AutonomousCapabilityBuilderService.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/connector_runtime/ConnectorRuntime.js",
+      "line": 31,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/connector_runtime/ConnectorRuntimeManager.js",
+      "line": 10,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 102,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1347,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1348,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOOHost.js",
+      "line": 1358,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "SERVICES/digital_coo/DigitalCOORuntime.js",
+      "line": 10,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/digital_coo/MarketingCOOService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/digital_coo/InstantlyCOOService.js",
+      "line": 34,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/Discovery/DiscoveryEngine.js",
+      "line": 10,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Events/EventBus.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Executive/CEOApprovalQueue.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/Learning/DecisionHistory.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/Memory/OperationalMemoryService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "SERVICES/operation_kernel/OperationExecutionKernel.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/worker_runtime/WorkerDispatcher.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/worker_runtime/WorkerRegistry.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/MissionLifecycleService.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/MissionSupervisor.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/ResolutionMemoryService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/ConfigService.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.root = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/InstantlyCampaignInventoryService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "SERVICES/InstantlyCampaignInventoryService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/InstantlyCampaignInventoryService.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "SERVICES/InstantlyExecutiveAdvisor.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "SERVICES/InstantlyExecutiveAdvisor.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/InstantlyExecutiveAdvisor.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "SERVICES/MissionCreationService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "SERVICES/MissionCreationService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/MissionCreationService.js",
+      "line": 13,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "SERVICES/RuntimeConsolidationAuditService.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/RuntimeConsolidationAuditService.js",
+      "line": 193,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/EnterpriseRuntimeManager.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/BusinessOperationsBridgeService.backup_20260710_172805.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "SERVICES/runtime_registry/RuntimeRegistryService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/CapabilityService.js",
+      "line": 41,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "SERVICES/LiveBusinessStateService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/RuntimeMetricsService.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.root = options.root || process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "SERVICES/StartExecutiveDashboard.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "SERVICES/StartExecutiveDashboard.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || __dirname;"
+    },
+    {
+      "file": "SERVICES/BusinessSnapshotService.js",
+      "line": 31,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "PROVIDERS/providers/MarketingProvider.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "PROVIDERS/providers/OrionProvider.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "PROVIDERS/providers/WebsiteProvider.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "PROVIDERS/providers/SalesProvider.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "PROVIDERS/providers/GoogleWorkspaceProvider.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "CONNECTORS/WEBSITE_B12/modules/paths.js",
+      "line": 2,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || 'D:\\\\P2GC_Intelligence\\\\MILES_OS';"
+    },
+    {
+      "file": "TESTS/Test_BUILD050_InstantlyLiveConnector.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD050_InstantlyLiveConnector.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD050_InstantlyLiveConnector.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "console.log(\"MILES_ROOT:\", process.env.MILES_ROOT);"
+    },
+    {
+      "file": "TESTS/Test_BUILD051_EnvironmentAudit.js",
+      "line": 15,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "console.log(process.env.MILES_ROOT || \"<NOT SET>\");"
+    },
+    {
+      "file": "TESTS/Test_BUILD051_ListCampaigns.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD051_ListCampaigns.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD052_CampaignIntelligence.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||= process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD053_CampaignInventory.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD053_CampaignInventory.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD054_ExecutiveAdvisor.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD054_ExecutiveAdvisor.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD055_MissionCreationService.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD055_MissionCreationService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "TESTS/Test_BUILD056_RuntimeConsolidationAudit.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD056_RuntimeConsolidationAudit.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_BUILD057_EnterpriseRuntimeManager.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_BUILD057_EnterpriseRuntimeManager.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build017_EnterpriseRegistryActivation.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build017_EnterpriseRegistryActivation.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build018_EnterpriseAssignment.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build018_EnterpriseAssignment.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build019_RevenueFirstAutonomousCOO.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build019_RevenueFirstAutonomousCOO.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build020_SalesCOO.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build020_SalesCOO.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build020_SalesCOO.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "TESTS/Test_Build021_MarketingCOO.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build021_MarketingCOO.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build021_MarketingCOO.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "TESTS/Test_Build022_OrionCOO.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build022_OrionCOO.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build022_OrionCOO.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "TESTS/Test_Build023_WebsiteCOO.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build023_WebsiteCOO.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build024_GoogleWorkspaceCOO.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build024_GoogleWorkspaceCOO.js",
+      "line": 10,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build024A_GoogleCapabilityRegistration.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build024A_GoogleCapabilityRegistration.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build025_ExecutiveCOO.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build025_ExecutiveCOO.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build025_ExecutiveCOO.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT;"
+    },
+    {
+      "file": "TESTS/Test_Build026_GovernedExecutiveDispatch.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build026_GovernedExecutiveDispatch.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build027_ResidentWorkerRuntime.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build027_ResidentWorkerRuntime.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build028_ExecutionCompletion.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build028_ExecutionCompletion.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build028_ExecutionCompletion.backup.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "TESTS/Test_Build028_ExecutionCompletion.backup.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "TESTS/Test_Build036_SingleExecutionAuthority.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT = root;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILDER.ps1",
+      "line": 26,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_BUILDER.ps1",
+      "line": 94,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_BUILDER.ps1",
+      "line": 127,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_BUILDER.ps1",
+      "line": 157,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_BUILDER_ANALYZER.ps1",
+      "line": 25,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_LOCAL_AUTOMATION_AGENT.ps1",
+      "line": 31,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+      "line": 50,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "INSTALL_MILES_PLANNER_SUBSYSTEM.ps1",
+      "line": 120,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "INSTALL_MILES_WORKFORCE_EXECUTION_ENGINE.ps1",
+      "line": 43,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "StartMilesProduction.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT = __dirname;"
+    },
+    {
+      "file": "StartMilesProduction.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "StartProductionSystem.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "MILES_Enterprise_Registry_Phase1_v1.0/BuildEnterpriseRegistry.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const rootDir = process.env.MILES_ROOT"
+    },
+    {
+      "file": "MILES_Enterprise_Registry_Phase1_v1.0/BuildEnterpriseRegistry.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "? path.resolve(process.env.MILES_ROOT)"
+    },
+    {
+      "file": "BuildEnterpriseRegistry.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const rootDir = process.env.MILES_ROOT"
+    },
+    {
+      "file": "BuildEnterpriseRegistry.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "? path.resolve(process.env.MILES_ROOT)"
+    },
+    {
+      "file": "StartRuntimeRegistryService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const rootDir = process.env.MILES_ROOT"
+    },
+    {
+      "file": "StartRuntimeRegistryService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "? path.resolve(process.env.MILES_ROOT)"
+    },
+    {
+      "file": "RunInstantlyCOO.js",
+      "line": 21,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "RunInstantlyCOO.js",
+      "line": 23,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "BuildMilesDeveloperIndex.js",
+      "line": 19,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "Fix-Miles-Now.ps1",
+      "line": 144,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "Trace-MilesQueueBinding.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "Final-Governance-Repair.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_EXECUTION_ROUTING_SOURCE.txt",
+      "line": 94,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_EXECUTION_ROUTING_SOURCE.txt",
+      "line": 398,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_EXECUTION_ROUTING_SOURCE.txt",
+      "line": 685,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_EXECUTION_SERVICE_SOURCE.txt",
+      "line": 443,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_EXECUTION_SERVICE_SOURCE.txt",
+      "line": 1009,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_PROVIDER_PLANNING_SOURCE.txt",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_PROVIDER_PLANNING_SOURCE.txt",
+      "line": 699,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_016_REQUIRED_SOURCE.txt",
+      "line": 98,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_016_REQUIRED_SOURCE.txt",
+      "line": 1112,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_016_REQUIRED_SOURCE.txt",
+      "line": 1210,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_016_CAPABILITY_RESOLUTION.ps1",
+      "line": 316,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_016_20260711_210405/SERVICES/PlannerService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "_BACKUPS/BUILD_017_ENTERPRISE_20260711_214055/SERVICES/WorkforceService.js",
+      "line": 4,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "_BACKUPS/BUILD_018_20260711_214516/SERVICES/CapabilityService.js",
+      "line": 14,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_018_20260711_214516/SERVICES/WorkforceService.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_018_TEST_REPAIR_20260711_215137/Test_Build018_EnterpriseAssignment.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "_BACKUPS/BUILD_018_TEST_REPAIR_20260711_215137/Test_Build018_EnterpriseAssignment.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "_BACKUPS/BUILD_019_20260711_221600/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_019A_TEST_ONLY/Test_Build019_RevenueFirstAutonomousCOO.js",
+      "line": 5,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "_BACKUPS/BUILD_019A_TEST_ONLY/Test_Build019_RevenueFirstAutonomousCOO.js",
+      "line": 6,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "_BACKUPS/BUILD_020_20260711_222344/SERVICES/CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_020B_20260711_223306/SERVICES/CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_020B_20260711_223306/PROVIDERS/providers/SalesProvider.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_024_20260711_230105/SERVICES/CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_024A_20260711_230650/SERVICES/CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_026_20260711_231617/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_028_20260711_233314/StartProductionSystem.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "_BACKUPS/BUILD_030_20260712_222558/SERVICES/BusinessExecutionEngineService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "_BACKUPS/BUILD_030_20260712_223053/SERVICES/BusinessExecutionEngineService.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "_BACKUPS/BUILD_031_20260712_231928/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_032_20260712_233030/SERVICES/CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_036_20260713_152946/CORE/TaskQueue.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_036_20260713_152946/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD_036_20260713_152946/StartProductionSystem.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "_BACKUPS/BUILD042_20260713_204336/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "_BACKUPS/BUILD043_20260713_204816/AutonomousCOOLoopService.js",
+      "line": 28,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD_017_REQUIRED_SOURCE.txt",
+      "line": 268,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD_017_REQUIRED_SOURCE.txt",
+      "line": 672,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REQUIRED_SOURCE.txt",
+      "line": 883,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REQUIRED_SOURCE.txt",
+      "line": 981,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 31,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, \"..\");"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 524,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 810,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 993,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 1063,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 1153,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 1206,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 1796,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "MILES_BUILD_017_REGISTRY_INTEGRATION_SOURCE.txt",
+      "line": 4231,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_WORKFORCE_CAPABILITY_NORMALIZATION.ps1",
+      "line": 54,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_WORKFORCE_CAPABILITY_NORMALIZATION.ps1",
+      "line": 539,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_WORKFORCE_CAPABILITY_NORMALIZATION.ps1",
+      "line": 540,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_ENTERPRISE_REGISTRY_ACTIVATION.ps1",
+      "line": 88,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_ENTERPRISE_REGISTRY_ACTIVATION.ps1",
+      "line": 530,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_ENTERPRISE_REGISTRY_ACTIVATION.ps1",
+      "line": 1821,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_ENTERPRISE_REGISTRY_ACTIVATION.ps1",
+      "line": 1822,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_REGISTRY_AWARE_WORKFORCE_RESOLVER.ps1",
+      "line": 52,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_REGISTRY_AWARE_WORKFORCE_RESOLVER.ps1",
+      "line": 884,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_017_REGISTRY_AWARE_WORKFORCE_RESOLVER.ps1",
+      "line": 885,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_018_ENTERPRISE_ASSIGNMENT_AND_CREDENTIAL_AWARENESS.ps1",
+      "line": 74,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_018_ENTERPRISE_ASSIGNMENT_AND_CREDENTIAL_AWARENESS.ps1",
+      "line": 863,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_018_ENTERPRISE_ASSIGNMENT_AND_CREDENTIAL_AWARENESS.ps1",
+      "line": 1690,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_018_ENTERPRISE_ASSIGNMENT_AND_CREDENTIAL_AWARENESS.ps1",
+      "line": 1691,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "REPAIR_MILES_BUILD_018_TEST_ONLY.ps1",
+      "line": 45,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "REPAIR_MILES_BUILD_018_TEST_ONLY.ps1",
+      "line": 46,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 1156,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 1381,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 1434,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 1602,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 2106,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 3227,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 3886,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 4745,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 4928,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 4998,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "MILES_BUILD_019_AUTONOMOUS_OPERATIONS_SOURCE.txt",
+      "line": 5099,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || \"D:\\\\P2GC_Intelligence\\\\MILES_OS\";"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_019_REVENUE_FIRST_AUTONOMOUS_COO.ps1",
+      "line": 80,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_019_REVENUE_FIRST_AUTONOMOUS_COO.ps1",
+      "line": 1411,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_019_REVENUE_FIRST_AUTONOMOUS_COO.ps1",
+      "line": 1412,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020_SALES_COO.ps1",
+      "line": 51,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020_SALES_COO.ps1",
+      "line": 970,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020_SALES_COO.ps1",
+      "line": 1292,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020_SALES_COO.ps1",
+      "line": 1293,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020_SALES_COO.ps1",
+      "line": 1296,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020B_SALES_COO_COMPLETE_REPLACEMENT.ps1",
+      "line": 76,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020B_SALES_COO_COMPLETE_REPLACEMENT.ps1",
+      "line": 1001,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020B_SALES_COO_COMPLETE_REPLACEMENT.ps1",
+      "line": 1478,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020B_SALES_COO_COMPLETE_REPLACEMENT.ps1",
+      "line": 1479,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_020B_SALES_COO_COMPLETE_REPLACEMENT.ps1",
+      "line": 1482,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_021_MARKETING_COO.ps1",
+      "line": 73,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_021_MARKETING_COO.ps1",
+      "line": 711,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_021_MARKETING_COO.ps1",
+      "line": 712,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_021_MARKETING_COO.ps1",
+      "line": 715,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_022_ORION_COO.ps1",
+      "line": 73,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_022_ORION_COO.ps1",
+      "line": 638,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_022_ORION_COO.ps1",
+      "line": 639,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_022_ORION_COO.ps1",
+      "line": 642,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_023_WEBSITE_COO.ps1",
+      "line": 75,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_023_WEBSITE_COO.ps1",
+      "line": 1152,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_023_WEBSITE_COO.ps1",
+      "line": 1153,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024_GOOGLE_WORKSPACE_COO.ps1",
+      "line": 77,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024_GOOGLE_WORKSPACE_COO.ps1",
+      "line": 1114,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024_GOOGLE_WORKSPACE_COO.ps1",
+      "line": 1561,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024_GOOGLE_WORKSPACE_COO.ps1",
+      "line": 1562,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "CapabilityService.js",
+      "line": 11,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024A_GOOGLE_CAPABILITY_REGISTRATION.ps1",
+      "line": 55,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024A_GOOGLE_CAPABILITY_REGISTRATION.ps1",
+      "line": 634,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_024A_GOOGLE_CAPABILITY_REGISTRATION.ps1",
+      "line": 635,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_025_EXECUTIVE_COO.ps1",
+      "line": 79,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_025_EXECUTIVE_COO.ps1",
+      "line": 1306,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_025_EXECUTIVE_COO.ps1",
+      "line": 1307,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_025_EXECUTIVE_COO.ps1",
+      "line": 1311,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT;"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_026_GOVERNED_EXECUTIVE_DISPATCH.ps1",
+      "line": 71,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_026_GOVERNED_EXECUTIVE_DISPATCH.ps1",
+      "line": 1551,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_026_GOVERNED_EXECUTIVE_DISPATCH.ps1",
+      "line": 1552,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_027_RESIDENT_WORKER_RUNTIME.ps1",
+      "line": 75,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_027_RESIDENT_WORKER_RUNTIME.ps1",
+      "line": 1053,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_027_RESIDENT_WORKER_RUNTIME.ps1",
+      "line": 1054,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_028_EXECUTION_COMPLETION.ps1",
+      "line": 51,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_028_EXECUTION_COMPLETION.ps1",
+      "line": 1602,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_028_EXECUTION_COMPLETION.ps1",
+      "line": 1603,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_030_BUSINESS_EXECUTION_ORCHESTRATOR.ps1",
+      "line": 83,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "INSTALL_MILES_BUILD_032_OBJECTIVE_PROVIDER_ACTIVATION.ps1",
+      "line": 87,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD036_SOURCE_BUNDLE.txt",
+      "line": 13,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD036_SOURCE_BUNDLE.txt",
+      "line": 1337,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "BUILD036_SOURCE_BUNDLE.txt",
+      "line": 2910,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/StartProductionSystem.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/CORE/TaskQueue.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/MILES_BUILD036_SINGLE_EXECUTION_AUTHORITY/TESTS/Test_Build036_SingleExecutionAuthority.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT = root;"
+    },
+    {
+      "file": "MILES_BUILD037_WORKFLOW_PERSISTENCE/MILES_BUILD037_WORKFLOW_PERSISTENCE/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD037_CURRENT_SOURCE.txt",
+      "line": 1078,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "MILES_BUILD037_FINAL_FIX/BUILD037_FINAL_FIX/SERVICES/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD038_ENGINEERING_SOURCE.txt",
+      "line": 959,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD038_ENGINEERING_SOURCE.txt",
+      "line": 1465,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/StartMilesProduction.js",
+      "line": 12,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT = __dirname;"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/StartMilesProduction.js",
+      "line": 16,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/AutonomousCOOLoopService.js",
+      "line": 27,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/DigitalCOOHost.js",
+      "line": 102,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/DigitalCOOHost.js",
+      "line": 1347,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/DigitalCOOHost.js",
+      "line": 1348,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    },
+    {
+      "file": "BUILD041_EXECUTIVE_RUNTIME_EVIDENCE/DigitalCOOHost.js",
+      "line": 1358,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT"
+    },
+    {
+      "file": "INSTALL_BUILD043_LIVE_BUSINESS_STATE.ps1",
+      "line": 33,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "const ROOT = process.env.MILES_ROOT || process.cwd();"
+    },
+    {
+      "file": "StartExecutiveDashboard.js",
+      "line": 7,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ="
+    },
+    {
+      "file": "StartExecutiveDashboard.js",
+      "line": 8,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT || __dirname;"
+    },
+    {
+      "file": "StartProductionSystem.BUILD048.backup.js",
+      "line": 9,
+      "pattern": "process.env.MILES_ROOT",
+      "text": "process.env.MILES_ROOT ||"
+    }
+  ],
+  "searchedAt": "2026-07-14T18:46:05.439Z"
+}

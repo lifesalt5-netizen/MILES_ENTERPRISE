@@ -1,6 +1,6 @@
 "use strict";
 
-const { buildSegmentRegistry } = require("./DIGITAL_COO/Marketing/SegmentRegistry");
+const { buildSegmentRegistry } = require("./SegmentRegistry");
 
 const registry = buildSegmentRegistry();
 

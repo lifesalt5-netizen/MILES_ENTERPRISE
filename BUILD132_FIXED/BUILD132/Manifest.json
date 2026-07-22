@@ -1,0 +1,13 @@
+{
+  "build": "BUILD132",
+  "baseline": "BUILD131",
+  "status": "installer package",
+  "powershell": "5.1 ASCII CRLF",
+  "backup": true,
+  "rollback": true,
+  "tests": [
+    "syntax",
+    "adapter",
+    "registry"
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T15:56:27.331Z",
+  "generatedAt": "2026-07-22T20:12:54.482Z",
   "source": "COO_BUSINESS_STATE_ENGINE",
   "status": "NO_RECOVERY_REQUIRED",
   "readiness": {
@@ -9,6 +9,6 @@
     "openCEOApprovals": 0,
     "openExecutiveAlerts": 0,
     "canOperate": true,
-    "generatedAt": "2026-07-13T15:56:27.232Z"
+    "generatedAt": "2026-07-22T20:12:54.473Z"
   }
 }

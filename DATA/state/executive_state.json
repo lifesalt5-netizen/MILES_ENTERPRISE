@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T15:58:56.209Z",
+  "generatedAt": "2026-07-22T20:13:20.877Z",
   "runtime": {
     "mode": "local",
     "node": "v24.18.0",
@@ -36,7 +36,7 @@
       "accountResponseType": "object",
       "dryRun": true,
       "mutationsAllowed": false,
-      "generatedAt": "2026-07-13T15:58:50.740Z"
+      "generatedAt": "2026-07-22T20:12:58.013Z"
     },
     "ORION": {
       "name": "ORION",
@@ -45,15 +45,16 @@
       "status": "OK",
       "db": "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
       "tableCount": 66,
-      "checkedAt": "2026-07-13T15:58:50.740Z"
+      "checkedAt": "2026-07-22T20:12:58.327Z"
     },
     "MILES": {
       "name": "MILES",
       "status": "OK",
       "ok": true,
       "service": "MILES Internal Capability Connector",
-      "message": "Internal capability routing operational.",
-      "checkedAt": "2026-07-13T15:58:50.740Z"
+      "message": "Explicit MILES business and capability routing operational.",
+      "supportedActionCount": 13,
+      "checkedAt": "2026-07-22T20:12:58.328Z"
     }
   },
   "workforce": {
@@ -63,7 +64,7 @@
     "capabilities": 344,
     "active": 0,
     "idle": 120,
-    "queued": 25
+    "queued": 0
   },
   "capabilities": {
     "ok": true,
@@ -123,37 +124,351 @@
   },
   "workflow": {
     "ok": true,
-    "total": 1983,
-    "queued": 1965,
-    "awaitingApproval": 18,
-    "completed": 0,
+    "total": 2094,
+    "queued": 1859,
+    "awaitingApproval": 22,
+    "completed": 212,
     "active": [
       {
-        "id": "WP-20260702005453-314",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "id": "WP-20260712010445-700",
+        "objective": "Repair Website: WebsiteProviderLoadFailure",
+        "status": "COMPLETED",
+        "owner": "MILES",
+        "priority": "CRITICAL",
+        "priorityScore": 100,
+        "createdAt": "2026-07-12T01:04:45.080Z",
+        "updatedAt": "2026-07-17T18:07:36.592Z",
+        "plan": {
+          "ok": true,
+          "type": "PLAN",
+          "objective": "Repair Website: WebsiteProviderLoadFailure",
+          "priority": "CRITICAL",
+          "priorityScore": 100,
+          "createdAt": "2026-07-12T01:04:45.079Z",
+          "owner": "MILES",
+          "context": {},
+          "domain": "website",
+          "workforce": "Website Operations Workforce",
+          "resolution": "OBJECTIVE_MATCH",
+          "requiredCapabilities": [
+            "website.health.repair"
+          ],
+          "assignments": [
+            {
+              "capability": "website.health.repair",
+              "provider": "WebsiteProvider",
+              "department": "Website",
+              "action": "verifyWebsite",
+              "bestWorker": null,
+              "candidates": []
+            }
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "capability": "website.health.repair",
+              "assignedTo": "MILES",
+              "department": "Website",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "taskType": "WORKFORCE_STEP",
+              "provider": "WebsiteProvider",
+              "action": "verifyWebsite",
+              "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+              "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+            }
+          ],
+          "providers": [
+            "WebsiteProvider"
+          ],
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
+          "approvalRequired": false,
+          "verificationChecklist": [
+            "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+          ],
+          "successCriteria": [
+            "WebsiteProvider.verifyWebsite executes through ProviderRouterService."
+          ],
+          "rulesVersion": "1.0.0"
+        },
+        "tasks": [
+          {
+            "step": 1,
+            "capability": "website.health.repair",
+            "assignedTo": "MILES",
+            "department": "Website",
+            "status": "COMPLETED",
+            "dependsOn": [],
+            "taskType": "WORKFORCE_STEP",
+            "provider": "WebsiteProvider",
+            "action": "verifyWebsite",
+            "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+            "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure.",
+            "taskId": "TASK-1783818285248-32503",
+            "startedAt": null,
+            "completedAt": "2026-07-17T17:58:56.615Z",
+            "failedAt": null,
+            "result": {
+              "ok": true,
+              "status": "COMPLETED",
+              "provider": "WebsiteProvider",
+              "connector": "WORKFORCE",
+              "department": "Website",
+              "action": "verifyWebsite",
+              "workforceResult": {
+                "ok": true,
+                "result": {
+                  "ok": true,
+                  "type": "WORKFORCE_STEP_RESULT",
+                  "executionMode": "AUTONOMOUS",
+                  "taskId": "TASK-1783818285248-32503",
+                  "workPackageId": "WP-20260712010445-700",
+                  "objective": "Repair Website: WebsiteProviderLoadFailure",
+                  "capability": "website.health.repair",
+                  "provider": "WebsiteProvider",
+                  "action": "verifyWebsite",
+                  "assignedTo": "MILES",
+                  "department": "Website",
+                  "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+                  "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure.",
+                  "employeeFound": false,
+                  "employeeProfile": null,
+                  "output": {
+                    "summary": "WebsiteProvider executed verifyWebsite.",
+                    "recommendation": "WebsiteProvider executed successfully. Decision approved for autonomous verification and reporting.",
+                    "nextActions": [
+                      "Accept WebsiteProvider execution result.",
+                      "Verify result evidence.",
+                      "Update Executive State.",
+                      "Generate executive reporting entry."
+                    ],
+                    "needsHumanInput": false,
+                    "ceoApprovalRequired": false,
+                    "providerResult": {
+                      "ok": true,
+                      "type": "PROVIDER_EXECUTION_RESULT",
+                      "requestedProvider": "WebsiteProvider",
+                      "provider": "WebsiteProvider",
+                      "routedTo": "WebsiteProvider",
+                      "action": "verifyWebsite",
+                      "actionInvoked": "verifyWebsite",
+                      "taskId": "TASK-1783818285248-32503",
+                      "workPackageId": "WP-20260712010445-700",
+                      "objective": "Repair Website: WebsiteProviderLoadFailure",
+                      "capability": "website.health.repair",
+                      "assignedTo": "MILES",
+                      "department": "Website",
+                      "status": "Healthy",
+                      "dataFreshness": "Live",
+                      "lastRefresh": "2026-07-12T01:04:57.265Z",
+                      "metrics": {
+                        "homepageReachable": true,
+                        "statusCode": 200,
+                        "loadMs": 853,
+                        "title": "Unlock Government Contract Opportunities",
+                        "h1": "Federal &amp; SLED Market Entry Advisory",
+                        "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+                        "https": true,
+                        "hasCTA": true,
+                        "hasContact": true,
+                        "hasCalendly": false,
+                        "hasServices": true,
+                        "hasPhone": true,
+                        "hasEmail": true
+                      },
+                      "exceptions": [],
+                      "recommendations": [],
+                      "providerOutput": {
+                        "ok": true,
+                        "provider": "WebsiteProvider",
+                        "action": "verifyWebsite",
+                        "status": "Healthy",
+                        "metrics": {
+                          "homepageReachable": true,
+                          "statusCode": 200,
+                          "loadMs": 853,
+                          "title": "Unlock Government Contract Opportunities",
+                          "h1": "Federal &amp; SLED Market Entry Advisory",
+                          "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+                          "https": true,
+                          "hasCTA": true,
+                          "hasContact": true,
+                          "hasCalendly": false,
+                          "hasServices": true,
+                          "hasPhone": true,
+                          "hasEmail": true
+                        },
+                        "exceptions": [],
+                        "recommendations": [],
+                        "verifiedAt": "2026-07-12T01:04:57.265Z"
+                      },
+                      "evidence": {
+                        "providerLoaded": true,
+                        "initialized": true,
+                        "requestedProvider": "WebsiteProvider",
+                        "routedProvider": "WebsiteProvider",
+                        "requestedAction": "verifyWebsite",
+                        "actionAvailable": true,
+                        "metricsCaptured": true,
+                        "exceptionsCaptured": true,
+                        "recommendationsCaptured": true
+                      },
+                      "startedAt": "2026-07-12T01:04:57.265Z",
+                      "completedAt": "2026-07-12T01:04:58.147Z"
+                    },
+                    "automationResult": null,
+                    "decision": {
+                      "ok": true,
+                      "type": "MILES_DECISION",
+                      "decision": "PROCEED",
+                      "authority": {
+                        "ok": true,
+                        "authority": "MILES_OPERATIONAL",
+                        "approvalRequired": false,
+                        "provider": "websiteprovider",
+                        "reason": "Action is within MILES operational authority."
+                      },
+                      "risk": {
+                        "ok": true,
+                        "risk": "LOW",
+                        "criticalCount": 0,
+                        "warningCount": 0,
+                        "reason": "No material provider risk detected."
+                      },
+                      "policy": {
+                        "ok": true,
+                        "policies": [],
+                        "policyCount": 0
+                      },
+                      "confidence": {
+                        "ok": true,
+                        "confidenceScore": 95,
+                        "confidence": "HIGH"
+                      },
+                      "approval": {
+                        "ok": true,
+                        "approvalRequired": false,
+                        "status": "APPROVED_FOR_AUTONOMOUS_EXECUTION",
+                        "reason": "Decision is approved for autonomous execution."
+                      },
+                      "createdAt": "2026-07-12T01:04:58.151Z"
+                    },
+                    "executionPlan": {
+                      "ok": true,
+                      "type": "AUTONOMOUS_EXECUTION_PLAN",
+                      "decision": "PROCEED",
+                      "executionMode": "AUTONOMOUS",
+                      "provider": "WebsiteProvider",
+                      "action": "verifyWebsite",
+                      "capability": "website.health.repair",
+                      "workPackageId": "WP-20260712010445-700",
+                      "taskId": "TASK-1783818285248-32503",
+                      "objective": "Repair Website: WebsiteProviderLoadFailure",
+                      "canExecute": true,
+                      "verificationRequired": true,
+                      "reportToExecutive": true,
+                      "nextActions": [
+                        "Accept WebsiteProvider execution result.",
+                        "Verify result evidence.",
+                        "Update Executive State.",
+                        "Generate executive reporting entry."
+                      ],
+                      "approval": {
+                        "ok": true,
+                        "approvalRequired": false,
+                        "status": "APPROVED_FOR_AUTONOMOUS_EXECUTION",
+                        "reason": "Decision is approved for autonomous execution."
+                      },
+                      "risk": {
+                        "ok": true,
+                        "risk": "LOW",
+                        "criticalCount": 0,
+                        "warningCount": 0,
+                        "reason": "No material provider risk detected."
+                      },
+                      "confidence": {
+                        "ok": true,
+                        "confidenceScore": 95,
+                        "confidence": "HIGH"
+                      },
+                      "createdAt": "2026-07-12T01:04:58.152Z"
+                    }
+                  },
+                  "status": "AWAITING_VERIFICATION",
+                  "createdAt": "2026-07-12T01:04:58.152Z",
+                  "outFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\workforce_results\\WP-20260712010445-700_TASK-1783818285248-32503.json"
+                },
+                "verification": {
+                  "ok": true,
+                  "type": "WORKFORCE_STEP_VERIFICATION",
+                  "taskId": "TASK-1783818285248-32503",
+                  "workPackageId": "WP-20260712010445-700",
+                  "capability": "website.health.repair",
+                  "provider": "WebsiteProvider",
+                  "action": "verifyWebsite",
+                  "assignedTo": "MILES",
+                  "verified": true,
+                  "status": "COMPLETED",
+                  "evidence": {
+                    "executionMode": "AUTONOMOUS",
+                    "hasOutput": true,
+                    "hasRecommendation": true,
+                    "providerFailed": false,
+                    "needsApproval": false
+                  },
+                  "checkedAt": "2026-07-12T01:04:58.165Z"
+                },
+                "status": "COMPLETED"
+              },
+              "completedAt": "2026-07-12T01:04:58.169Z"
+            },
+            "error": null,
+            "updatedAt": "2026-07-17T17:58:56.615Z"
+          }
+        ],
+        "approvals": [],
+        "results": [],
+        "verification": {
+          "required": true,
+          "status": "PASSED",
+          "checkedAt": "2026-07-17T18:07:36.584Z"
+        },
+        "lifecycle": {
+          "linkedTaskCount": 1,
+          "completedTaskCount": 1,
+          "failedTaskCount": 0,
+          "runningTaskCount": 0,
+          "queuedTaskCount": 0,
+          "lastReconciledAt": "2026-07-17T18:07:36.584Z"
+        },
+        "completedAt": "2026-07-17T02:28:08.532Z"
+      },
+      {
+        "id": "WP-20260704234902-844",
+        "objective": "Investigate why all Instantly campaigns are paused",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T00:54:53.160Z",
-        "updatedAt": "2026-07-02T00:54:53.160Z",
+        "createdAt": "2026-07-04T23:49:02.600Z",
+        "updatedAt": "2026-07-04T23:49:02.600Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "objective": "Investigate why all Instantly campaigns are paused",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T00:54:53.160Z",
+          "createdAt": "2026-07-04T23:49:02.600Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782953682025",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
+            "cycleId": "MILES-COO-CYCLE-1783208899012",
+            "provider": "MarketingProvider",
+            "domain": "marketing",
             "priority": "CRITICAL",
             "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+            "discoveredWorkId": "WORK-MARKETING-NO-ACTIVE-1783208900085",
+            "discoveryReason": "No active Instantly campaigns detected."
           },
           "domain": "marketing",
           "workforce": "Marketing Workforce",
@@ -281,7 +596,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -294,7 +609,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -307,7 +622,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -320,7 +635,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -329,7 +644,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -367,7 +682,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -380,7 +695,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -393,7 +708,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -406,7 +721,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -420,25 +735,25 @@
         }
       },
       {
-        "id": "WP-20260702005554-123",
+        "id": "WP-20260704234844-836",
         "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T00:55:54.909Z",
-        "updatedAt": "2026-07-02T00:55:54.909Z",
+        "createdAt": "2026-07-04T23:48:44.282Z",
+        "updatedAt": "2026-07-04T23:48:44.282Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
           "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T00:55:54.909Z",
+          "createdAt": "2026-07-04T23:48:44.282Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782953754307",
+            "cycleId": "MILES-COO-CYCLE-1783208899012",
             "provider": "Instantly",
             "domain": "Revenue Operations",
             "priority": "CRITICAL",
@@ -572,7 +887,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -585,7 +900,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -598,7 +913,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -611,7 +926,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -620,7 +935,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -658,7 +973,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -671,7 +986,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -684,7 +999,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -697,7 +1012,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -711,31 +1026,31 @@
         }
       },
       {
-        "id": "WP-20260702005656-385",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "id": "WP-20260704234233-350",
+        "objective": "Investigate why all Instantly campaigns are paused",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T00:56:56.891Z",
-        "updatedAt": "2026-07-02T00:56:56.891Z",
+        "createdAt": "2026-07-04T23:42:33.058Z",
+        "updatedAt": "2026-07-04T23:42:33.058Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "objective": "Investigate why all Instantly campaigns are paused",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T00:56:56.891Z",
+          "createdAt": "2026-07-04T23:42:33.058Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782953816244",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
+            "cycleId": "MILES-COO-CYCLE-1783208534798",
+            "provider": "MarketingProvider",
+            "domain": "marketing",
             "priority": "CRITICAL",
             "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+            "discoveredWorkId": "WORK-MARKETING-NO-ACTIVE-1783208535901",
+            "discoveryReason": "No active Instantly campaigns detected."
           },
           "domain": "marketing",
           "workforce": "Marketing Workforce",
@@ -863,7 +1178,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -876,7 +1191,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -889,7 +1204,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -902,7 +1217,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -911,7 +1226,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -949,7 +1264,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -962,7 +1277,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -975,7 +1290,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -988,7 +1303,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -1002,25 +1317,25 @@
         }
       },
       {
-        "id": "WP-20260702005759-386",
+        "id": "WP-20260704234216-222",
         "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T00:57:59.000Z",
-        "updatedAt": "2026-07-02T00:57:59.000Z",
+        "createdAt": "2026-07-04T23:42:16.826Z",
+        "updatedAt": "2026-07-04T23:42:16.826Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
           "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T00:57:59.000Z",
+          "createdAt": "2026-07-04T23:42:16.826Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782953878420",
+            "cycleId": "MILES-COO-CYCLE-1783208534798",
             "provider": "Instantly",
             "domain": "Revenue Operations",
             "priority": "CRITICAL",
@@ -1154,7 +1469,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1167,7 +1482,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1180,7 +1495,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1193,7 +1508,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -1202,7 +1517,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -1240,7 +1555,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1253,7 +1568,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1266,7 +1581,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1279,7 +1594,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -1293,31 +1608,31 @@
         }
       },
       {
-        "id": "WP-20260702005901-466",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "id": "WP-20260704233625-778",
+        "objective": "Investigate why all Instantly campaigns are paused",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T00:59:01.040Z",
-        "updatedAt": "2026-07-02T00:59:01.040Z",
+        "createdAt": "2026-07-04T23:36:25.220Z",
+        "updatedAt": "2026-07-04T23:36:25.220Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "objective": "Investigate why all Instantly campaigns are paused",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T00:59:01.040Z",
+          "createdAt": "2026-07-04T23:36:25.220Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782953940390",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
+            "cycleId": "MILES-COO-CYCLE-1783208150869",
+            "provider": "MarketingProvider",
+            "domain": "marketing",
             "priority": "CRITICAL",
             "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+            "discoveredWorkId": "WORK-MARKETING-NO-ACTIVE-1783208151812",
+            "discoveryReason": "No active Instantly campaigns detected."
           },
           "domain": "marketing",
           "workforce": "Marketing Workforce",
@@ -1445,7 +1760,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1458,7 +1773,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1471,7 +1786,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1484,7 +1799,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -1493,7 +1808,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -1531,7 +1846,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1544,7 +1859,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1557,7 +1872,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1570,7 +1885,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -1584,25 +1899,25 @@
         }
       },
       {
-        "id": "WP-20260702010003-415",
+        "id": "WP-20260704233608-616",
         "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T01:00:03.316Z",
-        "updatedAt": "2026-07-02T01:00:03.316Z",
+        "createdAt": "2026-07-04T23:36:08.844Z",
+        "updatedAt": "2026-07-04T23:36:08.844Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
           "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T01:00:03.316Z",
+          "createdAt": "2026-07-04T23:36:08.843Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782954002618",
+            "cycleId": "MILES-COO-CYCLE-1783208150869",
             "provider": "Instantly",
             "domain": "Revenue Operations",
             "priority": "CRITICAL",
@@ -1736,7 +2051,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1749,7 +2064,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1762,7 +2077,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1775,7 +2090,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -1784,7 +2099,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -1822,7 +2137,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -1835,7 +2150,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -1848,7 +2163,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -1861,7 +2176,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -1875,31 +2190,31 @@
         }
       },
       {
-        "id": "WP-20260702010105-054",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "id": "WP-20260704233010-524",
+        "objective": "Investigate why all Instantly campaigns are paused",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T01:01:05.429Z",
-        "updatedAt": "2026-07-02T01:01:05.429Z",
+        "createdAt": "2026-07-04T23:30:10.243Z",
+        "updatedAt": "2026-07-04T23:30:10.243Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "objective": "Investigate why all Instantly campaigns are paused",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T01:01:05.429Z",
+          "createdAt": "2026-07-04T23:30:10.243Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782954064797",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
+            "cycleId": "MILES-COO-CYCLE-1783207755025",
+            "provider": "MarketingProvider",
+            "domain": "marketing",
             "priority": "CRITICAL",
             "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+            "discoveredWorkId": "WORK-MARKETING-NO-ACTIVE-1783207757078",
+            "discoveryReason": "No active Instantly campaigns detected."
           },
           "domain": "marketing",
           "workforce": "Marketing Workforce",
@@ -2027,7 +2342,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2040,7 +2355,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -2053,7 +2368,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -2066,7 +2381,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -2075,7 +2390,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -2113,7 +2428,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2126,7 +2441,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -2139,7 +2454,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -2152,7 +2467,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -2166,25 +2481,25 @@
         }
       },
       {
-        "id": "WP-20260702010207-935",
+        "id": "WP-20260704232949-089",
         "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T01:02:07.489Z",
-        "updatedAt": "2026-07-02T01:02:07.489Z",
+        "createdAt": "2026-07-04T23:29:49.514Z",
+        "updatedAt": "2026-07-04T23:29:49.514Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
           "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T01:02:07.489Z",
+          "createdAt": "2026-07-04T23:29:49.514Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782954126769",
+            "cycleId": "MILES-COO-CYCLE-1783207755025",
             "provider": "Instantly",
             "domain": "Revenue Operations",
             "priority": "CRITICAL",
@@ -2318,7 +2633,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2331,7 +2646,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -2344,7 +2659,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -2357,7 +2672,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "Instantly",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -2366,7 +2681,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -2404,7 +2719,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2417,7 +2732,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -2430,7 +2745,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -2443,7 +2758,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "Instantly",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -2457,31 +2772,31 @@
         }
       },
       {
-        "id": "WP-20260702010309-253",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+        "id": "WP-20260704232325-077",
+        "objective": "Investigate why all Instantly campaigns are paused",
         "status": "QUEUED",
         "owner": "MILES",
         "priority": "CRITICAL",
         "priorityScore": 100,
-        "createdAt": "2026-07-02T01:03:09.551Z",
-        "updatedAt": "2026-07-02T01:03:09.551Z",
+        "createdAt": "2026-07-04T23:23:25.752Z",
+        "updatedAt": "2026-07-04T23:23:25.752Z",
         "plan": {
           "ok": true,
           "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
+          "objective": "Investigate why all Instantly campaigns are paused",
           "priority": "CRITICAL",
           "priorityScore": 100,
-          "createdAt": "2026-07-02T01:03:09.551Z",
+          "createdAt": "2026-07-04T23:23:25.752Z",
           "owner": "MILES",
           "context": {
             "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782954188946",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
+            "cycleId": "MILES-COO-CYCLE-1783207384472",
+            "provider": "MarketingProvider",
+            "domain": "marketing",
             "priority": "CRITICAL",
             "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
+            "discoveredWorkId": "WORK-MARKETING-NO-ACTIVE-1783207385194",
+            "discoveryReason": "No active Instantly campaigns detected."
           },
           "domain": "marketing",
           "workforce": "Marketing Workforce",
@@ -2609,7 +2924,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "identifyPausedCampaigns",
               "expectedOutput": "List of paused campaigns requiring review.",
               "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2617,303 +2932,12 @@
             {
               "step": 3,
               "capability": "marketing.deliverability.evaluate",
-              "assignedTo": "MILES",
-              "department": "Marketing",
-              "status": "QUEUED",
-              "dependsOn": [],
-              "taskType": "WORKFORCE_STEP",
-              "provider": null,
-              "action": "evaluateDeliverabilityRisk",
-              "expectedOutput": "Deliverability risk assessment for paused campaigns.",
-              "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
-            },
-            {
-              "step": 4,
-              "capability": "marketing.execution.route",
-              "assignedTo": "MILES",
-              "department": "Marketing",
-              "status": "QUEUED",
-              "dependsOn": [],
-              "taskType": "WORKFORCE_STEP",
-              "provider": null,
-              "action": "recommendResumeOrHold",
-              "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
-              "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
-            },
-            {
-              "step": 5,
-              "capability": "executive.update.generate",
-              "assignedTo": "MILES",
-              "department": "Executive",
-              "status": "QUEUED",
-              "dependsOn": [],
-              "taskType": "WORKFORCE_STEP",
-              "provider": null,
-              "action": "generateExecutiveUpdate",
-              "expectedOutput": "Executive update summarizing campaign status and recommended action.",
-              "verification": "Verify update is clear, concise, and action-oriented."
-            }
-          ],
-          "providers": [
-            "MarketingProvider"
-          ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
-          "approvalRequired": false,
-          "verificationChecklist": [
-            "Instantly campaign data was read successfully.",
-            "Paused campaigns were identified.",
-            "Deliverability risk was evaluated.",
-            "Resume or hold recommendation was generated.",
-            "Executive update was produced."
-          ],
-          "successCriteria": [
-            "Paused campaign inventory exists.",
-            "Every paused campaign has an action recommendation.",
-            "No unsafe sending action is performed without approval."
-          ],
-          "rulesVersion": "1.0.0"
-        },
-        "tasks": [
-          {
-            "step": 1,
-            "capability": "marketing.instantly.read",
-            "assignedTo": "MILES",
-            "department": "Marketing",
-            "status": "QUEUED",
-            "dependsOn": [],
-            "taskType": "WORKFORCE_STEP",
-            "provider": "MarketingProvider",
-            "action": "readCampaigns",
-            "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
-            "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
-          },
-          {
-            "step": 2,
-            "capability": "marketing.campaign.audit",
-            "assignedTo": "MILES",
-            "department": "Marketing",
-            "status": "QUEUED",
-            "dependsOn": [],
-            "taskType": "WORKFORCE_STEP",
-            "provider": null,
-            "action": "identifyPausedCampaigns",
-            "expectedOutput": "List of paused campaigns requiring review.",
-            "verification": "Verify paused campaigns are separated from active campaigns."
-          },
-          {
-            "step": 3,
-            "capability": "marketing.deliverability.evaluate",
-            "assignedTo": "MILES",
-            "department": "Marketing",
-            "status": "QUEUED",
-            "dependsOn": [],
-            "taskType": "WORKFORCE_STEP",
-            "provider": null,
-            "action": "evaluateDeliverabilityRisk",
-            "expectedOutput": "Deliverability risk assessment for paused campaigns.",
-            "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
-          },
-          {
-            "step": 4,
-            "capability": "marketing.execution.route",
-            "assignedTo": "MILES",
-            "department": "Marketing",
-            "status": "QUEUED",
-            "dependsOn": [],
-            "taskType": "WORKFORCE_STEP",
-            "provider": null,
-            "action": "recommendResumeOrHold",
-            "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
-            "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
-          },
-          {
-            "step": 5,
-            "capability": "executive.update.generate",
-            "assignedTo": "MILES",
-            "department": "Executive",
-            "status": "QUEUED",
-            "dependsOn": [],
-            "taskType": "WORKFORCE_STEP",
-            "provider": null,
-            "action": "generateExecutiveUpdate",
-            "expectedOutput": "Executive update summarizing campaign status and recommended action.",
-            "verification": "Verify update is clear, concise, and action-oriented."
-          }
-        ],
-        "approvals": [],
-        "results": [],
-        "verification": {
-          "required": true,
-          "status": "PENDING"
-        }
-      },
-      {
-        "id": "WP-20260702010354-517",
-        "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
-        "status": "QUEUED",
-        "owner": "MILES",
-        "priority": "CRITICAL",
-        "priorityScore": 100,
-        "createdAt": "2026-07-02T01:03:54.226Z",
-        "updatedAt": "2026-07-02T01:03:54.226Z",
-        "plan": {
-          "ok": true,
-          "type": "PLAN",
-          "objective": "Run Instantly COO operator to audit campaigns, inbox health, campaign readiness, and operational blockers.",
-          "priority": "CRITICAL",
-          "priorityScore": 100,
-          "createdAt": "2026-07-02T01:03:54.226Z",
-          "owner": "MILES",
-          "context": {
-            "source": "ExecutiveSupervisor",
-            "cycleId": "MILES-COO-CYCLE-1782954233619",
-            "provider": "Instantly",
-            "domain": "Revenue Operations",
-            "priority": "CRITICAL",
-            "priorityScore": 100,
-            "discoveredWorkId": "INSTANTLY-RUN-COO-OPERATOR",
-            "discoveryReason": "Instantly is a primary revenue system and must be inspected every COO cycle."
-          },
-          "domain": "marketing",
-          "workforce": "Marketing Workforce",
-          "requiredCapabilities": [
-            "marketing.instantly.read",
-            "marketing.campaign.audit",
-            "marketing.deliverability.evaluate",
-            "marketing.execution.route",
-            "executive.update.generate"
-          ],
-          "assignments": [
-            {
-              "capability": "marketing.instantly.read",
-              "candidates": [
-                {
-                  "capability": "marketing",
-                  "employees": [
-                    {
-                      "employee": "Aria",
-                      "department": "Marketing",
-                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
-                      "authority": "content_recommendation"
-                    }
-                  ]
-                }
-              ],
-              "bestWorker": {
-                "employee": "Aria",
-                "department": "Marketing",
-                "source": "workforce"
-              }
-            },
-            {
-              "capability": "marketing.campaign.audit",
-              "candidates": [
-                {
-                  "capability": "marketing",
-                  "employees": [
-                    {
-                      "employee": "Aria",
-                      "department": "Marketing",
-                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
-                      "authority": "content_recommendation"
-                    }
-                  ]
-                }
-              ],
-              "bestWorker": {
-                "employee": "Aria",
-                "department": "Marketing",
-                "source": "workforce"
-              }
-            },
-            {
-              "capability": "marketing.deliverability.evaluate",
-              "candidates": [
-                {
-                  "capability": "marketing",
-                  "employees": [
-                    {
-                      "employee": "Aria",
-                      "department": "Marketing",
-                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
-                      "authority": "content_recommendation"
-                    }
-                  ]
-                }
-              ],
-              "bestWorker": {
-                "employee": "Aria",
-                "department": "Marketing",
-                "source": "workforce"
-              }
-            },
-            {
-              "capability": "marketing.execution.route",
-              "candidates": [
-                {
-                  "capability": "marketing",
-                  "employees": [
-                    {
-                      "employee": "Aria",
-                      "department": "Marketing",
-                      "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
-                      "authority": "content_recommendation"
-                    }
-                  ]
-                }
-              ],
-              "bestWorker": {
-                "employee": "Aria",
-                "department": "Marketing",
-                "source": "workforce"
-              }
-            },
-            {
-              "capability": "executive.update.generate",
-              "candidates": [],
-              "bestWorker": {
-                "employee": "MILES",
-                "department": "Executive",
-                "source": "fallback"
-              }
-            }
-          ],
-          "steps": [
-            {
-              "step": 1,
-              "capability": "marketing.instantly.read",
               "assignedTo": "MILES",
               "department": "Marketing",
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
               "provider": "MarketingProvider",
-              "action": "readCampaigns",
-              "expectedOutput": "Current Instantly campaign inventory with campaign status and metrics.",
-              "verification": "Verify campaign status, campaign count, active count, paused count, and available metrics are captured."
-            },
-            {
-              "step": 2,
-              "capability": "marketing.campaign.audit",
-              "assignedTo": "MILES",
-              "department": "Marketing",
-              "status": "QUEUED",
-              "dependsOn": [],
-              "taskType": "WORKFORCE_STEP",
-              "provider": null,
-              "action": "identifyPausedCampaigns",
-              "expectedOutput": "List of paused campaigns requiring review.",
-              "verification": "Verify paused campaigns are separated from active campaigns."
-            },
-            {
-              "step": 3,
-              "capability": "marketing.deliverability.evaluate",
-              "assignedTo": "MILES",
-              "department": "Marketing",
-              "status": "QUEUED",
-              "dependsOn": [],
-              "taskType": "WORKFORCE_STEP",
-              "provider": null,
               "action": "evaluateDeliverabilityRisk",
               "expectedOutput": "Deliverability risk assessment for paused campaigns.",
               "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -2926,7 +2950,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "recommendResumeOrHold",
               "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
               "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -2939,7 +2963,7 @@
               "status": "QUEUED",
               "dependsOn": [],
               "taskType": "WORKFORCE_STEP",
-              "provider": null,
+              "provider": "MarketingProvider",
               "action": "generateExecutiveUpdate",
               "expectedOutput": "Executive update summarizing campaign status and recommended action.",
               "verification": "Verify update is clear, concise, and action-oriented."
@@ -2948,7 +2972,7 @@
           "providers": [
             "MarketingProvider"
           ],
-          "executionAuthority": "OPERATIONAL_WITH_LIMITS",
+          "executionAuthority": "MILES_AUTONOMOUS_COO",
           "approvalRequired": false,
           "verificationChecklist": [
             "Instantly campaign data was read successfully.",
@@ -2986,7 +3010,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "identifyPausedCampaigns",
             "expectedOutput": "List of paused campaigns requiring review.",
             "verification": "Verify paused campaigns are separated from active campaigns."
@@ -2999,7 +3023,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "evaluateDeliverabilityRisk",
             "expectedOutput": "Deliverability risk assessment for paused campaigns.",
             "verification": "Verify bounce risk, warmup status, sending domain safety, and recent campaign health are considered."
@@ -3012,7 +3036,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "recommendResumeOrHold",
             "expectedOutput": "Resume, hold, or CEO-review recommendation for each paused campaign.",
             "verification": "Verify recommendations follow P2GC sending safety and CEO authority rules."
@@ -3025,7 +3049,7 @@
             "status": "QUEUED",
             "dependsOn": [],
             "taskType": "WORKFORCE_STEP",
-            "provider": null,
+            "provider": "MarketingProvider",
             "action": "generateExecutiveUpdate",
             "expectedOutput": "Executive update summarizing campaign status and recommended action.",
             "verification": "Verify update is clear, concise, and action-oriented."
@@ -3041,16 +3065,16 @@
     ]
   },
   "queue": {
-    "total": 168,
-    "pending": 25,
-    "running": 7,
-    "completed": 133,
-    "failed": 2,
-    "healthScore": 100
+    "total": 329,
+    "pending": 0,
+    "running": 2,
+    "completed": 152,
+    "failed": 25,
+    "healthScore": 97
   },
   "recovery": {
-    "total": 2,
-    "waiting": 2,
+    "total": 25,
+    "waiting": 25,
     "retrying": 0,
     "blocked": 0,
     "byType": {}
@@ -3058,7 +3082,7 @@
   "health": {
     "overall": "DEGRADED",
     "warnings": [
-      "Failed tasks present: 2"
+      "Failed tasks present: 25"
     ],
     "errors": []
   }

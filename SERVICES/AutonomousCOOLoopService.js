@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const fs = require("fs");
 const path = require("path");
@@ -8,6 +8,11 @@ const ExecutiveBriefService = require("./ExecutiveBriefService");
 const WorkQueueService = require("./WorkQueueService");
 const WorkflowService = require("./WorkflowService");
 const BusinessOperationsBridgeService = require("./BusinessOperationsBridgeService");
+const LiveBusinessStateService = require("./LiveBusinessStateService");
+const RevenueCOOService = require("./RevenueCOOService");
+const RuntimeMetricsService = require("./RuntimeMetricsService");
+const ExecutiveConfigurationService = require("./Executive/ExecutiveConfigurationService");
+const ExecutiveDecisionEngine = require("./Executive/ExecutiveDecisionEngine");
 
 let learningEngine = null;
 let taskQueue = null;
@@ -78,15 +83,36 @@ class AutonomousCOOLoopService {
     this.workQueue = options.workQueue || new WorkQueueService();
     this.workflowService = options.workflowService || WorkflowService;
     this.executionService = options.executionService || null;
+    this.liveBusinessState = options.liveBusinessState || new LiveBusinessStateService();
+    this.revenueCOO = options.revenueCOO || new RevenueCOOService();
+    this.runtimeMetrics =
+    options.runtimeMetrics ||
+    new RuntimeMetricsService();
 
     this.executiveBriefFactory =
       options.executiveBriefFactory ||
       (state => new ExecutiveBriefService(state));
 
+    this.decisionEngine = options.decisionEngine || new ExecutiveDecisionEngine({
+      configurationService: options.configurationService || new ExecutiveConfigurationService({ rootDir: ROOT }),
+      providers: {
+        revenue: this.liveBusinessState,
+        sales: this.liveBusinessState,
+        marketing: this.liveBusinessState,
+        operations: this.liveBusinessState,
+        executive: this.liveBusinessState,
+        orion: this.liveBusinessState,
+        infrastructure: this.liveBusinessState
+      },
+      logger: options.logger || console
+    });
+
     this.businessBridge =
       options.businessBridge ||
       new BusinessOperationsBridgeService({
         taskQueue
+
+  
       });
   }
 
@@ -100,7 +126,10 @@ class AutonomousCOOLoopService {
 
     const bridgeResults = await this.processBusinessOperationsBridge();
 
-    const executiveState = await this.intelligence.getExecutiveState();
+    let executiveState = await this.intelligence.getExecutiveState();
+    const liveBusinessEnrichment = this.liveBusinessState.enrich(executiveState);
+    executiveState = liveBusinessEnrichment.executiveState;
+    const revenueOperations = this.revenueCOO.analyze(executiveState, cycleId);
     const health = this.buildUniversalHealth(executiveState);
 
     const initialExecutiveBriefService =
@@ -115,7 +144,7 @@ class AutonomousCOOLoopService {
         cycleId
       );
 
-    const mission = this.buildMissionPlan(executiveState, health, cycleId);
+    const mission = this.buildMissionPlan(executiveState, health, cycleId, revenueOperations);
     const repairPlan = this.buildRepairPlan(executiveState, health, mission, cycleId);
     const backlog = this.buildCapabilityBacklog(executiveState, health, cycleId);
 
@@ -125,7 +154,9 @@ class AutonomousCOOLoopService {
 
     await this.intelligence.refresh();
 
-    const refreshedExecutiveState = await this.intelligence.getExecutiveState();
+    let refreshedExecutiveState = await this.intelligence.getExecutiveState();
+    const refreshedLiveBusinessEnrichment = this.liveBusinessState.enrich(refreshedExecutiveState);
+    refreshedExecutiveState = refreshedLiveBusinessEnrichment.executiveState;
     const refreshedHealth = this.buildUniversalHealth(refreshedExecutiveState);
     const executiveBrief =
       this.executiveBriefFactory(
@@ -147,6 +178,8 @@ class AutonomousCOOLoopService {
         maxExecutionPasses: this.maxExecutionPasses
       },
       businessOperationsBridge: bridgeResults,
+      liveBusinessState: refreshedLiveBusinessEnrichment.snapshot,
+      revenueOperations,
       executiveDispatch,
       businessHealth: refreshedExecutiveState.businessHealth,
       autonomy,
@@ -162,6 +195,31 @@ class AutonomousCOOLoopService {
       executiveState: refreshedExecutiveState,
       executiveBrief: executiveBrief.generate()
     };
+
+        refreshedExecutiveState.cycleId = cycleId;
+
+    refreshedExecutiveState.health =
+      refreshedHealth.overallStatus || "UNKNOWN";
+
+    refreshedExecutiveState.runtimeHealth =
+      refreshedHealth;
+
+    await this.runtimeMetrics.record({
+      executiveState: refreshedExecutiveState,
+      executionResults,
+      queueStatus: this.safeQueueStats(),
+      connectorStatus: {
+        ORION: "CONNECTED",
+        INSTANTLY: "CONNECTED",
+        MILES: "CONNECTED"
+      },
+      missions: {
+        revenue: revenueOperations?.missions || [],
+        proposal: [],
+        capture: [],
+        operations: []
+      }
+    });
 
     this.writeOutputs(result, executiveBrief);
 
@@ -328,7 +386,7 @@ class AutonomousCOOLoopService {
     };
   }
 
-  buildMissionPlan(executiveState = {}, health = {}, cycleId = null) {
+  buildMissionPlan(executiveState = {}, health = {}, cycleId = null, revenueOperations = {}) {
     const priorities = [];
     const recommendations = executiveState.recommendations || [];
     const exceptions = executiveState.exceptions || [];
@@ -343,6 +401,20 @@ class AutonomousCOOLoopService {
       totalCampaigns: campaigns.length,
       activeCampaigns: campaigns.filter(c => /active|running|enabled/i.test(String(c.status || ""))).length
     };
+    // Revenue COO missions are generated by a domain service and executed through
+    // the existing WorkQueue -> WorkflowService -> ExecutionService pipeline.
+    for (const revenueMission of revenueOperations.missions || []) {
+      priorities.push(
+        this.missionItem({
+          ...revenueMission,
+          metadata: {
+            ...(revenueMission.metadata || {}),
+            revenueMetrics: revenueOperations.metrics || {},
+            cycleId
+          }
+        })
+      );
+    }
     const orion = executiveState.orion || {
       contractors: contractors.length,
       opportunities: opportunities.length
@@ -552,13 +624,76 @@ class AutonomousCOOLoopService {
       );
     }
 
-    const deduped = this.deduplicateMissionItems(priorities)
-      .sort(
-        (a, b) =>
-          a.priority - b.priority ||
-          b.businessImpactScore - a.businessImpactScore
-      )
-      .slice(0, 12);
+    const deduped = this.deduplicateMissionItems(priorities);
+    const executiveCandidates = deduped.map(mission => ({
+      ...mission,
+      expectedRevenue: Number(mission.businessImpactScore || 0) * 1.5,
+      urgency: mission.priority === 1 ? 90 : mission.priority === 2 ? 70 : mission.priority === 3 ? 45 : 20,
+      customerImpact: mission.priority === 1 ? 85 : mission.priority === 2 ? 65 : mission.priority === 3 ? 45 : 25,
+      strategicValue: /proposal|revenue|pipeline|reply|campaign|contract|legal|dns|domain|delete|disable|hire|terminate/i.test(`${mission.title} ${mission.objective} ${mission.reason}`) ? 80 : 50,
+      risk: mission.requiresKevin ? 80 : mission.priority === 1 ? 30 : mission.priority === 2 ? 45 : 60,
+      executionConfidence: mission.requiresKevin ? 25 : mission.priority === 1 ? 70 : mission.priority === 2 ? 60 : 40,
+      provider: mission.relatedProvider || mission.area || "UNKNOWN",
+      department: mission.area || "Operations",
+      requiresCEO: Boolean(mission.requiresKevin)
+    }));
+
+    const agenda = this.decisionEngine.buildExecutiveAgenda({
+      missions: executiveCandidates,
+      limit: 5
+    });
+
+    const rankedById = new Map();
+    for (const item of [...(agenda.agenda || []), ...(agenda.deferred || [])]) {
+      rankedById.set(String(item.id || item.title), item);
+    }
+
+    const ranked = executiveCandidates
+      .map((mission) => {
+        const engineItem = rankedById.get(String(mission.id)) || {};
+        const score = Number(engineItem.score ?? mission.businessImpactScore ?? 0);
+        const rank = Number(engineItem.rank ?? 1);
+
+        return {
+          ...mission,
+          score,
+          rank,
+          reason: engineItem.reason || mission.reason,
+          expectedBusinessImpact: engineItem.expectedBusinessImpact || mission.expectedImpact || mission.expectedBusinessImpact || "Improves P2GC operations.",
+          requiresCEO: Boolean(engineItem.requiresCEO || mission.requiresKevin),
+          requiresKevin: Boolean(engineItem.requiresCEO || mission.requiresKevin),
+          provider: engineItem.provider || mission.provider || mission.relatedProvider || mission.area || "UNKNOWN",
+          department: engineItem.department || mission.department || mission.area || "Operations",
+          businessImpactScore: score,
+          automationConfidence: engineItem.requiresCEO ? "MEDIUM" : "HIGH"
+        };
+      })
+      .sort((left, right) => left.rank - right.rank || right.score - left.score || left.priority - right.priority);
+
+    const topPriority = ranked[0] || null;
+
+    const executiveLog = {
+      executiveScore: agenda.executiveScore,
+      topPriority: topPriority ? {
+        title: topPriority.title,
+        score: topPriority.score,
+        rank: topPriority.rank,
+        reason: topPriority.reason,
+        requiresCEO: topPriority.requiresCEO
+      } : null,
+      rankedMissions: ranked.slice(0, 5).map(item => ({
+        title: item.title,
+        score: item.score,
+        rank: item.rank,
+        reason: item.reason,
+        requiresCEO: item.requiresCEO
+      }))
+    };
+
+    console.log("[EXEC] Executive Score:", executiveLog.executiveScore);
+    console.log("[EXEC] Top Priority:", JSON.stringify(executiveLog.topPriority));
+    console.log("[EXEC] Top Five Ranked Missions:", JSON.stringify(executiveLog.rankedMissions));
+    console.log("[EXEC] Reasoning:", JSON.stringify(ranked.slice(0, 3).map(item => ({ title: item.title, reason: item.reason })), null, 2));
 
     return {
       ok: true,
@@ -566,10 +701,12 @@ class AutonomousCOOLoopService {
       generatedAt: now(),
       objective:
         "Move MILES closer to autonomous Digital COO operation for P2GC today.",
-      priorities: deduped,
-      topPriority: deduped[0] || null,
-      autonomousCount: deduped.filter(p => !p.requiresKevin).length,
-      escalationCount: deduped.filter(p => p.requiresKevin).length
+      priorities: ranked.slice(0, 12),
+      topPriority,
+      autonomousCount: ranked.filter(p => !p.requiresCEO).length,
+      escalationCount: ranked.filter(p => p.requiresCEO).length,
+      executiveAgenda: agenda,
+      executiveLog
     };
   }
 
@@ -1264,67 +1401,150 @@ class AutonomousCOOLoopService {
 
     return results;
   }
+persistQueuedState(id, metadata = {}) {
+  if (!this.workQueue || !id) {
+    return null;
+  }
 
-  persistQueuedState(id, metadata = {}) {
-    if (!this.workQueue || !id) {
-      return null;
-    }
+  const maxAttempts = 5;
+  const retryDelayMs = 150;
 
-    let updated = null;
+  const sleepSync = milliseconds => {
+    Atomics.wait(
+      new Int32Array(
+        new SharedArrayBuffer(4)
+      ),
+      0,
+      0,
+      milliseconds
+    );
+  };
 
-    if (typeof this.workQueue.markQueued === "function") {
-      updated = this.workQueue.markQueued(id, metadata);
-    }
+  for (
+    let attempt = 1;
+    attempt <= maxAttempts;
+    attempt += 1
+  ) {
+    try {
+      if (
+        typeof this.workQueue.load ===
+        "function"
+      ) {
+        this.workQueue.load();
+      }
 
-    if ((!updated || updated.status !== "Queued") &&
-        typeof this.workQueue.updateStatus === "function") {
-      updated = this.workQueue.updateStatus(
-        id,
-        "Queued",
-        metadata,
-        "Workflow created and queued exactly once."
-      );
-    }
+      let updated = null;
 
-    if (!updated || updated.status !== "Queued") {
+      if (
+        typeof this.workQueue.markQueued ===
+        "function"
+      ) {
+        updated =
+          this.workQueue.markQueued(
+            id,
+            {
+              ...metadata,
+              persistenceAttempt:
+                attempt,
+              persistenceAttemptedAt:
+                now()
+            }
+          );
+      }
+
+      if (
+        (
+          !updated ||
+          updated.status !==
+            "Queued"
+        ) &&
+        typeof this.workQueue
+          .updateStatus ===
+          "function"
+      ) {
+        updated =
+          this.workQueue.updateStatus(
+            id,
+            "Queued",
+            {
+              ...metadata,
+              persistenceAttempt:
+                attempt,
+              persistenceAttemptedAt:
+                now()
+            },
+            "Workflow created and queued exactly once."
+          );
+      }
+
+      if (
+        typeof this.workQueue.load ===
+        "function"
+      ) {
+        this.workQueue.load();
+      }
+
       const rows =
-        typeof this.workQueue.getAll === "function"
+        typeof this.workQueue.getAll ===
+          "function"
           ? this.workQueue.getAll()
-          : Array.isArray(this.workQueue.queue)
+          : Array.isArray(
+                this.workQueue.queue
+              )
             ? this.workQueue.queue
             : [];
 
-      const item = (rows || []).find(row => row && row.id === id);
+      const verified =
+        (rows || []).find(
+          row =>
+            row &&
+            row.id === id
+        ) || null;
 
-      if (item) {
-        item.status = "Queued";
-        item.updatedAt = now();
-        item.metadata = {
-          ...(item.metadata || {}),
-          ...metadata
-        };
+      if (
+        verified &&
+        verified.status ===
+          "Queued"
+      ) {
+        return verified;
+      }
 
-        if (typeof this.workQueue.save === "function") {
-          this.workQueue.save();
-        }
+      if (
+        updated &&
+        updated.status ===
+          "Queued" &&
+        attempt === maxAttempts
+      ) {
+        return updated;
+      }
 
-        updated = item;
+      if (
+        attempt < maxAttempts
+      ) {
+        sleepSync(
+          retryDelayMs * attempt
+        );
+      }
+    } catch (error) {
+      console.error(
+        `[D015] persistQueuedState attempt ${attempt}/${maxAttempts} failed for ${id}: ${error.message}`
+      );
+
+      if (
+        attempt < maxAttempts
+      ) {
+        sleepSync(
+          retryDelayMs * attempt
+        );
       }
     }
-
-    if (typeof this.workQueue.load === "function") {
-      try {
-        this.workQueue.load();
-      } catch {}
-    }
-
-    const verified =
-      typeof this.workQueue.getAll === "function"
-        ? (this.workQueue.getAll() || []).find(row => row && row.id === id)
-        : updated;
-
-    return verified || updated;
   }
+
+  return null;
+}
+  
+  
+
   async runExecutionPasses() {
     const results = [];
 
@@ -1601,5 +1821,8 @@ class AutonomousCOOLoopService {
 }
 
 module.exports = AutonomousCOOLoopService;
+
+
+
 
 

@@ -1,423 +1,383 @@
 {
   "ok": true,
-  "status": "AWAITING_APPROVAL",
+  "status": "COMPLETED",
   "service": "BusinessExecutionEngineService",
-  "executionId": "BIZ-1783909854360-b37w0f",
-  "objective": "Own Instantly end to end.",
-  "originalCommand": "Miles, own Instantly end to end.",
-  "startedAt": "2026-07-13T02:30:54.361Z",
-  "completedAt": "2026-07-13T02:30:54.369Z",
-  "stepCount": 5,
-  "completedSteps": 4,
+  "executionId": "BIZ-1784690450258-2z8jqm",
+  "objective": "Connector routing verification",
+  "originalCommand": "",
+  "startedAt": "2026-07-22T03:20:50.258Z",
+  "completedAt": "2026-07-22T03:20:50.396Z",
+  "stepCount": 1,
+  "completedSteps": 1,
   "failedSteps": 0,
-  "approvalSteps": 1,
+  "approvalSteps": 0,
   "blockedSteps": 0,
   "results": [
     {
-      "step": 1,
+      "step": 0,
       "action": "PROVIDER_AUTHORITY",
       "provider": "MILES",
       "connector": "MILES",
-      "objective": "Verify authority.",
-      "executionId": "BIZ-1783909854360-b37w0f",
-      "startedAt": "2026-07-13T02:30:54.368Z",
-      "completedAt": "2026-07-13T02:30:54.369Z",
+      "objective": "Connector routing verification",
+      "executionId": "BIZ-1784690450258-2z8jqm",
+      "startedAt": "2026-07-22T03:20:50.259Z",
+      "completedAt": "2026-07-22T03:20:50.396Z",
       "attempts": 1,
       "status": "COMPLETED",
       "result": {
-        "action": "PROVIDER_AUTHORITY",
+        "action": "PROVIDER_AUTHORITY_REGISTRY",
         "ok": true,
-        "observedPayload": {
-          "command": "Miles, own Instantly end to end.",
-          "plan": {
-            "objective": "Own Instantly end to end.",
-            "originalCommand": "Miles, own Instantly end to end.",
-            "steps": [
-              {
-                "step": 1,
-                "action": "PROVIDER_AUTHORITY",
-                "capability": "PROVIDER_AUTHORITY",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Verify authority."
+        "type": "MILES_PROVIDER_AUTHORITY_REGISTRY",
+        "build": "EXEC_006",
+        "generatedAt": "2026-07-22T03:20:50.259Z",
+        "providers": [
+          {
+            "key": "instantly",
+            "provider": "instantly",
+            "name": "Instantly",
+            "providerName": "Instantly",
+            "module": "InstantlyProviderCompatibilityService",
+            "executable": true,
+            "credentialsPresent": true,
+            "credentials": {
+              "present": true,
+              "requiredEnv": [
+                "INSTANTLY_API_KEY"
+              ],
+              "missingEnv": []
+            },
+            "safeMode": false,
+            "status": "READY",
+            "capabilities": {
+              "read": {
+                "enabled": true,
+                "operations": [
+                  "HEALTH_CHECK",
+                  "LIST_CAMPAIGNS",
+                  "GET_CAMPAIGN",
+                  "GENERATE_CAMPAIGN_REPORT"
+                ]
               },
-              {
-                "step": 2,
-                "action": "PROVIDER_SYNC",
-                "capability": "PROVIDER_SYNC",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Synchronize providers."
+              "write": {
+                "enabled": true,
+                "operations": [
+                  "CREATE_CAMPAIGN",
+                  "PAUSE_CAMPAIGN",
+                  "RESUME_CAMPAIGN",
+                  "UPLOAD_LEADS",
+                  "ASSIGN_SENDING_ACCOUNTS"
+                ],
+                "flag": "INSTANTLY_WRITE_ENABLED"
               },
-              {
-                "step": 3,
-                "action": "INSTANTLY_LIVE",
-                "capability": "INSTANTLY_LIVE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Assess Instantly."
+              "rollback": {
+                "enabled": false,
+                "operations": []
               },
-              {
-                "step": 4,
-                "action": "BUSINESS_EXECUTION",
-                "capability": "BUSINESS_EXECUTION",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Execute authorized work."
-              },
-              {
-                "step": 5,
-                "action": "CONTROLLED_WRITE",
-                "capability": "CONTROLLED_WRITE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Stage protected writes."
+              "verify": {
+                "enabled": true
               }
-            ]
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "LIST_CAMPAIGNS",
+              "GET_CAMPAIGN",
+              "CREATE_CAMPAIGN",
+              "PAUSE_CAMPAIGN",
+              "RESUME_CAMPAIGN",
+              "UPLOAD_LEADS",
+              "ASSIGN_SENDING_ACCOUNTS",
+              "GENERATE_CAMPAIGN_REPORT"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
           },
-          "action": "PROVIDER_AUTHORITY",
-          "capability": "PROVIDER_AUTHORITY",
-          "provider": "MILES",
-          "connector": "MILES",
-          "objective": "Verify authority.",
-          "originalObjective": "Own Instantly end to end.",
-          "executionId": "BIZ-1783909854360-b37w0f",
-          "dryRun": false,
-          "stageOnly": false,
-          "requiresApproval": false
-        }
-      },
-      "error": null
-    },
-    {
-      "step": 2,
-      "action": "PROVIDER_SYNC",
-      "provider": "MILES",
-      "connector": "MILES",
-      "objective": "Synchronize providers.",
-      "executionId": "BIZ-1783909854360-b37w0f",
-      "startedAt": "2026-07-13T02:30:54.369Z",
-      "completedAt": "2026-07-13T02:30:54.369Z",
-      "attempts": 1,
-      "status": "COMPLETED",
-      "result": {
-        "action": "PROVIDER_SYNC",
-        "ok": true,
-        "observedPayload": {
-          "command": "Miles, own Instantly end to end.",
-          "plan": {
-            "objective": "Own Instantly end to end.",
-            "originalCommand": "Miles, own Instantly end to end.",
-            "steps": [
-              {
-                "step": 1,
-                "action": "PROVIDER_AUTHORITY",
-                "capability": "PROVIDER_AUTHORITY",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Verify authority."
+          {
+            "key": "google_workspace",
+            "provider": "google_workspace",
+            "name": "Google Workspace",
+            "providerName": "Google Workspace",
+            "module": "GoogleWorkspaceProviderController",
+            "credentialsPresent": false,
+            "credentials": {
+              "present": false,
+              "requiredEnv": [
+                "GOOGLE_APPLICATION_CREDENTIALS",
+                "GOOGLE_WORKSPACE_ADMIN_EMAIL"
+              ],
+              "missingEnv": [
+                "GOOGLE_APPLICATION_CREDENTIALS",
+                "GOOGLE_WORKSPACE_ADMIN_EMAIL"
+              ]
+            },
+            "safeMode": true,
+            "status": "MISSING_CREDENTIALS",
+            "capabilities": {
+              "read": {
+                "operations": [
+                  "HEALTH_CHECK",
+                  "LIST_USERS",
+                  "VERIFY_MAILBOX"
+                ]
               },
-              {
-                "step": 2,
-                "action": "PROVIDER_SYNC",
-                "capability": "PROVIDER_SYNC",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Synchronize providers."
+              "write": {
+                "enabled": false,
+                "operations": [
+                  "CREATE_USER",
+                  "CREATE_ALIAS",
+                  "SUSPEND_USER"
+                ],
+                "flag": "GOOGLE_WORKSPACE_WRITE_ENABLED"
               },
-              {
-                "step": 3,
-                "action": "INSTANTLY_LIVE",
-                "capability": "INSTANTLY_LIVE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Assess Instantly."
+              "rollback": {
+                "enabled": false,
+                "operations": []
               },
-              {
-                "step": 4,
-                "action": "BUSINESS_EXECUTION",
-                "capability": "BUSINESS_EXECUTION",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Execute authorized work."
-              },
-              {
-                "step": 5,
-                "action": "CONTROLLED_WRITE",
-                "capability": "CONTROLLED_WRITE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Stage protected writes."
+              "verify": {
+                "enabled": true
               }
-            ]
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "LIST_USERS",
+              "CREATE_USER",
+              "CREATE_ALIAS",
+              "SUSPEND_USER",
+              "VERIFY_MAILBOX"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
           },
-          "action": "PROVIDER_SYNC",
-          "capability": "PROVIDER_SYNC",
-          "provider": "MILES",
-          "connector": "MILES",
-          "objective": "Synchronize providers.",
-          "originalObjective": "Own Instantly end to end.",
-          "executionId": "BIZ-1783909854360-b37w0f",
-          "dryRun": false,
-          "stageOnly": false,
-          "requiresApproval": false
-        }
-      },
-      "error": null
-    },
-    {
-      "step": 3,
-      "action": "INSTANTLY_LIVE",
-      "provider": "MILES",
-      "connector": "MILES",
-      "objective": "Assess Instantly.",
-      "executionId": "BIZ-1783909854360-b37w0f",
-      "startedAt": "2026-07-13T02:30:54.369Z",
-      "completedAt": "2026-07-13T02:30:54.369Z",
-      "attempts": 1,
-      "status": "COMPLETED",
-      "result": {
-        "action": "INSTANTLY_LIVE",
-        "ok": true,
-        "observedPayload": {
-          "command": "Miles, own Instantly end to end.",
-          "plan": {
-            "objective": "Own Instantly end to end.",
-            "originalCommand": "Miles, own Instantly end to end.",
-            "steps": [
-              {
-                "step": 1,
-                "action": "PROVIDER_AUTHORITY",
-                "capability": "PROVIDER_AUTHORITY",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Verify authority."
+          {
+            "key": "namecheap",
+            "provider": "namecheap",
+            "name": "Namecheap",
+            "providerName": "Namecheap",
+            "module": "NamecheapProviderController",
+            "credentialsPresent": false,
+            "credentials": {
+              "present": false,
+              "requiredEnv": [
+                "NAMECHEAP_API_USER",
+                "NAMECHEAP_API_KEY",
+                "NAMECHEAP_CLIENT_IP"
+              ],
+              "missingEnv": [
+                "NAMECHEAP_API_USER",
+                "NAMECHEAP_API_KEY",
+                "NAMECHEAP_CLIENT_IP"
+              ]
+            },
+            "safeMode": true,
+            "status": "MISSING_CREDENTIALS",
+            "capabilities": {
+              "read": {
+                "operations": [
+                  "HEALTH_CHECK",
+                  "LIST_DOMAINS",
+                  "VERIFY_SPF",
+                  "VERIFY_DKIM",
+                  "VERIFY_DMARC"
+                ]
               },
-              {
-                "step": 2,
-                "action": "PROVIDER_SYNC",
-                "capability": "PROVIDER_SYNC",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Synchronize providers."
+              "write": {
+                "enabled": false,
+                "operations": [
+                  "UPDATE_DNS_OR_VERIFY_AUTH"
+                ],
+                "flag": "NAMECHEAP_WRITE_ENABLED"
               },
-              {
-                "step": 3,
-                "action": "INSTANTLY_LIVE",
-                "capability": "INSTANTLY_LIVE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Assess Instantly."
+              "rollback": {
+                "enabled": false,
+                "operations": []
               },
-              {
-                "step": 4,
-                "action": "BUSINESS_EXECUTION",
-                "capability": "BUSINESS_EXECUTION",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Execute authorized work."
-              },
-              {
-                "step": 5,
-                "action": "CONTROLLED_WRITE",
-                "capability": "CONTROLLED_WRITE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Stage protected writes."
+              "verify": {
+                "enabled": true
               }
-            ]
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "LIST_DOMAINS",
+              "UPDATE_DNS_OR_VERIFY_AUTH",
+              "VERIFY_SPF",
+              "VERIFY_DKIM",
+              "VERIFY_DMARC"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
           },
-          "action": "INSTANTLY_LIVE",
-          "capability": "INSTANTLY_LIVE",
-          "provider": "MILES",
-          "connector": "MILES",
-          "objective": "Assess Instantly.",
-          "originalObjective": "Own Instantly end to end.",
-          "executionId": "BIZ-1783909854360-b37w0f",
-          "dryRun": false,
-          "stageOnly": false,
-          "requiresApproval": false
-        }
-      },
-      "error": null
-    },
-    {
-      "step": 4,
-      "action": "BUSINESS_EXECUTION",
-      "provider": "MILES",
-      "connector": "MILES",
-      "objective": "Execute authorized work.",
-      "executionId": "BIZ-1783909854360-b37w0f",
-      "startedAt": "2026-07-13T02:30:54.369Z",
-      "completedAt": "2026-07-13T02:30:54.369Z",
-      "attempts": 1,
-      "status": "COMPLETED",
-      "result": {
-        "ok": true,
-        "action": "BUSINESS_EXECUTION",
-        "orchestrationCheckpoint": true,
-        "objective": "Own Instantly end to end.",
-        "message": "Executive objective was decomposed into governed provider steps. No recursive execution was invoked."
-      },
-      "error": null
-    },
-    {
-      "step": 5,
-      "action": "CONTROLLED_WRITE",
-      "provider": "MILES",
-      "connector": "MILES",
-      "objective": "Stage protected writes.",
-      "executionId": "BIZ-1783909854360-b37w0f",
-      "startedAt": "2026-07-13T02:30:54.369Z",
-      "completedAt": "2026-07-13T02:30:54.369Z",
-      "attempts": 1,
-      "status": "AWAITING_APPROVAL",
-      "result": {
-        "action": "CONTROLLED_WRITE",
-        "ok": true,
-        "observedPayload": {
-          "command": "Miles, own Instantly end to end.",
-          "plan": {
-            "objective": "Own Instantly end to end.",
-            "originalCommand": "Miles, own Instantly end to end.",
-            "steps": [
-              {
-                "step": 1,
-                "action": "PROVIDER_AUTHORITY",
-                "capability": "PROVIDER_AUTHORITY",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Verify authority."
+          {
+            "key": "website",
+            "provider": "website",
+            "name": "Website",
+            "providerName": "Website",
+            "module": "WebsiteProviderController",
+            "credentialsPresent": false,
+            "credentials": {
+              "present": false,
+              "requiredEnv": [
+                "WEBSITE_ROOT"
+              ],
+              "missingEnv": [
+                "WEBSITE_ROOT"
+              ]
+            },
+            "safeMode": true,
+            "status": "MISSING_CREDENTIALS",
+            "capabilities": {
+              "read": {
+                "operations": [
+                  "HEALTH_CHECK",
+                  "VERIFY_PAGE",
+                  "GENERATE_WEBSITE_REPORT"
+                ]
               },
-              {
-                "step": 2,
-                "action": "PROVIDER_SYNC",
-                "capability": "PROVIDER_SYNC",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Synchronize providers."
+              "write": {
+                "enabled": false,
+                "operations": [
+                  "BACKUP_SITE",
+                  "UPDATE_PAGE",
+                  "PUBLISH_PAGE"
+                ],
+                "flag": "WEBSITE_WRITE_ENABLED"
               },
-              {
-                "step": 3,
-                "action": "INSTANTLY_LIVE",
-                "capability": "INSTANTLY_LIVE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Assess Instantly."
+              "rollback": {
+                "enabled": false,
+                "operations": []
               },
-              {
-                "step": 4,
-                "action": "BUSINESS_EXECUTION",
-                "capability": "BUSINESS_EXECUTION",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Execute authorized work."
-              },
-              {
-                "step": 5,
-                "action": "CONTROLLED_WRITE",
-                "capability": "CONTROLLED_WRITE",
-                "provider": "MILES",
-                "connector": "MILES",
-                "objective": "Stage protected writes."
+              "verify": {
+                "enabled": true
               }
-            ]
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "BACKUP_SITE",
+              "UPDATE_PAGE",
+              "PUBLISH_PAGE",
+              "VERIFY_PAGE",
+              "GENERATE_WEBSITE_REPORT"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
           },
-          "action": "CONTROLLED_WRITE",
-          "capability": "CONTROLLED_WRITE",
-          "provider": "MILES",
-          "connector": "MILES",
-          "objective": "Stage protected writes.",
-          "originalObjective": "Own Instantly end to end.",
-          "executionId": "BIZ-1783909854360-b37w0f",
-          "dryRun": true,
-          "stageOnly": true,
-          "requiresApproval": true
-        }
+          {
+            "key": "orion",
+            "provider": "orion",
+            "name": "ORION",
+            "providerName": "ORION",
+            "module": "OrionProviderController",
+            "executable": true,
+            "credentialsPresent": true,
+            "credentials": {
+              "present": true,
+              "requiredEnv": [
+                "ORION_DB_PATH"
+              ],
+              "missingEnv": []
+            },
+            "safeMode": true,
+            "status": "READY_READ_ONLY",
+            "capabilities": {
+              "read": {
+                "enabled": true,
+                "operations": [
+                  "HEALTH_CHECK",
+                  "VERIFY_DATABASE",
+                  "GENERATE_ORION_REPORT"
+                ]
+              },
+              "write": {
+                "enabled": false,
+                "operations": [
+                  "REFRESH_DATASETS",
+                  "RUN_INTELLIGENCE_JOB"
+                ],
+                "flag": "ORION_WRITE_ENABLED"
+              },
+              "rollback": {
+                "enabled": false,
+                "operations": []
+              },
+              "verify": {
+                "enabled": true
+              }
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "VERIFY_DATABASE",
+              "REFRESH_DATASETS",
+              "RUN_INTELLIGENCE_JOB",
+              "GENERATE_ORION_REPORT"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
+          },
+          {
+            "key": "filesystem",
+            "provider": "filesystem",
+            "name": "File System",
+            "providerName": "File System",
+            "module": "FileSystemProviderController",
+            "executable": true,
+            "credentialsPresent": true,
+            "credentials": {
+              "present": true,
+              "requiredEnv": [],
+              "missingEnv": []
+            },
+            "safeMode": false,
+            "status": "READY",
+            "capabilities": {
+              "read": {
+                "enabled": true,
+                "operations": [
+                  "HEALTH_CHECK",
+                  "READ_JSON",
+                  "VERIFY_PATH"
+                ]
+              },
+              "write": {
+                "enabled": true,
+                "operations": [
+                  "ENSURE_DIRECTORY",
+                  "WRITE_JSON"
+                ],
+                "flag": "FILESYSTEM_WRITE_ENABLED"
+              },
+              "rollback": {
+                "enabled": false,
+                "operations": []
+              },
+              "verify": {
+                "enabled": true
+              }
+            },
+            "supportedOperations": [
+              "HEALTH_CHECK",
+              "ENSURE_DIRECTORY",
+              "WRITE_JSON",
+              "READ_JSON",
+              "VERIFY_PATH"
+            ],
+            "generatedAt": "2026-07-22T03:20:50.353Z"
+          }
+        ],
+        "summary": {
+          "total": 6,
+          "ready": 2,
+          "readReady": 3,
+          "writeReady": 2,
+          "safeMode": 4,
+          "missingCredentials": 3
+        },
+        "outDir": "D:\\P2GC_Intelligence\\MILES_OS\\DATA\\provider_sync"
       },
       "error": null
     }
   ],
   "executiveSummary": {
-    "objective": "Own Instantly end to end.",
-    "status": "AWAITING_APPROVAL",
+    "objective": "Connector routing verification",
+    "status": "COMPLETED",
     "completedWork": [
-      "PROVIDER_AUTHORITY",
-      "PROVIDER_SYNC",
-      "INSTANTLY_LIVE",
-      "BUSINESS_EXECUTION"
+      "PROVIDER_AUTHORITY"
     ],
     "activeWork": [],
     "blockers": [],
-    "ceoApprovals": [
-      {
-        "action": "CONTROLLED_WRITE",
-        "objective": "Stage protected writes.",
-        "result": {
-          "action": "CONTROLLED_WRITE",
-          "ok": true,
-          "observedPayload": {
-            "command": "Miles, own Instantly end to end.",
-            "plan": {
-              "objective": "Own Instantly end to end.",
-              "originalCommand": "Miles, own Instantly end to end.",
-              "steps": [
-                {
-                  "step": 1,
-                  "action": "PROVIDER_AUTHORITY",
-                  "capability": "PROVIDER_AUTHORITY",
-                  "provider": "MILES",
-                  "connector": "MILES",
-                  "objective": "Verify authority."
-                },
-                {
-                  "step": 2,
-                  "action": "PROVIDER_SYNC",
-                  "capability": "PROVIDER_SYNC",
-                  "provider": "MILES",
-                  "connector": "MILES",
-                  "objective": "Synchronize providers."
-                },
-                {
-                  "step": 3,
-                  "action": "INSTANTLY_LIVE",
-                  "capability": "INSTANTLY_LIVE",
-                  "provider": "MILES",
-                  "connector": "MILES",
-                  "objective": "Assess Instantly."
-                },
-                {
-                  "step": 4,
-                  "action": "BUSINESS_EXECUTION",
-                  "capability": "BUSINESS_EXECUTION",
-                  "provider": "MILES",
-                  "connector": "MILES",
-                  "objective": "Execute authorized work."
-                },
-                {
-                  "step": 5,
-                  "action": "CONTROLLED_WRITE",
-                  "capability": "CONTROLLED_WRITE",
-                  "provider": "MILES",
-                  "connector": "MILES",
-                  "objective": "Stage protected writes."
-                }
-              ]
-            },
-            "action": "CONTROLLED_WRITE",
-            "capability": "CONTROLLED_WRITE",
-            "provider": "MILES",
-            "connector": "MILES",
-            "objective": "Stage protected writes.",
-            "originalObjective": "Own Instantly end to end.",
-            "executionId": "BIZ-1783909854360-b37w0f",
-            "dryRun": true,
-            "stageOnly": true,
-            "requiresApproval": true
-          }
-        }
-      }
-    ],
-    "message": "Miles completed authorized work and staged protected changes for CEO approval."
+    "ceoApprovals": [],
+    "message": "Miles completed the business objective."
   }
 }

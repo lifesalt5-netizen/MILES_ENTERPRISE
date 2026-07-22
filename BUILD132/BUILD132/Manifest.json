@@ -1,0 +1,19 @@
+{
+  "build": 132,
+  "name": "Instantly Enterprise Provider Consolidation",
+  "baseline": 131,
+  "platform": "Windows PowerShell 5.1",
+  "changes": [
+    "Preserves existing InstantlyProvider.js implementation",
+    "Routes live Instantly read intelligence through the enterprise provider",
+    "Retains guarded legacy controller for mutations",
+    "Registers Instantly campaign intelligence and health capabilities",
+    "Corrects runtime output root to MILES Enterprise"
+  ],
+  "filesModified": [
+    "SERVICES/InstantlyLiveIntegrationService.js",
+    "SERVICES/ProviderRegistry.js"
+  ],
+  "automaticBackup": true,
+  "automaticRollback": true
+}

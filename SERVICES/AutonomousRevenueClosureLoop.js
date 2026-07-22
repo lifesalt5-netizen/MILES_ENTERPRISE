@@ -28,8 +28,36 @@ class AutonomousRevenueClosureLoop {
   }
 
   extractSignals(state) {
-    const pipeline = state?.pipeline?.pipeline || [];
-    const lifecycle = state?.lifecycle?.lifecycle || [];
+    // ===== Canonical Business State =====
+const business =
+    state?.executiveState?.business ??
+    state?.liveBusinessState?.business ??
+    {};
+
+const pipeline =
+    business.deals ??
+    state?.pipeline?.pipeline ??
+    [];
+
+const lifecycle =
+    business.opportunities ??
+    state?.lifecycle?.lifecycle ??
+    [];
+
+const proposals =
+    business.proposals ?? [];
+
+const campaigns =
+    business.campaigns ?? [];
+
+const segments =
+    business.segments ?? [];
+console.log("[REVENUE] Business Collections");
+console.log("Deals:", pipeline.length);
+console.log("Opportunities:", lifecycle.length);
+console.log("Proposals:", proposals.length);
+console.log("Campaigns:", campaigns.length);
+console.log("Segments:", segments.length);
 
     return {
       pipeline,

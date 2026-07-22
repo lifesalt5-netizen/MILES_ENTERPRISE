@@ -1,0 +1,10 @@
+{
+  "build": "037-final",
+  "name": "Workflow persistence race and false failure prevention",
+  "files": [
+    "SERVICES/WorkQueueService.js",
+    "SERVICES/AutonomousCOOLoopService.js",
+    "TESTS/Test_Build037_FinalWorkflowPersistence.js",
+    "INSTALL_BUILD037_FINAL.ps1"
+  ]
+}

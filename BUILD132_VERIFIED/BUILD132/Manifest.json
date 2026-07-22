@@ -1,0 +1,21 @@
+{
+  "build": 132,
+  "name": "Instantly Enterprise Adapter",
+  "baseline": 131,
+  "requires": [
+    "SERVICES/ProviderRegistry.js",
+    "PROVIDERS/providers/InstantlyProvider.js",
+    "CONNECTORS/INSTANTLY/instantly.js"
+  ],
+  "installs": [
+    "SERVICES/InstantlyEnterpriseAdapterService.js"
+  ],
+  "patches": [
+    "SERVICES/ProviderRegistry.js"
+  ],
+  "safety": {
+    "automaticBackup": true,
+    "automaticRollback": true,
+    "liveInstantlyMutationsChanged": false
+  }
+}

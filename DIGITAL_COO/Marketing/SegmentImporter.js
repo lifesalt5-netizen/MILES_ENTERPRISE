@@ -7,6 +7,7 @@ const store = require("../../CORE/CANONICAL/EnterpriseStore");
 const ROOT = process.env.MILES_ENTERPRISE_ROOT || process.cwd();
 
 const SEGMENT_ROOTS = [
+  "D:\\P2GC_Intelligence\\ARCHIVE_2026_REVIEW\\Good Files to use\\Good To Use and segmented",
   "D:\\P2GC_Intelligence\\SAM_Registry\\SAM_PUBLIC_MONTHLY_V2_20260301\\OUT_FILTERED",
   "D:\\P2GC_Intelligence\\SAM_Registry\\SAM_PUBLIC_MONTHLY_V2_20260301\\OUT_FILTERED\\SEGMENTS",
   "D:\\P2GC_Intelligence\\SAM_Registry"

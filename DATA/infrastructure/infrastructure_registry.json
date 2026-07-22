@@ -1,0 +1,679 @@
+{
+  "version": 1,
+  "type": "MILES_INFRASTRUCTURE_REGISTRY",
+  "generatedAt": "2026-07-14T21:16:19.945Z",
+  "updatedAt": "2026-07-22T20:13:31.312Z",
+  "systems": {
+    "miles_runtime": {
+      "id": "miles_runtime",
+      "name": "MILES Enterprise Runtime",
+      "owner": "EngineeringOwner",
+      "category": "runtime",
+      "provider": "MILES",
+      "systems": [
+        "MILES Enterprise"
+      ],
+      "capabilities": [
+        "runtime.health",
+        "runtime.profile",
+        "runtime.restart",
+        "runtime.repair",
+        "runtime.validate",
+        "runtime.rollback"
+      ],
+      "authority": {
+        "read": true,
+        "write": true,
+        "execute": true,
+        "admin": true,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForArchitectureChange": true
+      },
+      "credentials": {
+        "status": "VALID",
+        "required": [
+          "MILES_ROOT",
+          "D:\\P2GC_Intelligence\\MILES_ENTERPRISE"
+        ],
+        "present": [
+          "MILES_ROOT",
+          "D:\\P2GC_Intelligence\\MILES_ENTERPRISE"
+        ],
+        "missing": [],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.569Z"
+      },
+      "health": {
+        "status": "HEALTHY",
+        "score": 100,
+        "checkedAt": "2026-07-22T20:13:30.665Z",
+        "message": "MILES runtime is operational.",
+        "checks": [
+          {
+            "name": "PROCESS_RUNNING",
+            "ok": true,
+            "pid": 5384
+          },
+          {
+            "name": "ROOT_EXISTS",
+            "ok": true,
+            "root": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE"
+          },
+          {
+            "name": "NODE_VERSION",
+            "ok": true,
+            "value": "v24.18.0"
+          },
+          {
+            "name": "MEMORY_RSS",
+            "ok": true,
+            "rssMb": 515.82
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T20:13:30.665Z",
+        "lastSuccess": "2026-07-22T20:13:30.665Z",
+        "lastFailure": null,
+        "failures": 0,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.665Z"
+    },
+    "orion": {
+      "id": "orion",
+      "name": "ORION Intelligence",
+      "owner": "OrionOwner",
+      "category": "intelligence",
+      "provider": "OrionProvider",
+      "systems": [
+        "ORION",
+        "SQLite"
+      ],
+      "capabilities": [
+        "orion.health",
+        "orion.contractors.read",
+        "orion.buyers.read",
+        "orion.opportunities.read",
+        "orion.recompetes.read",
+        "orion.recommendations.read",
+        "orion.personas.read"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForWrite": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForSchemaChange": true
+      },
+      "credentials": {
+        "status": "VALID",
+        "required": [
+          "ORION_DB",
+          "ORION_DB_PATH",
+          "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db"
+        ],
+        "present": [
+          "ORION_DB_PATH",
+          "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db"
+        ],
+        "missing": [
+          "ORION_DB"
+        ],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.568Z"
+      },
+      "health": {
+        "status": "WATCH",
+        "score": 75,
+        "checkedAt": "2026-07-22T20:13:31.312Z",
+        "message": "ORION database is 790.64 hours old.",
+        "checks": [
+          {
+            "name": "PROVIDER_INVOCATION",
+            "ok": true,
+            "provider": "OrionProvider",
+            "action": "refresh",
+            "providerStatus": "Watch"
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T20:13:31.312Z",
+        "lastSuccess": "2026-07-22T20:13:31.312Z",
+        "lastFailure": null,
+        "failures": 0,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:31.312Z"
+    },
+    "instantly": {
+      "id": "instantly",
+      "name": "Instantly",
+      "owner": "InstantlyOwner",
+      "category": "marketing",
+      "provider": "MarketingProvider",
+      "systems": [
+        "Instantly"
+      ],
+      "capabilities": [
+        "instantly.health",
+        "instantly.campaigns.read",
+        "instantly.campaigns.create",
+        "instantly.campaigns.update",
+        "instantly.campaigns.pause",
+        "instantly.campaigns.resume",
+        "instantly.mailboxes.read",
+        "instantly.mailboxes.manage",
+        "instantly.replies.read",
+        "instantly.replies.classify",
+        "instantly.leads.upload",
+        "instantly.leads.remove",
+        "instantly.segments.manage",
+        "instantly.deliverability.audit",
+        "instantly.warmup.monitor"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForSend": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForCampaignLaunch": true
+      },
+      "credentials": {
+        "status": "PARTIAL",
+        "required": [
+          "INSTANTLY_API_KEY",
+          "INSTANTLY_API_TOKEN",
+          "INSTANTLY_EMAIL",
+          "INSTANTLY_PASSWORD"
+        ],
+        "present": [
+          "INSTANTLY_API_KEY"
+        ],
+        "missing": [
+          "INSTANTLY_EMAIL",
+          "INSTANTLY_PASSWORD"
+        ],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.566Z"
+      },
+      "health": {
+        "status": "HEALTHY",
+        "score": 100,
+        "checkedAt": "2026-07-22T19:35:50.701Z",
+        "message": "Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+        "checks": [
+          {
+            "name": "PROVIDER_INVOCATION",
+            "ok": true,
+            "provider": "MarketingProvider",
+            "action": "refresh",
+            "providerStatus": "Healthy"
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T19:35:50.701Z",
+        "lastSuccess": "2026-07-22T19:35:50.701Z",
+        "lastFailure": "2026-07-22T17:52:47.399Z",
+        "failures": 79,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.584Z"
+    },
+    "google_workspace": {
+      "id": "google_workspace",
+      "name": "Google Workspace",
+      "owner": "GoogleWorkspaceOwner",
+      "category": "productivity",
+      "provider": "GoogleWorkspaceProvider",
+      "systems": [
+        "Gmail",
+        "Google Calendar",
+        "Google Drive",
+        "Google Docs",
+        "Google Sheets",
+        "Google Contacts"
+      ],
+      "capabilities": [
+        "gmail.read",
+        "gmail.classify",
+        "gmail.draft",
+        "gmail.send",
+        "calendar.read",
+        "calendar.create",
+        "calendar.update",
+        "calendar.cancel",
+        "drive.read",
+        "drive.organize",
+        "drive.upload",
+        "docs.read",
+        "docs.create",
+        "docs.update",
+        "sheets.read",
+        "sheets.create",
+        "sheets.update",
+        "contacts.read"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForSend": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForExternalShare": true
+      },
+      "credentials": {
+        "status": "MISSING",
+        "required": [
+          "GOOGLE_CLIENT_ID",
+          "GOOGLE_CLIENT_SECRET",
+          "GOOGLE_REFRESH_TOKEN",
+          "GOOGLE_SERVICE_ACCOUNT_FILE",
+          "GOOGLE_APPLICATION_CREDENTIALS"
+        ],
+        "present": [],
+        "missing": [
+          "GOOGLE_CLIENT_ID",
+          "GOOGLE_CLIENT_SECRET",
+          "GOOGLE_REFRESH_TOKEN",
+          "GOOGLE_SERVICE_ACCOUNT_FILE"
+        ],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.566Z"
+      },
+      "health": {
+        "status": "WATCH",
+        "score": 75,
+        "checkedAt": "2026-07-22T19:35:50.759Z",
+        "message": "No valid Google Workspace accounts are registered.",
+        "checks": [
+          {
+            "name": "PROVIDER_INVOCATION",
+            "ok": true,
+            "provider": "GoogleWorkspaceProvider",
+            "action": "auditWorkspace",
+            "providerStatus": "Watch"
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T19:35:50.759Z",
+        "lastSuccess": "2026-07-22T19:35:50.759Z",
+        "lastFailure": null,
+        "failures": 0,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.597Z"
+    },
+    "website": {
+      "id": "website",
+      "name": "P2GC Website",
+      "owner": "WebsiteOwner",
+      "category": "digital_presence",
+      "provider": "WebsiteProvider",
+      "systems": [
+        "B12",
+        "IONOS Website"
+      ],
+      "capabilities": [
+        "website.health",
+        "website.pages.read",
+        "website.pages.update",
+        "website.forms.read",
+        "website.forms.update",
+        "website.links.audit",
+        "website.seo.audit",
+        "website.analytics.read",
+        "website.publish"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForPublish": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForBrandChange": true
+      },
+      "credentials": {
+        "status": "MISSING",
+        "required": [
+          "B12_EMAIL",
+          "B12_PASSWORD",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ],
+        "present": [],
+        "missing": [
+          "B12_EMAIL",
+          "B12_PASSWORD",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.567Z"
+      },
+      "health": {
+        "status": "WATCH",
+        "score": 75,
+        "checkedAt": "2026-07-22T18:04:16.666Z",
+        "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+        "checks": [
+          {
+            "name": "PROVIDER_INVOCATION",
+            "ok": true,
+            "provider": "WebsiteProvider",
+            "action": "verifyWebsite",
+            "providerStatus": "Watch"
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T18:04:16.666Z",
+        "lastSuccess": "2026-07-22T18:04:16.666Z",
+        "lastFailure": "2026-07-22T17:42:45.237Z",
+        "failures": 119,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.623Z"
+    },
+    "domains": {
+      "id": "domains",
+      "name": "P2GC Domains and DNS",
+      "owner": "DomainOwner",
+      "category": "infrastructure",
+      "provider": "DomainProvider",
+      "systems": [
+        "Namecheap",
+        "IONOS",
+        "DNS"
+      ],
+      "capabilities": [
+        "domains.inventory",
+        "domains.expiration.read",
+        "domains.dns.read",
+        "domains.dns.update",
+        "domains.spf.audit",
+        "domains.dkim.audit",
+        "domains.dmarc.audit",
+        "domains.mx.audit",
+        "domains.ssl.audit",
+        "domains.redirects.audit"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForDnsChange": true,
+        "approvalRequiredForRegistrarChange": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForTransfer": true
+      },
+      "credentials": {
+        "status": "MISSING",
+        "required": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_USERNAME",
+          "NAMECHEAP_CLIENT_IP",
+          "IONOS_API_KEY",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ],
+        "present": [],
+        "missing": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_USERNAME",
+          "NAMECHEAP_CLIENT_IP",
+          "IONOS_API_KEY",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ],
+        "expiresAt": null,
+        "checkedAt": "2026-07-22T20:13:30.566Z"
+      },
+      "health": {
+        "status": "CRITICAL",
+        "score": 35,
+        "checkedAt": "2026-07-22T20:13:30.716Z",
+        "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+        "checks": [
+          {
+            "name": "DOMAIN_CREDENTIAL_AUTHORITY",
+            "ok": false,
+            "credentialStatus": "MISSING"
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": false,
+        "lastCheck": "2026-07-22T20:13:30.716Z",
+        "lastSuccess": null,
+        "lastFailure": "2026-07-22T20:13:30.716Z",
+        "failures": 181,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.716Z"
+    },
+    "filesystem_c": {
+      "id": "filesystem_c",
+      "name": "Windows C Drive",
+      "owner": "FileSystemOwner",
+      "category": "filesystem",
+      "provider": "FileSystemProvider",
+      "systems": [
+        "C:\\"
+      ],
+      "capabilities": [
+        "filesystem.read",
+        "filesystem.inventory",
+        "filesystem.search",
+        "filesystem.classify",
+        "filesystem.health",
+        "filesystem.temp.cleanup"
+      ],
+      "authority": {
+        "read": true,
+        "write": false,
+        "execute": false,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForWrite": true,
+        "approvalRequiredForDelete": true,
+        "systemDirectoriesProtected": true
+      },
+      "credentials": {
+        "status": "UNKNOWN",
+        "required": [],
+        "present": [],
+        "missing": [],
+        "expiresAt": null,
+        "checkedAt": null
+      },
+      "health": {
+        "status": "HEALTHY",
+        "score": 100,
+        "checkedAt": "2026-07-22T20:13:30.693Z",
+        "message": "C drive is readable and operational.",
+        "checks": [
+          {
+            "name": "PATH_EXISTS",
+            "ok": true
+          },
+          {
+            "name": "PATH_READABLE",
+            "ok": true
+          },
+          {
+            "name": "PATH_WRITABLE",
+            "ok": true
+          },
+          {
+            "name": "DISK_CAPACITY",
+            "ok": true,
+            "usedPercent": 62.22
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T20:13:30.693Z",
+        "lastSuccess": "2026-07-22T20:13:30.693Z",
+        "lastFailure": null,
+        "failures": 0,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.693Z"
+    },
+    "filesystem_d": {
+      "id": "filesystem_d",
+      "name": "P2GC D Drive",
+      "owner": "FileSystemOwner",
+      "category": "filesystem",
+      "provider": "FileSystemProvider",
+      "systems": [
+        "D:\\"
+      ],
+      "capabilities": [
+        "filesystem.read",
+        "filesystem.write",
+        "filesystem.inventory",
+        "filesystem.search",
+        "filesystem.classify",
+        "filesystem.backup",
+        "filesystem.restore",
+        "filesystem.organize",
+        "filesystem.duplicates.detect",
+        "filesystem.health"
+      ],
+      "authority": {
+        "read": true,
+        "write": true,
+        "execute": true,
+        "admin": false,
+        "delete": false
+      },
+      "protection": {
+        "protected": true,
+        "approvalRequiredForDelete": true,
+        "approvalRequiredForMassMove": true,
+        "authoritativeFoldersProtected": true
+      },
+      "credentials": {
+        "status": "UNKNOWN",
+        "required": [],
+        "present": [],
+        "missing": [],
+        "expiresAt": null,
+        "checkedAt": null
+      },
+      "health": {
+        "status": "HEALTHY",
+        "score": 100,
+        "checkedAt": "2026-07-22T20:13:30.704Z",
+        "message": "D drive is readable, writable in the MILES runtime area, and operational.",
+        "checks": [
+          {
+            "name": "PATH_EXISTS",
+            "ok": true
+          },
+          {
+            "name": "PATH_READABLE",
+            "ok": true
+          },
+          {
+            "name": "PATH_WRITABLE",
+            "ok": true
+          },
+          {
+            "name": "DISK_CAPACITY",
+            "ok": true,
+            "usedPercent": 89.26
+          }
+        ]
+      },
+      "runtime": {
+        "status": "REGISTERED",
+        "enabled": true,
+        "ready": true,
+        "lastCheck": "2026-07-22T20:13:30.704Z",
+        "lastSuccess": "2026-07-22T20:13:30.704Z",
+        "lastFailure": null,
+        "failures": 0,
+        "activeOperations": 0
+      },
+      "metadata": {},
+      "createdAt": "2026-07-14T21:16:19.953Z",
+      "updatedAt": "2026-07-22T20:13:30.704Z"
+    }
+  }
+}

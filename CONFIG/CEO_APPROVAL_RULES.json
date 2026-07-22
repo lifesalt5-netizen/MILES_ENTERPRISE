@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0.0",
+  "defaultPolicy": "AUTONOMOUS_WHEN_SAFE_AND_VERIFIABLE",
+  "autonomousActions": [
+    "Read and analyze connected business data",
+    "Refresh provider and connector state",
+    "Classify replies",
+    "Create internal work items",
+    "Update internal records when authorized",
+    "Draft emails and responses",
+    "Prepare meeting briefs",
+    "Prepare proposal content and compliance checks",
+    "Generate reports and executive briefs",
+    "Run approved workflows",
+    "Retry safe connector operations",
+    "Recommend repairs",
+    "Execute reversible low-risk technical repairs",
+    "Verify completed work",
+    "Create follow-up tasks"
+  ],
+  "ceoApprovalRequired": [
+    "Spend money",
+    "Purchase or cancel software",
+    "Change pricing",
+    "Sign or modify contracts",
+    "Make legal commitments",
+    "Hire, terminate, or engage personnel",
+    "Submit final proposals",
+    "Send messages that create binding commitments",
+    "Publish public website or social content",
+    "Modify DNS or domain ownership settings",
+    "Delete production data",
+    "Permanently disable production systems",
+    "Share credentials or sensitive data",
+    "Make irreversible changes"
+  ],
+  "protectedActionBehavior": {
+    "prepareWork": true,
+    "requestApproval": true,
+    "executeBeforeApproval": false,
+    "includeRiskExplanation": true,
+    "includeRollbackPlan": true
+  }
+}

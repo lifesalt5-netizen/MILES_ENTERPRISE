@@ -1,0 +1,16 @@
+{
+  "build": 131,
+  "name": "Provider Registry Integration",
+  "files": [
+    "BUILD131.ps1",
+    "ProviderRegistryPatch.js",
+    "Test_Build131_ProviderRegistry.js",
+    "README.txt"
+  ],
+  "requires": [
+    "SERVICES/ProviderRegistry.js",
+    "SERVICES/BusinessOperationsBridgeService.js",
+    "SERVICES/RevenueMissionSourceService.js",
+    "Node.js"
+  ]
+}

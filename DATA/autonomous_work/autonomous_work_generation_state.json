@@ -1,0 +1,2834 @@
+{
+  "ok": true,
+  "type": "AUTONOMOUS_WORK_GENERATION_STATE",
+  "generatedAt": "2026-07-22T18:08:29.219Z",
+  "durationMs": 8630,
+  "findings": [
+    {
+      "infrastructureId": "domains",
+      "source": "InfrastructureHealthManager",
+      "category": "HEALTH",
+      "status": "CRITICAL",
+      "score": 35,
+      "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+      "evidence": {
+        "infrastructureId": "domains",
+        "status": "CRITICAL",
+        "score": 35,
+        "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+      },
+      "findingKey": "252af75b1486b05b"
+    },
+    {
+      "infrastructureId": "google_workspace",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for google_workspace.",
+      "evidence": {
+        "credentialId": "google_workspace",
+        "present": [],
+        "missing": [
+          "GOOGLE_CLIENT_ID",
+          "GOOGLE_CLIENT_SECRET",
+          "GOOGLE_REFRESH_TOKEN",
+          "GOOGLE_SERVICE_ACCOUNT_FILE"
+        ]
+      },
+      "findingKey": "d835ab710c05735e"
+    },
+    {
+      "infrastructureId": "domains",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for domains.",
+      "evidence": {
+        "credentialId": "domains",
+        "present": [],
+        "missing": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_USERNAME",
+          "NAMECHEAP_CLIENT_IP",
+          "IONOS_API_KEY",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ]
+      },
+      "findingKey": "b478695140be1445"
+    },
+    {
+      "infrastructureId": "website",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for website.",
+      "evidence": {
+        "credentialId": "website",
+        "present": [],
+        "missing": [
+          "B12_EMAIL",
+          "B12_PASSWORD",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ]
+      },
+      "findingKey": "189bdc7c0247c2d1"
+    },
+    {
+      "infrastructureId": "instantly",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "PARTIAL",
+      "score": 60,
+      "message": "Credential configuration is partial for instantly.",
+      "evidence": {
+        "credentialId": "instantly",
+        "present": [
+          "INSTANTLY_API_KEY"
+        ],
+        "missing": [
+          "INSTANTLY_EMAIL",
+          "INSTANTLY_PASSWORD"
+        ]
+      },
+      "findingKey": "0c9e713bb4f58c3c"
+    },
+    {
+      "infrastructureId": "orion",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "ORION database is 788.47 hours old.",
+      "evidence": {
+        "provider": "OrionProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "DatabaseFreshness",
+            "severity": "Warning",
+            "message": "ORION database is 788.47 hours old."
+          }
+        ],
+        "recommendations": [
+          "Run the authorized ORION dataset refresh and verify database modification time afterward."
+        ],
+        "durationMs": 391
+      },
+      "findingKey": "0623bc556210ff75"
+    },
+    {
+      "infrastructureId": "instantly",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+      "evidence": {
+        "provider": "MarketingProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "InstantlyAudit",
+            "severity": "Warning",
+            "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          }
+        ],
+        "recommendations": [
+          "No campaign-safe sending accounts were found. Do not launch new outbound work.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown."
+        ],
+        "durationMs": 22383
+      },
+      "findingKey": "3fbbdc93af7eb805"
+    },
+    {
+      "infrastructureId": "google_workspace",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "No valid Google Workspace accounts are registered.",
+      "evidence": {
+        "provider": "GoogleWorkspaceProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "GoogleAccountRegistry",
+            "severity": "Info",
+            "message": "No valid Google Workspace accounts are registered."
+          }
+        ],
+        "recommendations": [
+          "Register approved Google Workspace accounts through the existing account manager."
+        ],
+        "durationMs": 12
+      },
+      "findingKey": "4afa8ab9d46a50de"
+    },
+    {
+      "infrastructureId": "website",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+      "evidence": {
+        "provider": "WebsiteProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "Conversion",
+            "severity": "Warning",
+            "message": "Calendly integration was not detected."
+          },
+          {
+            "type": "ContentDrift",
+            "severity": "Info",
+            "message": "4 monitored content field(s) changed from baseline."
+          }
+        ],
+        "recommendations": [
+          "Verify the approved Calendly link is present and reachable.",
+          "Review content drift against approved website changes before publishing or rollback."
+        ],
+        "durationMs": 22724
+      },
+      "findingKey": "ef93787dd8c5a05b"
+    }
+  ],
+  "selectedFindings": [
+    {
+      "infrastructureId": "domains",
+      "source": "InfrastructureHealthManager",
+      "category": "HEALTH",
+      "status": "CRITICAL",
+      "score": 35,
+      "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+      "evidence": {
+        "infrastructureId": "domains",
+        "status": "CRITICAL",
+        "score": 35,
+        "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+      },
+      "findingKey": "252af75b1486b05b"
+    },
+    {
+      "infrastructureId": "google_workspace",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for google_workspace.",
+      "evidence": {
+        "credentialId": "google_workspace",
+        "present": [],
+        "missing": [
+          "GOOGLE_CLIENT_ID",
+          "GOOGLE_CLIENT_SECRET",
+          "GOOGLE_REFRESH_TOKEN",
+          "GOOGLE_SERVICE_ACCOUNT_FILE"
+        ]
+      },
+      "findingKey": "d835ab710c05735e"
+    },
+    {
+      "infrastructureId": "domains",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for domains.",
+      "evidence": {
+        "credentialId": "domains",
+        "present": [],
+        "missing": [
+          "NAMECHEAP_API_USER",
+          "NAMECHEAP_API_KEY",
+          "NAMECHEAP_USERNAME",
+          "NAMECHEAP_CLIENT_IP",
+          "IONOS_API_KEY",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ]
+      },
+      "findingKey": "b478695140be1445"
+    },
+    {
+      "infrastructureId": "website",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "MISSING",
+      "score": 30,
+      "message": "Credential configuration is missing for website.",
+      "evidence": {
+        "credentialId": "website",
+        "present": [],
+        "missing": [
+          "B12_EMAIL",
+          "B12_PASSWORD",
+          "IONOS_USERNAME",
+          "IONOS_PASSWORD"
+        ]
+      },
+      "findingKey": "189bdc7c0247c2d1"
+    },
+    {
+      "infrastructureId": "instantly",
+      "source": "CredentialAuthority",
+      "category": "CREDENTIAL",
+      "status": "PARTIAL",
+      "score": 60,
+      "message": "Credential configuration is partial for instantly.",
+      "evidence": {
+        "credentialId": "instantly",
+        "present": [
+          "INSTANTLY_API_KEY"
+        ],
+        "missing": [
+          "INSTANTLY_EMAIL",
+          "INSTANTLY_PASSWORD"
+        ]
+      },
+      "findingKey": "0c9e713bb4f58c3c"
+    },
+    {
+      "infrastructureId": "orion",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "ORION database is 788.47 hours old.",
+      "evidence": {
+        "provider": "OrionProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "DatabaseFreshness",
+            "severity": "Warning",
+            "message": "ORION database is 788.47 hours old."
+          }
+        ],
+        "recommendations": [
+          "Run the authorized ORION dataset refresh and verify database modification time afterward."
+        ],
+        "durationMs": 391
+      },
+      "findingKey": "0623bc556210ff75"
+    },
+    {
+      "infrastructureId": "instantly",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+      "evidence": {
+        "provider": "MarketingProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "InstantlyAudit",
+            "severity": "Warning",
+            "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          },
+          {
+            "type": "SegmentDepleted",
+            "severity": "Info",
+            "message": "Segment Unknown has no campaign-ready verified email inventory."
+          }
+        ],
+        "recommendations": [
+          "No campaign-safe sending accounts were found. Do not launch new outbound work.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown.",
+          "Enrich or replenish segment Unknown."
+        ],
+        "durationMs": 22383
+      },
+      "findingKey": "3fbbdc93af7eb805"
+    },
+    {
+      "infrastructureId": "google_workspace",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "No valid Google Workspace accounts are registered.",
+      "evidence": {
+        "provider": "GoogleWorkspaceProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "GoogleAccountRegistry",
+            "severity": "Info",
+            "message": "No valid Google Workspace accounts are registered."
+          }
+        ],
+        "recommendations": [
+          "Register approved Google Workspace accounts through the existing account manager."
+        ],
+        "durationMs": 12
+      },
+      "findingKey": "4afa8ab9d46a50de"
+    },
+    {
+      "infrastructureId": "website",
+      "source": "InfrastructureHealthManager",
+      "category": "PROVIDER",
+      "status": "WATCH",
+      "score": 75,
+      "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+      "evidence": {
+        "provider": "WebsiteProvider",
+        "providerStatus": "Watch",
+        "exceptions": [
+          {
+            "type": "Conversion",
+            "severity": "Warning",
+            "message": "Calendly integration was not detected."
+          },
+          {
+            "type": "ContentDrift",
+            "severity": "Info",
+            "message": "4 monitored content field(s) changed from baseline."
+          }
+        ],
+        "recommendations": [
+          "Verify the approved Calendly link is present and reachable.",
+          "Review content drift against approved website changes before publishing or rollback."
+        ],
+        "durationMs": 22724
+      },
+      "findingKey": "ef93787dd8c5a05b"
+    }
+  ],
+  "generatedTasks": [
+    {
+      "id": "AUTO_domains_health_8ca513c47bed6a77",
+      "type": "WORKFORCE_STEP",
+      "status": "AWAITING_APPROVAL",
+      "priority": 1,
+      "priorityLabel": "CRITICAL",
+      "title": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+      "action": "ENGINEERING_ANALYZE",
+      "provider": "MILES",
+      "connector": "MILES",
+      "department": "Infrastructure",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "MILES",
+        "system": "domains",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "action": "ENGINEERING_ANALYZE",
+        "capability": "infrastructure.domains.credential_gap",
+        "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+        "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+        "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access.",
+        "assignedTo": "EngineeringOwner",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "workPackageId": "AUTO_WP_8ca513c47bed6a77",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": true,
+        "blockReason": "Registrar authentication is unavailable.",
+        "infrastructureId": "domains",
+        "finding": {
+          "infrastructureId": "domains",
+          "source": "InfrastructureHealthManager",
+          "category": "HEALTH",
+          "status": "CRITICAL",
+          "score": 35,
+          "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "evidence": {
+            "infrastructureId": "domains",
+            "status": "CRITICAL",
+            "score": 35,
+            "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+          },
+          "findingKey": "252af75b1486b05b"
+        },
+        "autonomousWorkFingerprint": "8ca513c47bed6a77",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "originalCommand": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "infrastructure.domains.credential_gap",
+              "provider": "MILES",
+              "department": "Infrastructure",
+              "action": "ENGINEERING_ANALYZE",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "EngineeringOwner",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+              "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "MILES",
+        "system": "domains",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "action": "ENGINEERING_ANALYZE",
+        "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+        "originalCommand": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "infrastructure.domains.credential_gap",
+            "provider": "MILES",
+            "department": "Infrastructure",
+            "action": "ENGINEERING_ANALYZE",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "EngineeringOwner",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+            "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_google_workspace_credential_34ef8e21414f9f3b",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 1,
+      "priorityLabel": "CRITICAL",
+      "title": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+      "action": "auditWorkspace",
+      "provider": "GoogleWorkspaceProvider",
+      "connector": "GoogleWorkspaceProvider",
+      "department": "Operations",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "GoogleWorkspaceProvider",
+        "system": "google_workspace",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "action": "auditWorkspace",
+        "capability": "google.workspace.audit",
+        "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+        "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+        "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot.",
+        "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "workPackageId": "AUTO_WP_34ef8e21414f9f3b",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "google_workspace",
+        "finding": {
+          "infrastructureId": "google_workspace",
+          "source": "CredentialAuthority",
+          "category": "CREDENTIAL",
+          "status": "MISSING",
+          "score": 30,
+          "message": "Credential configuration is missing for google_workspace.",
+          "evidence": {
+            "credentialId": "google_workspace",
+            "present": [],
+            "missing": [
+              "GOOGLE_CLIENT_ID",
+              "GOOGLE_CLIENT_SECRET",
+              "GOOGLE_REFRESH_TOKEN",
+              "GOOGLE_SERVICE_ACCOUNT_FILE"
+            ]
+          },
+          "findingKey": "d835ab710c05735e"
+        },
+        "autonomousWorkFingerprint": "34ef8e21414f9f3b",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+          "originalCommand": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "google.workspace.audit",
+              "provider": "GoogleWorkspaceProvider",
+              "department": "Operations",
+              "action": "auditWorkspace",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+              "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "GoogleWorkspaceProvider",
+        "system": "google_workspace",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "action": "auditWorkspace",
+        "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+        "originalCommand": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "google.workspace.audit",
+            "provider": "GoogleWorkspaceProvider",
+            "department": "Operations",
+            "action": "auditWorkspace",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+            "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_domains_credential_05a8163aefc0f8a0",
+      "type": "WORKFORCE_STEP",
+      "status": "AWAITING_APPROVAL",
+      "priority": 1,
+      "priorityLabel": "CRITICAL",
+      "title": "Resolve domains finding: Credential configuration is missing for domains.",
+      "action": "ENGINEERING_ANALYZE",
+      "provider": "MILES",
+      "connector": "MILES",
+      "department": "Infrastructure",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "MILES",
+        "system": "domains",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "action": "ENGINEERING_ANALYZE",
+        "capability": "infrastructure.domains.credential_gap",
+        "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+        "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+        "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access.",
+        "assignedTo": "EngineeringOwner",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "workPackageId": "AUTO_WP_05a8163aefc0f8a0",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": true,
+        "blockReason": "Registrar authentication is unavailable.",
+        "infrastructureId": "domains",
+        "finding": {
+          "infrastructureId": "domains",
+          "source": "CredentialAuthority",
+          "category": "CREDENTIAL",
+          "status": "MISSING",
+          "score": 30,
+          "message": "Credential configuration is missing for domains.",
+          "evidence": {
+            "credentialId": "domains",
+            "present": [],
+            "missing": [
+              "NAMECHEAP_API_USER",
+              "NAMECHEAP_API_KEY",
+              "NAMECHEAP_USERNAME",
+              "NAMECHEAP_CLIENT_IP",
+              "IONOS_API_KEY",
+              "IONOS_USERNAME",
+              "IONOS_PASSWORD"
+            ]
+          },
+          "findingKey": "b478695140be1445"
+        },
+        "autonomousWorkFingerprint": "05a8163aefc0f8a0",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+          "originalCommand": "Resolve domains finding: Credential configuration is missing for domains.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "infrastructure.domains.credential_gap",
+              "provider": "MILES",
+              "department": "Infrastructure",
+              "action": "ENGINEERING_ANALYZE",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "EngineeringOwner",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+              "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "MILES",
+        "system": "domains",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "action": "ENGINEERING_ANALYZE",
+        "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+        "originalCommand": "Resolve domains finding: Credential configuration is missing for domains.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "infrastructure.domains.credential_gap",
+            "provider": "MILES",
+            "department": "Infrastructure",
+            "action": "ENGINEERING_ANALYZE",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "EngineeringOwner",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+            "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_website_credential_bfdb356b22ee8a69",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 1,
+      "priorityLabel": "CRITICAL",
+      "title": "Resolve website finding: Credential configuration is missing for website.",
+      "action": "verifyWebsite",
+      "provider": "WebsiteProvider",
+      "connector": "WebsiteProvider",
+      "department": "Digital Infrastructure",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "WebsiteProvider",
+        "system": "website",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "action": "verifyWebsite",
+        "capability": "website.health.audit",
+        "objective": "Resolve website finding: Credential configuration is missing for website.",
+        "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+        "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task.",
+        "assignedTo": "WebsiteExecutiveAdvisor",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "workPackageId": "AUTO_WP_bfdb356b22ee8a69",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "website",
+        "finding": {
+          "infrastructureId": "website",
+          "source": "CredentialAuthority",
+          "category": "CREDENTIAL",
+          "status": "MISSING",
+          "score": 30,
+          "message": "Credential configuration is missing for website.",
+          "evidence": {
+            "credentialId": "website",
+            "present": [],
+            "missing": [
+              "B12_EMAIL",
+              "B12_PASSWORD",
+              "IONOS_USERNAME",
+              "IONOS_PASSWORD"
+            ]
+          },
+          "findingKey": "189bdc7c0247c2d1"
+        },
+        "autonomousWorkFingerprint": "bfdb356b22ee8a69",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "objective": "Resolve website finding: Credential configuration is missing for website.",
+          "originalCommand": "Resolve website finding: Credential configuration is missing for website.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "website.health.audit",
+              "provider": "WebsiteProvider",
+              "department": "Digital Infrastructure",
+              "action": "verifyWebsite",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "WebsiteExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+              "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "WebsiteProvider",
+        "system": "website",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "action": "verifyWebsite",
+        "objective": "Resolve website finding: Credential configuration is missing for website.",
+        "originalCommand": "Resolve website finding: Credential configuration is missing for website.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "website.health.audit",
+            "provider": "WebsiteProvider",
+            "department": "Digital Infrastructure",
+            "action": "verifyWebsite",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "WebsiteExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+            "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_instantly_credential_0c68967d85a1de5d",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 2,
+      "priorityLabel": "HIGH",
+      "title": "Resolve instantly finding: Credential configuration is partial for instantly.",
+      "action": "refresh",
+      "provider": "MarketingProvider",
+      "connector": "MarketingProvider",
+      "department": "Revenue Operations",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "MarketingProvider",
+        "system": "instantly",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "action": "refresh",
+        "capability": "revenue.outbound.audit",
+        "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+        "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+        "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations.",
+        "assignedTo": "InstantlyExecutiveAdvisor",
+        "priority": 2,
+        "priorityLabel": "HIGH",
+        "workPackageId": "AUTO_WP_0c68967d85a1de5d",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "instantly",
+        "finding": {
+          "infrastructureId": "instantly",
+          "source": "CredentialAuthority",
+          "category": "CREDENTIAL",
+          "status": "PARTIAL",
+          "score": 60,
+          "message": "Credential configuration is partial for instantly.",
+          "evidence": {
+            "credentialId": "instantly",
+            "present": [
+              "INSTANTLY_API_KEY"
+            ],
+            "missing": [
+              "INSTANTLY_EMAIL",
+              "INSTANTLY_PASSWORD"
+            ]
+          },
+          "findingKey": "0c9e713bb4f58c3c"
+        },
+        "autonomousWorkFingerprint": "0c68967d85a1de5d",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+          "originalCommand": "Resolve instantly finding: Credential configuration is partial for instantly.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "revenue.outbound.audit",
+              "provider": "MarketingProvider",
+              "department": "Revenue Operations",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "InstantlyExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+              "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "MarketingProvider",
+        "system": "instantly",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "action": "refresh",
+        "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+        "originalCommand": "Resolve instantly finding: Credential configuration is partial for instantly.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "revenue.outbound.audit",
+            "provider": "MarketingProvider",
+            "department": "Revenue Operations",
+            "action": "refresh",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "InstantlyExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+            "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_orion_provider_bcb9fc4778670c7d",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 3,
+      "priorityLabel": "MEDIUM",
+      "title": "Resolve orion finding: ORION database is 788.47 hours old.",
+      "action": "refresh",
+      "provider": "OrionProvider",
+      "connector": "OrionProvider",
+      "department": "Intelligence",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "OrionProvider",
+        "system": "orion",
+        "connector": "OrionProvider",
+        "department": "Intelligence",
+        "action": "refresh",
+        "capability": "orion.health.refresh",
+        "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+        "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+        "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result.",
+        "assignedTo": "Allison",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "workPackageId": "AUTO_WP_bcb9fc4778670c7d",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "orion",
+        "finding": {
+          "infrastructureId": "orion",
+          "source": "InfrastructureHealthManager",
+          "category": "PROVIDER",
+          "status": "WATCH",
+          "score": 75,
+          "message": "ORION database is 788.47 hours old.",
+          "evidence": {
+            "provider": "OrionProvider",
+            "providerStatus": "Watch",
+            "exceptions": [
+              {
+                "type": "DatabaseFreshness",
+                "severity": "Warning",
+                "message": "ORION database is 788.47 hours old."
+              }
+            ],
+            "recommendations": [
+              "Run the authorized ORION dataset refresh and verify database modification time afterward."
+            ],
+            "durationMs": 391
+          },
+          "findingKey": "0623bc556210ff75"
+        },
+        "autonomousWorkFingerprint": "bcb9fc4778670c7d",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "OrionProvider",
+          "system": "orion",
+          "connector": "OrionProvider",
+          "department": "Intelligence",
+          "action": "refresh",
+          "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+          "originalCommand": "Resolve orion finding: ORION database is 788.47 hours old.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "orion.health.refresh",
+              "provider": "OrionProvider",
+              "department": "Intelligence",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "Allison",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+              "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "OrionProvider",
+        "system": "orion",
+        "connector": "OrionProvider",
+        "department": "Intelligence",
+        "action": "refresh",
+        "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+        "originalCommand": "Resolve orion finding: ORION database is 788.47 hours old.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "orion.health.refresh",
+            "provider": "OrionProvider",
+            "department": "Intelligence",
+            "action": "refresh",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "Allison",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+            "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_instantly_provider_440571a1978bb07d",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 3,
+      "priorityLabel": "MEDIUM",
+      "title": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+      "action": "refresh",
+      "provider": "MarketingProvider",
+      "connector": "MarketingProvider",
+      "department": "Revenue Operations",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "MarketingProvider",
+        "system": "instantly",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "action": "refresh",
+        "capability": "revenue.outbound.audit",
+        "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+        "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+        "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations.",
+        "assignedTo": "InstantlyExecutiveAdvisor",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "workPackageId": "AUTO_WP_440571a1978bb07d",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "instantly",
+        "finding": {
+          "infrastructureId": "instantly",
+          "source": "InfrastructureHealthManager",
+          "category": "PROVIDER",
+          "status": "WATCH",
+          "score": 75,
+          "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "evidence": {
+            "provider": "MarketingProvider",
+            "providerStatus": "Watch",
+            "exceptions": [
+              {
+                "type": "InstantlyAudit",
+                "severity": "Warning",
+                "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              },
+              {
+                "type": "SegmentDepleted",
+                "severity": "Info",
+                "message": "Segment Unknown has no campaign-ready verified email inventory."
+              }
+            ],
+            "recommendations": [
+              "No campaign-safe sending accounts were found. Do not launch new outbound work.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown.",
+              "Enrich or replenish segment Unknown."
+            ],
+            "durationMs": 22383
+          },
+          "findingKey": "3fbbdc93af7eb805"
+        },
+        "autonomousWorkFingerprint": "440571a1978bb07d",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "originalCommand": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "revenue.outbound.audit",
+              "provider": "MarketingProvider",
+              "department": "Revenue Operations",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "InstantlyExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+              "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "MarketingProvider",
+        "system": "instantly",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "action": "refresh",
+        "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+        "originalCommand": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "revenue.outbound.audit",
+            "provider": "MarketingProvider",
+            "department": "Revenue Operations",
+            "action": "refresh",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "InstantlyExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+            "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_google_workspace_provider_e1fae269bd59a527",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 3,
+      "priorityLabel": "MEDIUM",
+      "title": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+      "action": "auditWorkspace",
+      "provider": "GoogleWorkspaceProvider",
+      "connector": "GoogleWorkspaceProvider",
+      "department": "Operations",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "GoogleWorkspaceProvider",
+        "system": "google_workspace",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "action": "auditWorkspace",
+        "capability": "google.workspace.audit",
+        "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+        "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+        "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot.",
+        "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "workPackageId": "AUTO_WP_e1fae269bd59a527",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "google_workspace",
+        "finding": {
+          "infrastructureId": "google_workspace",
+          "source": "InfrastructureHealthManager",
+          "category": "PROVIDER",
+          "status": "WATCH",
+          "score": 75,
+          "message": "No valid Google Workspace accounts are registered.",
+          "evidence": {
+            "provider": "GoogleWorkspaceProvider",
+            "providerStatus": "Watch",
+            "exceptions": [
+              {
+                "type": "GoogleAccountRegistry",
+                "severity": "Info",
+                "message": "No valid Google Workspace accounts are registered."
+              }
+            ],
+            "recommendations": [
+              "Register approved Google Workspace accounts through the existing account manager."
+            ],
+            "durationMs": 12
+          },
+          "findingKey": "4afa8ab9d46a50de"
+        },
+        "autonomousWorkFingerprint": "e1fae269bd59a527",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+          "originalCommand": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "google.workspace.audit",
+              "provider": "GoogleWorkspaceProvider",
+              "department": "Operations",
+              "action": "auditWorkspace",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+              "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "GoogleWorkspaceProvider",
+        "system": "google_workspace",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "action": "auditWorkspace",
+        "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+        "originalCommand": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "google.workspace.audit",
+            "provider": "GoogleWorkspaceProvider",
+            "department": "Operations",
+            "action": "auditWorkspace",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+            "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+          }
+        ]
+      }
+    },
+    {
+      "id": "AUTO_website_provider_8efaaef7d4247cdb",
+      "type": "WORKFORCE_STEP",
+      "status": "QUEUED",
+      "priority": 3,
+      "priorityLabel": "MEDIUM",
+      "title": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+      "action": "verifyWebsite",
+      "provider": "WebsiteProvider",
+      "connector": "WebsiteProvider",
+      "department": "Digital Infrastructure",
+      "createdAt": "2026-07-22T18:08:20.590Z",
+      "updatedAt": "2026-07-22T18:08:20.590Z",
+      "source": "AutonomousWorkGenerationService",
+      "payload": {
+        "type": "WORKFORCE_STEP",
+        "provider": "WebsiteProvider",
+        "system": "website",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "action": "verifyWebsite",
+        "capability": "website.health.audit",
+        "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+        "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+        "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task.",
+        "assignedTo": "WebsiteExecutiveAdvisor",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "workPackageId": "AUTO_WP_8efaaef7d4247cdb",
+        "autonomous": true,
+        "safeToAutoExecute": true,
+        "blocked": false,
+        "blockReason": null,
+        "infrastructureId": "website",
+        "finding": {
+          "infrastructureId": "website",
+          "source": "InfrastructureHealthManager",
+          "category": "PROVIDER",
+          "status": "WATCH",
+          "score": 75,
+          "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "evidence": {
+            "provider": "WebsiteProvider",
+            "providerStatus": "Watch",
+            "exceptions": [
+              {
+                "type": "Conversion",
+                "severity": "Warning",
+                "message": "Calendly integration was not detected."
+              },
+              {
+                "type": "ContentDrift",
+                "severity": "Info",
+                "message": "4 monitored content field(s) changed from baseline."
+              }
+            ],
+            "recommendations": [
+              "Verify the approved Calendly link is present and reachable.",
+              "Review content drift against approved website changes before publishing or rollback."
+            ],
+            "durationMs": 22724
+          },
+          "findingKey": "ef93787dd8c5a05b"
+        },
+        "autonomousWorkFingerprint": "8efaaef7d4247cdb",
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "originalCommand": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "website.health.audit",
+              "provider": "WebsiteProvider",
+              "department": "Digital Infrastructure",
+              "action": "verifyWebsite",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "WebsiteExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+              "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+            }
+          ]
+        }
+      },
+      "plan": {
+        "ok": true,
+        "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+        "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+        "provider": "WebsiteProvider",
+        "system": "website",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "action": "verifyWebsite",
+        "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+        "originalCommand": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+        "steps": [
+          {
+            "step": 1,
+            "capability": "website.health.audit",
+            "provider": "WebsiteProvider",
+            "department": "Digital Infrastructure",
+            "action": "verifyWebsite",
+            "taskType": "WORKFORCE_STEP",
+            "assignedTo": "WebsiteExecutiveAdvisor",
+            "status": "QUEUED",
+            "dependsOn": [],
+            "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+            "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+          }
+        ]
+      }
+    }
+  ],
+  "submissions": [
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_domains_health_8ca513c47bed6a77",
+      "task": {
+        "id": "AUTO_domains_health_8ca513c47bed6a77",
+        "type": "WORKFORCE_STEP",
+        "status": "AWAITING_APPROVAL",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "title": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+        "action": "ENGINEERING_ANALYZE",
+        "provider": "MILES",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "capability": "infrastructure.domains.credential_gap",
+          "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+          "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access.",
+          "assignedTo": "EngineeringOwner",
+          "priority": 1,
+          "priorityLabel": "CRITICAL",
+          "workPackageId": "AUTO_WP_8ca513c47bed6a77",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": true,
+          "blockReason": "Registrar authentication is unavailable.",
+          "infrastructureId": "domains",
+          "finding": {
+            "infrastructureId": "domains",
+            "source": "InfrastructureHealthManager",
+            "category": "HEALTH",
+            "status": "CRITICAL",
+            "score": 35,
+            "message": "Domain inventory is registered, but live registrar management is not yet authenticated.",
+            "evidence": {
+              "infrastructureId": "domains",
+              "status": "CRITICAL",
+              "score": 35,
+              "message": "Domain inventory is registered, but live registrar management is not yet authenticated."
+            },
+            "findingKey": "252af75b1486b05b"
+          },
+          "autonomousWorkFingerprint": "8ca513c47bed6a77",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "MILES",
+            "system": "domains",
+            "connector": "MILES",
+            "department": "Infrastructure",
+            "action": "ENGINEERING_ANALYZE",
+            "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+            "originalCommand": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "infrastructure.domains.credential_gap",
+                "provider": "MILES",
+                "department": "Infrastructure",
+                "action": "ENGINEERING_ANALYZE",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "EngineeringOwner",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+                "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "objective": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "originalCommand": "Resolve domains finding: Domain inventory is registered, but live registrar management is not yet authenticated.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "infrastructure.domains.credential_gap",
+              "provider": "MILES",
+              "department": "Infrastructure",
+              "action": "ENGINEERING_ANALYZE",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "EngineeringOwner",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+              "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_google_workspace_credential_34ef8e21414f9f3b",
+      "task": {
+        "id": "AUTO_google_workspace_credential_34ef8e21414f9f3b",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "title": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+        "action": "auditWorkspace",
+        "provider": "GoogleWorkspaceProvider",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "capability": "google.workspace.audit",
+          "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+          "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+          "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot.",
+          "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+          "priority": 1,
+          "priorityLabel": "CRITICAL",
+          "workPackageId": "AUTO_WP_34ef8e21414f9f3b",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "google_workspace",
+          "finding": {
+            "infrastructureId": "google_workspace",
+            "source": "CredentialAuthority",
+            "category": "CREDENTIAL",
+            "status": "MISSING",
+            "score": 30,
+            "message": "Credential configuration is missing for google_workspace.",
+            "evidence": {
+              "credentialId": "google_workspace",
+              "present": [],
+              "missing": [
+                "GOOGLE_CLIENT_ID",
+                "GOOGLE_CLIENT_SECRET",
+                "GOOGLE_REFRESH_TOKEN",
+                "GOOGLE_SERVICE_ACCOUNT_FILE"
+              ]
+            },
+            "findingKey": "d835ab710c05735e"
+          },
+          "autonomousWorkFingerprint": "34ef8e21414f9f3b",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "GoogleWorkspaceProvider",
+            "system": "google_workspace",
+            "connector": "GoogleWorkspaceProvider",
+            "department": "Operations",
+            "action": "auditWorkspace",
+            "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+            "originalCommand": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "google.workspace.audit",
+                "provider": "GoogleWorkspaceProvider",
+                "department": "Operations",
+                "action": "auditWorkspace",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+                "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "objective": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+          "originalCommand": "Resolve google_workspace finding: Credential configuration is missing for google_workspace.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "google.workspace.audit",
+              "provider": "GoogleWorkspaceProvider",
+              "department": "Operations",
+              "action": "auditWorkspace",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+              "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_domains_credential_05a8163aefc0f8a0",
+      "task": {
+        "id": "AUTO_domains_credential_05a8163aefc0f8a0",
+        "type": "WORKFORCE_STEP",
+        "status": "AWAITING_APPROVAL",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "title": "Resolve domains finding: Credential configuration is missing for domains.",
+        "action": "ENGINEERING_ANALYZE",
+        "provider": "MILES",
+        "connector": "MILES",
+        "department": "Infrastructure",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "capability": "infrastructure.domains.credential_gap",
+          "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+          "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+          "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access.",
+          "assignedTo": "EngineeringOwner",
+          "priority": 1,
+          "priorityLabel": "CRITICAL",
+          "workPackageId": "AUTO_WP_05a8163aefc0f8a0",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": true,
+          "blockReason": "Registrar authentication is unavailable.",
+          "infrastructureId": "domains",
+          "finding": {
+            "infrastructureId": "domains",
+            "source": "CredentialAuthority",
+            "category": "CREDENTIAL",
+            "status": "MISSING",
+            "score": 30,
+            "message": "Credential configuration is missing for domains.",
+            "evidence": {
+              "credentialId": "domains",
+              "present": [],
+              "missing": [
+                "NAMECHEAP_API_USER",
+                "NAMECHEAP_API_KEY",
+                "NAMECHEAP_USERNAME",
+                "NAMECHEAP_CLIENT_IP",
+                "IONOS_API_KEY",
+                "IONOS_USERNAME",
+                "IONOS_PASSWORD"
+              ]
+            },
+            "findingKey": "b478695140be1445"
+          },
+          "autonomousWorkFingerprint": "05a8163aefc0f8a0",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "MILES",
+            "system": "domains",
+            "connector": "MILES",
+            "department": "Infrastructure",
+            "action": "ENGINEERING_ANALYZE",
+            "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+            "originalCommand": "Resolve domains finding: Credential configuration is missing for domains.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "infrastructure.domains.credential_gap",
+                "provider": "MILES",
+                "department": "Infrastructure",
+                "action": "ENGINEERING_ANALYZE",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "EngineeringOwner",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+                "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MILES",
+          "system": "domains",
+          "connector": "MILES",
+          "department": "Infrastructure",
+          "action": "ENGINEERING_ANALYZE",
+          "objective": "Resolve domains finding: Credential configuration is missing for domains.",
+          "originalCommand": "Resolve domains finding: Credential configuration is missing for domains.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "infrastructure.domains.credential_gap",
+              "provider": "MILES",
+              "department": "Infrastructure",
+              "action": "ENGINEERING_ANALYZE",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "EngineeringOwner",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "A precise domain-access readiness report identifying which Namecheap or IONOS authentication path is missing.",
+              "verification": "Verify CredentialAuthority reports VALID or PARTIAL with a documented next action for registrar access."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_website_credential_bfdb356b22ee8a69",
+      "task": {
+        "id": "AUTO_website_credential_bfdb356b22ee8a69",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 1,
+        "priorityLabel": "CRITICAL",
+        "title": "Resolve website finding: Credential configuration is missing for website.",
+        "action": "verifyWebsite",
+        "provider": "WebsiteProvider",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "capability": "website.health.audit",
+          "objective": "Resolve website finding: Credential configuration is missing for website.",
+          "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+          "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task.",
+          "assignedTo": "WebsiteExecutiveAdvisor",
+          "priority": 1,
+          "priorityLabel": "CRITICAL",
+          "workPackageId": "AUTO_WP_bfdb356b22ee8a69",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "website",
+          "finding": {
+            "infrastructureId": "website",
+            "source": "CredentialAuthority",
+            "category": "CREDENTIAL",
+            "status": "MISSING",
+            "score": 30,
+            "message": "Credential configuration is missing for website.",
+            "evidence": {
+              "credentialId": "website",
+              "present": [],
+              "missing": [
+                "B12_EMAIL",
+                "B12_PASSWORD",
+                "IONOS_USERNAME",
+                "IONOS_PASSWORD"
+              ]
+            },
+            "findingKey": "189bdc7c0247c2d1"
+          },
+          "autonomousWorkFingerprint": "bfdb356b22ee8a69",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "WebsiteProvider",
+            "system": "website",
+            "connector": "WebsiteProvider",
+            "department": "Digital Infrastructure",
+            "action": "verifyWebsite",
+            "objective": "Resolve website finding: Credential configuration is missing for website.",
+            "originalCommand": "Resolve website finding: Credential configuration is missing for website.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "website.health.audit",
+                "provider": "WebsiteProvider",
+                "department": "Digital Infrastructure",
+                "action": "verifyWebsite",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "WebsiteExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+                "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "objective": "Resolve website finding: Credential configuration is missing for website.",
+          "originalCommand": "Resolve website finding: Credential configuration is missing for website.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "website.health.audit",
+              "provider": "WebsiteProvider",
+              "department": "Digital Infrastructure",
+              "action": "verifyWebsite",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "WebsiteExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+              "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_instantly_credential_0c68967d85a1de5d",
+      "task": {
+        "id": "AUTO_instantly_credential_0c68967d85a1de5d",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 2,
+        "priorityLabel": "HIGH",
+        "title": "Resolve instantly finding: Credential configuration is partial for instantly.",
+        "action": "refresh",
+        "provider": "MarketingProvider",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "capability": "revenue.outbound.audit",
+          "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+          "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+          "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations.",
+          "assignedTo": "InstantlyExecutiveAdvisor",
+          "priority": 2,
+          "priorityLabel": "HIGH",
+          "workPackageId": "AUTO_WP_0c68967d85a1de5d",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "instantly",
+          "finding": {
+            "infrastructureId": "instantly",
+            "source": "CredentialAuthority",
+            "category": "CREDENTIAL",
+            "status": "PARTIAL",
+            "score": 60,
+            "message": "Credential configuration is partial for instantly.",
+            "evidence": {
+              "credentialId": "instantly",
+              "present": [
+                "INSTANTLY_API_KEY"
+              ],
+              "missing": [
+                "INSTANTLY_EMAIL",
+                "INSTANTLY_PASSWORD"
+              ]
+            },
+            "findingKey": "0c9e713bb4f58c3c"
+          },
+          "autonomousWorkFingerprint": "0c68967d85a1de5d",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "MarketingProvider",
+            "system": "instantly",
+            "connector": "MarketingProvider",
+            "department": "Revenue Operations",
+            "action": "refresh",
+            "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+            "originalCommand": "Resolve instantly finding: Credential configuration is partial for instantly.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "revenue.outbound.audit",
+                "provider": "MarketingProvider",
+                "department": "Revenue Operations",
+                "action": "refresh",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "InstantlyExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+                "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "objective": "Resolve instantly finding: Credential configuration is partial for instantly.",
+          "originalCommand": "Resolve instantly finding: Credential configuration is partial for instantly.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "revenue.outbound.audit",
+              "provider": "MarketingProvider",
+              "department": "Revenue Operations",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "InstantlyExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+              "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": true,
+      "duplicate": false,
+      "insertionMethod": "add",
+      "task": {
+        "id": "AUTO_orion_provider_bcb9fc4778670c7d",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "title": "Resolve orion finding: ORION database is 788.47 hours old.",
+        "action": "refresh",
+        "provider": "OrionProvider",
+        "connector": "OrionProvider",
+        "department": "Intelligence",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:22.218Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "OrionProvider",
+          "system": "orion",
+          "connector": "OrionProvider",
+          "department": "Intelligence",
+          "action": "refresh",
+          "capability": "orion.health.refresh",
+          "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+          "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+          "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result.",
+          "assignedTo": "Allison",
+          "priority": 3,
+          "priorityLabel": "MEDIUM",
+          "workPackageId": "AUTO_WP_bcb9fc4778670c7d",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "orion",
+          "finding": {
+            "infrastructureId": "orion",
+            "source": "InfrastructureHealthManager",
+            "category": "PROVIDER",
+            "status": "WATCH",
+            "score": 75,
+            "message": "ORION database is 788.47 hours old.",
+            "evidence": {
+              "provider": "OrionProvider",
+              "providerStatus": "Watch",
+              "exceptions": [
+                {
+                  "type": "DatabaseFreshness",
+                  "severity": "Warning",
+                  "message": "ORION database is 788.47 hours old."
+                }
+              ],
+              "recommendations": [
+                "Run the authorized ORION dataset refresh and verify database modification time afterward."
+              ],
+              "durationMs": 391
+            },
+            "findingKey": "0623bc556210ff75"
+          },
+          "autonomousWorkFingerprint": "bcb9fc4778670c7d",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "OrionProvider",
+            "system": "orion",
+            "connector": "OrionProvider",
+            "department": "Intelligence",
+            "action": "refresh",
+            "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+            "originalCommand": "Resolve orion finding: ORION database is 788.47 hours old.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "orion.health.refresh",
+                "provider": "OrionProvider",
+                "department": "Intelligence",
+                "action": "refresh",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "Allison",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+                "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "OrionProvider",
+          "system": "orion",
+          "connector": "OrionProvider",
+          "department": "Intelligence",
+          "action": "refresh",
+          "objective": "Resolve orion finding: ORION database is 788.47 hours old.",
+          "originalCommand": "Resolve orion finding: ORION database is 788.47 hours old.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "orion.health.refresh",
+              "provider": "OrionProvider",
+              "department": "Intelligence",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "Allison",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current ORION database health, freshness, record counts, and corrective recommendations.",
+              "verification": "Verify ORION health is not Critical and the infrastructure registry reflects the latest provider result."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_instantly_provider_440571a1978bb07d",
+      "task": {
+        "id": "AUTO_instantly_provider_440571a1978bb07d",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "title": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+        "action": "refresh",
+        "provider": "MarketingProvider",
+        "connector": "MarketingProvider",
+        "department": "Revenue Operations",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "capability": "revenue.outbound.audit",
+          "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+          "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations.",
+          "assignedTo": "InstantlyExecutiveAdvisor",
+          "priority": 3,
+          "priorityLabel": "MEDIUM",
+          "workPackageId": "AUTO_WP_440571a1978bb07d",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "instantly",
+          "finding": {
+            "infrastructureId": "instantly",
+            "source": "InfrastructureHealthManager",
+            "category": "PROVIDER",
+            "status": "WATCH",
+            "score": 75,
+            "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+            "evidence": {
+              "provider": "MarketingProvider",
+              "providerStatus": "Watch",
+              "exceptions": [
+                {
+                  "type": "InstantlyAudit",
+                  "severity": "Warning",
+                  "message": "ACCOUNTS: Instantly action listAccounts timed out after 10000 ms"
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                },
+                {
+                  "type": "SegmentDepleted",
+                  "severity": "Info",
+                  "message": "Segment Unknown has no campaign-ready verified email inventory."
+                }
+              ],
+              "recommendations": [
+                "No campaign-safe sending accounts were found. Do not launch new outbound work.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown.",
+                "Enrich or replenish segment Unknown."
+              ],
+              "durationMs": 22383
+            },
+            "findingKey": "3fbbdc93af7eb805"
+          },
+          "autonomousWorkFingerprint": "440571a1978bb07d",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "MarketingProvider",
+            "system": "instantly",
+            "connector": "MarketingProvider",
+            "department": "Revenue Operations",
+            "action": "refresh",
+            "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+            "originalCommand": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "revenue.outbound.audit",
+                "provider": "MarketingProvider",
+                "department": "Revenue Operations",
+                "action": "refresh",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "InstantlyExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+                "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "MarketingProvider",
+          "system": "instantly",
+          "connector": "MarketingProvider",
+          "department": "Revenue Operations",
+          "action": "refresh",
+          "objective": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "originalCommand": "Resolve instantly finding: ACCOUNTS: Instantly action listAccounts timed out after 10000 ms | Segment Unknown has no campaign-ready verified email inventory. | Segment Unknown has no campaign-ready verified email inventory.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "revenue.outbound.audit",
+              "provider": "MarketingProvider",
+              "department": "Revenue Operations",
+              "action": "refresh",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "InstantlyExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current campaign, mailbox, deliverability, segment, and lead inventory health.",
+              "verification": "Verify MarketingProvider returned current outbound metrics, exceptions, and actionable recommendations."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": true,
+      "duplicate": false,
+      "insertionMethod": "add",
+      "task": {
+        "id": "AUTO_google_workspace_provider_e1fae269bd59a527",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "title": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+        "action": "auditWorkspace",
+        "provider": "GoogleWorkspaceProvider",
+        "connector": "GoogleWorkspaceProvider",
+        "department": "Operations",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:24.949Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "capability": "google.workspace.audit",
+          "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+          "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+          "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot.",
+          "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+          "priority": 3,
+          "priorityLabel": "MEDIUM",
+          "workPackageId": "AUTO_WP_e1fae269bd59a527",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "google_workspace",
+          "finding": {
+            "infrastructureId": "google_workspace",
+            "source": "InfrastructureHealthManager",
+            "category": "PROVIDER",
+            "status": "WATCH",
+            "score": 75,
+            "message": "No valid Google Workspace accounts are registered.",
+            "evidence": {
+              "provider": "GoogleWorkspaceProvider",
+              "providerStatus": "Watch",
+              "exceptions": [
+                {
+                  "type": "GoogleAccountRegistry",
+                  "severity": "Info",
+                  "message": "No valid Google Workspace accounts are registered."
+                }
+              ],
+              "recommendations": [
+                "Register approved Google Workspace accounts through the existing account manager."
+              ],
+              "durationMs": 12
+            },
+            "findingKey": "4afa8ab9d46a50de"
+          },
+          "autonomousWorkFingerprint": "e1fae269bd59a527",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "GoogleWorkspaceProvider",
+            "system": "google_workspace",
+            "connector": "GoogleWorkspaceProvider",
+            "department": "Operations",
+            "action": "auditWorkspace",
+            "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+            "originalCommand": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "google.workspace.audit",
+                "provider": "GoogleWorkspaceProvider",
+                "department": "Operations",
+                "action": "auditWorkspace",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+                "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "GoogleWorkspaceProvider",
+          "system": "google_workspace",
+          "connector": "GoogleWorkspaceProvider",
+          "department": "Operations",
+          "action": "auditWorkspace",
+          "objective": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+          "originalCommand": "Resolve google_workspace finding: No valid Google Workspace accounts are registered.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "google.workspace.audit",
+              "provider": "GoogleWorkspaceProvider",
+              "department": "Operations",
+              "action": "auditWorkspace",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "GoogleWorkspaceExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current Google Workspace account, Gmail, Calendar, and Drive health.",
+              "verification": "Verify Google Workspace accounts are registered and the provider returns a current workspace snapshot."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "ok": true,
+      "created": false,
+      "duplicate": true,
+      "existingTaskId": "AUTO_website_provider_8efaaef7d4247cdb",
+      "task": {
+        "id": "AUTO_website_provider_8efaaef7d4247cdb",
+        "type": "WORKFORCE_STEP",
+        "status": "QUEUED",
+        "priority": 3,
+        "priorityLabel": "MEDIUM",
+        "title": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+        "action": "verifyWebsite",
+        "provider": "WebsiteProvider",
+        "connector": "WebsiteProvider",
+        "department": "Digital Infrastructure",
+        "createdAt": "2026-07-22T18:08:20.590Z",
+        "updatedAt": "2026-07-22T18:08:20.590Z",
+        "source": "AutonomousWorkGenerationService",
+        "payload": {
+          "type": "WORKFORCE_STEP",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "capability": "website.health.audit",
+          "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+          "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task.",
+          "assignedTo": "WebsiteExecutiveAdvisor",
+          "priority": 3,
+          "priorityLabel": "MEDIUM",
+          "workPackageId": "AUTO_WP_8efaaef7d4247cdb",
+          "autonomous": true,
+          "safeToAutoExecute": true,
+          "blocked": false,
+          "blockReason": null,
+          "infrastructureId": "website",
+          "finding": {
+            "infrastructureId": "website",
+            "source": "InfrastructureHealthManager",
+            "category": "PROVIDER",
+            "status": "WATCH",
+            "score": 75,
+            "message": "Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+            "evidence": {
+              "provider": "WebsiteProvider",
+              "providerStatus": "Watch",
+              "exceptions": [
+                {
+                  "type": "Conversion",
+                  "severity": "Warning",
+                  "message": "Calendly integration was not detected."
+                },
+                {
+                  "type": "ContentDrift",
+                  "severity": "Info",
+                  "message": "4 monitored content field(s) changed from baseline."
+                }
+              ],
+              "recommendations": [
+                "Verify the approved Calendly link is present and reachable.",
+                "Review content drift against approved website changes before publishing or rollback."
+              ],
+              "durationMs": 22724
+            },
+            "findingKey": "ef93787dd8c5a05b"
+          },
+          "autonomousWorkFingerprint": "8efaaef7d4247cdb",
+          "plan": {
+            "ok": true,
+            "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+            "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+            "provider": "WebsiteProvider",
+            "system": "website",
+            "connector": "WebsiteProvider",
+            "department": "Digital Infrastructure",
+            "action": "verifyWebsite",
+            "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+            "originalCommand": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+            "steps": [
+              {
+                "step": 1,
+                "capability": "website.health.audit",
+                "provider": "WebsiteProvider",
+                "department": "Digital Infrastructure",
+                "action": "verifyWebsite",
+                "taskType": "WORKFORCE_STEP",
+                "assignedTo": "WebsiteExecutiveAdvisor",
+                "status": "QUEUED",
+                "dependsOn": [],
+                "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+                "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+              }
+            ]
+          }
+        },
+        "plan": {
+          "ok": true,
+          "intent": "AUTONOMOUS_INFRASTRUCTURE_REPAIR",
+          "workflow": "INFRASTRUCTURE_HEALTH_TO_REPAIR",
+          "provider": "WebsiteProvider",
+          "system": "website",
+          "connector": "WebsiteProvider",
+          "department": "Digital Infrastructure",
+          "action": "verifyWebsite",
+          "objective": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "originalCommand": "Resolve website finding: Calendly integration was not detected. | 4 monitored content field(s) changed from baseline.",
+          "steps": [
+            {
+              "step": 1,
+              "capability": "website.health.audit",
+              "provider": "WebsiteProvider",
+              "department": "Digital Infrastructure",
+              "action": "verifyWebsite",
+              "taskType": "WORKFORCE_STEP",
+              "assignedTo": "WebsiteExecutiveAdvisor",
+              "status": "QUEUED",
+              "dependsOn": [],
+              "expectedOutput": "Current website availability, performance, conversion, link, form, accessibility, and content-drift findings.",
+              "verification": "Verify the website remains reachable and the identified warning is resolved or converted into an approved remediation task."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "findings": 9,
+    "selected": 9,
+    "created": 2,
+    "duplicates": 7,
+    "blocked": 2,
+    "failed": 0
+  }
+}

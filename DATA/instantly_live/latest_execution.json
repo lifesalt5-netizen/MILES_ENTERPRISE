@@ -2,31 +2,46 @@
   "ok": true,
   "action": "INSTANTLY_PROVIDER_EXECUTION",
   "provider": "instantly",
-  "operation": "GET_CAMPAIGN",
-  "status": "OK",
+  "operation": "HEALTH_CHECK",
+  "status": "READY",
   "executed": true,
-  "durationMs": 92,
+  "durationMs": 604,
   "result": {
     "ok": true,
-    "status": "OK",
-    "httpStatus": 200,
+    "action": "INSTANTLY_HEALTH_CHECK",
     "provider": "instantly",
-    "method": "GET",
-    "endpoint": "/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
-    "url": "https://api.instantly.ai/api/v2/campaigns/c4995272-21a1-4002-a7ed-57ff9d8fc35b",
-    "data": {
-      "id": "c4995272-21a1-4002-a7ed-57ff9d8fc35b",
-      "name": "NURTURE - 14 DAY",
-      "status": 0,
-      "campaign_schedule": {},
-      "timestamp_created": "2026-05-28T21:00:47.084Z",
-      "timestamp_updated": "2026-05-28T21:00:47.084Z",
-      "pl_value": 2500,
-      "open_tracking": false,
-      "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
-      "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+    "status": "READY",
+    "credentialsPresent": true,
+    "writeEnabled": true,
+    "durationMs": 300,
+    "result": {
+      "ok": true,
+      "status": "OK",
+      "httpStatus": 200,
+      "provider": "instantly",
+      "method": "GET",
+      "endpoint": "/campaigns?limit=1",
+      "url": "https://api.instantly.ai/api/v2/campaigns?limit=1",
+      "data": {
+        "items": [
+          {
+            "id": "f990817a-c420-4935-a159-7eda97dec196",
+            "name": "GSA 500k–3m",
+            "status": 0,
+            "campaign_schedule": {},
+            "timestamp_created": "2026-05-28T21:04:12.205Z",
+            "timestamp_updated": "2026-05-28T21:04:12.205Z",
+            "pl_value": 2500,
+            "open_tracking": false,
+            "organization": "ba423d71-533a-4f72-b5b2-ccc3cfc9d37b",
+            "owned_by": "9798083b-0923-4b77-acd2-805d9d7bc9a7"
+          }
+        ],
+        "next_starting_after": "f990817a-c420-4935-a159-7eda97dec196"
+      },
+      "message": "Instantly API request succeeded."
     },
-    "message": "Instantly API request succeeded."
+    "generatedAt": "2026-07-22T03:28:18.155Z"
   },
-  "generatedAt": "2026-07-09T23:38:27.706Z"
+  "generatedAt": "2026-07-22T03:28:18.459Z"
 }

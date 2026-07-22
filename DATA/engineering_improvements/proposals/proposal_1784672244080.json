@@ -1,0 +1,274 @@
+{
+  "ok": true,
+  "service": "EngineeringImprovementService",
+  "action": "ENGINEERING_IMPLEMENT",
+  "proposalId": "proposal_1784672244080",
+  "objective": "Miles, implement Build 2.",
+  "status": "PROPOSAL_CREATED",
+  "productionModified": false,
+  "approvalRequired": true,
+  "safeMode": true,
+  "executiveSummary": "Engineering proposal package created. No production files were modified.",
+  "analysis": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_ANALYZE",
+    "objective": "Miles, implement Build 2.",
+    "files": [
+      {
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "exists": true,
+        "size": 18501,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-21T22:17:24.021Z"
+      },
+      {
+        "file": "SERVICES/ExecutionService.js",
+        "exists": true,
+        "size": 29198,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.025Z"
+      },
+      {
+        "file": "SERVICES/EngineeringImprovementService.js",
+        "exists": true,
+        "size": 15712,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": true,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-21T22:17:24.027Z"
+      },
+      {
+        "file": "SERVICES/SelfMaintenanceService.js",
+        "exists": true,
+        "size": 11109,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": true,
+        "hasEngineeringImprovement": true,
+        "hasSelfMaintenance": true,
+        "checkedAt": "2026-07-21T22:17:24.028Z"
+      },
+      {
+        "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+        "exists": true,
+        "size": 15283,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": true,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.031Z"
+      },
+      {
+        "file": "SERVICES/ExecutiveResponseService.js",
+        "exists": true,
+        "size": 15355,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.035Z"
+      },
+      {
+        "file": "BUILDER/BuilderService.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.036Z"
+      },
+      {
+        "file": "BUILDER/index.js",
+        "exists": false,
+        "size": 0,
+        "hasModuleExport": false,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.037Z"
+      },
+      {
+        "file": "CONNECTORS/MILES/connector.js",
+        "exists": true,
+        "size": 1634,
+        "hasModuleExport": true,
+        "hasExecute": true,
+        "hasRun": true,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.040Z"
+      },
+      {
+        "file": "CORE/TaskQueue.js",
+        "exists": true,
+        "size": 17444,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.043Z"
+      },
+      {
+        "file": "CORE/ConnectorManager.js",
+        "exists": true,
+        "size": 1096,
+        "hasModuleExport": true,
+        "hasExecute": false,
+        "hasRun": false,
+        "hasPlan": false,
+        "hasKeywordRouting": false,
+        "hasEngineeringImprovement": false,
+        "hasSelfMaintenance": false,
+        "checkedAt": "2026-07-21T22:17:24.046Z"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "evidence": "Planner inspection detected provider/action routing expressions such as regex-based ORION, Website, Instantly, or resolveProvider logic.",
+        "recommendation": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      },
+      {
+        "severity": "HIGH",
+        "area": "Builder",
+        "file": "BUILDER/BuilderService.js",
+        "issue": "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+        "evidence": "BuilderService does not contain the ENGINEERING_IMPROVEMENT action.",
+        "recommendation": "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+      },
+      {
+        "severity": "MEDIUM",
+        "area": "Builder",
+        "file": "BUILDER/BuilderService.js",
+        "issue": "BuilderService does not expose SELF_MAINTENANCE.",
+        "evidence": "BuilderService does not contain SELF_MAINTENANCE.",
+        "recommendation": "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+      }
+    ],
+    "checkedAt": "2026-07-21T22:17:24.046Z"
+  },
+  "plan": {
+    "ok": true,
+    "service": "EngineeringImprovementService",
+    "action": "ENGINEERING_PLAN",
+    "objective": "Miles, implement Build 2.",
+    "status": "PLAN_CREATED",
+    "steps": [
+      {
+        "step": 1,
+        "action": "ENGINEERING_ANALYZE",
+        "description": "Inspect active MILES runtime files and identify architectural gaps."
+      },
+      {
+        "step": 2,
+        "action": "ENGINEERING_PLAN",
+        "description": "Create the smallest safe implementation plan while preserving production architecture."
+      },
+      {
+        "step": 3,
+        "action": "ENGINEERING_IMPLEMENT",
+        "description": "Create a controlled proposal package. Do not modify production files directly."
+      },
+      {
+        "step": 4,
+        "action": "ENGINEERING_VALIDATE",
+        "description": "Validate required files, routing assumptions, builder support, and implementation readiness."
+      },
+      {
+        "step": 5,
+        "action": "ENGINEERING_REPORT",
+        "description": "Return an executive engineering report with evidence and recommended next action."
+      }
+    ],
+    "recommendations": [
+      {
+        "area": "Planner",
+        "file": "SERVICES/CommandIntentPlannerService.js",
+        "severity": "HIGH",
+        "issue": "CommandIntentPlannerService still contains keyword/regex routing.",
+        "recommendedAction": "Preserve working behavior but isolate keyword matching behind intent-first classification. Engineering directives must remain highest priority."
+      },
+      {
+        "area": "Builder",
+        "file": "BUILDER/BuilderService.js",
+        "severity": "HIGH",
+        "issue": "BuilderService does not expose ENGINEERING_IMPROVEMENT.",
+        "recommendedAction": "Register ENGINEERING_IMPROVEMENT and related engineering actions in BuilderService."
+      },
+      {
+        "area": "Builder",
+        "file": "BUILDER/BuilderService.js",
+        "severity": "MEDIUM",
+        "issue": "BuilderService does not expose SELF_MAINTENANCE.",
+        "recommendedAction": "Register SELF_MAINTENANCE so MILES can diagnose its own health."
+      }
+    ],
+    "plannedAt": "2026-07-21T22:17:24.080Z"
+  },
+  "proposedChanges": [
+    {
+      "file": "SERVICES/digital_coo/MilesCommandCenter.js",
+      "exists": true,
+      "currentSize": 15283,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js"
+    },
+    {
+      "file": "SERVICES/ExecutiveResponseService.js",
+      "exists": true,
+      "currentSize": 15355,
+      "proposedChangeType": "REPLACE_FILE",
+      "productionWriteAllowed": false,
+      "reason": "Controlled engineering proposal only. Production replacement requires CEO approval.",
+      "validationCommand": "node --check .\\SERVICES\\ExecutiveResponseService.js"
+    }
+  ],
+  "validationCommands": [
+    "node --check .\\SERVICES\\digital_coo\\MilesCommandCenter.js",
+    "node --check .\\SERVICES\\ExecutiveResponseService.js"
+  ],
+  "approvalInstructions": "Review this proposal. If approved, request a full replacement script for each target file.",
+  "createdAt": "2026-07-21T22:17:24.089Z"
+}

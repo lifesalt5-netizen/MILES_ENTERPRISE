@@ -120,8 +120,8 @@ class EngineeringPlannerService {
           "delete files"
         ],
         testCommands: [
-          "node -e \"require('./CONNECTORS/WEBSITE/website'); console.log('website connector ok')\"",
-          "node -e \"const W=require('./PROVIDERS/providers/WebsiteProvider'); (async()=>{const w=new W(); await w.initialize(); console.log(JSON.stringify(w.getProviderState(),null,2));})();\"",
+          "node -e \"require('../CONNECTORS/WEBSITE/website'); console.log('website connector ok')\"",
+          "node -e \"const W=require('../PROVIDERS/providers/WebsiteProvider'); (async()=>{const w=new W(); await w.initialize(); console.log(JSON.stringify(w.getProviderState(),null,2));})();\"",
           "node StartAutonomousCOO.js"
         ],
         verification: "WebsiteProvider loads, refreshes, reports metrics, and MILES completes one autonomous COO cycle."
@@ -157,7 +157,7 @@ class EngineeringPlannerService {
           "delete leads"
         ],
         testCommands: [
-          "node -e \"const M=require('./PROVIDERS/providers/MarketingProvider'); (async()=>{const m=new M(); await m.initialize(); console.log(JSON.stringify(m.getProviderState(),null,2));})();\"",
+          "node -e \"const M=require('../PROVIDERS/providers/MarketingProvider'); (async()=>{const m=new M(); await m.initialize(); console.log(JSON.stringify(m.getProviderState(),null,2));})();\"",
           "node StartAutonomousCOO.js"
         ],
         verification: "MarketingProvider loads, refreshes, reports campaign metrics, and does not perform sending changes."
@@ -189,7 +189,7 @@ class EngineeringPlannerService {
           "modify schema without approval"
         ],
         testCommands: [
-          "node -e \"const O=require('./PROVIDERS/providers/OrionProvider'); (async()=>{const o=new O(); await o.initialize(); console.log(JSON.stringify(o.getProviderState(),null,2));})();\"",
+          "node -e \"const O=require('../PROVIDERS/providers/OrionProvider'); (async()=>{const o=new O(); await o.initialize(); console.log(JSON.stringify(o.getProviderState(),null,2));})();\"",
           "node StartAutonomousCOO.js"
         ],
         verification: "ORIONProvider loads, refreshes, reports database health, and MILES completes one autonomous COO cycle."

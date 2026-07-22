@@ -1,4 +1,9 @@
-"use strict";
+﻿"use strict";
+
+// BUILD E002A PHASE 1
+// Shared API helpers for governed Instantly controlled-write operations.
+// This phase preserves existing behavior and prepares the service for
+// PAUSE_TEST_CAMPAIGN and RESUME_TEST_CAMPAIGN implementation.
 
 const policyService = require("./ControlledWritePolicyService");
 const audit = require("./ControlledWriteAuditService");
@@ -6,6 +11,7 @@ const audit = require("./ControlledWriteAuditService");
 class InstantlyControlledWriteService {
   constructor() {
     this.provider = "instantly";
+    this.baseUrl = "https://api.instantly.ai/api/v2";
   }
 
   async execute(action = {}) {
@@ -14,50 +20,71 @@ class InstantlyControlledWriteService {
     const policy = policyService.evaluate(normalized);
 
     if (!policy.allowed) {
-      const result = {
-        ok: true,
-        action: "INSTANTLY_CONTROLLED_WRITE",
-        provider: this.provider,
+      const result = this.buildResult({
+        startedAt,
         operation: normalized.operation,
+        ok: true,
         status: policy.status,
         executed: false,
         verified: false,
         dryRun: true,
         reason: policy.reason,
-        payloadPreview: normalized.payload,
-        durationMs: Date.now() - startedAt,
-        generatedAt: new Date().toISOString()
-      };
-      audit.record({ provider: this.provider, operation: normalized.operation, status: result.status, executed: false, result });
+        payloadPreview: normalized.payload
+      });
+
+      this.recordAudit(result);
       return result;
     }
 
-    if (normalized.operation === "CREATE_TEST_CAMPAIGN") return await this.createTestCampaign(normalized, startedAt);
-    if (["PAUSE_TEST_CAMPAIGN", "RESUME_TEST_CAMPAIGN"].includes(normalized.operation)) return await this.safeNotImplemented(normalized, startedAt);
+    switch (normalized.operation) {
+      case "CREATE_TEST_CAMPAIGN":
+        return await this.createTestCampaign(normalized, startedAt);
 
-    const result = {
-      ok: false,
-      action: "INSTANTLY_CONTROLLED_WRITE",
-      provider: this.provider,
-      operation: normalized.operation,
-      status: "UNSUPPORTED_OPERATION",
-      executed: false,
-      verified: false,
-      durationMs: Date.now() - startedAt,
-      generatedAt: new Date().toISOString()
-    };
-    audit.record({ provider: this.provider, operation: normalized.operation, status: result.status, executed: false, result });
-    return result;
+      case "PAUSE_TEST_CAMPAIGN":
+      case "RESUME_TEST_CAMPAIGN":
+        return await this.safeNotImplemented(normalized, startedAt);
+
+      default: {
+        const result = this.buildResult({
+          startedAt,
+          operation: normalized.operation,
+          ok: false,
+          status: "UNSUPPORTED_OPERATION",
+          executed: false,
+          verified: false
+        });
+
+        this.recordAudit(result);
+        return result;
+      }
+    }
   }
 
   normalize(action = {}) {
-    const payload = action.payload || {};
+    const payload =
+      action.payload &&
+      typeof action.payload === "object" &&
+      !Array.isArray(action.payload)
+        ? action.payload
+        : {};
+
     return {
       provider: this.provider,
-      operation: String(action.operation || payload.operation || "CREATE_TEST_CAMPAIGN").toUpperCase(),
+      operation: String(
+        action.operation ||
+        payload.operation ||
+        "CREATE_TEST_CAMPAIGN"
+      ).toUpperCase(),
       payload: {
-        name: payload.name || payload.title || `MILES_TEST_${new Date().toISOString().replace(/[:.]/g, "-")}`,
-        description: payload.description || "Controlled write test campaign created by MILES OS.",
+        name:
+          payload.name ||
+          payload.title ||
+          `MILES_TEST_${new Date()
+            .toISOString()
+            .replace(/[:.]/g, "-")}`,
+        description:
+          payload.description ||
+          "Controlled write test campaign created by MILES OS.",
         ...payload
       },
       write: true,
@@ -65,26 +92,165 @@ class InstantlyControlledWriteService {
     };
   }
 
-  async createTestCampaign(action, startedAt) {
+  getApiKey() {
     const apiKey = process.env.INSTANTLY_API_KEY;
-    if (!apiKey) {
-      const result = {
-        ok: false,
-        action: "INSTANTLY_CONTROLLED_WRITE",
-        provider: this.provider,
-        operation: action.operation,
-        status: "MISSING_CREDENTIALS",
-        executed: false,
-        verified: false,
-        message: "INSTANTLY_API_KEY is not configured.",
-        durationMs: Date.now() - startedAt,
-        generatedAt: new Date().toISOString()
-      };
-      audit.record({ provider: this.provider, operation: action.operation, status: result.status, executed: false, result });
-      return result;
+
+    if (typeof apiKey !== "string") {
+      return null;
     }
 
-    const endpoint = "https://api.instantly.ai/api/v2/campaigns";
+    const trimmed = apiKey.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  async requestJson(method, endpoint, body, apiKey = this.getApiKey()) {
+    const requestMethod = String(method || "GET").toUpperCase();
+
+    const headers = {
+      Authorization: `Bearer ${apiKey}`
+    };
+
+    const requestOptions = {
+      method: requestMethod,
+      headers
+    };
+
+    if (body !== undefined && body !== null) {
+      headers["Content-Type"] = "application/json";
+      requestOptions.body = JSON.stringify(body);
+    }
+
+    try {
+      const response = await fetch(endpoint, requestOptions);
+      const text = await response.text();
+
+      let data;
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = {
+          raw: text
+        };
+      }
+
+      return {
+        ok: response.ok,
+        requestFailed: false,
+        httpStatus: response.status,
+        endpoint,
+        method: requestMethod,
+        data
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        requestFailed: true,
+        httpStatus: null,
+        endpoint,
+        method: requestMethod,
+        data: null,
+        error:
+          error instanceof Error
+            ? error.message
+            : String(error)
+      };
+    }
+  }
+
+  buildResult(options = {}) {
+    const startedAt =
+      typeof options.startedAt === "number"
+        ? options.startedAt
+        : Date.now();
+
+    const result = {
+      ok: Boolean(options.ok),
+      action: "INSTANTLY_CONTROLLED_WRITE",
+      provider: this.provider,
+      operation: options.operation || "UNKNOWN",
+      status: options.status || "UNKNOWN",
+      executed: Boolean(options.executed),
+      verified: Boolean(options.verified)
+    };
+
+    const optionalFields = [
+      "dryRun",
+      "reason",
+      "message",
+      "error",
+      "payloadPreview",
+      "httpStatus",
+      "endpoint",
+      "requestBody",
+      "response",
+      "campaignId",
+      "verification"
+    ];
+
+    for (const field of optionalFields) {
+      if (options[field] !== undefined) {
+        result[field] = options[field];
+      }
+    }
+
+    result.durationMs = Date.now() - startedAt;
+    result.generatedAt = new Date().toISOString();
+
+    return result;
+  }
+
+  recordAudit(result) {
+    audit.record({
+      provider: this.provider,
+      operation: result.operation,
+      status: result.status,
+      executed: Boolean(result.executed),
+      verified: Boolean(result.verified),
+      result
+    });
+  }
+
+  missingCredentialsResult(action, startedAt) {
+    const result = this.buildResult({
+      startedAt,
+      operation: action.operation,
+      ok: false,
+      status: "MISSING_CREDENTIALS",
+      executed: false,
+      verified: false,
+      message: "INSTANTLY_API_KEY is not configured."
+    });
+
+    this.recordAudit(result);
+    return result;
+  }
+
+  requestFailedResult(action, startedAt, request) {
+    const result = this.buildResult({
+      startedAt,
+      operation: action.operation,
+      ok: false,
+      status: "REQUEST_FAILED",
+      executed: false,
+      verified: false,
+      error: request.error,
+      endpoint: request.endpoint
+    });
+
+    this.recordAudit(result);
+    return result;
+  }
+
+  async createTestCampaign(action, startedAt) {
+    const apiKey = this.getApiKey();
+
+    if (!apiKey) {
+      return this.missingCredentialsResult(action, startedAt);
+    }
+
+    const endpoint = `${this.baseUrl}/campaigns`;
+
     const body = {
       name: action.payload.name,
       pl_value: Number(action.payload.pl_value || 2500),
@@ -92,92 +258,144 @@ class InstantlyControlledWriteService {
       stop_on_reply: true
     };
 
-    let response;
-    let data;
-    try {
-      response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      });
-      const text = await response.text();
-      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-    } catch (error) {
-      const result = {
-        ok: false,
-        action: "INSTANTLY_CONTROLLED_WRITE",
-        provider: this.provider,
-        operation: action.operation,
-        status: "REQUEST_FAILED",
-        executed: false,
-        verified: false,
-        error: error.message,
-        durationMs: Date.now() - startedAt,
-        generatedAt: new Date().toISOString()
-      };
-      audit.record({ provider: this.provider, operation: action.operation, status: result.status, executed: false, result });
-      return result;
+    const request = await this.requestJson(
+      "POST",
+      endpoint,
+      body,
+      apiKey
+    );
+
+    if (request.requestFailed) {
+      return this.requestFailedResult(
+        action,
+        startedAt,
+        request
+      );
     }
 
-    const executed = response.ok;
-    const campaignId = data?.id || data?.campaign_id || null;
-    const result = {
-      ok: response.ok,
-      action: "INSTANTLY_CONTROLLED_WRITE",
-      provider: this.provider,
+    const data = request.data || {};
+    const campaignId =
+      data.id ||
+      data.campaign_id ||
+      null;
+
+    const result = this.buildResult({
+      startedAt,
       operation: action.operation,
-      status: response.ok ? "EXECUTED" : "API_ERROR",
-      executed,
+      ok: request.ok,
+      status: request.ok ? "EXECUTED" : "API_ERROR",
+      executed: request.ok,
       verified: false,
-      httpStatus: response.status,
+      httpStatus: request.httpStatus,
       endpoint,
       requestBody: body,
       response: data,
-      campaignId,
-      durationMs: Date.now() - startedAt,
-      generatedAt: new Date().toISOString()
-    };
+      campaignId
+    });
 
     if (campaignId) {
-      result.verification = await this.verifyCampaign(campaignId, apiKey);
-      result.verified = Boolean(result.verification?.verified);
-      result.status = result.verified ? "VERIFIED" : "EXECUTED_NOT_VERIFIED";
+      result.verification = await this.verifyCampaign(
+        campaignId,
+        apiKey
+      );
+
+      result.verified = Boolean(
+        result.verification &&
+        result.verification.verified
+      );
+
+      result.status = result.verified
+        ? "VERIFIED"
+        : "EXECUTED_NOT_VERIFIED";
     }
 
-    audit.record({ provider: this.provider, operation: action.operation, status: result.status, executed: result.executed, verified: result.verified, result });
+    result.durationMs = Date.now() - startedAt;
+    result.generatedAt = new Date().toISOString();
+
+    this.recordAudit(result);
     return result;
   }
 
-  async verifyCampaign(campaignId, apiKey) {
-    const endpoint = `https://api.instantly.ai/api/v2/campaigns/${campaignId}`;
-    try {
-      const response = await fetch(endpoint, { headers: { "Authorization": `Bearer ${apiKey}` } });
-      const text = await response.text();
-      let data;
-      try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-      return { ok: response.ok, action: "VERIFY_INSTANTLY_CAMPAIGN", verified: response.ok, httpStatus: response.status, endpoint, data, generatedAt: new Date().toISOString() };
-    } catch (error) {
-      return { ok: false, action: "VERIFY_INSTANTLY_CAMPAIGN", verified: false, error: error.message, endpoint, generatedAt: new Date().toISOString() };
+  async getCampaign(campaignId, apiKey = this.getApiKey()) {
+    const endpoint =
+      `${this.baseUrl}/campaigns/${encodeURIComponent(campaignId)}`;
+
+    if (!apiKey) {
+      return {
+        ok: false,
+        requestFailed: false,
+        httpStatus: null,
+        endpoint,
+        method: "GET",
+        data: null,
+        error: "INSTANTLY_API_KEY is not configured."
+      };
     }
+
+    return await this.requestJson(
+      "GET",
+      endpoint,
+      undefined,
+      apiKey
+    );
+  }
+
+  async verifyCampaign(campaignId, apiKey = this.getApiKey()) {
+    const endpoint =
+      `${this.baseUrl}/campaigns/${encodeURIComponent(campaignId)}`;
+
+    if (!apiKey) {
+      return {
+        ok: false,
+        action: "VERIFY_INSTANTLY_CAMPAIGN",
+        verified: false,
+        error: "INSTANTLY_API_KEY is not configured.",
+        endpoint,
+        generatedAt: new Date().toISOString()
+      };
+    }
+
+    const request = await this.getCampaign(
+      campaignId,
+      apiKey
+    );
+
+    if (request.requestFailed) {
+      return {
+        ok: false,
+        action: "VERIFY_INSTANTLY_CAMPAIGN",
+        verified: false,
+        error: request.error,
+        endpoint: request.endpoint,
+        generatedAt: new Date().toISOString()
+      };
+    }
+
+    return {
+      ok: request.ok,
+      action: "VERIFY_INSTANTLY_CAMPAIGN",
+      verified: request.ok,
+      httpStatus: request.httpStatus,
+      endpoint: request.endpoint,
+      data: request.data,
+      generatedAt: new Date().toISOString()
+    };
   }
 
   async safeNotImplemented(action, startedAt) {
-    const result = {
-      ok: true,
-      action: "INSTANTLY_CONTROLLED_WRITE",
-      provider: this.provider,
+    const result = this.buildResult({
+      startedAt,
       operation: action.operation,
-      status: "CONTROLLED_WRITE_GUARD_READY_NOT_IMPLEMENTED",
+      ok: true,
+      status:
+        "CONTROLLED_WRITE_GUARD_READY_NOT_IMPLEMENTED",
       executed: false,
       verified: false,
-      message: "Guardrail is installed; live operation implementation will be enabled after create-test-campaign validation.",
-      durationMs: Date.now() - startedAt,
-      generatedAt: new Date().toISOString()
-    };
-    audit.record({ provider: this.provider, operation: action.operation, status: result.status, executed: false, result });
+      message:
+        "Guardrail is installed; live operation implementation will be enabled after create-test-campaign validation."
+    });
+
+    this.recordAudit(result);
     return result;
   }
 
@@ -185,4 +403,5 @@ class InstantlyControlledWriteService {
     return await this.execute(input);
   }
 }
+
 module.exports = new InstantlyControlledWriteService();

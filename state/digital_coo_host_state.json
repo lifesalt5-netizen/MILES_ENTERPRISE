@@ -5,19 +5,19 @@
   "status": "DEGRADED",
   "rootDir": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE",
   "running": true,
-  "startedAt": "2026-07-13T15:56:27.532Z",
+  "startedAt": "2026-07-22T20:12:54.547Z",
   "stoppedAt": null,
   "startCount": 1,
   "stopCount": 0,
-  "healthChecks": 3,
+  "healthChecks": 2,
   "operationsAccepted": 0,
   "operationsDispatched": 0,
   "operationsFailed": 0,
   "operationsWaitingApproval": 0,
-  "lastHealthAt": "2026-07-13T15:58:29.880Z",
+  "lastHealthAt": "2026-07-22T20:13:54.878Z",
   "lastOperationAt": null,
   "lastOperationId": null,
   "lastDispatchStatus": null,
   "lastError": null,
-  "generatedAt": "2026-07-13T15:58:29.880Z"
+  "generatedAt": "2026-07-22T20:13:54.878Z"
 }

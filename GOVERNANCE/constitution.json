@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "enterprise": "MILES Enterprise",
+  "effectiveDate": "2026-07-16",
+  "defaultDecision": "ALLOW",
+  "defaultRole": "MILES",
+  "principles": {
+    "constitutionRequired": true,
+    "auditRequired": true,
+    "authorityRequired": true,
+    "approvalRequiredWhenProtected": true,
+    "roleBasedAccess": true,
+    "entitlementAwareAccess": true,
+    "explainableDecisions": true,
+    "demoProtection": true,
+    "verificationRequired": true,
+    "noBypass": true
+  },
+  "riskLevels": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+  "decisions": ["ALLOW", "DENY", "REQUIRE_APPROVAL"]
+}

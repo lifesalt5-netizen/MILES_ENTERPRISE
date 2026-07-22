@@ -1,0 +1,15 @@
+"use strict";
+const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
+const root = process.argv[2] || process.env.MILES_ROOT || process.cwd();
+const service = path.join(root, "SERVICES", "InstantlyLiveIntegrationService.js");
+const registry = path.join(root, "SERVICES", "ProviderRegistry.js");
+assert.ok(fs.existsSync(service), "InstantlyLiveIntegrationService.js missing");
+assert.ok(fs.existsSync(registry), "ProviderRegistry.js missing");
+const serviceText = fs.readFileSync(service, "utf8");
+const registryText = fs.readFileSync(registry, "utf8");
+assert.ok(serviceText.includes('build: "BUILD132"'), "BUILD132 service marker missing");
+assert.ok(serviceText.includes("ENTERPRISE_INSTANTLY_PROVIDER"), "Enterprise provider path missing");
+assert.ok(registryText.includes("CAMPAIGN_INTELLIGENCE"), "Instantly capability registration missing");
+console.log("BUILD132 VALIDATION PASSED");

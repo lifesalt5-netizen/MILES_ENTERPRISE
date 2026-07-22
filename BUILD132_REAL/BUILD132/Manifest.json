@@ -1,0 +1,12 @@
+{
+  "build": 132,
+  "name": "Instantly Enterprise Provider Adapter",
+  "baseline": 131,
+  "platform": "Windows PowerShell 5.1",
+  "filesAdded": ["SERVICES/InstantlyEnterpriseAdapterService.js"],
+  "filesPatched": ["SERVICES/ProviderRegistry.js"],
+  "preserved": ["PROVIDERS/providers/InstantlyProvider.js", "CONNECTORS/INSTANTLY/instantly.js", "PROVIDERS/InstantlyProvider.js"],
+  "validation": ["node --check", "offline provider adapter regression", "provider registry resolution regression"],
+  "automaticBackup": true,
+  "automaticRollback": true
+}

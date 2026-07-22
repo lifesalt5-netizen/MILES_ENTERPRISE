@@ -68,7 +68,14 @@ class WorkerDispatcher {
   }
 
   async dispatchOperation(operation = {}) {
-    const workerName = operation.worker || operation.workerName || operation.assignedWorker || operation.area || null;
+    const workerName =
+      operation.workerId ||
+      operation.worker ||
+      operation.workerName ||
+      operation.assignedWorker ||
+      operation.assignedTo ||
+      operation.area ||
+      null;
 
     this.state.dispatchesAttempted += 1;
     this.state.lastDispatchAt = new Date().toISOString();

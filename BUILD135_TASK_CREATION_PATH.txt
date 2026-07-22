@@ -1,0 +1,1567 @@
+============================================================
+BUILD135 — TASK CREATION AND ENQUEUE PATH VERIFICATION
+Generated: 2026-07-17 18:03:29
+============================================================
+
+============================================================
+TASKMANAGER IMPLEMENTATION
+FILE: .\SERVICES\TaskManager.js
+============================================================
+1: const taskQueue = require("../CORE/TaskQueue");
+2: const { requiresApproval } = require("../CORE/authority");
+3: 
+4: class TaskManager {
+5:   create(type, payload = {}, priority = 50) {
+6:     return taskQueue.add(type, payload, priority);
+7:   }
+8: 
+9:   list(status = null) {
+10:     return taskQueue.list(status);
+11:   }
+12: 
+13:   next() {
+14:     return taskQueue.list("QUEUED")[0] || null;
+15:   }
+16: 
+17:   complete(id, result = {}) {
+18:     return taskQueue.update(id, { status: "COMPLETED", result });
+19:   }
+20: 
+21:   fail(id, error) {
+22:     return taskQueue.update(id, { status: "FAILED", error: String(error) });
+23:   }
+24: 
+25:   approvalCheck(system, action) {
+26:     return requiresApproval(system, action);
+27:   }
+28: }
+29: 
+30: module.exports = new TaskManager();
+
+============================================================
+TASKQUEUE IMPLEMENTATION
+FILE: .\CORE\TaskQueue.js
+============================================================
+1: "use strict";
+2: 
+3: const fs = require("fs");
+4: const path = require("path");
+5: const logger = require("./Logger");
+6: const eventBus = require("./EventBus");
+7: 
+8: const ROOT = process.env.MILES_ROOT || process.cwd();
+9: 
+10: function now() {
+11:     return new Date().toISOString();
+12: }
+13: 
+14: function sleepSync(ms) {
+15:     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+16: }
+17: 
+18: class TaskQueue {
+19:     constructor() {
+20:         this.queuePath = path.join(ROOT, "DATA", "runtime", "task_queue.json");
+21:         this.lockPath = path.join(ROOT, "DATA", "runtime", "task_queue.lock");
+22:         this.backupDir = path.join(ROOT, "DATA", "runtime", "queue_backups");
+23: 
+24:         this.ensureRuntime();
+25:         this.withLock(() => {
+26:             if (!fs.existsSync(this.queuePath)) {
+27:                 this.writeJsonDirect([]);
+28:             }
+29:         });
+30:     }
+31: 
+32:     ensureRuntime() {
+33:         const dir = path.dirname(this.queuePath);
+34: 
+35:         if (!fs.existsSync(dir)) {
+36:             fs.mkdirSync(dir, { recursive: true });
+37:         }
+38: 
+39:         if (!fs.existsSync(this.backupDir)) {
+40:             fs.mkdirSync(this.backupDir, { recursive: true });
+41:         }
+42:     }
+43: 
+44:     acquireLock() {
+45:         this.ensureRuntime();
+46: 
+47:         const maxAttempts = 100;
+48: 
+49:         for (let i = 0; i < maxAttempts; i++) {
+50:             try {
+51:                 fs.mkdirSync(this.lockPath);
+52:                 fs.writeFileSync(
+53:                     path.join(this.lockPath, "owner.json"),
+54:                     JSON.stringify({
+55:                         pid: process.pid,
+56:                         acquiredAt: now()
+57:                     }, null, 2),
+58:                     "utf8"
+59:                 );
+60:                 return true;
+61:             } catch {
+62:                 sleepSync(50);
+63:             }
+64:         }
+65: 
+66:         try {
+67:             fs.rmSync(this.lockPath, { recursive: true, force: true });
+68:             fs.mkdirSync(this.lockPath);
+69:             return true;
+70:         } catch {
+71:             return false;
+72:         }
+73:     }
+74: 
+75:     releaseLock() {
+76:         try {
+77:             fs.rmSync(this.lockPath, { recursive: true, force: true });
+78:         } catch {}
+79:     }
+80: 
+81:     withLock(fn) {
+82:         const locked = this.acquireLock();
+83: 
+84:         if (!locked) {
+85:             throw new Error("TaskQueue lock could not be acquired.");
+86:         }
+87: 
+88:         try {
+89:             return fn();
+90:         } finally {
+91:             this.releaseLock();
+92:         }
+93:     }
+94: 
+95:     sanitizeJsonText(text) {
+96:         return String(text || "")
+97:             .replace(/^\uFEFF/, "")
+98:             .trim();
+99:     }
+100: 
+101:     backupCorruptQueue(reason) {
+102:         try {
+103:             if (!fs.existsSync(this.queuePath)) {
+104:                 return null;
+105:             }
+106: 
+107:             const stamp = new Date()
+108:                 .toISOString()
+109:                 .replace(/[-:.TZ]/g, "")
+110:                 .slice(0, 14);
+111: 
+112:             const backupPath = path.join(
+113:                 this.backupDir,
+114:                 `task_queue_corrupt_${reason}_${stamp}.json`
+115:             );
+116: 
+117:             fs.copyFileSync(this.queuePath, backupPath);
+118:             console.error(`[TaskQueue] Corrupt queue backed up: ${backupPath}`);
+119: 
+120:             return backupPath;
+121:         } catch (err) {
+122:             console.error("[TaskQueue] Failed to backup corrupt queue:", err.message);
+123:             return null;
+124:         }
+125:     }
+126: 
+127:     taskTimestamp(task) {
+128:         const value =
+129:             task?.updatedAt ||
+130:             task?.createdAt ||
+131:             "";
+132: 
+133:         const parsed = new Date(value).getTime();
+134: 
+135:         return Number.isFinite(parsed)
+136:             ? parsed
+137:             : 0;
+138:     }
+139: 
+140:     statusRank(status) {
+141:         const ranks = {
+142:             QUEUED: 10,
+143:             PENDING: 10,
+144:             AUTHORIZED: 20,
+145:             RUNNING: 30,
+146:             AWAITING_APPROVAL: 40,
+147:             AWAITING_CEO_APPROVAL: 40,
+148:             BLOCKED: 40,
+149:             COMPLETED: 50,
+150:             FAILED: 50,
+151:             CANCELLED: 50
+152:         };
+153: 
+154:         return ranks[String(status || "").toUpperCase()] || 0;
+155:     }
+156: 
+157:     normalizeTasks(tasks) {
+158:         if (!Array.isArray(tasks)) {
+159:             return [];
+160:         }
+161: 
+162:         const byId = new Map();
+163:         const withoutId = [];
+164: 
+165:         for (const task of tasks) {
+166:             if (!task || typeof task !== "object") {
+167:                 continue;
+168:             }
+169: 
+170:             const id = String(task.id || "").trim();
+171: 
+172:             if (!id) {
+173:                 withoutId.push(task);
+174:                 continue;
+175:             }
+176: 
+177:             const existing = byId.get(id);
+178: 
+179:             if (!existing) {
+180:                 byId.set(id, task);
+181:                 continue;
+182:             }
+183: 
+184:             const existingTime = this.taskTimestamp(existing);
+185:             const incomingTime = this.taskTimestamp(task);
+186: 
+187:             let winner;
+188: 
+189:             if (incomingTime > existingTime) {
+190:                 winner = task;
+191:             } else if (existingTime > incomingTime) {
+192:                 winner = existing;
+193:             } else {
+194:                 winner =
+195:                     this.statusRank(task.status) >
+196:                     this.statusRank(existing.status)
+197:                         ? task
+198:                         : existing;
+199:             }
+200: 
+201:             byId.set(id, winner);
+202:         }
+203: 
+204:         return [
+205:             ...byId.values(),
+206:             ...withoutId
+207:         ];
+208:     }
+209: 
+210:     readJsonDirect() {
+211:         if (!fs.existsSync(this.queuePath)) {
+212:             return [];
+213:         }
+214: 
+215:         let raw = fs.readFileSync(
+216:             this.queuePath,
+217:             "utf8"
+218:         );
+219: 
+220:         raw = this.sanitizeJsonText(raw);
+221: 
+222:         if (!raw) {
+223:             return [];
+224:         }
+225: 
+226:         const parsed = JSON.parse(raw);
+227: 
+228:         if (!Array.isArray(parsed)) {
+229:             throw new Error(
+230:                 "Task queue root is not an array."
+231:             );
+232:         }
+233: 
+234:         return this.normalizeTasks(parsed);
+235:     }
+236: 
+237:     writeJsonDirect(tasks) {
+238:         if (!Array.isArray(tasks)) {
+239:             tasks = [];
+240:         }
+241: 
+242:         this.ensureRuntime();
+243: 
+244:         let currentTasks = [];
+245: 
+246:         try {
+247:             if (fs.existsSync(this.queuePath)) {
+248:                 let raw = fs.readFileSync(
+249:                     this.queuePath,
+250:                     "utf8"
+251:                 );
+252: 
+253:                 raw = this.sanitizeJsonText(raw);
+254: 
+255:                 if (raw) {
+256:                     const parsed = JSON.parse(raw);
+257: 
+258:                     if (Array.isArray(parsed)) {
+259:                         currentTasks = parsed;
+260:                     }
+261:                 }
+262:             }
+263:         } catch (error) {
+264:             console.error(
+265:                 "[BUILD128] Existing queue merge read failed:",
+266:                 error.message
+267:             );
+268:         }
+269: 
+270:         /*
+271:          * Merge current disk state with the incoming snapshot.
+272:          *
+273:          * normalizeTasks keeps the newest version of each task ID,
+274:          * preventing stale processes or duplicate records from restoring
+275:          * an older QUEUED state.
+276:          */
+277:         const normalized = this.normalizeTasks([
+278:             ...currentTasks,
+279:             ...tasks
+280:         ]);
+281: 
+282:         const tmp =
+283:             `${this.queuePath}.tmp_` +
+284:             `${process.pid}_` +
+285:             `${Date.now()}`;
+286: 
+287:         const json = JSON.stringify(
+288:             normalized,
+289:             null,
+290:             2
+291:         );
+292: 
+293:         fs.writeFileSync(
+294:             tmp,
+295:             json,
+296:             "utf8"
+297:         );
+298: 
+299:         try {
+300:             fs.copyFileSync(
+301:                 tmp,
+302:                 this.queuePath
+303:             );
+304:         } finally {
+305:             try {
+306:                 fs.unlinkSync(tmp);
+307:             } catch {}
+308:         }
+309:     }
+310:     _read() {
+311:         return this.withLock(() => {
+312:             const maxRetries = 5;
+313:             let lastError = null;
+314: 
+315:             for (let attempt = 1; attempt <= maxRetries; attempt++) {
+316:                 try {
+317:                     return this.readJsonDirect();
+318:                 } catch (err) {
+319:                     lastError = err;
+320:                     sleepSync(100);
+321:                 }
+322:             }
+323: 
+324:             const corruptBackup =
+325:                 this.backupCorruptQueue("parse_failure");
+326: 
+327:             const message =
+328:                 "[TaskQueue] Production queue could not be parsed after retries. " +
+329:                 "The queue was quarantined but was NOT replaced with an empty queue. " +
+330:                 "Backup: " +
+331:                 String(corruptBackup || "unavailable") +
+332:                 ". Cause: " +
+333:                 String(
+334:                     lastError
+335:                         ? lastError.message
+336:                         : "Unknown queue parse failure."
+337:                 );
+338: 
+339:             console.error(message);
+340: 
+341:             /*
+342:              * BUILD134
+343:              *
+344:              * Never convert an unreadable production queue into [].
+345:              *
+346:              * Returning [] makes a queue-corruption incident appear to be
+347:              * a legitimate empty queue and causes permanent task loss.
+348:              *
+349:              * Fail closed so the supervisor can stop execution, preserve
+350:              * evidence and allow deterministic recovery.
+351:              */
+352:             throw new Error(message);
+353:         });
+354:     }
+355: 
+356:     _write(tasks) {
+357:         return this.withLock(() => {
+358:             this.writeJsonDirect(tasks);
+359:         });
+360:     }
+361: 
+362:     calculateHealthScore() {
+363:         const tasks = this._read();
+364:         const current = Date.now();
+365: 
+366:         let score = 100;
+367: 
+368:         for (const t of tasks) {
+369:             const baseTime = t.updatedAt || t.createdAt || now();
+370:             const parsedTime = new Date(baseTime).getTime();
+371: 
+372:             const ageHours =
+373:                 Number.isFinite(parsedTime)
+374:                     ? (current - parsedTime) / 3600000
+375:                     : 0;
+376: 
+377:             const decay =
+378:                 ageHours < 6 ? 1.0 :
+379:                 ageHours < 24 ? 0.6 :
+380:                 ageHours < 72 ? 0.3 :
+381:                 0.1;
+382: 
+383:             if (t.status === "FAILED") score -= 6 * decay;
+384:             if (t.status === "COMPLETED") score += 1.5 * decay;
+385:             if (t.status === "RUNNING") score += 0.2;
+386:         }
+387: 
+388:         return Math.max(0, Math.min(100, Math.round(score)));
+389:     }
+390: 
+391:     getStatus() {
+392:         const tasks = this._read();
+393: 
+394:         return {
+395:             total: tasks.length,
+396:             pending: tasks.filter(t => t.status === "QUEUED").length,
+397:             running: tasks.filter(t => t.status === "RUNNING").length,
+398:             completed: tasks.filter(t => t.status === "COMPLETED").length,
+399:             failed: tasks.filter(t => t.status === "FAILED").length,
+400:             healthScore: this.calculateHealthScore()
+401:         };
+402:     }
+403: 
+404:     add(type, payload = {}, priority = 50) {
+405:     return this.withLock(() => {
+406:     const tasks = this.readJsonDirect();
+407: 
+408:     let task;
+409: 
+410:     // BUILD115 - Accept complete task objects
+411:     if (
+412:         typeof type === "object" &&
+413:         type !== null &&
+414:         !Array.isArray(type)
+415:     ) {
+416: 
+417:         task = {
+418:             id:
+419:                 type.id ||
+420:                 `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+421: 
+422:             ...type,
+423: 
+424:             payload:
+425:                 type.payload || {},
+426: 
+427:             priority:
+428:                 Number(type.priority ?? priority),
+429: 
+430:             status:
+431:                 type.status || "QUEUED",
+432: 
+433:             createdAt:
+434:                 type.createdAt || now(),
+435: 
+436:             updatedAt:
+437:                 now()
+438:         };
+439: 
+440:     } else {
+441: 
+442:         task = {
+443:             id:
+444:                 `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+445: 
+446:             type,
+447:             payload,
+448:             priority,
+449: 
+450:             status: "QUEUED",
+451: 
+452:             createdAt: now(),
+453: 
+454:             updatedAt: now()
+455:         };
+456:     }
+457: 
+458:     // BUILD123A - Prevent duplicate active autonomous repair tasks
+459:     const activeStatuses = new Set([
+460:         "QUEUED",
+461:         "RUNNING",
+462:         "AWAITING_APPROVAL",
+463:         "AWAITING_CEO_APPROVAL"
+464:     ]);
+465: 
+466:     const deduplicatedTaskTypes = new Set([
+467:         "ENGINEERING_REPAIR",
+468:         "CAPABILITY_GAP_REVIEW"
+469:     ]);
+470: 
+471:     const taskType = String(task.type || "");
+472:     const taskCapability = String(
+473:         task.payload?.capability ||
+474:         task.capability ||
+475:         ""
+476:     );
+477: 
+478:     if (deduplicatedTaskTypes.has(taskType)) {
+479:         const existingTask = tasks.find(existing => {
+480:             const existingType = String(existing.type || "");
+481:             const existingCapability = String(
+482:                 existing.payload?.capability ||
+483:                 existing.capability ||
+484:                 ""
+485:             );
+486: 
+487:             return (
+488:                 existingType === taskType &&
+489:                 existingCapability === taskCapability &&
+490:                 activeStatuses.has(String(existing.status || ""))
+491:             );
+492:         });
+493: 
+494:         if (existingTask) {
+495:             return {
+496:                 ...existingTask,
+497:                 duplicateSuppressed: true,
+498:                 duplicateRequestedAt: now()
+499:             };
+500:         }
+501:     }
+502: 
+503:     tasks.push(task);
+504: 
+505:     tasks.sort(
+506:         (a, b) =>
+507:             Number(b.priority || 0) -
+508:             Number(a.priority || 0)
+509:     );// BUILD126_TRACE
+510:         if (patch.status) {
+511:             console.log(
+512:                 "[BUILD126_TRACE]",
+513:                 id,
+514:                 "=>",
+515:                 patch.status
+516:             );
+517:         }
+518: 
+519: 
+520: 
+521:     this.writeJsonDirect(tasks);
+522: 
+523:     logger.info(
+524:         `Task queued: ${task.id}`,
+525:         task
+526:     );
+527: 
+528:     eventBus.publish(
+529:         "TASK_QUEUED",
+530:         task
+531:     );
+532: 
+533:     return task;
+534:     });
+535: }
+536: 
+537:     list(status = null) {
+538:         const tasks = this._read();
+539:         return status ? tasks.filter(t => t.status === status) : tasks;
+540:     }
+541: 
+542:     update(id, patch) {
+543:         const updatedTask = this.withLock(() => {
+544:             const tasks = this.readJsonDirect();
+545:             const index = tasks.findIndex(task => task.id === id);
+546: 
+547:             if (index === -1) {
+548:                 throw new Error(`Task not found: ${id}`);
+549:             }
+550: 
+551:             tasks[index] = {
+552:                 ...tasks[index],
+553:                 ...patch,
+554:                 updatedAt: now()
+555:             };
+556: 
+557:             this.writeJsonDirect(tasks);
+558: 
+559:             return tasks[index];
+560:         });
+561: 
+562:         if (patch.status) {
+563:             console.log(
+564:                 "[BUILD127_ATOMIC_UPDATE]",
+565:                 id,
+566:                 "=>",
+567:                 patch.status
+568:             );
+569:         }
+570: 
+571:         eventBus.publish(
+572:             "TASK_UPDATED",
+573:             updatedTask
+574:         );
+575: 
+576:         return updatedTask;
+577:     }
+578: }
+579: module.exports = new TaskQueue();
+580: 
+581: 
+582: 
+583: 
+
+============================================================
+WORKFLOWSERVICE IMPLEMENTATION
+FILE: .\SERVICES\WorkflowService.js
+============================================================
+1: "use strict";
+2: 
+3: const workPackages = require("./WorkPackageService");
+4: const taskManager = require("./TaskManager");
+5: 
+6: function normalizePriority(value) {
+7:   if (typeof value === "number") return value;
+8: 
+9:   const text = String(value || "").toUpperCase();
+10: 
+11:   if (text === "CRITICAL") return 100;
+12:   if (text === "HIGH") return 85;
+13:   if (text === "MEDIUM") return 60;
+14:   if (text === "LOW") return 35;
+15: 
+16:   return 50;
+17: }
+18: 
+19: class WorkflowService {
+20:   createWorkflow(objective, context = {}) {
+21:     console.log("[D012] createWorkflow:", objective);
+22:     const wp = workPackages.create(objective, context);
+23: 
+24:     if (wp.status === "AWAITING_APPROVAL") {
+25:       return {
+26:         ok: true,
+27:         status: "AWAITING_APPROVAL",
+28:         workPackage: wp,
+29:         message: "Work package created and awaiting CEO approval."
+30:       };
+31:     }
+32: 
+33:     const queuedTasks = [];
+34:     const priority = normalizePriority(wp.priorityScore || wp.priority || context.priority);
+35: 
+36:     for (const step of wp.tasks || []) {
+37:       console.log("[D012] Queueing step:", step.step, step.action, step.provider);
+38:       const task = taskManager.create(
+39:     step.taskType || "WORKFORCE_STEP",
+40:     {
+41:         workPackageId: wp.id,
+42:         objective: wp.objective,
+43:         capability: step.capability,
+44:         assignedTo: step.assignedTo,
+45:         department: step.department,
+46:         provider: step.provider || null,
+47:         action: step.action,
+48:         expectedOutput: step.expectedOutput,
+49:         verification: step.verification
+50:     },
+51:     priority
+52: );
+53: 
+54: console.log("[D012] Task created:", task);
+55: 
+56:       queuedTasks.push(task);
+57:     }
+58: 
+59:     return {
+60:       ok: true,
+61:       status: "QUEUED",
+62:       workPackage: wp,
+63:       queuedTasks
+64:     };
+65:   }
+66: 
+67:   status() {
+68:     const packages = workPackages.list();
+69: 
+70:     return {
+71:       ok: true,
+72:       total: packages.length,
+73:       queued: packages.filter(p => p.status === "QUEUED").length,
+74:       awaitingApproval: packages.filter(p => p.status === "AWAITING_APPROVAL").length,
+75:       completed: packages.filter(p => p.status === "COMPLETED").length,
+76:       active: packages.slice(0, 10)
+77:     };
+78:   }
+79: }
+80: 
+81: module.exports = new WorkflowService();
+
+============================================================
+WORKPACKAGE SERVICE IMPLEMENTATION
+FILE: .\SERVICES\WorkPackageService.js
+============================================================
+1: "use strict";
+2: 
+3: const crypto = require("crypto");
+4: const fs = require("fs");
+5: const path = require("path");
+6: const planner = require("./PlannerService");
+7: 
+8: const ROOT = process.env.MILES_ROOT || process.cwd();
+9: const PACKAGE_DIR = path.join(ROOT, "DATA", "work_packages");
+10: 
+11: const ACTIVE_STATUSES = new Set([
+12:   "AWAITING_APPROVAL",
+13:   "QUEUED",
+14:   "READY",
+15:   "RUNNING",
+16:   "IN_PROGRESS",
+17:   "IN PROGRESS",
+18:   "BLOCKED"
+19: ]);
+20: 
+21: function createId() {
+22:   const stamp = new Date()
+23:     .toISOString()
+24:     .replace(/[-:.TZ]/g, "")
+25:     .slice(0, 14);
+26: 
+27:   const random = crypto
+28:     .randomBytes(3)
+29:     .toString("hex")
+30:     .toUpperCase();
+31: 
+32:   return `WP-${stamp}-${random}`;
+33: }
+34: 
+35: function normalize(value) {
+36:   return String(value || "")
+37:     .trim()
+38:     .replace(/\s+/g, " ")
+39:     .toLowerCase();
+40: }
+41: 
+42: function normalizeStatus(value) {
+43:   return String(value || "")
+44:     .trim()
+45:     .replace(/-/g, "_")
+46:     .toUpperCase();
+47: }
+48: 
+49: function buildSignature(objective, plan = {}, context = {}) {
+50:   const steps = Array.isArray(plan.steps)
+51:     ? plan.steps.map(step => ({
+52:         capability: normalize(step.capability),
+53:         provider: normalize(step.provider),
+54:         department: normalize(step.department),
+55:         action: normalize(step.action),
+56:         assignedTo: normalize(step.assignedTo),
+57:         taskType: normalize(step.taskType)
+58:       }))
+59:     : [];
+60: 
+61:   const signaturePayload = {
+62:     objective: normalize(objective),
+63:     approvalRequired: Boolean(plan.approvalRequired),
+64:     department: normalize(context.department),
+65:     provider: normalize(context.provider),
+66:     capability: normalize(context.capability),
+67:     action: normalize(context.action),
+68:     steps
+69:   };
+70: 
+71:   return crypto
+72:     .createHash("sha256")
+73:     .update(JSON.stringify(signaturePayload))
+74:     .digest("hex");
+75: }
+76: 
+77: function safeReadJson(file) {
+78:   try {
+79:     return JSON.parse(fs.readFileSync(file, "utf8"));
+80:   } catch (error) {
+81:     console.error(
+82:       "[BUILD053] Failed to read work package:",
+83:       file,
+84:       error.message
+85:     );
+86: 
+87:     return null;
+88:   }
+89: }
+90: 
+91: class WorkPackageService {
+92:   ensureDirectory() {
+93:     fs.mkdirSync(PACKAGE_DIR, {
+94:       recursive: true
+95:     });
+96:   }
+97: 
+98:   create(objective, context = {}) {
+99:     this.ensureDirectory();
+100: 
+101:     const plan = planner.createPlan(
+102:       objective,
+103:       context
+104:     );
+105: 
+106:     const signature = buildSignature(
+107:       objective,
+108:       plan,
+109:       context
+110:     );
+111: 
+112:     const existing =
+113:       this.findActiveBySignature(signature);
+114: 
+115:     if (existing) {
+116:       console.log(
+117:         "[BUILD053] Work package reused:",
+118:         {
+119:           id: existing.id,
+120:           signature,
+121:           status: existing.status,
+122:           objective: existing.objective
+123:         }
+124:       );
+125: 
+126:       return {
+127:         ...existing,
+128:         reused: true,
+129:         creationDecision: "REUSED"
+130:       };
+131:     }
+132: 
+133:     const timestamp =
+134:       new Date().toISOString();
+135: 
+136:     const workPackage = {
+137:       id: createId(),
+138:       signature,
+139:       objective,
+140:       status: plan.approvalRequired
+141:         ? "AWAITING_APPROVAL"
+142:         : "QUEUED",
+143:       owner: "MILES",
+144:       priority: plan.priority,
+145:       priorityScore: plan.priorityScore,
+146:       createdAt: timestamp,
+147:       updatedAt: timestamp,
+148:       plan,
+149:       tasks: Array.isArray(plan.steps)
+150:         ? plan.steps
+151:         : [],
+152:       approvals: plan.approvalRequired
+153:         ? [
+154:             {
+155:               required: true,
+156:               reason:
+157:                 "CEO approval required by planning rules.",
+158:               status: "PENDING",
+159:               createdAt: timestamp
+160:             }
+161:           ]
+162:         : [],
+163:       results: [],
+164:       verification: {
+165:         required: true,
+166:         status: "PENDING"
+167:       },
+168:       reused: false,
+169:       creationDecision: "CREATED"
+170:     };
+171: 
+172:     this.save(workPackage);
+173: 
+174:     console.log(
+175:       "[BUILD053] Work package created:",
+176:       {
+177:         id: workPackage.id,
+178:         signature,
+179:         status: workPackage.status,
+180:         objective: workPackage.objective
+181:       }
+182:     );
+183: 
+184:     return workPackage;
+185:   }
+186: 
+187:   findActiveBySignature(signature) {
+188:     if (!signature) {
+189:       return null;
+190:     }
+191: 
+192:     return (
+193:       this.list().find(workPackage => {
+194:         if (
+195:           workPackage.signature !== signature
+196:         ) {
+197:           return false;
+198:         }
+199: 
+200:         return ACTIVE_STATUSES.has(
+201:           normalizeStatus(
+202:             workPackage.status
+203:           )
+204:         );
+205:       }) || null
+206:     );
+207:   }
+208: 
+209:   save(workPackage) {
+210:     this.ensureDirectory();
+211: 
+212:     if (
+213:       !workPackage ||
+214:       !workPackage.id
+215:     ) {
+216:       throw new Error(
+217:         "Cannot save a work package without an ID."
+218:       );
+219:     }
+220: 
+221:     const destination = path.join(
+222:       PACKAGE_DIR,
+223:       `${workPackage.id}.json`
+224:     );
+225: 
+226:     const temporary =
+227:       `${destination}.${process.pid}.tmp`;
+228: 
+229:     const text = JSON.stringify(
+230:       workPackage,
+231:       null,
+232:       2
+233:     );
+234: 
+235:     fs.writeFileSync(
+236:       temporary,
+237:       text,
+238:       "utf8"
+239:     );
+240: 
+241:     try {
+242:       fs.renameSync(
+243:         temporary,
+244:         destination
+245:       );
+246:     } catch (error) {
+247:       fs.copyFileSync(
+248:         temporary,
+249:         destination
+250:       );
+251: 
+252:       fs.unlinkSync(temporary);
+253:     }
+254: 
+255:     return workPackage;
+256:   }
+257: 
+258:   list() {
+259:     this.ensureDirectory();
+260: 
+261:     return fs
+262:       .readdirSync(PACKAGE_DIR)
+263:       .filter(file =>
+264:         file.endsWith(".json")
+265:       )
+266:       .map(file =>
+267:         safeReadJson(
+268:           path.join(
+269:             PACKAGE_DIR,
+270:             file
+271:           )
+272:         )
+273:       )
+274:       .filter(Boolean)
+275:       .sort((a, b) => {
+276:         const priorityDifference =
+277:           Number(b.priorityScore || 0) -
+278:           Number(a.priorityScore || 0);
+279: 
+280:         if (priorityDifference !== 0) {
+281:           return priorityDifference;
+282:         }
+283: 
+284:         return String(
+285:           b.createdAt || ""
+286:         ).localeCompare(
+287:           String(a.createdAt || "")
+288:         );
+289:       });
+290:   }
+291: 
+292:   get(packageId) {
+293:     if (!packageId) {
+294:       return null;
+295:     }
+296: 
+297:     const file = path.join(
+298:       PACKAGE_DIR,
+299:       `${packageId}.json`
+300:     );
+301: 
+302:     if (!fs.existsSync(file)) {
+303:       return null;
+304:     }
+305: 
+306:     return safeReadJson(file);
+307:   }
+308: 
+309:   update(packageId, patch = {}) {
+310:     const current =
+311:       this.get(packageId);
+312: 
+313:     if (!current) {
+314:       throw new Error(
+315:         `Work package not found: ${packageId}`
+316:       );
+317:     }
+318: 
+319:     const updated = {
+320:       ...current,
+321:       ...patch,
+322:       id: current.id,
+323:       signature:
+324:         current.signature ||
+325:         patch.signature,
+326:       updatedAt:
+327:         new Date().toISOString()
+328:     };
+329: 
+330:     this.save(updated);
+331: 
+332:     return updated;
+333:   }
+334: 
+335:   getStatus() {
+336:     const packages = this.list();
+337: 
+338:     return {
+339:       ok: true,
+340:       root: ROOT,
+341:       packageDirectory: PACKAGE_DIR,
+342:       total: packages.length,
+343:       active: packages.filter(item =>
+344:         ACTIVE_STATUSES.has(
+345:           normalizeStatus(item.status)
+346:         )
+347:       ).length,
+348:       awaitingApproval:
+349:         packages.filter(
+350:           item =>
+351:             normalizeStatus(item.status) ===
+352:             "AWAITING_APPROVAL"
+353:         ).length
+354:     };
+355:   }
+356: }
+357: 
+358: module.exports =
+359:   new WorkPackageService();
+
+============================================================
+ALL TASKMANAGER CREATE CALLS
+============================================================
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:310: const taskSpec = rule.createTask();
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DecisionEngine.backup_BUILD123A_20260717_155512.js:321: taskManager.create(d.type, d, d.priority)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\DecisionEngine.js:328: taskManager.create(d.type, d, d.priority)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkflowService.js:38: const task = taskManager.create(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:684: taskManager.create(
+
+============================================================
+ALL TASKQUEUE ADD AND WRITE CALLS
+============================================================
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:174: TaskQueue._write(repaired);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:190: seen.add(task.id);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\AutonomousDiscoveryEngine.js:314: const task = taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:92: const task = taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\RunCanonicalCoreTest.js:8: taskQueue.add({
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js:733: taskQueue.add(task)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build122RevenueOperationsAcceptance.js.BUILD122A_BACKUP_20260715_194821.js:733: taskQueue.add(task)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:542: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123A_BACKUP_20260715_200213.js:506: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD123B_BACKUP_20260715_201000.js:513: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:542: taskQueue.add(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:534: taskQueue.add(task);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:263: throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:266: return this.taskQueue.add(task.type, task.payload, task.priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:454: throw new Error("TaskQueue.add(type, payload, priority) unavailable");
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:457: return this.taskQueue.add(task.type, task.payload, task.priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveDispatcher.js:48: commandQueue.add({
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\TaskManager.js:6: return taskQueue.add(type, payload, priority);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\TestExecutionEngine.js:10: const task = taskQueue.add(
+
+============================================================
+WORK PACKAGE TO TASK LINKAGE
+============================================================
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\ExecutionOrchestrator.js:45: const workflow = workflowService.createWorkflow(objective, context);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:71: async createWorkflow(objective, context = {}) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:79: const workflow = workflowService.createWorkflow(objective, context);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\RuntimeController.js:194: return this.createWorkflow(
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1169: const existingWorkPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1171: existingWorkflowResult?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1172: item.metadata?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1175: if (existingWorkPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1177: `[D015] SKIPPED ${item.id}; workflow already exists as ${existingWorkPackageId}.`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1185: workPackageId: existingWorkPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1196: workPackageId: existingWorkPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1228: `[D015] Calling WorkflowService.createWorkflow("${objective}")`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1232: this.workflowService.createWorkflow(objective, context);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1234: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1236: workflowResult?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1250: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1262: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.backup_20260714_230928.js:1279: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1169: const existingWorkPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1171: existingWorkflowResult?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1172: item.metadata?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1175: if (existingWorkPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1177: `[D015] SKIPPED ${item.id}; workflow already exists as ${existingWorkPackageId}.`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1185: workPackageId: existingWorkPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1196: workPackageId: existingWorkPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1228: `[D015] Calling WorkflowService.createWorkflow("${objective}")`
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1232: this.workflowService.createWorkflow(objective, context);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1234: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1236: workflowResult?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1250: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1262: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousCOOLoopService.js:1279: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\AutonomousWorkGenerationService.js:1040: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build117ProductionStabilizer.js:222: payload.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:250: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:271: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:316: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js:345: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:250: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:271: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:316: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build123MultiProviderAcceptance.js.BUILD127_BACKUP_20260715_203125.js:345: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:151: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:152: args[0].workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:154: ?.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:435: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:469: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build125OrionExecutionTrace.js:524: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:181: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:182: task.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:233: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:234: payload.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:289: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\Build126OrionTaskDifferential.js:290: plan.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\COOOrchestratorService.js:161: this.workflowService.createWorkflow(objective, context);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutionPlanService.js:21: workPackageId: payload.workPackageId || providerResult.workPackageId || null,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:942: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:943: payload.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:1182: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:1183: payload.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:1346: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ProviderRouterService.js:1347: payload.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkflowService.js:20: createWorkflow(objective, context = {}) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkflowService.js:41: workPackageId: wp.id,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:142: workPackageId: payload.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:160: workPackageId: payload.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:176: workPackageId: payload.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:205: workPackageId: payload.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:235: workPackageId: payload.workPackageId || null,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:256: const fileName = `${safeId(result.workPackageId || "WP")}_${safeId(result.taskId || Date.now())}.json`;
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:265: workPackageId: result.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:275: workPackageId: result.workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:285: const cacheKey = payload.workPackageId || task.id || "GLOBAL_INSTANTLY_OPERATOR";
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:317: workPackageId: payload.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:405: workPackageId: payload.workPackageId || null,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:487: workPackageId: result.workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:510: workPackageId: result.workPackageId || null,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:539: workPackageId: verified.workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:630: workPackageId: task.payload?.workPackageId || null,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkforceExecutionService.js:635: workPackageId: task.payload?.workPackageId || null
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:22: function getWorkPackageId(task) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:28: task.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:30: task.payload?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:123: const embeddedTasks = Array.isArray(workPackage.tasks)
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:124: ? workPackage.tasks
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:245: JSON.stringify(workPackage.tasks || []) !==
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:270: const workPackageId = getWorkPackageId(task);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:272: if (!workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:275: "TASK_UPDATED missing workPackageId",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:286: this.reconcilePackage(workPackageId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:301: getWorkPackage(workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:305: return workPackageService.get(workPackageId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:311: return workPackageService.getById(workPackageId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:320: .find(item => item.id === workPackageId) ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:370: reconcilePackage(workPackageId, suppliedTasks = null) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:371: const workPackage = this.getWorkPackage(workPackageId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:377: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:382: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:393: task => getWorkPackageId(task) === workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:398: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:409: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:507: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:524: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:531: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:542: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:566: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:567: getWorkPackageId(task);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:569: if (workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:570: parentIds.add(workPackageId);
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:583: for (const workPackageId of parentIds) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:587: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageLifecycleService.js:611: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:160: workPackage.tasks
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:162: ? workPackage.tasks
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:259: ?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:260: task?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:267: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:271: workPackageId &&
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:305: workPackage.tasks
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:307: workPackage.tasks.length === 0
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:347: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:477: workPackage.tasks.length,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:630: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:650: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:662: workPackage.tasks
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:669: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageQueueReconciliationService.js:712: workPackageId:
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.BeforeBuild034_20260713_130722.js:481: ? workflowResult.workPackage.tasks.length
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.Build033Backup_20260713_114526.js:453: ? workflowResult.workPackage.tasks.length
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.Build034Backup_20260713_120306.js:494: ? workflowResult.workPackage.tasks.length
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.js:514: ? workflowResult.workPackage.tasks.length
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:633: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:635: workflowResult.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:636: item.metadata?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:639: if (workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:644: task.payload?.workPackageId ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:645: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:690: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:708: workPackageStatus(workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:709: if (!workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:720: task.payload?.workPackageId ===
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:721: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:727: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:826: const workPackageId =
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:828: workflowResult.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:829: item.metadata?.workPackageId ||
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:832: if (!workPackageId) {
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:838: workPackageId
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:851: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:879: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:911: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:930: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:948: workPackageId,
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:963: workPackageId,
+
+============================================================
+TASK STATUS INITIALIZATION
+============================================================
+D:\P2GC_Intelligence\MILES_ENTERPRISE\BUILD130_StabilizeCOO.js:107: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CapabilityService.js:430: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\CommandQueue.js:62: status: "PENDING",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD123A_20260717_155512.js:288: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD127_20260717_170614.js:288: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.backup_BUILD128_20260717_171153.js:289: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\CORE\TaskQueue.js:450: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.backup_20260710_172805.js:332: taskQueueStatus: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\BusinessOperationsBridgeService.js:529: taskQueueStatus: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\EngineeringCOOService.js:269: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\ExecutiveDispatcher.js:124: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkflowService.js:61: status: "QUEUED",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageService.js:158: status: "PENDING",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkPackageService.js:166: status: "PENDING"
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.BeforeBuild034_20260713_130722.js:526: status: "Pending",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.Build033Backup_20260713_114526.js:498: status: "Pending",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.Build034Backup_20260713_120306.js:539: status: "Pending",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\SERVICES\WorkQueueService.js:559: status: "Pending",
+D:\P2GC_Intelligence\MILES_ENTERPRISE\StartProductionSystem.BUILD048.backup.js:547: status: "QUEUED",
+
+============================================================
+RUNTIME MODULE EXPORT SHAPES
+============================================================
+{
+  "label": "TaskManager",
+  "modulePath": "./SERVICES/TaskManager",
+  "type": "object",
+  "keys": [],
+  "prototypeMethods": [
+    "approvalCheck",
+    "complete",
+    "create",
+    "fail",
+    "list",
+    "next"
+  ]
+}
+{
+  "label": "TaskQueue",
+  "modulePath": "./CORE/TaskQueue",
+  "type": "object",
+  "keys": [
+    "backupDir",
+    "lockPath",
+    "queuePath"
+  ],
+  "prototypeMethods": [
+    "_read",
+    "_write",
+    "acquireLock",
+    "add",
+    "backupCorruptQueue",
+    "calculateHealthScore",
+    "ensureRuntime",
+    "getStatus",
+    "list",
+    "normalizeTasks",
+    "readJsonDirect",
+    "releaseLock",
+    "sanitizeJsonText",
+    "statusRank",
+    "taskTimestamp",
+    "update",
+    "withLock",
+    "writeJsonDirect"
+  ]
+}
+{
+  "label": "WorkflowService",
+  "modulePath": "./SERVICES/WorkflowService",
+  "type": "object",
+  "keys": [],
+  "prototypeMethods": [
+    "createWorkflow",
+    "status"
+  ]
+}
+{
+  "label": "WorkPackageService",
+  "modulePath": "./SERVICES/WorkPackageService",
+  "type": "object",
+  "keys": [],
+  "prototypeMethods": [
+    "create",
+    "ensureDirectory",
+    "findActiveBySignature",
+    "get",
+    "getStatus",
+    "list",
+    "save",
+    "update"
+  ]
+}
+
+============================================================
+TaskManager.create
+============================================================
+create(type, payload = {}, priority = 50) {
+    return taskQueue.add(type, payload, priority);
+  }
+
+============================================================
+TaskManager.createTask
+============================================================
+METHOD NOT FOUND
+
+============================================================
+TaskQueue.add
+============================================================
+add(type, payload = {}, priority = 50) {
+    return this.withLock(() => {
+    const tasks = this.readJsonDirect();
+
+    let task;
+
+    // BUILD115 - Accept complete task objects
+    if (
+        typeof type === "object" &&
+        type !== null &&
+        !Array.isArray(type)
+    ) {
+
+        task = {
+            id:
+                type.id ||
+                `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+
+            ...type,
+
+            payload:
+                type.payload || {},
+
+            priority:
+                Number(type.priority ?? priority),
+
+            status:
+                type.status || "QUEUED",
+
+            createdAt:
+                type.createdAt || now(),
+
+            updatedAt:
+                now()
+        };
+
+    } else {
+
+        task = {
+            id:
+                `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+
+            type,
+            payload,
+            priority,
+
+            status: "QUEUED",
+
+            createdAt: now(),
+
+            updatedAt: now()
+        };
+    }
+
+    // BUILD123A - Prevent duplicate active autonomous repair tasks
+    const activeStatuses = new Set([
+        "QUEUED",
+        "RUNNING",
+        "AWAITING_APPROVAL",
+        "AWAITING_CEO_APPROVAL"
+    ]);
+
+    const deduplicatedTaskTypes = new Set([
+        "ENGINEERING_REPAIR",
+        "CAPABILITY_GAP_REVIEW"
+    ]);
+
+    const taskType = String(task.type || "");
+    const taskCapability = String(
+        task.payload?.capability ||
+        task.capability ||
+        ""
+    );
+
+    if (deduplicatedTaskTypes.has(taskType)) {
+        const existingTask = tasks.find(existing => {
+            const existingType = String(existing.type || "");
+            const existingCapability = String(
+                existing.payload?.capability ||
+                existing.capability ||
+                ""
+            );
+
+            return (
+                existingType === taskType &&
+                existingCapability === taskCapability &&
+                activeStatuses.has(String(existing.status || ""))
+            );
+        });
+
+        if (existingTask) {
+            return {
+                ...existingTask,
+                duplicateSuppressed: true,
+                duplicateRequestedAt: now()
+            };
+        }
+    }
+
+    tasks.push(task);
+
+    tasks.sort(
+        (a, b) =>
+            Number(b.priority || 0) -
+            Number(a.priority || 0)
+    );// BUILD126_TRACE
+        if (patch.status) {
+            console.log(
+                "[BUILD126_TRACE]",
+                id,
+                "=>",
+                patch.status
+            );
+        }
+
+
+
+    this.writeJsonDirect(tasks);
+
+    logger.info(
+        `Task queued: ${task.id}`,
+        task
+    );
+
+    eventBus.publish(
+        "TASK_QUEUED",
+        task
+    );
+
+    return task;
+    });
+}
+
+============================================================
+TaskQueue.enqueue
+============================================================
+METHOD NOT FOUND
+
+============================================================
+WorkflowService.createWorkflow
+============================================================
+createWorkflow(objective, context = {}) {
+    console.log("[D012] createWorkflow:", objective);
+    const wp = workPackages.create(objective, context);
+
+    if (wp.status === "AWAITING_APPROVAL") {
+      return {
+        ok: true,
+        status: "AWAITING_APPROVAL",
+        workPackage: wp,
+        message: "Work package created and awaiting CEO approval."
+      };
+    }
+
+    const queuedTasks = [];
+    const priority = normalizePriority(wp.priorityScore || wp.priority || context.priority);
+
+    for (const step of wp.tasks || []) {
+      console.log("[D012] Queueing step:", step.step, step.action, step.provider);
+      const task = taskManager.create(
+    step.taskType || "WORKFORCE_STEP",
+    {
+        workPackageId: wp.id,
+        objective: wp.objective,
+        capability: step.capability,
+        assignedTo: step.assignedTo,
+        department: step.department,
+        provider: step.provider || null,
+        action: step.action,
+        expectedOutput: step.expectedOutput,
+        verification: step.verification
+    },
+    priority
+);
+
+console.log("[D012] Task created:", task);
+
+      queuedTasks.push(task);
+    }
+
+    return {
+      ok: true,
+      status: "QUEUED",
+      workPackage: wp,
+      queuedTasks
+    };
+  }

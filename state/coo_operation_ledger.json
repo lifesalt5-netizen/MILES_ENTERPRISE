@@ -1,51 +1,9 @@
 {
-  "generatedAt": "2026-07-13T03:27:08.356Z",
+  "generatedAt": "2026-07-21T22:16:56.495Z",
   "source": "COO_EXECUTION_LOOP",
   "operations": [
     {
-      "id": "recovery_runtime_health_20260713013922",
-      "type": "COO_RECOVERY_OPERATION",
-      "source": "COO_EXECUTION_LOOP",
-      "area": "recovery",
-      "worker": "digital_coo",
-      "priority": 99,
-      "action": "Runtime health is degraded. Review health report, recovery plan, and restart or quarantine failed components if allowed.",
-      "goalId": null,
-      "approvalRequired": false,
-      "ceoEscalationOnly": true,
-      "status": "NEW",
-      "createdAt": "2026-07-13T01:39:22.371Z",
-      "generatedAt": "2026-07-13T01:39:22.378Z",
-      "metadata": {},
-      "queueStatus": "QUEUED",
-      "queueResult": {
-        "ok": true,
-        "service": "DIGITAL_COO_HOST",
-        "status": "WAITING_FOR_CEO_APPROVAL",
-        "operation": {
-          "id": "recovery_runtime_health_20260713013922",
-          "type": "COO_RECOVERY_OPERATION",
-          "source": "COO_EXECUTION_LOOP",
-          "area": "recovery",
-          "worker": "digital_coo",
-          "priority": 99,
-          "action": "Runtime health is degraded. Review health report, recovery plan, and restart or quarantine failed components if allowed.",
-          "goalId": null,
-          "approvalRequired": false,
-          "ceoEscalationOnly": true,
-          "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T01:39:22.371Z",
-          "generatedAt": "2026-07-13T01:39:22.378Z",
-          "metadata": {},
-          "updatedAt": "2026-07-13T01:39:22.456Z"
-        },
-        "dispatch": null,
-        "generatedAt": "2026-07-13T01:39:22.378Z"
-      },
-      "queuedAt": "2026-07-13T01:39:22.467Z"
-    },
-    {
-      "id": "sales_REVENUE_10000_30_DAYS_20260713032708",
+      "id": "sales_REVENUE_10000_30_DAYS_20260721221656",
       "type": "COO_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "sales",
@@ -56,8 +14,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.138Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.185Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -65,7 +23,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "sales_REVENUE_10000_30_DAYS_20260713032708",
+          "id": "sales_REVENUE_10000_30_DAYS_20260721221656",
           "type": "COO_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "sales",
@@ -76,18 +34,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.138Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.185Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.178Z"
+          "updatedAt": "2026-07-21T22:16:56.275Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.141Z"
+        "generatedAt": "2026-07-21T22:16:56.186Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.227Z"
+      "queuedAt": "2026-07-21T22:16:56.350Z"
     },
     {
-      "id": "sales_1_20260713032708",
+      "id": "sales_1_20260721221656",
       "type": "COO_PRIORITY_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "sales",
@@ -98,8 +56,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.231Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.359Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -107,7 +65,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "sales_1_20260713032708",
+          "id": "sales_1_20260721221656",
           "type": "COO_PRIORITY_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "sales",
@@ -118,18 +76,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.231Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.359Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.232Z"
+          "updatedAt": "2026-07-21T22:16:56.362Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.232Z"
+        "generatedAt": "2026-07-21T22:16:56.360Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.254Z"
+      "queuedAt": "2026-07-21T22:16:56.373Z"
     },
     {
-      "id": "sales_FIVE_NEW_CLIENTS_MONTHLY_20260713032708",
+      "id": "sales_FIVE_NEW_CLIENTS_MONTHLY_20260721221656",
       "type": "COO_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "sales",
@@ -140,8 +98,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.257Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.376Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -149,7 +107,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "sales_FIVE_NEW_CLIENTS_MONTHLY_20260713032708",
+          "id": "sales_FIVE_NEW_CLIENTS_MONTHLY_20260721221656",
           "type": "COO_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "sales",
@@ -160,18 +118,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.257Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.376Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.259Z"
+          "updatedAt": "2026-07-21T22:16:56.379Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.258Z"
+        "generatedAt": "2026-07-21T22:16:56.377Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.268Z"
+      "queuedAt": "2026-07-21T22:16:56.392Z"
     },
     {
-      "id": "outbound_2_20260713032708",
+      "id": "outbound_2_20260721221656",
       "type": "COO_PRIORITY_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "outbound",
@@ -182,8 +140,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.271Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.396Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -191,7 +149,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "outbound_2_20260713032708",
+          "id": "outbound_2_20260721221656",
           "type": "COO_PRIORITY_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "outbound",
@@ -202,18 +160,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.271Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.396Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.273Z"
+          "updatedAt": "2026-07-21T22:16:56.399Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.272Z"
+        "generatedAt": "2026-07-21T22:16:56.396Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.285Z"
+      "queuedAt": "2026-07-21T22:16:56.409Z"
     },
     {
-      "id": "operations_COO_AUTONOMY_20260713032708",
+      "id": "operations_COO_AUTONOMY_20260721221656",
       "type": "COO_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "operations",
@@ -224,8 +182,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.288Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.412Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -233,7 +191,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "operations_COO_AUTONOMY_20260713032708",
+          "id": "operations_COO_AUTONOMY_20260721221656",
           "type": "COO_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "operations",
@@ -244,18 +202,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.288Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.412Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.289Z"
+          "updatedAt": "2026-07-21T22:16:56.414Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.288Z"
+        "generatedAt": "2026-07-21T22:16:56.412Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.303Z"
+      "queuedAt": "2026-07-21T22:16:56.427Z"
     },
     {
-      "id": "website_3_20260713032708",
+      "id": "website_3_20260721221656",
       "type": "COO_PRIORITY_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "website",
@@ -266,8 +224,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.316Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.430Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -275,7 +233,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "website_3_20260713032708",
+          "id": "website_3_20260721221656",
           "type": "COO_PRIORITY_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "website",
@@ -286,18 +244,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.316Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.430Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.318Z"
+          "updatedAt": "2026-07-21T22:16:56.432Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.317Z"
+        "generatedAt": "2026-07-21T22:16:56.430Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.328Z"
+      "queuedAt": "2026-07-21T22:16:56.444Z"
     },
     {
-      "id": "orion_4_20260713032708",
+      "id": "orion_4_20260721221656",
       "type": "COO_PRIORITY_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "orion",
@@ -308,8 +266,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.331Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.449Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -317,7 +275,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "orion_4_20260713032708",
+          "id": "orion_4_20260721221656",
           "type": "COO_PRIORITY_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "orion",
@@ -328,18 +286,18 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.331Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.449Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.332Z"
+          "updatedAt": "2026-07-21T22:16:56.451Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.331Z"
+        "generatedAt": "2026-07-21T22:16:56.449Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.341Z"
+      "queuedAt": "2026-07-21T22:16:56.462Z"
     },
     {
-      "id": "operations_5_20260713032708",
+      "id": "operations_5_20260721221656",
       "type": "COO_PRIORITY_OPERATION",
       "source": "COO_EXECUTION_LOOP",
       "area": "operations",
@@ -350,8 +308,8 @@
       "approvalRequired": false,
       "ceoEscalationOnly": true,
       "status": "NEW",
-      "createdAt": "2026-07-13T03:27:08.126Z",
-      "generatedAt": "2026-07-13T03:27:08.345Z",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.465Z",
       "metadata": {},
       "queueStatus": "QUEUED",
       "queueResult": {
@@ -359,7 +317,7 @@
         "service": "DIGITAL_COO_HOST",
         "status": "WAITING_FOR_CEO_APPROVAL",
         "operation": {
-          "id": "operations_5_20260713032708",
+          "id": "operations_5_20260721221656",
           "type": "COO_PRIORITY_OPERATION",
           "source": "COO_EXECUTION_LOOP",
           "area": "operations",
@@ -370,15 +328,57 @@
           "approvalRequired": false,
           "ceoEscalationOnly": true,
           "status": "WAITING_FOR_CEO_APPROVAL",
-          "createdAt": "2026-07-13T03:27:08.126Z",
-          "generatedAt": "2026-07-13T03:27:08.345Z",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.465Z",
           "metadata": {},
-          "updatedAt": "2026-07-13T03:27:08.346Z"
+          "updatedAt": "2026-07-21T22:16:56.467Z"
         },
         "dispatch": null,
-        "generatedAt": "2026-07-13T03:27:08.345Z"
+        "generatedAt": "2026-07-21T22:16:56.465Z"
       },
-      "queuedAt": "2026-07-13T03:27:08.356Z"
+      "queuedAt": "2026-07-21T22:16:56.479Z"
+    },
+    {
+      "id": "recovery_runtime_health_20260721221656",
+      "type": "COO_RECOVERY_OPERATION",
+      "source": "COO_EXECUTION_LOOP",
+      "area": "recovery",
+      "worker": "digital_coo",
+      "priority": 99,
+      "action": "Runtime health is degraded. Review health report, recovery plan, and restart or quarantine failed components if allowed.",
+      "goalId": null,
+      "approvalRequired": false,
+      "ceoEscalationOnly": true,
+      "status": "NEW",
+      "createdAt": "2026-07-21T22:16:56.173Z",
+      "generatedAt": "2026-07-21T22:16:56.482Z",
+      "metadata": {},
+      "queueStatus": "QUEUED",
+      "queueResult": {
+        "ok": true,
+        "service": "DIGITAL_COO_HOST",
+        "status": "WAITING_FOR_CEO_APPROVAL",
+        "operation": {
+          "id": "recovery_runtime_health_20260721221656",
+          "type": "COO_RECOVERY_OPERATION",
+          "source": "COO_EXECUTION_LOOP",
+          "area": "recovery",
+          "worker": "digital_coo",
+          "priority": 99,
+          "action": "Runtime health is degraded. Review health report, recovery plan, and restart or quarantine failed components if allowed.",
+          "goalId": null,
+          "approvalRequired": false,
+          "ceoEscalationOnly": true,
+          "status": "WAITING_FOR_CEO_APPROVAL",
+          "createdAt": "2026-07-21T22:16:56.173Z",
+          "generatedAt": "2026-07-21T22:16:56.482Z",
+          "metadata": {},
+          "updatedAt": "2026-07-21T22:16:56.484Z"
+        },
+        "dispatch": null,
+        "generatedAt": "2026-07-21T22:16:56.483Z"
+      },
+      "queuedAt": "2026-07-21T22:16:56.495Z"
     }
   ]
 }

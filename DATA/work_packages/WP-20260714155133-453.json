@@ -1,0 +1,749 @@
+{
+  "id": "WP-20260714155133-453",
+  "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+  "status": "COMPLETED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-14T15:51:33.586Z",
+  "updatedAt": "2026-07-17T02:28:21.479Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-14T15:51:33.586Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1784044274736-77561",
+      "area": "website",
+      "priority": 1,
+      "description": "Protects business continuity and revenue operations.",
+      "reason": "Executive COO identified this work as authorized and operationally valuable.",
+      "recommendedAction": "Evaluate and repair critical website operating issue: Website audit failed.",
+      "expectedImpact": "Protects business continuity and revenue operations.",
+      "relatedProvider": "website",
+      "metadata": {
+        "cycleId": "COO-20260714154411-013",
+        "executiveBriefItem": {
+          "priority": 1,
+          "area": "website",
+          "action": "Investigate critical website exception: Website audit failed.",
+          "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+          "impact": "Protects business continuity and revenue operations.",
+          "owner": "MILES",
+          "requiresKevin": false,
+          "source": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\latest_website_operation.json"
+        },
+        "operationalObjective": "Evaluate and repair critical website operating issue: Website audit failed.",
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Safe operational review, audit, refresh, verification, analysis, or planning authorized autonomously.",
+          "classifiedAt": "2026-07-14T15:51:14.736Z"
+        }
+      },
+      "runtimeCycleId": "COO-20260714154411-013"
+    },
+    "domain": "website",
+    "workforce": "Website Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "website.health.repair"
+    ],
+    "assignments": [
+      {
+        "capability": "website.health.repair",
+        "provider": "WebsiteProvider",
+        "department": "Website",
+        "action": "verifyWebsite",
+        "bestWorker": {
+          "employee": "WebsiteCOOWorker",
+          "department": "Website",
+          "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_37E389177AC91708",
+          "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "website.health.repair",
+            "employees": [
+              {
+                "employee": "BrowserWorker.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyCampaignOperator.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "worker_registry.json",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "workerManager.js",
+                "department": "",
+                "mission": "",
+                "authority": "Operational",
+                "role": "",
+                "componentId": null,
+                "relativePath": null,
+                "score": 570,
+                "matchReasons": [
+                  "exact capability: website operations",
+                  "registry text: website operations"
+                ],
+                "registrySources": [
+                  "repository_worker_registry"
+                ]
+              },
+              {
+                "employee": "WebsiteCOOWorker",
+                "department": "Website",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_37E389177AC91708",
+                "relativePath": "SERVICES\\workers\\WebsiteCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "website department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "website.health.repair",
+        "assignedTo": "WebsiteCOOWorker",
+        "department": "Website",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "WebsiteProvider",
+        "action": "verifyWebsite",
+        "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+        "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+      }
+    ],
+    "providers": [
+      "WebsiteProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure."
+    ],
+    "successCriteria": [
+      "WebsiteProvider.verifyWebsite executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "website.health.repair",
+      "assignedTo": "WebsiteCOOWorker",
+      "department": "Website",
+      "status": "COMPLETED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "WebsiteProvider",
+      "action": "verifyWebsite",
+      "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+      "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure.",
+      "taskId": "TASK-1784044293735-29980",
+      "startedAt": null,
+      "completedAt": "2026-07-15T20:34:21.545Z",
+      "failedAt": null,
+      "result": {
+        "ok": true,
+        "status": "COMPLETED",
+        "provider": "WebsiteProvider",
+        "connector": "WORKFORCE",
+        "department": "Website",
+        "action": "verifyWebsite",
+        "workforceResult": {
+          "ok": true,
+          "result": {
+            "ok": true,
+            "type": "WORKFORCE_STEP_RESULT",
+            "executionMode": "AUTONOMOUS",
+            "taskId": "TASK-1784044293735-29980",
+            "workPackageId": "WP-20260714155133-453",
+            "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+            "capability": "website.health.repair",
+            "provider": "WebsiteProvider",
+            "action": "verifyWebsite",
+            "assignedTo": "WebsiteCOOWorker",
+            "department": "Website",
+            "expectedOutput": "Verified website health, availability, content signals, and repair evidence.",
+            "verification": "Verify WebsiteProvider executed verifyWebsite and returned provider evidence without a provider load failure.",
+            "employeeFound": true,
+            "employeeProfile": {
+              "name": "WebsiteCOOWorker",
+              "department": "Website",
+              "mission": "Execute enterprise capabilities through SERVICES\\workers\\WebsiteCOOWorker.js.",
+              "authority": "Operational"
+            },
+            "output": {
+              "summary": "WebsiteProvider executed verifyWebsite.",
+              "recommendation": "WebsiteProvider executed successfully but returned 4 exception(s). Review before autonomous action.",
+              "nextActions": [
+                "Accept WebsiteProvider execution result.",
+                "Verify result evidence.",
+                "Update Executive State.",
+                "Generate executive reporting entry."
+              ],
+              "needsHumanInput": false,
+              "ceoApprovalRequired": false,
+              "providerResult": {
+                "ok": true,
+                "type": "PROVIDER_EXECUTION_RESULT",
+                "requestedProvider": "WebsiteProvider",
+                "provider": "WebsiteProvider",
+                "routedTo": "WebsiteProvider",
+                "action": "verifyWebsite",
+                "actionInvoked": "verifyWebsite",
+                "taskId": "TASK-1784044293735-29980",
+                "workPackageId": "WP-20260714155133-453",
+                "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+                "capability": "website.health.repair",
+                "assignedTo": "WebsiteCOOWorker",
+                "department": "Website",
+                "status": "Watch",
+                "dataFreshness": "Live",
+                "lastRefresh": "2026-07-15T20:33:40.000Z",
+                "metrics": {
+                  "homepageReachable": true,
+                  "statusCode": 200,
+                  "loadMs": 1252,
+                  "title": "Unlock Government Contract Opportunities",
+                  "h1": "Federal &amp; SLED Market Entry Advisory",
+                  "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+                  "https": true,
+                  "hasCTA": true,
+                  "hasContact": true,
+                  "hasCalendly": false,
+                  "hasServices": true,
+                  "hasPhone": true,
+                  "hasEmail": true,
+                  "finalUrl": "https://pathways2gc.com",
+                  "titleLength": 40,
+                  "h1Count": 1,
+                  "headingCounts": {
+                    "h1": 1,
+                    "h2": 1,
+                    "h3": 3,
+                    "h4": 0,
+                    "h5": 0,
+                    "h6": 0
+                  },
+                  "metaDescriptionLength": 84,
+                  "formCount": 1,
+                  "validFormCount": 1,
+                  "imageCount": 7,
+                  "imagesMissingAlt": 0,
+                  "inputLabelCoverage": 100,
+                  "linksDiscovered": 19,
+                  "internalLinks": 13,
+                  "linksChecked": 13,
+                  "brokenLinks": 2,
+                  "hasCanonical": true,
+                  "hasViewport": true,
+                  "hasLang": true,
+                  "hasMainLandmark": false,
+                  "hasNavigation": true,
+                  "hasSkipLink": false,
+                  "hasAria": true
+                },
+                "exceptions": [
+                  {
+                    "type": "Conversion",
+                    "severity": "Warning",
+                    "message": "Calendly integration was not detected."
+                  },
+                  {
+                    "type": "BrokenLinks",
+                    "severity": "Warning",
+                    "message": "2 broken internal link(s) detected."
+                  },
+                  {
+                    "type": "ContentDrift",
+                    "severity": "Info",
+                    "message": "4 monitored content field(s) changed from baseline."
+                  },
+                  {
+                    "type": "ProviderCredentials",
+                    "severity": "Info",
+                    "message": "Missing environment variable(s): WEBSITE_ROOT. Read-only authorized operations may continue."
+                  }
+                ],
+                "recommendations": [
+                  "Verify the approved Calendly link is present and reachable.",
+                  "Repair broken internal links through the approved website change queue.",
+                  "Review content drift against approved website changes before publishing or rollback.",
+                  "Provider is operating in safe/read-only mode. Configure missing environment variable(s): WEBSITE_ROOT.",
+                  "Do not enable write operations until credentials, rollback, and governance controls are verified."
+                ],
+                "providerOutput": {
+                  "ok": true,
+                  "provider": "WebsiteProvider",
+                  "action": "verifyWebsite",
+                  "status": "Watch",
+                  "generatedAt": "2026-07-15T20:33:40.000Z",
+                  "verifiedAt": "2026-07-15T20:33:40.000Z",
+                  "readOnly": true,
+                  "url": "https://pathways2gc.com",
+                  "metrics": {
+                    "homepageReachable": true,
+                    "statusCode": 200,
+                    "loadMs": 1252,
+                    "title": "Unlock Government Contract Opportunities",
+                    "h1": "Federal &amp; SLED Market Entry Advisory",
+                    "metaDescription": "Discover the pathway to successful government contracting and elevate your business.",
+                    "https": true,
+                    "hasCTA": true,
+                    "hasContact": true,
+                    "hasCalendly": false,
+                    "hasServices": true,
+                    "hasPhone": true,
+                    "hasEmail": true,
+                    "finalUrl": "https://pathways2gc.com",
+                    "titleLength": 40,
+                    "h1Count": 1,
+                    "headingCounts": {
+                      "h1": 1,
+                      "h2": 1,
+                      "h3": 3,
+                      "h4": 0,
+                      "h5": 0,
+                      "h6": 0
+                    },
+                    "metaDescriptionLength": 84,
+                    "formCount": 1,
+                    "validFormCount": 1,
+                    "imageCount": 7,
+                    "imagesMissingAlt": 0,
+                    "inputLabelCoverage": 100,
+                    "linksDiscovered": 19,
+                    "internalLinks": 13,
+                    "linksChecked": 13,
+                    "brokenLinks": 2,
+                    "hasCanonical": true,
+                    "hasViewport": true,
+                    "hasLang": true,
+                    "hasMainLandmark": false,
+                    "hasNavigation": true,
+                    "hasSkipLink": false,
+                    "hasAria": true
+                  },
+                  "exceptions": [
+                    {
+                      "type": "Conversion",
+                      "severity": "Warning",
+                      "message": "Calendly integration was not detected."
+                    },
+                    {
+                      "type": "BrokenLinks",
+                      "severity": "Warning",
+                      "message": "2 broken internal link(s) detected."
+                    },
+                    {
+                      "type": "ContentDrift",
+                      "severity": "Info",
+                      "message": "4 monitored content field(s) changed from baseline."
+                    }
+                  ],
+                  "recommendations": [
+                    "Verify the approved Calendly link is present and reachable.",
+                    "Repair broken internal links through the approved website change queue.",
+                    "Review content drift against approved website changes before publishing or rollback."
+                  ],
+                  "details": {
+                    "forms": [
+                      {
+                        "action": "",
+                        "method": "GET",
+                        "hasSubmit": true,
+                        "inputCount": 1,
+                        "textareaCount": 0
+                      }
+                    ],
+                    "brokenLinks": [
+                      {
+                        "url": "https://pathways2gc.com/success-stories",
+                        "ok": false,
+                        "statusCode": 0,
+                        "loadMs": 12898,
+                        "error": "timeout"
+                      },
+                      {
+                        "url": "https://pathways2gc.com/index#home",
+                        "ok": false,
+                        "statusCode": 0,
+                        "loadMs": 15460,
+                        "error": "timeout"
+                      }
+                    ],
+                    "linkResults": [
+                      {
+                        "url": "https://pathways2gc.com/index",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 807,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/success-stories",
+                        "ok": false,
+                        "statusCode": 0,
+                        "loadMs": 12898,
+                        "error": "timeout"
+                      },
+                      {
+                        "url": "https://pathways2gc.com/index#home",
+                        "ok": false,
+                        "statusCode": 0,
+                        "loadMs": 15460,
+                        "error": "timeout"
+                      },
+                      {
+                        "url": "https://pathways2gc.com/about-us",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 36212,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/reference-policy",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 288,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/intake-form",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 1430,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/government-contracting-101",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 482,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/proposal-development-assistance-3",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 247,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/compliance-and-regulatory-guidance",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 307,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/government-contracting-workshops",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 408,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/contract-proposal-review",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 297,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/one-on-one-contracting-consultation",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 305,
+                        "error": null
+                      },
+                      {
+                        "url": "https://pathways2gc.com/",
+                        "ok": true,
+                        "statusCode": 200,
+                        "loadMs": 1060,
+                        "error": null
+                      }
+                    ],
+                    "contentDrift": {
+                      "baselineExists": true,
+                      "changed": true,
+                      "changes": [
+                        {
+                          "field": "title",
+                          "before": "Pathways 2 Government Contracting",
+                          "after": "Unlock Government Contract Opportunities"
+                        },
+                        {
+                          "field": "h1",
+                          "before": "Federal and SLED Growth Advisory",
+                          "after": "Federal & SLED Market Entry Advisory"
+                        },
+                        {
+                          "field": "metaDescription",
+                          "before": "Government contracting advisory services for companies seeking federal and SLED growth opportunities.",
+                          "after": "Discover the pathway to successful government contracting and elevate your business."
+                        },
+                        {
+                          "field": "hasCalendly",
+                          "before": true,
+                          "after": false
+                        }
+                      ]
+                    }
+                  },
+                  "safety": {
+                    "websiteMode": "READ_ONLY",
+                    "writesEnabled": false,
+                    "publishingEnabled": false,
+                    "formSubmissionEnabled": false,
+                    "contentChangesEnabled": false,
+                    "b12WritesEnabled": false
+                  },
+                  "evidenceFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\website_coo\\website_operation_1784147661049.json"
+                },
+                "authority": {
+                  "registryAvailable": true,
+                  "registryCached": true,
+                  "registryLoadedAt": "2026-07-15T20:32:21.546Z",
+                  "providerKey": "website",
+                  "providerStatus": "MISSING_CREDENTIALS",
+                  "safeMode": true,
+                  "credentialsPresent": false,
+                  "missingCredentials": [
+                    "WEBSITE_ROOT"
+                  ],
+                  "operation": "HEALTH_CHECK",
+                  "operationAuthorized": true,
+                  "writeEnabled": false
+                },
+                "evidence": {
+                  "providerLoaded": true,
+                  "initialized": true,
+                  "providerInstanceCached": true,
+                  "requestedProvider": "WebsiteProvider",
+                  "routedProvider": "WebsiteProvider",
+                  "requestedAction": "verifyWebsite",
+                  "actionAvailable": true,
+                  "authorityRegistryConsulted": true,
+                  "authorityRegistryCached": true,
+                  "authorityProviderKey": "website",
+                  "authorityOperation": "HEALTH_CHECK",
+                  "credentialAwarenessApplied": true,
+                  "metricsCaptured": true,
+                  "exceptionsCaptured": true,
+                  "recommendationsCaptured": true
+                },
+                "startedAt": "2026-07-15T20:33:08.714Z",
+                "completedAt": "2026-07-15T20:34:21.056Z",
+                "performance": {
+                  "stages": {
+                    "normalizeProvider": 0,
+                    "authorityLookup": 0,
+                    "providerResolution": 0,
+                    "providerInvocation": 72342,
+                    "resultAssembly": 0,
+                    "total": 72342
+                  },
+                  "providerInstanceCached": true,
+                  "registryCached": true,
+                  "providerCacheSize": 5,
+                  "registryCacheTtlMs": 60000
+                }
+              },
+              "automationResult": null,
+              "decision": {
+                "ok": true,
+                "type": "MILES_DECISION",
+                "decision": "PROCEED",
+                "authority": {
+                  "ok": true,
+                  "authority": "MILES_OPERATIONAL",
+                  "approvalRequired": false,
+                  "provider": "websiteprovider",
+                  "reason": "Action is within MILES operational authority."
+                },
+                "risk": {
+                  "ok": true,
+                  "risk": "MEDIUM",
+                  "criticalCount": 0,
+                  "warningCount": 2,
+                  "reason": "Provider warnings detected."
+                },
+                "policy": {
+                  "ok": true,
+                  "policies": [],
+                  "policyCount": 0
+                },
+                "confidence": {
+                  "ok": true,
+                  "confidenceScore": 70,
+                  "confidence": "MEDIUM"
+                },
+                "approval": {
+                  "ok": true,
+                  "approvalRequired": false,
+                  "status": "APPROVED_FOR_AUTONOMOUS_EXECUTION",
+                  "reason": "Decision is approved for autonomous execution."
+                },
+                "createdAt": "2026-07-15T20:34:21.059Z"
+              },
+              "executionPlan": {
+                "ok": true,
+                "type": "AUTONOMOUS_EXECUTION_PLAN",
+                "decision": "PROCEED",
+                "executionMode": "AUTONOMOUS",
+                "provider": "WebsiteProvider",
+                "action": "verifyWebsite",
+                "capability": "website.health.repair",
+                "workPackageId": "WP-20260714155133-453",
+                "taskId": "TASK-1784044293735-29980",
+                "objective": "Evaluate and repair critical website operating issue: Website audit failed.",
+                "canExecute": true,
+                "verificationRequired": true,
+                "reportToExecutive": true,
+                "nextActions": [
+                  "Accept WebsiteProvider execution result.",
+                  "Verify result evidence.",
+                  "Update Executive State.",
+                  "Generate executive reporting entry."
+                ],
+                "approval": {
+                  "ok": true,
+                  "approvalRequired": false,
+                  "status": "APPROVED_FOR_AUTONOMOUS_EXECUTION",
+                  "reason": "Decision is approved for autonomous execution."
+                },
+                "risk": {
+                  "ok": true,
+                  "risk": "MEDIUM",
+                  "criticalCount": 0,
+                  "warningCount": 2,
+                  "reason": "Provider warnings detected."
+                },
+                "confidence": {
+                  "ok": true,
+                  "confidenceScore": 70,
+                  "confidence": "MEDIUM"
+                },
+                "createdAt": "2026-07-15T20:34:21.061Z"
+              }
+            },
+            "status": "AWAITING_VERIFICATION",
+            "createdAt": "2026-07-15T20:34:21.062Z",
+            "outFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\workforce_results\\WP-20260714155133-453_TASK-1784044293735-29980.json"
+          },
+          "verification": {
+            "ok": true,
+            "type": "WORKFORCE_STEP_VERIFICATION",
+            "taskId": "TASK-1784044293735-29980",
+            "workPackageId": "WP-20260714155133-453",
+            "capability": "website.health.repair",
+            "provider": "WebsiteProvider",
+            "action": "verifyWebsite",
+            "assignedTo": "WebsiteCOOWorker",
+            "verified": true,
+            "status": "COMPLETED",
+            "evidence": {
+              "executionMode": "AUTONOMOUS",
+              "hasOutput": true,
+              "hasRecommendation": true,
+              "providerFailed": false,
+              "needsApproval": false
+            },
+            "checkedAt": "2026-07-15T20:34:21.085Z"
+          },
+          "status": "COMPLETED"
+        },
+        "completedAt": "2026-07-15T20:34:21.094Z"
+      },
+      "error": null,
+      "updatedAt": "2026-07-15T20:34:21.545Z"
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T02:28:21.479Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T02:28:21.479Z"
+  },
+  "completedAt": "2026-07-17T02:28:21.479Z"
+}

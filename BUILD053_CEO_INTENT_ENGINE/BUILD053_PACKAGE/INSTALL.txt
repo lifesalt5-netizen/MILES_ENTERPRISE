@@ -1,0 +1,45 @@
+BUILD 053 — CEO Intent Engine
+
+Target project:
+D:\P2GC_Intelligence\MILES_ENTERPRISE
+
+1. Stop MILES:
+   taskkill /F /IM node.exe
+
+2. Back up the current files:
+   Copy-Item .\SERVICES\digital_coo\MilesCommandCenter.js .\SERVICES\digital_coo\MilesCommandCenter.BEFORE_BUILD053.js -Force
+   Copy-Item .\SERVICES\ExecutiveConversationService.js .\SERVICES\ExecutiveConversationService.BEFORE_BUILD053.js -Force
+
+3. Copy these package files into the matching project locations:
+   SERVICES\digital_coo\MilesCommandCenter.js
+   SERVICES\ExecutiveConversationService.js
+   SERVICES\CEOIntentEngineService.js
+
+4. Validate:
+   node --check .\SERVICES\CEOIntentEngineService.js
+   node --check .\SERVICES\ExecutiveConversationService.js
+   node --check .\SERVICES\digital_coo\MilesCommandCenter.js
+
+5. Start MILES:
+   node .\StartMilesProduction.js
+
+6. Test in http://localhost:8787
+
+Conversation test:
+   What can you do?
+Expected:
+   status = ANSWERED
+   mode = CONVERSATION
+   queued = false
+
+Strategy test:
+   How do we get to $10k per week?
+Expected:
+   intent = STRATEGIC_GOAL
+   queued = false
+
+Delegation test:
+   Build the next-step plan to get us to $10k per week.
+Expected:
+   mode = EXECUTION or APPROVAL
+   operation created

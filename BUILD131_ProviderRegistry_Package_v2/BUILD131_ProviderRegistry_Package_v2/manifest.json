@@ -1,0 +1,12 @@
+{
+  "build": 131,
+  "revision": 2,
+  "name": "Provider Registry Integration",
+  "powershell_compatibility": "Windows PowerShell 5.1",
+  "files": [
+    "BUILD131.ps1",
+    "ProviderRegistryPatch.js",
+    "Test_Build131_ProviderRegistry.js",
+    "README.txt"
+  ]
+}

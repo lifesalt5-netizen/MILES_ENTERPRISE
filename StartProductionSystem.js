@@ -5,44 +5,12 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
-const ROOT =
+process.env.MILES_ROOT =
   process.env.MILES_ROOT ||
   __dirname;
 
-const DEFAULT_EXECUTION_INTERVAL_MS =
-  Number(
-    process.env
-      .MILES_EXECUTION_INTERVAL_MS ||
-    1000
-  );
-
-const DEFAULT_HEARTBEAT_MS =
-  Number(
-    process.env
-      .MILES_HEARTBEAT_INTERVAL_MS ||
-    15000
-  );
-
-const DEFAULT_BRIEF_INTERVAL_MS =
-  Number(
-    process.env
-      .MILES_EXECUTIVE_BRIEF_INTERVAL_MS ||
-    60 * 60 * 1000
-  );
-
-const DEFAULT_MAX_RETRIES =
-  Number(
-    process.env
-      .MILES_EXECUTION_MAX_RETRIES ||
-    2
-  );
-
-const DEFAULT_STALE_RUNNING_MINUTES =
-  Number(
-    process.env
-      .MILES_STALE_RUNNING_MINUTES ||
-    15
-  );
+const ROOT =
+  process.env.MILES_ROOT;
 
 const RUNTIME_DIR =
   path.join(
@@ -63,26 +31,111 @@ const EXECUTION_HISTORY_FILE =
     "execution_history.jsonl"
   );
 
-const EXECUTIVE_BRIEF_JSON =
-  path.join(
-    RUNTIME_DIR,
-    "latest_executive_brief.json"
+const EXECUTION_INTERVAL_MS =
+  positiveNumber(
+    process.env.MILES_EXECUTION_INTERVAL_MS,
+    5000
   );
 
-const EXECUTIVE_BRIEF_MD =
-  path.join(
-    RUNTIME_DIR,
-    "latest_executive_brief.md"
+const HEARTBEAT_INTERVAL_MS =
+  positiveNumber(
+    process.env.MILES_HEARTBEAT_INTERVAL_MS,
+    15000
   );
+
+const HEALTH_INTERVAL_MS =
+  positiveNumber(
+    process.env.MILES_INFRASTRUCTURE_HEALTH_INTERVAL_MS,
+    5 * 60 * 1000
+  );
+
+const WORK_GENERATION_INTERVAL_MS =
+  positiveNumber(
+    process.env.MILES_AUTONOMOUS_WORK_INTERVAL_MS,
+    5 * 60 * 1000
+  );
+
+const STARTUP_SETTLE_MS =
+  positiveNumber(
+    process.env.MILES_WORKER_STARTUP_SETTLE_MS,
+    1000
+  );
+
+const taskQueue =
+  require("./CORE/TaskQueue");
+
+const supervisor =
+  require("./CORE/Supervisor");
+
+const executionService =
+  require("./SERVICES/ExecutionService");
+
+const infrastructureRegistry =
+  require("./SERVICES/InfrastructureRegistryService");
+
+const credentialAuthority =
+  require("./SERVICES/CredentialAuthorityService");
+
+const infrastructureHealthManager =
+  require("./SERVICES/InfrastructureHealthManagerService");
+
+const autonomousWorkGenerator =
+  require("./SERVICES/AutonomousWorkGenerationService");
+
+const providerRouter =
+  require("./SERVICES/ProviderRouterService");
+
+const eventBus =
+  safeRequire(
+    "./event-bus/emitter"
+  );
+
+function positiveNumber(
+  value,
+  fallback
+) {
+  const parsed =
+    Number(value);
+
+  return (
+    Number.isFinite(parsed) &&
+    parsed > 0
+  )
+    ? parsed
+    : fallback;
+}
 
 function now() {
-  return new Date().toISOString();
+  return new Date()
+    .toISOString();
+}
+
+function safeRequire(
+  modulePath
+) {
+  try {
+    return require(modulePath);
+  } catch {
+    return null;
+  }
+}
+
+function delay(milliseconds) {
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        milliseconds
+      )
+  );
 }
 
 function ensureRuntimeDir() {
   fs.mkdirSync(
     RUNTIME_DIR,
-    { recursive: true }
+    {
+      recursive: true
+    }
   );
 }
 
@@ -92,31 +145,33 @@ function writeJsonAtomic(
 ) {
   ensureRuntimeDir();
 
-  const tempPath =
-    `${filePath}.tmp_${process.pid}_${Date.now()}`;
+  const temporaryFile =
+    `${filePath}.${process.pid}.${Date.now()}.tmp`;
 
-  const payload =
+  fs.writeFileSync(
+    temporaryFile,
     JSON.stringify(
       value,
       null,
       2
-    );
-
-  fs.writeFileSync(
-    tempPath,
-    payload,
+    ),
     "utf8"
   );
 
   try {
-    fs.copyFileSync(
-      tempPath,
+    fs.renameSync(
+      temporaryFile,
       filePath
     );
-  } finally {
+  } catch {
+    fs.copyFileSync(
+      temporaryFile,
+      filePath
+    );
+
     try {
       fs.unlinkSync(
-        tempPath
+        temporaryFile
       );
     } catch {}
   }
@@ -135,162 +190,154 @@ function appendJsonLine(
   );
 }
 
-function normalizeBoolean(
-  value,
-  fallback = false
+function normalizeStatus(
+  value
 ) {
-  if (
-    value === undefined ||
-    value === null
-  ) {
-    return fallback;
-  }
-
-  return ![
-    "0",
-    "false",
-    "no",
-    "off"
-  ].includes(
-    String(value)
-      .trim()
-      .toLowerCase()
-  );
+  return String(
+    value ||
+    "UNKNOWN"
+  )
+    .trim()
+    .toUpperCase();
 }
 
-function taskAgeMinutes(task) {
-  const timestamp =
-    task.updatedAt ||
-    task.startedAt ||
-    task.createdAt;
+function queueCounts() {
+  const items =
+    typeof taskQueue.list ===
+      "function"
+      ? taskQueue.list()
+      : [];
 
-  if (!timestamp) return 0;
+  const counts = {
+    total:
+      items.length,
 
-  const parsed =
-    new Date(timestamp)
-      .getTime();
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0
+  };
 
-  if (
-    !Number.isFinite(parsed)
-  ) {
-    return 0;
+  for (const item of items) {
+    const status =
+      normalizeStatus(
+        item?.status
+      );
+
+    switch (status) {
+      case "QUEUED":
+      case "READY":
+      case "PENDING":
+        counts.queued += 1;
+        break;
+
+      case "RUNNING":
+      case "IN_PROGRESS":
+        counts.running += 1;
+        break;
+
+      case "COMPLETED":
+      case "COMPLETE":
+        counts.completed += 1;
+        break;
+
+      case "FAILED":
+        counts.failed += 1;
+        break;
+
+      case "AWAITING_APPROVAL":
+      case "AWAITING_CEO_APPROVAL":
+        counts.awaitingApproval += 1;
+        break;
+
+      default:
+        counts.other += 1;
+        break;
+    }
   }
 
-  return (
-    Date.now() -
-    parsed
-  ) / 60000;
+  if (
+    typeof taskQueue.getStatus ===
+    "function"
+  ) {
+    try {
+      const status =
+        taskQueue.getStatus();
+
+      counts.healthScore =
+        status?.healthScore ??
+        null;
+    } catch {
+      counts.healthScore =
+        null;
+    }
+  } else {
+    counts.healthScore =
+      null;
+  }
+
+  return counts;
+}
+
+function emitCooTick(
+  payload
+) {
+  try {
+    const bus =
+      eventBus?.bus ||
+      eventBus;
+
+    if (
+      bus &&
+      typeof bus.emit ===
+        "function"
+    ) {
+      bus.emit(
+        "COO_TICK",
+        payload
+      );
+
+      return true;
+    }
+
+    if (
+      bus &&
+      typeof bus.publish ===
+        "function"
+    ) {
+      bus.publish(
+        "COO_TICK",
+        payload
+      );
+
+      return true;
+    }
+  } catch (
+    error
+  ) {
+    console.error(
+      "[MILES] COO_TICK emission failed:",
+      error.message
+    );
+  }
+
+  return false;
 }
 
 class RuntimeWorkerSupervisor {
-  constructor(options = {}) {
-    this.executionService =
-      options.executionService ||
-      require("./SERVICES/ExecutionService");
+  constructor() {
+    this.started = false;
+    this.shuttingDown = false;
 
-    this.taskQueue =
-      options.taskQueue ||
-      require("./CORE/TaskQueue");
-
-    this.eventBus =
-      options.eventBus ||
-      require("./event-bus/emitter").bus;
-
-    this.supervisor =
-      options.supervisor ||
-      require("./CORE/Supervisor");
-
-    this.ExecutiveBriefService =
-      options.ExecutiveBriefService ||
-      require("./SERVICES/ExecutiveBriefService");
-
-    this.executiveState =
-      options.executiveState ||
-      require("./SERVICES/ExecutiveStateService");
-
-    const WorkQueueService =
-      require("./SERVICES/WorkQueueService");
-
-    this.workQueue =
-      options.workQueue ||
-      new WorkQueueService();
-
-    this.workPackageService =
-      options.workPackageService ||
-      require("./SERVICES/WorkPackageService");
-
-    this.providerRouter =
-      options.providerRouter ||
-      require("./SERVICES/ProviderRouterService");
-
-    this.reconciliationIntervalMs =
-      Number(
-        options.reconciliationIntervalMs ||
-        process.env
-          .MILES_RECONCILIATION_INTERVAL_MS ||
-        5000
-      );
-
-    this.archiveIntervalMs =
-      Number(
-        options.archiveIntervalMs ||
-        process.env
-          .MILES_ARCHIVE_INTERVAL_MS ||
-        15 * 60 * 1000
-      );
-
-    this.executionIntervalMs =
-      Number(
-        options.executionIntervalMs ||
-        DEFAULT_EXECUTION_INTERVAL_MS
-      );
-
-    this.heartbeatMs =
-      Number(
-        options.heartbeatMs ||
-        DEFAULT_HEARTBEAT_MS
-      );
-
-    this.briefIntervalMs =
-      Number(
-        options.briefIntervalMs ||
-        DEFAULT_BRIEF_INTERVAL_MS
-      );
-
-    this.maxRetries =
-      Number.isFinite(
-        Number(
-          options.maxRetries
-        )
-      )
-        ? Number(
-            options.maxRetries
-          )
-        : DEFAULT_MAX_RETRIES;
-
-    this.staleRunningMinutes =
-      Number(
-        options.staleRunningMinutes ||
-        DEFAULT_STALE_RUNNING_MINUTES
-      );
-
-    this.enableRetries =
-      normalizeBoolean(
-        options.enableRetries,
-        normalizeBoolean(
-          process.env
-            .MILES_EXECUTION_RETRIES_ENABLED,
-          true
-        )
-      );
-
-    this.executionLoopRunning =
+    this.executionPassRunning =
       false;
 
-    this.started =
+    this.healthCycleRunning =
       false;
 
-    this.shuttingDown =
+    this.workGenerationRunning =
       false;
 
     this.executionTimer =
@@ -299,764 +346,285 @@ class RuntimeWorkerSupervisor {
     this.heartbeatTimer =
       null;
 
-    this.briefTimer =
+    this.healthTimer =
       null;
 
-    this.reconciliationTimer =
-      null;
-
-    this.archiveTimer =
+    this.workGenerationTimer =
       null;
 
     this.metrics = {
-      startedAt: null,
-      lastExecutionAt: null,
-      lastExecutionResult: null,
-      lastHeartbeatAt: null,
-      lastExecutiveBriefAt: null,
-      executionPasses: 0,
-      completed: 0,
-      failed: 0,
-      retried: 0,
-      staleRecovered: 0,
-      loopErrors: 0,
-      workItemsReconciled: 0,
-      workItemsCompleted: 0,
-      workItemsFailed: 0,
-      workItemsAwaitingApproval: 0,
-      staleCapabilityWorkSuppressed: 0,
-      archivedWorkItems: 0,
-      throughputPerMinute: 0,
-      lastReconciliationAt: null,
-      lastArchiveAt: null
+      pid:
+        process.pid,
+
+      startedAt:
+        null,
+
+      stoppedAt:
+        null,
+
+      executionPasses:
+        0,
+
+      executionPassesSkipped:
+        0,
+
+      completed:
+        0,
+
+      failed:
+        0,
+
+      awaitingApproval:
+        0,
+
+      emptyQueuePasses:
+        0,
+
+      healthCycles:
+        0,
+
+      healthCycleFailures:
+        0,
+
+      workGenerationCycles:
+        0,
+
+      workGenerationFailures:
+        0,
+
+      heartbeatCount:
+        0,
+
+      lastExecutionStartedAt:
+        null,
+
+      lastExecutionCompletedAt:
+        null,
+
+      lastExecutionDurationMs:
+        null,
+
+      lastExecutionTaskId:
+        null,
+
+      lastExecutionResult:
+        null,
+
+      lastHealthCycleAt:
+        null,
+
+      lastHealthResult:
+        null,
+
+      lastWorkGenerationAt:
+        null,
+
+      lastWorkGenerationResult:
+        null,
+
+      lastHeartbeatAt:
+        null,
+
+      lastError:
+        null
     };
   }
 
-  statusSnapshot() {
-    let queueStatus = {};
+  recordHistory(
+    record
+  ) {
+    appendJsonLine(
+      EXECUTION_HISTORY_FILE,
+      {
+        generatedAt:
+          now(),
+
+        pid:
+          process.pid,
+
+        ...record
+      }
+    );
+  }
+
+  buildStatus() {
+    let infrastructure = null;
+    let credentials = null;
+    let healthManager = null;
+    let generator = null;
+    let router = null;
 
     try {
-      queueStatus =
-        this.taskQueue.getStatus();
-    } catch (error) {
-      queueStatus = {
+      infrastructure =
+        infrastructureRegistry
+          .summary();
+    } catch (
+      error
+    ) {
+      infrastructure = {
+        ok: false,
+        error:
+          error.message
+      };
+    }
+
+    try {
+      credentials =
+        credentialAuthority
+          .summary();
+    } catch (
+      error
+    ) {
+      credentials = {
+        ok: false,
+        error:
+          error.message
+      };
+    }
+
+    try {
+      healthManager =
+        infrastructureHealthManager
+          .status();
+    } catch (
+      error
+    ) {
+      healthManager = {
+        ok: false,
+        error:
+          error.message
+      };
+    }
+
+    try {
+      generator =
+        autonomousWorkGenerator
+          .status();
+    } catch (
+      error
+    ) {
+      generator = {
+        ok: false,
+        error:
+          error.message
+      };
+    }
+
+    try {
+      router =
+        typeof providerRouter
+          .getPerformanceState ===
+          "function"
+          ? providerRouter
+              .getPerformanceState()
+          : null;
+    } catch (
+      error
+    ) {
+      router = {
+        ok: false,
         error:
           error.message
       };
     }
 
     return {
-      ok: true,
+      ok:
+        this.started &&
+        !this.shuttingDown,
+
       service:
-        "MILES_WORKER_RUNTIME",
-      pid:
-        process.pid,
-      started:
-        this.started,
-      shuttingDown:
-        this.shuttingDown,
-      executionLoopRunning:
-        this.executionLoopRunning,
+        "RuntimeWorkerSupervisor",
+
+      type:
+        "MILES_CANONICAL_WORKER_RUNTIME",
+
       generatedAt:
         now(),
-      configuration: {
-        executionIntervalMs:
-          this.executionIntervalMs,
-        heartbeatMs:
-          this.heartbeatMs,
-        briefIntervalMs:
-          this.briefIntervalMs,
-        maxRetries:
-          this.maxRetries,
-        retriesEnabled:
-          this.enableRetries,
-        staleRunningMinutes:
-          this.staleRunningMinutes,
-        reconciliationIntervalMs:
-          this.reconciliationIntervalMs,
-        archiveIntervalMs:
-          this.archiveIntervalMs
+
+      root:
+        ROOT,
+
+      pid:
+        process.pid,
+
+      nodeVersion:
+        process.version,
+
+      intervals: {
+        execution:
+          EXECUTION_INTERVAL_MS,
+
+        heartbeat:
+          HEARTBEAT_INTERVAL_MS,
+
+        infrastructureHealth:
+          HEALTH_INTERVAL_MS,
+
+        autonomousWorkGeneration:
+          WORK_GENERATION_INTERVAL_MS
       },
+
+      lifecycle: {
+        started:
+          this.started,
+
+        shuttingDown:
+          this.shuttingDown,
+
+        executionPassRunning:
+          this.executionPassRunning,
+
+        healthCycleRunning:
+          this.healthCycleRunning,
+
+        workGenerationRunning:
+          this.workGenerationRunning
+      },
+
       queue:
-        queueStatus,
-      metrics:
-        this.metrics
+        queueCounts(),
+
+      metrics: {
+        ...this.metrics
+      },
+
+      infrastructure,
+
+      credentials,
+
+      healthManager,
+
+      autonomousWorkGenerator:
+        generator,
+
+      providerRouter:
+        router
     };
   }
 
   persistStatus() {
-    const snapshot =
-      this.statusSnapshot();
+    const status =
+      this.buildStatus();
 
     writeJsonAtomic(
       STATUS_FILE,
-      snapshot
+      status
     );
 
-    return snapshot;
-  }
-
-  recordExecution(
-    record
-  ) {
-    appendJsonLine(
-      EXECUTION_HISTORY_FILE,
-      {
-        recordedAt:
-          now(),
-        ...record
-      }
-    );
-  }
-
-  recoverStaleRunningTasks() {
-    const running =
-      this.taskQueue
-        .list("RUNNING");
-
-    const recovered = [];
-
-    for (const task of running) {
-      const age =
-        taskAgeMinutes(
-          task
-        );
-
-      if (
-        age <
-        this.staleRunningMinutes
-      ) {
-        continue;
-      }
-
-      const retryCount =
-        Number(
-          task.retryCount ||
-          0
-        );
-
-      this.taskQueue.update(
-        task.id,
-        {
-          status:
-            retryCount <
-            this.maxRetries
-              ? "QUEUED"
-              : "FAILED",
-          retryCount:
-            retryCount +
-            1,
-          recoveredFromStale:
-            true,
-          staleRecoveredAt:
-            now(),
-          staleAgeMinutes:
-            Math.round(
-              age * 100
-            ) / 100,
-          error:
-            retryCount <
-            this.maxRetries
-              ? null
-              : "Stale RUNNING task exceeded retry limit."
-        }
-      );
-
-      recovered.push({
-        taskId:
-          task.id,
-        previousStatus:
-          "RUNNING",
-        newStatus:
-          retryCount <
-          this.maxRetries
-            ? "QUEUED"
-            : "FAILED",
-        ageMinutes:
-          age
-      });
-    }
-
-    this.metrics.staleRecovered +=
-      recovered.length;
-
-    if (
-      recovered.length > 0
-    ) {
-      this.recordExecution({
-        type:
-          "STALE_TASK_RECOVERY",
-        recovered
-      });
-    }
-
-    return recovered;
-  }
-
-  retryIfAllowed(
-    task,
-    result
-  ) {
-    if (
-      !this.enableRetries ||
-      !task ||
-      !result ||
-      result.ok === true ||
-      result.status ===
-        "AWAITING_APPROVAL"
-    ) {
-      return {
-        retried: false
-      };
-    }
-
-    const retryable =
-      result.retryable === true ||
-      result.failure
-        ?.retryable === true;
-
-    if (!retryable) {
-      return {
-        retried: false,
-        reason:
-          "Failure is not retryable."
-      };
-    }
-
-    const currentRetries =
-      Number(
-        task.retryCount ||
-        0
-      );
-
-    if (
-      currentRetries >=
-      this.maxRetries
-    ) {
-      return {
-        retried: false,
-        reason:
-          "Retry limit reached."
-      };
-    }
-
-    const updated =
-      this.taskQueue.update(
-        task.id,
-        {
-          status: "QUEUED",
-          retryCount:
-            currentRetries + 1,
-          lastRetryAt:
-            now(),
-          lastRetryReason:
-            result.error ||
-            result.failure
-              ?.type ||
-            "Transient execution failure",
-          error: null
-        }
-      );
-
-    this.metrics.retried += 1;
-
-    this.recordExecution({
-      type:
-        "TASK_RETRY_QUEUED",
-      taskId:
-        task.id,
-      retryCount:
-        updated.retryCount,
-      result
-    });
-
-    return {
-      retried: true,
-      task:
-        updated
-    };
-  }
-
-  capabilityProviderForWorkItem(item = {}) {
-    const text =
-      `${item.area || ""} ${item.title || ""} ${item.recommendedAction || ""}`
-        .toLowerCase();
-
-    if (/website\s+coo|website provider/.test(text)) {
-      return "WebsiteProvider";
-    }
-
-    if (/sales\s+coo|sales pipeline/.test(text)) {
-      return "SalesProvider";
-    }
-
-    if (/marketing\s+coo|instantly/.test(text)) {
-      return "MarketingProvider";
-    }
-
-    if (/orion\s+coo|government data/.test(text)) {
-      return "OrionProvider";
-    }
-
-    if (/google workspace\s+coo|gmail|calendar|drive/.test(text)) {
-      return "GoogleWorkspaceProvider";
-    }
-
-    return null;
-  }
-
-  suppressInstalledCapabilityWork() {
-    const registered =
-      new Set(
-        this.providerRouter
-          .status()
-          .registeredProviders || []
-      );
-
-    const suppressed = [];
-
-    for (const item of this.workQueue.getOpen()) {
-      if (item.source !== "CapabilityBacklog") {
-        continue;
-      }
-
-      const provider =
-        this.capabilityProviderForWorkItem(item);
-
-      if (!provider || !registered.has(provider)) {
-        continue;
-      }
-
-      const workflowResult =
-        item.metadata?.workflowResult || {};
-
-      const workPackageId =
-        workflowResult.workPackage?.id ||
-        workflowResult.workPackageId ||
-        item.metadata?.workPackageId ||
-        null;
-
-      if (workPackageId) {
-        const tasks =
-          this.taskQueue
-            .list()
-            .filter(task =>
-              task.payload?.workPackageId ===
-              workPackageId
-            );
-
-        for (const task of tasks) {
-          if (
-            ["QUEUED", "RUNNING"]
-              .includes(task.status)
-          ) {
-            this.taskQueue.update(
-              task.id,
-              {
-                status: "COMPLETED",
-                result: {
-                  ok: true,
-                  status: "COMPLETED",
-                  reason:
-                    `Capability already installed through ${provider}.`,
-                  suppressedAsStaleCapabilityWork:
-                    true,
-                  completedAt:
-                    now()
-                }
-              }
-            );
-          }
-        }
-      }
-
-      this.workQueue.markCompleted(
-        item.id,
-        {
-          reconciliation: {
-            reason:
-              `Capability already installed through ${provider}.`,
-            provider,
-            completedAt:
-              now()
-          }
-        }
-      );
-
-      suppressed.push({
-        workItemId:
-          item.id,
-        provider,
-        workPackageId
-      });
-    }
-
-    this.metrics.staleCapabilityWorkSuppressed +=
-      suppressed.length;
-
-    if (suppressed.length > 0) {
-      this.recordExecution({
-        type:
-          "STALE_CAPABILITY_WORK_SUPPRESSED",
-        suppressed
-      });
-    }
-
-    return suppressed;
-  }
-
-  workPackageStatus(workPackageId) {
-    if (!workPackageId) {
-      return {
-        status: "UNKNOWN",
-        tasks: []
-      };
-    }
-
-    const tasks =
-      this.taskQueue
-        .list()
-        .filter(task =>
-          task.payload?.workPackageId ===
-          workPackageId
-        );
-
-    if (tasks.length === 0) {
-      const workPackage =
-        this.workPackageService.get(
-          workPackageId
-        );
-
-      return {
-        status:
-          workPackage?.status ||
-          "UNKNOWN",
-        tasks,
-        workPackage
-      };
-    }
-
-    const statuses =
-      new Set(
-        tasks.map(task =>
-          String(task.status || "")
-            .toUpperCase()
-        )
-      );
-
-    if (
-      statuses.has(
-        "AWAITING_APPROVAL"
-      )
-    ) {
-      return {
-        status:
-          "AWAITING_APPROVAL",
-        tasks
-      };
-    }
-
-    if (
-      statuses.has("RUNNING")
-    ) {
-      return {
-        status:
-          "IN_PROGRESS",
-        tasks
-      };
-    }
-
-    if (
-      statuses.has("QUEUED")
-    ) {
-      return {
-        status:
-          "QUEUED",
-        tasks
-      };
-    }
-
-    if (
-      tasks.every(task =>
-        String(task.status)
-          .toUpperCase() ===
-        "COMPLETED"
-      )
-    ) {
-      return {
-        status:
-          "COMPLETED",
-        tasks
-      };
-    }
-
-    if (
-      tasks.some(task =>
-        String(task.status)
-          .toUpperCase() ===
-        "FAILED"
-      )
-    ) {
-      return {
-        status:
-          "FAILED",
-        tasks
-      };
-    }
-
-    return {
-      status:
-        "UNKNOWN",
-      tasks
-    };
-  }
-
-  reconcileWorkQueue() {
-    this.workQueue.load();
-
-    const suppressed =
-      this.suppressInstalledCapabilityWork();
-
-    const reconciled = [];
-
-    for (const item of this.workQueue.getOpen()) {
-      const workflowResult =
-        item.metadata?.workflowResult || {};
-
-      const workPackageId =
-        workflowResult.workPackage?.id ||
-        workflowResult.workPackageId ||
-        item.metadata?.workPackageId ||
-        null;
-
-      if (!workPackageId) {
-        continue;
-      }
-
-      const packageState =
-        this.workPackageStatus(
-          workPackageId
-        );
-
-      let updated = null;
-
-      if (
-        packageState.status ===
-        "COMPLETED"
-      ) {
-        updated =
-          this.workQueue.markCompleted(
-            item.id,
-            {
-              workPackageId,
-              reconciliation: {
-                status:
-                  "COMPLETED",
-                completedAt:
-                  now(),
-                taskCount:
-                  packageState.tasks.length
-              }
-            }
-          );
-
-        this.metrics.workItemsCompleted += 1;
-      } else if (
-        packageState.status ===
-        "FAILED"
-      ) {
-        const failedTasks =
-          packageState.tasks.filter(task =>
-            String(task.status)
-              .toUpperCase() ===
-            "FAILED"
-          );
-
-        updated =
-          this.workQueue.markFailed(
-            item.id,
-            {
-              workPackageId,
-              reconciliation: {
-                status:
-                  "FAILED",
-                failedAt:
-                  now(),
-                failedTaskIds:
-                  failedTasks.map(
-                    task =>
-                      task.id
-                  ),
-                errors:
-                  failedTasks.map(
-                    task =>
-                      task.error ||
-                      task.result?.error ||
-                      "Task failed"
-                  )
-              }
-            }
-          );
-
-        this.metrics.workItemsFailed += 1;
-      } else if (
-        packageState.status ===
-        "AWAITING_APPROVAL"
-      ) {
-        updated =
-          this.workQueue
-            .markAwaitingApproval(
-              item.id,
-              {
-                workPackageId,
-                reconciliation: {
-                  status:
-                    "AWAITING_APPROVAL",
-                  detectedAt:
-                    now()
-                }
-              }
-            );
-
-        this.metrics.workItemsAwaitingApproval += 1;
-      } else if (
-        packageState.status ===
-        "IN_PROGRESS"
-      ) {
-        updated =
-          this.workQueue.markRunning(
-            item.id,
-            {
-              workPackageId,
-              reconciliation: {
-                status:
-                  "IN_PROGRESS",
-                detectedAt:
-                  now()
-              }
-            }
-          );
-      } else if (
-        packageState.status ===
-        "QUEUED" &&
-        item.status !== "Queued"
-      ) {
-        updated =
-          this.workQueue.markQueued(
-            item.id,
-            {
-              workPackageId,
-              reconciliation: {
-                status:
-                  "QUEUED",
-                detectedAt:
-                  now()
-              }
-            }
-          );
-      }
-
-      if (updated) {
-        reconciled.push({
-          workItemId:
-            item.id,
-          workPackageId,
-          status:
-            updated.status
-        });
-      }
-    }
-
-    this.metrics.workItemsReconciled +=
-      reconciled.length;
-
-    this.metrics.lastReconciliationAt =
-      now();
-
-    const elapsedMinutes =
-      this.metrics.startedAt
-        ? Math.max(
-            (
-              Date.now() -
-              new Date(
-                this.metrics.startedAt
-              ).getTime()
-            ) / 60000,
-            1 / 60
-          )
-        : 1;
-
-    this.metrics.throughputPerMinute =
-      Math.round(
-        (
-          this.metrics.completed /
-          elapsedMinutes
-        ) *
-        100
-      ) / 100;
-
-    if (
-      reconciled.length > 0 ||
-      suppressed.length > 0
-    ) {
-      this.recordExecution({
-        type:
-          "WORK_QUEUE_RECONCILIATION",
-        reconciled,
-        suppressed,
-        workQueueStats:
-          this.workQueue.getStats()
-      });
-    }
-
-    this.persistStatus();
-
-    return {
-      ok: true,
-      reconciled,
-      suppressed,
-      stats:
-        this.workQueue.getStats()
-    };
-  }
-
-  archiveClosedWork() {
-    const result =
-      this.workQueue.archiveClosed();
-
-    this.metrics.archivedWorkItems +=
-      Number(
-        result.archived ||
-        0
-      );
-
-    this.metrics.lastArchiveAt =
-      now();
-
-    if (
-      Number(
-        result.archived ||
-        0
-      ) > 0
-    ) {
-      this.recordExecution({
-        type:
-          "WORK_QUEUE_ARCHIVE",
-        archived:
-          result.archived
-      });
-    }
-
-    this.persistStatus();
-
-    return result;
+    return status;
   }
 
   async executePass() {
+    console.log("[BUILD106] executePass ENTER");
     if (
-      this.executionLoopRunning ||
+      this.executionPassRunning ||
       this.shuttingDown
     ) {
+      this.metrics
+        .executionPassesSkipped +=
+        1;
+
       return {
         ok: true,
         skipped: true,
@@ -1067,309 +635,597 @@ class RuntimeWorkerSupervisor {
       };
     }
 
-    this.executionLoopRunning =
+    this.executionPassRunning =
       true;
 
-    const queuedBefore =
-      this.taskQueue
-        .list("QUEUED");
+    const startedAt =
+      Date.now();
 
-    const selectedTask =
-      queuedBefore
-        .slice()
-        .sort(
-          (a, b) =>
-            Number(
-              a.priority ||
-              99
-            ) -
-            Number(
-              b.priority ||
-              99
-            )
-        )[0] ||
-      null;
+    this.metrics
+      .executionPasses +=
+      1;
+
+    this.metrics
+      .lastExecutionStartedAt =
+      now();
 
     try {
-      this.metrics.executionPasses += 1;
-      this.metrics.lastExecutionAt =
-        now();
+      const queued =
+        taskQueue.list(
+          "QUEUED"
+        );
+console.log(
+  "[BUILD106] queued.length =",
+  Array.isArray(queued) ? queued.length : "NOT_ARRAY"
+);
+
+if (Array.isArray(queued) && queued.length) {
+  console.log(
+    "[BUILD106] First queued task:",
+    JSON.stringify(
+      {
+        id: queued[0].id,
+        status: queued[0].status,
+        provider:
+          queued[0].payload?.provider || queued[0].provider,
+        action:
+          queued[0].payload?.action || queued[0].action
+      },
+      null,
+      2
+    )
+  );
+}
+      if (
+        !Array.isArray(queued) ||
+        queued.length === 0
+      ) {
+        this.metrics
+          .emptyQueuePasses +=
+          1;
+
+        const result = {
+          ok: true,
+          message:
+            "No queued tasks"
+        };
+
+        this.metrics
+          .lastExecutionResult =
+          result;
+
+        return result;
+      }
+
+      const selectedTask =
+        queued
+          .slice()
+          .sort(
+            (
+              first,
+              second
+            ) =>
+              Number(
+                first.priority ||
+                99
+              ) -
+              Number(
+                second.priority ||
+                99
+              )
+          )[0];
+
+      this.metrics
+        .lastExecutionTaskId =
+        selectedTask?.id ||
+        null;
+
+
+      console.log("[BUILD124]",
+        JSON.stringify(
+          {
+            id: selectedTask?.id,
+            status: selectedTask?.status,
+            priority: selectedTask?.priority,
+            provider:
+              selectedTask?.payload?.provider ||
+              selectedTask?.provider,
+            action:
+              selectedTask?.payload?.action ||
+              selectedTask?.action ||
+              selectedTask?.type
+          },
+          null,
+          2
+        )
+      );
+      console.log(
+        `[MILES] EXECUTING ${selectedTask.id} | ${selectedTask.payload?.provider || selectedTask.provider || "UNKNOWN"} | ${selectedTask.payload?.action || selectedTask.action || selectedTask.type || "UNKNOWN"}`
+      );
 
       const result =
-        await this.executionService
-          .runNext();
+        await executionService
+          .execute(
+            selectedTask
+          );
 
-      this.metrics.lastExecutionResult =
+      this.metrics
+        .lastExecutionResult =
         result;
 
       if (
-        selectedTask &&
-        result?.ok === true &&
-        result?.message !==
-          "No queued tasks"
-      ) {
-        this.metrics.completed += 1;
-      }
-
-      if (
-        selectedTask &&
-        result?.ok === false &&
-        result?.status !==
+        result?.status ===
           "AWAITING_APPROVAL"
       ) {
-        this.metrics.failed += 1;
+        this.metrics
+          .awaitingApproval +=
+          1;
+      } else if (
+        result?.ok === true
+      ) {
+        this.metrics
+          .completed +=
+          1;
+      } else {
+        this.metrics
+          .failed +=
+          1;
       }
 
-      const retry =
-        this.retryIfAllowed(
-          selectedTask,
-          result
-        );
-
-      this.recordExecution({
+      this.recordHistory({
         type:
           "EXECUTION_PASS",
-        selectedTaskId:
-          selectedTask?.id ||
-          null,
-        selectedTaskType:
-          selectedTask?.type ||
-          null,
-        result,
-        retry
-      });
 
-      const reconciliation =
-        this.reconcileWorkQueue();
-
-      this.persistStatus();
-
-      return {
-        ok:
-          result?.ok !== false ||
-          retry.retried === true,
         taskId:
-          selectedTask?.id ||
+          selectedTask.id,
+
+        provider:
+          selectedTask
+            .payload?.provider ||
+          selectedTask.provider ||
           null,
-        result,
-        retry,
-        reconciliation
-      };
-    } catch (error) {
-      this.metrics.loopErrors += 1;
-      this.metrics.lastExecutionResult = {
-        ok: false,
-        error:
-          error.stack ||
-          error.message
+
+        action:
+          selectedTask
+            .payload?.action ||
+          selectedTask.action ||
+          selectedTask.type ||
+          null,
+
+        resultStatus:
+          result?.status ||
+          null,
+
+        ok:
+          result?.ok === true
+      });
+
+      console.log(
+        `[MILES] EXECUTION RESULT ${selectedTask.id} | status=${result?.status || "UNKNOWN"} | ok=${result?.ok === true}`
+      );
+
+      return result;
+    } catch (
+      error
+    ) {
+      this.metrics
+        .failed +=
+        1;
+
+      this.metrics
+        .lastError = {
+          area:
+            "EXECUTION_PASS",
+
+          message:
+            error.message,
+
+          stack:
+            error.stack,
+
+          createdAt:
+            now()
       };
 
-      this.recordExecution({
+      this.recordHistory({
         type:
-          "EXECUTION_LOOP_ERROR",
-        selectedTaskId:
-          selectedTask?.id ||
-          null,
+          "EXECUTION_PASS_ERROR",
+
         error:
           error.stack ||
           error.message
       });
 
-      this.persistStatus();
+      console.error(
+        "[MILES] EXECUTION LOOP ERROR"
+      );
+
+      console.error(
+        error
+      );
 
       return {
         ok: false,
+        status:
+          "EXECUTION_PASS_FAILED",
         error:
-          error.stack ||
           error.message
       };
     } finally {
-      this.executionLoopRunning =
+      this.metrics
+        .lastExecutionCompletedAt =
+        now();
+
+      this.metrics
+        .lastExecutionDurationMs =
+        Date.now() -
+        startedAt;
+
+      this.executionPassRunning =
         false;
+
+      this.persistStatus();
     }
   }
 
-  generateExecutiveBrief() {
-    try {
-      const service =
-        new this.ExecutiveBriefService(
-          this.executiveState
-        );
-
-      const brief =
-        service.generate();
-
-      const markdown =
-        service.toMarkdown();
-
-      writeJsonAtomic(
-        EXECUTIVE_BRIEF_JSON,
-        brief
-      );
-
-      ensureRuntimeDir();
-
-      fs.writeFileSync(
-        EXECUTIVE_BRIEF_MD,
-        markdown,
-        "utf8"
-      );
-
-      this.metrics.lastExecutiveBriefAt =
-        now();
-
-      this.recordExecution({
-        type:
-          "EXECUTIVE_BRIEF_GENERATED",
-        businessHealth:
-          brief.businessHealth,
-        businessHealthScore:
-          brief.businessHealthScore,
-        authorizedWork:
-          brief.authorizedWork
-            ?.length ||
-          0,
-        ceoDecisions:
-          brief
-            .executiveDecisionsNeeded
-            ?.length ||
-          0
-      });
-
-      this.persistStatus();
-
+  async runInfrastructureHealthCycle() {
+    if (
+      this.healthCycleRunning ||
+      this.shuttingDown
+    ) {
       return {
         ok: true,
-        brief,
-        jsonFile:
-          EXECUTIVE_BRIEF_JSON,
-        markdownFile:
-          EXECUTIVE_BRIEF_MD
+        skipped: true
       };
-    } catch (error) {
-      this.recordExecution({
+    }
+
+    this.healthCycleRunning =
+      true;
+
+    try {
+      const result =
+        await infrastructureHealthManager
+          .runCycle();
+
+      this.metrics
+        .healthCycles +=
+        1;
+
+      this.metrics
+        .lastHealthCycleAt =
+        now();
+
+      this.metrics
+        .lastHealthResult = {
+          ok:
+            result?.ok === true,
+
+          durationMs:
+            result?.durationMs ||
+            null,
+
+          failures:
+            result?.failures ||
+            []
+      };
+
+      this.recordHistory({
         type:
-          "EXECUTIVE_BRIEF_ERROR",
-        error:
-          error.stack ||
-          error.message
+          "INFRASTRUCTURE_HEALTH_CYCLE",
+
+        ok:
+          result?.ok === true,
+
+        durationMs:
+          result?.durationMs ||
+          null,
+
+        failures:
+          result?.failures ||
+          []
       });
+
+      return result;
+    } catch (
+      error
+    ) {
+      this.metrics
+        .healthCycleFailures +=
+        1;
+
+      this.metrics
+        .lastError = {
+          area:
+            "INFRASTRUCTURE_HEALTH",
+
+          message:
+            error.message,
+
+          createdAt:
+            now()
+      };
+
+      console.error(
+        "[MILES] INFRASTRUCTURE HEALTH ERROR"
+      );
+
+      console.error(
+        error
+      );
 
       return {
         ok: false,
         error:
-          error.stack ||
           error.message
       };
+    } finally {
+      this.healthCycleRunning =
+        false;
+
+      this.persistStatus();
+    }
+  }
+
+  runAutonomousWorkGenerationCycle() {
+    if (
+      this.workGenerationRunning ||
+      this.shuttingDown
+    ) {
+      return {
+        ok: true,
+        skipped: true
+      };
+    }
+
+    this.workGenerationRunning =
+      true;
+
+    try {
+      const result =
+        autonomousWorkGenerator
+          .runCycle();
+
+      this.metrics
+        .workGenerationCycles +=
+        1;
+
+      this.metrics
+        .lastWorkGenerationAt =
+        now();
+
+      this.metrics
+        .lastWorkGenerationResult = {
+          ok:
+            result?.ok === true,
+
+          summary:
+            result?.summary ||
+            null
+      };
+
+      this.recordHistory({
+        type:
+          "AUTONOMOUS_WORK_GENERATION",
+
+        ok:
+          result?.ok === true,
+
+        summary:
+          result?.summary ||
+          null
+      });
+
+      console.log(
+        "[MILES] AUTONOMOUS WORK",
+        result?.summary ||
+        {}
+      );
+
+      return result;
+    } catch (
+      error
+    ) {
+      this.metrics
+        .workGenerationFailures +=
+        1;
+
+      this.metrics
+        .lastError = {
+          area:
+            "AUTONOMOUS_WORK_GENERATION",
+
+          message:
+            error.message,
+
+          createdAt:
+            now()
+      };
+
+      console.error(
+        "[MILES] AUTONOMOUS WORK ERROR"
+      );
+
+      console.error(
+        error
+      );
+
+      return {
+        ok: false,
+        error:
+          error.message
+      };
+    } finally {
+      this.workGenerationRunning =
+        false;
+
+      this.persistStatus();
     }
   }
 
   emitHeartbeat() {
-    this.metrics.lastHeartbeatAt =
+    const queue =
+      queueCounts();
+
+    this.metrics
+      .heartbeatCount +=
+      1;
+
+    this.metrics
+      .lastHeartbeatAt =
       now();
 
-    try {
-      this.eventBus.emit(
-        "COO_TICK"
-      );
-    } catch (error) {
-      console.error(
-        "[MILES] HEARTBEAT ERROR",
-        error
-      );
-    }
+    const payload = {
+      generatedAt:
+        this.metrics
+          .lastHeartbeatAt,
 
-    const snapshot =
-      this.persistStatus();
+      queue,
 
-    console.log(
-      `[MILES] HEARTBEAT â†’ COO_TICK | queued=${snapshot.queue.pending || 0} running=${snapshot.queue.running || 0} failed=${snapshot.queue.failed || 0} health=${snapshot.queue.healthScore ?? "unknown"}`
+      metrics: {
+        executionPasses:
+          this.metrics
+            .executionPasses,
+
+        completed:
+          this.metrics
+            .completed,
+
+        failed:
+          this.metrics
+            .failed,
+
+        healthCycles:
+          this.metrics
+            .healthCycles,
+
+        workGenerationCycles:
+          this.metrics
+            .workGenerationCycles
+      }
+    };
+
+    emitCooTick(
+      payload
     );
 
-    return snapshot;
+    console.log(
+      `[MILES] HEARTBEAT -> COO_TICK | queued=${queue.queued} running=${queue.running} completed=${queue.completed} failed=${queue.failed} approval=${queue.awaitingApproval} health=${queue.healthScore ?? "unknown"}`
+    );
+
+    this.persistStatus();
+
+    return payload;
   }
 
   startExecutionLoop() {
     console.log(
-      `[MILES] Execution loop starting (${this.executionIntervalMs} ms).`
+      `[MILES] Canonical execution loop starting (${EXECUTION_INTERVAL_MS} ms).`
     );
+
+    this.executePass()
+      .catch(
+        error => {
+          console.error(
+            "[MILES] INITIAL EXECUTION PASS ERROR",
+            error
+          );
+        }
+      );
 
     this.executionTimer =
       setInterval(
         () => {
           this.executePass()
-            .catch(error => {
-              console.error(
-                "[MILES] EXECUTION LOOP ERROR"
-              );
-              console.error(error);
-            });
+            .catch(
+              error => {
+                console.error(
+                  "[MILES] EXECUTION LOOP ERROR",
+                  error
+                );
+              }
+            );
         },
-        this.executionIntervalMs
+        EXECUTION_INTERVAL_MS
       );
   }
 
-  startHeartbeat() {
+  startHeartbeatLoop() {
+    console.log(
+      `[MILES] Heartbeat loop starting (${HEARTBEAT_INTERVAL_MS} ms).`
+    );
+
+    this.emitHeartbeat();
+
     this.heartbeatTimer =
       setInterval(
         () => {
           this.emitHeartbeat();
         },
-        this.heartbeatMs
+        HEARTBEAT_INTERVAL_MS
       );
   }
 
-  startExecutiveBriefLoop() {
-    this.generateExecutiveBrief();
+  startInfrastructureHealthLoop() {
+    console.log(
+      `[MILES] Infrastructure health loop starting (${HEALTH_INTERVAL_MS} ms).`
+    );
 
-    this.briefTimer =
+    setTimeout(
+      () => {
+        this.runInfrastructureHealthCycle()
+          .catch(
+            error => {
+              console.error(
+                "[MILES] INITIAL INFRASTRUCTURE HEALTH ERROR",
+                error
+              );
+            }
+          );
+      },
+      5000
+    );
+
+    this.healthTimer =
       setInterval(
         () => {
-          this.generateExecutiveBrief();
-        },
-        this.briefIntervalMs
-      );
-  }
-
-  startReconciliationLoop() {
-    this.reconcileWorkQueue();
-
-    this.reconciliationTimer =
-      setInterval(
-        () => {
-          try {
-            this.reconcileWorkQueue();
-          } catch (error) {
-            console.error(
-              "[MILES] RECONCILIATION ERROR",
-              error
+          this.runInfrastructureHealthCycle()
+            .catch(
+              error => {
+                console.error(
+                  "[MILES] INFRASTRUCTURE HEALTH LOOP ERROR",
+                  error
+                );
+              }
             );
-          }
         },
-        this.reconciliationIntervalMs
+        HEALTH_INTERVAL_MS
       );
   }
 
-  startArchiveLoop() {
-    this.archiveTimer =
+  startAutonomousWorkLoop() {
+    console.log(
+      `[MILES] Autonomous work loop starting (${WORK_GENERATION_INTERVAL_MS} ms).`
+    );
+
+    setTimeout(
+      () => {
+        this.runAutonomousWorkGenerationCycle();
+      },
+      10000
+    );
+
+    this.workGenerationTimer =
       setInterval(
         () => {
-          try {
-            this.archiveClosedWork();
-          } catch (error) {
-            console.error(
-              "[MILES] ARCHIVE ERROR",
-              error
-            );
-          }
+          this.runAutonomousWorkGenerationCycle();
         },
-        this.archiveIntervalMs
+        WORK_GENERATION_INTERVAL_MS
       );
   }
 
   async boot() {
     if (this.started) {
-      return this.statusSnapshot();
+      return this.persistStatus();
     }
 
     console.log("");
@@ -1391,34 +1247,36 @@ class RuntimeWorkerSupervisor {
       "[MILES] Booting workers..."
     );
 
-    await this.supervisor.start();
+    await supervisor.start();
 
-    await new Promise(
-      resolve =>
-        setTimeout(
-          resolve,
-          1000
-        )
+    await delay(
+      STARTUP_SETTLE_MS
     );
 
-    this.recoverStaleRunningTasks();
+    credentialAuthority.scan();
 
-    this.started = true;
-    this.metrics.startedAt =
+    infrastructureRegistry.summary();
+
+    this.started =
+      true;
+
+    this.metrics
+      .startedAt =
       now();
 
     this.startExecutionLoop();
-    this.startHeartbeat();
-    this.startExecutiveBriefLoop();
-    this.startReconciliationLoop();
-    this.startArchiveLoop();
+    this.startHeartbeatLoop();
+    this.startInfrastructureHealthLoop();
+    this.startAutonomousWorkLoop();
 
     console.log(
       "[MILES] Workers online"
     );
+
     console.log(
       "[MILES] System fully running"
     );
+
     console.log("");
 
     return this.persistStatus();
@@ -1427,7 +1285,9 @@ class RuntimeWorkerSupervisor {
   async shutdown(
     signal = "MANUAL"
   ) {
-    if (this.shuttingDown) {
+    if (
+      this.shuttingDown
+    ) {
       return;
     }
 
@@ -1438,38 +1298,112 @@ class RuntimeWorkerSupervisor {
       `[MILES] Worker runtime shutdown requested: ${signal}`
     );
 
-    if (this.executionTimer) {
-      clearInterval(
-        this.executionTimer
+    const timers = [
+      this.executionTimer,
+      this.heartbeatTimer,
+      this.healthTimer,
+      this.workGenerationTimer
+    ];
+
+    for (
+      const timer of timers
+    ) {
+      if (timer) {
+        clearInterval(
+          timer
+        );
+
+        clearTimeout(
+          timer
+        );
+      }
+    }
+
+    try {
+      if (
+        infrastructureHealthManager &&
+        typeof infrastructureHealthManager
+          .stop ===
+          "function"
+      ) {
+        await infrastructureHealthManager
+          .stop();
+      }
+    } catch (
+      error
+    ) {
+      console.error(
+        "[MILES] Health manager shutdown error:",
+        error.message
       );
     }
 
-    if (this.heartbeatTimer) {
-      clearInterval(
-        this.heartbeatTimer
+    try {
+      if (
+        autonomousWorkGenerator &&
+        typeof autonomousWorkGenerator
+          .stop ===
+          "function"
+      ) {
+        autonomousWorkGenerator
+          .stop();
+      }
+    } catch (
+      error
+    ) {
+      console.error(
+        "[MILES] Work generator shutdown error:",
+        error.message
       );
     }
 
-    if (this.briefTimer) {
-      clearInterval(
-        this.briefTimer
+    try {
+      if (
+        providerRouter &&
+        typeof providerRouter.shutdown ===
+          "function"
+      ) {
+        await providerRouter
+          .shutdown();
+      }
+    } catch (
+      error
+    ) {
+      console.error(
+        "[MILES] Provider router shutdown error:",
+        error.message
       );
     }
 
-    if (this.reconciliationTimer) {
-      clearInterval(
-        this.reconciliationTimer
+    try {
+      if (
+        supervisor &&
+        typeof supervisor.stop ===
+          "function"
+      ) {
+        await supervisor.stop();
+      }
+    } catch (
+      error
+    ) {
+      console.error(
+        "[MILES] Supervisor shutdown error:",
+        error.message
       );
     }
 
-    if (this.archiveTimer) {
-      clearInterval(
-        this.archiveTimer
-      );
-    }
+    this.started =
+      false;
 
-    this.reconcileWorkQueue();
+    this.metrics
+      .stoppedAt =
+      now();
+
     this.persistStatus();
+
+    console.log(
+      "[MILES] Worker runtime stopped."
+    );
   }
 }
 
@@ -1485,23 +1419,57 @@ async function main() {
   const runtime =
     new RuntimeWorkerSupervisor();
 
+  let shutdownStarted =
+    false;
+
+  async function shutdown(
+    signal
+  ) {
+    if (shutdownStarted) {
+      return;
+    }
+
+    shutdownStarted =
+      true;
+
+    await runtime.shutdown(
+      signal
+    );
+
+    process.exit(0);
+  }
+
   process.on(
     "SIGINT",
-    async () => {
-      await runtime.shutdown(
+    () => {
+      shutdown(
         "SIGINT"
+      ).catch(
+        error => {
+          console.error(
+            error
+          );
+
+          process.exit(1);
+        }
       );
-      process.exit(0);
     }
   );
 
   process.on(
     "SIGTERM",
-    async () => {
-      await runtime.shutdown(
+    () => {
+      shutdown(
         "SIGTERM"
+      ).catch(
+        error => {
+          console.error(
+            error
+          );
+
+          process.exit(1);
+        }
       );
-      process.exit(0);
     }
   );
 
@@ -1512,6 +1480,21 @@ async function main() {
         "[MILES] UNCAUGHT EXCEPTION",
         error
       );
+
+      runtime.metrics
+        .lastError = {
+          area:
+            "UNCAUGHT_EXCEPTION",
+
+          message:
+            error.message,
+
+          stack:
+            error.stack,
+
+          createdAt:
+            now()
+      };
 
       runtime.persistStatus();
     }
@@ -1525,6 +1508,23 @@ async function main() {
         reason
       );
 
+      runtime.metrics
+        .lastError = {
+          area:
+            "UNHANDLED_REJECTION",
+
+          message:
+            reason?.message ||
+            String(reason),
+
+          stack:
+            reason?.stack ||
+            null,
+
+          createdAt:
+            now()
+      };
+
       runtime.persistStatus();
     }
   );
@@ -1532,19 +1532,28 @@ async function main() {
   await runtime.boot();
 }
 
-if (require.main === module) {
-  main().catch(error => {
-    console.error("");
-    console.error(
-      "[MILES] BOOT FAILED"
+if (
+  require.main === module
+) {
+  main()
+    .catch(
+      error => {
+        console.error("");
+        console.error(
+          "[MILES] BOOT FAILED"
+        );
+        console.error(
+          error
+        );
+
+        process.exit(1);
+      }
     );
-    console.error(error);
-    process.exit(1);
-  });
 }
 
 module.exports = {
   RuntimeWorkerSupervisor,
   main
 };
+
 

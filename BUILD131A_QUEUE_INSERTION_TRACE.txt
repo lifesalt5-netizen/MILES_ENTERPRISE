@@ -1,0 +1,643 @@
+============================================================
+BUILD131A — QUEUE INSERTION TRACE
+Generated: 2026-07-17 17:47:29
+============================================================
+
+============================================================
+WORKFLOW SERVICE — COMPLETE CREATE WORKFLOW METHOD
+FILE: .\SERVICES\WorkflowService.js
+LINES: 1-90
+============================================================
+1: "use strict";
+2: 
+3: const workPackages = require("./WorkPackageService");
+4: const taskManager = require("./TaskManager");
+5: 
+6: function normalizePriority(value) {
+7:   if (typeof value === "number") return value;
+8: 
+9:   const text = String(value || "").toUpperCase();
+10: 
+11:   if (text === "CRITICAL") return 100;
+12:   if (text === "HIGH") return 85;
+13:   if (text === "MEDIUM") return 60;
+14:   if (text === "LOW") return 35;
+15: 
+16:   return 50;
+17: }
+18: 
+19: class WorkflowService {
+20:   createWorkflow(objective, context = {}) {
+21:     console.log("[D012] createWorkflow:", objective);
+22:     const wp = workPackages.create(objective, context);
+23: 
+24:     if (wp.status === "AWAITING_APPROVAL") {
+25:       return {
+26:         ok: true,
+27:         status: "AWAITING_APPROVAL",
+28:         workPackage: wp,
+29:         message: "Work package created and awaiting CEO approval."
+30:       };
+31:     }
+32: 
+33:     const queuedTasks = [];
+34:     const priority = normalizePriority(wp.priorityScore || wp.priority || context.priority);
+35: 
+36:     for (const step of wp.tasks || []) {
+37:       console.log("[D012] Queueing step:", step.step, step.action, step.provider);
+38:       const task = taskManager.create(
+39:     step.taskType || "WORKFORCE_STEP",
+40:     {
+41:         workPackageId: wp.id,
+42:         objective: wp.objective,
+43:         capability: step.capability,
+44:         assignedTo: step.assignedTo,
+45:         department: step.department,
+46:         provider: step.provider || null,
+47:         action: step.action,
+48:         expectedOutput: step.expectedOutput,
+49:         verification: step.verification
+50:     },
+51:     priority
+52: );
+53: 
+54: console.log("[D012] Task created:", task);
+55: 
+56:       queuedTasks.push(task);
+57:     }
+58: 
+59:     return {
+60:       ok: true,
+61:       status: "QUEUED",
+62:       workPackage: wp,
+63:       queuedTasks
+64:     };
+65:   }
+66: 
+67:   status() {
+68:     const packages = workPackages.list();
+69: 
+70:     return {
+71:       ok: true,
+72:       total: packages.length,
+73:       queued: packages.filter(p => p.status === "QUEUED").length,
+74:       awaitingApproval: packages.filter(p => p.status === "AWAITING_APPROVAL").length,
+75:       completed: packages.filter(p => p.status === "COMPLETED").length,
+76:       active: packages.slice(0, 10)
+77:     };
+78:   }
+79: }
+80: 
+81: module.exports = new WorkflowService();
+
+============================================================
+WORK PACKAGE SERVICE — PACKAGE AND STEP CREATION
+FILE: .\SERVICES\WorkPackageService.js
+LINES: 1-220
+============================================================
+1: "use strict";
+2: 
+3: const crypto = require("crypto");
+4: const fs = require("fs");
+5: const path = require("path");
+6: const planner = require("./PlannerService");
+7: 
+8: const ROOT = process.env.MILES_ROOT || process.cwd();
+9: const PACKAGE_DIR = path.join(ROOT, "DATA", "work_packages");
+10: 
+11: const ACTIVE_STATUSES = new Set([
+12:   "AWAITING_APPROVAL",
+13:   "QUEUED",
+14:   "READY",
+15:   "RUNNING",
+16:   "IN_PROGRESS",
+17:   "IN PROGRESS",
+18:   "BLOCKED"
+19: ]);
+20: 
+21: function createId() {
+22:   const stamp = new Date()
+23:     .toISOString()
+24:     .replace(/[-:.TZ]/g, "")
+25:     .slice(0, 14);
+26: 
+27:   const random = crypto
+28:     .randomBytes(3)
+29:     .toString("hex")
+30:     .toUpperCase();
+31: 
+32:   return `WP-${stamp}-${random}`;
+33: }
+34: 
+35: function normalize(value) {
+36:   return String(value || "")
+37:     .trim()
+38:     .replace(/\s+/g, " ")
+39:     .toLowerCase();
+40: }
+41: 
+42: function normalizeStatus(value) {
+43:   return String(value || "")
+44:     .trim()
+45:     .replace(/-/g, "_")
+46:     .toUpperCase();
+47: }
+48: 
+49: function buildSignature(objective, plan = {}, context = {}) {
+50:   const steps = Array.isArray(plan.steps)
+51:     ? plan.steps.map(step => ({
+52:         capability: normalize(step.capability),
+53:         provider: normalize(step.provider),
+54:         department: normalize(step.department),
+55:         action: normalize(step.action),
+56:         assignedTo: normalize(step.assignedTo),
+57:         taskType: normalize(step.taskType)
+58:       }))
+59:     : [];
+60: 
+61:   const signaturePayload = {
+62:     objective: normalize(objective),
+63:     approvalRequired: Boolean(plan.approvalRequired),
+64:     department: normalize(context.department),
+65:     provider: normalize(context.provider),
+66:     capability: normalize(context.capability),
+67:     action: normalize(context.action),
+68:     steps
+69:   };
+70: 
+71:   return crypto
+72:     .createHash("sha256")
+73:     .update(JSON.stringify(signaturePayload))
+74:     .digest("hex");
+75: }
+76: 
+77: function safeReadJson(file) {
+78:   try {
+79:     return JSON.parse(fs.readFileSync(file, "utf8"));
+80:   } catch (error) {
+81:     console.error(
+82:       "[BUILD053] Failed to read work package:",
+83:       file,
+84:       error.message
+85:     );
+86: 
+87:     return null;
+88:   }
+89: }
+90: 
+91: class WorkPackageService {
+92:   ensureDirectory() {
+93:     fs.mkdirSync(PACKAGE_DIR, {
+94:       recursive: true
+95:     });
+96:   }
+97: 
+98:   create(objective, context = {}) {
+99:     this.ensureDirectory();
+100: 
+101:     const plan = planner.createPlan(
+102:       objective,
+103:       context
+104:     );
+105: 
+106:     const signature = buildSignature(
+107:       objective,
+108:       plan,
+109:       context
+110:     );
+111: 
+112:     const existing =
+113:       this.findActiveBySignature(signature);
+114: 
+115:     if (existing) {
+116:       console.log(
+117:         "[BUILD053] Work package reused:",
+118:         {
+119:           id: existing.id,
+120:           signature,
+121:           status: existing.status,
+122:           objective: existing.objective
+123:         }
+124:       );
+125: 
+126:       return {
+127:         ...existing,
+128:         reused: true,
+129:         creationDecision: "REUSED"
+130:       };
+131:     }
+132: 
+133:     const timestamp =
+134:       new Date().toISOString();
+135: 
+136:     const workPackage = {
+137:       id: createId(),
+138:       signature,
+139:       objective,
+140:       status: plan.approvalRequired
+141:         ? "AWAITING_APPROVAL"
+142:         : "QUEUED",
+143:       owner: "MILES",
+144:       priority: plan.priority,
+145:       priorityScore: plan.priorityScore,
+146:       createdAt: timestamp,
+147:       updatedAt: timestamp,
+148:       plan,
+149:       tasks: Array.isArray(plan.steps)
+150:         ? plan.steps
+151:         : [],
+152:       approvals: plan.approvalRequired
+153:         ? [
+154:             {
+155:               required: true,
+156:               reason:
+157:                 "CEO approval required by planning rules.",
+158:               status: "PENDING",
+159:               createdAt: timestamp
+160:             }
+161:           ]
+162:         : [],
+163:       results: [],
+164:       verification: {
+165:         required: true,
+166:         status: "PENDING"
+167:       },
+168:       reused: false,
+169:       creationDecision: "CREATED"
+170:     };
+171: 
+172:     this.save(workPackage);
+173: 
+174:     console.log(
+175:       "[BUILD053] Work package created:",
+176:       {
+177:         id: workPackage.id,
+178:         signature,
+179:         status: workPackage.status,
+180:         objective: workPackage.objective
+181:       }
+182:     );
+183: 
+184:     return workPackage;
+185:   }
+186: 
+187:   findActiveBySignature(signature) {
+188:     if (!signature) {
+189:       return null;
+190:     }
+191: 
+192:     return (
+193:       this.list().find(workPackage => {
+194:         if (
+195:           workPackage.signature !== signature
+196:         ) {
+197:           return false;
+198:         }
+199: 
+200:         return ACTIVE_STATUSES.has(
+201:           normalizeStatus(
+202:             workPackage.status
+203:           )
+204:         );
+205:       }) || null
+206:     );
+207:   }
+208: 
+209:   save(workPackage) {
+210:     this.ensureDirectory();
+211: 
+212:     if (
+213:       !workPackage ||
+214:       !workPackage.id
+215:     ) {
+216:       throw new Error(
+217:         "Cannot save a work package without an ID."
+218:       );
+219:     }
+220: 
+
+============================================================
+TASK QUEUE — INSERTION AND UPDATE METHODS
+FILE: .\CORE\TaskQueue.js
+LINES: 330-470
+============================================================
+330: 
+331:             this.writeJsonDirect([]);
+332:             return [];
+333:         });
+334:     }
+335: 
+336:     _write(tasks) {
+337:         return this.withLock(() => {
+338:             this.writeJsonDirect(tasks);
+339:         });
+340:     }
+341: 
+342:     calculateHealthScore() {
+343:         const tasks = this._read();
+344:         const current = Date.now();
+345: 
+346:         let score = 100;
+347: 
+348:         for (const t of tasks) {
+349:             const baseTime = t.updatedAt || t.createdAt || now();
+350:             const parsedTime = new Date(baseTime).getTime();
+351: 
+352:             const ageHours =
+353:                 Number.isFinite(parsedTime)
+354:                     ? (current - parsedTime) / 3600000
+355:                     : 0;
+356: 
+357:             const decay =
+358:                 ageHours < 6 ? 1.0 :
+359:                 ageHours < 24 ? 0.6 :
+360:                 ageHours < 72 ? 0.3 :
+361:                 0.1;
+362: 
+363:             if (t.status === "FAILED") score -= 6 * decay;
+364:             if (t.status === "COMPLETED") score += 1.5 * decay;
+365:             if (t.status === "RUNNING") score += 0.2;
+366:         }
+367: 
+368:         return Math.max(0, Math.min(100, Math.round(score)));
+369:     }
+370: 
+371:     getStatus() {
+372:         const tasks = this._read();
+373: 
+374:         return {
+375:             total: tasks.length,
+376:             pending: tasks.filter(t => t.status === "QUEUED").length,
+377:             running: tasks.filter(t => t.status === "RUNNING").length,
+378:             completed: tasks.filter(t => t.status === "COMPLETED").length,
+379:             failed: tasks.filter(t => t.status === "FAILED").length,
+380:             healthScore: this.calculateHealthScore()
+381:         };
+382:     }
+383: 
+384:     add(type, payload = {}, priority = 50) {
+385:     return this.withLock(() => {
+386:     const tasks = this.readJsonDirect();
+387: 
+388:     let task;
+389: 
+390:     // BUILD115 - Accept complete task objects
+391:     if (
+392:         typeof type === "object" &&
+393:         type !== null &&
+394:         !Array.isArray(type)
+395:     ) {
+396: 
+397:         task = {
+398:             id:
+399:                 type.id ||
+400:                 `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+401: 
+402:             ...type,
+403: 
+404:             payload:
+405:                 type.payload || {},
+406: 
+407:             priority:
+408:                 Number(type.priority ?? priority),
+409: 
+410:             status:
+411:                 type.status || "QUEUED",
+412: 
+413:             createdAt:
+414:                 type.createdAt || now(),
+415: 
+416:             updatedAt:
+417:                 now()
+418:         };
+419: 
+420:     } else {
+421: 
+422:         task = {
+423:             id:
+424:                 `TASK-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+425: 
+426:             type,
+427:             payload,
+428:             priority,
+429: 
+430:             status: "QUEUED",
+431: 
+432:             createdAt: now(),
+433: 
+434:             updatedAt: now()
+435:         };
+436:     }
+437: 
+438:     // BUILD123A - Prevent duplicate active autonomous repair tasks
+439:     const activeStatuses = new Set([
+440:         "QUEUED",
+441:         "RUNNING",
+442:         "AWAITING_APPROVAL",
+443:         "AWAITING_CEO_APPROVAL"
+444:     ]);
+445: 
+446:     const deduplicatedTaskTypes = new Set([
+447:         "ENGINEERING_REPAIR",
+448:         "CAPABILITY_GAP_REVIEW"
+449:     ]);
+450: 
+451:     const taskType = String(task.type || "");
+452:     const taskCapability = String(
+453:         task.payload?.capability ||
+454:         task.capability ||
+455:         ""
+456:     );
+457: 
+458:     if (deduplicatedTaskTypes.has(taskType)) {
+459:         const existingTask = tasks.find(existing => {
+460:             const existingType = String(existing.type || "");
+461:             const existingCapability = String(
+462:                 existing.payload?.capability ||
+463:                 existing.capability ||
+464:                 ""
+465:             );
+466: 
+467:             return (
+468:                 existingType === taskType &&
+469:                 existingCapability === taskCapability &&
+470:                 activeStatuses.has(String(existing.status || ""))
+
+============================================================
+AUTONOMOUS WORK GENERATION — TASK SUBMISSION
+FILE: .\SERVICES\AutonomousWorkGenerationService.js
+LINES: 500-585
+============================================================
+500: 
+501:         expectedOutput:
+502:           "Root-cause analysis and a safe corrective plan.",
+503: 
+504:         verification:
+505:           "Verify the original infrastructure finding is resolved.",
+506: 
+507:         safeToAutoExecute:
+508:           true
+509:       };
+510:   }
+511: }
+512: 
+513: function listQueueTasks() {
+514:   try {
+515:     if (
+516:       typeof taskQueue.list ===
+517:       "function"
+518:     ) {
+519:       const tasks =
+520:         taskQueue.list();
+521: 
+522:       return Array.isArray(tasks)
+523:         ? tasks
+524:         : [];
+525:     }
+526:   } catch {}
+527: 
+528:   return [];
+529: }
+530: 
+531: function queueInsert(task) {
+532:   const methods = [
+533:     "enqueue",
+534:     "add",
+535:     "create",
+536:     "push",
+537:     "submit"
+538:   ];
+539: 
+540:   for (
+541:     const method of methods
+542:   ) {
+543:     if (
+544:       typeof taskQueue[method] ===
+545:       "function"
+546:     ) {
+547:       const result =
+548:         taskQueue[method](task);
+549: 
+550:       return {
+551:         ok: true,
+552:         method,
+553:         result:
+554:           result || task
+555:       };
+556:     }
+557:   }
+558: 
+559:   throw new Error(
+560:     "TaskQueue exposes none of the supported insertion methods: enqueue, add, create, push, submit."
+561:   );
+562: }
+563: 
+564: function activeDuplicate(task) {
+565:   const fingerprint =
+566:     task.payload
+567:       ?.autonomousWorkFingerprint;
+568: 
+569:   if (!fingerprint) {
+570:     return null;
+571:   }
+572: 
+573:   return (
+574:     listQueueTasks()
+575:       .find(existing =>
+576:         existing.payload
+577:           ?.autonomousWorkFingerprint ===
+578:           fingerprint &&
+579:         ACTIVE_TASK_STATUSES.has(
+580:           statusUpper(
+581:             existing.status
+582:           )
+583:         )
+584:       ) || null
+585:   );
+
+============================================================
+AUTONOMOUS WORK GENERATION — CALL TO SUBMIT TASK
+FILE: .\SERVICES\AutonomousWorkGenerationService.js
+LINES: 1160-1230
+============================================================
+1160: 
+1161:       this.metrics
+1162:         .findingsEvaluated +=
+1163:         findings.length;
+1164: 
+1165:       const selected =
+1166:         findings
+1167:           .sort((a, b) =>
+1168:             priorityFor(
+1169:               a.status,
+1170:               a.score,
+1171:               a.category
+1172:             ) -
+1173:             priorityFor(
+1174:               b.status,
+1175:               b.score,
+1176:               b.category
+1177:             )
+1178:           )
+1179:           .slice(
+1180:             0,
+1181:             positiveNumber(
+1182:               options.maxTasks,
+1183:               this.maxTasksPerCycle
+1184:             )
+1185:           );
+1186: 
+1187:       const generated =
+1188:         selected.map(
+1189:           finding =>
+1190:             this.buildTask(
+1191:               finding
+1192:             )
+1193:         );
+1194: 
+1195:       const submissions =
+1196:         generated.map(task => {
+1197:           try {
+1198:             return this.submitTask(
+1199:               task
+1200:             );
+1201:           } catch (error) {
+1202:             this.metrics
+1203:               .errors += 1;
+1204: 
+1205:             return {
+1206:               ok: false,
+1207:               created: false,
+1208:               task,
+1209:               error:
+1210:                 error.stack ||
+1211:                 error.message
+1212:             };
+1213:           }
+1214:         });
+1215: 
+1216:       const state = {
+1217:         ok:
+1218:           submissions.every(
+1219:             item =>
+1220:               item.ok !== false
+1221:           ),
+1222: 
+1223:         type:
+1224:           "AUTONOMOUS_WORK_GENERATION_STATE",
+1225: 
+1226:         generatedAt:
+1227:           nowIso(),
+1228: 
+1229:         durationMs:
+1230:           Date.now() -
+
+============================================================
+QUEUE API METHOD DEFINITIONS
+============================================================
+173: withoutId.push(task);
+336: _write(tasks) {
+384: add(type, payload = {}, priority = 50) {
+483: tasks.push(task);
+517: list(status = null) {
+522: update(id, patch) {

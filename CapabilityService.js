@@ -1,9 +1,9 @@
 ﻿"use strict";
 
-const workforce = require("./WorkforceService");
-const executiveState = require("./ExecutiveStateService");
-const providerAuthority = require("./ProviderAuthorityRegistryService");
-const providerBindings = require("./ProviderCapabilityBindingService");
+const workforce = require("./SERVICES/WorkforceService");
+const executiveState = require("./SERVICES/ExecutiveStateService");
+const providerAuthority = require("./SERVICES/ProviderAuthorityRegistryService");
+const providerBindings = require("./SERVICES/ProviderCapabilityBindingService");
 
 const EnterpriseCapabilityRegistryService =
   require("./registry/EnterpriseCapabilityRegistryService");

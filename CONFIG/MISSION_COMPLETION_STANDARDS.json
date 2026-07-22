@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "standards": {
+    "POSITIVE_REPLY": [
+      "Reply classified",
+      "Prospect and company identified",
+      "CRM or internal record updated",
+      "Personalized response drafted",
+      "Scheduling action prepared when appropriate",
+      "Next action assigned",
+      "Follow-up date established",
+      "Completion verified"
+    ],
+    "SALES_DEAL": [
+      "Deal value and probability reviewed",
+      "Current stage verified",
+      "Decision maker and need identified",
+      "Missing information documented",
+      "Next best action selected",
+      "Owner assigned",
+      "Follow-up date established",
+      "Revenue risk documented"
+    ],
+    "PROPOSAL": [
+      "Stage 0 qualification gate completed",
+      "Mandatory qualifications verified",
+      "GO, GO WITH RISK, TEAMING REQUIRED, or NO-GO decision recorded",
+      "Compliance matrix completed",
+      "Required files identified",
+      "Pricing status verified",
+      "Missing inputs documented",
+      "Submission readiness verified",
+      "CEO approval requested before final submission"
+    ],
+    "OUTBOUND_CAMPAIGN": [
+      "Target segment verified",
+      "Suppression and deduplication rules applied",
+      "Email verification status confirmed",
+      "Mailbox capacity confirmed",
+      "SPF, DKIM, and DMARC state verified when relevant",
+      "Bounce and deliverability risks checked",
+      "Campaign mapping confirmed",
+      "Launch or resume action authorized",
+      "Post-action metrics scheduled for verification"
+    ],
+    "SYSTEM_REPAIR": [
+      "Problem reproduced or verified",
+      "Root cause identified or bounded",
+      "Risk classified",
+      "Protected-action rules checked",
+      "Safe repair executed or approval requested",
+      "Post-repair test passed",
+      "Rollback path documented",
+      "Learning recorded"
+    ],
+    "GENERAL_MISSION": [
+      "Objective is explicit",
+      "Expected business outcome is explicit",
+      "Owner is assigned",
+      "Dependencies are identified",
+      "Action is executed or escalated",
+      "Output is verified",
+      "Outcome is recorded",
+      "Next action is created when needed"
+    ]
+  }
+}

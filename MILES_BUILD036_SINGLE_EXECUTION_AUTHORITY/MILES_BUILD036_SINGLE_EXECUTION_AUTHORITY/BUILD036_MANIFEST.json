@@ -1,0 +1,22 @@
+{
+  "build": "036",
+  "name": "Single Execution Authority",
+  "purpose": [
+    "Atomic task claiming",
+    "Single resident execution owner",
+    "Stale RUNNING recovery",
+    "High-priority-first execution",
+    "Duplicate consumer suppression"
+  ],
+  "files": [
+    "CORE/TaskQueue.js",
+    "SERVICES/ExecutionService.js",
+    "StartProductionSystem.js",
+    "SERVICES/AutonomousCOOLoopService.js",
+    "SERVICES/COOOrchestratorService.js",
+    "SERVICES/SchedulerService.js",
+    "SERVICES/StartProductionSystem.js",
+    "TESTS/Test_Build036_SingleExecutionAuthority.js",
+    "INSTALL_BUILD036.ps1"
+  ]
+}

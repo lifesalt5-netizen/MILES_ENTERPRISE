@@ -1,0 +1,1552 @@
+{
+  "id": "WP-20260713193950-031",
+  "objective": "Add or restore a clear primary scheduling CTA.",
+  "status": "COMPLETED",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-13T19:39:50.943Z",
+  "updatedAt": "2026-07-17T02:28:17.255Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Add or restore a clear primary scheduling CTA.",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-13T19:39:50.943Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1783971579137-14974",
+      "area": "Website",
+      "priority": 1,
+      "description": "Website health score is 0.",
+      "reason": "Website health score is 0.",
+      "recommendedAction": "Add or restore a clear primary scheduling CTA.",
+      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+      "relatedProvider": "Website",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1783971579136-25883",
+          "priority": 1,
+          "area": "Website",
+          "title": "Repair high-risk Website condition",
+          "objective": "Repair Website: Repair high-risk Website condition",
+          "reason": "Website health score is 0.",
+          "recommendedAction": "Add or restore a clear primary scheduling CTA.",
+          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "relatedProvider": "Website",
+          "businessImpactScore": 95,
+          "automationConfidence": "HIGH",
+          "metadata": {
+            "health": {
+              "area": "Website",
+              "status": "Critical",
+              "score": 0,
+              "risk": "HIGH",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-13T19:37:04.280Z",
+              "lastFailure": "2026-07-13T19:39:37.065Z",
+              "exceptions": [
+                {
+                  "type": "WebsiteUnavailable",
+                  "severity": "Critical",
+                  "message": "Website audit failed."
+                },
+                {
+                  "type": "SEO",
+                  "severity": "Warning",
+                  "message": "Page title is missing or too short."
+                },
+                {
+                  "type": "SEO",
+                  "severity": "Warning",
+                  "message": "Meta description is missing or too short."
+                },
+                {
+                  "type": "Conversion",
+                  "severity": "Warning",
+                  "message": "No clear call-to-action was detected."
+                },
+                {
+                  "type": "Conversion",
+                  "severity": "Warning",
+                  "message": "Calendly integration was not detected."
+                },
+                {
+                  "type": "ContentDrift",
+                  "severity": "Info",
+                  "message": "9 monitored content field(s) changed from baseline."
+                }
+              ],
+              "recommendations": [
+                "Add or restore a clear primary scheduling CTA.",
+                "Verify the approved Calendly link is present and reachable.",
+                "Review content drift against approved website changes before publishing or rollback."
+              ],
+              "metrics": {
+                "homepageReachable": false,
+                "statusCode": 200,
+                "loadMs": 39345,
+                "title": "",
+                "h1": "",
+                "metaDescription": "",
+                "https": true,
+                "hasCTA": false,
+                "hasContact": false,
+                "hasCalendly": false,
+                "hasServices": false,
+                "hasPhone": false,
+                "hasEmail": false,
+                "finalUrl": "https://pathways2gc.com",
+                "titleLength": 0,
+                "h1Count": 1,
+                "headingCounts": {
+                  "h1": 1,
+                  "h2": 1,
+                  "h3": 3,
+                  "h4": 0,
+                  "h5": 0,
+                  "h6": 0
+                },
+                "metaDescriptionLength": 0,
+                "formCount": 1,
+                "validFormCount": 1,
+                "imageCount": 7,
+                "imagesMissingAlt": 0,
+                "inputLabelCoverage": 100,
+                "linksDiscovered": 19,
+                "internalLinks": 13,
+                "linksChecked": 13,
+                "brokenLinks": 0,
+                "hasCanonical": true,
+                "hasViewport": true,
+                "hasLang": true,
+                "hasMainLandmark": false,
+                "hasNavigation": true,
+                "hasSkipLink": false,
+                "hasAria": true
+              },
+              "sourceSystems": [
+                "CONNECTORS/WEBSITE"
+              ],
+              "dependencies": [
+                "Website"
+              ]
+            },
+            "cycleId": "COO-20260713193704-003"
+          }
+        },
+        "operationalObjective": "Repair Website: Repair high-risk Website condition",
+        "automationConfidence": "HIGH",
+        "businessImpactScore": 95,
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Existing governance classification retained.",
+          "classifiedAt": "2026-07-13T19:39:39.137Z"
+        }
+      },
+      "runtimeCycleId": "COO-20260713193704-003"
+    },
+    "domain": "executive",
+    "workforce": "Executive Operations Workforce",
+    "resolution": "EXECUTIVE_FALLBACK",
+    "requiredCapabilities": [
+      "executive.objective.evaluate"
+    ],
+    "assignments": [
+      {
+        "capability": "executive.objective.evaluate",
+        "provider": null,
+        "department": "Executive",
+        "action": "evaluateObjective",
+        "bestWorker": {
+          "employee": "EngineeringOrchestrator",
+          "department": "Executive",
+          "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_982B533911E0FCD1",
+          "relativePath": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "executive.objective.evaluate",
+            "employees": [
+              {
+                "employee": "MILES",
+                "department": "Executive",
+                "mission": "Operate as the autonomous Digital COO for Pathways 2 Government Contracting.",
+                "authority": "Operational",
+                "role": "Digital COO",
+                "componentId": null,
+                "relativePath": null,
+                "score": 2815,
+                "matchReasons": [
+                  "exact capability: executive.objective.evaluate",
+                  "registry text: executive.objective.evaluate",
+                  "exact capability: coo orchestration",
+                  "registry text: coo orchestration",
+                  "exact capability: executive intelligence",
+                  "registry text: executive intelligence",
+                  "exact capability: create plan",
+                  "registry text: create plan",
+                  "exact capability: prioritize work",
+                  "registry text: prioritize work",
+                  "exact capability: evaluate authority",
+                  "registry text: evaluate authority",
+                  "executive department",
+                  "authoritative executive owner"
+                ],
+                "registrySources": [
+                  "SYSTEM_EXECUTIVE_IDENTITY"
+                ]
+              },
+              {
+                "employee": "coo_goal_engine_feed",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through executive_intelligence\\coo_goal_engine_feed.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_E6B68F5FC42002E3",
+                "relativePath": "executive_intelligence\\coo_goal_engine_feed.json",
+                "score": 120,
+                "matchReasons": [
+                  "registry text: executive intelligence",
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "active_missions",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\missions\\active_missions.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_099492C7234930D2",
+                "relativePath": "DATA\\missions\\active_missions.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "approval_queue",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\executive\\approval\\approval_queue.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FD791836BFFCE5F9",
+                "relativePath": "DATA\\executive\\approval\\approval_queue.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "ArchitectAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\ArchitectAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FA3C192C7E1C51D7",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\ArchitectAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "atlas_runtime_report",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\runtime\\atlas_runtime_report.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_EE2E9C8716FF619C",
+                "relativePath": "DATA\\runtime\\atlas_runtime_report.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "AtlasWorkerAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\AtlasWorkerAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_25813D8D470FED9D",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\AtlasWorkerAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "BaseAutonomousWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\worker_runtime\\BaseAutonomousWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_B1C62144DB39EAC2",
+                "relativePath": "SERVICES\\worker_runtime\\BaseAutonomousWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "BaseCOOWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\BaseCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_476773B4C3BA4CE5",
+                "relativePath": "SERVICES\\workers\\BaseCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "BuilderAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\BuilderAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_F28D3EE80A9F559D",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\BuilderAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "business_operations_queue",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through state\\business_operations_queue.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_06DB54481202E847",
+                "relativePath": "state\\business_operations_queue.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "BusinessOperationsBridgeService",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\BusinessOperationsBridgeService.backup_20260710_172805.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4203893E93CAC55F",
+                "relativePath": "SERVICES\\BusinessOperationsBridgeService.backup_20260710_172805.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "BusinessWorker",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\BusinessWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_C9BEF57A162E374D",
+                "relativePath": "SERVICES\\BusinessWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "capability_report",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\capability\\capability_report.md.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_5E661D7FF759747D",
+                "relativePath": "DATA\\capability\\capability_report.md",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "CommandQueue",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through CORE\\CommandQueue.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_0E9CE59BAE8D98B9",
+                "relativePath": "CORE\\CommandQueue.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "commandWorker",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through WORKERS\\commandWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_B37CDD1441B4ACC9",
+                "relativePath": "WORKERS\\commandWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "completed",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\queue\\completed.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_73C5AD61FC33056C",
+                "relativePath": "DATA\\queue\\completed.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "coo_goals",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through state\\coo_goals.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_C4E232E21658AB84",
+                "relativePath": "state\\coo_goals.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "coo_operation_ledger",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through state\\coo_operation_ledger.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_2AD405D4FAE94C92",
+                "relativePath": "state\\coo_operation_ledger.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "COOExecutiveLoopService",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\COOExecutiveLoopService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4C8CB980BEAE4A3E",
+                "relativePath": "SERVICES\\COOExecutiveLoopService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "COOGoalEngine",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\digital_coo\\COOGoalEngine.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_69BB961726640C75",
+                "relativePath": "SERVICES\\digital_coo\\COOGoalEngine.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "cooWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through WORKERS\\cooWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_6F9BF25F98FC4C5B",
+                "relativePath": "WORKERS\\cooWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "digital_coo_host_operation_queue",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through state\\digital_coo_host_operation_queue.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_801B3D43C91DBA88",
+                "relativePath": "state\\digital_coo_host_operation_queue.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "DigitalCOORuntime",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\digital_coo\\DigitalCOORuntime.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_7746EBDD69C994D1",
+                "relativePath": "SERVICES\\digital_coo\\DigitalCOORuntime.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "EngineeringAssignmentEngine",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringAssignmentEngine.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_C84069401F3910A4",
+                "relativePath": "DIGITAL_COO\\Engineering\\EngineeringAssignmentEngine.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "EngineeringOrchestrator",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_982B533911E0FCD1",
+                "relativePath": "DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "EngineeringWorkerBridge",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringWorkerBridge.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_DE1B3BD3AF76A161",
+                "relativePath": "DIGITAL_COO\\Engineering\\EngineeringWorkerBridge.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "EnterpriseComponentRegistryService",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseComponentRegistryService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4FC4100A9660B5B8",
+                "relativePath": "MILES_Enterprise_Registry_Phase1_v1.0\\SERVICES\\registry\\EnterpriseComponentRegistryService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "failed",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\queue\\failed.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_E27EB90740054CB8",
+                "relativePath": "DATA\\queue\\failed.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "GoogleWorkspaceCOOWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\GoogleWorkspaceCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_B41E4BC3126ECBE5",
+                "relativePath": "SERVICES\\workers\\GoogleWorkspaceCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "inventory_summary",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\enterprise_inventory\\inventory_summary.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1909645D283D6B0D",
+                "relativePath": "DATA\\enterprise_inventory\\inventory_summary.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "latest_capability_backlog",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\capability_backlog\\latest_capability_backlog.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_D3BB8F112BCF7FDB",
+                "relativePath": "DATA\\capability_backlog\\latest_capability_backlog.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "latest_execution_report",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\operation_kernel\\latest_execution_report.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_912F3ACF7ED17602",
+                "relativePath": "DATA\\operation_kernel\\latest_execution_report.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MILES_WORKFORCE_SUMMARY",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through CONFIG\\WORKFORCE\\MILES_WORKFORCE_SUMMARY.md.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1039EA33D2E11DCB",
+                "relativePath": "CONFIG\\WORKFORCE\\MILES_WORKFORCE_SUMMARY.md",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MilesCommandCenter",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\digital_coo\\MilesCommandCenter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_7A3DC2CBBF0EA77B",
+                "relativePath": "SERVICES\\digital_coo\\MilesCommandCenter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MilesExecutionTracer",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\digital_coo\\MilesExecutionTracer.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_BA639FF86A82CE42",
+                "relativePath": "SERVICES\\digital_coo\\MilesExecutionTracer.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MissionCreationService",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\MissionCreationService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_549320FD30573951",
+                "relativePath": "SERVICES\\MissionCreationService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MockBrowserWorker",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build046_BusinessWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4E14367D8541AE35",
+                "relativePath": "TESTS\\Test_Build046_BusinessWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "MockWorker",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build045_WorkerContract.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FC6D03526E4BDC33",
+                "relativePath": "TESTS\\Test_Build045_WorkerContract.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "NamecheapCOOWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\workers\\NamecheapCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_E324C4BB1CF8D48F",
+                "relativePath": "SERVICES\\workers\\NamecheapCOOWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "PRODUCTION_MANIFEST",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through PRODUCTION_MANIFEST.md.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_B93B00757F86FE1D",
+                "relativePath": "PRODUCTION_MANIFEST.md",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "recovery_report",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\recovery\\recovery_report.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_95167BDA980AEA08",
+                "relativePath": "DATA\\recovery\\recovery_report.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "RecoveryAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\RecoveryAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_D409C72AA256640D",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\RecoveryAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "RepositoryInventoryService",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\engineering\\RepositoryInventoryService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FC7438C6D6B74164",
+                "relativePath": "SERVICES\\engineering\\RepositoryInventoryService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "RepositoryRegistryService",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\RepositoryRegistryService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1ABF73FCEDF0CB5F",
+                "relativePath": "SERVICES\\RepositoryRegistryService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "RuntimeActivationAuditService",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\RuntimeActivationAuditService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FCB12A6F1CB293C1",
+                "relativePath": "SERVICES\\RuntimeActivationAuditService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "StartMilesProduction",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through StartMilesProduction.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_8BC78FA1BAE8F68B",
+                "relativePath": "StartMilesProduction.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "task_queue",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\runtime\\task_queue.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_8420CBF730B2E4B7",
+                "relativePath": "DATA\\runtime\\task_queue.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "TaskExecutionWorker",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through SERVICES\\worker_runtime\\TaskExecutionWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_3D616902244FCC01",
+                "relativePath": "SERVICES\\worker_runtime\\TaskExecutionWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_Build044_WorkerSelector",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build044_WorkerSelector.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_6C6E176BD6492622",
+                "relativePath": "TESTS\\Test_Build044_WorkerSelector.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_Build048_EndToEndMissionTrace",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build048_EndToEndMissionTrace.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_C517CC00A8ECF321",
+                "relativePath": "TESTS\\Test_Build048_EndToEndMissionTrace.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_BUILD055_MissionCreationService",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_BUILD055_MissionCreationService.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_9C7C32E3EB0A4D9F",
+                "relativePath": "TESTS\\Test_BUILD055_MissionCreationService.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "TestBrowserWorker",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TestBrowserWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_CA40156FC6389CDA",
+                "relativePath": "TestBrowserWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "TestEngineeringWorkerBridge",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\TestEngineeringWorkerBridge.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_2122A59B1812EE2B",
+                "relativePath": "TESTS\\TestEngineeringWorkerBridge.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "TesterAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\TesterAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_396B57D0525DFE49",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\TesterAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "TestWorkerRegistry",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through TESTS\\TestWorkerRegistry.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_497E5F9450D9B0F1",
+                "relativePath": "TESTS\\TestWorkerRegistry.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "ValidatorAdapter",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WORKER_ADAPTERS\\ValidatorAdapter.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_F306EAF28294BC6E",
+                "relativePath": "SERVICES\\WORKER_ADAPTERS\\ValidatorAdapter.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "worker_registry",
+                "department": "Executive",
+                "mission": "Execute enterprise capabilities through DATA\\repository\\worker_registry.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_6E858B815AE4BA46",
+                "relativePath": "DATA\\repository\\worker_registry.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WorkerContract",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WorkerContract.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_CF05F289516CD2E8",
+                "relativePath": "SERVICES\\WorkerContract.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WorkerDispatcher",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\worker_runtime\\WorkerDispatcher.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_2E5FBA78A7B11700",
+                "relativePath": "SERVICES\\worker_runtime\\WorkerDispatcher.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WorkerExecutionBridge",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WorkerExecutionBridge.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_EA6CDA218FBA68B5",
+                "relativePath": "SERVICES\\WorkerExecutionBridge.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "runtime_worker_registry",
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WorkerSelector",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through SERVICES\\WorkerSelector.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_7A1785A3EF6FE5AC",
+                "relativePath": "SERVICES\\WorkerSelector.js",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164428-170",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164428-170.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_3F4B9461D1E9FA5E",
+                "relativePath": "DATA\\work_packages\\WP-20260702164428-170.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164428-898",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164428-898.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_268272B63C8CAE5E",
+                "relativePath": "DATA\\work_packages\\WP-20260702164428-898.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164438-145",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164438-145.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_45EF7BF02F8C31F2",
+                "relativePath": "DATA\\work_packages\\WP-20260702164438-145.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164438-716",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164438-716.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_C4F73A4AA2A85FE3",
+                "relativePath": "DATA\\work_packages\\WP-20260702164438-716.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164951-756",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164951-756.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_FC901551782867F6",
+                "relativePath": "DATA\\work_packages\\WP-20260702164951-756.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702164951-774",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702164951-774.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_E983DEB3D7D90320",
+                "relativePath": "DATA\\work_packages\\WP-20260702164951-774.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165123-089",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165123-089.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_66B2FF53648A98FC",
+                "relativePath": "DATA\\work_packages\\WP-20260702165123-089.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165123-440",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165123-440.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_03FA52D03DD7B23E",
+                "relativePath": "DATA\\work_packages\\WP-20260702165123-440.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165308-047",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165308-047.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_40543E5A216096DE",
+                "relativePath": "DATA\\work_packages\\WP-20260702165308-047.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165308-280",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165308-280.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4601650AD15B9161",
+                "relativePath": "DATA\\work_packages\\WP-20260702165308-280.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165632-469",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165632-469.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_EDE4C5BA65C803B8",
+                "relativePath": "DATA\\work_packages\\WP-20260702165632-469.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260702165632-958",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260702165632-958.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_0696115868B3CF3C",
+                "relativePath": "DATA\\work_packages\\WP-20260702165632-958.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260705004433-573",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260705004433-573.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_E35CA0667B45A948",
+                "relativePath": "DATA\\work_packages\\WP-20260705004433-573.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "WP-20260705004433-933",
+                "department": "Operations",
+                "mission": "Execute enterprise capabilities through DATA\\work_packages\\WP-20260705004433-933.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_B7AEAA6B51A0B595",
+                "relativePath": "DATA\\work_packages\\WP-20260705004433-933.json",
+                "score": 50,
+                "matchReasons": [
+                  "executive department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "executive.objective.evaluate",
+        "assignedTo": "EngineeringOrchestrator",
+        "department": "Executive",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": null,
+        "action": "evaluateObjective",
+        "expectedOutput": "Clear interpretation of the work objective.",
+        "verification": "Verify the objective is actionable and aligned to P2GC operating priorities."
+      }
+    ],
+    "providers": [],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify the objective is actionable and aligned to P2GC operating priorities."
+    ],
+    "successCriteria": [
+      "The objective is evaluated and routed without bypassing governance."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "executive.objective.evaluate",
+      "assignedTo": "EngineeringOrchestrator",
+      "department": "Executive",
+      "status": "COMPLETED",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": null,
+      "action": "evaluateObjective",
+      "expectedOutput": "Clear interpretation of the work objective.",
+      "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+      "taskId": "TASK-1783971591114-49615",
+      "startedAt": null,
+      "completedAt": "2026-07-13T19:44:51.157Z",
+      "failedAt": null,
+      "result": {
+        "ok": true,
+        "status": "COMPLETED",
+        "provider": null,
+        "connector": "WORKFORCE",
+        "department": "Executive",
+        "action": "evaluateObjective",
+        "workforceResult": {
+          "ok": true,
+          "result": {
+            "ok": true,
+            "type": "WORKFORCE_STEP_RESULT",
+            "executionMode": "WORKFORCE_RECOMMENDATION",
+            "taskId": "TASK-1783971591114-49615",
+            "workPackageId": "WP-20260713193950-031",
+            "objective": "Add or restore a clear primary scheduling CTA.",
+            "capability": "executive.objective.evaluate",
+            "provider": "UNKNOWN",
+            "action": "evaluateObjective",
+            "assignedTo": "EngineeringOrchestrator",
+            "department": "Executive",
+            "expectedOutput": "Clear interpretation of the work objective.",
+            "verification": "Verify the objective is actionable and aligned to P2GC operating priorities.",
+            "employeeFound": true,
+            "employeeProfile": {
+              "name": "EngineeringOrchestrator",
+              "department": "Executive",
+              "mission": "Execute enterprise capabilities through DIGITAL_COO\\Engineering\\EngineeringOrchestrator.js.",
+              "authority": "Operational"
+            },
+            "output": {
+              "summary": "EngineeringOrchestrator prepared Clear interpretation of the work objective. for: Add or restore a clear primary scheduling CTA.",
+              "recommendation": "Proceed with the next operational step for executive.objective.evaluate.",
+              "nextActions": [
+                "Review current state for executive.objective.evaluate.",
+                "Confirm available source data.",
+                "Escalate only if CEO approval rules are triggered."
+              ],
+              "needsHumanInput": false,
+              "ceoApprovalRequired": false
+            },
+            "status": "AWAITING_VERIFICATION",
+            "createdAt": "2026-07-13T19:44:50.941Z",
+            "outFile": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\workforce_results\\WP-20260713193950-031_TASK-1783971591114-49615.json"
+          },
+          "verification": {
+            "ok": true,
+            "type": "WORKFORCE_STEP_VERIFICATION",
+            "taskId": "TASK-1783971591114-49615",
+            "workPackageId": "WP-20260713193950-031",
+            "capability": "executive.objective.evaluate",
+            "provider": "UNKNOWN",
+            "action": "evaluateObjective",
+            "assignedTo": "EngineeringOrchestrator",
+            "verified": true,
+            "status": "COMPLETED",
+            "evidence": {
+              "executionMode": "WORKFORCE_RECOMMENDATION",
+              "hasOutput": true,
+              "hasRecommendation": true,
+              "providerFailed": false,
+              "needsApproval": false
+            },
+            "checkedAt": "2026-07-13T19:44:50.955Z"
+          },
+          "status": "COMPLETED"
+        },
+        "completedAt": "2026-07-13T19:44:50.961Z"
+      },
+      "error": null,
+      "updatedAt": "2026-07-13T19:44:51.157Z"
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "PASSED",
+    "checkedAt": "2026-07-17T02:28:17.255Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 1,
+    "failedTaskCount": 0,
+    "runningTaskCount": 0,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T02:28:17.255Z"
+  },
+  "completedAt": "2026-07-17T02:28:17.255Z"
+}

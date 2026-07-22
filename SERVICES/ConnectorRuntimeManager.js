@@ -1,6 +1,6 @@
 'use strict';
 
-const ConnectorRuntime = require('./ConnectorRuntime');
+const ConnectorRuntime = require('./connector_runtime/ConnectorRuntime');
 
 class ConnectorRuntimeManager {
   constructor(options = {}) {

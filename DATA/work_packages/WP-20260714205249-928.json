@@ -1,0 +1,352 @@
+{
+  "id": "WP-20260714205249-928",
+  "objective": "Verify Instantly API connectivity.",
+  "status": "RUNNING",
+  "owner": "MILES",
+  "priority": 1,
+  "priorityScore": 50,
+  "createdAt": "2026-07-14T20:52:49.843Z",
+  "updatedAt": "2026-07-17T18:07:52.030Z",
+  "plan": {
+    "ok": true,
+    "type": "PLAN",
+    "objective": "Verify Instantly API connectivity.",
+    "priority": 1,
+    "priorityScore": 50,
+    "createdAt": "2026-07-14T20:52:49.842Z",
+    "owner": "MILES",
+    "context": {
+      "sourceWorkItemId": "WORK-1784062359766-72346",
+      "area": "Instantly",
+      "priority": 1,
+      "description": "Instantly health score is 0.",
+      "reason": "Instantly health score is 0.",
+      "recommendedAction": "Verify Instantly API connectivity.",
+      "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+      "relatedProvider": "Instantly",
+      "metadata": {
+        "missionItem": {
+          "id": "MISSION-1784062359087-41827",
+          "priority": 1,
+          "area": "Instantly",
+          "title": "Repair high-risk Instantly condition",
+          "objective": "Audit Instantly campaign health, deliverability, bounce risk, and inbox capacity",
+          "reason": "Instantly health score is 0.",
+          "recommendedAction": "Verify Instantly API connectivity.",
+          "expectedImpact": "Protects operating continuity and removes an autonomy blocker.",
+          "owner": "Miles",
+          "requiresKevin": false,
+          "relatedProvider": "Instantly",
+          "businessImpactScore": 95,
+          "automationConfidence": "HIGH",
+          "metadata": {
+            "health": {
+              "area": "Instantly",
+              "status": "Critical",
+              "score": 0,
+              "risk": "HIGH",
+              "confidence": "HIGH",
+              "lastSuccess": "2026-07-14T20:49:42.982Z",
+              "lastFailure": "2026-07-14T20:52:37.030Z",
+              "exceptions": [
+                {
+                  "type": "InstantlyAPI",
+                  "severity": "Critical",
+                  "message": "read ECONNRESET"
+                }
+              ],
+              "recommendations": [
+                "Verify Instantly API connectivity.",
+                "Verify INSTANTLY_API_KEY.",
+                "Verify internet connectivity."
+              ],
+              "metrics": {},
+              "sourceSystems": [
+                "CONNECTORS/INSTANTLY"
+              ],
+              "dependencies": [
+                "Instantly"
+              ]
+            },
+            "cycleId": "COO-20260714191319-037"
+          }
+        },
+        "operationalObjective": "Audit Instantly campaign health, deliverability, bounce risk, and inbox capacity",
+        "automationConfidence": "HIGH",
+        "businessImpactScore": 95,
+        "governanceClassification": {
+          "source": "createWorkItem",
+          "reason": "Safe operational review, audit, refresh, verification, analysis, or planning authorized autonomously.",
+          "classifiedAt": "2026-07-14T20:52:39.766Z"
+        }
+      },
+      "runtimeCycleId": "COO-20260714191319-037"
+    },
+    "domain": "marketing",
+    "workforce": "Marketing Operations Workforce",
+    "resolution": "OBJECTIVE_MATCH",
+    "requiredCapabilities": [
+      "marketing.campaign.audit"
+    ],
+    "assignments": [
+      {
+        "capability": "marketing.campaign.audit",
+        "provider": "MarketingProvider",
+        "department": "Marketing",
+        "action": "refresh",
+        "bestWorker": {
+          "employee": "InstantlyExecutiveAdvisor",
+          "department": "Marketing",
+          "mission": "Execute enterprise capabilities through SERVICES\\InstantlyExecutiveAdvisor.js.",
+          "authority": "Operational",
+          "role": "Enterprise Worker Component",
+          "componentId": "CMP_1398B10D43B2CE13",
+          "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+          "score": 1000,
+          "matchReasons": [
+            "enterprise preferred component"
+          ],
+          "registrySources": [
+            "enterprise_component_registry"
+          ]
+        },
+        "candidates": [
+          {
+            "capability": "marketing.campaign.audit",
+            "employees": [
+              {
+                "employee": "InstantlyCOOWorker",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_4CE04D464E5B6E59",
+                "relativePath": "BACKUPS\\CAMPAIGN_REGISTRY_CONSOLIDATION_20260710_150636\\InstantlyCOOWorker.js",
+                "score": 620,
+                "matchReasons": [
+                  "exact capability: check deliverability",
+                  "registry text: check deliverability",
+                  "exact capability: sync campaigns",
+                  "registry text: sync campaigns",
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Aria",
+                "department": "Marketing",
+                "mission": "Turn the email system into revenue through messaging, subject lines, hooks, CTA strategy, campaign structure, and conversion optimization.",
+                "authority": "Operational",
+                "role": "Email Marketing & Conversion Architect",
+                "componentId": null,
+                "relativePath": null,
+                "score": 290,
+                "matchReasons": [
+                  "declared capability match: marketing.campaign.audit",
+                  "declared capability match: manage marketing",
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Alexis",
+                "department": "Sales",
+                "mission": "Turn government contractors into paying P2GC clients through segmentation, targeting, offer strategy, pricing positioning, messaging, and conversion strategy.",
+                "authority": "Operational",
+                "role": "GovCon Growth & Client Acquisition Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "instantly_worker_1782934465971",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through DATA\\browser\\worker_results\\instantly_worker_1782934465971.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_6F119DFF7AEFB15E",
+                "relativePath": "DATA\\browser\\worker_results\\instantly_worker_1782934465971.json",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "InstantlyExecutiveAdvisor",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through SERVICES\\InstantlyExecutiveAdvisor.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1398B10D43B2CE13",
+                "relativePath": "SERVICES\\InstantlyExecutiveAdvisor.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Sophia",
+                "department": "Sales",
+                "mission": "Turn intelligence into structured federal sales opportunities and deal flow for P2GC.",
+                "authority": "Operational",
+                "role": "Federal Sales Pipeline Strategist",
+                "componentId": null,
+                "relativePath": null,
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "MILES_WORKFORCE_REGISTRY"
+                ]
+              },
+              {
+                "employee": "Test_Build049_InstantlyCOOWorkerExecution",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build049_InstantlyCOOWorkerExecution.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_02D5206999030175",
+                "relativePath": "TESTS\\Test_Build049_InstantlyCOOWorkerExecution.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_Build049_InstantlyWorkerTrace",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_Build049_InstantlyWorkerTrace.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_9926A979EBF9A508",
+                "relativePath": "TESTS\\Test_Build049_InstantlyWorkerTrace.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "Test_InstantlyWorker",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through TESTS\\Test_InstantlyWorker.js.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_00C6AC68BA3F93B6",
+                "relativePath": "TESTS\\Test_InstantlyWorker.js",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              },
+              {
+                "employee": "worker_state",
+                "department": "Marketing",
+                "mission": "Execute enterprise capabilities through runtime\\workers\\INSTANTLY_COO_WORKER\\worker_state.json.",
+                "authority": "Operational",
+                "role": "Enterprise Worker Component",
+                "componentId": "CMP_1471C2FFE7E59BAF",
+                "relativePath": "runtime\\workers\\INSTANTLY_COO_WORKER\\worker_state.json",
+                "score": 50,
+                "matchReasons": [
+                  "marketing department"
+                ],
+                "registrySources": [
+                  "enterprise_component_registry"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "capability": "marketing.campaign.audit",
+        "assignedTo": "InstantlyExecutiveAdvisor",
+        "department": "Marketing",
+        "status": "QUEUED",
+        "dependsOn": [],
+        "taskType": "WORKFORCE_STEP",
+        "provider": "MarketingProvider",
+        "action": "refresh",
+        "expectedOutput": "Current Instantly campaign health, active/paused campaign counts, exceptions, and recommendations.",
+        "verification": "Verify MarketingProvider returned current campaign metrics and no unhandled provider failure."
+      }
+    ],
+    "providers": [
+      "MarketingProvider"
+    ],
+    "executionAuthority": "MILES_AUTONOMOUS_COO",
+    "approvalRequired": false,
+    "verificationChecklist": [
+      "Verify MarketingProvider returned current campaign metrics and no unhandled provider failure."
+    ],
+    "successCriteria": [
+      "MarketingProvider.refresh executes through ProviderRouterService."
+    ],
+    "rulesVersion": "1.0.0"
+  },
+  "tasks": [
+    {
+      "step": 1,
+      "capability": "marketing.campaign.audit",
+      "assignedTo": "InstantlyExecutiveAdvisor",
+      "department": "Marketing",
+      "status": "RUNNING",
+      "dependsOn": [],
+      "taskType": "WORKFORCE_STEP",
+      "provider": "MarketingProvider",
+      "action": "refresh",
+      "expectedOutput": "Current Instantly campaign health, active/paused campaign counts, exceptions, and recommendations.",
+      "verification": "Verify MarketingProvider returned current campaign metrics and no unhandled provider failure.",
+      "taskId": "TASK-1784062370312-76373",
+      "startedAt": null,
+      "completedAt": null,
+      "failedAt": null,
+      "updatedAt": "2026-07-17T18:07:50.994Z"
+    }
+  ],
+  "approvals": [],
+  "results": [],
+  "verification": {
+    "required": true,
+    "status": "IN_PROGRESS",
+    "checkedAt": "2026-07-17T18:07:52.030Z"
+  },
+  "lifecycle": {
+    "linkedTaskCount": 1,
+    "completedTaskCount": 0,
+    "failedTaskCount": 0,
+    "runningTaskCount": 1,
+    "queuedTaskCount": 0,
+    "lastReconciledAt": "2026-07-17T18:07:52.030Z"
+  },
+  "startedAt": "2026-07-17T18:07:52.030Z"
+}
