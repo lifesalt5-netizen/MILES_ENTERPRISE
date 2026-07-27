@@ -149,6 +149,13 @@ class GovernmentContactAuthorityService {
     const source = contactSource(contact);
     const authority = this.authority(title);
     const reasons = [];
+    const inferredOrGenerated =
+      truthy(contact.inferred) ||
+      truthy(contact.generated) ||
+      truthy(contact.patternGenerated) ||
+      truthy(contact.pattern_generated) ||
+      /\b(guess|guessed|generated|inferred|pattern)[ _-]?(email|match|inference)?\b/i
+        .test(source);
 
     if (!email.email || !email.localPart || !email.domain) {
       reasons.push("VALID_EMAIL_REQUIRED");
@@ -158,6 +165,9 @@ class GovernmentContactAuthorityService {
     }
     if (!source) {
       reasons.push("CONTACT_SOURCE_PROVENANCE_REQUIRED");
+    }
+    if (inferredOrGenerated) {
+      reasons.push("INFERRED_OR_FABRICATED_EMAIL_PROHIBITED");
     }
 
     const suffix = blockedSuffix(
@@ -204,6 +214,7 @@ class GovernmentContactAuthorityService {
       name: name || null,
       title: title || null,
       source: source || null,
+      exactSourcePublishedEmail: !inferredOrGenerated,
       verified: verified(contact),
       verifiedAt:
         text(
