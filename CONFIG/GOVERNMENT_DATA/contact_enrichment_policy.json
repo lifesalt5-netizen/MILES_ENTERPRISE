@@ -5,6 +5,9 @@
   "purpose": "Require a verified deliverable business email for every retained company and prioritize the person with authority to purchase P2GC government-contracting services.",
   "requirements": {
     "verifiedDeliverableEmail": true,
+    "exactSourcePublishedEmailRequired": true,
+    "generatedOrInferredEmailAllowed": false,
+    "emailPatternGuessingAllowed": false,
     "commercialDomainOnly": true,
     "sourceProvenanceRequired": true,
     "namedAuthorityPreferred": true,
@@ -123,6 +126,8 @@
     "mode": "STAGING_ONLY",
     "campaignUploadsRequireKevinApproval": true,
     "emailSendingRequiresKevinApproval": true,
-    "fabricatedContactsAllowed": false
+    "fabricatedContactsAllowed": false,
+    "fabricatedEmailsAllowed": false,
+    "inferredEmailPatternsAllowed": false
   }
 }
