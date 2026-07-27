@@ -83,6 +83,18 @@ function contentTypeAllowed(source, contentType) {
   );
 }
 
+function downloadTimeoutMs() {
+  const configured = Number(
+    process.env.GOVERNMENT_DATA_DOWNLOAD_TIMEOUT_MS
+  );
+
+  if (Number.isFinite(configured) && configured >= 30000) {
+    return configured;
+  }
+
+  return 1800000;
+}
+
 async function downloadSource(service, source) {
   const secret = ensureRequiredEnvironment(source);
   const destination = service.artifactPath(
@@ -112,7 +124,7 @@ async function downloadSource(service, source) {
     params: parameters,
     headers,
     responseType: "stream",
-    timeout: 180000,
+    timeout: downloadTimeoutMs(),
     maxRedirects: 5,
     httpsAgent: new https.Agent({
       family: 4,
@@ -236,6 +248,7 @@ if (require.main === module) {
 module.exports = {
   parseArgs,
   contentTypeAllowed,
+  downloadTimeoutMs,
   downloadSource,
   run
 };
