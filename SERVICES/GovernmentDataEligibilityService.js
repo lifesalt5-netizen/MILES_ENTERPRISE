@@ -187,6 +187,34 @@ function industryExclusion(candidate, naics, policy) {
   };
 }
 
+function manufacturingExclusion(candidate, naics, policy) {
+  const config = policy.manufacturingExclusion || {};
+  if (config.enabled === false) {
+    return {
+      blocked: false,
+      blockedNaics: [],
+      blockedPatterns: []
+    };
+  }
+
+  const prefixes = config.naicsPrefixes || [];
+  const blockedNaics = naics.filter(
+    code => prefixes.some(prefix => code.startsWith(prefix))
+  );
+
+  const text = companyAndIndustryText(candidate);
+  const blockedPatterns = (config.patterns || []).filter(
+    pattern => new RegExp(pattern, "i").test(text)
+  );
+
+  return {
+    blocked: blockedNaics.length > 0 || blockedPatterns.length > 0,
+    blockedNaics,
+    blockedPatterns,
+    evaluatedTextPresent: Boolean(text)
+  };
+}
+
 function scaleEvidence(candidate = {}) {
   const signals = [];
 
@@ -288,6 +316,15 @@ class GovernmentDataEligibilityService {
       reasons.push("EXCLUDED_INDUSTRY_OR_CONSUMER_MICROBUSINESS");
     }
 
+    const manufacturing = manufacturingExclusion(
+      candidate,
+      naics,
+      policy
+    );
+    if (manufacturing.blocked) {
+      reasons.push("EXCLUDED_MANUFACTURING_OR_CUSTOM_MANUFACTURING");
+    }
+
     const allowed = normalizeCrosswalk(crosswalk);
     const crosswalkLoaded =
       allowed.naics.size > 0 || allowed.sins.size > 0;
@@ -331,6 +368,7 @@ class GovernmentDataEligibilityService {
         matchedNaics,
         matchedSins,
         industry,
+        manufacturing,
         scale,
         crosswalkLoaded
       }
