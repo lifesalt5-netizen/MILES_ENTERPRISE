@@ -176,6 +176,50 @@ function emailEvidence(candidate = {}) {
   };
 }
 
+function orgDomainEvidence(candidate = {}, email = {}) {
+  const orgEmails = (email.verifiedEmails || []).filter(value => {
+    const domain = String(value).split("@").pop().toLowerCase();
+    return domain === "org" || domain.endsWith(".org");
+  });
+
+  const websiteValues = flattenValues([
+    candidate.website,
+    candidate.websites,
+    candidate.websiteUrl,
+    candidate.website_url,
+    candidate.domain,
+    candidate.websiteDomain,
+    candidate.website_domain
+  ]);
+
+  const orgWebsites = websiteValues.filter(value => {
+    let hostname = normalizeText(value).toLowerCase();
+    if (!hostname) return false;
+
+    try {
+      const url = new URL(
+        /^https?:\/\//i.test(hostname)
+          ? hostname
+          : `https://${hostname}`
+      );
+      hostname = url.hostname.toLowerCase();
+    } catch {
+      hostname = hostname
+        .replace(/^https?:\/\//i, "")
+        .split("/")[0]
+        .split(":")[0];
+    }
+
+    return hostname === "org" || hostname.endsWith(".org");
+  });
+
+  return {
+    blocked: orgEmails.length > 0 || orgWebsites.length > 0,
+    orgEmails,
+    orgWebsites
+  };
+}
+
 function registrationStatus(candidate = {}) {
   return normalizeUpper(
     candidate.registrationStatus ??
@@ -402,6 +446,11 @@ class GovernmentDataEligibilityService {
       reasons.push("VERIFIED_DELIVERABLE_EMAIL_REQUIRED");
     }
 
+    const orgDomain = orgDomainEvidence(candidate, email);
+    if (orgDomain.blocked) {
+      reasons.push("ORG_DOMAIN_NOT_ALLOWED");
+    }
+
     const exclusion = exclusionEvidence(candidate);
     if (exclusion.blocked) {
       reasons.push("EXCLUDED_SUSPENDED_OR_DEBARRED");
@@ -466,6 +515,7 @@ class GovernmentDataEligibilityService {
         registrationStatus: status || null,
         forProfit: profit,
         email,
+        orgDomain,
         exclusion,
         naics,
         sins,
