@@ -10,7 +10,8 @@ const GovernmentDataStagingService =
   require("../SERVICES/GovernmentDataStagingService");
 const {
   parseArgs,
-  contentTypeAllowed
+  contentTypeAllowed,
+  downloadTimeoutMs
 } = require("../SCRIPTS/RefreshGovernmentDataStaging");
 
 const policy = require(
@@ -172,6 +173,21 @@ try {
       contentTypeAllowed(source, "application/json"),
       false
     );
+  });
+
+  test("large downloads default to a 30-minute timeout", () => {
+    const previous =
+      process.env.GOVERNMENT_DATA_DOWNLOAD_TIMEOUT_MS;
+
+    delete process.env.GOVERNMENT_DATA_DOWNLOAD_TIMEOUT_MS;
+    assert.strictEqual(downloadTimeoutMs(), 1800000);
+
+    if (previous === undefined) {
+      delete process.env.GOVERNMENT_DATA_DOWNLOAD_TIMEOUT_MS;
+    } else {
+      process.env.GOVERNMENT_DATA_DOWNLOAD_TIMEOUT_MS =
+        previous;
+    }
   });
 
   console.log(
