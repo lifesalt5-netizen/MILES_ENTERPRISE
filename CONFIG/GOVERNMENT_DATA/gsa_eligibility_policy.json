@@ -1,9 +1,9 @@
 {
   "policyId": "P2GC_GSA_FEDERAL_MARKET_ELIGIBILITY",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "mode": "STRICT",
   "effectiveDate": "2026-07-27",
-  "purpose": "Prevent .org domains, records without verified deliverable email, non-government-buyable, nonprofit, consumer-only, non-target manufacturing, and unqualified microbusiness records from entering P2GC operational lead inventory.",
+  "purpose": "Prevent disallowed institutional and consumer-only domains, records without verified deliverable email, non-government-buyable, nonprofit, consumer-only, non-target manufacturing, and unqualified microbusiness records from entering P2GC operational lead inventory.",
   "requirements": {
     "activeSamRegistration": true,
     "forProfitConfirmed": true,
@@ -11,7 +11,7 @@
     "notExcludedSuspendedOrDebarred": true,
     "federalCommercialReadinessConfirmed": true,
     "verifiedDeliverableEmail": true,
-    "nonOrgEmailAndWebsiteDomain": true
+    "allowedCommercialDomainOnly": true
   },
   "hardExcludedNaicsPrefixes": [
     "523",
@@ -94,7 +94,7 @@
     "confirmedB2BOrB2GOperations"
   ],
   "ambiguousTermsRequiringReview": [],
-  "decisionRule": "Only ACTIVE, FOR-PROFIT, NON-EXCLUDED, NON-MANUFACTURING entities with no .org email or website domain, at least one VERIFIED DELIVERABLE EMAIL, an authoritative current GSA MAS NAICS or SIN match, and confirmed federal commercial readiness may enter operational inventory.",
+  "decisionRule": "Only ACTIVE, FOR-PROFIT, NON-EXCLUDED, NON-MANUFACTURING entities using an allowed commercial email and website domain, with at least one VERIFIED DELIVERABLE EMAIL, an authoritative current GSA MAS NAICS or SIN match, and confirmed federal commercial readiness may enter operational inventory.",
   "downstreamRestrictions": {
     "rejectedMayEnterCanonicalInventory": false,
     "reviewRequiredMayEnterCanonicalInventory": false,
@@ -106,9 +106,9 @@
     "recordsWithoutVerifiedEmailMayEnterCanonicalInventory": false,
     "recordsWithoutVerifiedEmailMayEnterSegments": false,
     "recordsWithoutVerifiedEmailMayEnterCampaigns": false,
-    "orgDomainRecordsMayEnterCanonicalInventory": false,
-    "orgDomainRecordsMayEnterSegments": false,
-    "orgDomainRecordsMayEnterCampaigns": false
+    "disallowedDomainRecordsMayEnterCanonicalInventory": false,
+    "disallowedDomainRecordsMayEnterSegments": false,
+    "disallowedDomainRecordsMayEnterCampaigns": false
   },
   "manufacturingExclusion": {
     "enabled": true,
@@ -122,7 +122,33 @@
     ],
     "scope": "Exclude manufacturing and custom manufacturing. The word custom by itself is not an exclusion."
   },
-  "disallowedTopLevelDomains": [
-    ".org"
+  "disallowedDomainSuffixes": [
+    ".org",
+    ".gov",
+    ".mil",
+    ".edu",
+    ".int",
+    ".ngo",
+    ".ong",
+    ".church",
+    ".charity",
+    ".foundation",
+    ".museum",
+    ".school",
+    ".college",
+    ".university",
+    ".academy",
+    ".hotel",
+    ".mortgage",
+    ".loans",
+    ".investments",
+    ".restaurant",
+    ".pizza",
+    ".cafe",
+    ".salon",
+    ".spa",
+    ".beauty",
+    ".hair",
+    ".pet"
   ]
 }
