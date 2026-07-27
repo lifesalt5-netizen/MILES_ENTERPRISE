@@ -176,11 +176,34 @@ function emailEvidence(candidate = {}) {
   };
 }
 
-function orgDomainEvidence(candidate = {}, email = {}) {
-  const orgEmails = (email.verifiedEmails || []).filter(value => {
-    const domain = String(value).split("@").pop().toLowerCase();
-    return domain === "org" || domain.endsWith(".org");
-  });
+function disallowedDomainEvidence(
+  candidate = {},
+  email = {},
+  policy = {}
+) {
+  const suffixes = (policy.disallowedDomainSuffixes || [])
+    .map(value => normalizeText(value).toLowerCase())
+    .filter(Boolean)
+    .map(value => value.startsWith(".") ? value : `.${value}`);
+
+  const matchSuffix = value => {
+    const domain = normalizeText(value)
+      .toLowerCase()
+      .replace(/^\.+/, "");
+
+    return suffixes.find(suffix =>
+      domain === suffix.slice(1) ||
+      domain.endsWith(suffix)
+    ) || null;
+  };
+
+  const blockedEmails = (email.verifiedEmails || [])
+    .map(address => {
+      const domain = String(address).split("@").pop();
+      const suffix = matchSuffix(domain);
+      return suffix ? { address, domain, suffix } : null;
+    })
+    .filter(Boolean);
 
   const websiteValues = flattenValues([
     candidate.website,
@@ -192,31 +215,37 @@ function orgDomainEvidence(candidate = {}, email = {}) {
     candidate.website_domain
   ]);
 
-  const orgWebsites = websiteValues.filter(value => {
-    let hostname = normalizeText(value).toLowerCase();
-    if (!hostname) return false;
+  const blockedWebsites = websiteValues
+    .map(value => {
+      let hostname = normalizeText(value).toLowerCase();
+      if (!hostname) return null;
 
-    try {
-      const url = new URL(
-        /^https?:\/\//i.test(hostname)
-          ? hostname
-          : `https://${hostname}`
-      );
-      hostname = url.hostname.toLowerCase();
-    } catch {
-      hostname = hostname
-        .replace(/^https?:\/\//i, "")
-        .split("/")[0]
-        .split(":")[0];
-    }
+      try {
+        const url = new URL(
+          /^https?:\/\//i.test(hostname)
+            ? hostname
+            : `https://${hostname}`
+        );
+        hostname = url.hostname.toLowerCase();
+      } catch {
+        hostname = hostname
+          .replace(/^https?:\/\//i, "")
+          .split("/")[0]
+          .split(":")[0];
+      }
 
-    return hostname === "org" || hostname.endsWith(".org");
-  });
+      const suffix = matchSuffix(hostname);
+      return suffix ? { website: value, hostname, suffix } : null;
+    })
+    .filter(Boolean);
 
   return {
-    blocked: orgEmails.length > 0 || orgWebsites.length > 0,
-    orgEmails,
-    orgWebsites
+    blocked:
+      blockedEmails.length > 0 ||
+      blockedWebsites.length > 0,
+    blockedEmails,
+    blockedWebsites,
+    disallowedSuffixes: suffixes
   };
 }
 
@@ -446,9 +475,9 @@ class GovernmentDataEligibilityService {
       reasons.push("VERIFIED_DELIVERABLE_EMAIL_REQUIRED");
     }
 
-    const orgDomain = orgDomainEvidence(candidate, email);
-    if (orgDomain.blocked) {
-      reasons.push("ORG_DOMAIN_NOT_ALLOWED");
+    const disallowedDomain = disallowedDomainEvidence(candidate, email, policy);
+    if (disallowedDomain.blocked) {
+      reasons.push("DISALLOWED_DOMAIN_SUFFIX");
     }
 
     const exclusion = exclusionEvidence(candidate);
@@ -515,7 +544,7 @@ class GovernmentDataEligibilityService {
         registrationStatus: status || null,
         forProfit: profit,
         email,
-        orgDomain,
+        disallowedDomain,
         exclusion,
         naics,
         sins,
