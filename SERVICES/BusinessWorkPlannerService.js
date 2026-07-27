@@ -22,32 +22,46 @@ class BusinessWorkPlannerService {
             "";
 
         const workPackages = [];
+        const workforceRoute = {
+            provider: "MarketingProvider",
+            connector: "WORKFORCE",
+            system: "MarketingProvider",
+            department: "Revenue Operations",
+            assignedTo: "InstantlyExecutiveAdvisor",
+            requiresKevin: false
+        };
 
         //
         // Always refresh business state first
         //
 
         workPackages.push({
+            ...workforceRoute,
             priority: 1,
             taskType: "REFRESH_CAMPAIGN_INVENTORY",
-            provider: "Instantly",
-            action: "LIST_CAMPAIGNS",
+            capability: "marketing.campaign.audit",
+            action: "campaign_audit",
+            governanceIntent: "AUDIT",
             description: "Refresh live campaign inventory."
         });
 
         workPackages.push({
+            ...workforceRoute,
             priority: 2,
             taskType: "REFRESH_SENDING_ACCOUNT_INVENTORY",
-            provider: "Instantly",
-            action: "LIST_SENDING_ACCOUNTS",
+            capability: "revenue.outbound.capacity.audit",
+            action: "capacity_audit",
+            governanceIntent: "AUDIT",
             description: "Refresh mailbox inventory."
         });
 
         workPackages.push({
+            ...workforceRoute,
             priority: 3,
             taskType: "REFRESH_SEGMENT_INVENTORY",
-            provider: "Revenue",
-            action: "LOAD_SEGMENTS",
+            capability: "revenue.outbound.segment.audit",
+            action: "segment_audit",
+            governanceIntent: "AUDIT",
             description: "Load lead segment inventory."
         });
 
@@ -56,34 +70,42 @@ class BusinessWorkPlannerService {
         //
 
         workPackages.push({
+            ...workforceRoute,
             priority: 4,
             taskType: "COMPARE_SEGMENTS_TO_CAMPAIGNS",
-            provider: "Revenue",
-            action: "COMPARE",
+            capability: "revenue.outbound.plan",
+            action: "plan_marketing_actions",
+            governanceIntent: "PLAN",
             description: "Determine campaign coverage."
         });
 
         workPackages.push({
+            ...workforceRoute,
             priority: 5,
             taskType: "IDENTIFY_MISSING_CAMPAIGNS",
-            provider: "Revenue",
-            action: "DISCOVER_MISSING_CAMPAIGNS",
+            capability: "revenue.outbound.plan",
+            action: "plan_marketing_actions",
+            governanceIntent: "PLAN",
             description: "Identify segments needing campaigns."
         });
 
         workPackages.push({
+            ...workforceRoute,
             priority: 6,
             taskType: "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
-            provider: "Instantly",
-            action: "CHECK_CAMPAIGN_INBOXES",
+            capability: "revenue.outbound.capacity.audit",
+            action: "capacity_audit",
+            governanceIntent: "AUDIT",
             description: "Locate campaigns without sending accounts."
         });
 
         workPackages.push({
+            ...workforceRoute,
             priority: 7,
             taskType: "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
-            provider: "Instantly",
-            action: "CHECK_CAMPAIGN_LEADS",
+            capability: "revenue.outbound.segment.audit",
+            action: "segment_audit",
+            governanceIntent: "AUDIT",
             description: "Locate campaigns with no leads."
         });
 
@@ -92,10 +114,12 @@ class BusinessWorkPlannerService {
         //
 
         workPackages.push({
+            ...workforceRoute,
             priority: 8,
             taskType: "BUILD_EXECUTION_QUEUE",
-            provider: "MILES",
-            action: "QUEUE_WORK",
+            capability: "revenue.outbound.plan",
+            action: "plan_marketing_actions",
+            governanceIntent: "PLAN",
             description: "Create prioritized execution queue."
         });
 
