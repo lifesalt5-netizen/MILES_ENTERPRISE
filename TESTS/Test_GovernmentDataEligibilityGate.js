@@ -10,6 +10,7 @@ const crosswalk = {
     "541511",
     "541611",
     "541715",
+    "333999",
     "561210",
     "611430"
   ],
@@ -117,6 +118,24 @@ const tests = [
     }),
     expected: "REJECTED",
     reason: "EXCLUDED_INDUSTRY_OR_CONSUMER_MICROBUSINESS"
+  },
+  {
+    name: "manufacturing-sector NAICS rejected even with GSA match",
+    candidate: base({
+      company: "Precision Components LLC",
+      primaryNaics: "333999"
+    }),
+    expected: "REJECTED",
+    reason: "EXCLUDED_MANUFACTURING_OR_CUSTOM_MANUFACTURING"
+  },
+  {
+    name: "custom manufacturing description rejected",
+    candidate: base({
+      company: "Custom Manufacturing Solutions LLC",
+      primaryNaics: "541511"
+    }),
+    expected: "REJECTED",
+    reason: "EXCLUDED_MANUFACTURING_OR_CUSTOM_MANUFACTURING"
   },
   {
     name: "no federal scale evidence requires review",
