@@ -1,0 +1,128 @@
+{
+  "policyId": "P2GC_GOVERNMENT_CONTACT_AUTHORITY",
+  "version": "1.0.0",
+  "effectiveDate": "2026-07-27",
+  "purpose": "Require a verified deliverable business email for every retained company and prioritize the person with authority to purchase P2GC government-contracting services.",
+  "requirements": {
+    "verifiedDeliverableEmail": true,
+    "commercialDomainOnly": true,
+    "sourceProvenanceRequired": true,
+    "namedAuthorityPreferred": true,
+    "genericMailboxFallbackAllowed": true,
+    "genericMailboxMayOutrankNamedAuthority": false,
+    "verificationDateRequiredForStaging": false,
+    "verificationDateRequiredBeforeCampaignUpload": true,
+    "maximumVerificationAgeDaysBeforeCampaignUpload": 90
+  },
+  "authorityTiers": [
+    {
+      "tier": 1,
+      "score": 100,
+      "label": "OWNER_EXECUTIVE_BUYER",
+      "titlePatterns": [
+        "\\bowner\\b",
+        "\\bchief executive officer\\b",
+        "\\bceo\\b",
+        "\\bfounder\\b",
+        "\\bco[ -]?founder\\b",
+        "\\bpresident\\b",
+        "\\bmanaging member\\b",
+        "\\bmanaging partner\\b",
+        "\\bprincipal\\b"
+      ]
+    },
+    {
+      "tier": 2,
+      "score": 90,
+      "label": "C_SUITE_BUYER",
+      "titlePatterns": [
+        "\\bchief operating officer\\b",
+        "\\bcoo\\b",
+        "\\bchief growth officer\\b",
+        "\\bcgo\\b",
+        "\\bchief strategy officer\\b",
+        "\\bchief revenue officer\\b",
+        "\\bcro\\b"
+      ]
+    },
+    {
+      "tier": 3,
+      "score": 80,
+      "label": "SENIOR_GROWTH_GOVCON_BUYER",
+      "titlePatterns": [
+        "\\bexecutive vice president\\b",
+        "\\bevp\\b",
+        "\\bsenior vice president\\b",
+        "\\bsvp\\b",
+        "\\bvice president\\b.*\\b(federal|government|govcon|growth|business development|contracts|capture)\\b",
+        "\\bvp\\b.*\\b(federal|government|govcon|growth|business development|contracts|capture)\\b"
+      ]
+    },
+    {
+      "tier": 4,
+      "score": 70,
+      "label": "FUNCTIONAL_AUTHORITY",
+      "titlePatterns": [
+        "\\bdirector\\b.*\\b(federal|government|govcon|growth|business development|contracts|capture)\\b",
+        "\\bhead of\\b.*\\b(federal|government|govcon|growth|business development|contracts|capture)\\b"
+      ]
+    },
+    {
+      "tier": 5,
+      "score": 60,
+      "label": "FUNCTIONAL_MANAGER",
+      "titlePatterns": [
+        "\\bcontracts? manager\\b",
+        "\\bbusiness development manager\\b",
+        "\\bcapture manager\\b",
+        "\\bfederal sales manager\\b"
+      ]
+    }
+  ],
+  "genericMailboxLocalParts": [
+    "info",
+    "contact",
+    "sales",
+    "businessdevelopment",
+    "business-development",
+    "bd",
+    "contracts",
+    "proposals",
+    "office",
+    "admin"
+  ],
+  "blockedMailboxLocalParts": [
+    "noreply",
+    "no-reply",
+    "donotreply",
+    "do-not-reply",
+    "support",
+    "help",
+    "billing",
+    "accounting",
+    "careers",
+    "jobs",
+    "recruiting",
+    "privacy",
+    "abuse",
+    "webmaster",
+    "postmaster"
+  ],
+  "nonBuyerTitlePatterns": [
+    "\\bintern\\b",
+    "\\bstudent\\b",
+    "\\brecruit(er|ing)?\\b",
+    "\\bhuman resources?\\b",
+    "\\bhr manager\\b",
+    "\\bhelp desk\\b",
+    "\\btechnical support\\b",
+    "\\bmarketing coordinator\\b",
+    "\\badministrative assistant\\b"
+  ],
+  "safety": {
+    "mode": "STAGING_ONLY",
+    "campaignUploadsRequireKevinApproval": true,
+    "emailSendingRequiresKevinApproval": true,
+    "fabricatedContactsAllowed": false
+  }
+}
