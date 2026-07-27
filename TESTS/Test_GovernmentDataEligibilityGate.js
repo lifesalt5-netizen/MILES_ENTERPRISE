@@ -148,6 +148,22 @@ const tests = [
     expected: "ELIGIBLE"
   },
   {
+    name: ".org verified email rejected",
+    candidate: base({
+      verifiedEmail: "contact@example.org"
+    }),
+    expected: "REJECTED",
+    reason: "ORG_DOMAIN_NOT_ALLOWED"
+  },
+  {
+    name: ".org company website rejected",
+    candidate: base({
+      website: "https://example.org"
+    }),
+    expected: "REJECTED",
+    reason: "ORG_DOMAIN_NOT_ALLOWED"
+  },
+  {
     name: "manufacturing-sector NAICS rejected even with GSA match",
     candidate: base({
       company: "Precision Components LLC",
