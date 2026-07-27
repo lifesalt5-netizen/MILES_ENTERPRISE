@@ -1,9 +1,9 @@
 {
   "policyId": "P2GC_GSA_FEDERAL_MARKET_ELIGIBILITY",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "mode": "STRICT",
   "effectiveDate": "2026-07-27",
-  "purpose": "Prevent non-government-buyable, nonprofit, consumer-only, and unqualified microbusiness records from entering P2GC operational lead inventory.",
+  "purpose": "Prevent non-government-buyable, nonprofit, consumer-only, non-target manufacturing, and unqualified microbusiness records from entering P2GC operational lead inventory.",
   "requirements": {
     "activeSamRegistration": true,
     "forProfitConfirmed": true,
@@ -91,10 +91,8 @@
     "commercialScaleEvidence",
     "confirmedB2BOrB2GOperations"
   ],
-  "ambiguousTermsRequiringReview": [
-    "custom"
-  ],
-  "decisionRule": "Only ACTIVE, FOR-PROFIT, NON-EXCLUDED entities with an authoritative current GSA MAS NAICS or SIN match and confirmed federal commercial readiness may enter operational inventory.",
+  "ambiguousTermsRequiringReview": [],
+  "decisionRule": "Only ACTIVE, FOR-PROFIT, NON-EXCLUDED, NON-MANUFACTURING entities with an authoritative current GSA MAS NAICS or SIN match and confirmed federal commercial readiness may enter operational inventory.",
   "downstreamRestrictions": {
     "rejectedMayEnterCanonicalInventory": false,
     "reviewRequiredMayEnterCanonicalInventory": false,
@@ -103,5 +101,17 @@
     "rejectedMayEnterCampaigns": false,
     "reviewRequiredMayEnterCampaigns": false,
     "campaignUploadsRequireKevinApproval": true
+  },
+  "manufacturingExclusion": {
+    "enabled": true,
+    "naicsPrefixes": [
+      "31",
+      "32",
+      "33"
+    ],
+    "patterns": [
+      "\\b(custom[ -]+)?manufactur(?:e|er|ing)\\b"
+    ],
+    "scope": "Exclude manufacturing and custom manufacturing. The word custom by itself is not an exclusion."
   }
 }
