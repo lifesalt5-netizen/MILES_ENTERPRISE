@@ -147,6 +147,21 @@ test("missing provenance is rejected", () => {
   );
 });
 
+test("pattern-generated email is prohibited", () => {
+  const result = service.evaluate(
+    contact({
+      email: "alex@example.com",
+      source: "generated_email_pattern",
+      patternGenerated: true
+    })
+  );
+  assert(
+    result.reasons.includes(
+      "INFERRED_OR_FABRICATED_EMAIL_PROHIBITED"
+    )
+  );
+});
+
 test("disallowed institutional domain is rejected", () => {
   const result = service.evaluate(
     contact({ email: "ceo@example.org" })
