@@ -78,6 +78,104 @@ function collectSins(candidate = {}) {
   return Array.from(sins);
 }
 
+function validEmail(value) {
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(
+    normalizeText(value)
+  );
+}
+
+function emailEvidence(candidate = {}) {
+  const formatted = new Set();
+  const verified = new Set();
+
+  const addFormatted = value => {
+    const normalized = normalizeText(value).toLowerCase();
+    if (validEmail(normalized)) formatted.add(normalized);
+  };
+
+  const addVerified = value => {
+    const normalized = normalizeText(value).toLowerCase();
+    if (!validEmail(normalized)) return;
+    formatted.add(normalized);
+    verified.add(normalized);
+  };
+
+  flattenValues([
+    candidate.email,
+    candidate.emails,
+    candidate.emailAddress,
+    candidate.email_address,
+    candidate.contactEmail,
+    candidate.contact_email,
+    candidate.pocEmail,
+    candidate.poc_email
+  ]).forEach(addFormatted);
+
+  flattenValues([
+    candidate.verifiedEmail,
+    candidate.verified_email,
+    candidate.verifiedEmails,
+    candidate.verified_emails,
+    candidate.deliverableEmail,
+    candidate.deliverable_email
+  ]).forEach(addVerified);
+
+  const globalStatus = normalizeUpper(
+    candidate.emailVerificationStatus ??
+    candidate.email_verification_status ??
+    candidate.verificationStatus ??
+    candidate.verification_status
+  );
+
+  const globallyVerified =
+    truthy(candidate.emailVerified) ||
+    truthy(candidate.email_verified) ||
+    /^(VERIFIED|DELIVERABLE|VALID|OK|SAFE)$/.test(globalStatus);
+
+  if (globallyVerified) {
+    Array.from(formatted).forEach(addVerified);
+  }
+
+  const records = [
+    ...(Array.isArray(candidate.emails) ? candidate.emails : []),
+    ...(Array.isArray(candidate.emailRecords)
+      ? candidate.emailRecords
+      : [])
+  ];
+
+  for (const record of records) {
+    if (!record || typeof record !== "object") continue;
+
+    const address =
+      record.email ??
+      record.address ??
+      record.value;
+
+    const status = normalizeUpper(
+      record.verificationStatus ??
+      record.verification_status ??
+      record.status
+    );
+
+    addFormatted(address);
+
+    if (
+      truthy(record.verified) ||
+      truthy(record.deliverable) ||
+      /^(VERIFIED|DELIVERABLE|VALID|OK|SAFE)$/.test(status)
+    ) {
+      addVerified(address);
+    }
+  }
+
+  return {
+    confirmed: verified.size > 0,
+    formattedEmails: Array.from(formatted),
+    verifiedEmails: Array.from(verified),
+    verificationStatus: globalStatus || null
+  };
+}
+
 function registrationStatus(candidate = {}) {
   return normalizeUpper(
     candidate.registrationStatus ??
@@ -299,6 +397,11 @@ class GovernmentDataEligibilityService {
       reviewReasons.push("FOR_PROFIT_NOT_CONFIRMED");
     }
 
+    const email = emailEvidence(candidate);
+    if (!email.confirmed) {
+      reasons.push("VERIFIED_DELIVERABLE_EMAIL_REQUIRED");
+    }
+
     const exclusion = exclusionEvidence(candidate);
     if (exclusion.blocked) {
       reasons.push("EXCLUDED_SUSPENDED_OR_DEBARRED");
@@ -362,6 +465,7 @@ class GovernmentDataEligibilityService {
       evidence: {
         registrationStatus: status || null,
         forProfit: profit,
+        email,
         exclusion,
         naics,
         sins,
