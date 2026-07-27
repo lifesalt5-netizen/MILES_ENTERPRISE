@@ -25,6 +25,7 @@ function base(overrides = {}) {
     company: "Federal Systems LLC",
     registrationStatus: "Active",
     forProfit: true,
+    verifiedEmail: "qualified@example.com",
     primaryNaics: "541511",
     awardCount: 1,
     federalRevenue: 100000,
@@ -118,6 +119,33 @@ const tests = [
     }),
     expected: "REJECTED",
     reason: "EXCLUDED_INDUSTRY_OR_CONSUMER_MICROBUSINESS"
+  },
+  {
+    name: "missing verified email rejected",
+    candidate: base({
+      verifiedEmail: null
+    }),
+    expected: "REJECTED",
+    reason: "VERIFIED_DELIVERABLE_EMAIL_REQUIRED"
+  },
+  {
+    name: "formatted but unverified email rejected",
+    candidate: base({
+      verifiedEmail: null,
+      email: "unverified@example.com",
+      emailVerified: false
+    }),
+    expected: "REJECTED",
+    reason: "VERIFIED_DELIVERABLE_EMAIL_REQUIRED"
+  },
+  {
+    name: "explicitly verified general email accepted",
+    candidate: base({
+      verifiedEmail: null,
+      email: "verified@example.com",
+      verificationStatus: "VERIFIED"
+    }),
+    expected: "ELIGIBLE"
   },
   {
     name: "manufacturing-sector NAICS rejected even with GSA match",
