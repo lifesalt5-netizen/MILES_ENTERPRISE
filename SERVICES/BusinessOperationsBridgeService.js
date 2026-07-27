@@ -424,6 +424,11 @@ class BusinessOperationsBridgeService {
       planned.intent ||
       null;
 
+    const governanceIntent =
+      operation.governanceIntent ||
+      planned.governanceIntent ||
+      null;
+
     const provider =
       operation.provider ||
       planned.provider ||
@@ -459,6 +464,7 @@ class BusinessOperationsBridgeService {
       capability,
       workflow,
       intent,
+      governanceIntent,
 
       objective: operation.objective || planned.objective || command,
       command,
@@ -476,13 +482,19 @@ class BusinessOperationsBridgeService {
         capability,
         workflow,
         intent,
+        governanceIntent,
         objective: planned.objective || operation.objective || command,
         originalCommand: planned.originalCommand || command
       }
     };
 
+    const executionType =
+      String(connector || "").toUpperCase() === "WORKFORCE"
+        ? "WORKFORCE_STEP"
+        : action;
+
     return {
-      type: action,
+      type: executionType,
       payload,
       priority: this.normalizePriority(operation.priority)
     };
@@ -633,4 +645,3 @@ class BusinessOperationsBridgeService {
 }
 
 module.exports = BusinessOperationsBridgeService;
-
