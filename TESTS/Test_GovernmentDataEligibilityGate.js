@@ -153,7 +153,7 @@ const tests = [
       verifiedEmail: "contact@example.org"
     }),
     expected: "REJECTED",
-    reason: "ORG_DOMAIN_NOT_ALLOWED"
+    reason: "DISALLOWED_DOMAIN_SUFFIX"
   },
   {
     name: ".org company website rejected",
@@ -161,7 +161,23 @@ const tests = [
       website: "https://example.org"
     }),
     expected: "REJECTED",
-    reason: "ORG_DOMAIN_NOT_ALLOWED"
+    reason: "DISALLOWED_DOMAIN_SUFFIX"
+  },
+  {
+    name: ".gov verified email rejected",
+    candidate: base({
+      verifiedEmail: "contact@agency.gov"
+    }),
+    expected: "REJECTED",
+    reason: "DISALLOWED_DOMAIN_SUFFIX"
+  },
+  {
+    name: ".edu company website rejected",
+    candidate: base({
+      website: "https://example.edu"
+    }),
+    expected: "REJECTED",
+    reason: "DISALLOWED_DOMAIN_SUFFIX"
   },
   {
     name: "manufacturing-sector NAICS rejected even with GSA match",
