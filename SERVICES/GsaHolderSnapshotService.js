@@ -448,10 +448,17 @@ class GsaHolderSnapshotService {
         index
       ])
     );
-    for (const required of ["Vendor", "Cont#", "SAM UEI"]) {
-      if (!indexes.has(normalizeHeader(required))) {
+    const requiredHeaders = [
+      ["Vendor", ["Vendor"]],
+      ["Contract number", ["Cont#", "Contract #", "Contract Number"]],
+      ["SAM UEI", ["SAM UEI", "UEI"]]
+    ];
+    for (const [label, alternatives] of requiredHeaders) {
+      if (!alternatives.some(header =>
+        indexes.has(normalizeHeader(header))
+      )) {
         throw new Error(
-          `GSA eLibrary CSV is missing ${required}.`
+          `GSA eLibrary CSV is missing ${label}.`
         );
       }
     }
@@ -461,7 +468,7 @@ class GsaHolderSnapshotService {
       const contractNumber = valueByHeader(
         fields,
         indexes,
-        ["Cont#", "Contract Number"]
+        ["Cont#", "Contract #", "Contract Number"]
       );
       if (!contractNumber) continue;
       const key = normalizeText(contractNumber);
@@ -516,6 +523,7 @@ class GsaHolderSnapshotService {
             indexes,
             [
               "Ultimate Cont End Date",
+              "Ultimate Contract End Date",
               "Ultimate End Date"
             ]
           ) || null,
