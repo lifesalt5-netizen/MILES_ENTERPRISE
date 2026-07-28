@@ -78,7 +78,22 @@ function monthBounds(value = new Date()) {
 }
 
 function dateOnly(value) {
-  const date = new Date(value);
+  const text = String(value || "").trim();
+  const us = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/);
+  const date = us
+    ? new Date(Date.UTC(
+        Number(us[3]),
+        Number(us[1]) - 1,
+        Number(us[2])
+      ))
+    : iso
+      ? new Date(Date.UTC(
+          Number(iso[1]),
+          Number(iso[2]) - 1,
+          Number(iso[3])
+        ))
+      : new Date(value);
   if (Number.isNaN(date.getTime())) return null;
   return new Date(Date.UTC(
     date.getUTCFullYear(),
@@ -92,9 +107,14 @@ function formatIsoDate(value) {
 }
 
 function addUtcYears(value, years) {
-  const result = new Date(value.getTime());
-  result.setUTCFullYear(result.getUTCFullYear() + years);
-  return result;
+  const targetYear = value.getUTCFullYear() + years;
+  const targetMonth = value.getUTCMonth();
+  const targetDay = Math.min(
+    value.getUTCDate(),
+    new Date(Date.UTC(targetYear, targetMonth + 1, 0))
+      .getUTCDate()
+  );
+  return new Date(Date.UTC(targetYear, targetMonth, targetDay));
 }
 
 function dayBefore(value) {
@@ -166,6 +186,54 @@ function gsaContractTerm(firstAwardDate, asOfDate = new Date()) {
     termStartDate: formatIsoDate(termStart),
     termEndDate: formatIsoDate(termEnd),
     totalPotentialYears: 20
+  };
+}
+
+function gsaTermFromELibrary(holder, asOfDate = new Date()) {
+  const currentEnd = dateOnly(
+    holder?.currentOptionPeriodEndDate
+  );
+  const ultimateEnd = dateOnly(
+    holder?.ultimateContractEndDate
+  );
+  if (!currentEnd || !ultimateEnd) {
+    return gsaContractTerm(null, asOfDate);
+  }
+  const derivedStart = addUtcYears(ultimateEnd, -20);
+  const term = gsaContractTerm(derivedStart, asOfDate);
+  if (term.evidenceStatus !== "CONFIRMED") {
+    return {
+      ...term,
+      evidenceStatus:
+        "ELIBRARY_TERM_DATE_REVIEW_REQUIRED",
+      firstGsaAwardDateDerived:
+        formatIsoDate(derivedStart)
+    };
+  }
+  const expectedEnd = dateOnly(term.termEndDate);
+  const endDifferenceDays = Math.abs(
+    (currentEnd - expectedEnd) / 86400000
+  );
+  if (endDifferenceDays > 2) {
+    return {
+      ...term,
+      evidenceStatus:
+        "ELIBRARY_TERM_DATE_REVIEW_REQUIRED",
+      firstGsaAwardDateDerived:
+        formatIsoDate(derivedStart),
+      currentOptionEndDifferenceDays: endDifferenceDays
+    };
+  }
+  return {
+    ...term,
+    evidenceStatus:
+      "DERIVED_FROM_GSA_ELIBRARY_TERM_DATES",
+    firstGsaAwardDateDerived:
+      formatIsoDate(derivedStart),
+    currentOptionPeriodEndDate:
+      formatIsoDate(currentEnd),
+    ultimateContractEndDate:
+      formatIsoDate(ultimateEnd)
   };
 }
 
@@ -605,12 +673,27 @@ class GsaHolderSnapshotService {
           normalizeText(holder.contractNumber) ||
           normalizeText(holder.uei);
         const newHolder = newHolderByKey.get(key);
+        const eLibraryTerm = gsaTermFromELibrary(
+          holder,
+          `${resolved.cycle}-28`
+        );
+        const contractTerm =
+          newHolder?.contractTerm || eLibraryTerm;
+        const firstGsaAwardDate =
+          newHolder?.firstGsaAwardDate ||
+          eLibraryTerm.firstGsaAwardDateDerived ||
+          null;
         await writeJsonLine(holdersWriter, {
           ...holder,
-          firstGsaAwardDate:
-            newHolder?.firstGsaAwardDate || null,
-          contractTerm:
-            newHolder?.contractTerm || gsaContractTerm(null),
+          firstGsaAwardDate,
+          firstGsaAwardDateIsDerived: !newHolder &&
+            Boolean(eLibraryTerm.firstGsaAwardDateDerived),
+          firstGsaAwardDateAuthority: newHolder
+            ? "SAM_CONTRACT_AWARDS_BASE_FSS"
+            : eLibraryTerm.firstGsaAwardDateDerived
+              ? "GSA_ELIBRARY_ULTIMATE_END_DATE_20_YEAR_MODEL"
+              : null,
+          contractTerm,
           snapshotCycle: resolved.cycle,
           retrievedAt: isoNow()
         });
@@ -654,8 +737,16 @@ class GsaHolderSnapshotService {
           monthlyBaseFssAwardsReported:
             monthly.totalRecords,
           newCurrentMasHolders: newHolderByKey.size,
-          currentHoldersAwaitingFirstAwardDate:
-            parsed.contracts.length - newHolderByKey.size
+          currentHoldersWithSamConfirmedFirstAwardDate:
+            newHolderByKey.size,
+          currentHoldersWithELibraryDerivedTerm:
+            parsed.contracts.filter(holder =>
+              gsaTermFromELibrary(
+                holder,
+                `${resolved.cycle}-28`
+              ).evidenceStatus ===
+              "DERIVED_FROM_GSA_ELIBRARY_TERM_DATES"
+            ).length
         },
         rules: {
           currentHolderConfirmedByELibrary: true,
@@ -665,13 +756,16 @@ class GsaHolderSnapshotService {
           contractTermYears: 5,
           contractTermCount: 4,
           maximumContractYears: 20,
-          termEvidenceFailsClosed: true
+          termEvidenceFailsClosed: true,
+          eLibraryTermDerivationUsesUltimateEndMinusYears: 20,
+          samBaseAwardOverridesDerivedDate: true
         },
         artifacts,
         nextGate: {
           matchToFreshlyVerifiedMaster: true,
           unmatchedNewHoldersToEmailEnrichment: true,
           ssqSalesRequiredForNoSalesTenureBands: true,
+          historicalAwardMergeShouldConfirmDerivedStartDates: true,
           operationalAuthorization: false
         },
         safety: this.safety(true)
@@ -706,6 +800,8 @@ class GsaHolderSnapshotService {
 GsaHolderSnapshotService.monthBounds = monthBounds;
 GsaHolderSnapshotService.parseCsvLine = parseCsvLine;
 GsaHolderSnapshotService.gsaContractTerm = gsaContractTerm;
+GsaHolderSnapshotService.gsaTermFromELibrary =
+  gsaTermFromELibrary;
 GsaHolderSnapshotService.ELIBRARY_MAS_CSV = ELIBRARY_MAS_CSV;
 
 module.exports = GsaHolderSnapshotService;
