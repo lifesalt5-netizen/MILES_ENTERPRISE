@@ -233,6 +233,27 @@ async function run() {
     master.segmentation.primarySegment,
     "New GSA Holders This Month"
   );
+  const termTwoTags = Service.segmentTags({
+    segmentValues: ["GSA No Sales"],
+    legalBusinessName: "Term Two LLC",
+    certificationValues: [],
+    gsaStartValues: ["2020-07-10"],
+    gsaContractValues: ["47QAAA20D0001"],
+    revenueValues: ["0"],
+    expirationValues: []
+  }, new Date("2026-07-28T00:00:00Z"));
+  assert(
+    termTwoTags.includes(
+      "GSA No Sales - Term 2 - Years 6 to 10"
+    )
+  );
+  assert.strictEqual(
+    Service.gsaContractTerm(
+      "2010-07-10",
+      "2026-07-28"
+    ).termNumber,
+    4
+  );
   assert.strictEqual(master.segmentation.priorityRank, 1);
   assert.strictEqual(
     result.segmentation.samRegistrationDateUsedAsGsaAwardDate,
@@ -278,7 +299,7 @@ async function run() {
     }
   );
 
-  console.log("LEGACY_SEGMENT_RECONCILIATION_TEST_PASS 18/18");
+  console.log("LEGACY_SEGMENT_RECONCILIATION_TEST_PASS 20/20");
 }
 
 run().catch(error => {
