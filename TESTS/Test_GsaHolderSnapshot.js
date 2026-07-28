@@ -82,6 +82,24 @@ async function run() {
       "07/09/2046",
       "UEI-ALPHA",
       "s"
+    ].join(","),
+    [
+      "Professional Services",
+      "Business",
+      "MAS",
+      "541611",
+      "Beta LLC",
+      "47QAAA20D0002",
+      "",
+      "Orlando",
+      "FL",
+      "555-0200",
+      "owner@beta.com",
+      "https://beta.com",
+      "07/09/2030",
+      "07/09/2040",
+      "UEI-BETA",
+      "s"
     ].join(",")
   ].join("\n");
   const awardPayload = {
@@ -134,8 +152,8 @@ async function run() {
     runId: "TEST"
   });
   assert.strictEqual(result.status, "COMPLETED");
-  assert.strictEqual(result.counts.eLibraryRows, 2);
-  assert.strictEqual(result.counts.currentMasContracts, 1);
+  assert.strictEqual(result.counts.eLibraryRows, 3);
+  assert.strictEqual(result.counts.currentMasContracts, 2);
   assert.strictEqual(result.counts.newCurrentMasHolders, 1);
   assert.strictEqual(
     result.rules.samRegistrationDateUsedAsAwardDate,
@@ -196,6 +214,21 @@ async function run() {
     ).evidenceStatus,
     "BEYOND_20_YEAR_MAXIMUM_REVIEW_REQUIRED"
   );
+  const holdersPath = result.artifacts.find(item =>
+    item.filePath.endsWith("gsa_current_mas_holders.jsonl")
+  ).filePath;
+  const holders = fs.readFileSync(holdersPath, "utf8")
+    .trim()
+    .split(/\r?\n/)
+    .map(JSON.parse);
+  const beta = holders.find(item => item.uei === "UEI-BETA");
+  assert.strictEqual(beta.contractTerm.termNumber, 2);
+  assert.strictEqual(
+    beta.contractTerm.evidenceStatus,
+    "DERIVED_FROM_GSA_ELIBRARY_TERM_DATES"
+  );
+  assert.strictEqual(beta.firstGsaAwardDate, "2020-07-09");
+  assert.strictEqual(beta.firstGsaAwardDateIsDerived, true);
   assert(!fs.readFileSync(result.manifestPath, "utf8")
     .includes("SECRET"));
 
@@ -212,7 +245,7 @@ async function run() {
       help: false
     }
   );
-  console.log("GSA_HOLDER_SNAPSHOT_TEST_PASS 21/21");
+  console.log("GSA_HOLDER_SNAPSHOT_TEST_PASS 25/25");
 }
 
 run().catch(error => {
