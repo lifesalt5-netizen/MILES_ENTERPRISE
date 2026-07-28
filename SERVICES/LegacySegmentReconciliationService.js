@@ -89,11 +89,14 @@ const BLOCKED_ENTITY_WORDS = [
 ];
 const SEGMENT_PRECEDENCE = [
   "New GSA Holders This Month",
-  "GSA No Sales - 1 Year or Less",
-  "GSA No Sales - 1 to 2 Years",
-  "GSA No Sales - 2 to 3 Years",
-  "GSA No Sales - 3+ Years",
-  "GSA No Sales - Tenure Unknown",
+  "GSA No Sales - Term 1 - Year 1",
+  "GSA No Sales - Term 1 - Year 2",
+  "GSA No Sales - Term 1 - Years 3 to 5",
+  "GSA No Sales - Term 2 - Years 6 to 10",
+  "GSA No Sales - Term 3 - Years 11 to 15",
+  "GSA No Sales - Term 4 Final - Years 16 to 20",
+  "GSA No Sales - Term Review Required",
+  "GSA No Sales - Term Unknown",
   "Expired Everything",
   "Expiring 6 Months",
   "Expiring 12 Months",
@@ -212,7 +215,21 @@ function extractNaics(values) {
 function parseDate(value) {
   const text = String(value || "").trim();
   if (!text) return null;
-  const date = new Date(text);
+  const us = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/);
+  const date = us
+    ? new Date(Date.UTC(
+        Number(us[3]),
+        Number(us[1]) - 1,
+        Number(us[2])
+      ))
+    : iso
+      ? new Date(Date.UTC(
+          Number(iso[1]),
+          Number(iso[2]) - 1,
+          Number(iso[3])
+        ))
+      : new Date(text);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
@@ -231,6 +248,60 @@ function sameUtcMonth(left, right) {
     left.getUTCFullYear() === right.getUTCFullYear() &&
     left.getUTCMonth() === right.getUTCMonth()
   );
+}
+
+function completedCalendarYears(start, asOf) {
+  let years = asOf.getUTCFullYear() - start.getUTCFullYear();
+  const targetYear = start.getUTCFullYear() + years;
+  const targetMonth = start.getUTCMonth();
+  const targetDay = Math.min(
+    start.getUTCDate(),
+    new Date(Date.UTC(targetYear, targetMonth + 1, 0))
+      .getUTCDate()
+  );
+  const anniversary = new Date(Date.UTC(
+    targetYear,
+    targetMonth,
+    targetDay
+  ));
+  if (asOf < anniversary) years -= 1;
+  return years;
+}
+
+function gsaContractTerm(firstAwardDate, asOfDate = new Date()) {
+  const start = parseDate(firstAwardDate);
+  const asOf = parseDate(asOfDate);
+  if (!start) {
+    return {
+      evidenceStatus: "AWAITING_FIRST_GSA_AWARD_DATE",
+      termNumber: null,
+      overallContractYear: null,
+      yearWithinTerm: null
+    };
+  }
+  if (!asOf || start > asOf) {
+    return {
+      evidenceStatus: "AWARD_DATE_REVIEW_REQUIRED",
+      termNumber: null,
+      overallContractYear: null,
+      yearWithinTerm: null
+    };
+  }
+  const completedYears = completedCalendarYears(start, asOf);
+  if (completedYears >= 20) {
+    return {
+      evidenceStatus: "BEYOND_20_YEAR_MAXIMUM_REVIEW_REQUIRED",
+      termNumber: null,
+      overallContractYear: completedYears + 1,
+      yearWithinTerm: null
+    };
+  }
+  return {
+    evidenceStatus: "CONFIRMED",
+    termNumber: Math.floor(completedYears / 5) + 1,
+    overallContractYear: completedYears + 1,
+    yearWithinTerm: (completedYears % 5) + 1
+  };
 }
 
 function emailDisposition(email, verificationResults) {
@@ -275,20 +346,31 @@ function segmentTags(record, now = new Date()) {
     tags.add("New GSA Holders This Month");
   } else if (gsaHolderSignal && noSales) {
     if (!firstGsaAwardDate) {
-      tags.add("GSA No Sales - Tenure Unknown");
+      tags.add("GSA No Sales - Term Unknown");
     } else {
-      const ageDays = Math.max(
-        0,
-        (now - firstGsaAwardDate) / 86400000
-      );
-      if (ageDays <= 365) {
-        tags.add("GSA No Sales - 1 Year or Less");
-      } else if (ageDays <= 730) {
-        tags.add("GSA No Sales - 1 to 2 Years");
-      } else if (ageDays <= 1095) {
-        tags.add("GSA No Sales - 2 to 3 Years");
-      } else {
-        tags.add("GSA No Sales - 3+ Years");
+      const term = gsaContractTerm(firstGsaAwardDate, now);
+      if (term.evidenceStatus !== "CONFIRMED") {
+        tags.add("GSA No Sales - Term Review Required");
+      } else if (
+        term.termNumber === 1 &&
+        term.overallContractYear === 1
+      ) {
+        tags.add("GSA No Sales - Term 1 - Year 1");
+      } else if (
+        term.termNumber === 1 &&
+        term.overallContractYear === 2
+      ) {
+        tags.add("GSA No Sales - Term 1 - Year 2");
+      } else if (term.termNumber === 1) {
+        tags.add("GSA No Sales - Term 1 - Years 3 to 5");
+      } else if (term.termNumber === 2) {
+        tags.add("GSA No Sales - Term 2 - Years 6 to 10");
+      } else if (term.termNumber === 3) {
+        tags.add("GSA No Sales - Term 3 - Years 11 to 15");
+      } else if (term.termNumber === 4) {
+        tags.add(
+          "GSA No Sales - Term 4 Final - Years 16 to 20"
+        );
       }
     }
   }
@@ -630,11 +712,16 @@ class LegacySegmentReconciliationService {
             "from the prior authoritative GSA-holder snapshot.",
           samRegistrationDateIsNotGsaAwardDate: true,
           noSalesTenureBands: [
-            "1 Year or Less",
-            "1 to 2 Years",
-            "2 to 3 Years",
-            "3+ Years"
+            "Term 1 - Year 1",
+            "Term 1 - Year 2",
+            "Term 1 - Years 3 to 5",
+            "Term 2 - Years 6 to 10",
+            "Term 3 - Years 11 to 15",
+            "Term 4 Final - Years 16 to 20"
           ],
+          contractTermYears: 5,
+          contractTermCount: 4,
+          maximumContractYears: 20,
           missingTenureEvidenceFailsClosed: true
         },
         everyLegacyRowAccountedFor: true,
@@ -1048,7 +1135,8 @@ class LegacySegmentReconciliationService {
         const tags = Array.from(reconciliation.segmentTags);
         const segment = primarySegment(tags, "SAM");
         const tenureEvidenceMissing =
-          tags.includes("GSA No Sales - Tenure Unknown");
+          tags.includes("GSA No Sales - Term Unknown") ||
+          tags.includes("GSA No Sales - Term Review Required");
         refreshedSegments.set(
           segment,
           (refreshedSegments.get(segment) || 0) + 1
@@ -1230,6 +1318,9 @@ class LegacySegmentReconciliationService {
         precedence: SEGMENT_PRECEDENCE,
         rollingNewGsaHolderSegment: true,
         newHolderCycle: "CALENDAR_MONTH_OF_PULL",
+        gsaContractTermYears: 5,
+        gsaContractTermCount: 4,
+        maximumGsaContractYears: 20,
         samRegistrationDateUsedAsGsaAwardDate: false,
         gsaHolderTenureEvidenceGaps:
           counts.gsaHolderTenureEvidenceGaps
@@ -1257,5 +1348,7 @@ LegacySegmentReconciliationService.SEGMENT_PRECEDENCE =
   SEGMENT_PRECEDENCE;
 LegacySegmentReconciliationService.parseCsvLine = parseCsvLine;
 LegacySegmentReconciliationService.segmentTags = segmentTags;
+LegacySegmentReconciliationService.gsaContractTerm =
+  gsaContractTerm;
 
 module.exports = LegacySegmentReconciliationService;
