@@ -215,7 +215,21 @@ function extractNaics(values) {
 function parseDate(value) {
   const text = String(value || "").trim();
   if (!text) return null;
-  const date = new Date(text);
+  const us = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/);
+  const date = us
+    ? new Date(Date.UTC(
+        Number(us[3]),
+        Number(us[1]) - 1,
+        Number(us[2])
+      ))
+    : iso
+      ? new Date(Date.UTC(
+          Number(iso[1]),
+          Number(iso[2]) - 1,
+          Number(iso[3])
+        ))
+      : new Date(text);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
@@ -238,8 +252,18 @@ function sameUtcMonth(left, right) {
 
 function completedCalendarYears(start, asOf) {
   let years = asOf.getUTCFullYear() - start.getUTCFullYear();
-  const anniversary = new Date(start.getTime());
-  anniversary.setUTCFullYear(start.getUTCFullYear() + years);
+  const targetYear = start.getUTCFullYear() + years;
+  const targetMonth = start.getUTCMonth();
+  const targetDay = Math.min(
+    start.getUTCDate(),
+    new Date(Date.UTC(targetYear, targetMonth + 1, 0))
+      .getUTCDate()
+  );
+  const anniversary = new Date(Date.UTC(
+    targetYear,
+    targetMonth,
+    targetDay
+  ));
   if (asOf < anniversary) years -= 1;
   return years;
 }
