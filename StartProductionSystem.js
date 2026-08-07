@@ -650,36 +650,32 @@ class RuntimeWorkerSupervisor {
       now();
 
     try {
-      const queued =
-        taskQueue.list(
-          "QUEUED"
-        );
-console.log(
-  "[BUILD106] queued.length =",
-  Array.isArray(queued) ? queued.length : "NOT_ARRAY"
-);
+      const selectedTask =
+        typeof taskQueue
+          .claimNextExecutableTask ===
+          "function"
+          ? taskQueue
+              .claimNextExecutableTask({
+                recoveredBy:
+                  "StartProductionSystem.executePass",
+                claimedBy:
+                  "RuntimeWorkerSupervisor"
+              })
+          : taskQueue
+              .list("QUEUED")
+              .slice()
+              .sort(
+                (first, second) =>
+                  Number(first.priority || 99) -
+                  Number(second.priority || 99)
+              )[0] || null;
 
-if (Array.isArray(queued) && queued.length) {
-  console.log(
-    "[BUILD106] First queued task:",
-    JSON.stringify(
-      {
-        id: queued[0].id,
-        status: queued[0].status,
-        provider:
-          queued[0].payload?.provider || queued[0].provider,
-        action:
-          queued[0].payload?.action || queued[0].action
-      },
-      null,
-      2
-    )
-  );
-}
-      if (
-        !Array.isArray(queued) ||
-        queued.length === 0
-      ) {
+      console.log(
+        "[GATE3_QUEUE] selected =",
+        selectedTask?.id || "NONE_READY"
+      );
+
+      if (!selectedTask) {
         this.metrics
           .emptyQueuePasses +=
           1;
@@ -687,7 +683,7 @@ if (Array.isArray(queued) && queued.length) {
         const result = {
           ok: true,
           message:
-            "No queued tasks"
+            "No dependency-ready queued tasks"
         };
 
         this.metrics
@@ -696,24 +692,6 @@ if (Array.isArray(queued) && queued.length) {
 
         return result;
       }
-
-      const selectedTask =
-        queued
-          .slice()
-          .sort(
-            (
-              first,
-              second
-            ) =>
-              Number(
-                first.priority ||
-                99
-              ) -
-              Number(
-                second.priority ||
-                99
-              )
-          )[0];
 
       this.metrics
         .lastExecutionTaskId =
