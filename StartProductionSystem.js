@@ -85,6 +85,15 @@ const autonomousWorkGenerator =
 const providerRouter =
   require("./SERVICES/ProviderRouterService");
 
+const connectorManager =
+  require("./CORE/ConnectorManager");
+
+const capabilityService =
+  require("./SERVICES/CapabilityService");
+
+const capabilityDispatcher =
+  require("./SERVICES/CapabilityDispatcherService");
+
 const eventBus =
   safeRequire(
     "./event-bus/emitter"
@@ -352,6 +361,9 @@ class RuntimeWorkerSupervisor {
     this.workGenerationTimer =
       null;
 
+    this.resolutionHealth =
+      null;
+
     this.metrics = {
       pid:
         process.pid,
@@ -597,6 +609,9 @@ class RuntimeWorkerSupervisor {
 
       autonomousWorkGenerator:
         generator,
+
+      resolutionHealth:
+        this.resolutionHealth,
 
       providerRouter:
         router
@@ -1226,6 +1241,60 @@ class RuntimeWorkerSupervisor {
     );
 
     await supervisor.start();
+
+    const providerResolution =
+      providerRouter.status();
+
+    const capabilityResolution =
+      capabilityService
+        .validateRegistry(
+          providerRouter
+        );
+
+    const connectorResolution =
+      connectorManager
+        .validateAll();
+
+    const routingResolution =
+      capabilityDispatcher
+        .validate(
+          connectorManager
+        );
+
+    this.resolutionHealth = {
+      ok:
+        providerResolution.ok === true &&
+        capabilityResolution.ok === true &&
+        connectorResolution.ok === true &&
+        routingResolution.ok === true,
+
+      providerRegistry:
+        providerResolution,
+
+      capabilityRegistry:
+        capabilityResolution,
+
+      connectorRegistry:
+        connectorResolution,
+
+      routing:
+        routingResolution,
+
+      checkedAt:
+        now()
+    };
+
+    if (
+      !this.resolutionHealth.ok
+    ) {
+      throw new Error(
+        "PROVIDER_CAPABILITY_RESOLUTION_FAILED"
+      );
+    }
+
+    console.log(
+      `[MILES] Provider/capability resolution READY | providers=${providerResolution.validation.providerCount} capabilities=${capabilityResolution.capabilityCount} connectors=${connectorResolution.connectorCount}`
+    );
 
     await delay(
       STARTUP_SETTLE_MS
