@@ -121,7 +121,10 @@ class RevenueSegmentReadinessService {
   }
 
   discoverSources() {
-    return unique(this.sourceRoots.flatMap(root => this.walkCsv(root))).map(filePath => this.inspectCsv(filePath));
+    const segmentNames = Object.keys(SEGMENT_ALIASES);
+    return unique(this.sourceRoots.flatMap(root => this.walkCsv(root)))
+      .filter(filePath => segmentNames.some(segmentName => this.sourceMatches(filePath, segmentName)))
+      .map(filePath => this.inspectCsv(filePath));
   }
 
   async loadMailboxes() {
@@ -155,7 +158,7 @@ class RevenueSegmentReadinessService {
     const domain = String(segment.assignedDomain || "").toLowerCase();
     const domainMailboxes = mailboxes.filter(item => item.usable && item.domain === domain).map(item => item.email);
     const sourceFiles = matches.map(item => item.filePath);
-    const verifiedEmailCount = verified.reduce((sum, item) => sum + item.verifiedEmailCount, 0);
+    const verifiedEmailCount = Math.max(0, ...verified.map(item => item.verifiedEmailCount));
     const assignedInboxes = unique([...(segment.assignedInboxes || []), ...domainMailboxes]);
     const blockers = (segment.blockers || []).filter(blocker => {
       if (blocker === "SOURCE_FILE_NOT_MAPPED" && sourceFiles.length) return false;
