@@ -20,7 +20,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     { email: "overlap@example.com", segments: ["SAM_LOW_SALES"] }
   ];
   const fresh = [
-    { email: "new@example.com", segments: ["GSA_NO_SALES"], quality: "good", result: "ok" },
+    { email: "new@example.com", segments: "GSA_NO_SALES | SBS", quality: "good", result: "ok" },
     { email: "expired@example.com", segments: ["EXPIRED_EVERYTHING", "SBS"], quality: "good", result: "ok" },
     { email: "overlap@example.com", segments: ["EXPIRING_12_MONTHS"], quality: "good", result: "ok" }
   ];
@@ -44,7 +44,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("conservation passes", async () => assert.strictEqual(report.conservation.ok, true));
   await test("one primary segment is assigned", async () => assert.strictEqual(report.onePrimarySegmentPerLead, true));
   await test("expired segment wins priority", async () => assert.strictEqual(report.summary.segmentCounts["Expired Everything"], 1));
-  await test("underscore GSA segment maps correctly", async () => assert.strictEqual(report.summary.segmentCounts.GSA, 1));
+  await test("pipe-delimited underscore GSA segment maps correctly", async () => assert.strictEqual(report.summary.segmentCounts.GSA, 1));\n  await test("no verified lead loses segment provenance", async () => assert.strictEqual(report.summary.segmentCounts.Unclassified || 0, 0));
   await test("overlap combines segments and uses higher priority", async () => assert.strictEqual(report.summary.segmentCounts["Expiring 12 Months"], 1));
   await test("SBS remains represented", async () => assert.strictEqual(report.summary.segmentCounts.SBS, 1));
   await test("master artifact exists", async () => assert.strictEqual(fs.existsSync(report.artifacts.master.filePath), true));
@@ -58,6 +58,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults safely", async () => assert.deepStrictEqual(parseArguments([]), { apply: false }));
   await test("CLI requires explicit apply", async () => assert.deepStrictEqual(parseArguments(["--apply"]), { apply: true }));
 
-  console.log("REVENUE_VERIFIED_SEGMENT_ACTIVATION_TEST_PASS " + passed + "/25");
+  console.log("REVENUE_VERIFIED_SEGMENT_ACTIVATION_TEST_PASS " + passed + "/26");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
