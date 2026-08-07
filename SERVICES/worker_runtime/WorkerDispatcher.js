@@ -7,7 +7,7 @@ class WorkerDispatcher {
   constructor(options = {}) {
     this.service = 'WORKER_DISPATCHER';
     this.name = this.service;
-    this.version = '1.1.0';
+    this.version = '1.2.0';
     this.rootDir = options.rootDir || process.env.MILES_ROOT || process.cwd();
 
     this.registry = options.registry || null;
@@ -39,6 +39,7 @@ class WorkerDispatcher {
   }
 
   async start() {
+    this.state.ok = true;
     this.state.status = 'RUNNING';
     this.state.lastError = null;
     this.saveState();
@@ -107,14 +108,23 @@ class WorkerDispatcher {
         return this.recordFailure(operation, workerName, 'WORKER_HAS_NO_EXECUTION_METHOD');
       }
 
-      this.state.dispatchesCompleted += 1;
-      this.state.status = 'RUNNING';
-      this.state.lastError = null;
+      const succeeded = !(result && result.ok === false);
+      if (succeeded) {
+        this.state.dispatchesCompleted += 1;
+        this.state.ok = true;
+        this.state.status = 'RUNNING';
+        this.state.lastError = null;
+      } else {
+        this.state.dispatchesFailed += 1;
+        this.state.ok = false;
+        this.state.status = 'DEGRADED';
+        this.state.lastError = result.error || result.reason || 'Worker returned a failed result.';
+      }
 
       const dispatchRecord = {
-        ok: result && result.ok === false ? false : true,
+        ok: succeeded,
         service: this.service,
-        status: 'DISPATCH_COMPLETED',
+        status: succeeded ? 'DISPATCH_COMPLETED' : 'DISPATCH_FAILED',
         worker: workerName,
         operation,
         result,
@@ -151,6 +161,7 @@ class WorkerDispatcher {
 
   recordFailure(operation, workerName, reason) {
     this.state.dispatchesFailed += 1;
+    this.state.ok = false;
     this.state.status = 'DEGRADED';
     this.state.lastError = reason;
 
@@ -172,12 +183,18 @@ class WorkerDispatcher {
   }
 
   async healthCheck() {
+    const registryHealth =
+      this.registry && typeof this.registry.healthCheck === 'function'
+        ? await this.registry.healthCheck()
+        : { ok: false, status: 'REGISTRY_HEALTH_UNAVAILABLE' };
+    const ok = Boolean(this.registry) && registryHealth.ok && this.state.status !== 'DEGRADED';
     return {
-      ok: this.state.ok,
+      ok,
       service: this.service,
       version: this.version,
-      status: this.state.ok ? 'HEALTHY' : 'DEGRADED',
+      status: ok ? 'HEALTHY' : 'DEGRADED',
       registryAvailable: Boolean(this.registry),
+      registry: registryHealth,
       state: this.getState(),
       generatedAt: new Date().toISOString()
     };
@@ -216,7 +233,9 @@ class WorkerDispatcher {
 
   writeJson(filePath, data) {
     this.ensureDir(path.dirname(filePath));
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+    const temporary = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+    fs.writeFileSync(temporary, JSON.stringify(data, null, 2), 'utf8');
+    fs.renameSync(temporary, filePath);
   }
 
   ensureDir(dir) {
