@@ -26,7 +26,9 @@ class TaskQueue {
         this.ensureRuntime();
         this.withLock(() => {
             if (!fs.existsSync(this.queuePath)) {
-                this.writeJsonDirect([]);
+                if (!this.restoreLastGoodQueue()) {
+                    this.writeJsonDirect([]);
+                }
             }
         });
     }
@@ -40,6 +42,43 @@ class TaskQueue {
 
         if (!fs.existsSync(this.backupDir)) {
             fs.mkdirSync(this.backupDir, { recursive: true });
+        }
+    }
+
+    restoreLastGoodQueue() {
+        try {
+            if (!fs.existsSync(this.lastGoodPath)) {
+                return false;
+            }
+
+            const raw = this.sanitizeJsonText(
+                fs.readFileSync(
+                    this.lastGoodPath,
+                    "utf8"
+                )
+            );
+            const parsed = JSON.parse(raw);
+
+            if (!Array.isArray(parsed)) {
+                return false;
+            }
+
+            fs.copyFileSync(
+                this.lastGoodPath,
+                this.queuePath
+            );
+
+            console.error(
+                "[TaskQueue] Restored queue from last-good snapshot."
+            );
+
+            return true;
+        } catch (error) {
+            console.error(
+                "[TaskQueue] Last-good restore failed:",
+                error.message
+            );
+            return false;
         }
     }
 
@@ -308,7 +347,9 @@ class TaskQueue {
 
     readJsonDirect() {
         if (!fs.existsSync(this.queuePath)) {
-            return [];
+            if (!this.restoreLastGoodQueue()) {
+                return [];
+            }
         }
 
         let raw = fs.readFileSync(
@@ -400,32 +441,35 @@ class TaskQueue {
 
         try {
             /*
-             * POSIX rename replaces atomically. Windows may reject replacement
-             * of an existing file, so retain a verified last-good snapshot
-             * before the remove-and-rename fallback.
+             * Rotate the current verified queue to a same-volume last-good
+             * snapshot, then promote the fsynced temporary file. Renames are
+             * metadata operations and avoid copying the large production
+             * queue on every task transition.
              */
             if (fs.existsSync(this.queuePath)) {
-                fs.copyFileSync(
-                    this.queuePath,
-                    this.lastGoodPath
+                fs.rmSync(
+                    this.lastGoodPath,
+                    { force: true }
                 );
-            }
 
-            try {
-                fs.renameSync(tmp, this.queuePath);
-            } catch (error) {
-                if (!["EEXIST", "EPERM", "EACCES"].includes(error?.code)) {
-                    throw error;
+                try {
+                    fs.renameSync(
+                        this.queuePath,
+                        this.lastGoodPath
+                    );
+                } catch {
+                    fs.copyFileSync(
+                        this.queuePath,
+                        this.lastGoodPath
+                    );
+                    fs.rmSync(
+                        this.queuePath,
+                        { force: true }
+                    );
                 }
-
-                fs.rmSync(this.queuePath, { force: true });
-                fs.renameSync(tmp, this.queuePath);
             }
 
-            fs.copyFileSync(
-                this.queuePath,
-                this.lastGoodPath
-            );
+            fs.renameSync(tmp, this.queuePath);
         } catch (error) {
             if (
                 !fs.existsSync(this.queuePath) &&
@@ -931,24 +975,6 @@ this.writeJsonDirect(tasks);
     }
 
     claimNextExecutableTask(options = {}) {
-        if (options.recoverStale !== false) {
-            this.recoverStaleRunningTasks({
-                staleAfterMs: options.staleAfterMs,
-                recoveredBy:
-                    options.recoveredBy ||
-                    "TaskQueue.claimNextExecutableTask"
-            });
-        }
-
-        if (options.recoverRetries !== false) {
-            this.recoverRetryableFailedTasks({
-                retryDelayMs: options.retryDelayMs,
-                recoveredBy:
-                    options.recoveredBy ||
-                    "TaskQueue.claimNextExecutableTask"
-            });
-        }
-
         return this.withLock(() => {
             const tasks = this.readJsonDirect();
             const byId = new Map(
@@ -959,6 +985,130 @@ this.writeJsonDirect(tasks);
             const candidates = [];
             let changed = false;
             const currentTime = Date.now();
+            const staleAfterMs =
+                Number(options.staleAfterMs) > 0
+                    ? Number(options.staleAfterMs)
+                    : Number(
+                        process.env.MILES_STALE_TASK_TIMEOUT_MS ||
+                        600000
+                    );
+            const retryDelayMs = Math.max(
+                0,
+                Number(
+                    options.retryDelayMs ??
+                    process.env.MILES_QUEUE_RETRY_DELAY_MS ??
+                    5000
+                )
+            );
+
+            for (const task of tasks) {
+                const status =
+                    String(task?.status || "").toUpperCase();
+
+                if (
+                    options.recoverStale !== false &&
+                    status === "RUNNING"
+                ) {
+                    const started = new Date(
+                        task.startedAt ||
+                        task.updatedAt ||
+                        task.createdAt ||
+                        0
+                    ).getTime();
+                    const ageMs =
+                        Number.isFinite(started)
+                            ? currentTime - started
+                            : Number.MAX_SAFE_INTEGER;
+
+                    if (ageMs >= staleAfterMs) {
+                        const recoveredAt = now();
+
+                        task.status = "QUEUED";
+                        task.updatedAt = recoveredAt;
+                        task.startedAt = null;
+                        task.failedAt = null;
+                        task.error = null;
+                        task.recoveryCount =
+                            Number(task.recoveryCount || 0) + 1;
+                        task.recovery = {
+                            recovered: true,
+                            recoveredAt,
+                            recoveredBy:
+                                options.recoveredBy ||
+                                "TaskQueue.claimNextExecutableTask",
+                            previousStatus: "RUNNING",
+                            staleAfterMs,
+                            observedAgeMs: ageMs,
+                            reason:
+                                "Recovered stale RUNNING task after interrupted execution."
+                        };
+                        changed = true;
+                    }
+
+                    continue;
+                }
+
+                if (
+                    options.recoverRetries !== false &&
+                    status === "FAILED"
+                ) {
+                    const retryable =
+                        task.retryable === true ||
+                        task.result?.retryable === true ||
+                        task.failure?.retryable === true ||
+                        task.result?.failure?.retryable === true;
+                    const retryCount =
+                        Number(task.retryCount || 0);
+                    const maxRetries = Math.max(
+                        0,
+                        Number(
+                            task.maxRetries ??
+                            task.payload?.maxRetries ??
+                            1
+                        )
+                    );
+                    const failedAt = new Date(
+                        task.failedAt ||
+                        task.updatedAt ||
+                        task.result?.createdAt ||
+                        0
+                    ).getTime();
+                    const eligibleAt = new Date(
+                        task.nextRetryAt ||
+                        (
+                            Number.isFinite(failedAt)
+                                ? failedAt + retryDelayMs
+                                : currentTime
+                        )
+                    ).getTime();
+
+                    if (
+                        retryable &&
+                        retryCount < maxRetries &&
+                        (
+                            !Number.isFinite(eligibleAt) ||
+                            eligibleAt <= currentTime
+                        )
+                    ) {
+                        task.status = "QUEUED";
+                        task.retryCount = retryCount + 1;
+                        task.updatedAt = now();
+                        task.startedAt = null;
+                        task.failedAt = null;
+                        task.nextRetryAt = null;
+                        task.retry = {
+                            scheduled: true,
+                            retryCount: task.retryCount,
+                            maxRetries,
+                            recoveredAt: task.updatedAt,
+                            recoveredBy:
+                                options.recoveredBy ||
+                                "TaskQueue.claimNextExecutableTask"
+                        };
+                        changed = true;
+                    }
+                }
+            }
 
             for (const task of tasks) {
                 if (
