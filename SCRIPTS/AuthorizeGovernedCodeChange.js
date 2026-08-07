@@ -9,7 +9,6 @@ function parseArguments(argv) {
   const result = {
     planPath: null,
     changeSetPath: null,
-    outputPath: null,
     approvedBy: "CEO",
     expiresMinutes: 15,
     apply: false
@@ -24,9 +23,6 @@ function parseArguments(argv) {
     } else if (value.startsWith("--changes=")) {
       result.changeSetPath =
         path.resolve(value.slice("--changes=".length));
-    } else if (value.startsWith("--output=")) {
-      result.outputPath =
-        path.resolve(value.slice("--output=".length));
     } else if (value.startsWith("--approved-by=")) {
       result.approvedBy =
         value.slice("--approved-by=".length);
@@ -43,11 +39,10 @@ function main(argv = process.argv.slice(2)) {
   const args = parseArguments(argv);
   if (
     !args.planPath ||
-    !args.changeSetPath ||
-    !args.outputPath
+    !args.changeSetPath
   ) {
     throw new Error(
-      "Usage: node SCRIPTS/AuthorizeGovernedCodeChange.js --plan=... --changes=... --output=... [--apply]"
+      "Usage: node SCRIPTS/AuthorizeGovernedCodeChange.js --plan=... --changes=... [--apply]"
     );
   }
 
@@ -89,6 +84,9 @@ function main(argv = process.argv.slice(2)) {
       args.expiresMinutes * 60 * 1000
   });
 
+  const outputPath =
+    service.approvalFilePath(approval);
+
   const result = {
     ok: true,
     mode:
@@ -108,17 +106,17 @@ function main(argv = process.argv.slice(2)) {
       approval.expiresAt,
     outputPath:
       args.apply
-        ? args.outputPath
+        ? outputPath
         : null
   };
 
   if (args.apply) {
     fs.mkdirSync(
-      path.dirname(args.outputPath),
+      path.dirname(outputPath),
       { recursive: true }
     );
     service.atomicWrite(
-      args.outputPath,
+      outputPath,
       JSON.stringify(approval, null, 2)
     );
   }
