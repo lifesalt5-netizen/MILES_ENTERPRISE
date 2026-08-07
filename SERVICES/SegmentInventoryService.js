@@ -1158,4 +1158,19 @@ class SegmentInventoryService {
         "getUploadReadySegments" ||
       method ===
         "getCampaignReadySegments"
-    )
+    ) {
+      const limit =
+        task.payload?.limit ||
+        task.limit ||
+        25;
+
+      return this[method](limit);
+    }
+
+    return this[method]();
+  }
+}
+
+module.exports = SegmentInventoryService;
+module.exports.SegmentInventoryService = SegmentInventoryService;
+module.exports.default = SegmentInventoryService;
