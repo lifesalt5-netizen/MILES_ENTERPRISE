@@ -154,11 +154,11 @@ function write(root, relativePath, content) {
       assert.deepStrictEqual(
         parseArguments([
           "--apply",
-          "--output=C:\\temp\\graph.json"
+          "--output=C:/temp/graph.json"
         ]),
         {
           apply: true,
-          output: "C:\\temp\\graph.json"
+          output: "C:/temp/graph.json"
         }
       ));
 
