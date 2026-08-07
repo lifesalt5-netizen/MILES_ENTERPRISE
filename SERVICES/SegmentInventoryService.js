@@ -579,9 +579,13 @@ class SegmentInventoryService {
         options.registry ||
         new CanonicalDatasetRegistry();
 
+    const registryInventory =
+        this.registry.getRegistry().inventory;
+
     this.inventoryFile =
         options.inventoryFile ||
-        this.registry.getRegistry().inventory.segmentInventory;
+        registryInventory?.segmentInventory ||
+        DEFAULT_INVENTORY_FILE;
 
     this.outputDir =
         options.outputDir ||
@@ -1158,4 +1162,19 @@ class SegmentInventoryService {
         "getUploadReadySegments" ||
       method ===
         "getCampaignReadySegments"
-    )
+    ) {
+      const limit =
+        task.payload?.limit ||
+        task.limit ||
+        25;
+
+      return this[method](limit);
+    }
+
+    return this[method]();
+  }
+}
+
+module.exports = SegmentInventoryService;
+module.exports.SegmentInventoryService = SegmentInventoryService;
+module.exports.default = SegmentInventoryService;

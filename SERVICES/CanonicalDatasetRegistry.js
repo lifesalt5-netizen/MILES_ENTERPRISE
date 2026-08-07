@@ -214,13 +214,30 @@ class CanonicalDatasetRegistry {
                 this.registry.version,
 
             totalSegments:
-                Object.keys(this.registry.segments).length,
-                "inventory": {
-  "segmentInventory": "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\OUTBOUND\\SEGMENT_INVENTORY_MASTER.csv"
-},
+                Object.keys(this.registry.segments || {}).length,
 
             verifiedRepositories:
-                Object.keys(this.registry.verifiedRepositories).length,
+                Object.keys(this.registry.verifiedRepositories || {}).length,
 
             campaignMappings:
-                Object.keys(this.registry.
+                Object.keys(this.registry.campaignMappings || {}).length,
+
+            domains:
+                Object.keys(this.registry.domains || {}).length,
+
+            inventoryConfigured:
+                Boolean(
+                    this.registry.inventory &&
+                    this.registry.inventory.segmentInventory
+                ),
+
+            validation
+        };
+
+        return health;
+    }
+}
+
+module.exports = CanonicalDatasetRegistry;
+module.exports.CanonicalDatasetRegistry = CanonicalDatasetRegistry;
+module.exports.default = CanonicalDatasetRegistry;
