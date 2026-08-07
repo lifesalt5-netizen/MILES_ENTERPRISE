@@ -66,7 +66,8 @@ class RevenueEmailVerificationBatchService {
 
   priority(record) {
     const text = Array.isArray(record.segments) ? record.segments.join(" | ") : "";
-    const match = PRIORITIES.find(item => item.pattern.test(text));
+    const normalizedText = text.replace(/[_\\-]+/g, " ").replace(/\\s+/g, " ").trim();
+    const match = PRIORITIES.find(item => item.pattern.test(normalizedText));
     return match || { rank: 9, name: "Unclassified" };
   }
 
