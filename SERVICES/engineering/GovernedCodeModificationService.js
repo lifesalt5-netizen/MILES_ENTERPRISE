@@ -126,8 +126,10 @@ class GovernedCodeModificationService {
       segments.some(segment =>
         BLOCKED_SEGMENTS.has(
           segment.toLowerCase()
-        )
-      )
+        ) ||
+        segment.toLowerCase().startsWith(".env")
+      ) ||
+      /\.(?:pem|key|p12|pfx)$/i.test(normalized)
     ) {
       throw new Error(
         `SOURCE_PATH_NOT_ALLOWED: ${relativePath}`
@@ -233,8 +235,12 @@ class GovernedCodeModificationService {
     if (
       !plan ||
       plan.ok !== true ||
-      !plan.planId ||
-      !plan.planFingerprint ||
+      !/^ENGINEERING-PLAN-[A-F0-9]{16}$/.test(
+        plan.planId || ""
+      ) ||
+      !/^[A-F0-9]{64}$/.test(
+        plan.planFingerprint || ""
+      ) ||
       !Array.isArray(plan.scope?.targets)
     ) {
       throw new Error(
@@ -393,6 +399,7 @@ class GovernedCodeModificationService {
       !approval ||
       approval.authorization !==
         "SOURCE_MODIFICATION" ||
+      !/CEO/i.test(approval.approvedBy || "") ||
       !Array.isArray(approval.approvedFiles) ||
       !/^[A-F0-9]{64}$/.test(approval.signature || "")
     ) {
