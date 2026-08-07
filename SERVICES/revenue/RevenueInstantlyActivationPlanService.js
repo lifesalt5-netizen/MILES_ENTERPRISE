@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 function sha256(value) { return crypto.createHash("sha256").update(value).digest("hex").toUpperCase(); }
-function normalize(value) { return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
+function normalize(value) {\n  return String(value || "").trim().toLowerCase()\n    .replace(/[^a-z0-9]+/g, " ").trim()\n    .replace(/\\b(\\d+)\\s*m\\b/g, "$1 months")\n    .replace(/\\bmonth\\b/g, "months");\n}
 
 const ROUTES = [
   { rank: 1, name: "Expired Everything", pattern: /expired everything/i },
@@ -62,9 +62,13 @@ class RevenueInstantlyActivationPlanService {
 
   findSegment(route, inventory) {
     const target = normalize(route.name);
+    const exact = inventory.find(item => normalize(item.segmentName || item.name || item.segmentId) === target);
+    if (exact) return exact;
+    const paddedTarget = " " + target + " ";
     return inventory.find(item => {
       const name = normalize(item.segmentName || item.name || item.segmentId);
-      return name === target || name.includes(target) || target.includes(name);
+      const paddedName = " " + name + " ";
+      return paddedName.includes(paddedTarget) || paddedTarget.includes(paddedName);
     }) || null;
   }
 
@@ -107,18 +111,25 @@ class RevenueInstantlyActivationPlanService {
       const segment = this.findSegment(route, segments);
       const campaign = this.findCampaign(route, segment, campaigns);
       const inboxes = Array.isArray(segment?.assignedInboxes) ? segment.assignedInboxes.filter(Boolean) : [];
+      const sourceFile = manifest.artifacts?.segments?.[leadSegmentName(route, manifest)]?.filePath || null;
       const blockers = [];
       if (route.name === "Unclassified") blockers.push("UNCLASSIFIED_LEADS");
       if (!segment) blockers.push("CANONICAL_SEGMENT_NOT_FOUND");
       if (!campaign) blockers.push("LIVE_CAMPAIGN_NOT_FOUND");
       if (!inboxes.length) blockers.push("SENDING_INBOXES_NOT_ASSIGNED");
-      if (segment && segment.blockers?.length) blockers.push(...segment.blockers);
+      for (const blocker of (segment?.blockers || [])) {
+        if (blocker === "NO_VERIFIED_EMAILS" && routeLeads.length) continue;
+        if (blocker === "SOURCE_FILE_NOT_MAPPED" && sourceFile) continue;
+        if (blocker === "LIVE_CAMPAIGN_NOT_FOUND" && campaign) continue;
+        if ((blocker === "INBOXES_NOT_ASSIGNED" || blocker === "SENDING_INBOXES_NOT_ASSIGNED") && inboxes.length) continue;
+        blockers.push(blocker);
+      }
       blockers.push("PROVIDER_DUPLICATE_SUPPRESSION_CHECK_REQUIRED");
       activationRoutes.push({
         priority: route.rank,
         route: route.name,
         verifiedLeads: routeLeads.length,
-        sourceFile: manifest.artifacts?.segments?.[leadSegmentName(route, manifest)]?.filePath || null,
+        sourceFile,
         segmentId: segment?.segmentId || null,
         liveCampaignId: campaign?.campaignId || null,
         campaignName: campaign?.name || segment?.campaignName || null,
