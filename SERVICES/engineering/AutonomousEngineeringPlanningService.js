@@ -113,8 +113,9 @@ class AutonomousEngineeringPlanningService {
       }
     }
 
-    if (node.type === "TEST") score -= 1;
-    if (node.type === "ENTRY_POINT") score += 1;
+    if (score > 0 && node.type === "ENTRY_POINT") {
+      score += 1;
+    }
 
     return {
       node,
@@ -131,12 +132,29 @@ class AutonomousEngineeringPlanningService {
       );
     }
 
-    const ranked = graph.nodes
+    const allowTests =
+      keywords.includes("test") ||
+      keywords.includes("tests");
+    const scored = graph.nodes
+      .filter(node =>
+        allowTests ||
+        node.type !== "TEST"
+      )
       .map(node => this.scoreNode(node, keywords))
       .filter(candidate => candidate.score > 0)
       .sort((first, second) =>
         second.score - first.score ||
         first.node.id.localeCompare(second.node.id)
+      );
+
+    const bestScore = scored[0]?.score || 0;
+    const minimumScore = Math.max(
+      1,
+      Math.ceil(bestScore * 0.6)
+    );
+    const ranked = scored
+      .filter(candidate =>
+        candidate.score >= minimumScore
       )
       .slice(0, this.maxTargets);
 
