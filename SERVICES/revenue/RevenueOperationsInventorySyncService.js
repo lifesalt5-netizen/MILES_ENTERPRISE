@@ -43,7 +43,18 @@ class RevenueOperationsInventorySyncService {
 
   async loadLiveCampaigns() {
     const instantly = require(path.join(this.rootDir, "CONNECTORS", "INSTANTLY", "instantly.js"));
-    return instantly.listCampaigns({ limit: 100 });
+    const campaigns = [];
+    let startingAfter = null;
+    for (let page = 0; page < 100; page += 1) {
+      const response = await instantly.listCampaigns({
+        limit: 100,
+        ...(startingAfter ? { starting_after: startingAfter } : {})
+      });
+      campaigns.push(...this.extractCampaigns(response));
+      startingAfter = response?.next_starting_after || response?.nextStartingAfter || null;
+      if (!startingAfter) break;
+    }
+    return campaigns;
   }
 
   extractCampaigns(response) {
@@ -188,4 +199,3 @@ class RevenueOperationsInventorySyncService {
 
 module.exports = RevenueOperationsInventorySyncService;
 module.exports.RevenueOperationsInventorySyncService = RevenueOperationsInventorySyncService;
-
