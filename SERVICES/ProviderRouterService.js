@@ -72,6 +72,9 @@ class ProviderRouterService {
       pipeline: "SalesProvider",
       replies: "SalesProvider",
       proposals: "SalesProvider",
+      revenue: "SalesProvider",
+      revenueoperations: "SalesProvider",
+      revenueprovider: "SalesProvider",
 
       google: "GoogleWorkspaceProvider",
       googleworkspace: "GoogleWorkspaceProvider",
@@ -1438,6 +1441,60 @@ class ProviderRouterService {
     };
   }
 
+  validateRegistry() {
+    const registeredProviders =
+      Object.keys(this.providers);
+
+    const providerSet =
+      new Set(registeredProviders);
+
+    const invalidAliases =
+      Object.entries(this.aliases)
+        .filter(([, target]) =>
+          !providerSet.has(target)
+        )
+        .map(([alias, target]) => ({
+          alias,
+          target
+        }));
+
+    const invalidProviderKeys =
+      Object.entries(this.providerKeys)
+        .filter(([providerName, providerKey]) =>
+          !providerSet.has(providerName) ||
+          !String(providerKey || "").trim()
+        )
+        .map(([providerName, providerKey]) => ({
+          providerName,
+          providerKey
+        }));
+
+    const invalidActionMaps =
+      Object.keys(this.actionOperations)
+        .filter(providerName =>
+          !providerSet.has(providerName)
+        );
+
+    return {
+      ok:
+        registeredProviders.length > 0 &&
+        invalidAliases.length === 0 &&
+        invalidProviderKeys.length === 0 &&
+        invalidActionMaps.length === 0,
+
+      providerCount:
+        registeredProviders.length,
+
+      aliasCount:
+        Object.keys(this.aliases).length,
+
+      registeredProviders,
+      invalidAliases,
+      invalidProviderKeys,
+      invalidActionMaps
+    };
+  }
+
   status() {
     const registryState =
       this.loadRegistryState();
@@ -1450,16 +1507,22 @@ class ProviderRouterService {
       registryState
         .bindingRegistry;
 
+    const validation =
+      this.validateRegistry();
+
     return {
-      ok: true,
+      ok:
+        validation.ok &&
+        authorityRegistry.ok === true &&
+        bindingRegistry.ok === true,
 
       registeredProviders:
-        Object.keys(
-          this.providers
-        ),
+        validation.registeredProviders,
 
       aliases:
         this.aliases,
+
+      validation,
 
       providerAuthority: {
         ok:
