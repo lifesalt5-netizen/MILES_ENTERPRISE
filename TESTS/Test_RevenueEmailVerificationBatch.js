@@ -51,6 +51,8 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("six month leads rank second", async () => assert.ok(fs.readFileSync(report.artifacts.batch.filePath, "utf8").includes("six@example.com,2")));
   await test("GSA precedes lower priority segments", async () => assert.ok(fs.readFileSync(report.artifacts.batch.filePath, "utf8").includes("gsa@example.com,4")));
   await test("priority counts are recorded", async () => assert.strictEqual(report.summary.selectedByPriority.GSA, 1));
+  await test("underscore GSA names classify correctly", async () => assert.strictEqual(service.priority({ segments: ["GSA_NO_SALES"] }).name, "GSA"));
+  await test("underscore SAM names classify correctly", async () => assert.strictEqual(service.priority({ segments: ["SAM_LOW_SALES"] }).name, "SAM"));
   await test("conservation passes", async () => assert.strictEqual(report.conservation.ok, true));
   await test("batch artifact exists", async () => assert.strictEqual(fs.existsSync(report.artifacts.batch.filePath), true));
   await test("deferred artifact exists", async () => assert.strictEqual(fs.existsSync(report.artifacts.deferred.filePath), true));
@@ -64,6 +66,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults to plan-only", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, creditLimit: 0 }));
   await test("CLI parses explicit cap", async () => assert.deepStrictEqual(parseArguments(["--apply", "--credit-limit=7662"]), { apply: true, creditLimit: 7662 }));
 
-  console.log("REVENUE_EMAIL_VERIFICATION_BATCH_TEST_PASS " + passed + "/27");
+  console.log("REVENUE_EMAIL_VERIFICATION_BATCH_TEST_PASS " + passed + "/29");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
