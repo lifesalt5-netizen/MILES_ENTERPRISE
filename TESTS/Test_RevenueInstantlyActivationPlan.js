@@ -30,7 +30,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   fs.writeFileSync(path.join(resultsRoot, "risky_blocked.jsonl"), JSON.stringify({ email: "risk@example.com" }) + "\n", "utf8");
   fs.writeFileSync(path.join(resultsRoot, "invalid_do_not_mail.jsonl"), JSON.stringify({ email: "bad@example.com" }) + "\n", "utf8");
   fs.writeFileSync(path.join(runtimeRoot, "segment_inventory.json"), JSON.stringify([
-    { segmentId: "gsa", segmentName: "GSA", liveCampaignId: "c1", assignedInboxes: ["gsa@sender.test"], blockers: [] },
+    { segmentId: "gsa", segmentName: "GSA", liveCampaignId: "c1", assignedInboxes: ["gsa@sender.test"], blockers: ["NO_VERIFIED_EMAILS", "SOURCE_FILE_NOT_MAPPED"] },
     { segmentId: "wosb", segmentName: "WOSB", liveCampaignId: "c2", assignedInboxes: ["cert@sender.test"], blockers: [] }
   ]), "utf8");
   fs.writeFileSync(path.join(runtimeRoot, "campaign_registry.json"), JSON.stringify([
@@ -57,6 +57,8 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("WOSB route matches campaign", async () => assert.strictEqual(report.activationRoutes.find(item => item.route === "WOSB").liveCampaignId, "c2"));
   await test("configured routes await duplicate check only", async () => assert.strictEqual(report.summary.routesReadyAfterProviderDuplicateCheck, 2));
   await test("unclassified route is blocked", async () => assert.ok(report.activationRoutes.find(item => item.route === "Unclassified").blockers.includes("UNCLASSIFIED_LEADS")));
+  await test("fresh verified evidence clears stale inventory blockers", async () => assert.deepStrictEqual(report.activationRoutes.find(item => item.route === "GSA").blockers, ["PROVIDER_DUPLICATE_SUPPRESSION_CHECK_REQUIRED"]));
+  await test("VOSB never aliases to SDVOSB", async () => assert.strictEqual(service.findSegment({ name: "VOSB" }, [{ segmentName: "SDVOSB" }]), null));
   await test("risky suppression is counted", async () => assert.strictEqual(report.suppression.riskyBlocked, 1));
   await test("invalid suppression is counted", async () => assert.strictEqual(report.suppression.doNotMail, 1));
   await test("verified suppression conflicts are zero", async () => assert.strictEqual(report.suppression.verifiedSuppressionConflicts, 0));
@@ -79,6 +81,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   fs.writeFileSync(path.join(activationRoot, "manifest.json"), JSON.stringify(changedManifest), "utf8");
   await test("suppressed verified lead fails closed", async () => assert.throws(() => service.build({ apply: true }), /suppressed/));
 
-  console.log("REVENUE_INSTANTLY_ACTIVATION_PLAN_TEST_PASS " + passed + "/25");
+  console.log("REVENUE_INSTANTLY_ACTIVATION_PLAN_TEST_PASS " + passed + "/27");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
