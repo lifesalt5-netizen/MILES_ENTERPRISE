@@ -1,5 +1,11 @@
 "use strict";
 
+try {
+  require("dotenv").config();
+} catch (error) {
+  if (error.code !== "MODULE_NOT_FOUND") throw error;
+}
+
 const RevenueOperationsBootstrapAuditService =
   require("../SERVICES/revenue/RevenueOperationsBootstrapAuditService");
 
@@ -29,4 +35,3 @@ if (require.main === module) {
 }
 
 module.exports = { parseArguments, main };
-
