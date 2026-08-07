@@ -795,6 +795,41 @@ this.writeJsonDirect(tasks);
             .filter(Boolean);
     }
 
+    hasDependencyCycle(taskId, byId) {
+        const visit = (currentId, active, complete) => {
+            if (active.has(currentId)) {
+                return true;
+            }
+
+            if (complete.has(currentId)) {
+                return false;
+            }
+
+            active.add(currentId);
+
+            const task = byId.get(currentId);
+
+            for (const dependencyId of this.dependencyIds(task)) {
+                if (
+                    byId.has(dependencyId) &&
+                    visit(dependencyId, active, complete)
+                ) {
+                    return true;
+                }
+            }
+
+            active.delete(currentId);
+            complete.add(currentId);
+            return false;
+        };
+
+        return visit(
+            String(taskId || ""),
+            new Set(),
+            new Set()
+        );
+    }
+
     recoverRetryableFailedTasks(options = {}) {
         const retryDelayMs = Math.max(
             0,
@@ -949,7 +984,21 @@ this.writeJsonDirect(tasks);
                 let waiting = false;
                 let blockedReason = null;
 
+                if (
+                    dependencies.length &&
+                    this.hasDependencyCycle(
+                        String(task.id || ""),
+                        byId
+                    )
+                ) {
+                    blockedReason =
+                        "Dependency cycle detected.";
+                }
+
                 for (const dependencyId of dependencies) {
+                    if (blockedReason) {
+                        break;
+                    }
                     const dependency = byId.get(dependencyId);
 
                     if (!dependency) {
