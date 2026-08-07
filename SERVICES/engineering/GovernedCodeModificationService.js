@@ -8,7 +8,7 @@ const BLOCKED_SEGMENTS = new Set([
   ".git",
   ".env",
   "node_modules",
-  "DATA",
+  "data",
   "recovery",
   "logs",
   "state",
@@ -77,6 +77,12 @@ class GovernedCodeModificationService {
         "runtime",
         "engineering"
       );
+    this.approvalRoot =
+      options.approvalRoot ||
+      path.join(
+        this.evidenceRoot,
+        "approvals"
+      );
     this.approvalKey =
       options.approvalKey ||
       process.env.MILES_ENGINEERING_APPROVAL_KEY ||
@@ -118,7 +124,9 @@ class GovernedCodeModificationService {
       segments.includes("..") ||
       segments.includes(".") ||
       segments.some(segment =>
-        BLOCKED_SEGMENTS.has(segment)
+        BLOCKED_SEGMENTS.has(
+          segment.toLowerCase()
+        )
       )
     ) {
       throw new Error(
@@ -279,6 +287,22 @@ class GovernedCodeModificationService {
       }
 
       const stat = fs.lstatSync(target.fullPath);
+      const realRoot = fs.realpathSync(this.rootDir);
+      const realTarget = fs.realpathSync(target.fullPath);
+      const realRootPrefix =
+        realRoot.endsWith(path.sep)
+          ? realRoot
+          : `${realRoot}${path.sep}`;
+
+      if (
+        realTarget !== realRoot &&
+        !realTarget.startsWith(realRootPrefix)
+      ) {
+        throw new Error(
+          `SOURCE_REAL_PATH_OUTSIDE_ROOT: ${change.path}`
+        );
+      }
+
       if (!stat.isFile() || stat.isSymbolicLink()) {
         throw new Error(
           `SOURCE_FILE_TYPE_NOT_ALLOWED: ${change.path}`
@@ -345,6 +369,15 @@ class GovernedCodeModificationService {
         this.approvalKey
       )
     };
+  }
+
+  approvalFilePath(approval) {
+    const fileName =
+      `${approval.planId}-${approval.changeSetSha256.slice(0, 16)}.json`;
+    return path.join(
+      this.approvalRoot,
+      fileName
+    );
   }
 
   validateApproval(approval, plan, changeSet) {
@@ -490,8 +523,7 @@ class GovernedCodeModificationService {
       changeSetSha256:
         changeSet.changeSetSha256,
       authorization,
-      files,
-      rawApproval: approval
+      files
     };
   }
 
@@ -554,6 +586,13 @@ class GovernedCodeModificationService {
           backupPath
         );
 
+        const appliedRecord = {
+          ...file,
+          backupPath,
+          afterSha256: null
+        };
+        applied.push(appliedRecord);
+
         this.writeImpl(
           file.fullPath,
           file.content
@@ -568,11 +607,8 @@ class GovernedCodeModificationService {
           );
         }
 
-        applied.push({
-          ...file,
-          backupPath,
-          afterSha256
-        });
+        appliedRecord.afterSha256 =
+          afterSha256;
       }
     } catch (error) {
       for (const file of applied.reverse()) {
