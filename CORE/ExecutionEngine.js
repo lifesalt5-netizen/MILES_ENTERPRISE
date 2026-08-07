@@ -106,9 +106,25 @@ class ExecutionEngine {
     }
 
     getNextQueuedTask() {
+        if (
+            typeof taskQueue.claimNextExecutableTask ===
+            "function"
+        ) {
+            return taskQueue.claimNextExecutableTask({
+                recoveredBy:
+                    "ExecutionEngine.getNextQueuedTask",
+                claimedBy:
+                    "ExecutionEngine"
+            });
+        }
+
         return taskQueue
             .list("QUEUED")
-            .sort((a, b) => (b.priority || 0) - (a.priority || 0))[0] || null;
+            .sort(
+                (a, b) =>
+                    Number(a.priority || 99) -
+                    Number(b.priority || 99)
+            )[0] || null;
     }
 
     async runNext() {
