@@ -44,7 +44,8 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("conservation passes", async () => assert.strictEqual(report.conservation.ok, true));
   await test("one primary segment is assigned", async () => assert.strictEqual(report.onePrimarySegmentPerLead, true));
   await test("expired segment wins priority", async () => assert.strictEqual(report.summary.segmentCounts["Expired Everything"], 1));
-  await test("pipe-delimited underscore GSA segment maps correctly", async () => assert.strictEqual(report.summary.segmentCounts.GSA, 1));\n  await test("no verified lead loses segment provenance", async () => assert.strictEqual(report.summary.segmentCounts.Unclassified || 0, 0));
+  await test("pipe-delimited underscore GSA segment maps correctly", async () => assert.strictEqual(report.summary.segmentCounts.GSA, 1));
+  await test("no verified lead loses segment provenance", async () => assert.strictEqual(report.summary.segmentCounts.Unclassified || 0, 0));
   await test("overlap combines segments and uses higher priority", async () => assert.strictEqual(report.summary.segmentCounts["Expiring 12 Months"], 1));
   await test("SBS remains represented", async () => assert.strictEqual(report.summary.segmentCounts.SBS, 1));
   await test("master artifact exists", async () => assert.strictEqual(fs.existsSync(report.artifacts.master.filePath), true));
