@@ -76,7 +76,7 @@ class RevenueVerifiedSegmentActivationService {
       if (!email) throw new Error("Verified record is missing email.");
       if (!byEmail.has(email)) byEmail.set(email, { email, segments: new Set(), sources: new Set(), verificationSources: new Set(), evidence: [] });
       const merged = byEmail.get(email);
-      for (const segment of (Array.isArray(record.segments) ? record.segments : [])) if (String(segment).trim()) merged.segments.add(String(segment).trim());
+      const segmentValues = Array.isArray(record.segments)\n        ? record.segments\n        : String(record.segments || "").split("|");\n      for (const segment of segmentValues) if (String(segment).trim()) merged.segments.add(String(segment).trim());
       merged.sources.add(source);
       merged.verificationSources.add(source === "GATE_6_EXISTING_VERIFIED" ? "PRIOR_VERIFIED_EVIDENCE" : "MILLIONVERIFIER_GATE_8");
       merged.evidence.push({ source, result: record.result || "ok", quality: record.quality || "good" });
