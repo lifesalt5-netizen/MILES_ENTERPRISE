@@ -8,8 +8,8 @@ function sha256(value) { return crypto.createHash("sha256").update(value).digest
 function normalize(value) {
   return String(value || "").trim().toLowerCase()
     .replace(/[^a-z0-9]+/g, " ").trim()
-    .replace(/\\b(\\d+)\\s*m\\b/g, "$1 months")
-    .replace(/\\bmonth\\b/g, "months");
+    .replace(/\b(\d+)\s*m\b/g, "$1 months")
+    .replace(/\bmonth\b/g, "months");
 }
 
 const ROUTES = [
