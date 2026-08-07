@@ -10,7 +10,8 @@ const SEGMENT_HEADERS = ["primary segment", "primarysegment", "segment", "segmen
 const GOOD = new Set(["ok", "valid", "verified", "deliverable"]);
 const BAD = new Set(["invalid", "bad", "undeliverable", "do not mail", "do_not_mail", "disposable", "bounce", "bounced"]);
 const LEAD_FILE_PATTERN = /(master|segment|gsa|sam|va|sbs|expired|expiring|hubzone|sdvosb|vosb|wosb|8a|8_a|millionverifier|validated|verified|email_ready)/i;
-const VERIFIED_FILE_PATTERN = /(ok[_ -]?only|verified|validated[_ -]?email|email[_ -]?ready)/i;
+const VERIFIED_FILE_PATTERN = /(ok[_ -]?only|verified|validated[_ -]?email)/i;
+const OPERATIONAL_FILE_PATTERN = /(inbox_status_master|campaign_status_master|domain_status_master|segment_inventory_master|segment_summary)/i;
 
 function sha256(value) { return crypto.createHash("sha256").update(value).digest("hex").toUpperCase(); }
 function normalize(value) { return String(value || "").replace(/^\uFEFF/, "").trim().toLowerCase(); }
@@ -82,7 +83,12 @@ class RevenueLeadInventoryClassificationService {
         for (const entry of entries) {
           const full = path.join(current, entry.name);
           if (entry.isDirectory()) stack.push(full);
-          else if (entry.isFile() && /\.csv$/i.test(entry.name) && LEAD_FILE_PATTERN.test(entry.name)) files.push(full);
+          else if (
+            entry.isFile() &&
+            /\.csv$/i.test(entry.name) &&
+            LEAD_FILE_PATTERN.test(entry.name) &&
+            !OPERATIONAL_FILE_PATTERN.test(entry.name)
+          ) files.push(full);
         }
       }
     }
