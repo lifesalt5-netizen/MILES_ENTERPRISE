@@ -6,6 +6,9 @@ const path = require('path');
 const InstantlyCOOWorker =
   require('../workers/InstantlyCOOWorker');
 
+const ExecutiveRuntimeHealthService =
+  require('./ExecutiveRuntimeHealthService');
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -95,7 +98,7 @@ function makeComponent(
 class DigitalCOOHost {
   constructor(options = {}) {
     this.service = 'DIGITAL_COO_HOST';
-    this.version = '1.4.0';
+    this.version = '1.5.0';
 
     this.rootDir =
       options.rootDir ||
@@ -478,6 +481,17 @@ class DigitalCOOHost {
         this.bootReport
       );
 
+    this.executiveRuntimeHealth =
+      options.executiveRuntimeHealth ||
+      makeComponent(
+        'executiveRuntimeHealth',
+        ExecutiveRuntimeHealthService,
+        {
+          rootDir: this.rootDir
+        },
+        this.bootReport
+      );
+
     this.running = false;
 
     this.state = {
@@ -840,6 +854,12 @@ class DigitalCOOHost {
 
   async healthCheck() {
     const components = {
+      executiveRuntimeHealth:
+        await this.safeHealth(
+          this.executiveRuntimeHealth,
+          true
+        ),
+
       connectorRuntimeManager:
         await this.safeHealth(
           this.connectorRuntimeManager
@@ -915,6 +935,8 @@ class DigitalCOOHost {
           : 'DEGRADED',
       running: this.running,
       components,
+      executiveRuntime:
+        components.executiveRuntimeHealth,
       workers:
         this.workerRegistry &&
         typeof this.workerRegistry.listWorkers ===

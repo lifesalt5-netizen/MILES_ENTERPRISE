@@ -107,6 +107,27 @@ function delay(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
+function writeJsonAtomic(filePath, value) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const temporaryFile =
+    `${filePath}.${process.pid}.${Date.now()}.tmp`;
+
+  fs.writeFileSync(
+    temporaryFile,
+    JSON.stringify(value, null, 2),
+    "utf8"
+  );
+
+  try {
+    fs.renameSync(temporaryFile, filePath);
+  } catch {
+    fs.copyFileSync(temporaryFile, filePath);
+    try {
+      fs.unlinkSync(temporaryFile);
+    } catch {}
+  }
+}
+
 function processFailure(record) {
   if (record.startError) return record.startError;
   if (record.exited) {
@@ -233,6 +254,14 @@ class ProductionBootstrapSupervisor {
       60000
     );
     this.processes = options.processes || buildProcessPlan(this.env);
+    this.statusFile =
+      options.statusFile ||
+      path.join(
+        this.root,
+        "DATA",
+        "runtime",
+        "production_bootstrap_status.json"
+      );
     this.children = new Map();
     this.restartCounts = new Map();
     this.shuttingDown = false;
@@ -259,6 +288,23 @@ class ProductionBootstrapSupervisor {
       if (!fs.existsSync(scriptPath)) {
         throw new Error(`Production entry point missing: ${scriptPath}`);
       }
+    }
+  }
+
+  persistStatus() {
+    const snapshot = this.statusSnapshot();
+    writeJsonAtomic(this.statusFile, snapshot);
+    return snapshot;
+  }
+
+  persistStatusSafe() {
+    try {
+      return this.persistStatus();
+    } catch (error) {
+      this.log(
+        `Production status persistence failed: ${error.message}`
+      );
+      return null;
     }
   }
 
@@ -301,10 +347,12 @@ class ProductionBootstrapSupervisor {
     };
 
     this.children.set(proc.name, record);
+    this.persistStatus();
 
     child.once("error", error => {
       record.startError = error;
       this.log(`${proc.name} failed to start: ${error.message}`);
+      this.persistStatusSafe();
     });
 
     child.once("exit", (code, signal) => {
@@ -313,6 +361,7 @@ class ProductionBootstrapSupervisor {
       record.exitCode = code;
       record.exitSignal = signal;
       this.log(`${proc.name} exited. code=${code} signal=${signal}`);
+      this.persistStatusSafe();
 
       if (!this.shuttingDown && this.startupComplete) {
         this.restartCounts.set(proc.name, record.restartCount + 1);
@@ -332,6 +381,7 @@ class ProductionBootstrapSupervisor {
       record.ready = true;
       record.readyAt = new Date().toISOString();
       this.log(`${proc.name}: READY pid=${child.pid}`);
+      this.persistStatus();
       return record;
     } catch (error) {
       try {
@@ -350,7 +400,7 @@ class ProductionBootstrapSupervisor {
 
     this.startupComplete = true;
     this.startHeartbeat();
-    return this.statusSnapshot();
+    return this.persistStatus();
   }
 
   statusSnapshot() {
@@ -370,7 +420,10 @@ class ProductionBootstrapSupervisor {
     });
 
     return {
-      ok: this.startupComplete && services.every(item => item.ready),
+      ok:
+        this.startupComplete &&
+        !this.shuttingDown &&
+        services.every(item => item.running && item.ready),
       service: "MILES_PRODUCTION_BOOTSTRAP",
       root: this.root,
       startupComplete: this.startupComplete,
@@ -382,7 +435,7 @@ class ProductionBootstrapSupervisor {
 
   startHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
-      const snapshot = this.statusSnapshot();
+      const snapshot = this.persistStatus();
       const ready = snapshot.services.filter(item => item.ready).length;
       this.log(`Supervisor heartbeat. ready=${ready}/${snapshot.services.length}`);
       for (const service of snapshot.services) {
@@ -399,6 +452,7 @@ class ProductionBootstrapSupervisor {
     this.shuttingDown = true;
     this.startupComplete = false;
     if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    this.persistStatusSafe();
 
     this.log(`Shutdown requested by ${signal}. Stopping child processes.`);
 
