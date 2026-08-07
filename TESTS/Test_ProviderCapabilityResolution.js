@@ -265,7 +265,7 @@ try {
       const result =
         capabilityService
           .resolveObjective(
-            "Review the revenue sales pipeline"
+            "Sales pipeline review and follow-up"
           );
 
       assert.strictEqual(
@@ -275,7 +275,7 @@ try {
 
       assert.strictEqual(
         result.capability,
-        "sales.pipeline.review"
+        "sales.pipeline.followup"
       );
     }
   );
