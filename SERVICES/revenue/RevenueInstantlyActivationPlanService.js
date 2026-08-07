@@ -5,7 +5,12 @@ const fs = require("fs");
 const path = require("path");
 
 function sha256(value) { return crypto.createHash("sha256").update(value).digest("hex").toUpperCase(); }
-function normalize(value) {\n  return String(value || "").trim().toLowerCase()\n    .replace(/[^a-z0-9]+/g, " ").trim()\n    .replace(/\\b(\\d+)\\s*m\\b/g, "$1 months")\n    .replace(/\\bmonth\\b/g, "months");\n}
+function normalize(value) {
+  return String(value || "").trim().toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ").trim()
+    .replace(/\\b(\\d+)\\s*m\\b/g, "$1 months")
+    .replace(/\\bmonth\\b/g, "months");
+}
 
 const ROUTES = [
   { rank: 1, name: "Expired Everything", pattern: /expired everything/i },
