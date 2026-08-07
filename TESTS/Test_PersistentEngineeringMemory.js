@@ -10,6 +10,9 @@ const Service = require(
 const { parseArguments } = require(
   "../SCRIPTS/RecordEngineeringMemory"
 );
+const { main: recordMemory } = require(
+  "../SCRIPTS/RecordEngineeringMemory"
+);
 
 let passed = 0;
 function test(name, action) {
@@ -96,7 +99,36 @@ function test(name, action) {
       apply: false
     }));
 
-  console.log(`PERSISTENT_ENGINEERING_MEMORY_TEST_PASS ${passed}/23`);
+  test("CLI accepts Windows PowerShell UTF-8 BOM JSON", () => {
+    const cliRoot = path.join(root, "bom-cli");
+    const eventPath = path.join(root, "bom-event.json");
+    fs.writeFileSync(
+      eventPath,
+      `\uFEFF${JSON.stringify({
+        eventType: "ENGINEERING_DECISION",
+        gate: "Windows BOM compatibility",
+        status: "RECORDED",
+        summary: "PowerShell UTF-8 BOM input is accepted."
+      })}`,
+      "utf8"
+    );
+    const previousRoot = process.env.MILES_ROOT;
+    process.env.MILES_ROOT = cliRoot;
+    const originalLog = console.log;
+    console.log = () => {};
+    try {
+      const result = recordMemory([
+        `--event=${eventPath}`
+      ]);
+      assert.strictEqual(result.ok, true);
+      assert.strictEqual(result.mode, "PLAN_ONLY");
+    } finally {
+      console.log = originalLog;
+      if (previousRoot === undefined) delete process.env.MILES_ROOT;
+      else process.env.MILES_ROOT = previousRoot;
+    }
+  });
+
+  console.log(`PERSISTENT_ENGINEERING_MEMORY_TEST_PASS ${passed}/24`);
   fs.rmSync(root, { recursive: true, force: true });
 })();
-
