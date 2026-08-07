@@ -20,6 +20,8 @@ class TaskQueue {
         this.queuePath = path.join(ROOT, "DATA", "runtime", "task_queue.json");
         this.lockPath = path.join(ROOT, "DATA", "runtime", "task_queue.lock");
         this.backupDir = path.join(ROOT, "DATA", "runtime", "queue_backups");
+        this.lastGoodPath = path.join(ROOT, "DATA", "runtime", "task_queue.last_good.json");
+        this.lockToken = null;
 
         this.ensureRuntime();
         this.withLock(() => {
@@ -41,41 +43,138 @@ class TaskQueue {
         }
     }
 
+    readLockOwner() {
+        try {
+            const ownerPath = path.join(this.lockPath, "owner.json");
+
+            if (!fs.existsSync(ownerPath)) {
+                return null;
+            }
+
+            return JSON.parse(fs.readFileSync(ownerPath, "utf8"));
+        } catch {
+            return null;
+        }
+    }
+
+    lockAgeMs() {
+        try {
+            const owner = this.readLockOwner();
+            const acquiredAt = new Date(owner?.acquiredAt || 0).getTime();
+
+            if (Number.isFinite(acquiredAt) && acquiredAt > 0) {
+                return Math.max(0, Date.now() - acquiredAt);
+            }
+
+            return Math.max(
+                0,
+                Date.now() - fs.statSync(this.lockPath).mtimeMs
+            );
+        } catch {
+            return 0;
+        }
+    }
+
+    isProcessAlive(pid) {
+        const numericPid = Number(pid);
+
+        if (!Number.isInteger(numericPid) || numericPid <= 0) {
+            return false;
+        }
+
+        try {
+            process.kill(numericPid, 0);
+            return true;
+        } catch (error) {
+            return error?.code === "EPERM";
+        }
+    }
+
+    canReclaimLock() {
+        if (!fs.existsSync(this.lockPath)) {
+            return false;
+        }
+
+        const staleAfterMs = Math.max(
+            1000,
+            Number(process.env.MILES_QUEUE_LOCK_STALE_MS || 5000)
+        );
+
+        if (this.lockAgeMs() < staleAfterMs) {
+            return false;
+        }
+
+        const owner = this.readLockOwner();
+
+        return !owner || !this.isProcessAlive(owner.pid);
+    }
+
     acquireLock() {
         this.ensureRuntime();
 
-        const maxAttempts = 100;
+        const timeoutMs = Math.max(
+            250,
+            Number(process.env.MILES_QUEUE_LOCK_TIMEOUT_MS || 10000)
+        );
+        const retryMs = Math.max(
+            10,
+            Number(process.env.MILES_QUEUE_LOCK_RETRY_MS || 50)
+        );
+        const deadline = Date.now() + timeoutMs;
 
-        for (let i = 0; i < maxAttempts; i++) {
+        while (Date.now() <= deadline) {
+            const token =
+                `${process.pid}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
             try {
                 fs.mkdirSync(this.lockPath);
                 fs.writeFileSync(
                     path.join(this.lockPath, "owner.json"),
                     JSON.stringify({
                         pid: process.pid,
+                        token,
                         acquiredAt: now()
                     }, null, 2),
                     "utf8"
                 );
+                this.lockToken = token;
                 return true;
             } catch {
-                sleepSync(50);
+                if (this.canReclaimLock()) {
+                    try {
+                        fs.rmSync(this.lockPath, {
+                            recursive: true,
+                            force: true
+                        });
+                        continue;
+                    } catch {}
+                }
+
+                sleepSync(retryMs);
             }
         }
 
-        try {
-            fs.rmSync(this.lockPath, { recursive: true, force: true });
-            fs.mkdirSync(this.lockPath);
-            return true;
-        } catch {
-            return false;
-        }
+        return false;
     }
 
     releaseLock() {
         try {
-            fs.rmSync(this.lockPath, { recursive: true, force: true });
-        } catch {}
+            const owner = this.readLockOwner();
+
+            if (
+                owner &&
+                owner.pid === process.pid &&
+                owner.token === this.lockToken
+            ) {
+                fs.rmSync(this.lockPath, {
+                    recursive: true,
+                    force: true
+                });
+            }
+        } catch {
+        } finally {
+            this.lockToken = null;
+        }
     }
 
     withLock(fn) {
@@ -261,8 +360,8 @@ class TaskQueue {
                 }
             }
         } catch (error) {
-            console.error(
-                "[BUILD128] Existing queue merge read failed:",
+            throw new Error(
+                "[TaskQueue] Refusing to overwrite unreadable queue: " +
                 error.message
             );
         }
@@ -290,17 +389,55 @@ class TaskQueue {
             2
         );
 
-        fs.writeFileSync(
-            tmp,
-            json,
-            "utf8"
-        );
+        const descriptor = fs.openSync(tmp, "wx");
 
         try {
+            fs.writeFileSync(descriptor, json, "utf8");
+            fs.fsyncSync(descriptor);
+        } finally {
+            fs.closeSync(descriptor);
+        }
+
+        try {
+            /*
+             * POSIX rename replaces atomically. Windows may reject replacement
+             * of an existing file, so retain a verified last-good snapshot
+             * before the remove-and-rename fallback.
+             */
+            if (fs.existsSync(this.queuePath)) {
+                fs.copyFileSync(
+                    this.queuePath,
+                    this.lastGoodPath
+                );
+            }
+
+            try {
+                fs.renameSync(tmp, this.queuePath);
+            } catch (error) {
+                if (!["EEXIST", "EPERM", "EACCES"].includes(error?.code)) {
+                    throw error;
+                }
+
+                fs.rmSync(this.queuePath, { force: true });
+                fs.renameSync(tmp, this.queuePath);
+            }
+
             fs.copyFileSync(
-                tmp,
-                this.queuePath
+                this.queuePath,
+                this.lastGoodPath
             );
+        } catch (error) {
+            if (
+                !fs.existsSync(this.queuePath) &&
+                fs.existsSync(this.lastGoodPath)
+            ) {
+                fs.copyFileSync(
+                    this.lastGoodPath,
+                    this.queuePath
+                );
+            }
+
+            throw error;
         } finally {
             try {
                 fs.unlinkSync(tmp);
@@ -632,6 +769,279 @@ this.writeJsonDirect(tasks);
                     recovered.length,
                 recovered
             };
+        });
+    }
+
+    dependencyIds(task = {}) {
+        const raw =
+            task.dependsOn ||
+            task.dependencies ||
+            task.payload?.dependsOn ||
+            task.payload?.dependencies ||
+            [];
+
+        return (Array.isArray(raw) ? raw : [raw])
+            .map(value => {
+                if (value && typeof value === "object") {
+                    return String(
+                        value.id ||
+                        value.taskId ||
+                        ""
+                    ).trim();
+                }
+
+                return String(value || "").trim();
+            })
+            .filter(Boolean);
+    }
+
+    recoverRetryableFailedTasks(options = {}) {
+        const retryDelayMs = Math.max(
+            0,
+            Number(
+                options.retryDelayMs ??
+                process.env.MILES_QUEUE_RETRY_DELAY_MS ??
+                5000
+            )
+        );
+        const currentTime = Date.now();
+
+        return this.withLock(() => {
+            const tasks = this.readJsonDirect();
+            const recovered = [];
+
+            for (const task of tasks) {
+                if (
+                    String(task?.status || "").toUpperCase() !== "FAILED"
+                ) {
+                    continue;
+                }
+
+                const retryable =
+                    task.retryable === true ||
+                    task.result?.retryable === true ||
+                    task.failure?.retryable === true ||
+                    task.result?.failure?.retryable === true;
+
+                if (!retryable) {
+                    continue;
+                }
+
+                const retryCount = Number(task.retryCount || 0);
+                const maxRetries = Math.max(
+                    0,
+                    Number(
+                        task.maxRetries ??
+                        task.payload?.maxRetries ??
+                        1
+                    )
+                );
+
+                if (retryCount >= maxRetries) {
+                    continue;
+                }
+
+                const failedAt = new Date(
+                    task.failedAt ||
+                    task.updatedAt ||
+                    task.result?.createdAt ||
+                    0
+                ).getTime();
+                const eligibleAt = new Date(
+                    task.nextRetryAt ||
+                    (
+                        Number.isFinite(failedAt)
+                            ? failedAt + retryDelayMs
+                            : currentTime
+                    )
+                ).getTime();
+
+                if (
+                    Number.isFinite(eligibleAt) &&
+                    eligibleAt > currentTime
+                ) {
+                    continue;
+                }
+
+                task.status = "QUEUED";
+                task.retryCount = retryCount + 1;
+                task.updatedAt = now();
+                task.startedAt = null;
+                task.completedAt = null;
+                task.failedAt = null;
+                task.nextRetryAt = null;
+                task.retry = {
+                    scheduled: true,
+                    retryCount: task.retryCount,
+                    maxRetries,
+                    recoveredAt: task.updatedAt,
+                    recoveredBy:
+                        options.recoveredBy ||
+                        "TaskQueue.recoverRetryableFailedTasks"
+                };
+
+                recovered.push(task.id);
+            }
+
+            if (recovered.length) {
+                this.writeJsonDirect(tasks);
+            }
+
+            return {
+                ok: true,
+                recoveredCount: recovered.length,
+                recovered
+            };
+        });
+    }
+
+    claimNextExecutableTask(options = {}) {
+        if (options.recoverStale !== false) {
+            this.recoverStaleRunningTasks({
+                staleAfterMs: options.staleAfterMs,
+                recoveredBy:
+                    options.recoveredBy ||
+                    "TaskQueue.claimNextExecutableTask"
+            });
+        }
+
+        if (options.recoverRetries !== false) {
+            this.recoverRetryableFailedTasks({
+                retryDelayMs: options.retryDelayMs,
+                recoveredBy:
+                    options.recoveredBy ||
+                    "TaskQueue.claimNextExecutableTask"
+            });
+        }
+
+        return this.withLock(() => {
+            const tasks = this.readJsonDirect();
+            const byId = new Map(
+                tasks
+                    .filter(task => task?.id)
+                    .map(task => [String(task.id), task])
+            );
+            const candidates = [];
+            let changed = false;
+            const currentTime = Date.now();
+
+            for (const task of tasks) {
+                if (
+                    String(task?.status || "").toUpperCase() !== "QUEUED"
+                ) {
+                    continue;
+                }
+
+                const nextAttemptAt = new Date(
+                    task.nextAttemptAt ||
+                    task.nextRetryAt ||
+                    0
+                ).getTime();
+
+                if (
+                    Number.isFinite(nextAttemptAt) &&
+                    nextAttemptAt > currentTime
+                ) {
+                    continue;
+                }
+
+                const dependencies = this.dependencyIds(task);
+                let waiting = false;
+                let blockedReason = null;
+
+                for (const dependencyId of dependencies) {
+                    const dependency = byId.get(dependencyId);
+
+                    if (!dependency) {
+                        blockedReason =
+                            `Required dependency not found: ${dependencyId}`;
+                        break;
+                    }
+
+                    const dependencyStatus =
+                        String(dependency.status || "").toUpperCase();
+
+                    if (
+                        ["FAILED", "CANCELLED", "BLOCKED"].includes(
+                            dependencyStatus
+                        )
+                    ) {
+                        blockedReason =
+                            `Dependency ${dependencyId} ended as ${dependencyStatus}`;
+                        break;
+                    }
+
+                    if (
+                        !["COMPLETED", "COMPLETE"].includes(
+                            dependencyStatus
+                        )
+                    ) {
+                        waiting = true;
+                    }
+                }
+
+                if (blockedReason) {
+                    task.status = "BLOCKED";
+                    task.error = blockedReason;
+                    task.updatedAt = now();
+                    task.dependencyState = {
+                        ok: false,
+                        blocked: true,
+                        reason: blockedReason,
+                        checkedAt: task.updatedAt
+                    };
+                    changed = true;
+                    continue;
+                }
+
+                if (!waiting) {
+                    candidates.push(task);
+                }
+            }
+
+            candidates.sort((a, b) => {
+                const priority =
+                    Number(a.priority ?? 99) -
+                    Number(b.priority ?? 99);
+
+                if (priority !== 0) {
+                    return priority;
+                }
+
+                return (
+                    this.taskTimestamp(a) -
+                    this.taskTimestamp(b)
+                );
+            });
+
+            const selected = candidates[0] || null;
+
+            if (selected) {
+                const claimedAt = now();
+
+                selected.status = "RUNNING";
+                selected.startedAt = claimedAt;
+                selected.updatedAt = claimedAt;
+                selected.attemptCount =
+                    Number(selected.attemptCount || 0) + 1;
+                selected.claim = {
+                    pid: process.pid,
+                    claimedAt,
+                    claimedBy:
+                        options.claimedBy ||
+                        options.recoveredBy ||
+                        "TaskQueue.claimNextExecutableTask"
+                };
+                changed = true;
+            }
+
+            if (changed) {
+                this.writeJsonDirect(tasks);
+            }
+
+            return selected
+                ? { ...selected }
+                : null;
         });
     }
 
