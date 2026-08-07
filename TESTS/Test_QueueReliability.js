@@ -155,6 +155,34 @@ try {
     });
 
     taskQueue.add({
+        id: "CYCLE_A",
+        type: "TEST",
+        status: "QUEUED",
+        dependsOn: ["CYCLE_B"]
+    });
+    taskQueue.add({
+        id: "CYCLE_B",
+        type: "TEST",
+        status: "QUEUED",
+        dependsOn: ["CYCLE_A"]
+    });
+
+    taskQueue.claimNextExecutableTask({
+        staleAfterMs: 600000,
+        retryDelayMs: 0
+    });
+
+    check("dependency cycles fail closed", () => {
+        for (const id of ["CYCLE_A", "CYCLE_B"]) {
+            const task = taskQueue.list().find(
+                item => item.id === id
+            );
+            assert.strictEqual(task.status, "BLOCKED");
+            assert.match(task.error, /cycle detected/i);
+        }
+    });
+
+    taskQueue.add({
         id: "RETRYABLE",
         type: "TEST",
         status: "FAILED",
@@ -298,7 +326,7 @@ try {
             fs.readFileSync(queuePath, "utf8")
         );
         assert.ok(Array.isArray(persisted));
-        assert.ok(persisted.length >= 7);
+        assert.ok(persisted.length >= 9);
     });
 
     console.log(
