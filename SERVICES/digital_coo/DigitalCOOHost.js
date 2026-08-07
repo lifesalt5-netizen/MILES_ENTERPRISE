@@ -593,12 +593,32 @@ class DigitalCOOHost {
       )
     );
 
-    results.push(
+    const workerRuntimeStart =
       await this.safeStart(
         'workerRuntimeManager',
-        this.workerRuntimeManager
-      )
-    );
+        this.workerRuntimeManager,
+        true
+      );
+
+    results.push(workerRuntimeStart);
+
+    if (workerRuntimeStart.ok === false) {
+      await this.safeStop(
+        'learningEngineManager',
+        this.learningEngineManager
+      );
+      await this.safeStop(
+        'connectorRuntimeManager',
+        this.connectorRuntimeManager
+      );
+      this.running = false;
+      this.state.running = false;
+      this.state.ok = false;
+      this.state.status = 'START_FAILED';
+      this.state.lastError = workerRuntimeStart.error || workerRuntimeStart.status;
+      this.saveState();
+      return { ok: false, service: this.service, status: 'START_FAILED', results, error: this.state.lastError, state: this.getState() };
+    }
 
     results.push(
       await this.safeStart(
@@ -735,15 +755,16 @@ class DigitalCOOHost {
     };
   }
 
-  async safeStart(name, component) {
+  async safeStart(name, component, required = false) {
     if (
       !component ||
       typeof component.start !== 'function'
     ) {
       return {
-        ok: true,
+        ok: !required,
         component: name,
-        status: 'START_SKIPPED'
+        required,
+        status: required ? 'REQUIRED_COMPONENT_UNAVAILABLE' : 'START_SKIPPED'
       };
     }
 
@@ -758,6 +779,7 @@ class DigitalCOOHost {
             ? false
             : true,
         component: name,
+        required,
         ...(result || {})
       };
     } catch (error) {
@@ -769,6 +791,7 @@ class DigitalCOOHost {
       return {
         ok: false,
         component: name,
+        required,
         status: 'START_FAILED',
         error: error.message
       };
@@ -829,22 +852,26 @@ class DigitalCOOHost {
 
       workerRuntimeManager:
         await this.safeHealth(
-          this.workerRuntimeManager
+          this.workerRuntimeManager,
+          true
         ),
 
       workerRegistry:
         await this.safeHealth(
-          this.workerRegistry
+          this.workerRegistry,
+          true
         ),
 
       workerDispatcher:
         await this.safeHealth(
-          this.workerDispatcher
+          this.workerDispatcher,
+          true
         ),
 
       instantlyCOOWorker:
         await this.safeHealth(
-          this.instantlyCOOWorker
+          this.instantlyCOOWorker,
+          true
         ),
 
       digitalCOORuntimeManager:
@@ -918,11 +945,12 @@ class DigitalCOOHost {
     return health;
   }
 
-  async safeHealth(component) {
+  async safeHealth(component, required = false) {
     if (!component) {
       return {
-        ok: true,
-        status: 'UNAVAILABLE_SKIPPED'
+        ok: !required,
+        required,
+        status: required ? 'REQUIRED_COMPONENT_UNAVAILABLE' : 'UNAVAILABLE_SKIPPED'
       };
     }
 
@@ -931,7 +959,8 @@ class DigitalCOOHost {
         typeof component.healthCheck ===
         'function'
       ) {
-        return await component.healthCheck();
+        const health = await component.healthCheck();
+        return { required, ...health };
       }
 
       if (
@@ -940,6 +969,7 @@ class DigitalCOOHost {
       ) {
         return {
           ok: true,
+          required,
           status: 'STATE_AVAILABLE',
           state: component.getState()
         };
@@ -947,11 +977,13 @@ class DigitalCOOHost {
 
       return {
         ok: true,
+        required,
         status: 'NO_HEALTH_INTERFACE'
       };
     } catch (error) {
       return {
         ok: false,
+        required,
         status: 'HEALTH_FAILED',
         error: error.message
       };
