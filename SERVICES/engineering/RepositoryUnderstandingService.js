@@ -194,6 +194,7 @@ class RepositoryUnderstandingService {
 
   classify(relativePath) {
     const normalized = normalizeRelative(relativePath);
+    if (normalized === "package.json") return "MANIFEST";
     if (/^Start[^/]*\.(?:js|cjs|mjs)$/i.test(normalized)) {
       return "ENTRY_POINT";
     }
@@ -306,11 +307,18 @@ class RepositoryUnderstandingService {
     const unresolved = [];
     const externalPackages = new Set();
 
-    for (const file of sourceFiles) {
-      const source = fs.readFileSync(file.fullPath, "utf8");
+    for (const file of scan.files) {
       const dependencies = [];
+      const isSource = SOURCE_EXTENSIONS.has(
+        path.extname(file.relativePath).toLowerCase()
+      );
+      const specifiers = isSource
+        ? this.parseSpecifiers(
+            fs.readFileSync(file.fullPath, "utf8")
+          )
+        : [];
 
-      for (const specifier of this.parseSpecifiers(source)) {
+      for (const specifier of specifiers) {
         if (
           specifier.startsWith("./") ||
           specifier.startsWith("../")
@@ -413,7 +421,8 @@ class RepositoryUnderstandingService {
       generatedAt: this.generatedAt(),
       fingerprint,
       summary: {
-        sourceFiles: nodes.length,
+        files: nodes.length,
+        sourceFiles: sourceFiles.length,
         entryPoints: entryPoints.length,
         internalDependencies: edges.length,
         externalPackages: externalPackages.size,
