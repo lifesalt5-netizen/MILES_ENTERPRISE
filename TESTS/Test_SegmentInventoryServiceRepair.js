@@ -26,6 +26,17 @@ async function test(name, action) {
   const service = new SegmentInventoryService({ rootDir: root, registry, inventoryFile, outputDir });
 
   await test("segment inventory service is constructable", async () => assert.ok(service));
+  const fallbackService = new SegmentInventoryService({
+    rootDir: root,
+    registry: { getRegistry: () => ({}) },
+    outputDir
+  });
+  await test("missing registry inventory uses the production default safely", async () => {
+    assert.strictEqual(
+      path.basename(fallbackService.inventoryFile),
+      "SEGMENT_INVENTORY_MASTER.csv"
+    );
+  });
   const inventory = service.getInventory();
   await test("inventory loads successfully", async () => assert.strictEqual(inventory.ok, true));
   await test("inventory preserves segment count", async () => assert.strictEqual(inventory.summary.totalSegments, 1));
@@ -38,7 +49,7 @@ async function test(name, action) {
     await assert.rejects(() => service.executeTask({ action: "deleteEverything" }), /Unsupported/);
   });
 
-  console.log(`SEGMENT_INVENTORY_SERVICE_REPAIR_TEST_PASS ${passed}/8`);
+  console.log(`SEGMENT_INVENTORY_SERVICE_REPAIR_TEST_PASS ${passed}/9`);
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => {
   console.error(error.stack || error.message);
