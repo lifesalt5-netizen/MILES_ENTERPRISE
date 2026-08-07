@@ -390,9 +390,36 @@ function sendStaticFile(res, file, contentType) {
 }
 
 async function start() {
-  await host.start();
+  const hostStart = await host.start();
+
+  if (!hostStart || hostStart.ok === false) {
+    throw new Error(
+      `Digital COO host failed to start: ${
+        (hostStart && (hostStart.error || hostStart.status)) ||
+        'unknown error'
+      }`
+    );
+  }
 
   const server = http.createServer(async (req, res) => {
+    if (req.method === 'GET' && req.url === '/api/health') {
+      try {
+        const health = await host.healthCheck();
+        res.writeHead(health.ok ? 200 : 503, {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store'
+        });
+        res.end(JSON.stringify(health, null, 2));
+      } catch (error) {
+        res.writeHead(503, {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store'
+        });
+        res.end(JSON.stringify({ ok: false, status: 'HEALTH_FAILED', error: error.message }, null, 2));
+      }
+      return;
+    }
+
     if (req.method === 'GET' && req.url === '/') {
       try {
         res.writeHead(200, {
