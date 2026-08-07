@@ -628,6 +628,79 @@ class CapabilityService {
     );
   }
 
+  validateRegistry(
+    providerRouter = null
+  ) {
+    const entries =
+      this.registry();
+
+    const seen =
+      new Set();
+
+    const duplicates = [];
+    const invalidEntries = [];
+    const unresolvedProviders = [];
+
+    const router =
+      providerRouter ||
+      require("./ProviderRouterService");
+
+    for (const entry of entries) {
+      const capability =
+        String(entry.capability || "")
+          .trim();
+
+      if (seen.has(capability)) {
+        duplicates.push(capability);
+      }
+
+      seen.add(capability);
+
+      const missing = [
+        "capability",
+        "action",
+        "taskType"
+      ].filter(field =>
+        !String(entry[field] || "")
+          .trim()
+      );
+
+      if (missing.length) {
+        invalidEntries.push({
+          capability:
+            capability || null,
+          missing
+        });
+      }
+
+      if (
+        entry.provider &&
+        !router.hasProvider(entry.provider)
+      ) {
+        unresolvedProviders.push({
+          capability,
+          provider:
+            entry.provider
+        });
+      }
+    }
+
+    return {
+      ok:
+        entries.length > 0 &&
+        duplicates.length === 0 &&
+        invalidEntries.length === 0 &&
+        unresolvedProviders.length === 0,
+
+      capabilityCount:
+        entries.length,
+
+      duplicates,
+      invalidEntries,
+      unresolvedProviders
+    };
+  }
+
   findWorkers(capability) {
     return workforce.findByCapability(
       capability

@@ -491,6 +491,134 @@ class CapabilityDispatcherService {
     );
   }
 
+  validate(
+    connectorManager =
+      require("../CORE/ConnectorManager")
+  ) {
+    const localServices = [];
+    const connectorRoutes = [];
+    const errors = [];
+
+    for (
+      const serviceName of
+      Object.keys(
+        LOCAL_SERVICE_LOADERS
+      )
+    ) {
+      try {
+        const service =
+          this.loadService(
+            serviceName
+          );
+
+        const executable =
+          typeof service.execute ===
+            "function" ||
+          typeof service.run ===
+            "function" ||
+          typeof service.report ===
+            "function";
+
+        localServices.push({
+          serviceName,
+          executable
+        });
+
+        if (!executable) {
+          errors.push(
+            `Local capability service has no executor: ${serviceName}`
+          );
+        }
+      } catch (error) {
+        localServices.push({
+          serviceName,
+          executable: false,
+          error:
+            error.message
+        });
+
+        errors.push(
+          error.message
+        );
+      }
+    }
+
+    for (
+      const connectorName of
+      ["MILES", "ORION"]
+    ) {
+      const connector =
+        connectorManager.get(
+          connectorName
+        );
+
+      const validation =
+        connector
+          ? connectorManager
+              .validateConnector(
+                connectorName,
+                connector
+              )
+          : {
+              ok: false,
+              name:
+                connectorName,
+              errors: [
+                "connector is not registered"
+              ]
+            };
+
+      connectorRoutes.push(
+        validation
+      );
+
+      if (!validation.ok) {
+        errors.push(
+          `Connector route unavailable: ${connectorName}`
+        );
+      }
+    }
+
+    const routeChecks = [
+      this.resolve({
+        action:
+          "ORION_HEALTH"
+      }),
+      this.resolve({
+        action:
+          "BUSINESS_EXECUTION"
+      }),
+      this.resolve({
+        action:
+          "REPOSITORY_SEARCH"
+      })
+    ];
+
+    for (
+      const route of
+      routeChecks
+    ) {
+      if (
+        !route.resolved ||
+        route.ok !== true
+      ) {
+        errors.push(
+          `Capability route unresolved: ${route.action}`
+        );
+      }
+    }
+
+    return {
+      ok:
+        errors.length === 0,
+
+      localServices,
+      connectorRoutes,
+      routeChecks,
+      errors
+    };
+  }
+
   describe() {
     return {
       ok: true,
