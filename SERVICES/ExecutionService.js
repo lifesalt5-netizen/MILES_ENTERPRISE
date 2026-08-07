@@ -1280,6 +1280,36 @@ if (
   ) {
     const failure =
       classifyFailure(error);
+    const retryCount =
+      Number(task.retryCount || 0);
+    const maxRetries =
+      Math.max(
+        0,
+        Number(
+          task.maxRetries ??
+          task.payload?.maxRetries ??
+          1
+        )
+      );
+    const retryDelayMs =
+      Math.max(
+        0,
+        Number(
+          task.retryDelayMs ??
+          task.payload?.retryDelayMs ??
+          process.env.MILES_QUEUE_RETRY_DELAY_MS ??
+          5000
+        )
+      );
+    const failedAt =
+      new Date().toISOString();
+    const nextRetryAt =
+      failure.retryable &&
+      retryCount < maxRetries
+        ? new Date(
+            Date.now() + retryDelayMs
+          ).toISOString()
+        : null;
 
     const result = {
       ok: false,
@@ -1292,8 +1322,11 @@ if (
       failure,
       retryable:
         failure.retryable,
+      retryCount,
+      maxRetries,
+      nextRetryAt,
       createdAt:
-        new Date().toISOString()
+        failedAt
     };
 
     taskQueue.update(
@@ -1306,6 +1339,10 @@ if (
         failure,
         retryable:
           failure.retryable,
+        retryCount,
+        maxRetries,
+        failedAt,
+        nextRetryAt,
         result
       }
     );
@@ -1338,66 +1375,34 @@ if (
 
   async runNext() {
     /*
-     * BUILD141_STALE_TASK_RECOVERY
-     *
-     * A process termination, service restart or machine shutdown can leave
-     * a task persisted as RUNNING even though no worker still owns it.
-     *
-     * Recover stale tasks before selecting the next executable task.
+     * Gate 3 claims the next dependency-ready task atomically. The claim
+     * path also recovers stale RUNNING tasks and due retryable failures.
      */
-    if (
-      typeof taskQueue.recoverStaleRunningTasks ===
-      "function"
-    ) {
-      try {
-        taskQueue.recoverStaleRunningTasks({
-          recoveredBy:
-            "ExecutionService.runNext"
-        });
-      } catch (error) {
-        log(
-          "ExecutionService",
-          "recoverStaleRunningTasks",
-          "Failed",
-          error.message
-        );
-      }
-    }
+    const task =
+      typeof taskQueue.claimNextExecutableTask ===
+        "function"
+        ? taskQueue.claimNextExecutableTask({
+            recoveredBy:
+              "ExecutionService.runNext",
+            claimedBy:
+              "ExecutionService.runNext"
+          })
+        : taskQueue
+            .list("QUEUED")
+            .slice()
+            .sort(
+              (a, b) =>
+                Number(a.priority || 99) -
+                Number(b.priority || 99)
+            )[0] || null;
 
-    const queued =
-      taskQueue.list("QUEUED");
-
-    if (!queued.length) {
+    if (!task) {
       return {
         ok: true,
         message:
-          "No queued tasks"
+          "No queued task ready for execution"
       };
     }
-
-    const sorted =
-      queued
-        .slice()
-        .sort(
-          (a, b) => {
-            const ap =
-              Number(
-                a.priority ||
-                99
-              );
-
-            const bp =
-              Number(
-                b.priority ||
-                99
-              );
-
-            return ap - bp;
-          }
-        );
-
-    const task =
-      sorted[0];
 
     const normalizedTask =
       normalizeTask(task);
