@@ -579,9 +579,13 @@ class SegmentInventoryService {
         options.registry ||
         new CanonicalDatasetRegistry();
 
+    const registryInventory =
+        this.registry.getRegistry().inventory;
+
     this.inventoryFile =
         options.inventoryFile ||
-        this.registry.getRegistry().inventory.segmentInventory;
+        registryInventory?.segmentInventory ||
+        DEFAULT_INVENTORY_FILE;
 
     this.outputDir =
         options.outputDir ||
