@@ -9,7 +9,7 @@ const WorkerDispatcher = require('./WorkerDispatcher');
 class WorkerRuntimeManager {
   constructor(options = {}) {
     this.service = 'WORKER_RUNTIME_MANAGER';
-    this.version = '1.0.0';
+    this.version = '1.1.0';
 
     this.rootDir = options.rootDir || process.cwd();
 
@@ -39,6 +39,7 @@ class WorkerRuntimeManager {
     this.pollIntervalMs = Number(options.pollIntervalMs || 15000);
     this.running = false;
     this.loopHandle = null;
+    this.cycleInProgress = false;
 
     this.state = {
       ok: true,
@@ -67,13 +68,33 @@ class WorkerRuntimeManager {
       };
     }
 
+    const runtimeStart =
+      this.runtime && typeof this.runtime.start === 'function'
+        ? await this.runtime.start()
+        : { ok: false, status: 'RUNTIME_START_UNAVAILABLE' };
+
+    if (!runtimeStart || runtimeStart.ok === false) {
+      this.state.ok = false;
+      this.state.status = 'START_FAILED';
+      this.state.lastError = runtimeStart && (runtimeStart.error || runtimeStart.status) || 'Worker runtime failed to start.';
+      return { ok: false, service: this.service, status: 'START_FAILED', runtime: runtimeStart, state: this.getState() };
+    }
+
     this.running = true;
     this.state.status = 'RUNNING';
     this.state.startedAt = new Date().toISOString();
     this.state.stoppedAt = null;
     this.state.lastError = null;
 
-    await this.runCycle();
+    const firstCycle = await this.runCycle();
+    if (!firstCycle || firstCycle.ok === false) {
+      await this.runtime.stop();
+      this.running = false;
+      this.state.ok = false;
+      this.state.status = 'START_FAILED';
+      this.state.lastError = firstCycle && (firstCycle.error || firstCycle.status) || 'Initial worker cycle failed.';
+      return { ok: false, service: this.service, status: 'START_FAILED', firstCycle, state: this.getState() };
+    }
 
     this.loopHandle = setInterval(async () => {
       await this.runCycle();
@@ -94,6 +115,10 @@ class WorkerRuntimeManager {
       this.loopHandle = null;
     }
 
+    if (this.runtime && typeof this.runtime.stop === 'function') {
+      await this.runtime.stop();
+    }
+
     this.running = false;
     this.state.status = 'STOPPED';
     this.state.stoppedAt = new Date().toISOString();
@@ -107,11 +132,19 @@ class WorkerRuntimeManager {
   }
 
   async runCycle() {
+    if (this.cycleInProgress) {
+      return { ok: true, service: this.service, status: 'CYCLE_ALREADY_RUNNING', state: this.getState() };
+    }
+
+    this.cycleInProgress = true;
     try {
       this.state.cycleCount += 1;
       this.state.lastCycleAt = new Date().toISOString();
 
       const discovery = await this.safeDiscoverWorkers();
+      if (!discovery || discovery.ok === false) {
+        throw new Error('Live worker discovery failed.');
+      }
       const nextWork = await this.getNextWork();
 
       let execution = null;
@@ -163,6 +196,8 @@ class WorkerRuntimeManager {
         error: error.message,
         state: this.getState()
       };
+    } finally {
+      this.cycleInProgress = false;
     }
   }
 
@@ -197,31 +232,15 @@ class WorkerRuntimeManager {
       }
     }
 
-    if (this.registry) {
-      if (typeof this.registry.getNextWorker === 'function') {
-        return await this.registry.getNextWorker();
-      }
-
-      if (typeof this.registry.next === 'function') {
-        return await this.registry.next();
-      }
-
-      if (typeof this.registry.listAvailableWorkers === 'function') {
-        const workers = await this.registry.listAvailableWorkers();
-        if (Array.isArray(workers) && workers.length > 0) {
-          return workers[0];
-        }
-      }
-
-      if (typeof this.registry.listWorkers === 'function') {
-        const workers = await this.registry.listWorkers();
-        if (Array.isArray(workers) && workers.length > 0) {
-          return workers[0];
-        }
-      }
-    }
-
     return null;
+  }
+
+  async executeWorker(operation = {}) {
+    return await this.runtime.executeWorker(operation);
+  }
+
+  async dispatch(operation = {}) {
+    return await this.executeWorker(operation);
   }
 
   async healthCheck() {
@@ -234,10 +253,10 @@ class WorkerRuntimeManager {
           };
 
     return {
-      ok: Boolean(runtimeHealth.ok),
+      ok: Boolean(this.running && runtimeHealth.ok),
       service: this.service,
       version: this.version,
-      status: runtimeHealth.ok ? 'HEALTHY' : 'DEGRADED',
+      status: this.running && runtimeHealth.ok ? 'HEALTHY' : 'DEGRADED',
       running: this.running,
       pollIntervalMs: this.pollIntervalMs,
       runtime: runtimeHealth,
@@ -249,6 +268,7 @@ class WorkerRuntimeManager {
     return {
       ...this.state,
       running: this.running,
+      cycleInProgress: this.cycleInProgress,
       generatedAt: new Date().toISOString()
     };
   }
