@@ -19,7 +19,10 @@ function main(argv = process.argv.slice(2)) {
   if (!args.eventPath || !fs.existsSync(args.eventPath)) {
     throw new Error("Usage: node SCRIPTS/RecordEngineeringMemory.js --event=... [--apply]");
   }
-  const event = JSON.parse(fs.readFileSync(args.eventPath, "utf8"));
+  const eventText = fs
+    .readFileSync(args.eventPath, "utf8")
+    .replace(/^\uFEFF/, "");
+  const event = JSON.parse(eventText);
   const service = new PersistentEngineeringMemoryService();
   const result = service.record({ ...event, apply: args.apply });
   console.log(JSON.stringify(result, null, 2));
@@ -38,4 +41,3 @@ if (require.main === module) {
 }
 
 module.exports = { parseArguments, main };
-
