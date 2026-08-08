@@ -27,7 +27,7 @@ async function test(name, fn) {
     routes: routes.map((route, index) => ({ route, campaignId: "c" + index, paused: true, ready: true }))
   }), "utf8");
 
-  const schedule = { schedules: [{ timezone: "America/New_York" }] };
+  const schedule = { schedules: [{ timezone: "America/New_York", timing: { from: "09:00", to: "17:00" } }] };
   const service = new Service({
     rootDir: root,
     readinessPath,
@@ -63,6 +63,7 @@ async function test(name, fn) {
   await test("full sequence runway calculated", () => assert.strictEqual(result.summary.estimatedSendingDaysAtFullSequence, 125.6));
   await test("all remain paused", () => assert.ok(result.campaigns.every(item => item.mustRemainPaused && item.paused)));
   await test("reference schedule preserved", () => assert.deepStrictEqual(result.referenceSchedule, schedule));
+  await test("reference schedule source recorded", () => assert.strictEqual(result.referenceScheduleSource.route, "GSA"));
   await test("ready for apply", () => assert.strictEqual(result.readyForCapacityApply, true));
   await test("blocked sender excluded", () => assert.strictEqual(result.safety.blockedSender, "info@pathways2gc.com"));
   await test("bounce stop is 3 percent", () => assert.strictEqual(result.stopConditions.bounceRatePercent, 3));
@@ -75,6 +76,35 @@ async function test(name, fn) {
   await test("fingerprint recorded", () => assert.match(result.capacityFingerprint, /^[A-F0-9]{64}$/));
   await test("artifact exists", () => assert.ok(fs.existsSync(result.artifact.filePath)));
   await test("CLI safe", () => assert.deepStrictEqual(parseArguments([]), { apply: false, live: false }));
+
+  const mixedSchedules = new Service({
+    rootDir: root,
+    readinessPath,
+    outputRoot: path.join(root, "out-mixed"),
+    campaignProvider: async id => {
+      const index = Number(id.slice(1));
+      const route = routes[index];
+      return { id, status: 2, campaign_schedule: route === "GSA" ? schedule : {}, email_list: [senders[index % senders.length]] };
+    },
+    accountProvider: async () => ({ items: senders.map(email => ({ email, status: 1 })) })
+  });
+  const mixedResult = await mixedSchedules.build({ apply: true, live: true });
+  await test("empty schedules are ignored", () => assert.deepStrictEqual(mixedResult.referenceSchedule, schedule));
+  await test("valid GSA schedule is selected", () => assert.strictEqual(mixedResult.referenceScheduleSource.route, "GSA"));
+
+  const noValidSchedule = new Service({
+    rootDir: root,
+    readinessPath,
+    outputRoot: path.join(root, "out-noschedule"),
+    campaignProvider: async id => {
+      const index = Number(id.slice(1));
+      return { id, status: 2, campaign_schedule: {}, email_list: [senders[index % senders.length]] };
+    },
+    accountProvider: async () => ({ items: senders.map(email => ({ email, status: 1 })) })
+  });
+  const noScheduleResult = await noValidSchedule.build({ apply: true, live: true });
+  await test("missing valid schedule fails closed", () => assert.strictEqual(noScheduleResult.readyForCapacityApply, false));
+  await test("missing valid schedule blocker recorded", () => assert.ok(noScheduleResult.blockers.includes("VALID_PROVIDER_SCHEDULE_REQUIRED")));
 
   const unhealthy = new Service({
     rootDir: root,
@@ -104,7 +134,7 @@ async function test(name, fn) {
   await test("blocked sender fails closed", () => assert.strictEqual(blockedResult.readyForCapacityApply, false));
   await test("blocked sender blocker recorded", () => assert.ok(blockedResult.blockers.includes("BLOCKED_SENDER_PRESENT:info@pathways2gc.com")));
 
-  console.log("REVENUE_LAUNCH_CAPACITY_PLAN_TEST_PASS " + passed + "/30");
+  console.log("REVENUE_LAUNCH_CAPACITY_PLAN_TEST_PASS " + passed + "/35");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => {
   console.error(error.stack || error.message);
