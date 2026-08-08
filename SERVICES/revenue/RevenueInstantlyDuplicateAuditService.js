@@ -52,19 +52,26 @@ class RevenueInstantlyDuplicateAuditService {
 
   async readCampaignLeads(campaignId) {
     const records = [];
+    const seenCursors = new Set();
     let startingAfter = null;
-    for (let page = 0; page < 100; page += 1) {
+    for (let page = 0; page < 1000; page += 1) {
       const response = await this.leadProvider({
         campaign_id: campaignId,
         limit: 100,
         ...(startingAfter ? { starting_after: startingAfter } : {})
       });
       const extracted = this.extract(response);
+      if (extracted.items.length === 0) return records;
       records.push(...extracted.items);
-      startingAfter = extracted.next;
-      if (!startingAfter) return records;
+      const nextCursor = normalize(extracted.next);
+      if (!nextCursor) return records;
+      if (seenCursors.has(nextCursor)) {
+        throw new Error("Instantly lead pagination returned a repeated cursor.");
+      }
+      seenCursors.add(nextCursor);
+      startingAfter = nextCursor;
     }
-    throw new Error("Instantly lead pagination exceeded the safety limit.");
+    throw new Error("Instantly lead pagination exceeded the 1000-page safety limit.");
   }
 
   leadEmail(record) {
