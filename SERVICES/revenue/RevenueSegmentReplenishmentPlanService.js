@@ -43,7 +43,7 @@ class RevenueSegmentReplenishmentPlanService {
 
   build(input = {}) {
     if (input.apply !== true) return this.preview(input);
-    const target = Number(input.target || 5000);
+    const target = input.target == null ? 5000 : Number(input.target);
     if (!Number.isInteger(target) || target <= 0) throw new Error("A positive integer segment target is required.");
 
     const audit = this.loadJson(this.auditPath);
