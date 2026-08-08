@@ -7,6 +7,12 @@ const path = require("path");
 const AUTHORIZATION = "AUTHORIZE_GATE_23B_PAUSE_LEGACY_AND_APPLY_REPLY_TRIAGE_NO_SEND_NO_LAUNCH";
 const SOURCE_FINGERPRINT = "562BE750E34FA59304A6E64C9A0CF12E4FBD4E7AD9DF4A9A63366C5ADA8BB48D";
 const LEGACY_CAMPAIGN_ID = "3b178b26-4449-4217-9369-946ad9542ac2";
+const CONFIRMED_INTERESTED_EMAIL = "epgcontracts@gmail.com";
+const FALSE_POSITIVE_CORRECTIONS = new Map([
+  ["shawkins@shcpasolutions.com", "AUTO_ACKNOWLEDGEMENT"],
+  ["envirospark-automated-emails@envirosparkenergy.com", "AUTO_ACKNOWLEDGEMENT"],
+  ["kt@directconnectionusa.com", "OUT_OF_OFFICE"]
+]);
 
 function text(value) { return String(value || "").trim(); }
 function lower(value) { return text(value).toLowerCase(); }
@@ -67,13 +73,22 @@ class RevenueInstantlyReplyTriageApplyService {
       if (unique.has(item.messageId)) throw new Error("Duplicate reply evidence detected.");
       unique.add(item.messageId);
     }
-    const positive = normalized.filter(item => item.classification === "POSITIVE_REVIEW");
+    const originallyPositive = normalized.filter(item => item.classification === "POSITIVE_REVIEW");
     const manual = normalized.filter(item => item.classification === "MANUAL_REVIEW");
-    const outOfOffice = normalized.filter(item => item.classification === "OUT_OF_OFFICE");
-    if (positive.length !== 4 || manual.length !== 14 || outOfOffice.length !== 14 || normalized.length !== 32) {
+    const positive = originallyPositive.filter(item => item.email === CONFIRMED_INTERESTED_EMAIL);
+    const corrections = originallyPositive.filter(item => FALSE_POSITIVE_CORRECTIONS.has(item.email)).map(item => ({
+      ...item,
+      correctedClassification: FALSE_POSITIVE_CORRECTIONS.get(item.email)
+    }));
+    const outOfOffice = [
+      ...normalized.filter(item => item.classification === "OUT_OF_OFFICE"),
+      ...corrections.filter(item => item.correctedClassification === "OUT_OF_OFFICE")
+    ];
+    const automated = corrections.filter(item => item.correctedClassification === "AUTO_ACKNOWLEDGEMENT");
+    if (originallyPositive.length !== 4 || positive.length !== 1 || corrections.length !== 3 || manual.length !== 14 || outOfOffice.length !== 15 || automated.length !== 2 || normalized.length !== 32) {
       throw new Error("Gate 23A triage conservation changed.");
     }
-    return { positive, manual, outOfOffice };
+    return { positive, corrections, manual, outOfOffice, automated };
   }
 
   loadProgress() {
@@ -96,6 +111,7 @@ class RevenueInstantlyReplyTriageApplyService {
     const progress = this.loadProgress();
     let pausedThisRun = 0;
     let positivesUpdatedThisRun = 0;
+    let falsePositivesResetThisRun = 0;
 
     const pauseActionId = sha256("PAUSE:" + LEGACY_CAMPAIGN_ID + ":" + SOURCE_FINGERPRINT);
     if (!progress.has(pauseActionId)) {
@@ -114,6 +130,15 @@ class RevenueInstantlyReplyTriageApplyService {
       this.appendProgress(record); progress.set(actionId, record); positivesUpdatedThisRun += 1;
     }
 
+    for (const item of dispositions.corrections) {
+      const actionId = sha256("RESET_FALSE_POSITIVE:" + item.messageId + ":" + item.email + ":" + SOURCE_FINGERPRINT);
+      if (progress.has(actionId)) continue;
+      const response = await this.interestProvider({ lead_email: item.email, interest_value: null, disable_auto_interest: true });
+      if (response?.dryRun === true || response?.mutationExecuted === false) throw new Error("False-positive reset returned a dry-run response.");
+      const record = { actionId, action: "RESET_FALSE_POSITIVE_TO_LEAD", messageId: item.messageId, email: item.email, correctedClassification: item.correctedClassification, completedAt: this.generatedAt() };
+      this.appendProgress(record); progress.set(actionId, record); falsePositivesResetThisRun += 1;
+    }
+
     const report = {
       ok: true,
       service: this.service,
@@ -125,19 +150,24 @@ class RevenueInstantlyReplyTriageApplyService {
       summary: {
         legacyCampaignsPaused: 1,
         positiveLeadsMarkedInterested: dispositions.positive.length,
+        falsePositivesResetToLead: dispositions.corrections.length,
         manualReviewHeld: dispositions.manual.length,
         outOfOfficeDeferred: dispositions.outOfOffice.length,
+        automatedAcknowledgementsHeld: dispositions.automated.length,
         pausedThisRun,
-        positivesUpdatedThisRun
+        positivesUpdatedThisRun,
+        falsePositivesResetThisRun
       },
-      conservation: { ok: dispositions.positive.length + dispositions.manual.length + dispositions.outOfOffice.length === 32, totalReplies: 32 },
+      conservation: { ok: dispositions.positive.length + dispositions.corrections.length + dispositions.manual.length + 14 === 32, totalReplies: 32 },
       dispositions: {
         interested: dispositions.positive,
+        correctedFalsePositives: dispositions.corrections,
         manualReview: dispositions.manual,
-        futureFollowUp: dispositions.outOfOffice
+        futureFollowUp: dispositions.outOfOffice,
+        automatedAcknowledgements: dispositions.automated
       },
       providerWritesAuthorized: true,
-      providerWriteScope: "PAUSE_ONE_LEGACY_CAMPAIGN_AND_MARK_FOUR_POSITIVE_LEADS_INTERESTED",
+      providerWriteScope: "PAUSE_ONE_LEGACY_CAMPAIGN_MARK_ONE_CONFIRMED_POSITIVE_INTERESTED_AND_RESET_THREE_FALSE_POSITIVES",
       negativeOrUnsubscribeSuppressionApplied: 0,
       mailboxForwardingChanged: false,
       leadsUploaded: 0,
