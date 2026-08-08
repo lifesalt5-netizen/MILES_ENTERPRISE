@@ -20,7 +20,9 @@ require("./WORKER_ADAPTERS/TesterAdapter")
 )();
 
 const deployerAdapter =
-require("./WORKER_ADAPTERS/DeployerAdapter");
+new (
+require("./WORKER_ADAPTERS/DeployerAdapter")
+)();
 
 const recoveryAdapter =
 new (
