@@ -15,16 +15,29 @@ const validatorAdapter =
 require("./WORKER_ADAPTERS/ValidatorAdapter");
 
 const testerAdapter =
-require("./WORKER_ADAPTERS/TesterAdapter");
+new (
+require("./WORKER_ADAPTERS/TesterAdapter")
+)();
 
 const deployerAdapter =
-require("./WORKER_ADAPTERS/DeployerAdapter");
+new (
+require("./WORKER_ADAPTERS/DeployerAdapter")
+)();
 
 const recoveryAdapter =
-require("./WORKER_ADAPTERS/RecoveryAdapter");
+new (
+require("./WORKER_ADAPTERS/RecoveryAdapter")
+)();
 
+const selfDevelopmentAdapter =
+require("./WORKER_ADAPTERS/SelfDevelopmentAdapter");
 
 function bootstrapWorkers() {
+
+    registry.register(
+        "SELF_DEVELOPMENT",
+        selfDevelopmentAdapter
+    );
 
     registry.register(
         "ATLAS",

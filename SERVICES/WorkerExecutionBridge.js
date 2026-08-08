@@ -3,6 +3,9 @@
 const commandQueue =
 require("../CORE/CommandQueue");
 
+const bootstrapWorkers =
+require("./WorkerBootstrap");
+
 
 class WorkerExecutionBridge {
 
@@ -11,6 +14,8 @@ class WorkerExecutionBridge {
 
         this.registry =
 require("./WorkerRegistry");
+
+        bootstrapWorkers();
 
     }
 
