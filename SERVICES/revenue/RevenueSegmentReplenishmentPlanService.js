@@ -106,7 +106,7 @@ class RevenueSegmentReplenishmentPlanService {
         routesMeetingTarget: routes.filter(route => route.replenishmentStatus === "TARGET_MET").length,
         routesRequiringVerification: routes.filter(route => route.replenishmentStatus === "VERIFY_EXISTING_PENDING").length,
         routesRequiringNewSources: routes.filter(route => route.replenishmentStatus === "NEW_SOURCE_PULL_REQUIRED").length,
-        deferredOutsideConfiguredRoutes
+        deferredOutsideConfiguredRoutes: deferredOutsideRoutes
       },
       routes,
       globalExclusionPolicy: [
