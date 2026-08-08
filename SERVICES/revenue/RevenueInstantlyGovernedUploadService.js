@@ -16,7 +16,7 @@ class RevenueInstantlyGovernedUploadService {
     this.outputRoot = options.outputRoot || path.join(this.rootDir, "DATA", "runtime", "revenue", "instantly_governed_upload");
     this.progressPath = options.progressPath || path.join(this.outputRoot, "upload_progress.json");
     this.generatedAt = options.generatedAt || (() => new Date().toISOString());
-    this.expectedAuthorization = options.expectedAuthorization || "AUTHORIZE_INSTANTLY_UPLOAD_473_NO_LAUNCH";
+    this.expectedAuthorization = options.expectedAuthorization || "AUTHORIZE_INSTANTLY_UPLOAD_522_NO_LAUNCH";
     this.uploadProvider = options.uploadProvider || (async payload => {
       const instantly = require(path.join(this.rootDir, "CONNECTORS", "INSTANTLY", "instantly.js"));
       const configuration = instantly.getConfiguration();
@@ -28,7 +28,7 @@ class RevenueInstantlyGovernedUploadService {
   plan(input = {}) {
     return {
       ok: true, service: this.service, mode: "PLAN_ONLY", status: "PLANNED",
-      requestedAuthorization: input.authorization || null, maximumUploads: 473,
+      requestedAuthorization: input.authorization || null, maximumUploads: 522,
       providerWritesAuthorized: false, leadsUploaded: 0,
       emailsSent: false, campaignsChanged: false, campaignsLaunched: false
     };
@@ -60,11 +60,11 @@ class RevenueInstantlyGovernedUploadService {
     if (input.apply !== true) return this.plan(input);
     if (input.live !== true) throw new Error("Explicit --live authorization is required.");
     if (input.authorization !== this.expectedAuthorization) throw new Error("Exact CEO upload authorization is required.");
-    if (Number(input.maximumUploads) !== 473) throw new Error("The authorized upload cap must equal exactly 473.");
+    if (Number(input.maximumUploads) !== 522) throw new Error("The authorized upload cap must equal exactly 522.");
 
     const audit = this.loadJson(this.auditManifestPath);
     if (audit.ok !== true || audit.status !== "DUPLICATE_AUDIT_COMPLETED" || audit.conservation?.ok !== true) throw new Error("Gate 11 duplicate audit evidence is unhealthy.");
-    if (Number(audit.summary.uploadDelta) !== 473 || Number(audit.summary.candidates) !== 908 || Number(audit.summary.alreadyPresent) !== 435) throw new Error("Gate 11 authorized counts do not match 908 = 435 + 473.");
+    if (Number(audit.summary.uploadDelta) !== 522 || Number(audit.summary.candidates) !== 908 || Number(audit.summary.alreadyPresent) !== 386) throw new Error("Gate 11 authorized counts do not match 908 = 386 + 522.");
     if (audit.providerWritesAuthorized !== false || audit.leadsUploaded !== false || audit.campaignsLaunched !== false) throw new Error("Gate 11 safety evidence is invalid.");
 
     const rows = [];
@@ -75,7 +75,7 @@ class RevenueInstantlyGovernedUploadService {
       if (routeRows.length !== Number(artifact.records) || routeRows.length !== Number(route.uploadDelta)) throw new Error("Upload delta count mismatch for " + route.route + ".");
       rows.push(...routeRows);
     }
-    if (rows.length !== 473) throw new Error("Authorized upload inventory must contain exactly 473 leads.");
+    if (rows.length !== 522) throw new Error("Authorized upload inventory must contain exactly 522 leads.");
     if (new Set(rows.map(row => row.email)).size !== rows.length) throw new Error("Authorized upload inventory contains duplicate emails.");
     if (rows.some(row => !row.email || !row.route || !row.campaignId)) throw new Error("Authorized upload inventory contains incomplete records.");
 
@@ -108,12 +108,12 @@ class RevenueInstantlyGovernedUploadService {
       completedRows.filter(item => item.route === route.route).length
     ]));
     const report = {
-      ok: completedRows.length === 473,
-      service: this.service, mode: "APPLY_LIVE_AUTHORIZED", status: completedRows.length === 473 ? "UPLOAD_COMPLETED" : "UPLOAD_INCOMPLETE",
+      ok: completedRows.length === 522,
+      service: this.service, mode: "APPLY_LIVE_AUTHORIZED", status: completedRows.length === 522 ? "UPLOAD_COMPLETED" : "UPLOAD_INCOMPLETE",
       generatedAt: this.generatedAt(), authorization: this.expectedAuthorization,
       sourceAuditFingerprint: audit.auditFingerprint,
-      summary: { authorized: 473, uploaded: completedRows.length, uploadedThisRun, byRoute },
-      conservation: { ok: completedRows.length === 473, authorized: 473, uploaded: completedRows.length },
+      summary: { authorized: 522, uploaded: completedRows.length, uploadedThisRun, byRoute },
+      conservation: { ok: completedRows.length === 522, authorized: 522, uploaded: completedRows.length },
       providerWritesAuthorized: true, providerWriteScope: "CREATE_LEADS_ONLY",
       leadsUploaded: completedRows.length, emailsSent: false, campaignsChanged: false, campaignsLaunched: false
     };
