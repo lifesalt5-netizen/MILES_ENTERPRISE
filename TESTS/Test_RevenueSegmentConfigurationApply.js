@@ -93,6 +93,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   });
   await test("dry-run mutation fails closed", async () => assert.rejects(() => dry.apply({ apply: true, live: true, authorization: auth }), /did not confirm/));
 
-  console.log("REVENUE_SEGMENT_CONFIGURATION_APPLY_TEST_PASS " + passed + "/32");
+  console.log("REVENUE_SEGMENT_CONFIGURATION_APPLY_TEST_PASS " + passed + "/34");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
