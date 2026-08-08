@@ -91,7 +91,7 @@ class RevenueInstantlyGovernedUploadService {
 
     for (const row of rows) {
       if (completed.has(row.email)) continue;
-      const result = await this.uploadProvider({ email: row.email, campaign_id: row.campaignId });
+      const result = await this.uploadProvider({ email: row.email, campaign: row.campaignId });
       if (!result || typeof result !== "object" || result.dryRun === true || result.mutationExecuted === false) throw new Error("Instantly did not confirm a live lead upload for " + row.email + ".");
       completed.set(row.email, { ...row, uploadedAt: this.generatedAt(), providerLeadId: result.id || result.lead_id || result.uuid || null });
       uploadedThisRun += 1;
