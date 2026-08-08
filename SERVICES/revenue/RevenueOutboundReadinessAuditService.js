@@ -131,7 +131,7 @@ class RevenueOutboundReadinessAuditService {
       if (!this.boolean(campaign, ["stop_on_reply", "stopOnReply"], true)) blockers.push("STOP_ON_REPLY_REQUIRED");
       if (!this.boolean(campaign, ["stop_on_auto_reply", "stopOnAutoReply"], true)) blockers.push("STOP_ON_AUTO_REPLY_REQUIRED");
       if (!this.boolean(campaign, ["allow_risky_contacts", "allowRiskyContacts"], false)) blockers.push("RISKY_CONTACT_BLOCK_REQUIRED");
-      if (this.boolean(campaign, ["disable_bounce_protect", "disableBounceProtect"], true)) blockers.push("BOUNCE_PROTECTION_REQUIRED");
+      if (!this.boolean(campaign, ["disable_bounce_protect", "disableBounceProtect"], false)) blockers.push("BOUNCE_PROTECTION_REQUIRED");
       routes.push({ route: configured.route, campaignId, paused: this.paused(campaign), messageSteps: steps, senders, healthySenders: healthySenders.length, blockers, ready: blockers.length === 0 });
     }
 
