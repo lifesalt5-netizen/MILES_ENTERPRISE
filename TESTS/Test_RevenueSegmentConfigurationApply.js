@@ -58,6 +58,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("exactly two campaigns are created", async () => assert.strictEqual(created.length, 2));
   await test("created campaigns are the expiring routes", async () => assert.deepStrictEqual(created.map(item => item.name), ["Expiring GSA 12 Months - Verified", "Expiring VA 12 Months - Verified"]));
   await test("created campaigns have zero daily limit", async () => assert.ok(created.every(item => item.daily_limit === 0 && item.daily_max_leads === 0)));
+  await test("created campaigns use an Instantly-supported timezone", async () => assert.ok(created.every(item => item.campaign_schedule.schedules[0].timezone === "Etc/GMT+12")));
   await test("all ten classified campaigns are paused", async () => assert.strictEqual(paused.length, 10));
   await test("all ten classified routes receive inbox configuration", async () => assert.strictEqual(updated.length, 10));
   await test("GSA routes use GSA inboxes", async () => assert.ok(updated.find(item => item.id === "c-gsa").payload.email_list.every(value => value.endsWith("@pathwaysgsa.com"))));
@@ -93,6 +94,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   });
   await test("dry-run mutation fails closed", async () => assert.rejects(() => dry.apply({ apply: true, live: true, authorization: auth }), /did not confirm/));
 
-  console.log("REVENUE_SEGMENT_CONFIGURATION_APPLY_TEST_PASS " + passed + "/34");
+  console.log("REVENUE_SEGMENT_CONFIGURATION_APPLY_TEST_PASS " + passed + "/35");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
