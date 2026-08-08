@@ -84,7 +84,9 @@ class RevenueSegmentReplenishmentPlanService {
     });
 
     const knownRoutes = new Set(routes.map(route => route.route));
-    const deferredOutsideRoutes = [...pendingByRoute.entries()].filter(([route]) => !knownRoutes.has(route)).reduce((sum, [, count]) => sum + count, 0);
+    const sortedPendingRoutes = [...pendingByRoute.entries()].sort(([left], [right]) => left.localeCompare(right));
+    const outsidePendingRoutes = sortedPendingRoutes.filter(([route]) => !knownRoutes.has(route));
+    const deferredOutsideRoutes = outsidePendingRoutes.reduce((sum, [, count]) => sum + count, 0);
     const report = {
       ok: true, service: this.service, mode: "APPLY_INTERNAL_PLAN", status: "SEGMENT_REPLENISHMENT_PLANNED", generatedAt: this.generatedAt(),
       targetPolicy: {
@@ -106,7 +108,9 @@ class RevenueSegmentReplenishmentPlanService {
         routesMeetingTarget: routes.filter(route => route.replenishmentStatus === "TARGET_MET").length,
         routesRequiringVerification: routes.filter(route => route.replenishmentStatus === "VERIFY_EXISTING_PENDING").length,
         routesRequiringNewSources: routes.filter(route => route.replenishmentStatus === "NEW_SOURCE_PULL_REQUIRED").length,
-        deferredOutsideConfiguredRoutes: deferredOutsideRoutes
+        deferredOutsideConfiguredRoutes: deferredOutsideRoutes,
+        pendingRouteCounts: Object.fromEntries(sortedPendingRoutes),
+        outsideConfiguredRouteCounts: Object.fromEntries(outsidePendingRoutes)
       },
       routes,
       globalExclusionPolicy: [
