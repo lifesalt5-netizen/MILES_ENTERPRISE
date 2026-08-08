@@ -56,9 +56,9 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     planner: { route: lead => ({ name: lead.primarySegment }) },
     leadProvider: async filters => {
       calls.push(filters);
-      const index = offsets[filters.campaign_id] || 0;
-      offsets[filters.campaign_id] = index + 1;
-      return pages[filters.campaign_id][index];
+      const index = offsets[filters.campaign] || 0;
+      offsets[filters.campaign] = index + 1;
+      return pages[filters.campaign][index];
     }
   });
 
@@ -78,7 +78,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("upload delta is calculated", async () => assert.strictEqual(report.summary.uploadDelta, 2));
   await test("provider pages are counted", async () => assert.strictEqual(report.summary.providerLeadsRead, 3));
   await test("pagination cursor is used", async () => assert.strictEqual(calls[1].starting_after, "gsa-next"));
-  await test("campaign scoping is used", async () => assert.strictEqual(calls[0].campaign_id, "campaign-gsa"));
+  await test("campaign scoping is used", async () => assert.strictEqual(calls[0].campaign, "campaign-gsa"));
   await test("email matching is case insensitive", async () => assert.strictEqual(report.routes.find(route => route.route === "SBS").alreadyPresent, 1));
   await test("GSA delta artifact exists", async () => assert.strictEqual(fs.existsSync(report.routes.find(route => route.route === "GSA").artifacts.uploadDelta.filePath), true));
   await test("SBS duplicate artifact exists", async () => assert.strictEqual(fs.existsSync(report.routes.find(route => route.route === "SBS").artifacts.existing.filePath), true));
