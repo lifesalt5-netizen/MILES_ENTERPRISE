@@ -38,7 +38,8 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("default target is 5000", async () => assert.strictEqual(preview.targetPerSegment, 5000));
   await test("preview performs no writes", async () => assert.strictEqual(fs.existsSync(outputRoot), false));
   await test("preview authorizes no source reads", async () => assert.strictEqual(preview.sourceReadsAuthorized, false));
-  await test("invalid target fails closed", async () => assert.throws(() => service.build({ apply: true, target: 0 }), /positive integer/));
+  await test("zero target fails closed", async () => assert.throws(() => service.build({ apply: true, target: 0 }), /positive integer/));
+  await test("fractional target fails closed", async () => assert.throws(() => service.build({ apply: true, target: 1.5 }), /positive integer/));
 
   const report = service.build({ apply: true, target: 5000 });
   await test("plan completes", async () => assert.strictEqual(report.status, "SEGMENT_REPLENISHMENT_PLANNED"));
@@ -46,6 +47,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("aggregate target is 50000", async () => assert.strictEqual(report.summary.aggregateTarget, 50000));
   await test("verified total is conserved", async () => assert.strictEqual(report.summary.verified, 8576));
   await test("deferred verification total is conserved", async () => assert.strictEqual(report.summary.pendingVerification, 100));
+  await test("outside-route pending total is bound correctly", async () => assert.strictEqual(report.summary.deferredOutsideConfiguredRoutes, 0));
   await test("each route receives its own target", async () => assert.ok(report.routes.every(route => route.target === 5000)));
   await test("verified gaps never go negative", async () => assert.ok(report.routes.every(route => route.verifiedGap >= 0)));
   await test("best case includes pending verification", async () => assert.ok(report.routes.every(route => route.bestCaseAfterPending === route.verified + route.pendingVerification)));
@@ -66,6 +68,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults safely", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, target: 5000 }));
   await test("CLI parses explicit target", async () => assert.deepStrictEqual(parseArguments(["--apply", "--target=6000"]), { apply: true, target: 6000 }));
 
-  console.log("REVENUE_SEGMENT_REPLENISHMENT_PLAN_TEST_PASS " + passed + "/30");
+  console.log("REVENUE_SEGMENT_REPLENISHMENT_PLAN_TEST_PASS " + passed + "/32");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
