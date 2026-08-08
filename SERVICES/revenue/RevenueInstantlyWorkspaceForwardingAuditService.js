@@ -19,6 +19,8 @@ class RevenueInstantlyWorkspaceForwardingAuditService {
     this.outputRoot = options.outputRoot || path.join(this.rootDir, "DATA", "runtime", "revenue", "instantly_workspace_forwarding_audit");
     this.outputPath = options.outputPath || path.join(this.outputRoot, "manifest.json");
     this.generatedAt = options.generatedAt || (() => new Date().toISOString());
+    this.pageDelayMs = options.pageDelayMs === undefined ? 3250 : Number(options.pageDelayMs);
+    this.sleep = options.sleep || (milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)));
     const connector = options.connector || ((options.campaignProvider && options.accountProvider && options.emailProvider)
       ? null
       : require(path.join(this.rootDir, "CONNECTORS", "INSTANTLY", "instantly.js")));
@@ -69,6 +71,7 @@ class RevenueInstantlyWorkspaceForwardingAuditService {
     const seen = new Set();
     let cursor = null;
     for (let page = 0; page < pageLimit; page += 1) {
+      if (page > 0 && this.pageDelayMs > 0) await this.sleep(this.pageDelayMs);
       const response = await provider({ limit: 100, ...(cursor ? { starting_after: cursor } : {}) });
       const result = this.extract(response, keys);
       records.push(...result.items);
@@ -130,11 +133,13 @@ class RevenueInstantlyWorkspaceForwardingAuditService {
     if (input.authorization !== AUTHORIZATION) throw new Error("Exact Gate 23A authorization is required.");
 
     const readiness = this.loadReadiness();
-    const [campaigns, accounts, rawEmails] = await Promise.all([
-      this.paginate(this.campaignProvider, ["items", "campaigns", "data", "results"]),
-      this.paginate(this.accountProvider, ["items", "accounts", "data", "results"]),
-      this.paginate(this.emailProvider, ["items", "emails", "data", "results"])
-    ]);
+    // Instantly permits 20 requests per minute. Read inventories serially and
+    // pace pagination so a large mailbox cannot burst through that limit.
+    const campaigns = await this.paginate(this.campaignProvider, ["items", "campaigns", "data", "results"]);
+    if (this.pageDelayMs > 0) await this.sleep(this.pageDelayMs);
+    const accounts = await this.paginate(this.accountProvider, ["items", "accounts", "data", "results"]);
+    if (this.pageDelayMs > 0) await this.sleep(this.pageDelayMs);
+    const rawEmails = await this.paginate(this.emailProvider, ["items", "emails", "data", "results"]);
     const inbound = rawEmails.filter(item => this.isInbound(item));
     const governedIds = new Set(array(readiness.routes).map(route => text(route.campaignId)).filter(Boolean));
     const campaignInventory = campaigns.map(campaign => {
