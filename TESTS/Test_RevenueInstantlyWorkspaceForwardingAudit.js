@@ -26,7 +26,8 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   const emails = [
     { id: "e1", direction: "inbound", from: "buyer@example.com", subject: "How much does this cost?", body: "Please send pricing." },
     { id: "e2", direction: "inbound", from: "no@example.com", subject: "No thanks", body: "unsubscribe" },
-    { id: "e3", direction: "inbound", from: "ooo@example.com", subject: "Automatic reply", body: "Away from my desk" }
+    { id: "e3", direction: "inbound", from: "ooo@example.com", subject: "Automatic reply", body: "Away from my desk" },
+    { id: "e4", from: "sender0@example.com", subject: "Quick question about your GSA contract", body: "Outbound copy without a direction field" }
   ];
   const service = new Service({
     rootDir: root,
@@ -60,6 +61,7 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   await test("positive pricing reply is classified", () => assert.strictEqual(report.replyTriage.counts.POSITIVE_REVIEW, 1));
   await test("unsubscribe is classified", () => assert.strictEqual(report.replyTriage.counts.UNSUBSCRIBE, 1));
   await test("out of office is classified", () => assert.strictEqual(report.replyTriage.counts.OUT_OF_OFFICE, 1));
+  await test("own outbound mail without direction is excluded", () => assert.strictEqual(report.summary.inboundMessagesRead, 3));
   await test("capacity apply remains blocked", () => assert.strictEqual(report.safeForGate23CapacityApply, false));
   await test("provider reads are recorded", () => assert.strictEqual(report.providerReadsPerformed, true));
   await test("provider writes remain unauthorized", () => assert.strictEqual(report.providerWritesAuthorized, false));
@@ -73,6 +75,6 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   await test("CLI defaults safely", () => assert.deepStrictEqual(parseArguments([]), { apply: false, live: false, authorization: null }));
   await test("CLI parses exact authorization", () => assert.deepStrictEqual(parseArguments(["--apply", "--live", "--authorization=" + AUTHORIZATION]), { apply: true, live: true, authorization: AUTHORIZATION }));
 
-  console.log("REVENUE_INSTANTLY_WORKSPACE_FORWARDING_AUDIT_TEST_PASS " + passed + "/31");
+  console.log("REVENUE_INSTANTLY_WORKSPACE_FORWARDING_AUDIT_TEST_PASS " + passed + "/32");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
