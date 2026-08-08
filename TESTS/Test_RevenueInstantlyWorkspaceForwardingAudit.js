@@ -36,6 +36,7 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
     accountProvider: async () => ({ items: accounts }),
     emailProvider: async () => ({ items: emails }),
     forwardingEvidenceProvider: async () => null,
+    pageDelayMs: 0,
     generatedAt: () => "2026-08-08T00:00:00.000Z"
   });
 
