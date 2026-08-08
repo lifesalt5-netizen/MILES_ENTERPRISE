@@ -56,7 +56,7 @@ class RevenueInstantlyDuplicateAuditService {
     let startingAfter = null;
     for (let page = 0; page < 1000; page += 1) {
       const response = await this.leadProvider({
-        campaign_id: campaignId,
+        campaign: campaignId,
         limit: 100,
         ...(startingAfter ? { starting_after: startingAfter } : {})
       });
