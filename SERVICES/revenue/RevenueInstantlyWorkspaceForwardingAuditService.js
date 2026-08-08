@@ -140,7 +140,11 @@ class RevenueInstantlyWorkspaceForwardingAuditService {
     const accounts = await this.paginate(this.accountProvider, ["items", "accounts", "data", "results"]);
     if (this.pageDelayMs > 0) await this.sleep(this.pageDelayMs);
     const rawEmails = await this.paginate(this.emailProvider, ["items", "emails", "data", "results"]);
-    const inbound = rawEmails.filter(item => this.isInbound(item));
+    const ownSenderEmails = new Set(accounts.map(account => lower(account.email || account.address || account.account)).filter(Boolean));
+    const inbound = rawEmails.filter(item => {
+      const from = lower(item.from_address_email || item.from || item.sender);
+      return this.isInbound(item) && from && !ownSenderEmails.has(from);
+    });
     const governedIds = new Set(array(readiness.routes).map(route => text(route.campaignId)).filter(Boolean));
     const campaignInventory = campaigns.map(campaign => {
       const id = text(campaign.id || campaign.campaign_id);
