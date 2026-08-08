@@ -104,6 +104,28 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   });
   await test("malformed provider response fails closed", async () => assert.rejects(() => badService.audit({ apply: true, live: true }), /does not contain an array/));
 
-  console.log("REVENUE_INSTANTLY_DUPLICATE_AUDIT_TEST_PASS " + passed + "/31");
+  const emptyPageService = new Service({
+    rootDir: root, activationPlanPath: planPath, verifiedMasterPath: masterPath,
+    outputRoot: path.join(root, "empty-page-output"),
+    planner: { route: lead => ({ name: lead.primarySegment }) },
+    leadProvider: async () => ({ items: [], next_starting_after: "provider-final-cursor" })
+  });
+  const emptyPageReport = await emptyPageService.audit({ apply: true, live: true });
+  await test("empty provider page terminates pagination", async () => assert.strictEqual(emptyPageReport.summary.providerLeadsRead, 0));
+
+  let repeatedCalls = 0;
+  const repeatedCursorService = new Service({
+    rootDir: root, activationPlanPath: planPath, verifiedMasterPath: masterPath,
+    outputRoot: path.join(root, "repeated-cursor-output"),
+    planner: { route: lead => ({ name: lead.primarySegment }) },
+    leadProvider: async () => {
+      repeatedCalls += 1;
+      return { items: [{ email: "provider@example.com" }], next_starting_after: "same-cursor" };
+    }
+  });
+  await test("repeated provider cursor fails closed", async () => assert.rejects(() => repeatedCursorService.audit({ apply: true, live: true }), /repeated cursor/));
+  await test("repeated cursor stops promptly", async () => assert.strictEqual(repeatedCalls, 2));
+
+  console.log("REVENUE_INSTANTLY_DUPLICATE_AUDIT_TEST_PASS " + passed + "/34");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
