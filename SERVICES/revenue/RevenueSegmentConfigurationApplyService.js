@@ -63,7 +63,7 @@ class RevenueSegmentConfigurationApplyService {
           name: "Weekdays",
           timing: { from: "09:00", to: "17:00" },
           days: { "0": false, "1": true, "2": true, "3": true, "4": true, "5": true, "6": false },
-          timezone: "America/New_York"
+          timezone: "Etc/GMT+12"
         }],
         start_date: this.generatedAt().slice(0, 10)
       },
