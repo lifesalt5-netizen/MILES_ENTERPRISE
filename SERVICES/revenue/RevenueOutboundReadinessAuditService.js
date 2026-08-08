@@ -13,6 +13,7 @@ class RevenueOutboundReadinessAuditService {
     this.service = "REVENUE_OUTBOUND_READINESS_AUDIT";
     this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, "..", ".."));
     this.configurationPath = options.configurationPath || path.join(this.rootDir, "DATA", "runtime", "revenue", "segment_configuration_apply", "manifest.json");
+    this.configurationPlanPath = options.configurationPlanPath || path.join(this.rootDir, "DATA", "runtime", "revenue", "all_segment_configuration", "plan.json");
     this.uploadPath = options.uploadPath || path.join(this.rootDir, "DATA", "runtime", "revenue", "all_segment_governed_upload", "manifest.json");
     this.masterPath = options.masterPath || path.join(this.rootDir, "DATA", "runtime", "revenue", "verified_segment_activation", "verified_segment_master.jsonl");
     this.riskyPath = options.riskyPath || path.join(this.rootDir, "DATA", "runtime", "revenue", "email_verification_results", "risky_blocked.jsonl");
@@ -99,8 +100,11 @@ class RevenueOutboundReadinessAuditService {
     if (input.live !== true) throw new Error("Explicit --live read authorization is required.");
 
     const configuration = this.loadJson(this.configurationPath);
+    const configurationPlan = this.loadJson(this.configurationPlanPath);
     const upload = this.loadJson(this.uploadPath);
     if (configuration.ok !== true || configuration.status !== "SEGMENT_CONFIGURATION_COMPLETED" || Number(configuration.summary?.classifiedRoutes) !== 10) throw new Error("Gate 14 configuration evidence is unhealthy.");
+    if (configurationPlan.ok !== true || configurationPlan.status !== "ALL_SEGMENT_CONFIGURATION_PLANNED" || !Array.isArray(configurationPlan.routes)) throw new Error("Gate 13 configuration plan is unhealthy.");
+    const plannedByRoute = new Map(configurationPlan.routes.map(route => [route.route, route]));
     if (upload.ok !== true || upload.status !== "UPLOAD_COMPLETED" || upload.uploadFingerprint !== "E9157BDC2E0D724F9C0BE0BC49939271BE1FB57B1A6DC4CAD4DCF3C4BD0FD4F4" || Number(upload.summary?.uploaded) !== 5654) throw new Error("Gate 18 upload evidence is unhealthy.");
 
     const master = this.loadJsonl(this.masterPath);
@@ -116,7 +120,7 @@ class RevenueOutboundReadinessAuditService {
     const requiredSenders = new Set();
     const routes = [];
     for (const configured of configuration.routes) {
-      const campaignId = String(configured.campaignId || "").trim();
+      const campaignId = String(configured.campaignId || plannedByRoute.get(configured.route)?.currentCampaignId || "").trim();
       if (!campaignId) throw new Error("Configured route is missing a campaign ID: " + configured.route);
       const campaign = await this.campaignProvider(campaignId);
       const senders = this.senderEmails(campaign);
