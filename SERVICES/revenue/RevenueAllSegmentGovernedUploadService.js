@@ -33,6 +33,8 @@ class RevenueAllSegmentGovernedUploadService {
     this.progressPath = options.progressPath || path.join(this.outputRoot, "upload_progress.jsonl");
     this.manifestPath = options.manifestPath || path.join(this.outputRoot, "manifest.json");
     this.generatedAt = options.generatedAt || (() => new Date().toISOString());
+    this.expectedPreparationFingerprint = options.expectedPreparationFingerprint || PREPARATION_FINGERPRINT;
+    this.expectedArtifactSha256 = options.expectedArtifactSha256 || ARTIFACT_SHA256;
     this.uploadProvider = options.uploadProvider || (async payload => {
       const instantly = require(path.join(this.rootDir, "CONNECTORS", "INSTANTLY", "instantly.js"));
       const configuration = instantly.getConfiguration();
@@ -106,13 +108,13 @@ class RevenueAllSegmentGovernedUploadService {
 
     const preparation = this.loadJson(this.preparationManifestPath);
     if (preparation.ok !== true || preparation.status !== "ALL_SEGMENT_UPLOAD_PREPARED" || preparation.conservation?.ok !== true || preparation.globalDeduplication?.ok !== true) throw new Error("Gate 17 preparation evidence is unhealthy.");
-    if (preparation.preparationFingerprint !== PREPARATION_FINGERPRINT) throw new Error("Gate 17 preparation fingerprint changed.");
+    if (preparation.preparationFingerprint !== this.expectedPreparationFingerprint) throw new Error("Gate 17 preparation fingerprint changed.");
     if (preparation.authorizationRequired !== AUTHORIZATION || preparation.providerWritesAuthorized !== false || preparation.uploadAuthorized !== false || Number(preparation.leadsUploaded) !== 0 || preparation.emailsSent !== false || preparation.campaignsLaunched !== false) throw new Error("Gate 17 authority boundary is invalid.");
     if (Number(preparation.summary?.prepared) !== 5654 || Number(preparation.summary?.globallyUniqueEmails) !== 5654) throw new Error("Gate 17 prepared totals changed.");
     const artifact = preparation.artifact;
     if (!artifact?.filePath || !fs.existsSync(artifact.filePath)) throw new Error("Gate 17 prepared upload artifact is missing.");
     const artifactBytes = fs.readFileSync(artifact.filePath);
-    if (artifact.sha256 !== ARTIFACT_SHA256 || sha256(artifactBytes) !== ARTIFACT_SHA256 || Number(artifact.records) !== 5654) throw new Error("Gate 17 prepared upload integrity check failed.");
+    if (artifact.sha256 !== this.expectedArtifactSha256 || sha256(artifactBytes) !== this.expectedArtifactSha256 || Number(artifact.records) !== 5654) throw new Error("Gate 17 prepared upload integrity check failed.");
 
     const rows = this.parseCsv(artifactBytes.toString("utf8").replace(/^\uFEFF/, ""));
     if (rows.length !== 5654 || new Set(rows.map(row => row.email)).size !== 5654) throw new Error("Authorized upload inventory must contain exactly 5654 globally unique emails.");
