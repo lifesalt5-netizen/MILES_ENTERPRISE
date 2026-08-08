@@ -39,7 +39,14 @@ class RevenueSegmentReplenishmentPlanService {
     return fs.readFileSync(filePath, "utf8").split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line));
   }
 
-  route(record) { return this.planner.route(record).name; }
+  route(record) {
+    const provenance = [
+      ...(Array.isArray(record.segments) ? record.segments : []),
+      ...(Array.isArray(record.sources) ? record.sources : []),
+      ...(Array.isArray(record.evidence) ? record.evidence.map(item => item?.sourceFile) : [])
+    ].filter(Boolean);
+    return this.planner.route({ ...record, segments: [...new Set(provenance)] }).name;
+  }
 
   build(input = {}) {
     if (input.apply !== true) return this.preview(input);
