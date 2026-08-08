@@ -75,6 +75,16 @@ class RevenueLaunchCapacityPlanService {
     return campaign.campaign_schedule || campaign.campaignSchedule || null;
   }
 
+  validSchedule(schedule) {
+    if (!schedule || typeof schedule !== "object" || !Array.isArray(schedule.schedules) || schedule.schedules.length === 0) return false;
+    return schedule.schedules.some(item => {
+      const timezone = String(item?.timezone || "").trim();
+      const from = String(item?.timing?.from || "").trim();
+      const to = String(item?.timing?.to || "").trim();
+      return Boolean(timezone && from && to);
+    });
+  }
+
   campaignSenders(campaign) {
     const values = [campaign.email_list, campaign.emailList, campaign.accounts, campaign.senders].find(Array.isArray) || [];
     return [...new Set(values.map(item => normalizeEmail(typeof item === "string" ? item : item?.email || item?.address || item?.account)).filter(Boolean))];
@@ -121,7 +131,8 @@ class RevenueLaunchCapacityPlanService {
 
     const totalDailyCap = Object.values(CAPS).reduce((sum, value) => sum + value, 0);
     const healthyRequiredSenders = [...requiredSenders].filter(sender => this.accountHealthy(accountMap.get(sender)));
-    const referenceSchedule = campaigns.find(item => item.route === "SBS")?.currentSchedule || campaigns.find(item => item.currentSchedule)?.currentSchedule || null;
+    const referenceCampaign = campaigns.find(item => item.route === "GSA" && this.validSchedule(item.currentSchedule)) || campaigns.find(item => this.validSchedule(item.currentSchedule)) || null;
+    const referenceSchedule = referenceCampaign?.currentSchedule || null;
 
     if (!referenceSchedule) blockers.push("VALID_PROVIDER_SCHEDULE_REQUIRED");
     if (totalDailyCap !== 180) blockers.push("CAP_CONSERVATION_FAILED");
@@ -157,6 +168,7 @@ class RevenueLaunchCapacityPlanService {
         estimatedInitialTouchDaysIfNoFollowups,
         estimatedSendingDaysAtFullSequence
       },
+      referenceScheduleSource: referenceCampaign ? { route: referenceCampaign.route, campaignId: referenceCampaign.campaignId } : null,
       referenceSchedule,
       campaigns,
       blockers,
