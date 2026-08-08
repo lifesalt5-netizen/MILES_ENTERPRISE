@@ -24,14 +24,14 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     return { filePath, records: count, bytes: fs.statSync(filePath).size, sha256: hash(fs.readFileSync(filePath)) };
   };
   const gsa = makeDelta("gsa.csv", "GSA", "c-gsa", 428);
-  const sbs = makeDelta("sbs.csv", "SBS", "c-sbs", 45);
+  const sbs = makeDelta("sbs.csv", "SBS", "c-sbs", 94);
   const audit = {
     ok: true, status: "DUPLICATE_AUDIT_COMPLETED", auditFingerprint: "A".repeat(64),
-    summary: { candidates: 908, alreadyPresent: 435, uploadDelta: 473 },
+    summary: { candidates: 908, alreadyPresent: 386, uploadDelta: 522 },
     conservation: { ok: true }, providerWritesAuthorized: false, leadsUploaded: false, campaignsLaunched: false,
     routes: [
       { route: "GSA", uploadDelta: 428, artifacts: { uploadDelta: gsa } },
-      { route: "SBS", uploadDelta: 45, artifacts: { uploadDelta: sbs } }
+      { route: "SBS", uploadDelta: 94, artifacts: { uploadDelta: sbs } }
     ]
   };
   const auditManifestPath = path.join(auditRoot, "manifest.json");
@@ -42,23 +42,23 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     generatedAt: () => "2026-08-08T00:00:00.000Z",
     uploadProvider: async payload => { uploads.push(payload); return { id: "lead-" + uploads.length }; }
   });
-  const auth = "AUTHORIZE_INSTANTLY_UPLOAD_473_NO_LAUNCH";
+  const auth = "AUTHORIZE_INSTANTLY_UPLOAD_522_NO_LAUNCH";
 
   await test("service is constructable", async () => assert.ok(service));
   const preview = await service.upload({});
   await test("default mode is plan-only", async () => assert.strictEqual(preview.mode, "PLAN_ONLY"));
   await test("plan performs no uploads", async () => assert.strictEqual(uploads.length, 0));
   await test("plan authorizes no provider writes", async () => assert.strictEqual(preview.providerWritesAuthorized, false));
-  await test("apply requires live flag", async () => assert.rejects(() => service.upload({ apply: true, authorization: auth, maximumUploads: 473 }), /--live/));
-  await test("wrong authorization fails closed", async () => assert.rejects(() => service.upload({ apply: true, live: true, authorization: "WRONG", maximumUploads: 473 }), /Exact CEO/));
-  await test("wrong upload cap fails closed", async () => assert.rejects(() => service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 474 }), /exactly 473/));
+  await test("apply requires live flag", async () => assert.rejects(() => service.upload({ apply: true, authorization: auth, maximumUploads: 522 }), /--live/));
+  await test("wrong authorization fails closed", async () => assert.rejects(() => service.upload({ apply: true, live: true, authorization: "WRONG", maximumUploads: 522 }), /Exact CEO/));
+  await test("wrong upload cap fails closed", async () => assert.rejects(() => service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 523 }), /exactly 522/));
 
-  const report = await service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 473 });
+  const report = await service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 522 });
   await test("authorized upload completes", async () => assert.strictEqual(report.status, "UPLOAD_COMPLETED"));
-  await test("exactly 473 leads upload", async () => assert.strictEqual(report.summary.uploaded, 473));
+  await test("exactly 522 leads upload", async () => assert.strictEqual(report.summary.uploaded, 522));
   await test("GSA count is preserved", async () => assert.strictEqual(report.summary.byRoute.GSA, 428));
-  await test("SBS count is preserved", async () => assert.strictEqual(report.summary.byRoute.SBS, 45));
-  await test("provider receives exact uploads", async () => assert.strictEqual(uploads.length, 473));
+  await test("SBS count is preserved", async () => assert.strictEqual(report.summary.byRoute.SBS, 94));
+  await test("provider receives exact uploads", async () => assert.strictEqual(uploads.length, 522));
   await test("campaign IDs are included", async () => assert.strictEqual(uploads[0].campaign, "c-gsa"));
   await test("emails are included", async () => assert.match(uploads[0].email, /@example\.com$/));
   await test("conservation passes", async () => assert.strictEqual(report.conservation.ok, true));
@@ -71,13 +71,13 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("manifest hash is recorded", async () => assert.match(report.artifact.sha256, /^[A-F0-9]{64}$/));
   await test("upload fingerprint is recorded", async () => assert.match(report.uploadFingerprint, /^[A-F0-9]{64}$/));
 
-  const second = await service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 473 });
+  const second = await service.upload({ apply: true, live: true, authorization: auth, maximumUploads: 522 });
   await test("rerun is idempotent", async () => assert.strictEqual(second.summary.uploadedThisRun, 0));
-  await test("rerun creates no duplicate provider calls", async () => assert.strictEqual(uploads.length, 473));
+  await test("rerun creates no duplicate provider calls", async () => assert.strictEqual(uploads.length, 522));
   await test("CLI defaults safely", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, live: false, authorization: null, maximumUploads: 0 }));
   await test("CLI parses exact authorization", async () => assert.deepStrictEqual(
-    parseArguments(["--apply", "--live", "--authorization=" + auth, "--maximum-uploads=473"]),
-    { apply: true, live: true, authorization: auth, maximumUploads: 473 }
+    parseArguments(["--apply", "--live", "--authorization=" + auth, "--maximum-uploads=522"]),
+    { apply: true, live: true, authorization: auth, maximumUploads: 522 }
   ));
 
   const dryService = new Service({
@@ -85,7 +85,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     outputRoot: path.join(root, "dry-output"),
     uploadProvider: async () => ({ dryRun: true, mutationExecuted: false })
   });
-  await test("dry-run provider response fails closed", async () => assert.rejects(() => dryService.upload({ apply: true, live: true, authorization: auth, maximumUploads: 473 }), /did not confirm/));
+  await test("dry-run provider response fails closed", async () => assert.rejects(() => dryService.upload({ apply: true, live: true, authorization: auth, maximumUploads: 522 }), /did not confirm/));
 
   const tampered = fs.readFileSync(gsa.filePath, "utf8") + "tamper@example.com,GSA,c-gsa\n";
   fs.writeFileSync(gsa.filePath, tampered, "utf8");
@@ -94,7 +94,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     outputRoot: path.join(root, "tampered-output"),
     uploadProvider: async () => ({ id: "never" })
   });
-  await test("tampered upload delta fails closed", async () => assert.rejects(() => tamperedService.upload({ apply: true, live: true, authorization: auth, maximumUploads: 473 }), /integrity/));
+  await test("tampered upload delta fails closed", async () => assert.rejects(() => tamperedService.upload({ apply: true, live: true, authorization: auth, maximumUploads: 522 }), /integrity/));
 
   console.log("REVENUE_INSTANTLY_GOVERNED_UPLOAD_TEST_PASS " + passed + "/29");
   fs.rmSync(root, { recursive: true, force: true });
