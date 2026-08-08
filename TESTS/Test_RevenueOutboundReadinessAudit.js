@@ -15,7 +15,8 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   const names = ["Expiring GSA 12 Months","Expiring VA 12 Months","GSA","VA","8(a)","HUBZone","SDVOSB","VOSB","WOSB","SBS"];
   const senders = ["contacts@pathwaysgsa.com","info@pathwaysgsa.com","kevin@pathwaysgsa.com","cora@pathwaysgovcon.com","evan@pathwaysgovcon.com","maya@pathwaysgovcon.com","silvia@pathwaysgovcon.com","victoria@pathwaysgovcon.com","kevin@pathwaysgov.com"];
   const routeSenders = name => /gsa/i.test(name) ? senders.slice(0,3) : name === "SBS" ? senders.slice(8) : senders.slice(3,8);
-  const configurationPath = writeJson("configuration.json", { ok:true, status:"SEGMENT_CONFIGURATION_COMPLETED", configurationApplyFingerprint:"A".repeat(64), summary:{classifiedRoutes:10}, routes:names.map((route,index)=>({route,campaignId:"campaign-"+index})) });
+  const configurationPath = writeJson("configuration.json", { ok:true, status:"SEGMENT_CONFIGURATION_COMPLETED", configurationApplyFingerprint:"A".repeat(64), summary:{classifiedRoutes:10}, routes:names.map((route,index)=>({route,campaignId:index < 2 ? "campaign-"+index : null})) });
+  const configurationPlanPath = writeJson("configuration-plan.json", { ok:true, status:"ALL_SEGMENT_CONFIGURATION_PLANNED", routes:names.map((route,index)=>({route,currentCampaignId:index < 2 ? null : "campaign-"+index})) });
   const uploadPath = writeJson("upload.json", { ok:true,status:"UPLOAD_COMPLETED",uploadFingerprint:"E9157BDC2E0D724F9C0BE0BC49939271BE1FB57B1A6DC4CAD4DCF3C4BD0FD4F4",summary:{uploaded:5654} });
   const masterPath = writeJsonl("master.jsonl", Array.from({length:8578},(_,i)=>({email:"lead-"+i+"@example.com"})));
   const riskyPath = writeJsonl("risky.jsonl", [{email:"risky@example.com"}]);
@@ -26,7 +27,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
     sequences:[{steps:Array.from({length:4},(_,step)=>({subject:"Subject "+step,body:"Body "+step}))}]
   }]));
   const accounts = senders.map(value=>({email:value,status:1}));
-  const service = new Service({rootDir:root,configurationPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath,outputRoot:path.join(root,"output"),generatedAt:()=>"2026-08-08T00:00:00.000Z",campaignProvider:async id=>campaigns.get(id),accountProvider:async()=>({items:accounts})});
+  const service = new Service({rootDir:root,configurationPath,configurationPlanPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath,outputRoot:path.join(root,"output"),generatedAt:()=>"2026-08-08T00:00:00.000Z",campaignProvider:async id=>campaigns.get(id),accountProvider:async()=>({items:accounts})});
 
   await test("service is constructable",async()=>assert.ok(service));
   const preview=await service.audit({});
@@ -57,12 +58,12 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
 
   campaigns.get("campaign-0").status=1;
   campaigns.get("campaign-0").sequences=[{steps:[{subject:"One",body:"Body"}]}];
-  const blocked=await new Service({rootDir:root,configurationPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath,outputRoot:path.join(root,"blocked"),campaignProvider:async id=>campaigns.get(id),accountProvider:async()=>({items:accounts})}).audit({apply:true,live:true});
+  const blocked=await new Service({rootDir:root,configurationPath,configurationPlanPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath,outputRoot:path.join(root,"blocked"),campaignProvider:async id=>campaigns.get(id),accountProvider:async()=>({items:accounts})}).audit({apply:true,live:true});
   await test("active campaign fails readiness closed",async()=>assert.ok(blocked.routes[0].blockers.includes("CAMPAIGN_NOT_PAUSED")));
   await test("missing follow-ups fail readiness closed",async()=>assert.ok(blocked.routes[0].blockers.includes("FOUR_STEP_SEQUENCE_REQUIRED")));
   await test("blocked audit never authorizes launch",async()=>assert.strictEqual(blocked.campaignsLaunched,false));
 
-  const missingReply=await new Service({rootDir:root,configurationPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath:path.join(root,"missing.json"),outputRoot:path.join(root,"missing"),campaignProvider:async id=>{const c=campaigns.get(id);return {...c,status:2,sequences:[{steps:Array.from({length:4},(_,i)=>({subject:"S"+i,body:"B"+i}))}]};},accountProvider:async()=>({items:accounts})}).audit({apply:true,live:true});
+  const missingReply=await new Service({rootDir:root,configurationPath,configurationPlanPath,uploadPath,masterPath,riskyPath,invalidPath,replyRoutingPath:path.join(root,"missing.json"),outputRoot:path.join(root,"missing"),campaignProvider:async id=>{const c=campaigns.get(id);return {...c,status:2,sequences:[{steps:Array.from({length:4},(_,i)=>({subject:"S"+i,body:"B"+i}))}]};},accountProvider:async()=>({items:accounts})}).audit({apply:true,live:true});
   await test("missing reply routing is reported",async()=>assert.ok(missingReply.globalBlockers.includes("REPLY_ROUTING_EVIDENCE_REQUIRED")));
 
   console.log("REVENUE_OUTBOUND_READINESS_AUDIT_TEST_PASS "+passed+"/28");
