@@ -33,6 +33,14 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   });
 
   await test("service is constructable", async () => assert.ok(service));
+  const provenanceProbe = new Service({
+    rootDir: root,
+    planner: { route: record => ({ name: record.segments.join(" | ").includes("GSA_NO_SALES") ? "GSA" : "Unclassified" }) }
+  });
+  await test("source provenance recovers a missing route label", async () => assert.strictEqual(
+    provenanceProbe.route({ email: "source@example.com", segments: ["MASTER"], sources: ["C:\\archive\\GSA_NO_SALES.csv"] }),
+    "GSA"
+  ));
   const preview = service.build({});
   await test("default mode is plan-only", async () => assert.strictEqual(preview.mode, "PLAN_ONLY"));
   await test("default target is 5000", async () => assert.strictEqual(preview.targetPerSegment, 5000));
@@ -70,6 +78,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults safely", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, target: 5000 }));
   await test("CLI parses explicit target", async () => assert.deepStrictEqual(parseArguments(["--apply", "--target=6000"]), { apply: true, target: 6000 }));
 
-  console.log("REVENUE_SEGMENT_REPLENISHMENT_PLAN_TEST_PASS " + passed + "/34");
+  console.log("REVENUE_SEGMENT_REPLENISHMENT_PLAN_TEST_PASS " + passed + "/35");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
