@@ -16,7 +16,10 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   const auditPath = path.join(root, "audit.json");
   const outputRoot = path.join(root, "out");
   const replies = [
-    ...Array.from({ length: 4 }, (_, index) => ({ messageId: "p" + index, from: "positive" + index + "@example.com", subject: "Pricing", classification: "POSITIVE_REVIEW" })),
+    { messageId: "p0", from: "epgcontracts@gmail.com", subject: "Pricing", classification: "POSITIVE_REVIEW" },
+    { messageId: "p1", from: "shawkins@shcpasolutions.com", subject: "Resources", classification: "POSITIVE_REVIEW" },
+    { messageId: "p2", from: "envirospark-automated-emails@envirosparkenergy.com", subject: "Automated", classification: "POSITIVE_REVIEW" },
+    { messageId: "p3", from: "kt@directconnectionusa.com", subject: "Out of office", classification: "POSITIVE_REVIEW" },
     ...Array.from({ length: 14 }, (_, index) => ({ messageId: "m" + index, from: "manual" + index + "@example.com", subject: "Reply", classification: "MANUAL_REVIEW" })),
     ...Array.from({ length: 14 }, (_, index) => ({ messageId: "o" + index, from: "ooo" + index + "@example.com", subject: "Out of office", classification: "OUT_OF_OFFICE" }))
   ];
@@ -47,12 +50,14 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   const report = await service.apply({ apply: true, live: true, authorization: AUTHORIZATION });
   await test("apply completes", () => assert.strictEqual(report.status, "LEGACY_PAUSED_AND_REPLY_TRIAGE_APPLIED"));
   await test("exact legacy campaign is paused", () => assert.deepStrictEqual(pauses, [LEGACY_CAMPAIGN_ID]));
-  await test("exactly four positives are updated", () => assert.strictEqual(updates.length, 4));
-  await test("positive status value is one", () => assert.ok(updates.every(item => item.interest_value === 1)));
+  await test("one confirmed positive is updated", () => assert.strictEqual(updates.filter(item => item.interest_value === 1).length, 1));
+  await test("three false positives are reset", () => assert.strictEqual(updates.filter(item => item.interest_value === null).length, 3));
   await test("auto interest is disabled", () => assert.ok(updates.every(item => item.disable_auto_interest === true)));
-  await test("four interested dispositions are recorded", () => assert.strictEqual(report.dispositions.interested.length, 4));
+  await test("one interested disposition is recorded", () => assert.strictEqual(report.dispositions.interested.length, 1));
+  await test("three corrected dispositions are recorded", () => assert.strictEqual(report.dispositions.correctedFalsePositives.length, 3));
   await test("fourteen manual replies remain held", () => assert.strictEqual(report.summary.manualReviewHeld, 14));
-  await test("fourteen out of office replies are deferred", () => assert.strictEqual(report.summary.outOfOfficeDeferred, 14));
+  await test("fifteen out of office replies are deferred", () => assert.strictEqual(report.summary.outOfOfficeDeferred, 15));
+  await test("two automated acknowledgements are held", () => assert.strictEqual(report.summary.automatedAcknowledgementsHeld, 2));
   await test("reply conservation passes", () => assert.strictEqual(report.conservation.ok, true));
   await test("write scope is constrained", () => assert.match(report.providerWriteScope, /ONE_LEGACY_CAMPAIGN/));
   await test("no negative suppression is invented", () => assert.strictEqual(report.negativeOrUnsubscribeSuppressionApplied, 0));
@@ -72,6 +77,6 @@ async function test(name, fn) { await fn(); passed += 1; console.log("[PASS] " +
   await test("CLI defaults safely", () => assert.deepStrictEqual(parseArguments([]), { apply: false, live: false, authorization: null }));
   await test("CLI parses authorization", () => assert.deepStrictEqual(parseArguments(["--apply", "--live", "--authorization=" + AUTHORIZATION]), { apply: true, live: true, authorization: AUTHORIZATION }));
 
-  console.log("REVENUE_INSTANTLY_REPLY_TRIAGE_APPLY_TEST_PASS " + passed + "/30");
+  console.log("REVENUE_INSTANTLY_REPLY_TRIAGE_APPLY_TEST_PASS " + passed + "/32");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
