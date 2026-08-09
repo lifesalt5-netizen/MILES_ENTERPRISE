@@ -152,22 +152,45 @@ function classifyWorker(text, plan = {}) {
   return 'cooWorker';
 }
 
-function needsApproval(text) {
-  const t = String(text || '').toLowerCase();
+function needsApproval(text, plan = {}) {
+  const t = String(text || '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
 
-  return [
-    'change pricing',
-    'send proposal',
-    'final proposal',
-    'sign',
-    'agreement',
-    'hire',
-    'fire',
-    'delete',
-    'legal',
-    'financial commitment',
-    'contract'
-  ].some((term) => t.includes(term));
+  const action = String(plan.action || '').toUpperCase();
+
+  // Approval is for an actual protected action, not for merely mentioning a
+  // protected topic while defining governance, policy, data semantics, or
+  // escalation boundaries. Bare words such as "contract", "legal", "sign",
+  // and "financial commitment" are intentionally not sufficient by themselves.
+  const protectedActions = new Set([
+    'CHANGE_PRICING',
+    'PRICING_CHANGE',
+    'SEND_PROPOSAL',
+    'SUBMIT_PROPOSAL',
+    'SIGN_AGREEMENT',
+    'SIGN_CONTRACT',
+    'HIRE',
+    'FIRE',
+    'DELETE_PRODUCTION_DATA',
+    'MAKE_FINANCIAL_COMMITMENT'
+  ]);
+
+  if (protectedActions.has(action)) {
+    return true;
+  }
+
+  const protectedActionPatterns = [
+    /\b(change|set|increase|decrease|discount|override)\s+(our\s+)?pricing\b/,
+    /\b(send|submit|deliver)\s+(the\s+|a\s+)?(final\s+)?proposal\b/,
+    /\b(sign|execute)\s+(the\s+|a\s+|an\s+)?(agreement|contract|legal document)\b/,
+    /\b(hire|fire|terminate)\s+(an?\s+|the\s+)?(employee|contractor|staff|person|worker)\b/,
+    /\b(delete|drop|destroy|purge)\s+(production\s+)?(database|records?|data|campaign|account|repository|repo)\b/,
+    /\b(make|approve|authorize|commit|spend|purchase|pay)\b.{0,60}\b(financial commitment|payment|expense|purchase|spend|budget)\b/
+  ];
+
+  return protectedActionPatterns.some((pattern) => pattern.test(t));
 }
 
 function normalizeProvider(provider) {
@@ -201,7 +224,7 @@ function makeOperation(command, plan = {}) {
     action
   });
 
-  const approvalRequired = needsApproval(command);
+  const approvalRequired = needsApproval(command, normalizedPlan);
 
   return {
     id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
