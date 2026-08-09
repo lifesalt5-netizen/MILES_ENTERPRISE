@@ -50,6 +50,7 @@ function makeFetch(responses) {
       ],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "S1",
@@ -71,7 +72,8 @@ function makeFetch(responses) {
         "Prime Award ID": "PX"
       }],
       page_metadata: { hasNext: false }
-    }
+    },
+    { results: [], page_metadata: { hasNext: false } }
   ];
 
   const service = new AwardHistoryTruthService({ fetch: makeFetch(responses), requestTimeoutMs: 5000 });
@@ -113,6 +115,7 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "FS1",
@@ -122,7 +125,8 @@ function makeFetch(responses) {
         "Prime Award ID": "FP2"
       }],
       page_metadata: { hasNext: false }
-    }
+    },
+    { results: [], page_metadata: { hasNext: false } }
   ];
 
   const fallbackService = new AwardHistoryTruthService({ fetch: makeFetch(fallbackResponses), requestTimeoutMs: 5000 });
@@ -162,6 +166,7 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "SS1",
@@ -172,7 +177,8 @@ function makeFetch(responses) {
         "Prime Award ID": "SPX"
       }],
       page_metadata: { hasNext: false }
-    }
+    },
+    { results: [], page_metadata: { hasNext: false } }
   ];
 
   const samService = new AwardHistoryTruthService({
@@ -227,7 +233,7 @@ function makeFetch(responses) {
 
   assert(Boolean(timeoutError), "hung request fails instead of hanging indefinitely");
   assert(/timed out after 1000ms/.test(timeoutError.message), "timeout error is explicit");
-  assert(/\/api\/v2\/recipient\//.test(timeoutError.message), "timeout identifies blocked endpoint");
+  assert(/USAspending \/api\/v2\/recipient\//.test(timeoutError.message), "timeout identifies blocked endpoint");
 
   console.log("AWARD_HISTORY_TRUTH_TEST_PASS 47/47");
 })().catch((error) => {
