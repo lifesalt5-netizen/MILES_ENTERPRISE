@@ -122,4 +122,4 @@ const nameMerged = service.mergeStateRows([
 assert(nameMerged.length === 1, "normalized legal names merge state records when UEI is unavailable");
 assert(nameMerged[0].sledStates.join(",") === "NC,SC", "name-based merge preserves multi-state award footprint");
 
-console.log("FEDERAL_SLED_VENDOR_CLASSIFICATION_TEST_PASS 28/28");
+console.log("FEDERAL_SLED_VENDOR_CLASSIFICATION_TEST_PASS 30/30");
