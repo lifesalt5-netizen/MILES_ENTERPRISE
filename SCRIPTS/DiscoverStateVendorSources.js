@@ -19,6 +19,8 @@ const STATES = {
 
 const EXTENSIONS = new Set([".csv", ".json", ".xlsx", ".xls", ".tsv", ".txt"]);
 const SIGNALS = ["vendor", "vendors", "award", "awards", "contract", "contracts", "spend", "supplier", "procurement", "purchase", "payments"];
+const STATE_CONTEXT = ["SLED", "STATE", "PROCUREMENT", "VENDOR", "VENDORS", "SUPPLIER", "SUPPLIERS", "PURCHASING"];
+const FEDERAL_CONTEXT = ["GSA", "SAM", "USASPENDING", "FEDERAL", "VETERANS AFFAIRS"];
 const SKIP_DIRS = new Set(["node_modules", ".git", "BACKUPS", "_BACKUPS", "_LEGACY_BUILDS"]);
 
 function arg(name, fallback = null) {
@@ -31,11 +33,26 @@ function normalize(value) {
 }
 
 function detectState(filePath) {
-  const text = ` ${normalize(filePath)} `;
+  const normalized = normalize(filePath);
+  const text = ` ${normalized} `;
+  const tokens = new Set(normalized.split(" ").filter(Boolean));
+  const hasStateContext = STATE_CONTEXT.some((token) => tokens.has(token));
+  const hasFederalContext = FEDERAL_CONTEXT.some((token) => normalized.includes(token));
   const matches = [];
+
   for (const [abbr, full] of Object.entries(STATES)) {
-    if (text.includes(` ${full} `) || text.includes(` ${abbr} `)) matches.push(abbr);
+    if (text.includes(` ${full} `)) {
+      matches.push(abbr);
+      continue;
+    }
+
+    if (!text.includes(` ${abbr} `)) continue;
+
+    // Two-letter abbreviations are ambiguous (VA is often Veterans Affairs, CA can appear in IDs, etc.).
+    // Accept abbreviations only when the path clearly lives in a state/SLED context and not a federal context.
+    if (hasStateContext && !hasFederalContext) matches.push(abbr);
   }
+
   return [...new Set(matches)];
 }
 
