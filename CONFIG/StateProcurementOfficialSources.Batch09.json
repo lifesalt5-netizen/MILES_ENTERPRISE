@@ -12,12 +12,42 @@
     {
       "code": "NM",
       "name": "New Mexico",
-      "status": "SOURCE_DISCOVERY_PARTIAL",
-      "vendorRegistryStatus": "OFFICIAL_SOURCE_REQUIRES_FURTHER_VALIDATION",
-      "awardSourceStatus": "OFFICIAL_SOURCE_REQUIRES_FURTHER_VALIDATION",
-      "vendorSources": [],
-      "awardSources": [],
-      "notes": "Do not auto-ingest until the current official New Mexico vendor registration and award/contract extraction endpoints are validated."
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "New Mexico State Purchasing Online Procurement / Supplier Registration",
+          "authority": "New Mexico General Services Department, State Purchasing Division",
+          "url": "https://generalservices.state.nm.us/state-purchasing/online-procurement/",
+          "purpose": "Official supplier registration and online procurement participation",
+          "ingestionMode": "TRANSITIONING_PLATFORM_ENDPOINT_VALIDATION_REQUIRED"
+        },
+        {
+          "name": "New Mexico State Purchasing Vendor Resources",
+          "authority": "New Mexico General Services Department, State Purchasing Division",
+          "url": "https://generalservices.state.nm.us/state-purchasing/resources-and-information/",
+          "purpose": "Official supplier registration resources and vendor reference materials",
+          "ingestionMode": "PUBLIC_RESOURCE_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "New Mexico State Purchasing Recent Awards",
+          "authority": "New Mexico General Services Department, State Purchasing Division",
+          "url": "https://generalservices.state.nm.us/state-purchasing/recent-awards/",
+          "purpose": "Official recent procurement award publication",
+          "ingestionMode": "PUBLIC_IFRAME_OR_EXPORT_EXTRACTION_VALIDATION_REQUIRED"
+        },
+        {
+          "name": "New Mexico Statewide Price Agreements",
+          "authority": "New Mexico General Services Department, State Purchasing Division",
+          "url": "https://generalservices.state.nm.us/state-purchasing/",
+          "purpose": "Official statewide procurement contract and price-agreement source",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "notes": "GSD states the procurement platform is transitioning in summer 2026. Source authority is confirmed, but production ingestion must validate the current live endpoints before extraction."
     },
     {
       "code": "NY",
@@ -56,7 +86,7 @@
       "name": "North Carolina",
       "status": "SOURCE_CONFIRMED_NOT_INGESTED",
       "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
-      "awardSourceStatus": "PARTIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
       "vendorSources": [
         {
           "name": "North Carolina electronic Vendor Portal (eVP)",
@@ -68,13 +98,14 @@
       ],
       "awardSources": [
         {
-          "name": "North Carolina eVP Solicitations / Procurement Repository",
+          "name": "North Carolina eVP Solicitation and Award Repository",
           "authority": "State of North Carolina",
           "url": "https://evp.nc.gov/",
-          "purpose": "Official repository for competitive procurement advertisements; award-result extraction method requires validation",
-          "ingestionMode": "PUBLIC_SEARCH_AWARD_RESULT_DISCOVERY_REQUIRED"
+          "purpose": "Official procurement repository exposing solicitation records with awarded status and award-result evidence",
+          "ingestionMode": "PUBLIC_SEARCH_AWARD_RESULT_EXTRACTION_VALIDATION_REQUIRED"
         }
-      ]
+      ],
+      "notes": "Award-source authority is confirmed because eVP exposes awarded solicitation status. Production ingestion must still validate awardee and amount extraction fields before loading contractor sales history."
     },
     {
       "code": "ND",
