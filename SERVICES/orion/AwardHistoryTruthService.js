@@ -28,6 +28,20 @@ function pick(row, keys) {
   return null;
 }
 
+function errorDetail(data, fallback) {
+  if (data?.detail !== undefined && data?.detail !== null) {
+    if (typeof data.detail === "string") return data.detail;
+    try { return JSON.stringify(data.detail); } catch { return String(data.detail); }
+  }
+  if (data && typeof data === "object") {
+    try {
+      const text = JSON.stringify(data);
+      if (text && text !== "{}") return text;
+    } catch {}
+  }
+  return fallback || "request failed";
+}
+
 class AwardHistoryTruthService {
   constructor(options = {}) {
     this.fetch = options.fetch || global.fetch;
@@ -62,7 +76,7 @@ class AwardHistoryTruthService {
     let data;
     try { data = JSON.parse(text); } catch { data = { detail: text }; }
     if (!response.ok) {
-      throw new Error(`USAspending ${response.status}: ${data?.detail || response.statusText || "request failed"}`);
+      throw new Error(`USAspending ${response.status} ${path}: ${errorDetail(data, response.statusText)}`);
     }
     return data;
   }
@@ -133,7 +147,7 @@ class AwardHistoryTruthService {
         "Start Date",
         "End Date",
         "Award Amount",
-        "Description",
+        "Contract Description",
         "Awarding Agency",
         "Awarding Sub Agency",
         "Funding Agency",
@@ -144,7 +158,6 @@ class AwardHistoryTruthService {
       limit,
       sort: "Award Amount",
       order: "desc",
-      spending_level: spendingLevel,
       subawards: spendingLevel === "subawards"
     };
   }
@@ -178,7 +191,7 @@ class AwardHistoryTruthService {
       startDate: pick(row, ["Start Date", "start_date"]),
       endDate: pick(row, ["End Date", "end_date"]),
       amount: number(pick(row, ["Award Amount", "award_amount", "total_obligation"])),
-      description: pick(row, ["Description", "Contract Description", "description"]),
+      description: pick(row, ["Contract Description", "Description", "description"]),
       awardingAgency: pick(row, ["Awarding Agency", "awarding_agency"]),
       awardingSubAgency: pick(row, ["Awarding Sub Agency", "awarding_sub_agency"]),
       fundingAgency: pick(row, ["Funding Agency", "funding_agency"]),
