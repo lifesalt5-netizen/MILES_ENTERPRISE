@@ -2,6 +2,11 @@
 
 const AwardHistoryTruthService = require("../SERVICES/orion/AwardHistoryTruthService");
 
+// Test fixtures must be deterministic even when the developer/runtime shell has
+// real SAM credentials loaded. Dedicated SAM coverage below injects TEST_KEY.
+process.env.SAM_API_KEY = "";
+process.env.SAM_GOV_API_KEY = "";
+
 function assert(condition, label) {
   if (!condition) throw new Error(label);
   console.log(`[PASS] ${label}`);
