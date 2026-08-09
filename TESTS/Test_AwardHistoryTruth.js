@@ -20,6 +20,9 @@ function makeFetch(responses) {
 }
 
 (async () => {
+  // auditByUei reads prime and subaward histories concurrently. After identity
+  // resolution, the mock response order is therefore:
+  // prime group 1, subaward group 1, prime group 2, subaward group 2.
   const responses = [
     {
       results: [{ id: "x-R", uei: "ABC123", name: "ACME FEDERAL LLC", amount: 1000 }]
@@ -50,7 +53,6 @@ function makeFetch(responses) {
       ],
       page_metadata: { hasNext: false }
     },
-    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "S1",
@@ -73,6 +75,7 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     { results: [], page_metadata: { hasNext: false } }
   ];
 
@@ -119,7 +122,6 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
-    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "FS1",
@@ -130,6 +132,7 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     { results: [], page_metadata: { hasNext: false } }
   ];
 
@@ -174,7 +177,6 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
-    { results: [], page_metadata: { hasNext: false } },
     {
       results: [{
         "Sub-Award ID": "SS1",
@@ -186,6 +188,7 @@ function makeFetch(responses) {
       }],
       page_metadata: { hasNext: false }
     },
+    { results: [], page_metadata: { hasNext: false } },
     { results: [], page_metadata: { hasNext: false } }
   ];
 
