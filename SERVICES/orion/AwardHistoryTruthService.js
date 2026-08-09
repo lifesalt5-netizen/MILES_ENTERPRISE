@@ -1,6 +1,7 @@
 "use strict";
 
 const API_BASE = "https://api.usaspending.gov";
+const SAM_API_BASE = "https://api.sam.gov";
 
 const PRIME_CONTRACT_CODES = ["A", "B", "C", "D"];
 const IDV_CODES = [
@@ -32,10 +33,12 @@ class AwardHistoryTruthService {
   constructor(options = {}) {
     this.fetch = options.fetch || global.fetch;
     this.apiBase = options.apiBase || API_BASE;
+    this.samApiBase = options.samApiBase || SAM_API_BASE;
+    this.samApiKey = clean(options.samApiKey || process.env.SAM_API_KEY || process.env.SAM_GOV_API_KEY);
     this.requestTimeoutMs = Math.max(1000, Number(options.requestTimeoutMs) || 30000);
   }
 
-  async post(path, body) {
+  async request(url, options = {}, label = url) {
     if (typeof this.fetch !== "function") throw new Error("fetch is unavailable");
 
     const controller = new AbortController();
@@ -43,15 +46,10 @@ class AwardHistoryTruthService {
 
     let response;
     try {
-      response = await this.fetch(this.apiBase + path, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal
-      });
+      response = await this.fetch(url, { ...options, signal: controller.signal });
     } catch (error) {
       if (error?.name === "AbortError" || controller.signal.aborted) {
-        throw new Error(`USAspending request timed out after ${this.requestTimeoutMs}ms: ${path}`);
+        throw new Error(`Request timed out after ${this.requestTimeoutMs}ms: ${label}`);
       }
       throw error;
     } finally {
@@ -63,9 +61,21 @@ class AwardHistoryTruthService {
     try { data = JSON.parse(text); } catch { data = { detail: text }; }
     if (!response.ok) {
       const detail = data?.message || data?.detail || response.statusText || "request failed";
-      throw new Error(`USAspending ${response.status} ${path}: ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
+      throw new Error(`${label} ${response.status}: ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
     }
     return data;
+  }
+
+  async post(path, body) {
+    return this.request(
+      this.apiBase + path,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body)
+      },
+      `USAspending ${path}`
+    );
   }
 
   async resolveRecipientByKeyword(keyword) {
@@ -80,6 +90,41 @@ class AwardHistoryTruthService {
     return Array.isArray(data?.results) ? data.results : [];
   }
 
+  async resolveSamIdentity(uei) {
+    const targetUei = clean(uei).toUpperCase();
+    if (!this.samApiKey) {
+      return {
+        attempted: false,
+        confirmed: false,
+        status: "SAM_API_KEY_NOT_CONFIGURED",
+        rows: []
+      };
+    }
+
+    const url = `${this.samApiBase}/entity-information/v4/entities?ueiSAM=${encodeURIComponent(targetUei)}&includeSections=entityRegistration`;
+    const data = await this.request(
+      url,
+      {
+        method: "GET",
+        headers: {
+          "accept": "application/json",
+          "x-api-key": this.samApiKey
+        }
+      },
+      "SAM Entity Management API"
+    );
+
+    const rows = Array.isArray(data?.entityData) ? data.entityData : [];
+    const exact = rows.filter((row) => clean(row?.entityRegistration?.ueiSAM).toUpperCase() === targetUei);
+    return {
+      attempted: true,
+      confirmed: exact.length > 0,
+      status: exact.length ? "SAM_UEI_CONFIRMED" : "SAM_UEI_NOT_FOUND",
+      rows: exact,
+      candidates: rows
+    };
+  }
+
   async resolveIdentity(uei, companyName) {
     const targetUei = clean(uei).toUpperCase();
     const targetName = clean(companyName);
@@ -89,11 +134,33 @@ class AwardHistoryTruthService {
     if (exactUei.length) {
       return {
         confirmed: true,
-        matchedBy: "UEI",
+        matchedBy: "USASPENDING_UEI",
         authoritativeForPersistence: true,
-        canonicalRows: exactUei,
+        canonicalRows: exactUei.map((row) => ({ name: row.name, uei: row.uei })),
         recipientCandidates: ueiResults,
-        searchText: targetUei
+        searchText: targetUei,
+        sam: { attempted: false, status: "NOT_REQUIRED" }
+      };
+    }
+
+    const sam = await this.resolveSamIdentity(targetUei);
+    if (sam.confirmed) {
+      const canonicalRows = sam.rows.map((row) => ({
+        name: row?.entityRegistration?.legalBusinessName,
+        uei: row?.entityRegistration?.ueiSAM,
+        registrationStatus: row?.entityRegistration?.registrationStatus,
+        samRegistered: row?.entityRegistration?.samRegistered,
+        cageCode: row?.entityRegistration?.cageCode
+      }));
+      const canonicalName = clean(canonicalRows[0]?.name);
+      return {
+        confirmed: true,
+        matchedBy: "SAM_UEI",
+        authoritativeForPersistence: true,
+        canonicalRows,
+        recipientCandidates: ueiResults,
+        searchText: canonicalName || targetUei,
+        sam
       };
     }
 
@@ -104,7 +171,8 @@ class AwardHistoryTruthService {
         authoritativeForPersistence: false,
         canonicalRows: [],
         recipientCandidates: ueiResults,
-        searchText: targetUei
+        searchText: targetUei,
+        sam
       };
     }
 
@@ -116,16 +184,22 @@ class AwardHistoryTruthService {
       confirmed: exactName.length > 0,
       matchedBy: exactName.length ? "LEGAL_NAME_FALLBACK" : null,
       authoritativeForPersistence: false,
-      canonicalRows: exactName,
+      canonicalRows: exactName.map((row) => ({ name: row.name, uei: row.uei })),
       recipientCandidates: [...ueiResults, ...nameResults],
-      searchText: targetName
+      searchText: targetName,
+      sam
     };
   }
 
   buildSearchBody(searchText, page, limit, spendingLevel, awardTypeCodes = PRIME_CONTRACT_CODES) {
-    const subawards = spendingLevel === "subawards";
-    const fields = subawards
-      ? [
+    const isSubaward = spendingLevel === "subawards";
+    if (isSubaward) {
+      return {
+        filters: {
+          recipient_search_text: [clean(searchText)],
+          award_type_codes: awardTypeCodes
+        },
+        fields: [
           "Sub-Award ID",
           "Sub-Award Type",
           "Sub-Awardee Name",
@@ -138,32 +212,38 @@ class AwardHistoryTruthService {
           "Sub-Award Description",
           "Sub-Recipient UEI",
           "Prime Award Recipient UEI"
-        ]
-      : [
-          "Award ID",
-          "Recipient Name",
-          "Start Date",
-          "End Date",
-          "Award Amount",
-          "Contract Description",
-          "Awarding Agency",
-          "Awarding Sub Agency",
-          "Funding Agency",
-          "Funding Sub Agency",
-          "Contract Award Type"
-        ];
+        ],
+        page,
+        limit,
+        sort: "Sub-Award Amount",
+        order: "desc",
+        subawards: true
+      };
+    }
 
     return {
       filters: {
         recipient_search_text: [clean(searchText)],
         award_type_codes: awardTypeCodes
       },
-      fields,
+      fields: [
+        "Award ID",
+        "Recipient Name",
+        "Start Date",
+        "End Date",
+        "Award Amount",
+        "Contract Description",
+        "Awarding Agency",
+        "Awarding Sub Agency",
+        "Funding Agency",
+        "Funding Sub Agency",
+        "Contract Award Type"
+      ],
       page,
       limit,
-      sort: subawards ? "Sub-Award Amount" : "Award Amount",
+      sort: "Award Amount",
       order: "desc",
-      subawards
+      subawards: false
     };
   }
 
@@ -176,7 +256,6 @@ class AwardHistoryTruthService {
 
     const allRows = [];
     for (const awardTypeCodes of groups) {
-      const rows = [];
       let page = 1;
       let hasNext = true;
       while (hasNext && page <= maxPages) {
@@ -185,13 +264,12 @@ class AwardHistoryTruthService {
           this.buildSearchBody(searchText, page, pageSize, spendingLevel, awardTypeCodes)
         );
         const batch = Array.isArray(data?.results) ? data.results : [];
-        rows.push(...batch);
+        allRows.push(...batch);
         const meta = data?.page_metadata || {};
         hasNext = Boolean(meta.hasNext || meta.has_next || meta.next);
         page += 1;
         if (!batch.length) hasNext = false;
       }
-      allRows.push(...rows);
     }
     return allRows;
   }
@@ -215,20 +293,6 @@ class AwardHistoryTruthService {
   }
 
   normalizeSub(row = {}) {
-    const nested = Array.isArray(row.Subawards) ? row.Subawards : [];
-    if (nested.length) {
-      return nested.map((sub) => ({
-        role: "SUBCONTRACT",
-        primeAwardId: pick(row, ["Award ID", "award_id", "piid"]),
-        subawardId: pick(sub, ["Sub-Award ID", "Subaward ID", "subaward_id"]),
-        recipientName: pick(sub, ["Recipient Name", "Subawardee Name", "Sub-Awardee Name", "recipient_name"]),
-        actionDate: pick(sub, ["Action Date", "Subaward Date", "Sub-Award Date", "action_date"]),
-        amount: number(pick(sub, ["Amount", "Subaward Amount", "Sub-Award Amount", "amount"])),
-        description: pick(sub, ["Description", "Sub-Award Description", "description"]),
-        awardingAgency: pick(row, ["Awarding Agency", "awarding_agency"]),
-        source: "USAspending.gov"
-      }));
-    }
     return [{
       role: "SUBCONTRACT",
       primeAwardId: pick(row, ["Prime Award ID", "Award ID", "prime_award_id", "award_id"]),
@@ -253,7 +317,9 @@ class AwardHistoryTruthService {
     });
   }
 
-  recipientMatches(row, canonicalNameSet) {
+  recipientMatches(row, canonicalNameSet, targetUei) {
+    const rowUei = clean(row?.recipientUei).toUpperCase();
+    if (rowUei && targetUei && rowUei === targetUei) return true;
     const name = normalizeName(row?.recipientName);
     return Boolean(name && canonicalNameSet.has(name));
   }
@@ -268,10 +334,11 @@ class AwardHistoryTruthService {
       return {
         ok: false,
         service: "AWARD_HISTORY_TRUTH",
-        status: companyName ? "IDENTITY_NOT_CONFIRMED_BY_USASPENDING" : "UEI_NOT_CONFIRMED_BY_USASPENDING",
+        status: companyName ? "IDENTITY_NOT_CONFIRMED_BY_AUTHORITATIVE_SOURCES" : "UEI_NOT_CONFIRMED_BY_AUTHORITATIVE_SOURCES",
         uei: target,
         companyName: companyName || null,
         recipientCandidates: identity.recipientCandidates,
+        samIdentityStatus: identity.sam?.status || null,
         zeroAwardClassificationPermitted: false,
         readOnly: true
       };
@@ -297,11 +364,11 @@ class AwardHistoryTruthService {
         : `FALLBACK|${row.primeAwardId || ""}|${normalizeName(row.recipientName)}|${row.actionDate || ""}|${row.amount}`
     );
 
-    const primeAwards = primeCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
-    const subcontracts = subcontractCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
+    const primeAwards = primeCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet, target));
+    const subcontracts = subcontractCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet, target));
 
-    const excludedPrimeCandidates = primeCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet));
-    const excludedSubcontractCandidates = subcontractCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet));
+    const excludedPrimeCandidates = primeCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet, target));
+    const excludedSubcontractCandidates = subcontractCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet, target));
 
     const primeAwardedRevenue = primeAwards.reduce((sum, row) => sum + number(row.amount), 0);
     const subcontractedRevenue = subcontracts.reduce((sum, row) => sum + number(row.amount), 0);
@@ -327,10 +394,12 @@ class AwardHistoryTruthService {
       },
       source: {
         name: "USAspending.gov",
+        identityAuthority: identity.matchedBy === "SAM_UEI" ? "SAM.gov" : "USAspending.gov",
         apiBase: this.apiBase,
         recipientMatchedBy: identity.matchedBy,
         authoritativeLookupPerformed: true,
         authoritativeForPersistence,
+        samIdentityStatus: identity.sam?.status || null,
         requestTimeoutMs: this.requestTimeoutMs
       },
       identity: {
@@ -359,9 +428,9 @@ class AwardHistoryTruthService {
         excludedSubcontractCandidateCount: excludedSubcontractCandidates.length,
         zeroAwardClassificationPermitted: authoritativeForPersistence,
         warnings: [
-          ...(!authoritativeForPersistence ? ["USAspending did not confirm the supplied UEI. Award history was recovered by exact legal-name fallback and must not overwrite ORION contractor totals until UEI reconciliation is completed."] : []),
+          ...(!authoritativeForPersistence ? ["Award history was recovered by exact legal-name fallback and must not overwrite ORION contractor totals until UEI reconciliation is completed."] : []),
           ...(excludedPrimeCandidates.length ? ["Prime award candidates with recipient names outside the confirmed canonical identity set were excluded from revenue and award counts."] : []),
-          ...(excludedSubcontractCandidates.length ? ["Subcontract candidates with recipient names outside the confirmed canonical identity set were excluded from revenue and award counts pending review."] : [])
+          ...(excludedSubcontractCandidates.length ? ["Subcontract candidates with recipient names or UEIs outside the confirmed canonical identity set were excluded from revenue and award counts pending review."] : [])
         ]
       },
       excludedCandidates: {
