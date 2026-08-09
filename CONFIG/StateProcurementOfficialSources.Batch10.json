@@ -1,0 +1,98 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_10",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "OH",
+      "name": "Ohio",
+      "status": "SOURCE_PARTIAL_REQUIRES_VALIDATION",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED",
+      "vendorSources": [],
+      "awardSources": [],
+      "notes": "Do not mark Ohio ingested until the current official Ohio procurement supplier-registration and award/contract search endpoints are validated."
+    },
+    {
+      "code": "OK",
+      "name": "Oklahoma",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Oklahoma Supplier Portal",
+          "authority": "Oklahoma Office of Management and Enterprise Services, Central Purchasing",
+          "url": "https://www.oklahoma.gov/omes/divisions/central-purchasing/suppliers-and-payees/supplier-portal.html",
+          "purpose": "State supplier and payee self-registration and account management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Oklahoma Statewide Contract Search",
+          "authority": "Oklahoma Office of Management and Enterprise Services, Central Purchasing",
+          "url": "https://www.oklahoma.gov/omes/divisions/central-purchasing/agency-resources/statewide-contracts.html",
+          "purpose": "Public statewide contract search including supplier and contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "OR",
+      "name": "Oregon",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "OregonBuys Supplier Registration",
+          "authority": "Oregon Department of Administrative Services",
+          "url": "https://www.oregon.gov/das/ORBuys/Pages/supplierregistration.aspx",
+          "purpose": "State supplier registration and eProcurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "OregonBuys",
+          "authority": "Oregon Department of Administrative Services",
+          "url": "https://oregonbuys.gov/bso/",
+          "purpose": "State eProcurement system for opportunities, purchase orders and contracting activity",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "PA",
+      "name": "Pennsylvania",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "PA Supplier Portal",
+          "authority": "Commonwealth of Pennsylvania",
+          "url": "https://www.pa.gov/services/dgs/register-as-a-commonwealth-supplier",
+          "purpose": "Commonwealth procurement supplier registration and profile management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "PA eMarketplace",
+          "authority": "Pennsylvania Department of General Services",
+          "url": "https://www.emarketplace.state.pa.us/",
+          "purpose": "Public bidding opportunities, awards, purchase orders and contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}
