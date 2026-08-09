@@ -1,0 +1,113 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_07",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "MN",
+      "name": "Minnesota",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "SWIFT Supplier Portal",
+          "authority": "Minnesota Management and Budget / Department of Administration",
+          "url": "https://mn.gov/mmb/accounting/swift/vendor-resources/",
+          "purpose": "State supplier registration and supplier account resources",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Minnesota State Contracts / Cooperative Purchasing Venture",
+          "authority": "Minnesota Department of Administration, Office of State Procurement",
+          "url": "https://mn.gov/admin/government/purchasing-contracting/contracts/",
+          "purpose": "Public state contract and awarded supplier information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MS",
+      "name": "Mississippi",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_DISCOVERY_REQUIRED",
+      "vendorSources": [
+        {
+          "name": "MAGIC Vendor Self Service",
+          "authority": "Mississippi Department of Finance and Administration",
+          "url": "https://www.dfa.ms.gov/vendors",
+          "purpose": "State vendor registration and vendor self-service resources",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Mississippi State Contracts",
+          "authority": "Mississippi Department of Finance and Administration, Office of Purchasing, Travel and Fleet Management",
+          "url": "https://www.dfa.ms.gov/purchasing-travel-and-fleet-management",
+          "purpose": "State contract and procurement award resources",
+          "ingestionMode": "WEB_QUERY_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MO",
+      "name": "Missouri",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "MissouriBUYS Vendor Registration",
+          "authority": "Missouri Office of Administration, Division of Purchasing",
+          "url": "https://missouribuys.mo.gov/",
+          "purpose": "State vendor registration and procurement marketplace access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "MissouriBUYS Contracts and Bid Awards",
+          "authority": "Missouri Office of Administration, Division of Purchasing",
+          "url": "https://missouribuys.mo.gov/",
+          "purpose": "Public procurement, contract and award information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MT",
+      "name": "Montana",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "eMACS Vendor Registration",
+          "authority": "Montana Department of Administration, State Procurement Bureau",
+          "url": "https://spb.mt.gov/Vendors",
+          "purpose": "State vendor registration and procurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Montana State Contracts / eMACS",
+          "authority": "Montana Department of Administration, State Procurement Bureau",
+          "url": "https://spb.mt.gov/Contracts",
+          "purpose": "Public statewide contract and awarded vendor information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}
