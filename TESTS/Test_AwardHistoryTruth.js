@@ -52,33 +52,23 @@ function makeFetch(responses) {
     },
     {
       results: [{
-        "Award ID": "P2",
-        "Recipient Name": "PRIME COMPANY LLC",
-        "Award Amount": 200,
-        "Awarding Agency": "Agency B",
-        "Subawards": [
-          {
-            "Sub-Award ID": "S1",
-            "Recipient Name": "ACME FEDERAL LLC",
-            "Action Date": "2026-01-01",
-            "Amount": 50,
-            "Description": "Subcontract work"
-          },
-          {
-            "Sub-Award ID": "S1",
-            "Recipient Name": "ACME FEDERAL LLC",
-            "Action Date": "2026-02-01",
-            "Amount": 50,
-            "Description": "Duplicate subcontract row"
-          },
-          {
-            "Sub-Award ID": "S-X",
-            "Recipient Name": "OTHER SUBCONTRACTOR LLC",
-            "Action Date": "2026-01-01",
-            "Amount": 400,
-            "Description": "Must not count"
-          }
-        ]
+        "Sub-Award ID": "S1",
+        "Sub-Awardee Name": "ACME FEDERAL LLC",
+        "Sub-Award Date": "2026-01-01",
+        "Sub-Award Amount": 50,
+        "Prime Award ID": "P2"
+      }, {
+        "Sub-Award ID": "S1",
+        "Sub-Awardee Name": "ACME FEDERAL LLC",
+        "Sub-Award Date": "2026-02-01",
+        "Sub-Award Amount": 50,
+        "Prime Award ID": "P2"
+      }, {
+        "Sub-Award ID": "S-X",
+        "Sub-Awardee Name": "OTHER SUBCONTRACTOR LLC",
+        "Sub-Award Date": "2026-01-01",
+        "Sub-Award Amount": 400,
+        "Prime Award ID": "PX"
       }],
       page_metadata: { hasNext: false }
     }
@@ -125,13 +115,11 @@ function makeFetch(responses) {
     },
     {
       results: [{
-        "Award ID": "FP2",
-        "Subawards": [{
-          "Sub-Award ID": "FS1",
-          "Recipient Name": "ACME FEDERAL LLC",
-          "Action Date": "2026-03-01",
-          "Amount": 75
-        }]
+        "Sub-Award ID": "FS1",
+        "Sub-Awardee Name": "ACME FEDERAL LLC",
+        "Sub-Award Date": "2026-03-01",
+        "Sub-Award Amount": 75,
+        "Prime Award ID": "FP2"
       }],
       page_metadata: { hasNext: false }
     }
@@ -152,6 +140,57 @@ function makeFetch(responses) {
   assert(fallback.dataQuality.zeroAwardClassificationPermitted === false, "fallback cannot classify contractor as zero award");
   assert(fallback.persistence.allowed === false, "fallback persistence fails closed");
 
+  const samResponses = [
+    { results: [] },
+    {
+      entityData: [{
+        entityRegistration: {
+          ueiSAM: "ABC123",
+          legalBusinessName: "ACME FEDERAL LLC",
+          registrationStatus: "Active",
+          samRegistered: "Yes",
+          cageCode: "1ABC2"
+        }
+      }]
+    },
+    {
+      results: [{
+        "Award ID": "SP1",
+        "Recipient Name": "ACME FEDERAL LLC",
+        "Award Amount": 700,
+        "Awarding Agency": "Agency SAM"
+      }],
+      page_metadata: { hasNext: false }
+    },
+    {
+      results: [{
+        "Sub-Award ID": "SS1",
+        "Sub-Awardee Name": "ACME FEDERAL LLC",
+        "Sub-Recipient UEI": "ABC123",
+        "Sub-Award Date": "2026-04-01",
+        "Sub-Award Amount": 125,
+        "Prime Award ID": "SPX"
+      }],
+      page_metadata: { hasNext: false }
+    }
+  ];
+
+  const samService = new AwardHistoryTruthService({
+    fetch: makeFetch(samResponses),
+    requestTimeoutMs: 5000,
+    samApiKey: "TEST_KEY"
+  });
+  const samResult = await samService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
+
+  assert(samResult.ok === true, "SAM exact UEI reconciles identity when USAspending recipient profile is empty");
+  assert(samResult.source.recipientMatchedBy === "SAM_UEI", "SAM identity method recorded");
+  assert(samResult.source.identityAuthority === "SAM.gov", "SAM recorded as identity authority");
+  assert(samResult.source.samIdentityStatus === "SAM_UEI_CONFIRMED", "SAM confirmation status recorded");
+  assert(samResult.source.authoritativeForPersistence === true, "SAM exact UEI permits authoritative persistence after validation");
+  assert(samResult.identity.canonicalNames[0] === "ACME FEDERAL LLC", "SAM legal business name becomes canonical identity");
+  assert(samResult.summary.federalRevenue === 825, "SAM reconciled history still uses prime plus subcontract governing formula");
+  assert(samResult.dataQuality.zeroAwardClassificationPermitted === true, "zero-award classification allowed only after authoritative UEI reconciliation");
+
   const unresolvedResponses = [
     { results: [] },
     { results: [{ name: "DIFFERENT COMPANY LLC" }] }
@@ -160,6 +199,7 @@ function makeFetch(responses) {
   const unresolved = await unresolvedService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
   assert(unresolved.ok === false, "unresolved identity fails closed");
   assert(unresolved.zeroAwardClassificationPermitted === false, "unresolved identity cannot be labeled zero award");
+  assert(unresolved.samIdentityStatus === "SAM_API_KEY_NOT_CONFIGURED", "missing SAM credential is explicit");
 
   const hangingFetch = async (_url, options = {}) => new Promise((resolve, reject) => {
     const signal = options.signal;
@@ -189,7 +229,7 @@ function makeFetch(responses) {
   assert(/timed out after 1000ms/.test(timeoutError.message), "timeout error is explicit");
   assert(/\/api\/v2\/recipient\//.test(timeoutError.message), "timeout identifies blocked endpoint");
 
-  console.log("AWARD_HISTORY_TRUTH_TEST_PASS 38/38");
+  console.log("AWARD_HISTORY_TRUTH_TEST_PASS 47/47");
 })().catch((error) => {
   console.error(error.stack || error);
   process.exit(1);
