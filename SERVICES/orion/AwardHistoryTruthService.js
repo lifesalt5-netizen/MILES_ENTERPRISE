@@ -123,29 +123,47 @@ class AwardHistoryTruthService {
   }
 
   buildSearchBody(searchText, page, limit, spendingLevel, awardTypeCodes = PRIME_CONTRACT_CODES) {
+    const subawards = spendingLevel === "subawards";
+    const fields = subawards
+      ? [
+          "Sub-Award ID",
+          "Sub-Award Type",
+          "Sub-Awardee Name",
+          "Sub-Award Date",
+          "Sub-Award Amount",
+          "Awarding Agency",
+          "Awarding Sub Agency",
+          "Prime Award ID",
+          "Prime Recipient Name",
+          "Sub-Award Description",
+          "Sub-Recipient UEI",
+          "Prime Award Recipient UEI"
+        ]
+      : [
+          "Award ID",
+          "Recipient Name",
+          "Start Date",
+          "End Date",
+          "Award Amount",
+          "Contract Description",
+          "Awarding Agency",
+          "Awarding Sub Agency",
+          "Funding Agency",
+          "Funding Sub Agency",
+          "Contract Award Type"
+        ];
+
     return {
       filters: {
         recipient_search_text: [clean(searchText)],
         award_type_codes: awardTypeCodes
       },
-      fields: [
-        "Award ID",
-        "Recipient Name",
-        "Start Date",
-        "End Date",
-        "Award Amount",
-        "Contract Description",
-        "Awarding Agency",
-        "Awarding Sub Agency",
-        "Funding Agency",
-        "Funding Sub Agency",
-        "Contract Award Type"
-      ],
+      fields,
       page,
       limit,
-      sort: "Award Amount",
+      sort: subawards ? "Sub-Award Amount" : "Award Amount",
       order: "desc",
-      subawards: spendingLevel === "subawards"
+      subawards
     };
   }
 
@@ -203,10 +221,10 @@ class AwardHistoryTruthService {
         role: "SUBCONTRACT",
         primeAwardId: pick(row, ["Award ID", "award_id", "piid"]),
         subawardId: pick(sub, ["Sub-Award ID", "Subaward ID", "subaward_id"]),
-        recipientName: pick(sub, ["Recipient Name", "Subawardee Name", "recipient_name"]),
-        actionDate: pick(sub, ["Action Date", "Subaward Date", "action_date"]),
-        amount: number(pick(sub, ["Amount", "Subaward Amount", "amount"])),
-        description: pick(sub, ["Description", "description"]),
+        recipientName: pick(sub, ["Recipient Name", "Subawardee Name", "Sub-Awardee Name", "recipient_name"]),
+        actionDate: pick(sub, ["Action Date", "Subaward Date", "Sub-Award Date", "action_date"]),
+        amount: number(pick(sub, ["Amount", "Subaward Amount", "Sub-Award Amount", "amount"])),
+        description: pick(sub, ["Description", "Sub-Award Description", "description"]),
         awardingAgency: pick(row, ["Awarding Agency", "awarding_agency"]),
         source: "USAspending.gov"
       }));
@@ -215,10 +233,11 @@ class AwardHistoryTruthService {
       role: "SUBCONTRACT",
       primeAwardId: pick(row, ["Prime Award ID", "Award ID", "prime_award_id", "award_id"]),
       subawardId: pick(row, ["Sub-Award ID", "Subaward ID", "subaward_id"]),
-      recipientName: pick(row, ["Recipient Name", "Subawardee Name", "recipient_name"]),
-      actionDate: pick(row, ["Action Date", "Subaward Date", "action_date"]),
-      amount: number(pick(row, ["Amount", "Subaward Amount", "Award Amount", "amount"])),
-      description: pick(row, ["Description", "description"]),
+      recipientName: pick(row, ["Sub-Awardee Name", "Recipient Name", "Subawardee Name", "recipient_name"]),
+      recipientUei: pick(row, ["Sub-Recipient UEI", "recipient_uei"]),
+      actionDate: pick(row, ["Sub-Award Date", "Action Date", "Subaward Date", "action_date"]),
+      amount: number(pick(row, ["Sub-Award Amount", "Amount", "Subaward Amount", "Award Amount", "amount"])),
+      description: pick(row, ["Sub-Award Description", "Description", "description"]),
       awardingAgency: pick(row, ["Awarding Agency", "awarding_agency"]),
       source: "USAspending.gov"
     }];
