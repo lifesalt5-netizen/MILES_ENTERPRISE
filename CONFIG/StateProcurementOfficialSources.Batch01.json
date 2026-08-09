@@ -1,0 +1,89 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_01",
+  "generatedAt": "2026-08-08",
+  "governingRules": {
+    "authoritativeGovernmentSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveVendorAndAwardSourcesSeparately": true,
+    "stateAwardRole": "STATE_PRIME",
+    "productionIngestionRequiresSourceSpecificValidation": true
+  },
+  "jurisdictions": [
+    {
+      "code": "AL",
+      "name": "Alabama",
+      "vendorRegistry": {
+        "name": "STAARS Vendor Self Service",
+        "officialUrl": "https://vendors.alabama.gov/default.aspx",
+        "status": "OFFICIAL_SOURCE_CONFIRMED",
+        "access": "PUBLIC_PORTAL_REGISTRATION_AND_SEARCH",
+        "notes": "STAARS VSS is Alabama's central vendor system; official guidance states vendors can register, maintain account information, view solicitations, responses, awards, purchase history and financial transaction history."
+      },
+      "awardSource": {
+        "name": "STAARS Vendor Self Service Public Access",
+        "officialUrl": "https://vendors.alabama.gov/default.aspx",
+        "status": "PUBLIC_AWARD_ACCESS_CONFIRMED",
+        "access": "PUBLIC_PORTAL",
+        "notes": "Official Alabama VSS FAQ states open opportunities and awards can be viewed without a vendor account through Public Access."
+      },
+      "acquisitionStatus": "SOURCE_CONFIRMED_INGESTION_METHOD_PENDING"
+    },
+    {
+      "code": "AK",
+      "name": "Alaska",
+      "vendorRegistry": {
+        "name": "State of Alaska Vendor Self Service",
+        "officialUrl": "https://doa.alaska.gov/dof/vendor.html",
+        "status": "OFFICIAL_SOURCE_CONFIRMED",
+        "access": "VSS_REGISTRATION",
+        "notes": "Alaska Division of Finance identifies Vendor Self Service as the state vendor/payee system and supports vendor registration, payment visibility and solicitation response."
+      },
+      "awardSource": {
+        "name": "State of Alaska Procurement / Contract Award Sources",
+        "officialUrl": "https://oppm.doa.alaska.gov/vendor-resources/",
+        "status": "MULTI_SOURCE_REVIEW_REQUIRED",
+        "access": "PUBLIC_PORTALS_AND_AGENCY_AWARD_PAGES",
+        "notes": "Central vendor resources link VSS and Online Public Notice. Alaska DOT&PF separately exposes contract award status, historical bid data, RFP award status and vendor lists. A statewide normalized award extraction route still requires validation."
+      },
+      "acquisitionStatus": "SOURCE_CONFIRMED_AWARD_METHOD_REVIEW"
+    },
+    {
+      "code": "AZ",
+      "name": "Arizona",
+      "vendorRegistry": {
+        "name": "Arizona Procurement Portal (APP)",
+        "officialUrl": "https://doa.az.gov/about/services/register-be-state-vendor",
+        "status": "OFFICIAL_SOURCE_CONFIRMED",
+        "access": "PUBLIC_REGISTRATION_PORTAL",
+        "notes": "Arizona Department of Administration requires businesses doing business with the state to register in APP."
+      },
+      "awardSource": {
+        "name": "Arizona State Procurement Office Contracts / APP Public Portal",
+        "officialUrl": "https://spo.az.gov/contracts",
+        "status": "PUBLIC_CONTRACT_SEARCH_CONFIRMED",
+        "access": "PUBLIC_SEARCH",
+        "notes": "Arizona SPO provides searchable active contracts by supplier, contract number and keywords and points to APP for real-time public contract data."
+      },
+      "acquisitionStatus": "SOURCE_CONFIRMED_INGESTION_METHOD_PENDING"
+    },
+    {
+      "code": "AR",
+      "name": "Arkansas",
+      "vendorRegistry": {
+        "name": "Arkansas Vendor Services / ARBuy",
+        "officialUrl": "https://vendor.ark.org/",
+        "status": "OFFICIAL_SOURCE_CONFIRMED",
+        "access": "PUBLIC_REGISTRATION_PORTAL",
+        "notes": "Arkansas Vendor Services is the official vendor registration system; ARBuy is the state's electronic bidding/eProcurement system."
+      },
+      "awardSource": {
+        "name": "ARBuy / State Procurement Open Bids and Award Records",
+        "officialUrl": "https://portal.arkansas.gov/service/vendor-registration/",
+        "status": "OFFICIAL_PLATFORM_CONFIRMED_METHOD_PENDING",
+        "access": "PUBLIC_PORTAL",
+        "notes": "Official Arkansas sources confirm ARBuy as the state eProcurement platform. Award extraction and historical spend route still require endpoint-level validation before ingestion."
+      },
+      "acquisitionStatus": "SOURCE_CONFIRMED_AWARD_METHOD_REVIEW"
+    }
+  ]
+}
