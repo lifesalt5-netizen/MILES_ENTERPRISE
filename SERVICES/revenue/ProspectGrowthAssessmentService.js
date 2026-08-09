@@ -25,6 +25,60 @@ function normalizeText(value) {
         .trim();
 }
 
+function toDateOnly(value) {
+    if (!value) return null;
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return parsed.toISOString().slice(0, 10);
+}
+
+function isProspectOpportunity(row = {}, asOfDate) {
+    const source = String(row.source || "").toUpperCase();
+    const status = String(row.status || "").toUpperCase();
+    const title = String(row.title || "").trim();
+    const dueDate = toDateOnly(row.due_date);
+
+    if (!title || title.toUpperCase() === "NOT APPLICABLE") return false;
+    if (source.includes("SAM_REGISTRY") || source.includes("CONTRACT_AWARDS")) return false;
+
+    const isForecast = source.includes("FORECAST");
+    const isOpportunitySource =
+        source.includes("OPPORTUNITY") ||
+        source.includes("SAM.GOV") ||
+        source.includes("SOURCES_SOUGHT") ||
+        source.includes("RFI") ||
+        source.includes("RFQ") ||
+        source.includes("RFP") ||
+        isForecast;
+
+    const looksOpen =
+        status.includes("OPEN") ||
+        status.includes("SOURCE IDENTIFIED") ||
+        isForecast;
+
+    if (!isOpportunitySource || !looksOpen) return false;
+    if (dueDate && dueDate < asOfDate) return false;
+    if (!dueDate && !isForecast) return false;
+
+    return true;
+}
+
+function normalizeRecompete(row = {}, asOfDate) {
+    const date = toDateOnly(row.recompete_date);
+    if (date && date < asOfDate) return null;
+
+    const title = String(row.title || "");
+    const monitoringProfile = /^Recompete monitoring profile for /i.test(title);
+
+    return {
+        ...row,
+        signalType: monitoringProfile ? "MONITORING_PROFILE" : "ORION_RECOMPETE_SIGNAL",
+        prospectClaim: monitoringProfile
+            ? "Modeled monitoring signal; not a confirmed procurement event."
+            : "ORION recompete signal; validate against an authoritative procurement source before external claim."
+    };
+}
+
 class ProspectGrowthAssessmentService {
     constructor(options = {}) {
         this.orion = options.orion || null;
@@ -106,6 +160,8 @@ class ProspectGrowthAssessmentService {
 
         const contractorId = contractor.id;
         const detailLimit = Math.max(1, Math.min(Number(options.detailLimit) || 25, 100));
+        const rawDetailLimit = Math.max(detailLimit, Math.min(Number(options.rawDetailLimit) || 100, 250));
+        const asOfDate = toDateOnly(options.asOfDate || new Date()) || new Date().toISOString().slice(0, 10);
 
         const recommendationRows = orion.query(
             "SELECT * FROM contractor_recommendations_v2 WHERE contractor_id = ? LIMIT 1",
@@ -122,15 +178,24 @@ class ProspectGrowthAssessmentService {
             [contractorId, detailLimit]
         );
 
-        const opportunities = orion.query(
+        const rawOpportunities = orion.query(
             "SELECT * FROM opportunities WHERE company_id = ? ORDER BY CASE WHEN due_date = '' OR due_date IS NULL THEN 1 ELSE 0 END, due_date ASC LIMIT ?",
-            [contractorId, detailLimit]
+            [contractorId, rawDetailLimit]
         );
 
-        const recompetes = orion.query(
+        const rawRecompetes = orion.query(
             "SELECT * FROM recompetes WHERE company_id = ? ORDER BY CASE WHEN recompete_date = '' OR recompete_date IS NULL THEN 1 ELSE 0 END, recompete_date ASC LIMIT ?",
-            [contractorId, detailLimit]
+            [contractorId, rawDetailLimit]
         );
+
+        const opportunities = rawOpportunities
+            .filter((row) => isProspectOpportunity(row, asOfDate))
+            .slice(0, detailLimit);
+
+        const recompetes = rawRecompetes
+            .map((row) => normalizeRecompete(row, asOfDate))
+            .filter(Boolean)
+            .slice(0, detailLimit);
 
         const recommendation = recommendationRows[0] || null;
         const persona = personaRows[0] || null;
@@ -157,11 +222,23 @@ class ProspectGrowthAssessmentService {
                 lastUpdated: null
             };
 
+        const warnings = [];
+        if (buyers.length === 0) {
+            warnings.push("No linked buyer history is available for this contractor.");
+        }
+        if (opportunities.length === 0) {
+            warnings.push("No current prospect-safe linked opportunities survived freshness/source filtering.");
+        }
+        if (recompetes.some((row) => row.signalType === "MONITORING_PROFILE")) {
+            warnings.push("At least one recompete item is a modeled monitoring profile and must not be presented as a confirmed procurement event.");
+        }
+
         return {
             ok: true,
             service: "PROSPECT_GROWTH_ASSESSMENT",
             status: "ASSESSMENT_READY",
             generatedAt: new Date().toISOString(),
+            asOfDate,
             term: searchTerm,
             match: {
                 candidateCount: candidates.length,
@@ -211,6 +288,15 @@ class ProspectGrowthAssessmentService {
             buyerAlignment: buyers,
             linkedOpportunities: opportunities,
             recompeteSignals: recompetes,
+            dataQuality: {
+                rawOpportunityRows: rawOpportunities.length,
+                prospectOpportunityRows: opportunities.length,
+                filteredOpportunityRows: rawOpportunities.length - opportunities.length,
+                rawRecompeteRows: rawRecompetes.length,
+                upcomingRecompeteRows: recompetes.length,
+                monitoringProfileRecompetes: recompetes.filter((row) => row.signalType === "MONITORING_PROFILE").length,
+                warnings
+            },
             evidence: {
                 contractorJoinKey: "contractors.id",
                 recommendationJoinKey: "contractor_recommendations_v2.contractor_id",
