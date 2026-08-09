@@ -2,8 +2,8 @@
 
 const API_BASE = "https://api.usaspending.gov";
 
-const CONTRACT_CODES = [
-  "A", "B", "C", "D",
+const PRIME_CONTRACT_CODES = ["A", "B", "C", "D"];
+const IDV_CODES = [
   "IDV_A", "IDV_B", "IDV_B_A", "IDV_B_B", "IDV_B_C",
   "IDV_C", "IDV_D", "IDV_E"
 ];
@@ -26,20 +26,6 @@ function pick(row, keys) {
     if (row && row[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
   }
   return null;
-}
-
-function errorDetail(data, fallback) {
-  if (data?.detail !== undefined && data?.detail !== null) {
-    if (typeof data.detail === "string") return data.detail;
-    try { return JSON.stringify(data.detail); } catch { return String(data.detail); }
-  }
-  if (data && typeof data === "object") {
-    try {
-      const text = JSON.stringify(data);
-      if (text && text !== "{}") return text;
-    } catch {}
-  }
-  return fallback || "request failed";
 }
 
 class AwardHistoryTruthService {
@@ -76,7 +62,8 @@ class AwardHistoryTruthService {
     let data;
     try { data = JSON.parse(text); } catch { data = { detail: text }; }
     if (!response.ok) {
-      throw new Error(`USAspending ${response.status} ${path}: ${errorDetail(data, response.statusText)}`);
+      const detail = data?.message || data?.detail || response.statusText || "request failed";
+      throw new Error(`USAspending ${response.status} ${path}: ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
     }
     return data;
   }
@@ -135,11 +122,11 @@ class AwardHistoryTruthService {
     };
   }
 
-  buildSearchBody(searchText, page, limit, spendingLevel) {
+  buildSearchBody(searchText, page, limit, spendingLevel, awardTypeCodes = PRIME_CONTRACT_CODES) {
     return {
       filters: {
         recipient_search_text: [clean(searchText)],
-        award_type_codes: CONTRACT_CODES
+        award_type_codes: awardTypeCodes
       },
       fields: [
         "Award ID",
@@ -165,22 +152,30 @@ class AwardHistoryTruthService {
   async searchAll(searchText, spendingLevel, options = {}) {
     const pageSize = Math.max(1, Math.min(Number(options.pageSize) || 100, 100));
     const maxPages = Math.max(1, Math.min(Number(options.maxPages) || 100, 500));
-    const rows = [];
-    let page = 1;
-    let hasNext = true;
-    while (hasNext && page <= maxPages) {
-      const data = await this.post(
-        "/api/v2/search/spending_by_award/",
-        this.buildSearchBody(searchText, page, pageSize, spendingLevel)
-      );
-      const batch = Array.isArray(data?.results) ? data.results : [];
-      rows.push(...batch);
-      const meta = data?.page_metadata || {};
-      hasNext = Boolean(meta.hasNext || meta.has_next || meta.next);
-      page += 1;
-      if (!batch.length) hasNext = false;
+    const groups = Array.isArray(options.awardTypeGroups) && options.awardTypeGroups.length
+      ? options.awardTypeGroups
+      : [PRIME_CONTRACT_CODES, IDV_CODES];
+
+    const allRows = [];
+    for (const awardTypeCodes of groups) {
+      const rows = [];
+      let page = 1;
+      let hasNext = true;
+      while (hasNext && page <= maxPages) {
+        const data = await this.post(
+          "/api/v2/search/spending_by_award/",
+          this.buildSearchBody(searchText, page, pageSize, spendingLevel, awardTypeCodes)
+        );
+        const batch = Array.isArray(data?.results) ? data.results : [];
+        rows.push(...batch);
+        const meta = data?.page_metadata || {};
+        hasNext = Boolean(meta.hasNext || meta.has_next || meta.next);
+        page += 1;
+        if (!batch.length) hasNext = false;
+      }
+      allRows.push(...rows);
     }
-    return rows;
+    return allRows;
   }
 
   normalizePrime(row = {}) {
