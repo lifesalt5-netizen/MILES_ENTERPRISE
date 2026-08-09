@@ -13,15 +13,15 @@
       "code": "NE",
       "name": "Nebraska",
       "status": "SOURCE_CONFIRMED_NOT_INGESTED",
-      "vendorRegistryStatus": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
       "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
       "vendorSources": [
         {
-          "name": "Nebraska DAS Materiel Division / Vendor Registration Resources",
-          "authority": "Nebraska Department of Administrative Services",
-          "url": "https://das.nebraska.gov/materiel/",
-          "purpose": "State procurement and vendor resources; extraction path for a complete procurement-vendor registry still requires validation",
-          "ingestionMode": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED"
+          "name": "Nebraska DAS Materiel Purchasing Vendor Information / Vendor Application",
+          "authority": "Nebraska Department of Administrative Services, Materiel Division",
+          "url": "https://das.nebraska.gov/materiel/vendor-information.html",
+          "purpose": "Official State Purchasing Bureau vendor information and vendor application resources; Nebraska notes registration is not required to do business with the State, so this source is vendor-registration/contact evidence only and not award evidence",
+          "ingestionMode": "PUBLIC_VENDOR_APPLICATION_AND_RESOURCE_DISCOVERY"
         }
       ],
       "awardSources": [
@@ -31,6 +31,13 @@
           "url": "https://statecontracts.nebraska.gov/Home/Index",
           "purpose": "Public searchable state contracts active on and after January 1, 2014, searchable by vendor, agency, and dollar amount",
           "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Nebraska Materiel Contract Search",
+          "authority": "Nebraska Department of Administrative Services, Materiel Division",
+          "url": "https://www.nebraska.gov/das/materiel/purchasing/contract_search/index.php",
+          "purpose": "Official public contract search by contract number, vendor name, procurement officer, or category",
+          "ingestionMode": "PUBLIC_SEARCH_EXTRACTION_VALIDATION_REQUIRED"
         }
       ]
     },
