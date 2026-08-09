@@ -32,15 +32,32 @@ class AwardHistoryTruthService {
   constructor(options = {}) {
     this.fetch = options.fetch || global.fetch;
     this.apiBase = options.apiBase || API_BASE;
+    this.requestTimeoutMs = Math.max(1000, Number(options.requestTimeoutMs) || 30000);
   }
 
   async post(path, body) {
     if (typeof this.fetch !== "function") throw new Error("fetch is unavailable");
-    const response = await this.fetch(this.apiBase + path, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
-    });
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+
+    let response;
+    try {
+      response = await this.fetch(this.apiBase + path, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+    } catch (error) {
+      if (error?.name === "AbortError" || controller.signal.aborted) {
+        throw new Error(`USAspending request timed out after ${this.requestTimeoutMs}ms: ${path}`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+
     const text = await response.text();
     let data;
     try { data = JSON.parse(text); } catch { data = { detail: text }; }
@@ -241,7 +258,8 @@ class AwardHistoryTruthService {
         name: "USAspending.gov",
         apiBase: this.apiBase,
         recipientMatchedBy: "UEI",
-        authoritativeLookupPerformed: true
+        authoritativeLookupPerformed: true,
+        requestTimeoutMs: this.requestTimeoutMs
       },
       identity: {
         uei: target,
