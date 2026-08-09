@@ -1,6 +1,7 @@
 {
   "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_01",
   "generatedAt": "2026-08-08",
+  "version": 2,
   "governingRules": {
     "authoritativeGovernmentSourcesOnly": true,
     "vendorRegistrationIsNotAwardEvidence": true,
@@ -12,6 +13,9 @@
     {
       "code": "AL",
       "name": "Alabama",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "PUBLIC_AWARD_ACCESS_CONFIRMED",
       "vendorRegistry": {
         "name": "STAARS Vendor Self Service",
         "officialUrl": "https://vendors.alabama.gov/default.aspx",
@@ -31,6 +35,9 @@
     {
       "code": "AK",
       "name": "Alaska",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_REVIEW_REQUIRED",
       "vendorRegistry": {
         "name": "State of Alaska Vendor Self Service",
         "officialUrl": "https://doa.alaska.gov/dof/vendor.html",
@@ -50,6 +57,9 @@
     {
       "code": "AZ",
       "name": "Arizona",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "PUBLIC_CONTRACT_SEARCH_CONFIRMED",
       "vendorRegistry": {
         "name": "Arizona Procurement Portal (APP)",
         "officialUrl": "https://doa.az.gov/about/services/register-be-state-vendor",
@@ -69,6 +79,9 @@
     {
       "code": "AR",
       "name": "Arkansas",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_PLATFORM_CONFIRMED_METHOD_PENDING",
       "vendorRegistry": {
         "name": "Arkansas Vendor Services / ARBuy",
         "officialUrl": "https://vendor.ark.org/",
