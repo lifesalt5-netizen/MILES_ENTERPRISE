@@ -7,83 +7,63 @@ function assert(condition, label) {
   console.log(`[PASS] ${label}`);
 }
 
-function makeFetch(responses) {
-  return async () => {
-    const body = responses.shift();
+function makeFetch(routes) {
+  return async (url, options = {}) => {
+    const body = options.body ? JSON.parse(options.body) : null;
+
+    let key;
+    if (String(url).includes("/api/v2/recipient/")) {
+      key = `recipient:${body?.keyword || ""}`;
+    } else if (String(url).includes("/entity-information/v4/entities")) {
+      const parsed = new URL(url);
+      key = `sam:${parsed.searchParams.get("ueiSAM") || ""}`;
+    } else if (String(url).includes("/api/v2/search/spending_by_award/")) {
+      const level = body?.subawards ? "sub" : "prime";
+      const group = Array.isArray(body?.filters?.award_type_codes) && body.filters.award_type_codes[0]?.startsWith("IDV_")
+        ? "idv"
+        : "contract";
+      const searchText = body?.filters?.recipient_search_text?.[0] || "";
+      key = `search:${searchText}:${level}:${group}`;
+    } else {
+      throw new Error(`Unexpected mock URL: ${url}`);
+    }
+
+    const queue = routes[key];
+    if (!Array.isArray(queue) || !queue.length) {
+      throw new Error(`No mock response configured for ${key}`);
+    }
+    const responseBody = queue.shift();
     return {
       ok: true,
       status: 200,
       statusText: "OK",
-      async text() { return JSON.stringify(body); }
+      async text() { return JSON.stringify(responseBody); }
     };
   };
 }
 
-(async () => {
-  // auditByUei reads prime and subaward histories concurrently. After identity
-  // resolution, the mock response order is therefore:
-  // prime group 1, subaward group 1, prime group 2, subaward group 2.
-  const responses = [
-    {
-      results: [{ id: "x-R", uei: "ABC123", name: "ACME FEDERAL LLC", amount: 1000 }]
-    },
-    {
-      results: [
-        {
-          "Award ID": "P1",
-          "Recipient Name": "ACME FEDERAL LLC",
-          "Award Amount": 100,
-          "Awarding Agency": "Agency A",
-          "Description": "Prime work"
-        },
-        {
-          "Award ID": "P1",
-          "Recipient Name": "ACME FEDERAL LLC",
-          "Award Amount": 100,
-          "Awarding Agency": "Agency A",
-          "Description": "Duplicate award row"
-        },
-        {
-          "Award ID": "P-X",
-          "Recipient Name": "OTHER COMPANY LLC",
-          "Award Amount": 999,
-          "Awarding Agency": "Agency X",
-          "Description": "Must not count"
-        }
-      ],
-      page_metadata: { hasNext: false }
-    },
-    {
-      results: [{
-        "Sub-Award ID": "S1",
-        "Sub-Awardee Name": "ACME FEDERAL LLC",
-        "Sub-Award Date": "2026-01-01",
-        "Sub-Award Amount": 50,
-        "Prime Award ID": "P2"
-      }, {
-        "Sub-Award ID": "S1",
-        "Sub-Awardee Name": "ACME FEDERAL LLC",
-        "Sub-Award Date": "2026-02-01",
-        "Sub-Award Amount": 50,
-        "Prime Award ID": "P2"
-      }, {
-        "Sub-Award ID": "S-X",
-        "Sub-Awardee Name": "OTHER SUBCONTRACTOR LLC",
-        "Sub-Award Date": "2026-01-01",
-        "Sub-Award Amount": 400,
-        "Prime Award ID": "PX"
-      }],
-      page_metadata: { hasNext: false }
-    },
-    { results: [], page_metadata: { hasNext: false } },
-    { results: [], page_metadata: { hasNext: false } }
-  ];
+function awardPage(results) {
+  return { results, page_metadata: { hasNext: false } };
+}
 
-  const service = new AwardHistoryTruthService({
-    fetch: makeFetch(responses),
-    requestTimeoutMs: 5000,
-    samApiKey: ""
+(async () => {
+  const baseFetch = makeFetch({
+    "recipient:ABC123": [{ results: [{ id: "x-R", uei: "ABC123", name: "ACME FEDERAL LLC", amount: 1000 }] }],
+    "search:ABC123:prime:contract": [awardPage([
+      { "Award ID": "P1", "Recipient Name": "ACME FEDERAL LLC", "Award Amount": 100, "Awarding Agency": "Agency A", "Description": "Prime work" },
+      { "Award ID": "P1", "Recipient Name": "ACME FEDERAL LLC", "Award Amount": 100, "Awarding Agency": "Agency A", "Description": "Duplicate award row" },
+      { "Award ID": "P-X", "Recipient Name": "OTHER COMPANY LLC", "Award Amount": 999, "Awarding Agency": "Agency X", "Description": "Must not count" }
+    ])],
+    "search:ABC123:prime:idv": [awardPage([])],
+    "search:ABC123:sub:contract": [awardPage([
+      { "Sub-Award ID": "S1", "Sub-Awardee Name": "ACME FEDERAL LLC", "Sub-Award Date": "2026-01-01", "Sub-Award Amount": 50, "Prime Award ID": "P2" },
+      { "Sub-Award ID": "S1", "Sub-Awardee Name": "ACME FEDERAL LLC", "Sub-Award Date": "2026-02-01", "Sub-Award Amount": 50, "Prime Award ID": "P2" },
+      { "Sub-Award ID": "S-X", "Sub-Awardee Name": "OTHER SUBCONTRACTOR LLC", "Sub-Award Date": "2026-01-01", "Sub-Award Amount": 400, "Prime Award ID": "PX" }
+    ])],
+    "search:ABC123:sub:idv": [awardPage([])]
   });
+
+  const service = new AwardHistoryTruthService({ fetch: baseFetch, requestTimeoutMs: 5000, samApiKey: "" });
   const result = await service.auditByUei("ABC123");
 
   assert(result.ok === true, "audit succeeds");
@@ -110,37 +90,16 @@ function makeFetch(responses) {
   assert(result.safety.emailsSent === false, "no emails sent");
   assert(result.safety.campaignsChanged === false, "no campaign changes");
 
-  const fallbackResponses = [
-    { results: [] },
-    { results: [{ id: "name-R", uei: null, name: "ACME FEDERAL LLC", amount: 1000 }] },
-    {
-      results: [{
-        "Award ID": "FP1",
-        "Recipient Name": "ACME FEDERAL LLC",
-        "Award Amount": 300,
-        "Awarding Agency": "Agency C"
-      }],
-      page_metadata: { hasNext: false }
-    },
-    {
-      results: [{
-        "Sub-Award ID": "FS1",
-        "Sub-Awardee Name": "ACME FEDERAL LLC",
-        "Sub-Award Date": "2026-03-01",
-        "Sub-Award Amount": 75,
-        "Prime Award ID": "FP2"
-      }],
-      page_metadata: { hasNext: false }
-    },
-    { results: [], page_metadata: { hasNext: false } },
-    { results: [], page_metadata: { hasNext: false } }
-  ];
-
-  const fallbackService = new AwardHistoryTruthService({
-    fetch: makeFetch(fallbackResponses),
-    requestTimeoutMs: 5000,
-    samApiKey: ""
+  const fallbackFetch = makeFetch({
+    "recipient:ABC123": [{ results: [] }],
+    "recipient:ACME FEDERAL LLC": [{ results: [{ id: "name-R", uei: null, name: "ACME FEDERAL LLC", amount: 1000 }] }],
+    "search:ACME FEDERAL LLC:prime:contract": [awardPage([{ "Award ID": "FP1", "Recipient Name": "ACME FEDERAL LLC", "Award Amount": 300, "Awarding Agency": "Agency C" }])],
+    "search:ACME FEDERAL LLC:prime:idv": [awardPage([])],
+    "search:ACME FEDERAL LLC:sub:contract": [awardPage([{ "Sub-Award ID": "FS1", "Sub-Awardee Name": "ACME FEDERAL LLC", "Sub-Award Date": "2026-03-01", "Sub-Award Amount": 75, "Prime Award ID": "FP2" }])],
+    "search:ACME FEDERAL LLC:sub:idv": [awardPage([])]
   });
+
+  const fallbackService = new AwardHistoryTruthService({ fetch: fallbackFetch, requestTimeoutMs: 5000, samApiKey: "" });
   const fallback = await fallbackService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
 
   assert(fallback.ok === true, "legal-name fallback recovers award history when UEI recipient lookup is empty");
@@ -155,48 +114,16 @@ function makeFetch(responses) {
   assert(fallback.dataQuality.zeroAwardClassificationPermitted === false, "fallback cannot classify contractor as zero award");
   assert(fallback.persistence.allowed === false, "fallback persistence fails closed");
 
-  const samResponses = [
-    { results: [] },
-    {
-      entityData: [{
-        entityRegistration: {
-          ueiSAM: "ABC123",
-          legalBusinessName: "ACME FEDERAL LLC",
-          registrationStatus: "Active",
-          samRegistered: "Yes",
-          cageCode: "1ABC2"
-        }
-      }]
-    },
-    {
-      results: [{
-        "Award ID": "SP1",
-        "Recipient Name": "ACME FEDERAL LLC",
-        "Award Amount": 700,
-        "Awarding Agency": "Agency SAM"
-      }],
-      page_metadata: { hasNext: false }
-    },
-    {
-      results: [{
-        "Sub-Award ID": "SS1",
-        "Sub-Awardee Name": "ACME FEDERAL LLC",
-        "Sub-Recipient UEI": "ABC123",
-        "Sub-Award Date": "2026-04-01",
-        "Sub-Award Amount": 125,
-        "Prime Award ID": "SPX"
-      }],
-      page_metadata: { hasNext: false }
-    },
-    { results: [], page_metadata: { hasNext: false } },
-    { results: [], page_metadata: { hasNext: false } }
-  ];
-
-  const samService = new AwardHistoryTruthService({
-    fetch: makeFetch(samResponses),
-    requestTimeoutMs: 5000,
-    samApiKey: "TEST_KEY"
+  const samFetch = makeFetch({
+    "recipient:ABC123": [{ results: [] }],
+    "sam:ABC123": [{ entityData: [{ entityRegistration: { ueiSAM: "ABC123", legalBusinessName: "ACME FEDERAL LLC", registrationStatus: "Active", samRegistered: "Yes", cageCode: "1ABC2" } }] }],
+    "search:ACME FEDERAL LLC:prime:contract": [awardPage([{ "Award ID": "SP1", "Recipient Name": "ACME FEDERAL LLC", "Award Amount": 700, "Awarding Agency": "Agency SAM" }])],
+    "search:ACME FEDERAL LLC:prime:idv": [awardPage([])],
+    "search:ACME FEDERAL LLC:sub:contract": [awardPage([{ "Sub-Award ID": "SS1", "Sub-Awardee Name": "ACME FEDERAL LLC", "Sub-Recipient UEI": "ABC123", "Sub-Award Date": "2026-04-01", "Sub-Award Amount": 125, "Prime Award ID": "SPX" }])],
+    "search:ACME FEDERAL LLC:sub:idv": [awardPage([])]
   });
+
+  const samService = new AwardHistoryTruthService({ fetch: samFetch, requestTimeoutMs: 5000, samApiKey: "TEST_KEY" });
   const samResult = await samService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
 
   assert(samResult.ok === true, "SAM exact UEI reconciles identity when USAspending recipient profile is empty");
@@ -208,15 +135,11 @@ function makeFetch(responses) {
   assert(samResult.summary.federalRevenue === 825, "SAM reconciled history still uses prime plus subcontract governing formula");
   assert(samResult.dataQuality.zeroAwardClassificationPermitted === true, "zero-award classification allowed only after authoritative UEI reconciliation");
 
-  const unresolvedResponses = [
-    { results: [] },
-    { results: [{ name: "DIFFERENT COMPANY LLC" }] }
-  ];
-  const unresolvedService = new AwardHistoryTruthService({
-    fetch: makeFetch(unresolvedResponses),
-    requestTimeoutMs: 5000,
-    samApiKey: ""
+  const unresolvedFetch = makeFetch({
+    "recipient:ABC123": [{ results: [] }],
+    "recipient:ACME FEDERAL LLC": [{ results: [{ name: "DIFFERENT COMPANY LLC" }] }]
   });
+  const unresolvedService = new AwardHistoryTruthService({ fetch: unresolvedFetch, requestTimeoutMs: 5000, samApiKey: "" });
   const unresolved = await unresolvedService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
   assert(unresolved.ok === false, "unresolved identity fails closed");
   assert(unresolved.zeroAwardClassificationPermitted === false, "unresolved identity cannot be labeled zero award");
