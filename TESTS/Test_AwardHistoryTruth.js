@@ -82,7 +82,7 @@ const fakeFetch = async () => {
 };
 
 (async () => {
-  const service = new AwardHistoryTruthService({ fetch: fakeFetch });
+  const service = new AwardHistoryTruthService({ fetch: fakeFetch, requestTimeoutMs: 5000 });
   const result = await service.auditByUei("ABC123");
 
   assert(result.ok === true, "audit succeeds");
@@ -101,13 +101,42 @@ const fakeFetch = async () => {
   assert(result.subcontracts[0].role === "SUBCONTRACT", "subcontract role explicit");
   assert(result.dataQuality.excludedPrimeCandidateCount === 1, "mismatched prime candidate excluded");
   assert(result.dataQuality.excludedSubcontractCandidateCount === 1, "mismatched subcontract candidate excluded");
+  assert(result.source.requestTimeoutMs === 5000, "request timeout recorded");
   assert(result.persistence.databaseWritesPerformed === false, "no database writes");
   assert(result.persistence.ledgerUpdated === false, "ledger not mutated before live validation");
   assert(result.safety.readOnly === true, "read-only safety recorded");
   assert(result.safety.emailsSent === false, "no emails sent");
   assert(result.safety.campaignsChanged === false, "no campaign changes");
 
-  console.log("AWARD_HISTORY_TRUTH_TEST_PASS 21/21");
+  const hangingFetch = async (_url, options = {}) => new Promise((resolve, reject) => {
+    const signal = options.signal;
+    if (!signal) return;
+    if (signal.aborted) {
+      const error = new Error("aborted");
+      error.name = "AbortError";
+      reject(error);
+      return;
+    }
+    signal.addEventListener("abort", () => {
+      const error = new Error("aborted");
+      error.name = "AbortError";
+      reject(error);
+    }, { once: true });
+  });
+
+  const timeoutService = new AwardHistoryTruthService({ fetch: hangingFetch, requestTimeoutMs: 1000 });
+  let timeoutError = null;
+  try {
+    await timeoutService.auditByUei("ABC123");
+  } catch (error) {
+    timeoutError = error;
+  }
+
+  assert(Boolean(timeoutError), "hung request fails instead of hanging indefinitely");
+  assert(/timed out after 1000ms/.test(timeoutError.message), "timeout error is explicit");
+  assert(/\/api\/v2\/recipient\//.test(timeoutError.message), "timeout identifies blocked endpoint");
+
+  console.log("AWARD_HISTORY_TRUTH_TEST_PASS 25/25");
 })().catch((error) => {
   console.error(error.stack || error);
   process.exit(1);
