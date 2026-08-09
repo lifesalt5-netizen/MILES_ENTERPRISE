@@ -1,0 +1,120 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_08",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "NE",
+      "name": "Nebraska",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Nebraska DAS Materiel Division / Vendor Registration Resources",
+          "authority": "Nebraska Department of Administrative Services",
+          "url": "https://das.nebraska.gov/materiel/",
+          "purpose": "State procurement and vendor resources; extraction path for a complete procurement-vendor registry still requires validation",
+          "ingestionMode": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Nebraska State Contracts Database",
+          "authority": "Nebraska Department of Administrative Services, Materiel Division",
+          "url": "https://statecontracts.nebraska.gov/Home/Index",
+          "purpose": "Public searchable state contracts active on and after January 1, 2014, searchable by vendor, agency, and dollar amount",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "NV",
+      "name": "Nevada",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "MULTI_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "NEVADAePro Vendor Registration",
+          "authority": "State of Nevada Purchasing Division",
+          "url": "https://www.purchasing.nv.gov/vendors/vendorsregistration/",
+          "purpose": "Procurement vendor registration and access to Nevada electronic procurement opportunities",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Nevada Controller Vendor Services",
+          "authority": "State of Nevada Controller's Office",
+          "url": "https://controller.nv.gov/Vendor/VendorServices/",
+          "purpose": "State payee/vendor database registration used by Nevada agencies for accounting and payment",
+          "ingestionMode": "REGISTRATION_ONLY_NOT_AWARD_EVIDENCE"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "NEVADAePro / Statewide Contracts",
+          "authority": "State of Nevada Purchasing Division",
+          "url": "https://www.purchasing.nv.gov/Vendors/",
+          "purpose": "Procurement awards, approved purchase orders, solicitations, and statewide contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "NH",
+      "name": "New Hampshire",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED",
+      "vendorSources": [
+        {
+          "name": "New Hampshire Online Vendor Registration",
+          "authority": "New Hampshire Department of Administrative Services",
+          "url": "https://apps.das.nh.gov/vendorregistration/",
+          "purpose": "Official bidder and purchasing-vendor registration used to assign state vendor codes",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "New Hampshire DAS Procurement Award Sources",
+          "authority": "New Hampshire Department of Administrative Services",
+          "url": "https://www.das.nh.gov/",
+          "purpose": "Authoritative state procurement award/contract source path requires additional validation before ingestion",
+          "ingestionMode": "OFFICIAL_SOURCE_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "NJ",
+      "name": "New Jersey",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "NJSTART Registered Vendor Search",
+          "authority": "New Jersey Department of the Treasury, Division of Purchase and Property",
+          "url": "https://nj.gov/treasury/purchase/vendor.shtml",
+          "purpose": "State procurement vendor registration and registered-vendor search",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "NJSTART State Contract Search",
+          "authority": "New Jersey Department of the Treasury, Division of Purchase and Property",
+          "url": "https://nj.gov/treasury/purchase/vendor.shtml",
+          "purpose": "Public state contract search and procurement award information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}
