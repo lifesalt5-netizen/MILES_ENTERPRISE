@@ -67,24 +67,64 @@ class AwardHistoryTruthService {
     return data;
   }
 
-  async resolveRecipient(uei) {
+  async resolveRecipientByKeyword(keyword) {
     const data = await this.post("/api/v2/recipient/", {
-      keyword: clean(uei),
+      keyword: clean(keyword),
       award_type: "contracts",
       limit: 100,
       page: 1,
       sort: "amount",
       order: "desc"
     });
-    const results = Array.isArray(data?.results) ? data.results : [];
-    const exact = results.filter((row) => clean(row?.uei).toUpperCase() === clean(uei).toUpperCase());
-    return { results, exact };
+    return Array.isArray(data?.results) ? data.results : [];
   }
 
-  buildSearchBody(uei, page, limit, spendingLevel) {
+  async resolveIdentity(uei, companyName) {
+    const targetUei = clean(uei).toUpperCase();
+    const targetName = clean(companyName);
+
+    const ueiResults = await this.resolveRecipientByKeyword(targetUei);
+    const exactUei = ueiResults.filter((row) => clean(row?.uei).toUpperCase() === targetUei);
+    if (exactUei.length) {
+      return {
+        confirmed: true,
+        matchedBy: "UEI",
+        authoritativeForPersistence: true,
+        canonicalRows: exactUei,
+        recipientCandidates: ueiResults,
+        searchText: targetUei
+      };
+    }
+
+    if (!targetName) {
+      return {
+        confirmed: false,
+        matchedBy: null,
+        authoritativeForPersistence: false,
+        canonicalRows: [],
+        recipientCandidates: ueiResults,
+        searchText: targetUei
+      };
+    }
+
+    const nameResults = await this.resolveRecipientByKeyword(targetName);
+    const normalizedTarget = normalizeName(targetName);
+    const exactName = nameResults.filter((row) => normalizeName(row?.name) === normalizedTarget);
+
+    return {
+      confirmed: exactName.length > 0,
+      matchedBy: exactName.length ? "LEGAL_NAME_FALLBACK" : null,
+      authoritativeForPersistence: false,
+      canonicalRows: exactName,
+      recipientCandidates: [...ueiResults, ...nameResults],
+      searchText: targetName
+    };
+  }
+
+  buildSearchBody(searchText, page, limit, spendingLevel) {
     return {
       filters: {
-        recipient_search_text: [clean(uei)],
+        recipient_search_text: [clean(searchText)],
         award_type_codes: CONTRACT_CODES
       },
       fields: [
@@ -109,7 +149,7 @@ class AwardHistoryTruthService {
     };
   }
 
-  async searchAll(uei, spendingLevel, options = {}) {
+  async searchAll(searchText, spendingLevel, options = {}) {
     const pageSize = Math.max(1, Math.min(Number(options.pageSize) || 100, 100));
     const maxPages = Math.max(1, Math.min(Number(options.maxPages) || 100, 500));
     const rows = [];
@@ -118,7 +158,7 @@ class AwardHistoryTruthService {
     while (hasNext && page <= maxPages) {
       const data = await this.post(
         "/api/v2/search/spending_by_award/",
-        this.buildSearchBody(uei, page, pageSize, spendingLevel)
+        this.buildSearchBody(searchText, page, pageSize, spendingLevel)
       );
       const batch = Array.isArray(data?.results) ? data.results : [];
       rows.push(...batch);
@@ -195,25 +235,27 @@ class AwardHistoryTruthService {
     const target = clean(uei).toUpperCase();
     if (!target) return { ok: false, status: "UEI_REQUIRED", readOnly: true };
 
-    const recipient = await this.resolveRecipient(target);
-    const exact = recipient.exact;
-    if (!exact.length) {
+    const companyName = clean(options.companyName);
+    const identity = await this.resolveIdentity(target, companyName);
+    if (!identity.confirmed) {
       return {
         ok: false,
         service: "AWARD_HISTORY_TRUTH",
-        status: "UEI_NOT_CONFIRMED_BY_USASPENDING",
+        status: companyName ? "IDENTITY_NOT_CONFIRMED_BY_USASPENDING" : "UEI_NOT_CONFIRMED_BY_USASPENDING",
         uei: target,
-        recipientCandidates: recipient.results,
+        companyName: companyName || null,
+        recipientCandidates: identity.recipientCandidates,
+        zeroAwardClassificationPermitted: false,
         readOnly: true
       };
     }
 
-    const canonicalNames = [...new Set(exact.map((row) => clean(row.name)).filter(Boolean))];
+    const canonicalNames = [...new Set(identity.canonicalRows.map((row) => clean(row.name)).filter(Boolean))];
     const canonicalNameSet = new Set(canonicalNames.map(normalizeName));
 
     const [primeRaw, subRaw] = await Promise.all([
-      this.searchAll(target, "awards", options),
-      this.searchAll(target, "subawards", options)
+      this.searchAll(identity.searchText, "awards", options),
+      this.searchAll(identity.searchText, "subawards", options)
     ]);
 
     const primeCandidates = this.dedupe(
@@ -228,9 +270,6 @@ class AwardHistoryTruthService {
         : `FALLBACK|${row.primeAwardId || ""}|${normalizeName(row.recipientName)}|${row.actionDate || ""}|${row.amount}`
     );
 
-    // UEI is the authoritative lookup key. USAspending's award result rows do not
-    // consistently expose UEI, so canonical recipient names resolved from the exact
-    // UEI lookup are used as a fail-closed secondary validation before totals persist.
     const primeAwards = primeCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
     const subcontracts = subcontractCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
 
@@ -244,10 +283,15 @@ class AwardHistoryTruthService {
     const subcontractAwardCount = subcontracts.length;
     const awardCount = primeAwardCount + subcontractAwardCount;
 
+    const authoritativeForPersistence = identity.authoritativeForPersistence;
+    const status = authoritativeForPersistence
+      ? "AUTHORITATIVE_AWARD_HISTORY_READ"
+      : "AWARD_HISTORY_READ_NAME_FALLBACK_REQUIRES_UEI_RECONCILIATION";
+
     return {
       ok: true,
       service: "AWARD_HISTORY_TRUTH",
-      status: "AUTHORITATIVE_AWARD_HISTORY_READ",
+      status,
       generatedAt: new Date().toISOString(),
       governingDefinition: {
         federalRevenue: "PRIME_AWARDED_REVENUE_PLUS_SUBCONTRACTED_REVENUE",
@@ -257,14 +301,17 @@ class AwardHistoryTruthService {
       source: {
         name: "USAspending.gov",
         apiBase: this.apiBase,
-        recipientMatchedBy: "UEI",
+        recipientMatchedBy: identity.matchedBy,
         authoritativeLookupPerformed: true,
+        authoritativeForPersistence,
         requestTimeoutMs: this.requestTimeoutMs
       },
       identity: {
         uei: target,
+        requestedCompanyName: companyName || null,
         canonicalNames,
-        recipientMatches: exact.length
+        recipientMatches: identity.canonicalRows.length,
+        reconciliationRequired: !authoritativeForPersistence
       },
       summary: {
         federalRevenue,
@@ -283,9 +330,11 @@ class AwardHistoryTruthService {
         subcontractCandidateRows: subcontractCandidates.length,
         excludedPrimeCandidateCount: excludedPrimeCandidates.length,
         excludedSubcontractCandidateCount: excludedSubcontractCandidates.length,
+        zeroAwardClassificationPermitted: authoritativeForPersistence,
         warnings: [
-          ...(excludedPrimeCandidates.length ? ["Prime award candidates with recipient names outside the exact-UEI canonical identity set were excluded from revenue and award counts."] : []),
-          ...(excludedSubcontractCandidates.length ? ["Subcontract candidates with recipient names outside the exact-UEI canonical identity set were excluded from revenue and award counts pending review."] : [])
+          ...(!authoritativeForPersistence ? ["USAspending did not confirm the supplied UEI. Award history was recovered by exact legal-name fallback and must not overwrite ORION contractor totals until UEI reconciliation is completed."] : []),
+          ...(excludedPrimeCandidates.length ? ["Prime award candidates with recipient names outside the confirmed canonical identity set were excluded from revenue and award counts."] : []),
+          ...(excludedSubcontractCandidates.length ? ["Subcontract candidates with recipient names outside the confirmed canonical identity set were excluded from revenue and award counts pending review."] : [])
         ]
       },
       excludedCandidates: {
@@ -296,7 +345,10 @@ class AwardHistoryTruthService {
         databaseWritesPerformed: false,
         contractorSummaryUpdated: false,
         ledgerUpdated: false,
-        nextAuthorization: "VALIDATE_LIVE_AWARD_HISTORY_BEFORE_PERSISTENCE"
+        allowed: authoritativeForPersistence,
+        nextAuthorization: authoritativeForPersistence
+          ? "VALIDATE_LIVE_AWARD_HISTORY_BEFORE_PERSISTENCE"
+          : "RECONCILE_UEI_BEFORE_PERSISTENCE"
       },
       safety: {
         readOnly: true,
