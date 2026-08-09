@@ -1,0 +1,120 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_05",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "IA",
+      "name": "Iowa",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "IMPACS / JAGGAER Vendor Registration",
+          "authority": "Iowa Department of Administrative Services",
+          "url": "https://das.iowa.gov/vendors/vendor-resources/vendor-registration",
+          "purpose": "State vendor registration and eProcurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "IMPACS / Current Contracts",
+          "authority": "Iowa Department of Administrative Services",
+          "url": "https://das.iowa.gov/vendors",
+          "purpose": "State procurement contracts and awarded contract resources",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "KS",
+      "name": "Kansas",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Kansas eSupplier / SMART Bidder Registration",
+          "authority": "Kansas Department of Administration, Office of Procurement and Contracts",
+          "url": "https://supplier.sok.ks.gov/psc/sokfsprdsup/SUPPLIER/ERP/c/AUC_BIDDER_REGISTRATION.AUC_BIDDER_REGISTR.GBL?page=SUP_OB_BID_REG_PG1",
+          "purpose": "State bidder and supplier registration",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Kansas Procurement and Contracts Search",
+          "authority": "Kansas Department of Administration, Office of Procurement and Contracts",
+          "url": "https://supplier.sok.ks.gov/psc/sokfsprdsup/SUPPLIER/ERP/c/KS_SUPPLIER_MENU.KS_PROCR_CNTRCT.GBL?PAGE=KS_PROCR_CNTRCT",
+          "purpose": "Public search of procurement contracts established by the Office of Procurement and Contracts",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "KY",
+      "name": "Kentucky",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Kentucky Vendor Self Service (VSS)",
+          "authority": "Kentucky Finance and Administration Cabinet",
+          "url": "https://finance.ky.gov/eProcurement/Pages/default.aspx",
+          "purpose": "Vendor registration and account management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Kentucky eProcurement Recent Awards / VSS",
+          "authority": "Kentucky Finance and Administration Cabinet",
+          "url": "https://finance.ky.gov/eProcurement/Pages/default.aspx",
+          "purpose": "Public access to recent procurement awards and bidding information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "LA",
+      "name": "Louisiana",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "LaGov Vendor Enrollment / LaPAC Vendor Search",
+          "authority": "Louisiana Division of Administration, Office of State Procurement",
+          "url": "https://wwwcfprd.doa.louisiana.gov/OSP/LaPAC/Vendor/srchven2.cfm",
+          "purpose": "Registered vendor search and vendor enrollment evidence",
+          "ingestionMode": "PUBLIC_SEARCH_WITH_RESULT_LIMIT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "LaPAC Public Menu / Contract Search",
+          "authority": "Louisiana Division of Administration, Office of State Procurement",
+          "url": "https://wwwprd.doa.louisiana.gov/osp/lapac/pubMain.cfm",
+          "purpose": "Public procurement status and contract search access",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Louisiana Current Contracts",
+          "authority": "Louisiana Division of Administration, Office of State Procurement",
+          "url": "https://www.doa.louisiana.gov/doa/osp/vendor-resources/contracting-opportunities/",
+          "purpose": "Current state contract information with buyer details",
+          "ingestionMode": "WEB_QUERY_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}
