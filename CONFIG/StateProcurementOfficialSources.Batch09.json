@@ -1,0 +1,105 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_09",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "NM",
+      "name": "New Mexico",
+      "status": "SOURCE_DISCOVERY_PARTIAL",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_REQUIRES_FURTHER_VALIDATION",
+      "awardSourceStatus": "OFFICIAL_SOURCE_REQUIRES_FURTHER_VALIDATION",
+      "vendorSources": [],
+      "awardSources": [],
+      "notes": "Do not auto-ingest until the current official New Mexico vendor registration and award/contract extraction endpoints are validated."
+    },
+    {
+      "code": "NY",
+      "name": "New York",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "MULTI_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "New York State Contract Reporter",
+          "authority": "New York State",
+          "url": "https://www.nyscr.ny.gov/",
+          "purpose": "Official state contracting opportunity publication and business registration for notifications",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "New York State Contract System",
+          "authority": "New York State Office of General Services",
+          "url": "https://ogs.ny.gov/mwbe",
+          "purpose": "Searchable New York State certified business directory; supplementary vendor identity source only",
+          "ingestionMode": "PUBLIC_SEARCH_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "New York State Contract Reporter / OGS Centralized Contracts",
+          "authority": "New York State / Office of General Services",
+          "url": "https://ogs.ny.gov/procurement/ogs-centralized-contracts",
+          "purpose": "State contracting opportunities and centralized contract awards",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "NC",
+      "name": "North Carolina",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "PARTIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "North Carolina electronic Vendor Portal (eVP)",
+          "authority": "State of North Carolina",
+          "url": "https://evp.nc.gov/",
+          "purpose": "Official vendor directory, vendor registration, and procurement participation",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "North Carolina eVP Solicitations / Procurement Repository",
+          "authority": "State of North Carolina",
+          "url": "https://evp.nc.gov/",
+          "purpose": "Official repository for competitive procurement advertisements; award-result extraction method requires validation",
+          "ingestionMode": "PUBLIC_SEARCH_AWARD_RESULT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "ND",
+      "name": "North Dakota",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "NDBuys Bidders List",
+          "authority": "North Dakota Office of Management and Budget, State Procurement Office",
+          "url": "https://www.omb.nd.gov/doing-business-state/procurement/vendor-registration-guidelines",
+          "purpose": "Official state bidders list and supplier registration through NDBuys",
+          "ingestionMode": "PUBLIC_SEARCH_CAPTCHA_OR_LOGIN_DEPENDENT"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "North Dakota State Contracts List",
+          "authority": "North Dakota Office of Management and Budget, State Procurement Office",
+          "url": "https://www.omb.nd.gov/doing-business-state/procurement/state-contracts-and-cooperative-purchasing",
+          "purpose": "Official state contracts for commodities and services",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}
