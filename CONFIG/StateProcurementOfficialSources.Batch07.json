@@ -39,25 +39,47 @@
       "name": "Mississippi",
       "status": "SOURCE_CONFIRMED_NOT_INGESTED",
       "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
-      "awardSourceStatus": "MULTI_SOURCE_DISCOVERY_REQUIRED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
       "vendorSources": [
         {
           "name": "MAGIC Vendor Self Service",
           "authority": "Mississippi Department of Finance and Administration",
-          "url": "https://www.dfa.ms.gov/vendors",
-          "purpose": "State vendor registration and vendor self-service resources",
-          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+          "url": "https://www.dfa.ms.gov/mississippi-suppliersvendors",
+          "purpose": "Official state supplier registration, vendor lookup, and eProcurement access",
+          "ingestionMode": "PUBLIC_SEARCH_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
         }
       ],
       "awardSources": [
         {
-          "name": "Mississippi State Contracts",
+          "name": "Mississippi Statewide Contracts",
           "authority": "Mississippi Department of Finance and Administration, Office of Purchasing, Travel and Fleet Management",
-          "url": "https://www.dfa.ms.gov/purchasing-travel-and-fleet-management",
-          "purpose": "State contract and procurement award resources",
-          "ingestionMode": "WEB_QUERY_OR_EXPORT_DISCOVERY_REQUIRED"
+          "url": "https://www.dfa.ms.gov/statewide-agency-contracts",
+          "purpose": "Official public contract records with supplier names, contract numbers, commodities, and effective dates",
+          "ingestionMode": "PUBLIC_WEB_EXTRACTION_VALIDATION_REQUIRED"
+        },
+        {
+          "name": "Mississippi Competitive Contracts",
+          "authority": "Mississippi Department of Finance and Administration, Office of Purchasing, Travel and Fleet Management",
+          "url": "https://www.dfa.ms.gov/competitive-contracts_DEF",
+          "purpose": "Official competitively awarded contract records with supplier and contract identifiers",
+          "ingestionMode": "PUBLIC_WEB_EXTRACTION_VALIDATION_REQUIRED"
+        },
+        {
+          "name": "Mississippi Negotiated Contracts",
+          "authority": "Mississippi Department of Finance and Administration, Office of Purchasing, Travel and Fleet Management",
+          "url": "https://www.dfa.ms.gov/negotiated-contracts",
+          "purpose": "Official negotiated contract records with supplier and contract identifiers",
+          "ingestionMode": "PUBLIC_WEB_EXTRACTION_VALIDATION_REQUIRED"
+        },
+        {
+          "name": "Mississippi Cooperative Contracts",
+          "authority": "Mississippi Department of Finance and Administration, Office of Purchasing, Travel and Fleet Management",
+          "url": "https://www.dfa.ms.gov/cooperative-contracts",
+          "purpose": "Official cooperative contract records with supplier and contract identifiers",
+          "ingestionMode": "PUBLIC_WEB_EXTRACTION_VALIDATION_REQUIRED"
         }
-      ]
+      ],
+      "notes": "Official award/contract sources are now mapped. Registration remains separate from award evidence. Extraction grain and completeness still require source-specific validation before ingestion."
     },
     {
       "code": "MO",
