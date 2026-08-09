@@ -135,7 +135,7 @@ class AwardHistoryTruthService {
     const nested = Array.isArray(row.Subawards) ? row.Subawards : [];
     if (nested.length) {
       return nested.map((sub) => ({
-        role: "SUBAWARD",
+        role: "SUBCONTRACT",
         primeAwardId: pick(row, ["Award ID", "award_id", "piid"]),
         subawardId: pick(sub, ["Sub-Award ID", "Subaward ID", "subaward_id"]),
         recipientName: pick(sub, ["Recipient Name", "Subawardee Name", "recipient_name"]),
@@ -147,7 +147,7 @@ class AwardHistoryTruthService {
       }));
     }
     return [{
-      role: "SUBAWARD",
+      role: "SUBCONTRACT",
       primeAwardId: pick(row, ["Prime Award ID", "Award ID", "prime_award_id", "award_id"]),
       subawardId: pick(row, ["Sub-Award ID", "Subaward ID", "subaward_id"]),
       recipientName: pick(row, ["Recipient Name", "Subawardee Name", "recipient_name"]),
@@ -167,6 +167,11 @@ class AwardHistoryTruthService {
       seen.add(key);
       return true;
     });
+  }
+
+  recipientMatches(row, canonicalNameSet) {
+    const name = normalizeName(row?.recipientName);
+    return Boolean(name && canonicalNameSet.has(name));
   }
 
   async auditByUei(uei, options = {}) {
@@ -194,27 +199,44 @@ class AwardHistoryTruthService {
       this.searchAll(target, "subawards", options)
     ]);
 
-    const primes = this.dedupe(
+    const primeCandidates = this.dedupe(
       primeRaw.map((row) => this.normalizePrime(row)).filter((row) => row.awardId),
       (row) => String(row.awardId)
     );
 
-    const subs = this.dedupe(
+    const subcontractCandidates = this.dedupe(
       subRaw.flatMap((row) => this.normalizeSub(row)).filter((row) => row.subawardId || row.primeAwardId),
-      (row) => `${row.primeAwardId || ""}|${row.subawardId || ""}|${row.actionDate || ""}|${row.amount}`
+      (row) => row.subawardId
+        ? `SUB|${row.subawardId}`
+        : `FALLBACK|${row.primeAwardId || ""}|${normalizeName(row.recipientName)}|${row.actionDate || ""}|${row.amount}`
     );
 
-    const primeNameMismatches = primes.filter((row) => row.recipientName && !canonicalNameSet.has(normalizeName(row.recipientName)));
-    const subNameMismatches = subs.filter((row) => row.recipientName && canonicalNameSet.size && !canonicalNameSet.has(normalizeName(row.recipientName)));
+    // UEI is the authoritative lookup key. USAspending's award result rows do not
+    // consistently expose UEI, so canonical recipient names resolved from the exact
+    // UEI lookup are used as a fail-closed secondary validation before totals persist.
+    const primeAwards = primeCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
+    const subcontracts = subcontractCandidates.filter((row) => this.recipientMatches(row, canonicalNameSet));
 
-    const primeObligations = primes.reduce((sum, row) => sum + number(row.amount), 0);
-    const subawardAmount = subs.reduce((sum, row) => sum + number(row.amount), 0);
+    const excludedPrimeCandidates = primeCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet));
+    const excludedSubcontractCandidates = subcontractCandidates.filter((row) => !this.recipientMatches(row, canonicalNameSet));
+
+    const primeAwardedRevenue = primeAwards.reduce((sum, row) => sum + number(row.amount), 0);
+    const subcontractedRevenue = subcontracts.reduce((sum, row) => sum + number(row.amount), 0);
+    const federalRevenue = primeAwardedRevenue + subcontractedRevenue;
+    const primeAwardCount = primeAwards.length;
+    const subcontractAwardCount = subcontracts.length;
+    const awardCount = primeAwardCount + subcontractAwardCount;
 
     return {
       ok: true,
       service: "AWARD_HISTORY_TRUTH",
       status: "AUTHORITATIVE_AWARD_HISTORY_READ",
       generatedAt: new Date().toISOString(),
+      governingDefinition: {
+        federalRevenue: "PRIME_AWARDED_REVENUE_PLUS_SUBCONTRACTED_REVENUE",
+        awardCount: "DISTINCT_PRIME_AWARDS_PLUS_DISTINCT_SUBCONTRACT_AWARDS",
+        transactionRule: "MODIFICATIONS_AND_FUNDING_TRANSACTIONS_DO_NOT_INFLATE_DISTINCT_AWARD_COUNT"
+      },
       source: {
         name: "USAspending.gov",
         apiBase: this.apiBase,
@@ -227,23 +249,30 @@ class AwardHistoryTruthService {
         recipientMatches: exact.length
       },
       summary: {
-        primeAwardCount: primes.length,
-        primeObligations,
-        subawardCount: subs.length,
-        subawardAmount,
-        combinedReportedAmount: primeObligations + subawardAmount
+        federalRevenue,
+        awardCount,
+        primeAwardedRevenue,
+        primeAwardCount,
+        subcontractedRevenue,
+        subcontractAwardCount
       },
-      primeAwards: primes,
-      subawards: subs,
+      primeAwards,
+      subcontracts,
       dataQuality: {
         primeRawRows: primeRaw.length,
-        subawardRawRows: subRaw.length,
-        primeNameMismatchCount: primeNameMismatches.length,
-        subawardNameMismatchCount: subNameMismatches.length,
+        subcontractRawRows: subRaw.length,
+        primeCandidateRows: primeCandidates.length,
+        subcontractCandidateRows: subcontractCandidates.length,
+        excludedPrimeCandidateCount: excludedPrimeCandidates.length,
+        excludedSubcontractCandidateCount: excludedSubcontractCandidates.length,
         warnings: [
-          ...(primeNameMismatches.length ? ["Prime award recipient-name mismatches require review despite UEI filtering."] : []),
-          ...(subNameMismatches.length ? ["Some subaward recipient names do not match the canonical UEI recipient name; review USAspending subaward response semantics before persistence."] : [])
+          ...(excludedPrimeCandidates.length ? ["Prime award candidates with recipient names outside the exact-UEI canonical identity set were excluded from revenue and award counts."] : []),
+          ...(excludedSubcontractCandidates.length ? ["Subcontract candidates with recipient names outside the exact-UEI canonical identity set were excluded from revenue and award counts pending review."] : [])
         ]
+      },
+      excludedCandidates: {
+        primeAwards: excludedPrimeCandidates,
+        subcontracts: excludedSubcontractCandidates
       },
       persistence: {
         databaseWritesPerformed: false,
