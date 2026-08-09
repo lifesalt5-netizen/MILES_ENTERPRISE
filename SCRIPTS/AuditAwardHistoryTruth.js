@@ -9,8 +9,9 @@ function arg(name) {
 
 async function main() {
   const uei = arg("uei") || process.argv[2];
+  const companyName = arg("name") || arg("company-name");
   if (!uei) {
-    console.error("Usage: node SCRIPTS/AuditAwardHistoryTruth.js --uei <UEI>");
+    console.error("Usage: node SCRIPTS/AuditAwardHistoryTruth.js --uei <UEI> [--name <LEGAL COMPANY NAME>]");
     process.exitCode = 2;
     return;
   }
@@ -18,6 +19,7 @@ async function main() {
   try {
     const service = new AwardHistoryTruthService();
     const result = await service.auditByUei(uei, {
+      companyName,
       pageSize: Number(arg("page-size")) || 100,
       maxPages: Number(arg("max-pages")) || 100
     });
