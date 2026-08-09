@@ -8,10 +8,12 @@ function arg(name, fallback = null) {
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
 }
 
-function federalFalsePositive(row) {
+function nonStateFalsePositive(row) {
   const text = String(row.familyKey || row.path || "").toLowerCase();
   return /(^|[\\/_ -])(gsa|sam|usaspending|federal|veterans[ _-]?affairs)([\\/_ -]|$)/i.test(text)
-    || /gsa[_ -]?va[_ -]?top[_ -]?contractors/i.test(text);
+    || /gsa[_ -]?va[_ -]?top[_ -]?contractors/i.test(text)
+    || /[\\/]orion[\\/]00_control[\\/]/i.test(text)
+    || /contractor[_ -]?profile/i.test(text);
 }
 
 function aggregateSignals(sources) {
@@ -26,8 +28,8 @@ function aggregateSignals(sources) {
 }
 
 function classifyFamily(family, sources) {
-  if (federalFalsePositive(family)) {
-    return { disposition: "EXCLUDE", reason: "FEDERAL_OR_NON_STATE_FALSE_POSITIVE", sourceType: "NON_STATE" };
+  if (nonStateFalsePositive(family)) {
+    return { disposition: "EXCLUDE", reason: "NON_STATE_OR_INTERNAL_CONTROL_FALSE_POSITIVE", sourceType: "NON_STATE" };
   }
   const signals = aggregateSignals(sources);
   const names = sources.flatMap((s) => s.signals || []).map((x) => String(x).toLowerCase());
