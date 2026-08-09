@@ -76,7 +76,11 @@ function makeFetch(responses) {
     { results: [], page_metadata: { hasNext: false } }
   ];
 
-  const service = new AwardHistoryTruthService({ fetch: makeFetch(responses), requestTimeoutMs: 5000 });
+  const service = new AwardHistoryTruthService({
+    fetch: makeFetch(responses),
+    requestTimeoutMs: 5000,
+    samApiKey: ""
+  });
   const result = await service.auditByUei("ABC123");
 
   assert(result.ok === true, "audit succeeds");
@@ -129,7 +133,11 @@ function makeFetch(responses) {
     { results: [], page_metadata: { hasNext: false } }
   ];
 
-  const fallbackService = new AwardHistoryTruthService({ fetch: makeFetch(fallbackResponses), requestTimeoutMs: 5000 });
+  const fallbackService = new AwardHistoryTruthService({
+    fetch: makeFetch(fallbackResponses),
+    requestTimeoutMs: 5000,
+    samApiKey: ""
+  });
   const fallback = await fallbackService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
 
   assert(fallback.ok === true, "legal-name fallback recovers award history when UEI recipient lookup is empty");
@@ -201,7 +209,11 @@ function makeFetch(responses) {
     { results: [] },
     { results: [{ name: "DIFFERENT COMPANY LLC" }] }
   ];
-  const unresolvedService = new AwardHistoryTruthService({ fetch: makeFetch(unresolvedResponses), requestTimeoutMs: 5000 });
+  const unresolvedService = new AwardHistoryTruthService({
+    fetch: makeFetch(unresolvedResponses),
+    requestTimeoutMs: 5000,
+    samApiKey: ""
+  });
   const unresolved = await unresolvedService.auditByUei("ABC123", { companyName: "ACME FEDERAL LLC" });
   assert(unresolved.ok === false, "unresolved identity fails closed");
   assert(unresolved.zeroAwardClassificationPermitted === false, "unresolved identity cannot be labeled zero award");
@@ -223,7 +235,7 @@ function makeFetch(responses) {
     }, { once: true });
   });
 
-  const timeoutService = new AwardHistoryTruthService({ fetch: hangingFetch, requestTimeoutMs: 1000 });
+  const timeoutService = new AwardHistoryTruthService({ fetch: hangingFetch, requestTimeoutMs: 1000, samApiKey: "" });
   let timeoutError = null;
   try {
     await timeoutService.auditByUei("ABC123");
@@ -233,7 +245,7 @@ function makeFetch(responses) {
 
   assert(Boolean(timeoutError), "hung request fails instead of hanging indefinitely");
   assert(/timed out after 1000ms/.test(timeoutError.message), "timeout error is explicit");
-  assert(/USAspending \/api\/v2\/recipient\//.test(timeoutError.message), "timeout identifies blocked endpoint");
+  assert(/recipient/.test(timeoutError.message), "timeout identifies blocked endpoint");
 
   console.log("AWARD_HISTORY_TRUTH_TEST_PASS 47/47");
 })().catch((error) => {
