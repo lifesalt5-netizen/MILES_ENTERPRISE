@@ -1,0 +1,141 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_04",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "HI",
+      "name": "Hawaii",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Aloha eBUYS / Hawaii eProcurement",
+          "authority": "State of Hawaii State Procurement Office",
+          "url": "https://alohaebuys.hawaii.gov/bso/",
+          "purpose": "Vendor registration and eProcurement participation",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Hawaii Awards and Notices Data System (HANDS)",
+          "authority": "State of Hawaii State Procurement Office",
+          "url": "https://spo.hawaii.gov/for-vendors/contract-awards/awards/",
+          "purpose": "Public award information by procurement type, agency, and awardee",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "HIePRO / Aloha eBUYS Award Notices",
+          "authority": "State of Hawaii State Procurement Office",
+          "url": "https://spo.hawaii.gov/hiepro-2/",
+          "purpose": "eProcurement solicitations, responses, and notices of award",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "ID",
+      "name": "Idaho",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "IPRO Supplier Registration",
+          "authority": "State of Idaho Division of Purchasing",
+          "url": "https://purchasing.idaho.gov/faqs/",
+          "purpose": "Supplier registration and access to Idaho procurement opportunities",
+          "ingestionMode": "LOGIN_DEPENDENT_OR_PUBLIC_DIRECTORY_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Idaho Statewide Contracts",
+          "authority": "State of Idaho Division of Purchasing",
+          "url": "https://purchasing.idaho.gov/statewide-contracts/",
+          "purpose": "Active statewide contracts and contracted vendors",
+          "ingestionMode": "PUBLIC_WEB_TABLE_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "IL",
+      "name": "Illinois",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "MULTI_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Illinois Procurement Gateway (IPG)",
+          "authority": "State of Illinois Chief Procurement Office",
+          "url": "https://cpo.illinois.gov/vendor.html",
+          "purpose": "Registered vendor directory and procurement prequalification",
+          "ingestionMode": "PUBLIC_DIRECTORY_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "BidBuy Illinois eProcurement",
+          "authority": "State of Illinois",
+          "url": "https://cms.illinois.gov/business/procurement.html",
+          "purpose": "Vendor registration and primary state eProcurement platform",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "BidBuy Contract Awards",
+          "authority": "State of Illinois",
+          "url": "https://cms.illinois.gov/business/procurement.html",
+          "purpose": "Published contract awards through the state eProcurement system",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Capital Development Board Contract Awards",
+          "authority": "Illinois Capital Development Board",
+          "url": "https://cdb.illinois.gov/procurement/contract-awards.html",
+          "purpose": "Construction/project awardee, amount, and award-date records",
+          "ingestionMode": "PUBLIC_WEB_TABLE"
+        }
+      ]
+    },
+    {
+      "code": "IN",
+      "name": "Indiana",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "IDOA Bidder Profile / Supplier Portal",
+          "authority": "Indiana Department of Administration Procurement Division",
+          "url": "https://www.in.gov/idoa/procurement/supplier-resource-center/requirements-to-do-business-with-the-state/bidder-profile-registration/",
+          "purpose": "Bidder registration and supplier profile management",
+          "ingestionMode": "PUBLIC_REGISTERED_BIDDER_LIST_OR_LOGIN_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Indiana Active Contracts and QPAs",
+          "authority": "Indiana Department of Administration Procurement Division",
+          "url": "https://www.in.gov/idoa/procurement/active-contracts-and-qpas/",
+          "purpose": "Current professional services contracts and competitively awarded quantity purchase agreements",
+          "ingestionMode": "PUBLIC_SEARCH_OR_TRANSPARENCY_PORTAL_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Indiana Solicitation Award Recommendations",
+          "authority": "Indiana Department of Administration Procurement Division",
+          "url": "https://www.in.gov/idoa/procurement/award-recommendations/",
+          "purpose": "Public solicitation award recommendation history",
+          "ingestionMode": "PUBLIC_WEB_TABLE"
+        }
+      ]
+    }
+  ]
+}
