@@ -148,20 +148,24 @@ class OrionConnector {
     searchContractors(term, limit = 50) {
         this.initialize();
 
-        const q = `%${String(term || "").trim()}%`;
+        const normalized = String(term || "").trim();
+        const q = `%${normalized}%`;
 
-        if (!term) {
+        if (!normalized) {
             return [];
         }
 
         return this.db.prepare(`
             SELECT *
             FROM contractors
-            WHERE legal_name LIKE ?
+            WHERE company LIKE ?
+               OR company_norm LIKE ?
                OR uei LIKE ?
-               OR cage LIKE ?
+            ORDER BY
+                CASE WHEN uei = ? THEN 0 ELSE 1 END,
+                company ASC
             LIMIT ?
-        `).all(q, q, q, this.safeLimit(limit));
+        `).all(q, q, q, normalized, this.safeLimit(limit));
     }
 
     getTopRecommendations(limit = 100) {
