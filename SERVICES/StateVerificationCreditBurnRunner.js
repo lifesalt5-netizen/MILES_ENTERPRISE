@@ -44,6 +44,11 @@ async function run(options = {}) {
 
     const result = await discovery.run({ limit: rowLimit });
     const stats = result?.stats || {};
+
+    if (stats.millionVerifierConfigured !== true) {
+      throw new Error('MillionVerifier is not configured; credit-burn runner stopped before counting any unverified batch as spend.');
+    }
+
     const attempted = Number(stats.publicEmailsDiscovered || 0);
 
     creditsUsed += attempted;
