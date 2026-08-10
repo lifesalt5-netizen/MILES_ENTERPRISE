@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3O_FL_LEAD_COUNT_RECONCILIATION",
+  "state": "FL",
+  "campaignName": "STATE SLED - FL",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "expectedVerifiedLeadCount": 73,
+  "verifiedMasterFile": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION/STATE_SLED_WAVE1_VERIFIED_MASTER.csv",
+  "readOnly": true,
+  "safety": {
+    "activateCampaigns": false,
+    "pauseCampaigns": false,
+    "updateCampaigns": false,
+    "deleteCampaigns": false,
+    "uploadLeads": false
+  }
+}
