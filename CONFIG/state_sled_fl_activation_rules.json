@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3M_FL_ACTIVATION",
+  "authorizationToken": "AUTHORIZE_STATE_SLED_FL_ACTIVATE",
+  "state": "FL",
+  "campaignName": "STATE SLED - FL",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "launchReadinessFile": "DATA/OUTBOUND/STATE_SLED/LAUNCH_READINESS/STATE_SLED_FL_LAUNCH_READINESS.json",
+  "requiredReadiness": {
+    "readyForLaunchApproval": true,
+    "authorizedToActivate": false,
+    "failedChecks": 0,
+    "minimumLeadCount": 73,
+    "requiredSender": "contacts@pathwaysgsa.com",
+    "requiredSequenceSteps": 4,
+    "requiredPreLaunchStatus": 0
+  },
+  "safety": {
+    "allowOnlyActivationMutation": true,
+    "createCampaign": false,
+    "uploadLeads": false,
+    "updateCampaign": false,
+    "deleteCampaign": false,
+    "pauseCampaign": false,
+    "activateOnlyExactCampaignId": true
+  }
+}
