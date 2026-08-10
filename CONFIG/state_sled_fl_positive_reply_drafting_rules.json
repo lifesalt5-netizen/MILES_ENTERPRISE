@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3Y_FL_POSITIVE_REPLY_DRAFTING",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "calendlyUrl": "https://calendly.com/kevin-pathways2gc/30min",
+  "eligibleClasses": ["POSITIVE"],
+  "draftTemplate": {
+    "subjectPrefix": "Re:",
+    "body": "Thanks for getting back to me. The easiest next step is a quick 30-minute conversation so we can look at where your company may have a realistic path in Florida state and local contracting. You can pick a time here: {{CALENDLY_URL}}\n\nKevin\nPathways 2 Government Contracting"
+  },
+  "safety": {
+    "sendReplies": false,
+    "moveMailboxMessages": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "automaticCrmWrites": false
+  }
+}
