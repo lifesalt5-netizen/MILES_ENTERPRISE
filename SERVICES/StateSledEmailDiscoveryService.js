@@ -1,5 +1,7 @@
 "use strict";
 
+require("dotenv").config();
+
 const fs = require("fs");
 const path = require("path");
 const csv = require("csv-parser");
@@ -211,22 +213,43 @@ async function discoverOne(row, rules, apiKey) {
   };
 }
 
+function loadProgress(progressFile) {
+  try {
+    if (!fs.existsSync(progressFile)) return { nextOffset: 0, batchesCompleted: 0, totalProcessed: 0 };
+    const parsed = JSON.parse(fs.readFileSync(progressFile, "utf8"));
+    return {
+      nextOffset: Number(parsed.nextOffset || 0),
+      batchesCompleted: Number(parsed.batchesCompleted || 0),
+      totalProcessed: Number(parsed.totalProcessed || 0)
+    };
+  } catch {
+    return { nextOffset: 0, batchesCompleted: 0, totalProcessed: 0 };
+  }
+}
+
 async function run(options = {}) {
   const rules = loadRules();
   const source = path.join(ROOT, rules.sourceQueue);
   if (!fs.existsSync(source)) throw new Error(`P1.3E source queue not found: ${source}`);
   const allRows = await readCsv(source);
+  const outDir = path.join(ROOT, rules.outputDir);
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const progressFile = path.join(outDir, "STATE_SLED_WAVE1_EMAIL_DISCOVERY_PROGRESS.json");
+  const progress = loadProgress(progressFile);
   const requested = Number(options.limit || process.env.MILES_EMAIL_DISCOVERY_LIMIT || rules.execution.defaultLimit || 250);
   const limit = Math.min(Math.max(1, requested), rules.execution.maxLimit || 2500, allRows.length);
-  const rows = allRows.slice(0, limit);
+  const offset = Math.min(Math.max(0, Number(options.offset ?? process.env.MILES_EMAIL_DISCOVERY_OFFSET ?? progress.nextOffset ?? 0)), allRows.length);
+  const rows = allRows.slice(offset, Math.min(offset + limit, allRows.length));
   const apiKey = getApiKey(rules);
   const results = await mapLimit(rows, rules.execution.concurrency || 5, row => discoverOne(row, rules, apiKey));
 
-  const outDir = path.join(ROOT, rules.outputDir);
-  const discoveredFile = path.join(outDir, "STATE_SLED_WAVE1_DISCOVERY_RESULTS.csv");
-  const verifiedFile = path.join(outDir, "STATE_SLED_WAVE1_VERIFIED_OK.csv");
-  const retryFile = path.join(outDir, "STATE_SLED_WAVE1_DISCOVERY_RETRY.csv");
-  const auditFile = path.join(outDir, "STATE_SLED_WAVE1_EMAIL_DISCOVERY_AUDIT.json");
+  const batchNumber = progress.batchesCompleted + 1;
+  const batchTag = String(batchNumber).padStart(4, "0");
+  const discoveredFile = path.join(outDir, `STATE_SLED_WAVE1_DISCOVERY_RESULTS_BATCH_${batchTag}.csv`);
+  const verifiedFile = path.join(outDir, `STATE_SLED_WAVE1_VERIFIED_OK_BATCH_${batchTag}.csv`);
+  const retryFile = path.join(outDir, `STATE_SLED_WAVE1_DISCOVERY_RETRY_BATCH_${batchTag}.csv`);
+  const auditFile = path.join(outDir, `STATE_SLED_WAVE1_EMAIL_DISCOVERY_AUDIT_BATCH_${batchTag}.json`);
 
   const verified = results.filter(r => r.verificationDisposition === "VERIFIED_OK");
   const retry = results.filter(r => !r.discoveredEmail || r.verificationStatus !== "COMPLETE" || r.verificationDisposition === "REVIEW");
@@ -234,10 +257,25 @@ async function run(options = {}) {
   writeCsv(verifiedFile, verified);
   writeCsv(retryFile, retry);
 
+  const nextOffset = Math.min(allRows.length, offset + results.length);
+  const updatedProgress = {
+    gate: "P1.3F_PRODUCTION_EMAIL_DISCOVERY",
+    generatedAt: new Date().toISOString(),
+    queueTotal: allRows.length,
+    nextOffset,
+    batchesCompleted: batchNumber,
+    totalProcessed: progress.totalProcessed + results.length,
+    remainingInQueue: Math.max(0, allRows.length - nextOffset),
+    complete: nextOffset >= allRows.length
+  };
+  fs.writeFileSync(progressFile, JSON.stringify(updatedProgress, null, 2));
+
   const stats = {
     source,
     generatedAt: new Date().toISOString(),
     queueTotal: allRows.length,
+    batchNumber,
+    offset,
     processed: results.length,
     withWebsiteOrDomain: results.filter(r => r.domain).length,
     publicEmailsDiscovered: results.filter(r => r.discoveredEmail).length,
@@ -248,14 +286,15 @@ async function run(options = {}) {
     verificationReview: results.filter(r => r.verificationDisposition === "REVIEW").length,
     verificationRejected: results.filter(r => r.verificationDisposition === "REJECTED").length,
     verificationNotRun: results.filter(r => r.verificationStatus === "NOT_RUN").length,
-    remainingInQueue: Math.max(0, allRows.length - results.length),
+    remainingInQueue: updatedProgress.remainingInQueue,
+    nextOffset,
+    progressFile,
     safety: rules.safety
   };
 
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(auditFile, JSON.stringify({ gate: rules.gate, rulesVersion: rules.version, stats, outputs: { discoveredFile, verifiedFile, retryFile, auditFile } }, null, 2));
+  fs.writeFileSync(auditFile, JSON.stringify({ gate: rules.gate, rulesVersion: rules.version, stats, outputs: { discoveredFile, verifiedFile, retryFile, auditFile, progressFile } }, null, 2));
 
-  return { ok: true, gate: rules.gate, rulesVersion: rules.version, stats, outputs: { discoveredFile, verifiedFile, retryFile, auditFile } };
+  return { ok: true, gate: rules.gate, rulesVersion: rules.version, stats, outputs: { discoveredFile, verifiedFile, retryFile, auditFile, progressFile } };
 }
 
 module.exports = { run, extractEmails, chooseEmail, normalizeDomain, verifyEmail };
