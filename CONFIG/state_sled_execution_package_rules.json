@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3I_GOVERNED_STATE_SLED_EXECUTION_PACKAGE",
+  "campaignPlanFile": "DATA/OUTBOUND/STATE_SLED/CAMPAIGN_PLAN/STATE_SLED_CAMPAIGN_CREATION_UPLOAD_PLAN.csv",
+  "uploadPlanFile": "DATA/OUTBOUND/STATE_SLED/CAMPAIGN_PLAN/STATE_SLED_VERIFIED_LEAD_UPLOAD_PLAN.csv",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/EXECUTION_PACKAGE",
+  "allowedStates": ["FL","TX","CA","VA","MD"],
+  "requirements": {
+    "campaignCreationReadiness": "READY_FOR_CREATION_APPROVAL",
+    "minimumHealthySenders": 1,
+    "maximumDailyPerInbox": 25,
+    "sequenceStatusRequired": "DRAFT_FOR_APPROVAL"
+  },
+  "approvals": {
+    "campaignCreation": true,
+    "leadUpload": true,
+    "activation": true,
+    "sequenceCopy": true
+  },
+  "safety": {
+    "executeInstantlyMutations": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false,
+    "autoApprove": false
+  }
+}
