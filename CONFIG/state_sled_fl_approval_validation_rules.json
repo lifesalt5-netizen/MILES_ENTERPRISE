@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3J_FL_APPROVAL_PACKAGE_VALIDATION",
+  "targetState": "FL",
+  "expectedCampaignName": "STATE SLED - FL",
+  "minimumVerifiedContacts": 25,
+  "minimumHealthySenders": 1,
+  "maximumDailyPerInbox": 25,
+  "requiredSequenceStatus": "DRAFT_FOR_APPROVAL",
+  "requiredApprovalGates": [
+    "campaignCreation",
+    "leadUpload",
+    "senderAssignment",
+    "sequenceCopy",
+    "activation"
+  ],
+  "executionOrder": [
+    "CREATE_CAMPAIGN",
+    "ASSIGN_HEALTHY_SENDERS",
+    "APPLY_APPROVED_SEQUENCE",
+    "UPLOAD_VERIFIED_LEADS",
+    "VERIFY_CAMPAIGN_CONFIGURATION"
+  ],
+  "safety": {
+    "executeInstantlyMutations": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false,
+    "autoApprove": false
+  }
+}
