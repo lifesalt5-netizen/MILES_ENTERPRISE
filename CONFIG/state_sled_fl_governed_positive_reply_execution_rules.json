@@ -1,0 +1,17 @@
+{
+  "gate": "P1.3AB_FL_GOVERNED_POSITIVE_REPLY_EXECUTION",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "requiredAuthorization": "AUTHORIZE_STATE_SLED_FL_POSITIVE_REPLY_SEND",
+  "requireLiveFlag": true,
+  "draftArtifact": "DATA/OUTBOUND/STATE_SLED/REPLY_DRAFTING/STATE_SLED_FL_POSITIVE_REPLY_DRAFTS.json",
+  "executionArtifact": "DATA/OUTBOUND/STATE_SLED/REPLY_SEND/STATE_SLED_FL_GOVERNED_POSITIVE_REPLY_EXECUTION.json",
+  "crmStageAfterSuccessfulSend": "Meeting Set",
+  "safety": {
+    "sendRepliesWithoutAuthorization": false,
+    "createCalendarEvents": false,
+    "moveMailboxMessages": false,
+    "mutateCampaigns": false,
+    "requireExactAuthorization": true
+  }
+}
