@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3T_CANONICAL_CRM_PERSISTENCE",
+  "stages": ["Target","Contacted","Engaged","Qualified","Meeting Set","Meeting Held","Proposal","Negotiation","Won","Lost","Client"],
+  "identityPriority": ["email","uei","companyDomain","legalName"],
+  "storageFile": "DATA/CRM/canonical_crm.json",
+  "auditFile": "DATA/CRM/canonical_crm_audit.jsonl",
+  "allowAutomaticStageRegression": false,
+  "requireRoutingEventForStageChange": true
+}
