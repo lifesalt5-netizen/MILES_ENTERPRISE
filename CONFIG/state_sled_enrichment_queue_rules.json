@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3D_ENRICHMENT_VERIFICATION_QUEUE",
+  "wave1Only": true,
+  "batchSize": 2500,
+  "statePriority": ["FL", "TX", "CA", "VA", "MD"],
+  "industryPriority": [
+    "IT_SERVICES",
+    "CONSULTING",
+    "BUSINESS_SUPPORT",
+    "ENGINEERING",
+    "TRAINING_EDUCATION_SERVICES"
+  ],
+  "emailFields": ["POC_Email", "email", "Email", "contact_email"],
+  "websiteFields": ["Website", "NORMALIZED_WEBSITE", "website"],
+  "nameFields": ["POC_Name", "contact_name", "Contact Name"],
+  "stateFields": ["NORMALIZED_STATE", "State", "state"],
+  "industryFields": ["Industry_Segment", "industry_segment"],
+  "leadScoreFields": ["Lead_Score", "Final_Consulting_Prospect_Score", "consulting_likelihood_score"],
+  "safety": {
+    "inventEmails": false,
+    "callEnrichmentProvider": false,
+    "callVerificationProvider": false,
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false
+  }
+}
