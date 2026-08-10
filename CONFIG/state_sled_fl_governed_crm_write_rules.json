@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3V_FL_GOVERNED_CRM_WRITE_EXECUTION",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "authorizationToken": "AUTHORIZE_STATE_SLED_FL_CRM_WRITES",
+  "routingArtifact": "DATA/OUTBOUND/STATE_SLED/CRM_ROUTING/STATE_SLED_FL_REPLY_TO_CRM_ROUTING.json",
+  "allowedReplyClasses": ["POSITIVE", "NEUTRAL", "NEGATIVE", "TECHNICAL", "OOO"],
+  "stageMap": {
+    "POSITIVE": "Engaged",
+    "NEUTRAL": "Engaged",
+    "NEGATIVE": "Lost",
+    "TECHNICAL": "Contacted",
+    "OOO": "Contacted"
+  },
+  "safety": {
+    "sendReplies": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "automaticWritesWithoutAuthorization": false,
+    "allowStageRegression": false
+  }
+}
