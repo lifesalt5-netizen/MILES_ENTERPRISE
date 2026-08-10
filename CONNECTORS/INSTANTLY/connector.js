@@ -3,12 +3,7 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/connector.js
-  Version: 2.1.0
-
-  Purpose:
-  - ConnectorRuntime-compatible Instantly adapter.
-  - Normalize runtime requests.
-  - Expose authorized Instantly API v2 actions.
+  Version: 2.2.0
 */
 
 const instantly = require('./instantly');
@@ -37,7 +32,7 @@ function resolveCampaignId(payload = {}) {
 module.exports = {
   id: 'INSTANTLY',
   name: 'Instantly Connector',
-  version: '2.1.0',
+  version: '2.2.0',
 
   capabilities: [
     'INSTANTLY_HEALTH',
@@ -52,6 +47,7 @@ module.exports = {
     'INSTANTLY_LIST_EMAILS',
     'INSTANTLY_READ_REPLIES',
     'INSTANTLY_GET_EMAIL',
+    'INSTANTLY_SEND_REPLY',
     'INSTANTLY_CREATE_LEAD',
     'INSTANTLY_CREATE_CAMPAIGN',
     'INSTANTLY_UPDATE_CAMPAIGN',
@@ -72,60 +68,45 @@ module.exports = {
       case 'health':
       case 'healthCheck':
         return instantly.healthCheck();
-
       case 'getConfiguration':
         return { ok: true, configuration: instantly.getConfiguration() };
-
       case 'listCampaigns':
         return { ok: true, campaigns: await instantly.listCampaigns(payload) };
-
       case 'getCampaign':
         return { ok: true, campaign: await instantly.getCampaign(resolveCampaignId(payload)) };
-
       case 'getCampaignAnalytics':
         return { ok: true, analytics: await instantly.getCampaignAnalytics(payload) };
-
       case 'getCampaignAnalyticsOverview':
         return { ok: true, analytics: await instantly.getCampaignAnalyticsOverview(payload) };
-
       case 'getCampaignDailyAnalytics':
         return { ok: true, analytics: await instantly.getCampaignDailyAnalytics(payload) };
-
       case 'getCampaignStepsAnalytics':
         return { ok: true, analytics: await instantly.getCampaignStepsAnalytics(payload) };
-
       case 'listAccounts':
         return { ok: true, accounts: await instantly.listAccounts(payload) };
-
       case 'testAccountVitals':
         return { ok: true, vitals: await instantly.testAccountVitals(payload.emails || []) };
-
       case 'getWarmupAnalytics':
         return { ok: true, warmupAnalytics: await instantly.getWarmupAnalytics(payload) };
-
       case 'getDailyAccountAnalytics':
         return { ok: true, accountAnalytics: await instantly.getDailyAccountAnalytics(payload) };
-
       case 'listLeads':
         return { ok: true, leads: await instantly.listLeads(payload) };
-
       case 'listEmails':
         return { ok: true, emails: await instantly.listEmails(payload) };
-
       case 'listReceivedEmails':
       case 'listReplies':
       case 'readReplies':
         return { ok: true, emails: await instantly.listReceivedEmails(payload) };
-
       case 'getEmail':
         return { ok: true, email: await instantly.getEmail(payload.emailId || payload.email_id || payload.id) };
-
+      case 'replyToEmail':
+      case 'sendReply':
+        return { ok: true, result: await instantly.replyToEmail(payload) };
       case 'createLead':
         return { ok: true, result: await instantly.createLead(payload) };
-
       case 'createCampaign':
         return { ok: true, result: await instantly.createCampaign(payload) };
-
       case 'updateCampaign':
         return {
           ok: true,
@@ -134,7 +115,6 @@ module.exports = {
             payload.updates || payload.patch || payload.body || {}
           )
         };
-
       case 'pauseCampaign':
         return {
           ok: true,
@@ -143,12 +123,10 @@ module.exports = {
             payload.reason || context.reason || ''
           )
         };
-
       case 'activateCampaign':
       case 'resumeCampaign':
       case 'startCampaign':
         return { ok: true, result: await instantly.activateCampaign(resolveCampaignId(payload)) };
-
       case 'deleteCampaign':
         return {
           ok: true,
@@ -157,7 +135,6 @@ module.exports = {
             payload.confirmation || ''
           )
         };
-
       default:
         return {
           ok: false,
@@ -165,32 +142,12 @@ module.exports = {
           connector: 'INSTANTLY',
           error: `Unknown Instantly action: ${action}`,
           supportedActions: [
-            'healthCheck',
-            'getConfiguration',
-            'listCampaigns',
-            'getCampaign',
-            'getCampaignAnalytics',
-            'getCampaignAnalyticsOverview',
-            'getCampaignDailyAnalytics',
-            'getCampaignStepsAnalytics',
-            'listAccounts',
-            'testAccountVitals',
-            'getWarmupAnalytics',
-            'getDailyAccountAnalytics',
-            'listLeads',
-            'listEmails',
-            'listReceivedEmails',
-            'listReplies',
-            'readReplies',
-            'getEmail',
-            'createLead',
-            'createCampaign',
-            'updateCampaign',
-            'pauseCampaign',
-            'activateCampaign',
-            'resumeCampaign',
-            'startCampaign',
-            'deleteCampaign'
+            'healthCheck','getConfiguration','listCampaigns','getCampaign',
+            'getCampaignAnalytics','getCampaignAnalyticsOverview','getCampaignDailyAnalytics','getCampaignStepsAnalytics',
+            'listAccounts','testAccountVitals','getWarmupAnalytics','getDailyAccountAnalytics',
+            'listLeads','listEmails','listReceivedEmails','listReplies','readReplies','getEmail',
+            'replyToEmail','sendReply','createLead','createCampaign','updateCampaign','pauseCampaign',
+            'activateCampaign','resumeCampaign','startCampaign','deleteCampaign'
           ],
           received: task
         };
