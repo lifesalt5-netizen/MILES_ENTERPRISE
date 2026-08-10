@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3K_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
+  "authorizationToken": "AUTHORIZE_STATE_SLED_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
+  "state": "FL",
+  "campaignName": "STATE SLED - FL",
+  "verifiedMasterFile": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION/STATE_SLED_WAVE1_VERIFIED_MASTER.csv",
+  "minimumVerifiedLeads": 25,
+  "senderPolicy": {
+    "minimumHealthySenders": 1,
+    "maximumDailyPerInbox": 25,
+    "minimumWarmupScore": 70
+  },
+  "campaign": {
+    "daily_limit": 25,
+    "daily_max_leads": 25,
+    "email_gap": 10,
+    "random_wait_max": 5,
+    "text_only": true,
+    "first_email_text_only": true,
+    "stop_on_reply": true,
+    "stop_for_company": true,
+    "link_tracking": false,
+    "open_tracking": false,
+    "insert_unsubscribe_header": true,
+    "allow_risky_contacts": false,
+    "disable_bounce_protect": false,
+    "prioritize_new_leads": true
+  },
+  "sequence": {
+    "approvedForThisExecution": true,
+    "steps": [
+      {
+        "type": "email",
+        "delay": 2,
+        "delay_unit": "days",
+        "variants": [
+          {
+            "subject": "Florida government contracting",
+            "body": "Hi,\n\nWe help businesses turn government registrations and capabilities into a practical sales plan — target agencies, opportunities, vehicles, and capture steps.\n\nWe're expanding our Florida state/local program and identified your company as a possible fit. Would a 15-minute review of where you may have realistic public-sector opportunities be useful?\n\nKevin\nPathways 2 Government Contracting",
+            "v_disabled": false
+          }
+        ]
+      },
+      {
+        "type": "email",
+        "delay": 3,
+        "delay_unit": "days",
+        "variants": [
+          {
+            "subject": "Re: Florida government contracting",
+            "body": "Following up in case Florida state/local contracting is on your growth list. We can quickly show which agencies and opportunity types line up with your capabilities and where the gaps are. Worth a short conversation?",
+            "v_disabled": false
+          }
+        ]
+      },
+      {
+        "type": "email",
+        "delay": 4,
+        "delay_unit": "days",
+        "variants": [
+          {
+            "subject": "Worth mapping the Florida market?",
+            "body": "Many firms are registered but still do not have a clear agency and opportunity path. Our work is focused on turning that into an actionable pursuit plan. Open to a quick review?",
+            "v_disabled": false
+          }
+        ]
+      },
+      {
+        "type": "email",
+        "delay": 7,
+        "delay_unit": "days",
+        "variants": [
+          {
+            "subject": "Close the loop?",
+            "body": "I'll close the loop for now. If Florida state/local government growth becomes a priority, reply Florida and I'll send a few times to talk.",
+            "v_disabled": false
+          }
+        ]
+      }
+    ]
+  },
+  "safety": {
+    "activateCampaign": false,
+    "deleteCampaign": false,
+    "allowDuplicateCampaign": false,
+    "allowUnverifiedLeads": false,
+    "ensurePausedAfterCreate": true
+  }
+}
