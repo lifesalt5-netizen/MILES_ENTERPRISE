@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "gate": "P1.3K_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
   "authorizationToken": "AUTHORIZE_STATE_SLED_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
   "state": "FL",
@@ -12,6 +12,27 @@
     "minimumWarmupScore": 70
   },
   "campaign": {
+    "campaign_schedule": {
+      "schedules": [
+        {
+          "name": "P2GC Weekdays Eastern",
+          "timing": {
+            "from": "09:00",
+            "to": "17:00"
+          },
+          "days": {
+            "0": true,
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": false,
+            "6": false
+          },
+          "timezone": "America/Detroit"
+        }
+      ]
+    },
     "daily_limit": 25,
     "daily_max_leads": 25,
     "email_gap": 10,
