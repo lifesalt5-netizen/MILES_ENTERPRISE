@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3S_FL_CRM_WRITE_PATH_READINESS",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "canonicalStages": ["Target","Contacted","Engaged","Qualified","Meeting Set","Meeting Held","Proposal","Negotiation","Won","Lost","Client"],
+  "requiredCapabilities": ["CRM_IDENTITY_UPSERT","CRM_STAGE_UPDATE"],
+  "safety": {
+    "mutateCrm": false,
+    "sendReplies": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false
+  }
+}
