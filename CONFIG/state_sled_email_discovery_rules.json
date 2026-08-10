@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3E_EMAIL_DISCOVERY_AND_VERIFICATION",
+  "sourceQueue": "DATA/OUTBOUND/STATE_SLED/ENRICHMENT_QUEUE/STATE_SLED_WAVE1_EMAIL_DISCOVERY_QUEUE.csv",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/EMAIL_DISCOVERY",
+  "execution": {
+    "defaultLimit": 250,
+    "maxLimit": 2500,
+    "concurrency": 5,
+    "requestTimeoutMs": 8000,
+    "maxPagesPerDomain": 3,
+    "candidatePaths": ["/", "/contact", "/contact-us", "/about", "/about-us"]
+  },
+  "verification": {
+    "provider": "MillionVerifier",
+    "apiBaseUrl": "https://api.millionverifier.com/api/v3/",
+    "apiKeyEnvNames": ["MILLIONVERIFIER_API_KEY", "MILLION_VERIFIER_API_KEY"],
+    "timeoutSeconds": 10,
+    "acceptedResults": ["ok"],
+    "reviewResults": ["catch_all", "unknown"],
+    "rejectedResults": ["invalid", "disposable"]
+  },
+  "discovery": {
+    "inventEmails": false,
+    "allowGenericRoleEmails": true,
+    "preferredLocalParts": ["contact", "info", "sales", "business", "office", "hello"],
+    "excludeLocalParts": ["privacy", "abuse", "noreply", "no-reply", "webmaster"]
+  },
+  "safety": {
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false,
+    "inventEmails": false
+  }
+}
