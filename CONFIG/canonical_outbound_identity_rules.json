@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "authoritativeRoot": "D:\\P2GC_Intelligence\\ARCHIVE_2026_REVIEW\\Good Files to use",
+  "stateSledRoot": "DATA\\OUTBOUND\\STATE_SLED",
+  "includeNamePatterns": [
+    "MASTER_DEDUPED_ALL_SEGMENTS",
+    "GSA_",
+    "VA_",
+    "SAM_",
+    "SBS_",
+    "EXPIR",
+    "EXPIRED",
+    "SETASIDE_",
+    "CERT",
+    "HUBZONE",
+    "WOSB",
+    "SDVOSB",
+    "VOSB",
+    "8A",
+    "MATCHED_ALREADY_IN_INSTANTLY",
+    "READY_FOR_NEW_INSTANTLY_UPLOAD"
+  ],
+  "excludeNamePatterns": [
+    "STATE_SLED",
+    "SUMMARY",
+    "NORMALIZED",
+    "BLOCKER",
+    "INSERTION_MAP"
+  ],
+  "identity": {
+    "ueiFields": ["UEI", "uei", "Recipient UEI", "recipient_uei", "Unique Entity ID"],
+    "emailFields": ["email", "Email", "POC_Email", "poc_email", "contact_email"],
+    "websiteFields": ["Website", "website", "NORMALIZED_WEBSITE", "domain", "Domain"],
+    "nameFields": ["Legal_Name", "Legal Name", "legal_name", "Recipient Name", "company", "Company", "Company Name"],
+    "stateFields": ["NORMALIZED_STATE", "State", "state"]
+  },
+  "matchPriority": ["UEI", "EMAIL", "DOMAIN", "NAME_STATE"],
+  "safety": {
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false
+  }
+}
