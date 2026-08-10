@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3N_FL_LIVE_MONITORING",
+  "state": "FL",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "minimumLeadCount": 73,
+  "thresholds": {
+    "bounceRatePauseRecommend": 0.05,
+    "replyRateHealthy": 0.01,
+    "positiveReplyRateHealthy": 0.005
+  },
+  "safety": {
+    "readOnly": true,
+    "activateCampaigns": false,
+    "pauseCampaigns": false,
+    "updateCampaigns": false,
+    "deleteCampaigns": false,
+    "uploadLeads": false
+  }
+}
