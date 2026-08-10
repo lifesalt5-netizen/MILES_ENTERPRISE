@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3G_VERIFIED_MASTER_AND_INSTANTLY_RECONCILIATION",
+  "verifiedBatchDir": "DATA/OUTBOUND/STATE_SLED/EMAIL_DISCOVERY",
+  "verifiedBatchPattern": "STATE_SLED_WAVE1_VERIFIED_OK_BATCH_",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION",
+  "wave1States": ["FL", "TX", "CA", "VA", "MD"],
+  "campaignNaming": {
+    "prefix": "STATE SLED - ",
+    "aliases": {
+      "FL": ["STATE SLED - FL", "STATE/SLED FL", "SLED FL", "FL STATE SLED"],
+      "TX": ["STATE SLED - TX", "STATE/SLED TX", "SLED TX", "TX STATE SLED"],
+      "CA": ["STATE SLED - CA", "STATE/SLED CA", "SLED CA", "CA STATE SLED"],
+      "VA": ["STATE SLED - VA", "STATE/SLED VA", "SLED VA", "VA STATE SLED"],
+      "MD": ["STATE SLED - MD", "STATE/SLED MD", "SLED MD", "MD STATE SLED"]
+    }
+  },
+  "pipelineStateCampaignNames": [
+    "ACTIVE PIPELINE",
+    "MEETING BOOKED",
+    "TECHNICAL SUPPRESSION",
+    "FUTURE FOLLOW-UP",
+    "NO - SUPPRESSED",
+    "NURTURE - 30 DAY",
+    "NURTURE - 14 DAY"
+  ],
+  "safety": {
+    "instantlyReadOnly": true,
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false,
+    "modifyPipelineStateCampaigns": false
+  }
+}
