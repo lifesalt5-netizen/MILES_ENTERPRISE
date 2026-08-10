@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3X_FL_CALENDLY_MEETING_ROUTING",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "meetingPath": "CALENDLY_LINK_FIRST",
+  "calendlyUrl": "https://calendly.com/kevin-pathways2gc/30min",
+  "meetingEligibleClasses": ["POSITIVE"],
+  "neutralRequiresReview": true,
+  "proposedMeetingStage": "Meeting Set",
+  "safety": {
+    "sendReplies": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "automaticCrmWrites": false
+  }
+}
