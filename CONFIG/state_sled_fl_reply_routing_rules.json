@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3R_FL_REPLY_CLASSIFICATION_ROUTING",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "replyClasses": ["POSITIVE", "NEUTRAL", "NEGATIVE", "TECHNICAL", "OOO"],
+  "canonicalStages": ["Target", "Contacted", "Engaged", "Qualified", "Meeting Set", "Meeting Held", "Proposal", "Negotiation", "Won", "Lost", "Client"],
+  "routing": {
+    "POSITIVE": {"targetStage": "Engaged", "requiresHumanReplyApproval": true, "meetingCandidate": true},
+    "NEUTRAL": {"targetStage": "Engaged", "requiresHumanReplyApproval": true, "meetingCandidate": false},
+    "NEGATIVE": {"targetStage": "Lost", "requiresHumanReplyApproval": false, "suppressFutureOutreach": true},
+    "TECHNICAL": {"targetStage": "Contacted", "requiresHumanReplyApproval": false, "technicalSuppression": true},
+    "OOO": {"targetStage": "Contacted", "requiresHumanReplyApproval": false, "futureFollowUp": true}
+  },
+  "safety": {
+    "sendReplies": false,
+    "moveMailboxMessages": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "autoAdvanceRevenueStages": false
+  }
+}
