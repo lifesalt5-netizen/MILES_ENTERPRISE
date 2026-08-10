@@ -1,0 +1,35 @@
+{
+  "gate": "P1.4_STATE_REVENUE_PIPELINE_RUNNER",
+  "version": "1.0.0",
+  "states": ["FL", "TX", "CA", "VA", "MD"],
+  "batchSize": 2500,
+  "minimumVerifiedContactsToPrepare": 25,
+  "pipeline": [
+    "SEGMENT",
+    "CANONICAL_IDENTITY",
+    "BUILD_ENRICHMENT_QUEUE",
+    "DISCOVER_VERIFY_EMAILS",
+    "BUILD_VERIFIED_MASTER",
+    "RECONCILE_INSTANTLY",
+    "PREPARE_CAMPAIGN_PLAN",
+    "PREPARE_EXECUTION_PACKAGES",
+    "READ_REPLIES",
+    "CLASSIFY_REPLIES",
+    "PLAN_CRM_ROUTING",
+    "PLAN_MEETING_ROUTING"
+  ],
+  "manualApprovalBoundaries": [
+    "PAID_VERIFICATION_SPEND",
+    "CAMPAIGN_CREATE_UPLOAD_ACTIVATE",
+    "LIVE_REPLY_SEND",
+    "CALENDAR_WRITE",
+    "DESTRUCTIVE_CHANGE"
+  ],
+  "safety": {
+    "allowPaidVerificationWithoutApproval": false,
+    "allowCampaignMutationWithoutApproval": false,
+    "allowReplySendWithoutApproval": false,
+    "allowCalendarWriteWithoutApproval": false,
+    "allowDestructiveChangeWithoutApproval": false
+  }
+}
