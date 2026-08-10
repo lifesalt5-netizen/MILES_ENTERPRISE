@@ -3,11 +3,11 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/instantly.js
-  Version: 2.0.0
+  Version: 2.1.0
 
   Purpose:
   - Authoritative JavaScript Instantly API v2 client.
-  - Read campaigns, accounts, analytics, leads, and account health.
+  - Read campaigns, accounts, analytics, leads, emails/replies, and account health.
   - Perform guarded campaign and lead mutations.
   - Default all mutations to dry-run unless explicitly authorized.
 
@@ -364,471 +364,166 @@ async function healthCheck() {
 }
 
 async function listCampaigns(params = {}) {
-  return request(
-    '/campaigns',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+  return request('/campaigns', { method: 'GET', params });
 }
 
 async function getCampaign(campaignId) {
-  if (!campaignId) {
-    throw new Error(
-      'campaignId is required.'
-    );
-  }
-
-  return request(
-    `/campaigns/${encodeURIComponent(campaignId)}`,
-    {
-      method:
-        'GET'
-    }
-  );
+  if (!campaignId) throw new Error('campaignId is required.');
+  return request(`/campaigns/${encodeURIComponent(campaignId)}`, { method: 'GET' });
 }
 
-async function getCampaignAnalytics(
-  params = {}
-) {
-  return request(
-    '/campaigns/analytics',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+async function getCampaignAnalytics(params = {}) {
+  return request('/campaigns/analytics', { method: 'GET', params });
 }
 
-async function getCampaignAnalyticsOverview(
-  params = {}
-) {
-  return request(
-    '/campaigns/analytics/overview',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+async function getCampaignAnalyticsOverview(params = {}) {
+  return request('/campaigns/analytics/overview', { method: 'GET', params });
 }
 
-async function getCampaignDailyAnalytics(
-  params = {}
-) {
-  return request(
-    '/campaigns/analytics/daily',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+async function getCampaignDailyAnalytics(params = {}) {
+  return request('/campaigns/analytics/daily', { method: 'GET', params });
 }
 
-async function getCampaignStepsAnalytics(
-  params = {}
-) {
-  return request(
-    '/campaigns/analytics/steps',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+async function getCampaignStepsAnalytics(params = {}) {
+  return request('/campaigns/analytics/steps', { method: 'GET', params });
 }
 
 async function listAccounts(params = {}) {
-  return request(
-    '/accounts',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+  return request('/accounts', { method: 'GET', params });
 }
 
 async function testAccountVitals(emails = []) {
-  if (
-    !Array.isArray(emails) ||
-    emails.length === 0
-  ) {
-    throw new Error(
-      'emails must be a non-empty array.'
-    );
+  if (!Array.isArray(emails) || emails.length === 0) {
+    throw new Error('emails must be a non-empty array.');
   }
-
-  return request(
-    '/accounts/test/vitals',
-    {
-      method:
-        'POST',
-      body: {
-        emails
-      }
-    }
-  );
+  return request('/accounts/test/vitals', { method: 'POST', body: { emails } });
 }
 
-async function getWarmupAnalytics(
-  payload = {}
-) {
-  return request(
-    '/accounts/warmup-analytics',
-    {
-      method:
-        'POST',
-      body:
-        payload
-    }
-  );
+async function getWarmupAnalytics(payload = {}) {
+  return request('/accounts/warmup-analytics', { method: 'POST', body: payload });
 }
 
-async function getDailyAccountAnalytics(
-  params = {}
-) {
-  return request(
-    '/accounts/analytics/daily',
-    {
-      method:
-        'GET',
-      params
-    }
-  );
+async function getDailyAccountAnalytics(params = {}) {
+  return request('/accounts/analytics/daily', { method: 'GET', params });
 }
 
 async function listLeads(filters = {}) {
-  return request(
-    '/leads/list',
-    {
-      method:
-        'POST',
-      body:
-        filters
-    }
-  );
+  return request('/leads/list', { method: 'POST', body: filters });
+}
+
+async function listEmails(params = {}) {
+  return request('/emails', { method: 'GET', params });
+}
+
+async function listReceivedEmails(params = {}) {
+  return listEmails({ ...params, email_type: 'received' });
+}
+
+async function getEmail(emailId) {
+  if (!emailId) throw new Error('emailId is required.');
+  return request(`/emails/${encodeURIComponent(emailId)}`, { method: 'GET' });
 }
 
 async function createCampaign(payload = {}) {
-  if (
-    !payload ||
-    typeof payload !== 'object'
-  ) {
-    throw new Error(
-      'Campaign payload is required.'
-    );
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Campaign payload is required.');
   }
-
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'createCampaign',
-      {
-        method:
-          'POST',
-        endpoint:
-          '/campaigns',
-        body:
-          payload
-      }
-    );
+    return buildMutationResult('createCampaign', { method: 'POST', endpoint: '/campaigns', body: payload });
   }
-
-  return request(
-    '/campaigns',
-    {
-      method:
-        'POST',
-      body:
-        payload
-    }
-  );
+  return request('/campaigns', { method: 'POST', body: payload });
 }
 
-async function updateCampaign(
-  campaignId,
-  payload = {}
-) {
-  if (!campaignId) {
-    throw new Error(
-      'campaignId is required.'
-    );
+async function updateCampaign(campaignId, payload = {}) {
+  if (!campaignId) throw new Error('campaignId is required.');
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Campaign update payload is required.');
   }
-
-  if (
-    !payload ||
-    typeof payload !== 'object'
-  ) {
-    throw new Error(
-      'Campaign update payload is required.'
-    );
-  }
-
-  const endpoint =
-    `/campaigns/${encodeURIComponent(campaignId)}`;
-
+  const endpoint = `/campaigns/${encodeURIComponent(campaignId)}`;
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'updateCampaign',
-      {
-        method:
-          'PATCH',
-        endpoint,
-        body:
-          payload
-      }
-    );
+    return buildMutationResult('updateCampaign', { method: 'PATCH', endpoint, body: payload });
   }
-
-  return request(
-    endpoint,
-    {
-      method:
-        'PATCH',
-      body:
-        payload
-    }
-  );
+  return request(endpoint, { method: 'PATCH', body: payload });
 }
 
-async function pauseCampaign(
-  campaignId,
-  reason = ''
-) {
-  if (!campaignId) {
-    throw new Error(
-      'campaignId is required.'
-    );
-  }
-
-  const endpoint =
-    `/campaigns/${encodeURIComponent(campaignId)}/pause`;
-
+async function pauseCampaign(campaignId, reason = '') {
+  if (!campaignId) throw new Error('campaignId is required.');
+  const endpoint = `/campaigns/${encodeURIComponent(campaignId)}/pause`;
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'pauseCampaign',
-      {
-        method:
-          'POST',
-        endpoint,
-        reason:
-          reason ||
-          'No reason supplied.'
-      }
-    );
+    return buildMutationResult('pauseCampaign', { method: 'POST', endpoint, reason: reason || 'No reason supplied.' });
   }
-
-  const result =
-    await request(
-      endpoint,
-      {
-        method:
-          'POST'
-      }
-    );
-
-  return {
-    campaignId,
-    action:
-      'pause',
-    reason:
-      reason ||
-      'No reason supplied.',
-    result
-  };
+  const result = await request(endpoint, { method: 'POST' });
+  return { campaignId, action: 'pause', reason: reason || 'No reason supplied.', result };
 }
 
 async function activateCampaign(campaignId) {
-  if (!campaignId) {
-    throw new Error(
-      'campaignId is required.'
-    );
-  }
-
-  const endpoint =
-    `/campaigns/${encodeURIComponent(campaignId)}/activate`;
-
+  if (!campaignId) throw new Error('campaignId is required.');
+  const endpoint = `/campaigns/${encodeURIComponent(campaignId)}/activate`;
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'activateCampaign',
-      {
-        method:
-          'POST',
-        endpoint
-      }
-    );
+    return buildMutationResult('activateCampaign', { method: 'POST', endpoint });
   }
-
-  return request(
-    endpoint,
-    {
-      method:
-        'POST'
-    }
-  );
+  return request(endpoint, { method: 'POST' });
 }
 
-async function deleteCampaign(
-  campaignId,
-  confirmation = ''
-) {
-  if (!campaignId) {
-    throw new Error(
-      'campaignId is required.'
-    );
+async function deleteCampaign(campaignId, confirmation = '') {
+  if (!campaignId) throw new Error('campaignId is required.');
+  const requiredConfirmation = `DELETE:${campaignId}`;
+  if (confirmation !== requiredConfirmation) {
+    return { ok: false, mutationExecuted: false, provider: 'Instantly', action: 'deleteCampaign', error: 'Exact deletion confirmation is required.', requiredConfirmation };
   }
-
-  const requiredConfirmation =
-    `DELETE:${campaignId}`;
-
-  if (
-    confirmation !==
-    requiredConfirmation
-  ) {
-    return {
-      ok: false,
-      mutationExecuted:
-        false,
-      provider:
-        'Instantly',
-      action:
-        'deleteCampaign',
-      error:
-        'Exact deletion confirmation is required.',
-      requiredConfirmation
-    };
-  }
-
-  const endpoint =
-    `/campaigns/${encodeURIComponent(campaignId)}`;
-
+  const endpoint = `/campaigns/${encodeURIComponent(campaignId)}`;
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'deleteCampaign',
-      {
-        method:
-          'DELETE',
-        endpoint,
-        confirmation
-      }
-    );
+    return buildMutationResult('deleteCampaign', { method: 'DELETE', endpoint, confirmation });
   }
-
-  return request(
-    endpoint,
-    {
-      method:
-        'DELETE'
-    }
-  );
+  return request(endpoint, { method: 'DELETE' });
 }
 
 async function createLead(payload = {}) {
-  if (
-    !payload ||
-    typeof payload !== 'object'
-  ) {
-    throw new Error(
-      'Lead payload is required.'
-    );
+  if (!payload || typeof payload !== 'object') throw new Error('Lead payload is required.');
+  if (!payload.email && !payload.contact) throw new Error('Lead email/contact is required.');
+  if (!payload.campaign && !payload.campaign_id && !payload.list_id) {
+    throw new Error('campaign, campaign_id, or list_id is required.');
   }
-
-  if (
-    !payload.email &&
-    !payload.contact
-  ) {
-    throw new Error(
-      'Lead email/contact is required.'
-    );
-  }
-
-  if (
-    !payload.campaign &&
-    !payload.campaign_id &&
-    !payload.list_id
-  ) {
-    throw new Error(
-      'campaign, campaign_id, or list_id is required.'
-    );
-  }
-
   if (!mayExecuteMutation()) {
-    return buildMutationResult(
-      'createLead',
-      {
-        method:
-          'POST',
-        endpoint:
-          '/leads',
-        body:
-          payload
-      }
-    );
+    return buildMutationResult('createLead', { method: 'POST', endpoint: '/leads', body: payload });
   }
-
-  return request(
-    '/leads',
-    {
-      method:
-        'POST',
-      body:
-        payload
-    }
-  );
+  return request('/leads', { method: 'POST', body: payload });
 }
 
 function getConfiguration() {
   return {
-    provider:
-      'Instantly',
-    apiVersion:
-      'v2',
-    baseUrl:
-      BASE_URL,
-    apiKeyConfigured:
-      Boolean(API_KEY),
-    requestTimeoutMs:
-      REQUEST_TIMEOUT_MS,
-    maxRetries:
-      MAX_RETRIES,
-    dryRun:
-      DRY_RUN,
-    mutationsAllowed:
-      MUTATIONS_ALLOWED,
-    liveMutationsEnabled:
-      mayExecuteMutation(),
-    mutatingActions: [
-      ...MUTATING_ACTIONS
-    ]
+    provider: 'Instantly',
+    apiVersion: 'v2',
+    baseUrl: BASE_URL,
+    apiKeyConfigured: Boolean(API_KEY),
+    requestTimeoutMs: REQUEST_TIMEOUT_MS,
+    maxRetries: MAX_RETRIES,
+    dryRun: DRY_RUN,
+    mutationsAllowed: MUTATIONS_ALLOWED,
+    liveMutationsEnabled: mayExecuteMutation(),
+    mutatingActions: [...MUTATING_ACTIONS]
   };
 }
 
 module.exports = {
   request,
-
   healthCheck,
   getConfiguration,
-
   listCampaigns,
   getCampaign,
-
   getCampaignAnalytics,
   getCampaignAnalyticsOverview,
   getCampaignDailyAnalytics,
   getCampaignStepsAnalytics,
-
   listAccounts,
   testAccountVitals,
   getWarmupAnalytics,
   getDailyAccountAnalytics,
-
   listLeads,
+  listEmails,
+  listReceivedEmails,
+  getEmail,
   createLead,
-
   createCampaign,
   updateCampaign,
   pauseCampaign,
