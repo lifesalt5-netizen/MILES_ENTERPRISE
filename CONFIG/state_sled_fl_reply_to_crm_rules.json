@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3U_FL_REPLY_TO_CRM_ROUTING",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "campaignName": "STATE SLED - FL",
+  "classToStage": {
+    "POSITIVE": "Engaged",
+    "NEUTRAL": "Engaged",
+    "NEGATIVE": "Lost",
+    "TECHNICAL": "Contacted",
+    "OOO": "Contacted"
+  },
+  "meetingEligibleClasses": ["POSITIVE"],
+  "suppressionClasses": ["NEGATIVE"],
+  "safety": {
+    "sendReplies": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "allowAutomaticCrmWrites": false
+  }
+}
