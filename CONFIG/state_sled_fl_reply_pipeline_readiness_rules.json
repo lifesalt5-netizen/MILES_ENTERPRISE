@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3P_FL_REPLY_PIPELINE_ROUTING_READINESS",
+  "state": "FL",
+  "campaignName": "STATE SLED - FL",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "canonicalStages": [
+    "Target",
+    "Contacted",
+    "Engaged",
+    "Qualified",
+    "Meeting Set",
+    "Meeting Held",
+    "Proposal",
+    "Negotiation",
+    "Won",
+    "Lost",
+    "Client"
+  ],
+  "replyClasses": [
+    "POSITIVE",
+    "NEUTRAL",
+    "NEGATIVE",
+    "TECHNICAL",
+    "OOO"
+  ],
+  "requiredCapabilities": {
+    "instantlyReadReplies": true,
+    "crmIdentityUpsert": true,
+    "crmStageUpdate": true,
+    "googleWorkspaceRead": true,
+    "meetingRouting": true
+  },
+  "safety": {
+    "sendReplies": false,
+    "moveMailboxMessages": false,
+    "createCalendarEvents": false,
+    "mutateInstantlyCampaigns": false,
+    "autoAdvanceRevenueStages": false
+  }
+}
