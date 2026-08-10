@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3H_GOVERNED_STATE_SLED_CAMPAIGN_PLAN",
+  "verifiedMaster": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION/STATE_SLED_WAVE1_VERIFIED_MASTER.csv",
+  "reconciliationFile": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION/STATE_SLED_INSTANTLY_CAMPAIGN_RECONCILIATION.csv",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/CAMPAIGN_PLAN",
+  "states": ["FL", "TX", "CA", "VA", "MD"],
+  "campaignNameTemplate": "STATE SLED - {{STATE}}",
+  "minimumVerifiedContactsToPrepare": 25,
+  "leadBatchSize": 500,
+  "senderPolicy": {
+    "required": true,
+    "minimumHealthySenders": 1,
+    "maximumDailyPerInbox": 25,
+    "warmupRequired": true
+  },
+  "sequence": {
+    "status": "DRAFT_FOR_APPROVAL",
+    "steps": [
+      {"step": 1, "dayOffset": 0, "purpose": "State/SLED relevance and revenue-growth opener"},
+      {"step": 2, "dayOffset": 3, "purpose": "Follow-up with procurement positioning value"},
+      {"step": 3, "dayOffset": 7, "purpose": "Opportunity/vehicle alignment follow-up"},
+      {"step": 4, "dayOffset": 14, "purpose": "Close-the-loop and nurture handoff"}
+    ]
+  },
+  "suppression": {
+    "excludePipelineStates": ["NO - SUPPRESSED", "TECHNICAL SUPPRESSION"],
+    "doNotDeleteExistingPipelineCampaigns": true,
+    "dedupeByEmail": true
+  },
+  "approval": {
+    "campaignCreationRequiresApproval": true,
+    "leadUploadRequiresApproval": true,
+    "activationRequiresApproval": true,
+    "senderAssignmentRequiresApproval": false,
+    "sequenceCopyRequiresApproval": true
+  },
+  "safety": {
+    "instantlyReadOnly": true,
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false
+  }
+}
