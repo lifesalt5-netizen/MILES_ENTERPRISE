@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.3L_FL_LAUNCH_READINESS_VERIFICATION",
+  "state": "FL",
+  "campaignName": "STATE SLED - FL",
+  "campaignId": "0a67a493-2d41-44f6-a581-ed7952446a75",
+  "expectedVerifiedLeadCount": 73,
+  "senderPolicy": {
+    "minimumHealthySenders": 1,
+    "maximumDailyPerInbox": 25,
+    "minimumWarmupScore": 70
+  },
+  "requiredCampaign": {
+    "daily_limit": 25,
+    "stop_on_reply": true,
+    "link_tracking": false,
+    "open_tracking": false,
+    "allow_risky_contacts": false
+  },
+  "requiredSchedule": {
+    "timezone": "America/Detroit",
+    "from": "09:00",
+    "to": "17:00"
+  },
+  "requiredSequenceSteps": 4,
+  "safety": {
+    "instantlyReadOnly": true,
+    "activateCampaigns": false,
+    "createCampaigns": false,
+    "uploadLeads": false,
+    "deleteCampaigns": false,
+    "modifyCampaigns": false
+  }
+}
