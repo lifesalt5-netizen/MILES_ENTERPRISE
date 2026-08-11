@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "gate": "P1.4B_VERIFIED_STATE_REVENUE_DEPLOYMENT",
+  "authorizationEnv": "MILES_STATE_VERIFIED_DEPLOYMENT_AUTH",
+  "authorizationToken": "AUTHORIZE_VERIFIED_STATE_DEPLOYMENT",
+  "executeLiveEnv": "MILES_STATE_VERIFIED_DEPLOYMENT_LIVE",
+  "states": ["FL", "TX", "CA", "VA", "MD"],
+  "stateNames": {"FL":"Florida","TX":"Texas","CA":"California","VA":"Virginia","MD":"Maryland"},
+  "verifiedMasterFile": "DATA/OUTBOUND/STATE_SLED/INSTANTLY_RECONCILIATION/STATE_SLED_WAVE1_VERIFIED_MASTER.csv",
+  "minimumVerifiedLeads": 25,
+  "maximumDailyPerInboxAcrossStateCampaigns": 25,
+  "minimumWarmupScore": 70,
+  "campaignTemplateRulesFile": "CONFIG/state_sled_fl_live_execution_rules.json",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/VERIFIED_DEPLOYMENT",
+  "safety": {
+    "allowUnverifiedLeads": false,
+    "allowDuplicateCampaigns": false,
+    "deleteCampaigns": false,
+    "sendReplies": false,
+    "calendarWrites": false,
+    "destructiveChanges": false
+  }
+}
