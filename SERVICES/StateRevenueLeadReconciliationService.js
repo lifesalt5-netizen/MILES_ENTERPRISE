@@ -41,22 +41,29 @@ async function readAllCampaignLeads(connector, campaignId) {
   const rows = [];
   const seen = new Set();
   let startingAfter;
+
   for (let page = 0; page < 200; page += 1) {
-    const payload = { campaign: campaignId, limit: 100 };
+    const payload = { campaign: campaignId, limit: 100, distinct_contacts: false };
     if (startingAfter) payload.starting_after = startingAfter;
+
     const result = await connector.execute({ action: 'listLeads', payload });
     const envelope = result?.leads || result?.result || {};
     const items = unwrapItems(envelope);
+
     for (const item of items) {
       const id = String(item?.id || item?.email || '');
       if (!id || seen.has(id)) continue;
       seen.add(id);
       rows.push(item);
     }
-    const next = envelope?.next_starting_after || envelope?.nextStartingAfter || null;
-    if (!next || items.length === 0 || next === startingAfter) break;
-    startingAfter = next;
+
+    if (items.length === 0 || items.length < 100) break;
+
+    const lastItemId = String(items[items.length - 1]?.id || '').trim();
+    if (!lastItemId || lastItemId === startingAfter) break;
+    startingAfter = lastItemId;
   }
+
   return rows;
 }
 
