@@ -21,29 +21,60 @@ function eligibleStateRows(input) {
   return (input.states || []).filter(row => row.campaignId && Number(row.counts?.existsOtherCampaign || 0) > 0);
 }
 
-function contactsForState(row) {
-  return (row.classifications || [])
-    .filter(x => x.classification === 'EXISTS_IN_OTHER_CAMPAIGN')
-    .map(x => String(x.email || '').trim().toLowerCase())
-    .filter(Boolean);
+function sourceGroupsForState(row) {
+  const groups = new Map();
+
+  for (const item of (row.classifications || [])) {
+    if (item.classification !== 'EXISTS_IN_OTHER_CAMPAIGN') continue;
+
+    const email = String(item.email || '').trim().toLowerCase();
+    const sourceCampaignIds = Array.isArray(item.otherCampaignIds)
+      ? item.otherCampaignIds.filter(Boolean)
+      : [];
+
+    if (!email) continue;
+    if (sourceCampaignIds.length !== 1) {
+      throw new Error(`Expected exactly one source campaign for ${email}; found ${sourceCampaignIds.length}.`);
+    }
+
+    const sourceCampaignId = String(sourceCampaignIds[0]).trim();
+    if (!sourceCampaignId) throw new Error(`Missing source campaign for ${email}.`);
+    if (sourceCampaignId === row.campaignId) {
+      throw new Error(`Source and target campaign are identical for ${email}; refusing corrective copy.`);
+    }
+
+    if (!groups.has(sourceCampaignId)) groups.set(sourceCampaignId, []);
+    groups.get(sourceCampaignId).push(email);
+  }
+
+  return Array.from(groups.entries()).map(([sourceCampaignId, contacts]) => ({
+    sourceCampaignId,
+    contacts: Array.from(new Set(contacts))
+  }));
 }
 
 async function postMove(payload) {
   const apiKey = process.env.INSTANTLY_API_KEY || '';
   if (!apiKey) throw new Error('INSTANTLY_API_KEY is not configured.');
-  const response = await axios({
-    method: 'POST',
-    url: `${BASE_URL}/leads/move`,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    data: payload,
-    timeout: 30000,
-    validateStatus: status => status >= 200 && status < 300
-  });
-  return response.data;
+
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: `${BASE_URL}/leads/move`,
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      data: payload,
+      timeout: 30000,
+      validateStatus: status => status >= 200 && status < 300
+    });
+    return response.data;
+  } catch (error) {
+    const detail = error?.response?.data || error?.message || error;
+    throw new Error(`Instantly corrective copy failed: ${JSON.stringify(detail)}`);
+  }
 }
 
 async function run(options = {}) {
@@ -60,31 +91,36 @@ async function run(options = {}) {
 
   const jobs = [];
   for (const row of eligibleStateRows(input)) {
-    const contacts = contactsForState(row);
-    if (!contacts.length) continue;
+    const groups = sourceGroupsForState(row);
 
-    const payload = {
-      contacts,
-      to_campaign_id: row.campaignId,
-      copy_leads: true,
-      check_duplicates: true,
-      check_duplicates_in_campaigns: true,
-      skip_leads_in_verification: true,
-      reset_interest_status: false,
-      limit: contacts.length
-    };
+    for (const group of groups) {
+      if (!group.contacts.length) continue;
 
-    const job = await postMove(payload);
-    if (!job?.id) throw new Error(`Instantly did not return a background job id for ${row.state}.`);
+      const payload = {
+        campaign: group.sourceCampaignId,
+        contacts: group.contacts,
+        to_campaign_id: row.campaignId,
+        copy_leads: true,
+        check_duplicates: true,
+        check_duplicates_in_campaigns: true,
+        skip_leads_in_verification: true,
+        reset_interest_status: false,
+        limit: group.contacts.length
+      };
 
-    jobs.push({
-      state: row.state,
-      targetCampaignId: row.campaignId,
-      contactsRequested: contacts.length,
-      backgroundJobId: job.id,
-      status: job.status || null,
-      type: job.type || null
-    });
+      const job = await postMove(payload);
+      if (!job?.id) throw new Error(`Instantly did not return a background job id for ${row.state} from ${group.sourceCampaignId}.`);
+
+      jobs.push({
+        state: row.state,
+        sourceCampaignId: group.sourceCampaignId,
+        targetCampaignId: row.campaignId,
+        contactsRequested: group.contacts.length,
+        backgroundJobId: job.id,
+        status: job.status || null,
+        type: job.type || null
+      });
+    }
   }
 
   const result = {
@@ -92,9 +128,11 @@ async function run(options = {}) {
     gate: 'P1.4C4_STATE_REVENUE_MISSING_LEAD_CORRECTIVE_COPY',
     generatedAt: new Date().toISOString(),
     totalContactsRequested: jobs.reduce((n, x) => n + x.contactsRequested, 0),
+    jobsSubmitted: jobs.length,
     jobs,
     safety: {
       copyOnly: true,
+      sourceCampaignRequired: true,
       removeFromExistingCampaigns: false,
       createNewLeads: false,
       deleteLeads: false,
@@ -110,4 +148,4 @@ async function run(options = {}) {
   return result;
 }
 
-module.exports = { run, eligibleStateRows, contactsForState };
+module.exports = { run, eligibleStateRows, sourceGroupsForState };
