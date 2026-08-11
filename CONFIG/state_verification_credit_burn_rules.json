@@ -1,0 +1,18 @@
+{
+  "gate": "P1.4A_STATE_VERIFICATION_CREDIT_BURN",
+  "version": "1.0.0",
+  "defaultCreditBudget": 5965,
+  "maxBatchRows": 2500,
+  "authorizationEnv": "MILES_STATE_PIPELINE_PAID_VERIFICATION_AUTH",
+  "authorizationToken": "AUTHORIZE_STATE_PIPELINE_PAID_VERIFICATION",
+  "outputDir": "DATA/OUTBOUND/STATE_SLED/PIPELINE_RUNNER",
+  "safety": {
+    "hardStopAtCreditBudget": true,
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "sendReplies": false,
+    "calendarWrites": false,
+    "destructiveChanges": false
+  }
+}

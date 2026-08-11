@@ -139,7 +139,7 @@ async function readAllVerifiedBatches(rules) {
 
 async function readLiveInstantlyCampaigns() {
   const connector = require("../CONNECTORS/INSTANTLY/connector");
-  const result = await connector.execute({ action: "LIST_CAMPAIGNS", payload: { limit: 100 } });
+  const result = await connector.execute({ action: "listCampaigns", payload: { limit: 100 } });
   if (!result?.ok) throw new Error(result?.error || "Instantly campaign inventory failed");
   return flattenCampaignPayload(result.campaigns);
 }
