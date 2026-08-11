@@ -148,6 +148,19 @@ function resolveCampaignObject(createResponse) {
   return null;
 }
 
+function loadLiveInstantlyConnector() {
+  process.env.MILES_DRY_RUN = 'false';
+  process.env.MILES_ALLOW_INSTANTLY_MUTATIONS = 'true';
+
+  const instantlyPath = require.resolve('../CONNECTORS/INSTANTLY/instantly');
+  const connectorPath = require.resolve('../CONNECTORS/INSTANTLY/connector');
+  delete require.cache[connectorPath];
+  delete require.cache[instantlyPath];
+
+  const connector = require('../CONNECTORS/INSTANTLY/connector');
+  return connector;
+}
+
 async function run(options = {}) {
   const authorization = String(options.authorization || process.env.MILES_STATE_REVENUE_DEPLOYMENT_AUTH || '').trim();
   const executeLive = options.executeLive === true || String(process.env.MILES_STATE_REVENUE_DEPLOYMENT_LIVE || '').toLowerCase() === 'true';
@@ -169,9 +182,11 @@ async function run(options = {}) {
     if (!byState.get(state).has(email)) byState.get(state).set(email, row);
   }
 
-  process.env.MILES_DRY_RUN = 'false';
-  process.env.MILES_ALLOW_INSTANTLY_MUTATIONS = 'true';
-  const connector = require('../CONNECTORS/INSTANTLY/connector');
+  const connector = loadLiveInstantlyConnector();
+  const configuration = await connector.execute({ action: 'getConfiguration', payload: {} });
+  if (configuration?.configuration?.liveMutationsEnabled !== true) {
+    throw new Error(`Instantly live mutations are not enabled after guarded reload: ${JSON.stringify(configuration)}`);
+  }
 
   const campaignInventory = await connector.execute({ action: 'listCampaigns', payload: { limit: 100 } });
   const campaigns = unwrapItems(campaignInventory?.campaigns);
@@ -216,7 +231,9 @@ async function run(options = {}) {
     for (const row of leads) {
       try {
         const result = await connector.execute({ action: 'createLead', payload: leadPayload(row, campaignId, state) });
-        if (result?.ok === false) failed += 1;
+        const dryRun = result?.result?.dryRun === true;
+        const mutationExecuted = result?.result?.mutationExecuted;
+        if (result?.ok === false || dryRun || mutationExecuted === false) failed += 1;
         else uploaded += 1;
       } catch {
         failed += 1;
@@ -228,7 +245,10 @@ async function run(options = {}) {
       const live = await connector.execute({ action: 'getCampaign', payload: { campaign_id: campaignId } });
       const status = Number(live?.campaign?.status ?? live?.result?.status ?? campaign?.status);
       if (status !== 1) {
-        await connector.execute({ action: 'activateCampaign', payload: { campaign_id: campaignId } });
+        const activated = await connector.execute({ action: 'activateCampaign', payload: { campaign_id: campaignId } });
+        if (activated?.result?.dryRun === true || activated?.result?.mutationExecuted === false) {
+          throw new Error(`Activation did not execute for ${state}: ${JSON.stringify(activated)}`);
+        }
         activatedNow = true;
       }
     }
@@ -270,4 +290,4 @@ async function run(options = {}) {
   return summary;
 }
 
-module.exports = { run, selectHealthySenders, campaignPayload, leadPayload, sequenceForState, resolveCampaignObject };
+module.exports = { run, selectHealthySenders, campaignPayload, leadPayload, sequenceForState, resolveCampaignObject, loadLiveInstantlyConnector };
