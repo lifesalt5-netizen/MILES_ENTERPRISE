@@ -43,7 +43,11 @@ async function readAllCampaignLeads(connector, campaignId) {
   let startingAfter;
 
   for (let page = 0; page < 200; page += 1) {
-    const payload = { campaign: campaignId, limit: 100, distinct_contacts: false };
+    const payload = {
+      campaign: campaignId,
+      limit: 100,
+      distinct_contacts: true
+    };
     if (startingAfter) payload.starting_after = startingAfter;
 
     const result = await connector.execute({ action: 'listLeads', payload });
@@ -51,17 +55,23 @@ async function readAllCampaignLeads(connector, campaignId) {
     const items = unwrapItems(envelope);
 
     for (const item of items) {
-      const id = String(item?.id || item?.email || '');
-      if (!id || seen.has(id)) continue;
-      seen.add(id);
+      const key = String(item?.email || item?.id || '').trim().toLowerCase();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
       rows.push(item);
     }
 
-    if (items.length === 0 || items.length < 100) break;
+    if (items.length === 0) break;
 
-    const lastItemId = String(items[items.length - 1]?.id || '').trim();
-    if (!lastItemId || lastItemId === startingAfter) break;
-    startingAfter = lastItemId;
+    const next = envelope?.next_starting_after || envelope?.nextStartingAfter || null;
+    const lastItem = items[items.length - 1] || {};
+    const lastId = String(lastItem?.id || '').trim();
+    const candidate = String(next || lastId || '').trim();
+
+    if (!candidate || candidate === startingAfter) break;
+    startingAfter = candidate;
+
+    if (items.length < 100 && !next) break;
   }
 
   return rows;
