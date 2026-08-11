@@ -13,14 +13,26 @@ const AUTH_TOKEN = 'AUTHORIZE_P1_5E2_EXACT_DUPLICATE_MEMBERSHIP_REMOVAL';
 const BASE_URL = process.env.INSTANTLY_BASE_URL || 'https://api.instantly.ai/api/v2';
 
 function normalizeEmail(v) { return String(v || '').trim().toLowerCase(); }
-function authHeaders() {
+function authHeaders({ json = true } = {}) {
   const apiKey = process.env.INSTANTLY_API_KEY || '';
   if (!apiKey) throw new Error('INSTANTLY_API_KEY is not configured.');
-  return { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', Accept: 'application/json' };
+  const headers = { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' };
+  if (json) headers['Content-Type'] = 'application/json';
+  return headers;
 }
 async function api(method, endpoint, body) {
   try {
-    const r = await axios({ method, url: `${BASE_URL}${endpoint}`, headers: authHeaders(), data: body, timeout: 30000, validateStatus: s => s >= 200 && s < 300 });
+    const upper = String(method || 'GET').toUpperCase();
+    const hasBody = body !== undefined && body !== null;
+    const config = {
+      method: upper,
+      url: `${BASE_URL}${endpoint}`,
+      headers: authHeaders({ json: hasBody }),
+      timeout: 30000,
+      validateStatus: s => s >= 200 && s < 300
+    };
+    if (hasBody) config.data = body;
+    const r = await axios(config);
     return { ok: true, data: r.data };
   } catch (e) {
     const detail = e?.response?.data || e?.message || e;
@@ -49,7 +61,6 @@ async function run(options = {}) {
 
   const connector = require('../CONNECTORS/INSTANTLY/connector');
   const snapshot = await master.run();
-  const candidateIds = new Set(snapshot.campaigns.filter(x => x.statusLabel !== 'ACTIVE' && !['SUPPRESSION','PIPELINE','MEETING_PIPELINE','NURTURE','FOLLOW_UP'].includes(x.family)).map(x => x.campaignId));
   const activeRows = snapshot.campaigns.filter(x => x.statusLabel === 'ACTIVE' && !['SUPPRESSION','PIPELINE','MEETING_PIPELINE','NURTURE','FOLLOW_UP'].includes(x.family));
 
   const planFile = path.join(OUTPUT_DIR, 'INSTANTLY_REVENUE_PRIORITY_DEDUP_SENDER_CAPACITY_GATE_LATEST.json');
@@ -120,7 +131,6 @@ async function run(options = {}) {
     }
   }
 
-  // Post-delete verification: source membership absent, owner membership still present.
   const affectedCampaignIds = new Set();
   for (const item of deleted) { affectedCampaignIds.add(item.sourceCampaignId); affectedCampaignIds.add(item.ownerCampaignId); }
   const postLeadsByCampaign = new Map();
@@ -136,7 +146,7 @@ async function run(options = {}) {
   const result = {
     ok: failed.length === 0 && verificationFailures.length === 0 && refused.length === 0,
     gate: 'P1.5E2_EXACT_DUPLICATE_MEMBERSHIP_REMOVAL',
-    version: '1.0-delete-source-lead-object-only-after-surviving-owner-proof',
+    version: '1.1-delete-without-json-content-type-on-empty-body',
     generatedAt: new Date().toISOString(),
     exactDuplicateMembershipsPlanned: exactPlan.length,
     refusedUnsafe: refused.length,
@@ -155,7 +165,8 @@ async function run(options = {}) {
       activateCampaigns: false,
       sendReplies: false,
       candidateCampaignScopeOnly: true,
-      officialInstantlyDeleteLeadEndpoint: 'DELETE /api/v2/leads/{id}'
+      officialInstantlyDeleteLeadEndpoint: 'DELETE /api/v2/leads/{id}',
+      deleteRequestSendsNoBodyAndNoJsonContentType: true
     },
     outputFile: OUTPUT_FILE
   };
