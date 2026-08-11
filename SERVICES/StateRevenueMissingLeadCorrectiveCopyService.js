@@ -70,9 +70,21 @@ async function postMove(payload) {
       timeout: 30000,
       validateStatus: status => status >= 200 && status < 300
     });
-    return response.data;
+    return { ok: true, data: response.data };
   } catch (error) {
+    const statusCode = Number(error?.response?.status || 0);
     const detail = error?.response?.data || error?.message || error;
+    const message = String(detail?.message || detail || '');
+
+    if (statusCode === 409 && /move-leads job in progress/i.test(message)) {
+      return {
+        ok: false,
+        busy: true,
+        statusCode,
+        detail
+      };
+    }
+
     throw new Error(`Instantly corrective copy failed: ${JSON.stringify(detail)}`);
   }
 }
@@ -90,6 +102,8 @@ async function run(options = {}) {
   }
 
   const jobs = [];
+  const busyGroups = [];
+
   for (const row of eligibleStateRows(input)) {
     const groups = sourceGroupsForState(row);
 
@@ -108,7 +122,20 @@ async function run(options = {}) {
         limit: group.contacts.length
       };
 
-      const job = await postMove(payload);
+      const moveResult = await postMove(payload);
+
+      if (moveResult.busy) {
+        busyGroups.push({
+          state: row.state,
+          sourceCampaignId: group.sourceCampaignId,
+          targetCampaignId: row.campaignId,
+          contactsDeferred: group.contacts.length,
+          reason: 'MOVE_JOB_IN_PROGRESS'
+        });
+        continue;
+      }
+
+      const job = moveResult.data;
       if (!job?.id) throw new Error(`Instantly did not return a background job id for ${row.state} from ${group.sourceCampaignId}.`);
 
       jobs.push({
@@ -128,8 +155,12 @@ async function run(options = {}) {
     gate: 'P1.4C4_STATE_REVENUE_MISSING_LEAD_CORRECTIVE_COPY',
     generatedAt: new Date().toISOString(),
     totalContactsRequested: jobs.reduce((n, x) => n + x.contactsRequested, 0),
+    totalContactsDeferredBusy: busyGroups.reduce((n, x) => n + x.contactsDeferred, 0),
     jobsSubmitted: jobs.length,
+    busyGroupsCount: busyGroups.length,
     jobs,
+    busyGroups,
+    readyForReconciliation: jobs.length > 0 || busyGroups.length > 0,
     safety: {
       copyOnly: true,
       sourceCampaignRequired: true,
