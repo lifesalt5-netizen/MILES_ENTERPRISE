@@ -53,36 +53,11 @@ function selectHealthySenders(accounts) {
 }
 
 function sequenceForState(state) {
-  const label = state;
   return [
-    {
-      type: 'email', delay: 2, delay_unit: 'days', variants: [{
-        subject: `${label} government contracting`,
-        body: `Hi,\n\nWe help businesses turn government registrations and capabilities into a practical sales plan — target agencies, opportunities, vehicles, and capture steps.\n\nWe're expanding our ${label} state/local program and identified your company as a possible fit. Would a 15-minute review of where you may have realistic public-sector opportunities be useful?\n\nKevin\nPathways 2 Government Contracting`,
-        v_disabled: false
-      }]
-    },
-    {
-      type: 'email', delay: 3, delay_unit: 'days', variants: [{
-        subject: `Re: ${label} government contracting`,
-        body: `Following up in case ${label} state/local contracting is on your growth list. We can quickly show which agencies and opportunity types line up with your capabilities and where the gaps are. Worth a short conversation?`,
-        v_disabled: false
-      }]
-    },
-    {
-      type: 'email', delay: 4, delay_unit: 'days', variants: [{
-        subject: `Worth mapping the ${label} market?`,
-        body: `Many firms are registered but still do not have a clear agency and opportunity path. Our work is focused on turning that into an actionable pursuit plan. Open to a quick review?`,
-        v_disabled: false
-      }]
-    },
-    {
-      type: 'email', delay: 7, delay_unit: 'days', variants: [{
-        subject: 'Close the loop?',
-        body: `I'll close the loop for now. If ${label} state/local government growth becomes a priority, reply ${label} and I'll send a few times to talk.`,
-        v_disabled: false
-      }]
-    }
+    { type: 'email', delay: 2, delay_unit: 'days', variants: [{ subject: `${state} government contracting`, body: `Hi,\n\nWe help businesses turn government registrations and capabilities into a practical sales plan — target agencies, opportunities, vehicles, and capture steps.\n\nWe're expanding our ${state} state/local program and identified your company as a possible fit. Would a 15-minute review of where you may have realistic public-sector opportunities be useful?\n\nKevin\nPathways 2 Government Contracting`, v_disabled: false }] },
+    { type: 'email', delay: 3, delay_unit: 'days', variants: [{ subject: `Re: ${state} government contracting`, body: `Following up in case ${state} state/local contracting is on your growth list. We can quickly show which agencies and opportunity types line up with your capabilities and where the gaps are. Worth a short conversation?`, v_disabled: false }] },
+    { type: 'email', delay: 4, delay_unit: 'days', variants: [{ subject: `Worth mapping the ${state} market?`, body: `Many firms are registered but still do not have a clear agency and opportunity path. Our work is focused on turning that into an actionable pursuit plan. Open to a quick review?`, v_disabled: false }] },
+    { type: 'email', delay: 7, delay_unit: 'days', variants: [{ subject: 'Close the loop?', body: `I'll close the loop for now. If ${state} state/local government growth becomes a priority, reply ${state} and I'll send a few times to talk.`, v_disabled: false }] }
   ];
 }
 
@@ -91,14 +66,7 @@ function campaignPayload(state, senderEmails) {
     name: `STATE SLED - ${state}`,
     sequences: [{ steps: sequenceForState(state) }],
     email_list: senderEmails,
-    campaign_schedule: {
-      schedules: [{
-        name: 'P2GC Weekdays Eastern',
-        timing: { from: '09:00', to: '17:00' },
-        days: { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false },
-        timezone: 'America/Detroit'
-      }]
-    },
+    campaign_schedule: { schedules: [{ name: 'P2GC Weekdays Eastern', timing: { from: '09:00', to: '17:00' }, days: { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false }, timezone: 'America/Detroit' }] },
     daily_limit: 25,
     daily_max_leads: 25,
     email_gap: 10,
@@ -121,22 +89,13 @@ function leadPayload(row, campaignId, state) {
   const legalName = first(row, ['legalName', 'Legal_Name', 'legal_name', 'company_name']);
   const domain = first(row, ['domain', 'Domain', 'website', 'Website']);
   const uei = first(row, ['uei', 'UEI']);
-  return {
-    campaign: campaignId,
-    email,
-    company_name: legalName || undefined,
-    website: domain ? (/^https?:\/\//i.test(domain) ? domain : `https://${domain}`) : undefined,
-    custom_variables: uei ? { uei, source_segment: `STATE_SLED_${state}` } : { source_segment: `STATE_SLED_${state}` },
-    skip_if_in_workspace: true,
-    skip_if_in_campaign: true
-  };
+  return { campaign: campaignId, email, company_name: legalName || undefined, website: domain ? (/^https?:\/\//i.test(domain) ? domain : `https://${domain}`) : undefined, custom_variables: uei ? { uei, source_segment: `STATE_SLED_${state}` } : { source_segment: `STATE_SLED_${state}` }, skip_if_in_workspace: true, skip_if_in_campaign: true };
 }
 
 async function run(options = {}) {
   const authorization = String(options.authorization || process.env.MILES_STATE_REVENUE_DEPLOYMENT_AUTH || '').trim();
   const executeLive = options.executeLive === true || String(process.env.MILES_STATE_REVENUE_DEPLOYMENT_LIVE || '').toLowerCase() === 'true';
   const activate = options.activate === true || String(process.env.MILES_STATE_REVENUE_ACTIVATE || '').toLowerCase() === 'true';
-
   if (authorization !== AUTH_TOKEN) throw new Error('State revenue deployment authorization token missing or incorrect.');
   if (!executeLive) throw new Error('State revenue deployment live flag is not enabled.');
 
@@ -163,17 +122,17 @@ async function run(options = {}) {
   const healthy = selectHealthySenders(accountInventory?.accounts);
   if (!healthy.length) throw new Error('No healthy Instantly sending accounts available.');
 
-  const senderEmails = [healthy[0].email];
   const summaries = [];
-
-  for (const state of STATES) {
+  for (let stateIndex = 0; stateIndex < STATES.length; stateIndex += 1) {
+    const state = STATES[stateIndex];
     const leads = [...byState.get(state).values()];
     const name = `STATE SLED - ${state}`;
+    const senderEmails = [healthy[stateIndex % healthy.length].email];
     let campaign = campaigns.find(c => String(c.name || '').trim().toUpperCase() === name.toUpperCase()) || null;
     let campaignCreated = false;
 
     if (!leads.length) {
-      summaries.push({ state, campaignName: name, verifiedLeads: 0, status: 'NO_VERIFIED_LEADS' });
+      summaries.push({ state, campaignName: name, senderEmails, verifiedLeads: 0, status: 'NO_VERIFIED_LEADS' });
       continue;
     }
 
@@ -191,11 +150,8 @@ async function run(options = {}) {
     for (const row of leads) {
       try {
         const result = await connector.execute({ action: 'createLead', payload: leadPayload(row, campaignId, state) });
-        if (result?.ok === false) failed += 1;
-        else uploaded += 1;
-      } catch {
-        failed += 1;
-      }
+        if (result?.ok === false) failed += 1; else uploaded += 1;
+      } catch { failed += 1; }
     }
 
     let activatedNow = false;
@@ -208,18 +164,7 @@ async function run(options = {}) {
       }
     }
 
-    summaries.push({
-      state,
-      campaignName: name,
-      campaignId,
-      campaignCreated,
-      senderEmails,
-      verifiedLeads: leads.length,
-      uploadSucceeded: uploaded,
-      uploadFailed: failed,
-      activationRequested: activate,
-      activatedNow
-    });
+    summaries.push({ state, campaignName: name, campaignId, campaignCreated, senderEmails, verifiedLeads: leads.length, uploadSucceeded: uploaded, uploadFailed: failed, activationRequested: activate, activatedNow });
   }
 
   const summary = {
@@ -227,7 +172,7 @@ async function run(options = {}) {
     gate: 'P1.4B_VERIFIED_STATE_REVENUE_DEPLOYMENT',
     generatedAt: new Date().toISOString(),
     verifiedMasterUnique: allRows.length,
-    senderEmails,
+    healthySenderPool: healthy.map(x => x.email),
     states: summaries,
     totals: {
       verifiedLeads: summaries.reduce((n, x) => n + Number(x.verifiedLeads || 0), 0),
