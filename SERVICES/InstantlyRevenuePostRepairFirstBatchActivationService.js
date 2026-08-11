@@ -5,6 +5,7 @@
   P1.5F — Post-repair verification + governed first-batch activation
   Rebuilds dedup/sender truth and message readiness after P1.5E.
   It will not activate while unresolved priority overlap remains.
+  V1.1: never treat a dry-run response as a successful activation; verify live status after mutation.
 */
 
 require('dotenv').config();
@@ -29,15 +30,25 @@ async function activateCampaign(campaignId) {
   return connector.execute({ action: 'activateCampaign', payload: { campaign_id: campaignId, id: campaignId } });
 }
 
+async function getCampaign(campaignId) {
+  const response = await connector.execute({ action: 'getCampaign', payload: { campaign_id: campaignId, id: campaignId } });
+  return response?.campaign || response?.result || response;
+}
+
+function isCampaignActive(campaign) {
+  const status = campaign?.status;
+  if (status === 1 || status === '1') return true;
+  const label = String(campaign?.statusLabel || campaign?.status_label || status || '').trim().toUpperCase();
+  return label === 'ACTIVE' || label === 'RUNNING';
+}
+
 async function run(options = {}) {
   const executeLive = options.executeLive === true || String(process.env.MILES_P1_5F_LIVE || '').toLowerCase() === 'true';
   const authorization = String(options.authorization || process.env.MILES_P1_5F_AUTH || '').trim();
 
   const repair = loadJson(P1_5E_FILE);
 
-  // Rebuild P1.5C from live Instantly state after dedup/config repair.
   const c = await dedupGate.run();
-  // P1.5D consumes the newly-written P1.5C artifact.
   const d = await messageGate.run();
 
   const remainingOverlap = Number(c?.totals?.blockedActiveAcquisition || 0) + Number(c?.totals?.blockedCandidateOverlap || 0);
@@ -63,14 +74,46 @@ async function run(options = {}) {
         activationResults.push({ campaignId: row.campaignId, campaignName: row.campaignName, activated: false, reason: 'CANDIDATE_NOT_READY' });
         continue;
       }
+
       const response = await activateCampaign(row.campaignId);
-      activationResults.push({ campaignId: row.campaignId, campaignName: row.campaignName, activated: true, responseObserved: Boolean(response) });
+      const mutation = response?.result || response;
+      const dryRun = mutation?.dryRun === true || mutation?.mutationExecuted === false;
+
+      if (dryRun) {
+        activationResults.push({
+          campaignId: row.campaignId,
+          campaignName: row.campaignName,
+          activated: false,
+          mutationExecuted: false,
+          reason: mutation?.reason || 'INSTANTLY_MUTATION_DRY_RUN',
+          requiredEnvironment: {
+            MILES_DRY_RUN: 'false',
+            MILES_ALLOW_INSTANTLY_MUTATIONS: 'true'
+          }
+        });
+        continue;
+      }
+
+      const verifiedCampaign = await getCampaign(row.campaignId);
+      const activeVerified = isCampaignActive(verifiedCampaign);
+      activationResults.push({
+        campaignId: row.campaignId,
+        campaignName: row.campaignName,
+        activated: activeVerified,
+        mutationExecuted: true,
+        liveStatusVerified: activeVerified,
+        observedStatus: verifiedCampaign?.status ?? verifiedCampaign?.statusLabel ?? null,
+        responseObserved: Boolean(response),
+        reason: activeVerified ? null : 'ACTIVATION_RESPONSE_RETURNED_BUT_LIVE_STATUS_NOT_ACTIVE'
+      });
     }
   }
 
+  const liveActivatedCount = activationResults.filter(x => x.activated && x.liveStatusVerified).length;
   const result = {
-    ok: true,
+    ok: globalBlockers.length === 0 && (!activationAuthorized || activationResults.every(x => x.activated === true)),
     gate: 'P1.5F_POST_REPAIR_RECONCILIATION_AND_FIRST_BATCH_ACTIVATION',
+    version: '1.1-live-mutation-and-status-verification',
     generatedAt: new Date().toISOString(),
     postRepairTruth: {
       activationCandidates: Number(c?.totals?.activationCandidates || 0),
@@ -101,16 +144,21 @@ async function run(options = {}) {
     globalBlockers,
     activationAuthorized,
     activationAttempted: activationAuthorized && globalBlockers.length === 0,
+    liveActivatedCount,
     activationResults,
     nextAction: globalBlockers.includes('PRIORITY_OVERLAP_STILL_PRESENT')
       ? 'RERUN_P1_5E_EXACT_DEDUP_AFTER_BACKGROUND_JOBS_CLEAR'
-      : activationResults.length > 0
+      : liveActivatedCount === firstBatch.slice(0,3).length && liveActivatedCount > 0
         ? 'VERIFY_FIRST_BATCH_LIVE_AND_MONITOR'
-        : 'AUTHORIZE_FIRST_BATCH_ACTIVATION',
+        : activationAuthorized
+          ? 'ENABLE_GLOBAL_INSTANTLY_MUTATIONS_AND_RETRY_P1_5F'
+          : 'AUTHORIZE_FIRST_BATCH_ACTIVATION',
     safety: {
       maxCampaignsActivatedThisRun: 3,
       activationRequiresExactAuthorization: true,
       noActivationWhilePriorityOverlapRemains: true,
+      dryRunResponsesNeverCountAsActivation: true,
+      liveStatusVerificationRequired: true,
       deleteLeads: false,
       deleteCampaigns: false,
       sendReplies: false
