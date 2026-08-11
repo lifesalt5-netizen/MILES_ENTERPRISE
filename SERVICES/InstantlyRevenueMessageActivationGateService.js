@@ -63,7 +63,13 @@ function inspectMessages(campaign) {
 async function run() {
   if (!fs.existsSync(INPUT)) throw new Error(`Required P1.5C output not found: ${INPUT}`);
   const prior = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
-  const candidates = asArray(prior.candidates);
+
+  // P1.5C publishes candidatePlans. Keep candidates as a compatibility fallback
+  // for any older persisted output produced before this contract was corrected.
+  const candidates = asArray(prior.candidatePlans).length
+    ? asArray(prior.candidatePlans)
+    : asArray(prior.candidates);
+
   const results = [];
 
   for (const candidate of candidates) {
@@ -126,6 +132,7 @@ async function run() {
     gate: 'P1.5D_INSTANTLY_REVENUE_MESSAGE_ACTIVATION_READINESS_GATE',
     generatedAt: new Date().toISOString(),
     sourceGate: prior.gate || 'P1.5C',
+    sourceCandidateField: asArray(prior.candidatePlans).length ? 'candidatePlans' : 'candidates',
     totals: {
       candidates: results.length,
       readyForGovernedActivationAuthorization: ready.length,
