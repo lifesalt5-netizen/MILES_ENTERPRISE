@@ -107,24 +107,40 @@ async function run(options = {}) {
   for (const group of dedupGroups.values()) {
     const contacts = [...new Set(group.contacts)];
     if (!contacts.length) continue;
+
+    // Critical P1.5E fix:
+    // These contacts are intentionally already members of the designated owner campaign.
+    // Enabling duplicate checks causes Instantly to classify every requested contact as a
+    // duplicate and report a successful background job with moved_leads=0. We therefore
+    // disable duplicate checks here and move the source membership to the already-selected
+    // owner campaign. copy_leads=false ensures the lower-priority source membership is removed.
     const payload = {
       campaign: group.sourceCampaignId,
       contacts,
       to_campaign_id: group.targetCampaignId,
       copy_leads: false,
-      check_duplicates: true,
-      check_duplicates_in_campaigns: true,
+      check_duplicates: false,
+      check_duplicates_in_campaigns: false,
       skip_leads_in_verification: true,
       reset_interest_status: false,
       limit: contacts.length
     };
+
     const r = await api('POST', '/leads/move', payload);
     if (r.busy) {
       busyGroups.push({ ...group, contactsDeferred: contacts.length, contacts: undefined, reason: 'MOVE_JOB_IN_PROGRESS' });
       continue;
     }
     if (!r.data?.id) throw new Error(`No background job id returned for dedup ${group.sourceCampaignName} -> ${group.targetCampaignName}.`);
-    dedupJobs.push({ ...group, contactsRequested: contacts.length, contacts: undefined, backgroundJobId: r.data.id, status: r.data.status || null, type: r.data.type || null });
+    dedupJobs.push({
+      ...group,
+      contactsRequested: contacts.length,
+      contacts: undefined,
+      backgroundJobId: r.data.id,
+      status: r.data.status || null,
+      type: r.data.type || null,
+      duplicateChecksDisabledForOwnerPreservingMove: true
+    });
   }
 
   const repairs = [];
@@ -145,6 +161,7 @@ async function run(options = {}) {
   const result = {
     ok: true,
     gate: 'P1.5E_INSTANTLY_REVENUE_DEDUP_ENFORCEMENT_CONFIG_REPAIR',
+    version: '1.1-owner-preserving-cross-campaign-move',
     generatedAt: new Date().toISOString(),
     duplicateMembershipsToRemove,
     dedupJobsSubmitted: dedupJobs.length,
@@ -160,6 +177,7 @@ async function run(options = {}) {
       exactPriorityDedupOnly: true,
       duplicateSourceMembershipRemoved: true,
       ownerCampaignPreserved: true,
+      duplicateChecksDisabledOnlyBecauseOwnerAlreadySelected: true,
       deleteLeads: false,
       deleteCampaigns: false,
       activateCampaigns: false,
