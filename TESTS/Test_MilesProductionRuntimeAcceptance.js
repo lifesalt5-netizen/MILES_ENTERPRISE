@@ -88,6 +88,30 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   return { operation: getOperation(operationId), task: getMatchingTask(operationId), elapsed: Date.now() - started };
 }
 
+function validDelegation(enqueueResult) {
+  if (!enqueueResult || enqueueResult.ok !== true) return false;
+
+  const status = String(enqueueResult.status || '').toUpperCase();
+
+  if (
+    status === 'QUEUED_FOR_PRODUCTION_BRIDGE' &&
+    enqueueResult.executionOwner === 'AUTONOMOUS_COO'
+  ) {
+    return true;
+  }
+
+  if (
+    status === 'BRIDGE_COMPLETED' &&
+    Number(enqueueResult.operationsQueued || 0) === 1 &&
+    String(enqueueResult.taskType || '').toUpperCase() === 'WORKFORCE_STEP' &&
+    Boolean(enqueueResult.taskId)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 (async () => {
   const health8787 = await requestJson('GET', 8787, '/api/health', null, 5000);
   const api3000 = await tcpListening(3000, 2000);
@@ -112,7 +136,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
     commandAccepted: submitted.statusCode === 200 && submitted.body && submitted.body.ok === true,
     commandResponseFast: submitted.elapsedMs < 5000,
     operationIdCreated: Boolean(operationId),
-    executionDelegated: Boolean(enqueueResult && enqueueResult.ok === true && enqueueResult.status === 'QUEUED_FOR_PRODUCTION_BRIDGE' && enqueueResult.executionOwner === 'AUTONOMOUS_COO'),
+    executionDelegated: validDelegation(enqueueResult),
     businessOperationBridged: Boolean(queuedOperation && String(queuedOperation.status || '').toUpperCase() === 'BRIDGED'),
     workforceStepCreated: Boolean(matchingTask && matchingTask.type === 'WORKFORCE_STEP'),
     sourceOperationLinked: Boolean(matchingTask && matchingTask.payload && matchingTask.payload.sourceOperationId === operationId),
@@ -132,9 +156,9 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.log(JSON.stringify({
     ok,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.5-windows-production-truth-gate',
+    version: '1.6-valid-delegation-modes',
     externalWritesRequested: false,
-    note: 'Port 3000 transport is validated by TCP listener state in Node; HTTP body health is independently proven by Invoke-WebRequest on this Windows host.',
+    note: 'Port 3000 is validated by listener state in Node. Delegation accepts either queued-for-bridge or immediate targeted BRIDGE_COMPLETED when both produce a linked WORKFORCE_STEP.',
     command,
     operationId,
     timings: {
@@ -163,7 +187,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.error(JSON.stringify({
     ok: false,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.5-windows-production-truth-gate',
+    version: '1.6-valid-delegation-modes',
     error: error.stack || error.message
   }, null, 2));
   process.exitCode = 1;
