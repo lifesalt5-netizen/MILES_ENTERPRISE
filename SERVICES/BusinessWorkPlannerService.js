@@ -24,22 +24,27 @@ class BusinessWorkPlannerService {
         const workPackages = [];
 
         //
-        // Always refresh business state first
+        // Always refresh business state first.
+        // Use the existing MarketingProvider read-only audit methods so
+        // Minimum COO gets real Instantly/account state instead of a
+        // generic MILES recommendation. External writes remain disabled.
         //
 
         workPackages.push({
             priority: 1,
             taskType: "REFRESH_CAMPAIGN_INVENTORY",
-            provider: "Instantly",
-            action: "LIST_CAMPAIGNS",
+            provider: "Marketing",
+            action: "auditCampaignHealth",
+            capability: "CAMPAIGN_INVENTORY",
             description: "Refresh live campaign inventory."
         });
 
         workPackages.push({
             priority: 2,
             taskType: "REFRESH_SENDING_ACCOUNT_INVENTORY",
-            provider: "Instantly",
-            action: "LIST_SENDING_ACCOUNTS",
+            provider: "Marketing",
+            action: "auditCapacity",
+            capability: "SENDING_ACCOUNT_INVENTORY",
             description: "Refresh mailbox inventory."
         });
 
@@ -48,6 +53,7 @@ class BusinessWorkPlannerService {
             taskType: "REFRESH_SEGMENT_INVENTORY",
             provider: "Revenue",
             action: "LOAD_SEGMENTS",
+            capability: "SEGMENT_INVENTORY",
             description: "Load lead segment inventory."
         });
 
@@ -60,6 +66,7 @@ class BusinessWorkPlannerService {
             taskType: "COMPARE_SEGMENTS_TO_CAMPAIGNS",
             provider: "Revenue",
             action: "COMPARE",
+            capability: "SEGMENT_CAMPAIGN_COVERAGE",
             description: "Determine campaign coverage."
         });
 
@@ -68,22 +75,25 @@ class BusinessWorkPlannerService {
             taskType: "IDENTIFY_MISSING_CAMPAIGNS",
             provider: "Revenue",
             action: "DISCOVER_MISSING_CAMPAIGNS",
+            capability: "MISSING_CAMPAIGN_DISCOVERY",
             description: "Identify segments needing campaigns."
         });
 
         workPackages.push({
             priority: 6,
             taskType: "IDENTIFY_CAMPAIGNS_WITHOUT_INBOXES",
-            provider: "Instantly",
-            action: "CHECK_CAMPAIGN_INBOXES",
+            provider: "Marketing",
+            action: "auditCapacity",
+            capability: "CAMPAIGN_INBOX_COVERAGE",
             description: "Locate campaigns without sending accounts."
         });
 
         workPackages.push({
             priority: 7,
             taskType: "IDENTIFY_CAMPAIGNS_WITHOUT_LEADS",
-            provider: "Instantly",
-            action: "CHECK_CAMPAIGN_LEADS",
+            provider: "Marketing",
+            action: "auditSegments",
+            capability: "CAMPAIGN_LEAD_COVERAGE",
             description: "Locate campaigns with no leads."
         });
 
@@ -96,6 +106,7 @@ class BusinessWorkPlannerService {
             taskType: "BUILD_EXECUTION_QUEUE",
             provider: "MILES",
             action: "QUEUE_WORK",
+            capability: "COO_EXECUTION_QUEUE",
             description: "Create prioritized execution queue."
         });
 
