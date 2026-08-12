@@ -11,10 +11,7 @@ function requestJson(method, port, urlPath, body, timeoutMs = 5000) {
     const payload = body == null ? null : JSON.stringify(body);
     const startedAt = Date.now();
     const req = http.request({
-      hostname: '127.0.0.1',
-      port,
-      path: urlPath,
-      method,
+      hostname: '127.0.0.1', port, path: urlPath, method,
       headers: payload ? {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload)
@@ -28,19 +25,29 @@ function requestJson(method, port, urlPath, body, timeoutMs = 5000) {
         resolve({ statusCode: res.statusCode, body: parsed, elapsedMs: Date.now() - startedAt });
       });
     });
-    req.setTimeout(timeoutMs, () => req.destroy(new Error(`HTTP_TIMEOUT_${timeoutMs}MS`)));
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`HTTP_TIMEOUT_${port}_${timeoutMs}MS`)));
     req.on('error', reject);
     if (payload) req.write(payload);
     req.end();
   });
 }
 
+function requestText(port, urlPath, timeoutMs = 5000) {
+  return new Promise((resolve, reject) => {
+    const startedAt = Date.now();
+    const req = http.get(`http://127.0.0.1:${port}${urlPath}`, res => {
+      let data = '';
+      res.on('data', c => { data += c; });
+      res.on('end', () => resolve({ statusCode: res.statusCode, body: data.trim(), elapsedMs: Date.now() - startedAt }));
+    });
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`HTTP_TIMEOUT_${port}_${timeoutMs}MS`)));
+    req.on('error', reject);
+  });
+}
+
 function readJson(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
-  } catch {
-    return fallback;
-  }
+  try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
+  catch { return fallback; }
 }
 
 function getTasks() {
@@ -61,33 +68,23 @@ function getMatchingTask(operationId) {
 }
 
 async function waitForBridge(operationId, timeoutMs = 60000) {
-  const deadline = Date.now() + timeoutMs;
+  const started = Date.now();
+  const deadline = started + timeoutMs;
   while (Date.now() < deadline) {
     const operation = getOperation(operationId);
     const task = getMatchingTask(operationId);
-    if (operation && String(operation.status || '').toUpperCase() === 'BRIDGED' && task) {
-      return { operation, task, elapsed: timeoutMs - Math.max(0, deadline - Date.now()) };
-    }
-    if (operation && String(operation.status || '').toUpperCase() === 'BRIDGE_FAILED') {
-      return { operation, task, elapsed: timeoutMs - Math.max(0, deadline - Date.now()) };
+    const status = String(operation && operation.status || '').toUpperCase();
+    if ((status === 'BRIDGED' && task) || status === 'BRIDGE_FAILED') {
+      return { operation, task, elapsed: Date.now() - started };
     }
     await new Promise(resolve => setTimeout(resolve, 500));
   }
-  return { operation: getOperation(operationId), task: getMatchingTask(operationId), elapsed: timeoutMs };
+  return { operation: getOperation(operationId), task: getMatchingTask(operationId), elapsed: Date.now() - started };
 }
 
 (async () => {
   const health8787 = await requestJson('GET', 8787, '/api/health', null, 5000);
-  const health3000 = await new Promise((resolve, reject) => {
-    const startedAt = Date.now();
-    const req = http.get('http://127.0.0.1:3000', res => {
-      let data = '';
-      res.on('data', c => { data += c; });
-      res.on('end', () => resolve({ statusCode: res.statusCode, body: data.trim(), elapsedMs: Date.now() - startedAt }));
-    });
-    req.setTimeout(5000, () => req.destroy(new Error('HTTP_3000_TIMEOUT_5000MS')));
-    req.on('error', reject);
-  });
+  const health3000 = await requestText(3000, '/', 5000);
 
   const command = `MILES runtime acceptance ${Date.now()}: check current outbound campaign health and report what needs attention. Do not make any external changes.`;
   const submitted = await requestJson('POST', 8787, '/api/command', { command }, 5000);
@@ -97,12 +94,12 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   const bridged = operationId ? await waitForBridge(operationId, 60000) : { operation: null, task: null, elapsed: 0 };
   const queuedOperation = bridged.operation;
   const matchingTask = bridged.task;
-
   const enqueueResult = submitted.body && submitted.body.enqueueResult;
   const serialized = JSON.stringify({ submitted: submitted.body, operation: queuedOperation, task: matchingTask });
 
   const checks = {
-    api3000Listening: health3000.statusCode >= 200 && health3000.statusCode < 500,
+    api3000Responsive: health3000.statusCode >= 200 && health3000.statusCode < 500 && health3000.elapsedMs < 5000,
+    api3000ExpectedBody: /MILES OS is running/i.test(String(health3000.body || '')),
     commandCenterHealthy: health8787.statusCode === 200 && health8787.body && health8787.body.ok === true,
     commandCenterResponsive: health8787.elapsedMs < 5000,
     commandAccepted: submitted.statusCode === 200 && submitted.body && submitted.body.ok === true,
@@ -113,15 +110,19 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
     workforceStepCreated: Boolean(matchingTask && matchingTask.type === 'WORKFORCE_STEP'),
     sourceOperationLinked: Boolean(matchingTask && matchingTask.payload && matchingTask.payload.sourceOperationId === operationId),
     noLegacyWorkerDispatchFailure: !/WORKER_NOT_FOUND|CUSTOM_TASK_NOT_IMPLEMENTED/.test(serialized),
-    commandCenterStillResponsiveAfterBridge: false
+    commandCenterStillResponsiveAfterBridge: false,
+    api3000StillResponsiveAfterBridge: false
   };
 
   try {
     const healthAfter = await requestJson('GET', 8787, '/api/health', null, 5000);
     checks.commandCenterStillResponsiveAfterBridge = healthAfter.statusCode === 200 && healthAfter.body && healthAfter.body.ok === true && healthAfter.elapsedMs < 5000;
-  } catch {
-    checks.commandCenterStillResponsiveAfterBridge = false;
-  }
+  } catch {}
+
+  try {
+    const apiAfter = await requestText(3000, '/', 5000);
+    checks.api3000StillResponsiveAfterBridge = apiAfter.statusCode >= 200 && apiAfter.statusCode < 500 && apiAfter.elapsedMs < 5000;
+  } catch {}
 
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
   const ok = failed.length === 0;
@@ -129,7 +130,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.log(JSON.stringify({
     ok,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.2-process-isolated-command-center',
+    version: '1.3-api-and-command-process-isolation',
     externalWritesRequested: false,
     command,
     operationId,
@@ -158,7 +159,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.error(JSON.stringify({
     ok: false,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.2-process-isolated-command-center',
+    version: '1.3-api-and-command-process-isolation',
     error: error.stack || error.message
   }, null, 2));
   process.exitCode = 1;
