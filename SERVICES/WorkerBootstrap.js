@@ -2,85 +2,64 @@
 
 const registry = require("./WorkerRegistry");
 
-const atlasAdapter =
-require("./WORKER_ADAPTERS/AtlasWorkerAdapter");
+function materializeAdapter(modulePath) {
+  const exported = require(modulePath);
 
-const architectAdapter =
-require("./WORKER_ADAPTERS/ArchitectAdapter");
+  if (exported && typeof exported.execute === "function") {
+    return exported;
+  }
 
-const builderAdapter =
-require("./WORKER_ADAPTERS/BuilderAdapter");
+  if (typeof exported === "function") {
+    try {
+      const instance = new exported();
+      if (instance && typeof instance.execute === "function") {
+        return instance;
+      }
+    } catch (constructorError) {
+      try {
+        const instance = exported();
+        if (instance && typeof instance.execute === "function") {
+          return instance;
+        }
+      } catch (_) {
+        // Fall through to explicit validation error below.
+      }
 
-const validatorAdapter =
-require("./WORKER_ADAPTERS/ValidatorAdapter");
+      const error = new Error(`INVALID_WORKER_ADAPTER_EXPORT: ${modulePath}`);
+      error.cause = constructorError;
+      throw error;
+    }
+  }
 
-const testerAdapter =
-new (
-require("./WORKER_ADAPTERS/TesterAdapter")
-)();
-
-const deployerAdapter =
-new (
-require("./WORKER_ADAPTERS/DeployerAdapter")
-)();
-
-const recoveryAdapter =
-new (
-require("./WORKER_ADAPTERS/RecoveryAdapter")
-)();
-
-const selfDevelopmentAdapter =
-require("./WORKER_ADAPTERS/SelfDevelopmentAdapter");
-
-function bootstrapWorkers() {
-
-    registry.register(
-        "SELF_DEVELOPMENT",
-        selfDevelopmentAdapter
-    );
-
-    registry.register(
-        "ATLAS",
-        atlasAdapter
-    );
-
-    registry.register(
-        "ARCHITECT",
-        architectAdapter
-    );
-
-    registry.register(
-        "BUILDER",
-        builderAdapter
-    );
-
-    registry.register(
-        "VALIDATOR",
-        validatorAdapter
-    );
-
-    registry.register(
-        "TESTER",
-        testerAdapter
-    );
-
-    registry.register(
-        "DEPLOYER",
-        deployerAdapter
-    );
-
-    registry.register(
-        "RECOVERY",
-        recoveryAdapter
-    );
-
-
-    console.log(
-        "[WORKERS] Registered:",
-        registry.list()
-    );
-
+  throw new Error(`INVALID_WORKER_ADAPTER_EXPORT: ${modulePath}`);
 }
 
+const WORKERS = Object.freeze({
+  SELF_DEVELOPMENT: "./WORKER_ADAPTERS/SelfDevelopmentAdapter",
+  ATLAS: "./WORKER_ADAPTERS/AtlasWorkerAdapter",
+  ARCHITECT: "./WORKER_ADAPTERS/ArchitectAdapter",
+  BUILDER: "./WORKER_ADAPTERS/BuilderAdapter",
+  VALIDATOR: "./WORKER_ADAPTERS/ValidatorAdapter",
+  TESTER: "./WORKER_ADAPTERS/TesterAdapter",
+  DEPLOYER: "./WORKER_ADAPTERS/DeployerAdapter",
+  RECOVERY: "./WORKER_ADAPTERS/RecoveryAdapter"
+});
+
+function bootstrapWorkers() {
+  const registered = [];
+
+  for (const [type, modulePath] of Object.entries(WORKERS)) {
+    const adapter = materializeAdapter(modulePath);
+    registry.register(type, adapter);
+    registered.push(type);
+  }
+
+  console.log("[WORKERS] Registered:", registry.list());
+
+  return {
+    ok: true,
+    registered
+  };
+}
 
 module.exports = bootstrapWorkers;
