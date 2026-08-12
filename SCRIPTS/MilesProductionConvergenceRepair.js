@@ -20,9 +20,7 @@ function writePatched(file, source) {
 
 function mustContain(source, markers, label) {
   for (const marker of markers) {
-    if (!source.includes(marker)) {
-      throw new Error(`${label}_VALIDATION_FAILED: ${marker}`);
-    }
+    if (!source.includes(marker)) throw new Error(`${label}_VALIDATION_FAILED: ${marker}`);
   }
 }
 
@@ -37,27 +35,16 @@ function patchBridge() {
 
     const method = `
   async bridgeOperation(operationId) {
-    if (!this.enabled) {
-      return { ok: true, status: "DISABLED", operationId, operationsQueued: 0 };
-    }
+    if (!this.enabled) return { ok: true, status: "DISABLED", operationId, operationsQueued: 0 };
 
     this.lastRun = now();
     const queue = this.readQueue();
     queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
     const operation = queue.operations.find(item => item && item.id === operationId);
 
-    if (!operation) {
-      return { ok: false, status: "OPERATION_NOT_FOUND", operationId, operationsQueued: 0 };
-    }
-
+    if (!operation) return { ok: false, status: "OPERATION_NOT_FOUND", operationId, operationsQueued: 0 };
     if (!this.isPending(operation)) {
-      return {
-        ok: false,
-        status: "OPERATION_NOT_PENDING",
-        operationId,
-        operationStatus: operation.status,
-        operationsQueued: 0
-      };
+      return { ok: false, status: "OPERATION_NOT_PENDING", operationId, operationStatus: operation.status, operationsQueued: 0 };
     }
 
     try {
@@ -87,13 +74,7 @@ function patchBridge() {
         error: error.message
       });
       this.failedCount++;
-      return {
-        ok: false,
-        status: "BRIDGE_FAILED",
-        operationId: operation.id,
-        operationsQueued: 0,
-        error: error.message
-      };
+      return { ok: false, status: "BRIDGE_FAILED", operationId: operation.id, operationsQueued: 0, error: error.message };
     }
   }
 
@@ -102,12 +83,7 @@ function patchBridge() {
     source = source.slice(0, match.index) + '\n' + method + source.slice(match.index + 1);
   }
 
-  mustContain(source, [
-    'async bridgeOperation(operationId)',
-    'taskType: "WORKFORCE_STEP"',
-    'Target-bridged operation to TaskQueue'
-  ], 'BRIDGE');
-
+  mustContain(source, ['async bridgeOperation(operationId)', 'taskType: "WORKFORCE_STEP"', 'Target-bridged operation to TaskQueue'], 'BRIDGE');
   return { file, backup: writePatched(file, source) };
 }
 
@@ -128,63 +104,67 @@ function patchCommandCenter() {
     source = source.replace(match[0], `${match[0]}\n\nconst businessBridge = new BusinessOperationsBridgeService({\n  rootDir: ROOT,\n  queueFile\n});`);
   }
 
-  // Remove legacy command dispatch into DigitalCOOHost/WorkerDispatcher.
+  if (!source.includes('function scheduleBridge(operationId)')) {
+    const anchor = /const businessBridge = new BusinessOperationsBridgeService\(\{[\s\S]*?\}\);/;
+    const match = source.match(anchor);
+    if (!match) throw new Error('COMMAND_BRIDGE_INSTANCE_ANCHOR_NOT_FOUND');
+    source = source.replace(match[0], `${match[0]}\n\nfunction scheduleBridge(operationId) {\n  setTimeout(async () => {\n    try {\n      const result = await businessBridge.bridgeOperation(operationId);\n      log(result && result.ok ? 'INFO' : 'ERROR', 'Targeted bridge finished', { operationId, result });\n    } catch (error) {\n      log('ERROR', 'Targeted bridge crashed', { operationId, error: error.message });\n    }\n  }, 25);\n\n  return {\n    ok: true,\n    status: 'BRIDGE_SCHEDULED',\n    operationId,\n    taskType: 'WORKFORCE_STEP'\n  };\n}`);
+  }
+
   const legacyDispatch = /\n\s*let enqueueResult = null;\s*\n\s*if\s*\(\s*host\s*&&\s*typeof host\.enqueueOperation === 'function'\s*\)\s*\{\s*enqueueResult = await host\.enqueueOperation\(operation\);\s*\}/m;
   if (legacyDispatch.test(source)) {
     source = source.replace(legacyDispatch, `
   let enqueueResult = null;
 
   if (operation.approvalRequired) {
-    enqueueResult = {
-      ok: true,
-      status: 'WAITING_FOR_CEO_APPROVAL',
-      operationId: operation.id
-    };
+    enqueueResult = { ok: true, status: 'WAITING_FOR_CEO_APPROVAL', operationId: operation.id };
   } else {
-    enqueueResult = await businessBridge.bridgeOperation(operation.id);
+    enqueueResult = scheduleBridge(operation.id);
   }`);
   }
 
-  if (!source.includes('enqueueResult = await businessBridge.bridgeOperation(operation.id);')) {
+  source = source.replace(
+    /enqueueResult = await businessBridge\.bridgeOperation\(operation\.id\);/g,
+    'enqueueResult = scheduleBridge(operation.id);'
+  );
+
+  if (!source.includes('enqueueResult = scheduleBridge(operation.id);')) {
     throw new Error('COMMAND_NORMAL_TARGET_BRIDGE_NOT_INSTALLED');
   }
 
-  // After a CEO approval becomes READY, bridge that exact operation once.
-  if (!source.includes('result.bridge = await businessBridge.bridgeOperation(operationId);')) {
+  if (!source.includes('result.bridge = scheduleBridge(operationId);')) {
+    source = source.replace(
+      /result\.bridge = await businessBridge\.bridgeOperation\(operationId\);/g,
+      'result.bridge = scheduleBridge(operationId);'
+    );
+  }
+
+  if (!source.includes('result.bridge = scheduleBridge(operationId);')) {
     const approvalRegex = /const result = action === 'approve'\s*\? await executiveResponses\.approveOperation\(\s*operationId,\s*payload\.reason \|\| ''\s*\)\s*:\s*await executiveResponses\.rejectOperation\(\s*operationId,\s*payload\.reason \|\| ''\s*\);/m;
     const match = source.match(approvalRegex);
     if (!match) throw new Error('COMMAND_APPROVAL_ANCHOR_NOT_FOUND');
     source = source.replace(match[0], `let result = action === 'approve'
-              ? await executiveResponses.approveOperation(
-                operationId,
-                payload.reason || ''
-              )
-              : await executiveResponses.rejectOperation(
-                operationId,
-                payload.reason || ''
-              );
+              ? await executiveResponses.approveOperation(operationId, payload.reason || '')
+              : await executiveResponses.rejectOperation(operationId, payload.reason || '');
 
             if (
-              action === 'approve' &&
-              result &&
-              result.ok &&
-              result.operation &&
+              action === 'approve' && result && result.ok && result.operation &&
               String(result.operation.status || '').toUpperCase() === 'READY'
             ) {
-              result.bridge = await businessBridge.bridgeOperation(operationId);
+              result.bridge = scheduleBridge(operationId);
             }`);
   }
 
   mustContain(source, [
     "require('../BusinessOperationsBridgeService')",
     'const businessBridge = new BusinessOperationsBridgeService',
-    'enqueueResult = await businessBridge.bridgeOperation(operation.id);',
-    'result.bridge = await businessBridge.bridgeOperation(operationId);'
+    'function scheduleBridge(operationId)',
+    'enqueueResult = scheduleBridge(operation.id);',
+    'result.bridge = scheduleBridge(operationId);'
   ], 'COMMAND_CENTER');
 
-  if (/await host\.enqueueOperation\(operation\)/.test(source)) {
-    throw new Error('LEGACY_HOST_COMMAND_DISPATCH_STILL_PRESENT');
-  }
+  if (/await host\.enqueueOperation\(operation\)/.test(source)) throw new Error('LEGACY_HOST_COMMAND_DISPATCH_STILL_PRESENT');
+  if (/await businessBridge\.bridgeOperation\(/.test(source)) throw new Error('SYNCHRONOUS_COMMAND_BRIDGE_STILL_PRESENT');
 
   return { file, backup: writePatched(file, source) };
 }
@@ -192,22 +172,14 @@ function patchCommandCenter() {
 function validateApproval() {
   const file = path.join(ROOT, 'SERVICES', 'ExecutiveResponseService.js');
   const source = read(file);
-  mustContain(source, [
-    'approved: true',
-    'approver: "CEO"',
-    'operation.status = "READY"'
-  ], 'APPROVAL');
+  mustContain(source, ['approved: true', 'approver: "CEO"', 'operation.status = "READY"'], 'APPROVAL');
   return { file, status: 'VALIDATED' };
 }
 
 function validateTaskQueueLock() {
   const file = path.join(ROOT, 'CORE', 'TaskQueue.js');
   const source = read(file);
-  mustContain(source, [
-    'canReclaimLock()',
-    'isProcessAlive(owner.pid)',
-    'fs.rmSync(this.lockPath'
-  ], 'TASK_QUEUE_LOCK');
+  mustContain(source, ['canReclaimLock()', 'isProcessAlive(owner.pid)', 'fs.rmSync(this.lockPath'], 'TASK_QUEUE_LOCK');
   return { file, status: 'VALIDATED' };
 }
 
@@ -221,15 +193,16 @@ const results = {
 console.log(JSON.stringify({
   ok: true,
   gate: 'MILES_PRODUCTION_CONVERGENCE_REPAIR',
-  version: '1.0',
+  version: '1.1-nonblocking-command-bridge',
   results,
   resolvedKnownDefects: [
     '8787 legacy WORKER_NOT_FOUND routing',
     '8787 CUSTOM_TASK_NOT_IMPLEMENTED legacy worker path',
+    '8787 HTTP timeout caused by synchronous TaskQueue bridge',
     'broad pending-operation replay from command intake',
     'CEO approval resume not entering canonical WORKFORCE_STEP path',
     'duplicate approved operation dispatch risk',
     'stale TaskQueue lock recovery validation'
   ],
-  nextAction: 'RUN_CONVERGENCE_GATE'
+  nextAction: 'RUN_CONVERGENCE_GATE_THEN_RESTART'
 }, null, 2));
