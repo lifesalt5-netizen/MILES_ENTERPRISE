@@ -74,8 +74,9 @@ function now() {
       bridgeResult.ok &&
       bridged?.status === "BRIDGED" &&
       queuedTask?.type === "WORKFORCE_STEP" &&
-      execution?.ok &&
-      finalTask && ["COMPLETED", "FAILED"].includes(finalTask.status)
+      execution?.ok === true &&
+      execution?.status === "COMPLETED" &&
+      finalTask?.status === "COMPLETED"
     ),
     gate: "MINIMUM_COO_END_TO_END",
     planner: {
