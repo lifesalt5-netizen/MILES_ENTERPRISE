@@ -1,0 +1,52 @@
+{
+  "gate": "P1.5_FEDERAL_SEGMENTATION_CLOSURE",
+  "status": "CLOSED_WITH_DEFERRED_DATA_GAPS",
+  "closedAt": "2026-08-12",
+  "purpose": "Stop federal source-reconstruction from blocking Minimum COO work. Preserve best defensible baseline and defer non-critical refresh gaps.",
+  "accepted": {
+    "revenueSource": "D:\\P2GC_Intelligence\\ORION_CORE\\Opportunity_Engine\\Input\\contract_award_summary.csv",
+    "revenueSourceStatus": "VALIDATED_ORION_BASELINE_NOT_FULLY_CURRENT",
+    "gsa": {
+      "authoritativeRosterUei": 12952,
+      "NO_SALES": 1592,
+      "ONE_TO_LT3M": 2820,
+      "THREE_TO_LT10M": 745,
+      "TEN_M_PLUS": 3310,
+      "UNKNOWN": 4485,
+      "matchRate": 0.6537214329833231
+    },
+    "vaFss": {
+      "resolvedAuthoritativeRosterUei": 489,
+      "NO_SALES": 112,
+      "ONE_TO_LT3M": 95,
+      "THREE_TO_LT10M": 22,
+      "TEN_M_PLUS": 50,
+      "UNKNOWN": 210,
+      "matchRate": 0.5705521472392638,
+      "note": "VA roster itself is larger; this is the currently resolved authoritative UEI subset."
+    },
+    "instantMutation": false
+  },
+  "deferred": [
+    "February 2026 forward USAspending prime/subcontract catch-up",
+    "Remaining VA/FSS UEI resolution",
+    "Certification-family source cleanup: SDVOSB, VOSB, WOSB, HUBZone, 8(a)",
+    "SAM/SBS family source cleanup and canonical membership",
+    "Final live Instantly resegmentation from corrected federal master"
+  ],
+  "rules": [
+    "Do not reopen P1.5 source reconstruction unless a revenue-critical decision requires it.",
+    "Do not classify missing revenue coverage as NO_SALES; preserve UNKNOWN.",
+    "Do not mutate live Instantly campaigns from deferred certification/SAM/SBS outputs.",
+    "Preserve pathways2gc.com as protected from cold outbound.",
+    "Federal data cleanup is now a maintenance backlog, not a Minimum COO blocker."
+  ],
+  "nextGate": "MINIMUM_COO_WORKER_EXECUTION",
+  "nextFocus": [
+    "WorkerExecutionBridge runtime routing",
+    "Worker registration failures including SELF_DEVELOPMENT / ARCHITECT / BUILDER",
+    "BusinessWorkPlannerService and BusinessOperationsBridgeService execution path",
+    "Marketing execution and queue handoff",
+    "Revenue-producing autonomous COO loop"
+  ]
+}
