@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const net = require('net');
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, '..');
 
@@ -32,16 +33,58 @@ function requestJson(method, port, urlPath, body, timeoutMs = 5000) {
   });
 }
 
+// Raw HTTP/1.1 probe for the dedicated 3000 API process.
+// This avoids a Node http.get false-timeout observed on Windows even while
+// Invoke-WebRequest to the same 127.0.0.1 endpoint returns HTTP 200.
 function requestText(port, urlPath, timeoutMs = 5000) {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now();
-    const req = http.get(`http://127.0.0.1:${port}${urlPath}`, res => {
-      let data = '';
-      res.on('data', c => { data += c; });
-      res.on('end', () => resolve({ statusCode: res.statusCode, body: data.trim(), elapsedMs: Date.now() - startedAt }));
+    const socket = net.createConnection({ host: '127.0.0.1', port });
+    let settled = false;
+    let raw = '';
+
+    const finishError = error => {
+      if (settled) return;
+      settled = true;
+      try { socket.destroy(); } catch {}
+      reject(error);
+    };
+
+    const finishSuccess = () => {
+      if (settled) return;
+      const headerEnd = raw.indexOf('\r\n\r\n');
+      if (headerEnd < 0) return;
+
+      const headerText = raw.slice(0, headerEnd);
+      const body = raw.slice(headerEnd + 4).trim();
+      const firstLine = headerText.split('\r\n')[0] || '';
+      const match = firstLine.match(/^HTTP\/\d(?:\.\d)?\s+(\d{3})/i);
+      if (!match) return finishError(new Error(`INVALID_HTTP_RESPONSE_${port}`));
+
+      settled = true;
+      try { socket.end(); } catch {}
+      resolve({
+        statusCode: Number(match[1]),
+        body,
+        elapsedMs: Date.now() - startedAt
+      });
+    };
+
+    socket.setTimeout(timeoutMs);
+    socket.once('connect', () => {
+      socket.write(
+        `GET ${urlPath} HTTP/1.1\r\n` +
+        `Host: 127.0.0.1:${port}\r\n` +
+        'Connection: close\r\n\r\n'
+      );
     });
-    req.setTimeout(timeoutMs, () => req.destroy(new Error(`HTTP_TIMEOUT_${port}_${timeoutMs}MS`)));
-    req.on('error', reject);
+    socket.on('data', chunk => {
+      raw += chunk.toString('utf8');
+      finishSuccess();
+    });
+    socket.once('timeout', () => finishError(new Error(`HTTP_TIMEOUT_${port}_${timeoutMs}MS`)));
+    socket.once('error', finishError);
+    socket.once('end', finishSuccess);
   });
 }
 
@@ -130,7 +173,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.log(JSON.stringify({
     ok,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.3-api-and-command-process-isolation',
+    version: '1.4-windows-raw-http-api-probe',
     externalWritesRequested: false,
     command,
     operationId,
@@ -159,7 +202,7 @@ async function waitForBridge(operationId, timeoutMs = 60000) {
   console.error(JSON.stringify({
     ok: false,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.3-api-and-command-process-isolation',
+    version: '1.4-windows-raw-http-api-probe',
     error: error.stack || error.message
   }, null, 2));
   process.exitCode = 1;
