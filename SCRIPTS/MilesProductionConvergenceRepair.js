@@ -90,22 +90,11 @@ function patchCommandCenter() {
   const file = path.join(ROOT, 'SERVICES', 'digital_coo', 'MilesCommandCenter.js');
   let source = read(file);
 
-  // v1.2 architecture: the HTTP process never requires/instantiates the production bridge.
-  // READY operations are persisted and picked up by AutonomousCOOLoopService in its own process.
+  // HTTP 8787 is persistence/acknowledgement only. Execution belongs to the
+  // separate Autonomous COO process so synchronous queue work cannot freeze UI.
   source = source.replace(/\nconst BusinessOperationsBridgeService = require\('\.\.\/BusinessOperationsBridgeService'\);/g, '');
   source = source.replace(/\nconst businessBridge = new BusinessOperationsBridgeService\(\{[\s\S]*?\}\);\n/g, '\n');
 
-  // Replace any synchronous or setImmediate targeted bridge block used by earlier convergence versions.
-  source = source.replace(/\n\s*let enqueueResult = null;[\s\S]*?\n\s*log\('INFO', `Command accepted:/m,
-`\n  const enqueueResult = operation.approvalRequired\n    ? {\n        ok: true,\n        status: 'WAITING_FOR_CEO_APPROVAL',\n        operationId: operation.id\n      }\n    : {\n        ok: true,\n        status: 'QUEUED_FOR_PRODUCTION_BRIDGE',\n        operationId: operation.id,\n        executionOwner: 'AUTONOMOUS_COO'\n      };\n\n  log('INFO', \`Command accepted:`);
-
-  // The broad regex above intentionally terminates at log(. Restore the full log prefix if needed.
-  source = source.replace("log('INFO', `Command accepted: ${cleanCommand}`.replace", "log('INFO', `Command accepted: ${cleanCommand}`.replace");
-  // Repair accidental reduced log token created by replacement.
-  source = source.replace("log('INFO', `Command accepted:, {", "log('INFO', `Command accepted: ${cleanCommand}`, {");
-  source = source.replace("log('INFO', `Command accepted:`); ${cleanCommand}`, {", "log('INFO', `Command accepted: ${cleanCommand}`, {");
-
-  // More deterministic fallback: locate operation creation through return block and rebuild handler tail if legacy dispatch remains.
   if (/host\.enqueueOperation\(operation\)|businessBridge\.bridgeOperation\(operation\.id\)/.test(source)) {
     const start = source.indexOf('  const operation = makeOperation(cleanCommand, plan);');
     const end = source.indexOf('\n  return {\n    ok: true,\n    status: \'COMMAND_ACCEPTED\'', start);
@@ -114,7 +103,6 @@ function patchCommandCenter() {
     source = source.slice(0, start) + replacement + source.slice(end);
   }
 
-  // Approval endpoint must persist READY only; Autonomous COO resumes it externally.
   source = source.replace(/\n\s*if\s*\(\s*action === 'approve'[\s\S]*?result\.bridge\s*=\s*await businessBridge\.bridgeOperation\(operationId\);\s*\}/m, '');
   source = source.replace(/\n\s*if\s*\(\s*action === 'approve'[\s\S]*?businessBridge\.bridgeOperation\(operationId\)[\s\S]*?\}\);?\s*\}/m, '');
 
@@ -129,6 +117,46 @@ function patchCommandCenter() {
   ], 'COMMAND_CENTER');
 
   return { file, backup: writePatched(file, source) };
+}
+
+function patchApiProcessIsolation() {
+  const workerFile = path.join(ROOT, 'StartProductionSystem.js');
+  let workerSource = read(workerFile);
+
+  // Worker Runtime must never host port 3000. Its synchronous TaskQueue lock
+  // path can legitimately wait; sharing the HTTP event loop made the API hang.
+  workerSource = workerSource.replace(/\n\s*require\(["']\.\/api\/server["']\);\s*/i, '\n  // MILES API runs in dedicated StartMilesApi.js process.\n');
+  if (/require\(["']\.\/api\/server["']\)/i.test(workerSource)) {
+    throw new Error('WORKER_RUNTIME_STILL_HOSTS_API');
+  }
+
+  const bootstrapFile = path.join(ROOT, 'StartMilesProduction.js');
+  let bootstrapSource = read(bootstrapFile);
+
+  if (!bootstrapSource.includes('name: "MILES API"')) {
+    const planAnchor = '  return [\n    {\n      name: "Worker Runtime",';
+    if (!bootstrapSource.includes(planAnchor)) throw new Error('BOOTSTRAP_WORKER_PLAN_ANCHOR_NOT_FOUND');
+
+    const apiDescriptor = `  return [\n    {\n      name: "MILES API",\n      file: "StartMilesApi.js",\n      phase: 1,\n      readiness: [\n        {\n          type: "tcp",\n          host: "127.0.0.1",\n          port: positiveNumber(env.MILES_API_PORT, 3000)\n        }\n      ]\n    },\n    {\n      name: "Worker Runtime",`;
+
+    bootstrapSource = bootstrapSource.replace(planAnchor, apiDescriptor);
+  }
+
+  mustContain(bootstrapSource, [
+    'name: "MILES API"',
+    'file: "StartMilesApi.js"',
+    'port: positiveNumber(env.MILES_API_PORT, 3000)'
+  ], 'API_BOOTSTRAP');
+
+  const apiEntry = path.join(ROOT, 'StartMilesApi.js');
+  const apiEntrySource = read(apiEntry);
+  mustContain(apiEntrySource, ["require('./API/server')"], 'API_ENTRY');
+
+  return {
+    workerRuntime: { file: workerFile, backup: writePatched(workerFile, workerSource) },
+    bootstrap: { file: bootstrapFile, backup: writePatched(bootstrapFile, bootstrapSource) },
+    apiEntry: { file: apiEntry, status: 'VALIDATED' }
+  };
 }
 
 function validateApproval() {
@@ -148,6 +176,7 @@ function validateTaskQueueLock() {
 const results = {
   bridge: patchBridge(),
   commandCenter: patchCommandCenter(),
+  apiIsolation: patchApiProcessIsolation(),
   approval: validateApproval(),
   taskQueueLock: validateTaskQueueLock()
 };
@@ -155,14 +184,17 @@ const results = {
 console.log(JSON.stringify({
   ok: true,
   gate: 'MILES_PRODUCTION_CONVERGENCE_REPAIR',
-  version: '1.2-process-isolated-command-center',
+  version: '1.3-api-and-command-process-isolation',
   results,
   architecture: {
+    api3000: 'DEDICATED_START_MILES_API_PROCESS',
+    workerRuntime: 'TASK_EXECUTION_ONLY_NO_HTTP',
     commandCenter8787: 'PERSIST_AND_ACK_ONLY',
     execution: 'AUTONOMOUS_COO_PROCESS -> BusinessOperationsBridgeService -> WORKFORCE_STEP',
     approval: 'PERSIST_READY_ONLY -> AUTONOMOUS_COO_PROCESS_RESUMES'
   },
   resolvedKnownDefects: [
+    '3000 bound-but-unresponsive Worker Runtime event-loop blocking',
     '8787 legacy WORKER_NOT_FOUND routing',
     '8787 CUSTOM_TASK_NOT_IMPLEMENTED legacy worker path',
     '8787 event-loop blocking on synchronous TaskQueue lock',
