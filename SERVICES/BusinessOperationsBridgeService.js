@@ -48,9 +48,6 @@ class BusinessOperationsBridgeService {
       options.queueFile ||
       path.join(this.rootDir, "state", "business_operations_queue.json");
 
-    // MarketingCOOService owns marketing intelligence and writes this queue.
-    // BusinessOperationsBridgeService consumes it and converts work into
-    // the existing business operations pipeline.
     this.marketingQueueFile =
       options.marketingQueueFile ||
       path.join(
@@ -92,81 +89,23 @@ class BusinessOperationsBridgeService {
   readMarketingQueue() {
     const queue = readJson(this.marketingQueueFile, []);
 
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-
-    if (queue && Array.isArray(queue.operations)) {
-      return queue.operations;
-    }
-
-    if (queue && Array.isArray(queue.items)) {
-      return queue.items;
-    }
-
-    if (queue && Array.isArray(queue.workItems)) {
-      return queue.workItems;
-    }
-
+    if (Array.isArray(queue)) return queue;
+    if (queue && Array.isArray(queue.operations)) return queue.operations;
+    if (queue && Array.isArray(queue.items)) return queue.items;
+    if (queue && Array.isArray(queue.workItems)) return queue.workItems;
     return [];
   }
 
   buildMarketingOperation(item = {}, index = 0) {
-    const title =
-      item.title ||
-      item.command ||
-      item.objective ||
-      "Marketing business operation";
-
-    const reason =
-      item.reason ||
-      item.description ||
-      item.objective ||
-      title;
-
-    const sourceKey = [
-      item.id || "",
-      item.department || "Marketing",
-      title,
-      reason
-    ].join("|");
-
-    const generatedId =
-      "MARKETING_" +
-      Buffer.from(sourceKey, "utf8")
-        .toString("base64url")
-        .slice(0, 64);
-
+    const title = item.title || item.command || item.objective || "Marketing business operation";
+    const reason = item.reason || item.description || item.objective || title;
+    const sourceKey = [item.id || "", item.department || "Marketing", title, reason].join("|");
+    const generatedId = "MARKETING_" + Buffer.from(sourceKey, "utf8").toString("base64url").slice(0, 64);
     const requiresKevin = item.requiresKevin === true;
-
-    let status = String(
-      item.status ||
-      (requiresKevin ? "AWAITING_APPROVAL" : "READY")
-    ).toUpperCase();
-
-    // Never bypass an explicit Kevin approval requirement.
-    if (
-      requiresKevin &&
-      ["READY", "PENDING", "NEW"].includes(status)
-    ) {
-      status = "AWAITING_APPROVAL";
-    }
-
-    const action =
-      item.action ||
-      item.type ||
-      (/paused.*campaign|campaign.*paused/i.test(`${title} ${reason}`)
-        ? "REVIEW_PAUSED_CAMPAIGNS"
-        : "MARKETING_OPERATION");
-
-    const provider =
-      item.provider ||
-      item.connector ||
-      (/instantly|campaign|email|lead|outbound/i.test(
-        `${title} ${reason}`
-      )
-        ? "INSTANTLY"
-        : "Marketing");
+    let status = String(item.status || (requiresKevin ? "AWAITING_APPROVAL" : "READY")).toUpperCase();
+    if (requiresKevin && ["READY", "PENDING", "NEW"].includes(status)) status = "AWAITING_APPROVAL";
+    const action = item.action || item.type || (/paused.*campaign|campaign.*paused/i.test(`${title} ${reason}`) ? "REVIEW_PAUSED_CAMPAIGNS" : "MARKETING_OPERATION");
+    const provider = item.provider || item.connector || (/instantly|campaign|email|lead|outbound/i.test(`${title} ${reason}`) ? "INSTANTLY" : "Marketing");
 
     return {
       ...item,
@@ -194,186 +133,79 @@ class BusinessOperationsBridgeService {
 
   importMarketingWork() {
     const marketingItems = this.readMarketingQueue();
-
-    if (!marketingItems.length) {
-      return {
-        found: 0,
-        imported: 0,
-        updated: 0
-      };
-    }
+    if (!marketingItems.length) return { found: 0, imported: 0, updated: 0 };
 
     const businessQueue = this.readQueue();
-
-    businessQueue.operations = Array.isArray(businessQueue.operations)
-      ? businessQueue.operations
-      : [];
-
-    const existingById = new Map(
-      businessQueue.operations
-        .filter((operation) => operation && operation.id)
-        .map((operation) => [operation.id, operation])
-    );
-
+    businessQueue.operations = Array.isArray(businessQueue.operations) ? businessQueue.operations : [];
+    const existingById = new Map(businessQueue.operations.filter(o => o && o.id).map(o => [o.id, o]));
     let imported = 0;
     let updated = 0;
 
     marketingItems.forEach((item, index) => {
       const incoming = this.buildMarketingOperation(item, index);
       const existing = existingById.get(incoming.id);
-
       if (!existing) {
         businessQueue.operations.push(incoming);
         existingById.set(incoming.id, incoming);
         imported++;
         return;
       }
-
-      // Preserve completed runtime states so recurring Marketing COO scans
-      // do not requeue already bridged or completed operations.
-      const terminalStates = [
-        "BRIDGED",
-        "COMPLETED",
-        "EXECUTED",
-        "CANCELLED",
-        "REJECTED"
-      ];
-
+      const terminalStates = ["BRIDGED", "COMPLETED", "EXECUTED", "CANCELLED", "REJECTED"];
       const existingStatus = String(existing.status || "").toUpperCase();
-
-      if (terminalStates.includes(existingStatus)) {
-        return;
-      }
-
-      Object.assign(existing, {
-        ...incoming,
-        importedAt: existing.importedAt || incoming.importedAt,
-        updatedAt: now()
-      });
-
+      if (terminalStates.includes(existingStatus)) return;
+      Object.assign(existing, { ...incoming, importedAt: existing.importedAt || incoming.importedAt, updatedAt: now() });
       updated++;
     });
 
     this.writeQueue(businessQueue);
-
-    this.log(
-      `Marketing import found=${marketingItems.length} imported=${imported} updated=${updated}`
-    );
-
-    return {
-      found: marketingItems.length,
-      imported,
-      updated
-    };
+    this.log(`Marketing import found=${marketingItems.length} imported=${imported} updated=${updated}`);
+    return { found: marketingItems.length, imported, updated };
   }
 
-
   importRevenueWork() {
-    if (
-      !this.revenueMissionSource ||
-      typeof this.revenueMissionSource.readCandidates !== "function"
-    ) {
-      return {
-        found: 0,
-        imported: 0,
-        updated: 0,
-        sources: []
-      };
+    if (!this.revenueMissionSource || typeof this.revenueMissionSource.readCandidates !== "function") {
+      return { found: 0, imported: 0, updated: 0, sources: [] };
     }
 
-    const revenueRead =
-      this.revenueMissionSource.readCandidates();
-
-    const candidates =
-      Array.isArray(revenueRead.candidates)
-        ? revenueRead.candidates
-        : [];
-
+    const revenueRead = this.revenueMissionSource.readCandidates();
+    const candidates = Array.isArray(revenueRead.candidates) ? revenueRead.candidates : [];
     if (!candidates.length) {
-      return {
-        found: 0,
-        imported: 0,
-        updated: 0,
-        sources: revenueRead.sourceSummary || []
-      };
+      return { found: 0, imported: 0, updated: 0, sources: revenueRead.sourceSummary || [] };
     }
 
     const businessQueue = this.readQueue();
-
-    businessQueue.operations =
-      Array.isArray(businessQueue.operations)
-        ? businessQueue.operations
-        : [];
-
-    const existingById = new Map(
-      businessQueue.operations
-        .filter((operation) => operation && operation.id)
-        .map((operation) => [operation.id, operation])
-    );
-
-    const terminalStates = [
-      "BRIDGED",
-      "COMPLETED",
-      "EXECUTED",
-      "CANCELLED",
-      "REJECTED"
-    ];
-
+    businessQueue.operations = Array.isArray(businessQueue.operations) ? businessQueue.operations : [];
+    const existingById = new Map(businessQueue.operations.filter(o => o && o.id).map(o => [o.id, o]));
+    const terminalStates = ["BRIDGED", "COMPLETED", "EXECUTED", "CANCELLED", "REJECTED"];
     let imported = 0;
     let updated = 0;
 
     for (const incoming of candidates) {
-      const existing =
-        existingById.get(incoming.id);
-
+      const existing = existingById.get(incoming.id);
       if (!existing) {
         businessQueue.operations.push(incoming);
         existingById.set(incoming.id, incoming);
         imported++;
         continue;
       }
-
-      const existingStatus =
-        String(existing.status || "").toUpperCase();
-
-      if (terminalStates.includes(existingStatus)) {
-        continue;
-      }
-
-      Object.assign(existing, {
-        ...incoming,
-        importedAt:
-          existing.importedAt ||
-          incoming.importedAt,
-        updatedAt: now()
-      });
-
+      const existingStatus = String(existing.status || "").toUpperCase();
+      if (terminalStates.includes(existingStatus)) continue;
+      Object.assign(existing, { ...incoming, importedAt: existing.importedAt || incoming.importedAt, updatedAt: now() });
       updated++;
     }
 
     this.writeQueue(businessQueue);
-
-    this.log(
-      `Revenue import found=${candidates.length} imported=${imported} updated=${updated}`
-    );
-
-    return {
-      found: candidates.length,
-      imported,
-      updated,
-      sources: revenueRead.sourceSummary || []
-    };
+    this.log(`Revenue import found=${candidates.length} imported=${imported} updated=${updated}`);
+    return { found: candidates.length, imported, updated, sources: revenueRead.sourceSummary || [] };
   }
 
   isPending(operation) {
-    return ["READY", "PENDING", "NEW"].includes(
-      String(operation.status || "").toUpperCase()
-    );
+    return ["READY", "PENDING", "NEW"].includes(String(operation.status || "").toUpperCase());
   }
 
   resolveProvider(operation = {}) {
-      const provider = ProviderRegistry.resolve(operation);
-      return provider ? provider.id : "MILES";
+    const provider = ProviderRegistry.resolve(operation);
+    return provider ? provider.id : "MILES";
   }
 
   normalizePriority(value) {
@@ -381,91 +213,40 @@ class BusinessOperationsBridgeService {
     if (value === 2 || value === "2") return 2;
     if (value === 3 || value === "3") return 3;
     if (value === 4 || value === "4") return 4;
-
     const text = String(value || "").toUpperCase();
-
     if (text === "CRITICAL") return 1;
     if (text === "HIGH") return 2;
     if (text === "MEDIUM" || text === "NORMAL") return 3;
     if (text === "LOW") return 4;
-
     return 3;
   }
 
   buildTaskParts(operation = {}) {
     const planned = operation.plan || {};
-
-    const command =
-      operation.command ||
-      planned.originalCommand ||
-      planned.objective ||
-      operation.title ||
-      operation.objective ||
-      "Business operation";
-
-    const action =
-      operation.action ||
-      planned.action ||
-      operation.type ||
-      "BUSINESS_OPERATION";
-
-    const capability =
-      operation.capability ||
-      planned.capability ||
-      action;
-
-    const workflow =
-      operation.workflow ||
-      planned.workflow ||
-      null;
-
-    const intent =
-      operation.intent ||
-      planned.intent ||
-      null;
-
-    const provider =
-      operation.provider ||
-      planned.provider ||
-      this.resolveProvider(operation);
-
-    const connector =
-      operation.connector ||
-      planned.connector ||
-      provider;
-
-    const system =
-      operation.system ||
-      planned.system ||
-      provider;
-
-    const department =
-      operation.department ||
-      planned.department ||
-      provider;
+    const command = operation.command || planned.originalCommand || planned.objective || operation.title || operation.objective || "Business operation";
+    const action = operation.action || planned.action || operation.type || "BUSINESS_OPERATION";
+    const capability = operation.capability || planned.capability || action;
+    const workflow = operation.workflow || planned.workflow || null;
+    const intent = operation.intent || planned.intent || null;
+    const provider = operation.provider || planned.provider || this.resolveProvider(operation);
+    const connector = operation.connector || planned.connector || provider;
+    const system = operation.system || planned.system || provider;
+    const department = operation.department || planned.department || provider;
 
     const payload = {
       ...operation,
-
       provider,
       system,
       department,
       connector,
-
-      // CRITICAL FIX:
-      // Preserve planner-selected action.
-      // Do NOT replace action with full command text.
       action,
       capability,
       workflow,
       intent,
-
       objective: operation.objective || planned.objective || command,
       command,
-
       sourceOperationId: operation.id,
       source: operation.source || "business_operations_queue",
-
       plan: {
         ...planned,
         provider,
@@ -482,79 +263,41 @@ class BusinessOperationsBridgeService {
     };
 
     return {
-      type: action,
+      type: "WORKFORCE_STEP",
       payload,
       priority: this.normalizePriority(operation.priority)
     };
   }
 
   enqueueTask(operation) {
-    if (!this.taskQueue) {
-      throw new Error("TaskQueue unavailable");
-    }
-
+    if (!this.taskQueue) throw new Error("TaskQueue unavailable");
     const task = this.buildTaskParts(operation);
-
-    this.log(
-      `Routing trace operation=${operation.id || "UNKNOWN"} type=${task.type} action=${task.payload.action} capability=${task.payload.capability} workflow=${task.payload.workflow} connector=${task.payload.connector}`
-    );
-
-    if (typeof this.taskQueue.add !== "function") {
-      throw new Error("TaskQueue.add(type, payload, priority) unavailable");
-    }
-
+    this.log(`Routing trace operation=${operation.id || "UNKNOWN"} type=${task.type} action=${task.payload.action} capability=${task.payload.capability} workflow=${task.payload.workflow} connector=${task.payload.connector}`);
+    if (typeof this.taskQueue.add !== "function") throw new Error("TaskQueue.add(type, payload, priority) unavailable");
     return this.taskQueue.add(task.type, task.payload, task.priority);
   }
 
   markOperation(operationId, patch) {
     const queue = this.readQueue();
-
     queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
-
-    queue.operations = queue.operations.map((operation) => {
-      if (operation.id !== operationId) return operation;
-
-      return {
-        ...operation,
-        ...patch,
-        updatedAt: now()
-      };
-    });
-
+    queue.operations = queue.operations.map(operation => operation.id !== operationId ? operation : { ...operation, ...patch, updatedAt: now() });
     this.writeQueue(queue);
   }
 
   async runOnce() {
     if (!this.enabled) {
-      return {
-        ok: true,
-        status: "DISABLED",
-        operationsFound: 0,
-        operationsQueued: 0,
-        operationsFailed: 0
-      };
+      return { ok: true, status: "DISABLED", operationsFound: 0, operationsQueued: 0, operationsFailed: 0 };
     }
 
     this.lastRun = now();
-
-    // Pull Marketing COO business intelligence into the existing
-    // business operations queue before looking for executable work.
     const marketingImport = this.importMarketingWork();
-
-    // BUILD130: Import revenue work into the same canonical
-    // business operations queue before dispatch.
     const revenueImport = this.importRevenueWork();
-
     const queue = this.readQueue();
     queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
-
-    const pending = queue.operations.filter((operation) =>
-      this.isPending(operation)
-    );
+    const pending = queue.operations.filter(operation => this.isPending(operation));
 
     if (!pending.length) {
       this.log("No pending business operations.");
-
       return {
         ok: true,
         status: "NO_PENDING_OPERATIONS",
@@ -569,36 +312,20 @@ class BusinessOperationsBridgeService {
     }
 
     this.log(`Found ${pending.length} pending business operation(s).`);
-
     let queued = 0;
     let failed = 0;
 
     for (const operation of pending) {
       try {
         const task = this.enqueueTask(operation);
-
-        this.markOperation(operation.id, {
-          status: "BRIDGED",
-          bridgedAt: now(),
-          taskQueueStatus: "QUEUED",
-          taskId: task.id || null
-        });
-
+        this.markOperation(operation.id, { status: "BRIDGED", bridgedAt: now(), taskQueueStatus: "QUEUED", taskId: task.id || null });
         queued++;
         this.bridgedCount++;
-
         this.log(`Bridged operation to TaskQueue: ${operation.title || operation.command}`);
       } catch (error) {
-        this.markOperation(operation.id, {
-          status: "BRIDGE_FAILED",
-          bridgeFailedAt: now(),
-          taskQueueStatus: "FAILED",
-          error: error.message
-        });
-
+        this.markOperation(operation.id, { status: "BRIDGE_FAILED", bridgeFailedAt: now(), taskQueueStatus: "FAILED", error: error.message });
         failed++;
         this.failedCount++;
-
         this.log(`Bridge failed: ${error.message}`);
       }
     }
@@ -622,15 +349,14 @@ class BusinessOperationsBridgeService {
     return {
       service: this.name,
       enabled: this.enabled,
-      queueFile: this.queueFile,
-      marketingQueueFile: this.marketingQueueFile,
-      taskQueueAvailable: Boolean(this.taskQueue),
       lastRun: this.lastRun,
       bridgedCount: this.bridgedCount,
-      failedCount: this.failedCount
+      failedCount: this.failedCount,
+      queueFile: this.queueFile,
+      marketingQueueFile: this.marketingQueueFile
     };
   }
 }
 
-module.exports = BusinessOperationsBridgeService;
-
+module.exports = new BusinessOperationsBridgeService();
+module.exports.BusinessOperationsBridgeService = BusinessOperationsBridgeService;
