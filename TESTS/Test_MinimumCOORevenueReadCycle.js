@@ -83,6 +83,35 @@ function now() {
     execution?.result?.result?.providerResult ||
     null;
 
+  const providerOutput =
+    providerResult?.providerOutput ||
+    null;
+
+  const metrics =
+    providerResult?.metrics ||
+    providerOutput?.metrics ||
+    {};
+
+  const liveCampaigns = Number(metrics.totalCampaigns || 0);
+  const liveAccounts = Number(metrics.totalAccounts || 0);
+  const localSegmentLeads = Number(metrics.segmentInventory?.totalLeads || 0);
+  const localSegments = Number(metrics.segmentInventory?.totalSegments || 0);
+
+  const readOnly =
+    providerOutput?.readOnly === true;
+
+  const writesEnabled =
+    providerOutput?.safety?.writesEnabled === true;
+
+  const externalWritesPerformed =
+    providerOutput?.externalWritesPerformed === true;
+
+  const segmentInventoryStale =
+    liveCampaigns > 0 &&
+    liveAccounts > 0 &&
+    localSegments > 0 &&
+    localSegmentLeads === 0;
+
   const result = {
     ok: Boolean(
       plan.ok &&
@@ -95,8 +124,11 @@ function now() {
       finalTask?.status === "COMPLETED" &&
       providerResult &&
       providerResult.provider === "MarketingProvider" &&
-      providerResult.readOnly === true &&
-      providerResult.safety?.writesEnabled === false
+      liveCampaigns > 0 &&
+      liveAccounts > 0 &&
+      readOnly &&
+      !writesEnabled &&
+      !externalWritesPerformed
     ),
     gate: "MINIMUM_COO_REVENUE_READ_CYCLE",
     planner: {
@@ -124,11 +156,22 @@ function now() {
       provider: providerResult.provider,
       action: providerResult.action,
       status: providerResult.status,
-      readOnly: providerResult.readOnly,
-      writesEnabled: providerResult.safety?.writesEnabled,
-      metrics: providerResult.metrics,
-      evidenceFile: providerResult.evidenceFile
+      readOnly,
+      writesEnabled,
+      externalWritesPerformed,
+      metrics,
+      evidenceFile: providerOutput?.evidenceFile || providerResult.evidenceFile || null
     } : null,
+    diagnostics: {
+      liveCampaigns,
+      liveAccounts,
+      localSegments,
+      localSegmentLeads,
+      segmentInventoryStale,
+      nextAction: segmentInventoryStale
+        ? "REFRESH_SEGMENT_INVENTORY_FROM_ACCEPTED_ORION_BASELINE"
+        : "COMPARE_SEGMENTS_TO_CAMPAIGNS"
+    },
     finalTask: finalTask ? {
       id: finalTask.id,
       status: finalTask.status
