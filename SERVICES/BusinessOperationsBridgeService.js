@@ -358,5 +358,16 @@ class BusinessOperationsBridgeService {
   }
 }
 
-module.exports = new BusinessOperationsBridgeService();
+// Compatibility export: production COO consumers instantiate the default export,
+// while older callers may invoke methods on it as if it were the historical singleton.
+const singleton = new BusinessOperationsBridgeService();
+for (const methodName of Object.getOwnPropertyNames(BusinessOperationsBridgeService.prototype)) {
+  if (methodName === "constructor") continue;
+  if (typeof singleton[methodName] === "function") {
+    BusinessOperationsBridgeService[methodName] = singleton[methodName].bind(singleton);
+  }
+}
+
+module.exports = BusinessOperationsBridgeService;
 module.exports.BusinessOperationsBridgeService = BusinessOperationsBridgeService;
+module.exports.instance = singleton;
