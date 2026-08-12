@@ -35,30 +35,47 @@ function materializeAdapter(modulePath) {
 }
 
 const WORKERS = Object.freeze({
-  SELF_DEVELOPMENT: "./WORKER_ADAPTERS/SelfDevelopmentAdapter",
-  ATLAS: "./WORKER_ADAPTERS/AtlasWorkerAdapter",
-  ARCHITECT: "./WORKER_ADAPTERS/ArchitectAdapter",
-  BUILDER: "./WORKER_ADAPTERS/BuilderAdapter",
-  VALIDATOR: "./WORKER_ADAPTERS/ValidatorAdapter",
-  TESTER: "./WORKER_ADAPTERS/TesterAdapter",
-  DEPLOYER: "./WORKER_ADAPTERS/DeployerAdapter",
-  RECOVERY: "./WORKER_ADAPTERS/RecoveryAdapter"
+  SELF_DEVELOPMENT: { path: "./WORKER_ADAPTERS/SelfDevelopmentAdapter", required: true },
+  ATLAS: { path: "./WORKER_ADAPTERS/AtlasWorkerAdapter", required: false },
+  ARCHITECT: { path: "./WORKER_ADAPTERS/ArchitectAdapter", required: true },
+  BUILDER: { path: "./WORKER_ADAPTERS/BuilderAdapter", required: true },
+  VALIDATOR: { path: "./WORKER_ADAPTERS/ValidatorAdapter", required: false },
+  TESTER: { path: "./WORKER_ADAPTERS/TesterAdapter", required: false },
+  DEPLOYER: { path: "./WORKER_ADAPTERS/DeployerAdapter", required: false },
+  RECOVERY: { path: "./WORKER_ADAPTERS/RecoveryAdapter", required: false }
 });
 
 function bootstrapWorkers() {
   const registered = [];
+  const skipped = [];
 
-  for (const [type, modulePath] of Object.entries(WORKERS)) {
-    const adapter = materializeAdapter(modulePath);
-    registry.register(type, adapter);
-    registered.push(type);
+  for (const [type, config] of Object.entries(WORKERS)) {
+    try {
+      const adapter = materializeAdapter(config.path);
+      registry.register(type, adapter);
+      registered.push(type);
+    } catch (error) {
+      if (config.required) {
+        error.message = `REQUIRED_WORKER_BOOTSTRAP_FAILED: ${type}: ${error.message}`;
+        throw error;
+      }
+
+      skipped.push({
+        type,
+        modulePath: config.path,
+        reason: error.message
+      });
+
+      console.warn(`[WORKERS] Optional worker skipped: ${type}: ${error.message}`);
+    }
   }
 
   console.log("[WORKERS] Registered:", registry.list());
 
   return {
     ok: true,
-    registered
+    registered,
+    skipped
   };
 }
 
