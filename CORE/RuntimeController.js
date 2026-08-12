@@ -141,18 +141,25 @@ class RuntimeController {
         });
 
         try {
-            const result = workforceExecutionService.executeAndVerify(task);
+            const execution = await workforceExecutionService.executeAndVerify(task);
+            const terminalStatus =
+                execution && execution.status === "COMPLETED"
+                    ? "COMPLETED"
+                    : execution && execution.status === "AWAITING_CEO_APPROVAL"
+                        ? "AWAITING_CEO_APPROVAL"
+                        : "FAILED";
 
             taskQueue.update(task.id, {
-                status: result.status === "COMPLETED" ? "COMPLETED" : "FAILED",
-                result
+                status: terminalStatus,
+                result: execution
             });
 
             return {
-                ok: true,
+                ok: terminalStatus === "COMPLETED",
                 type: "WORKFORCE_STEP_EXECUTED",
                 taskId: task.id,
-                result,
+                status: terminalStatus,
+                result: execution,
                 queue: taskQueue.getStatus(),
                 timestamp: new Date().toISOString()
             };
