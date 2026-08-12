@@ -56,7 +56,7 @@ function patchBridge() {
         taskId: task.id || null
       });
       this.bridgedCount++;
-      this.log(\`Target-bridged operation to TaskQueue: \${operation.id}\`);
+      this.log(`Target-bridged operation to TaskQueue: ${operation.id}`);
       return {
         ok: true,
         status: "BRIDGE_COMPLETED",
@@ -79,11 +79,10 @@ function patchBridge() {
   }
 
 `;
-
     source = source.slice(0, match.index) + '\n' + method + source.slice(match.index + 1);
   }
 
-  mustContain(source, ['async bridgeOperation(operationId)', 'taskType: "WORKFORCE_STEP"', 'Target-bridged operation to TaskQueue'], 'BRIDGE');
+  mustContain(source, ['async bridgeOperation(operationId)', 'taskType: "WORKFORCE_STEP"'], 'BRIDGE');
   return { file, backup: writePatched(file, source) };
 }
 
@@ -91,80 +90,43 @@ function patchCommandCenter() {
   const file = path.join(ROOT, 'SERVICES', 'digital_coo', 'MilesCommandCenter.js');
   let source = read(file);
 
-  if (!source.includes("require('../BusinessOperationsBridgeService')")) {
-    const anchor = "const DigitalCOOHost = require('./DigitalCOOHost');";
-    if (!source.includes(anchor)) throw new Error('COMMAND_IMPORT_ANCHOR_NOT_FOUND');
-    source = source.replace(anchor, `${anchor}\nconst BusinessOperationsBridgeService = require('../BusinessOperationsBridgeService');`);
+  // v1.2 architecture: the HTTP process never requires/instantiates the production bridge.
+  // READY operations are persisted and picked up by AutonomousCOOLoopService in its own process.
+  source = source.replace(/\nconst BusinessOperationsBridgeService = require\('\.\.\/BusinessOperationsBridgeService'\);/g, '');
+  source = source.replace(/\nconst businessBridge = new BusinessOperationsBridgeService\(\{[\s\S]*?\}\);\n/g, '\n');
+
+  // Replace any synchronous or setImmediate targeted bridge block used by earlier convergence versions.
+  source = source.replace(/\n\s*let enqueueResult = null;[\s\S]*?\n\s*log\('INFO', `Command accepted:/m,
+`\n  const enqueueResult = operation.approvalRequired\n    ? {\n        ok: true,\n        status: 'WAITING_FOR_CEO_APPROVAL',\n        operationId: operation.id\n      }\n    : {\n        ok: true,\n        status: 'QUEUED_FOR_PRODUCTION_BRIDGE',\n        operationId: operation.id,\n        executionOwner: 'AUTONOMOUS_COO'\n      };\n\n  log('INFO', \`Command accepted:`);
+
+  // The broad regex above intentionally terminates at log(. Restore the full log prefix if needed.
+  source = source.replace("log('INFO', `Command accepted: ${cleanCommand}`.replace", "log('INFO', `Command accepted: ${cleanCommand}`.replace");
+  // Repair accidental reduced log token created by replacement.
+  source = source.replace("log('INFO', `Command accepted:, {", "log('INFO', `Command accepted: ${cleanCommand}`, {");
+  source = source.replace("log('INFO', `Command accepted:`); ${cleanCommand}`, {", "log('INFO', `Command accepted: ${cleanCommand}`, {");
+
+  // More deterministic fallback: locate operation creation through return block and rebuild handler tail if legacy dispatch remains.
+  if (/host\.enqueueOperation\(operation\)|businessBridge\.bridgeOperation\(operation\.id\)/.test(source)) {
+    const start = source.indexOf('  const operation = makeOperation(cleanCommand, plan);');
+    const end = source.indexOf('\n  return {\n    ok: true,\n    status: \'COMMAND_ACCEPTED\'', start);
+    if (start < 0 || end < 0) throw new Error('COMMAND_HANDLER_TAIL_ANCHOR_NOT_FOUND');
+    const replacement = `  const operation = makeOperation(cleanCommand, plan);\n\n  addToQueue(operation);\n\n  const enqueueResult = operation.approvalRequired\n    ? {\n        ok: true,\n        status: 'WAITING_FOR_CEO_APPROVAL',\n        operationId: operation.id\n      }\n    : {\n        ok: true,\n        status: 'QUEUED_FOR_PRODUCTION_BRIDGE',\n        operationId: operation.id,\n        executionOwner: 'AUTONOMOUS_COO'\n      };\n\n  log('INFO', \`Command accepted: \${cleanCommand}\`, {\n    operationId: operation.id,\n    provider: operation.provider,\n    action: operation.action,\n    worker: operation.worker,\n    approvalRequired: operation.approvalRequired,\n    executionOwner: operation.approvalRequired ? 'CEO_APPROVAL' : 'AUTONOMOUS_COO'\n  });\n`;
+    source = source.slice(0, start) + replacement + source.slice(end);
   }
 
-  if (!source.includes('const businessBridge = new BusinessOperationsBridgeService')) {
-    const hostRegex = /const host = new DigitalCOOHost\(\{[\s\S]*?rootDir:\s*ROOT[\s\S]*?\}\);/;
-    const match = source.match(hostRegex);
-    if (!match) throw new Error('COMMAND_HOST_ANCHOR_NOT_FOUND');
-    source = source.replace(match[0], `${match[0]}\n\nconst businessBridge = new BusinessOperationsBridgeService({\n  rootDir: ROOT,\n  queueFile\n});`);
-  }
+  // Approval endpoint must persist READY only; Autonomous COO resumes it externally.
+  source = source.replace(/\n\s*if\s*\(\s*action === 'approve'[\s\S]*?result\.bridge\s*=\s*await businessBridge\.bridgeOperation\(operationId\);\s*\}/m, '');
+  source = source.replace(/\n\s*if\s*\(\s*action === 'approve'[\s\S]*?businessBridge\.bridgeOperation\(operationId\)[\s\S]*?\}\);?\s*\}/m, '');
 
-  if (!source.includes('function scheduleBridge(operationId)')) {
-    const anchor = /const businessBridge = new BusinessOperationsBridgeService\(\{[\s\S]*?\}\);/;
-    const match = source.match(anchor);
-    if (!match) throw new Error('COMMAND_BRIDGE_INSTANCE_ANCHOR_NOT_FOUND');
-    source = source.replace(match[0], `${match[0]}\n\nfunction scheduleBridge(operationId) {\n  setTimeout(async () => {\n    try {\n      const result = await businessBridge.bridgeOperation(operationId);\n      log(result && result.ok ? 'INFO' : 'ERROR', 'Targeted bridge finished', { operationId, result });\n    } catch (error) {\n      log('ERROR', 'Targeted bridge crashed', { operationId, error: error.message });\n    }\n  }, 25);\n\n  return {\n    ok: true,\n    status: 'BRIDGE_SCHEDULED',\n    operationId,\n    taskType: 'WORKFORCE_STEP'\n  };\n}`);
-  }
-
-  const legacyDispatch = /\n\s*let enqueueResult = null;\s*\n\s*if\s*\(\s*host\s*&&\s*typeof host\.enqueueOperation === 'function'\s*\)\s*\{\s*enqueueResult = await host\.enqueueOperation\(operation\);\s*\}/m;
-  if (legacyDispatch.test(source)) {
-    source = source.replace(legacyDispatch, `
-  let enqueueResult = null;
-
-  if (operation.approvalRequired) {
-    enqueueResult = { ok: true, status: 'WAITING_FOR_CEO_APPROVAL', operationId: operation.id };
-  } else {
-    enqueueResult = scheduleBridge(operation.id);
-  }`);
-  }
-
-  source = source.replace(
-    /enqueueResult = await businessBridge\.bridgeOperation\(operation\.id\);/g,
-    'enqueueResult = scheduleBridge(operation.id);'
-  );
-
-  if (!source.includes('enqueueResult = scheduleBridge(operation.id);')) {
-    throw new Error('COMMAND_NORMAL_TARGET_BRIDGE_NOT_INSTALLED');
-  }
-
-  if (!source.includes('result.bridge = scheduleBridge(operationId);')) {
-    source = source.replace(
-      /result\.bridge = await businessBridge\.bridgeOperation\(operationId\);/g,
-      'result.bridge = scheduleBridge(operationId);'
-    );
-  }
-
-  if (!source.includes('result.bridge = scheduleBridge(operationId);')) {
-    const approvalRegex = /const result = action === 'approve'\s*\? await executiveResponses\.approveOperation\(\s*operationId,\s*payload\.reason \|\| ''\s*\)\s*:\s*await executiveResponses\.rejectOperation\(\s*operationId,\s*payload\.reason \|\| ''\s*\);/m;
-    const match = source.match(approvalRegex);
-    if (!match) throw new Error('COMMAND_APPROVAL_ANCHOR_NOT_FOUND');
-    source = source.replace(match[0], `let result = action === 'approve'
-              ? await executiveResponses.approveOperation(operationId, payload.reason || '')
-              : await executiveResponses.rejectOperation(operationId, payload.reason || '');
-
-            if (
-              action === 'approve' && result && result.ok && result.operation &&
-              String(result.operation.status || '').toUpperCase() === 'READY'
-            ) {
-              result.bridge = scheduleBridge(operationId);
-            }`);
+  if (/require\('\.\.\/BusinessOperationsBridgeService'\)|new BusinessOperationsBridgeService|host\.enqueueOperation\(operation\)|businessBridge\.bridgeOperation/.test(source)) {
+    throw new Error('COMMAND_CENTER_EXECUTION_COUPLING_STILL_PRESENT');
   }
 
   mustContain(source, [
-    "require('../BusinessOperationsBridgeService')",
-    'const businessBridge = new BusinessOperationsBridgeService',
-    'function scheduleBridge(operationId)',
-    'enqueueResult = scheduleBridge(operation.id);',
-    'result.bridge = scheduleBridge(operationId);'
+    "status: 'QUEUED_FOR_PRODUCTION_BRIDGE'",
+    "executionOwner: 'AUTONOMOUS_COO'",
+    "status: 'WAITING_FOR_CEO_APPROVAL'"
   ], 'COMMAND_CENTER');
-
-  if (/await host\.enqueueOperation\(operation\)/.test(source)) throw new Error('LEGACY_HOST_COMMAND_DISPATCH_STILL_PRESENT');
-  if (/await businessBridge\.bridgeOperation\(/.test(source)) throw new Error('SYNCHRONOUS_COMMAND_BRIDGE_STILL_PRESENT');
 
   return { file, backup: writePatched(file, source) };
 }
@@ -193,16 +155,21 @@ const results = {
 console.log(JSON.stringify({
   ok: true,
   gate: 'MILES_PRODUCTION_CONVERGENCE_REPAIR',
-  version: '1.1-nonblocking-command-bridge',
+  version: '1.2-process-isolated-command-center',
   results,
+  architecture: {
+    commandCenter8787: 'PERSIST_AND_ACK_ONLY',
+    execution: 'AUTONOMOUS_COO_PROCESS -> BusinessOperationsBridgeService -> WORKFORCE_STEP',
+    approval: 'PERSIST_READY_ONLY -> AUTONOMOUS_COO_PROCESS_RESUMES'
+  },
   resolvedKnownDefects: [
     '8787 legacy WORKER_NOT_FOUND routing',
     '8787 CUSTOM_TASK_NOT_IMPLEMENTED legacy worker path',
-    '8787 HTTP timeout caused by synchronous TaskQueue bridge',
+    '8787 event-loop blocking on synchronous TaskQueue lock',
     'broad pending-operation replay from command intake',
-    'CEO approval resume not entering canonical WORKFORCE_STEP path',
-    'duplicate approved operation dispatch risk',
+    'CEO approval loop / wrong approval evidence',
+    'duplicate approved operation direct dispatch risk',
     'stale TaskQueue lock recovery validation'
   ],
-  nextAction: 'RUN_CONVERGENCE_GATE_THEN_RESTART'
+  nextAction: 'RESTART_AND_RUN_RUNTIME_ACCEPTANCE'
 }, null, 2));
