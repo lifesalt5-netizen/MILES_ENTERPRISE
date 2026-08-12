@@ -115,24 +115,39 @@ class ExecutiveResponseService {
 
     const approvedAt = new Date().toISOString();
 
-    operation.status = "APPROVED";
+    // Governance-valid approval evidence. ApprovalGateService reads the
+    // nested approval object and requires approved=true with approver=CEO.
+    operation.approval = {
+      ...(operation.approval || {}),
+      approved: true,
+      approver: "CEO",
+      approvedAt,
+      reason: reason || operation.approvalReason || ""
+    };
+
     operation.approvalDecision = "APPROVED";
     operation.approvedAt = approvedAt;
     operation.approvedBy = "CEO";
+    operation.approvalRequired = true;
+    operation.ceoEscalationOnly = false;
     operation.updatedAt = approvedAt;
     operation.reason = reason || operation.reason || "";
-    operation.approvalReason =
-      reason || operation.approvalReason || "";
+    operation.approvalReason = reason || operation.approvalReason || "";
 
-    this.persistOperation(operation);
-    this.dispatchWorker(operation, {
-      decision: "APPROVED",
-      reason
-    });
+    // READY deliberately returns the approved operation to the canonical
+    // BusinessOperationsBridge -> WORKFORCE_STEP -> governance/execution path.
+    // Do not create a synthetic WORKER_DISPATCH; that bypassed the canonical
+    // queue and caused approval to be requested again downstream.
+    operation.status = "READY";
+
+    const persisted = this.persistOperation(operation);
 
     return {
-      ok: true,
-      status: "APPROVED",
+      ok: persisted,
+      status: persisted ? "APPROVED_READY" : "APPROVAL_PERSIST_FAILED",
+      message: persisted
+        ? "CEO approval recorded. Operation returned to the execution queue."
+        : "CEO approval could not be persisted.",
       operation
     };
   }
@@ -165,6 +180,13 @@ class ExecutiveResponseService {
 
     operation.status = "REJECTED";
     operation.approvalDecision = "REJECTED";
+    operation.approval = {
+      ...(operation.approval || {}),
+      approved: false,
+      approver: "CEO",
+      rejectedAt,
+      reason: reason || operation.approvalReason || ""
+    };
     operation.rejectedAt = rejectedAt;
     operation.rejectedBy = "CEO";
     operation.updatedAt = rejectedAt;
@@ -181,6 +203,9 @@ class ExecutiveResponseService {
     };
   }
 
+  // Retained only for backward compatibility with older callers. New CEO
+  // approvals intentionally do not call this method; approved operations are
+  // resumed by BusinessOperationsBridgeService through the canonical queue.
   dispatchWorker(operation, context = {}) {
     const tasks = this.readJson(this.taskQueueFile, []);
     const normalizedTasks = Array.isArray(tasks)
@@ -205,38 +230,14 @@ class ExecutiveResponseService {
       payload: {
         operationId: operation.id,
         decision: context.decision || "APPROVED",
-        reason: context.reason || ""
+        reason: context.reason || "",
+        approval: operation.approval || null
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
 
     this.writeJson(this.taskQueueFile, normalizedTasks);
-
-    setTimeout(() => {
-      const runningOperation = this.getOperation(operation.id);
-
-      if (!runningOperation) {
-        return;
-      }
-
-      runningOperation.status = "RUNNING";
-      runningOperation.updatedAt = new Date().toISOString();
-      this.persistOperation(runningOperation);
-
-      setTimeout(() => {
-        const completedOperation = this.getOperation(operation.id);
-
-        if (!completedOperation) {
-          return;
-        }
-
-        completedOperation.status = "COMPLETED";
-        completedOperation.updatedAt = new Date().toISOString();
-        completedOperation.completedAt = new Date().toISOString();
-        this.persistOperation(completedOperation);
-      }, 700);
-    }, 400);
   }
 
   getOperation(operationId) {
