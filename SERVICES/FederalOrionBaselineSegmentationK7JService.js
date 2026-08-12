@@ -1,0 +1,28 @@
+'use strict';
+const fs=require('fs');
+const path=require('path');
+
+const OUT=path.join(process.cwd(),'DATA','OUTBOUND','FEDERAL_ORION_BASELINE_K7J');
+const ORION_CANDIDATES=[
+  'D:\\P2GC_Intelligence\\ORION_CORE\\P2GC_EVAN_SEGMENTED_MASTER_V2.csv',
+  'D:\\P2GC_Intelligence\\ORION_CORE\\Good Files to use\\P2GC_EVAN_SEGMENTED_MASTER_V2.csv',
+  'D:\\P2GC_Intelligence\\ORION_CORE\\P2GC_FINAL_SEGMENTED.csv'
+];
+const GSA_CANDIDATES=[
+  'D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\staging\\government_data\\gsa_holder_snapshot\\GSA-HOLDERS-2026-07-2026-07-28T02-41-25-700Z\\gsa_elibrary_schedule_MAS.csv',
+  path.join(process.cwd(),'DATA','staging','government_data','gsa_holder_snapshot','GSA-HOLDERS-2026-07-2026-07-28T02-41-25-700Z','gsa_elibrary_schedule_MAS.csv')
+];
+const VA_CP=path.join(process.cwd(),'DATA','staging','government_data','K7F_VA_FSS_BULK_AWARD_REFRESH','VA_FSS_UEI_RESOLUTION_CHECKPOINT_V15.json');
+
+function parseCsvLine(s){let a=[],x='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c==='"'){if(q&&s[i+1]==='"'){x+='"';i++;}else q=!q;}else if(c===','&&!q){a.push(x);x='';}else x+=c;}a.push(x);return a;}
+function normHeader(s){return String(s||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');}
+function number(v){const n=Number(String(v??'').replace(/[$,]/g,'').trim());return Number.isFinite(n)?n:null;}
+function tier(rev){if(rev===null||rev===undefined)return 'UNKNOWN';if(rev<=0)return 'NO_SALES';if(rev<3000000)return '1_TO_LT3M';if(rev<10000000)return '3_TO_LT10M';return '10M_PLUS';}
+function firstExisting(list){for(const p of list)if(fs.existsSync(p))return p;return null;}
+function loadRevenue(){const p=firstExisting(ORION_CANDIDATES);if(!p)throw new Error('ORION_BASELINE_REVENUE_FILE_NOT_FOUND');const lines=fs.readFileSync(p,'utf8').split(/\r?\n/).filter(Boolean);const h=parseCsvLine(lines[0]).map(normHeader);const ueiNames=['uei','sam_uei','recipient_uei'];const revNames=['normalized_revenue','federal_total_revenue','federal_revenue','total_revenue','federal_total_revenue_x'];let ui=-1,ri=-1;for(const n of ueiNames){ui=h.indexOf(n);if(ui>=0)break;}for(const n of revNames){ri=h.indexOf(n);if(ri>=0)break;}if(ui<0||ri<0)throw new Error(`ORION_BASELINE_REQUIRED_COLUMNS_MISSING uei=${ui} revenue=${ri}`);const m=new Map();let withRevenue=0,zero=0,positive=0;for(let i=1;i<lines.length;i++){const r=parseCsvLine(lines[i]);const u=String(r[ui]||'').trim().toUpperCase();if(!u)continue;const n=number(r[ri]);if(n===null)continue;withRevenue++;if(n<=0)zero++;else positive++;const prev=m.get(u);if(prev===undefined||Math.abs(n)>Math.abs(prev))m.set(u,n);}return {path:p,map:m,rows:lines.length-1,uniqueUei:m.size,withRevenue,zero,positive,revenueColumn:h[ri]};}
+function loadGsa(){const p=firstExisting(GSA_CANDIDATES);if(!p)throw new Error('CONFIRMED_GSA_SNAPSHOT_NOT_FOUND');const lines=fs.readFileSync(p,'utf8').split(/\r?\n/).filter(Boolean);const h=parseCsvLine(lines[0]).map(normHeader);let ui=h.indexOf('sam_uei');if(ui<0)ui=h.indexOf('uei');const s=new Set();for(let i=1;i<lines.length;i++){const u=String(parseCsvLine(lines[i])[ui]||'').trim().toUpperCase();if(u)s.add(u);}return {path:p,ueis:s};}
+function loadVa(){if(!fs.existsSync(VA_CP))throw new Error('VALIDATED_VA_UEI_CHECKPOINT_NOT_FOUND');const j=JSON.parse(fs.readFileSync(VA_CP,'utf8'));const s=new Set(Object.values(j.rows||{}).map(x=>String(x.uei||'').trim().toUpperCase()).filter(Boolean));return {path:VA_CP,ueis:s};}
+function summarize(label,ueis,revenue){const c={NO_SALES:0,'1_TO_LT3M':0,'3_TO_LT10M':0,'10M_PLUS':0,UNKNOWN:0,total:ueis.size};for(const u of ueis){const t=tier(revenue.has(u)?revenue.get(u):null);c[t]++;}return {family:label,...c};}
+function writeSegmentFiles(label,ueis,revenue){const buckets={NO_SALES:[], '1_TO_LT3M':[], '3_TO_LT10M':[], '10M_PLUS':[], UNKNOWN:[]};for(const u of ueis){const rev=revenue.has(u)?revenue.get(u):null;const t=tier(rev);buckets[t].push({uei:u,revenue:rev});}for(const [t,rows] of Object.entries(buckets)){const p=path.join(OUT,`${label}_${t}.csv`);fs.writeFileSync(p,['uei,orion_baseline_revenue,revenue_tier,source_status',...rows.map(r=>`${r.uei},${r.revenue??''},${t},ORION_BASELINE_NOT_CURRENT`).join('\n')].join('\n'));}return Object.fromEntries(Object.entries(buckets).map(([k,v])=>[k,v.length]));}
+async function run(){fs.mkdirSync(OUT,{recursive:true});const rev=loadRevenue();const gsa=loadGsa();const va=loadVa();const gsaSummary=summarize('GSA',gsa.ueis,rev.map);const vaSummary=summarize('VA_FSS',va.ueis,rev.map);writeSegmentFiles('GSA',gsa.ueis,rev.map);writeSegmentFiles('VA_FSS',va.ueis,rev.map);const result={ok:true,gate:'P1.5K7J_ORION_BASELINE_FEDERAL_SEGMENTATION',version:'1.0',generatedAt:new Date().toISOString(),dataPolicy:'TEMPORARY_BASELINE_USE_EXISTING_ORION_AWARD_TRUTH; FEB_2026_FORWARD_CATCHUP_DEFERRED',sourceTruth:{revenue:{path:rev.path,rows:rev.rows,uniqueUei:rev.uniqueUei,revenueColumn:rev.revenueColumn,withRevenue:rev.withRevenue,zero:rev.zero,positive:rev.positive,status:'ORION_BASELINE_NOT_FULLY_CURRENT'},gsa:{path:gsa.path,uniqueUei:gsa.ueis.size,status:'FRESH_ROSTER'},vaFss:{path:va.path,uniqueUei:va.ueis.size,status:'AUTHORITATIVE_ROSTER_PARTIAL_UEI_RESOLUTION'}},segments:{GSA:gsaSummary,VA_FSS:vaSummary},outputDir:OUT,liveCampaignsMutated:false,authoritativeEnoughToResegment:false,nextAction:'REVIEW_ORION_BASELINE_COUNTS; IF ACCEPTED, EXTEND SAME BASELINE METHOD TO CERTIFICATIONS_AND_SAM_SBS; KEEP FEB_2026_FORWARD_REFRESH_AS_DEFERRED_DATA_GAP'};fs.writeFileSync(path.join(OUT,'K7J_SUMMARY.json'),JSON.stringify(result,null,2));return result;}
+module.exports={run};
