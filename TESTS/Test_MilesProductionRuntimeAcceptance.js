@@ -6,11 +6,15 @@ const http = require('http');
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, '..');
 
-function requestJson(method, port, urlPath, body, timeoutMs = 10000) {
+function requestJson(method, port, urlPath, body, timeoutMs = 5000) {
   return new Promise((resolve, reject) => {
     const payload = body == null ? null : JSON.stringify(body);
+    const startedAt = Date.now();
     const req = http.request({
-      hostname: '127.0.0.1', port, path: urlPath, method,
+      hostname: '127.0.0.1',
+      port,
+      path: urlPath,
+      method,
       headers: payload ? {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(payload)
@@ -19,11 +23,12 @@ function requestJson(method, port, urlPath, body, timeoutMs = 10000) {
       let data = '';
       res.on('data', chunk => { data += chunk; });
       res.on('end', () => {
-        try { resolve({ statusCode: res.statusCode, body: data ? JSON.parse(data) : {} }); }
-        catch { resolve({ statusCode: res.statusCode, body: data }); }
+        let parsed = data;
+        try { parsed = data ? JSON.parse(data) : {}; } catch {}
+        resolve({ statusCode: res.statusCode, body: parsed, elapsedMs: Date.now() - startedAt });
       });
     });
-    req.setTimeout(timeoutMs, () => req.destroy(new Error('HTTP_TIMEOUT')));
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`HTTP_TIMEOUT_${timeoutMs}MS`)));
     req.on('error', reject);
     if (payload) req.write(payload);
     req.end();
@@ -31,68 +36,92 @@ function requestJson(method, port, urlPath, body, timeoutMs = 10000) {
 }
 
 function readJson(file, fallback) {
-  try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
-  catch { return fallback; }
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+  } catch {
+    return fallback;
+  }
 }
 
-function taskList() {
+function getTasks() {
   const raw = readJson(path.join(ROOT, 'DATA', 'runtime', 'task_queue.json'), []);
-  return Array.isArray(raw) ? raw : Array.isArray(raw.tasks) ? raw.tasks : Array.isArray(raw.items) ? raw.items : [];
+  if (Array.isArray(raw)) return raw;
+  if (Array.isArray(raw.tasks)) return raw.tasks;
+  if (Array.isArray(raw.items)) return raw.items;
+  return [];
 }
 
-async function waitForOperation(operationId, timeoutMs = 30000) {
+function getOperation(operationId) {
+  const queue = readJson(path.join(ROOT, 'state', 'business_operations_queue.json'), { operations: [] });
+  return (queue.operations || []).find(item => item && item.id === operationId) || null;
+}
+
+function getMatchingTask(operationId) {
+  return getTasks().find(task => task && task.payload && task.payload.sourceOperationId === operationId) || null;
+}
+
+async function waitForBridge(operationId, timeoutMs = 60000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const businessQueue = readJson(path.join(ROOT, 'state', 'business_operations_queue.json'), { operations: [] });
-    const operation = (businessQueue.operations || []).find(item => item.id === operationId);
-    const task = taskList().find(item => item && item.payload && item.payload.sourceOperationId === operationId);
-    if (operation && ['BRIDGED', 'BRIDGE_FAILED'].includes(String(operation.status || '').toUpperCase())) {
-      return { operation, task };
+    const operation = getOperation(operationId);
+    const task = getMatchingTask(operationId);
+    if (operation && String(operation.status || '').toUpperCase() === 'BRIDGED' && task) {
+      return { operation, task, elapsed: timeoutMs - Math.max(0, deadline - Date.now()) };
     }
-    await new Promise(resolve => setTimeout(resolve, 250));
+    if (operation && String(operation.status || '').toUpperCase() === 'BRIDGE_FAILED') {
+      return { operation, task, elapsed: timeoutMs - Math.max(0, deadline - Date.now()) };
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
-  const businessQueue = readJson(path.join(ROOT, 'state', 'business_operations_queue.json'), { operations: [] });
-  return {
-    operation: (businessQueue.operations || []).find(item => item.id === operationId) || null,
-    task: taskList().find(item => item && item.payload && item.payload.sourceOperationId === operationId) || null
-  };
+  return { operation: getOperation(operationId), task: getMatchingTask(operationId), elapsed: timeoutMs };
 }
 
 (async () => {
   const health8787 = await requestJson('GET', 8787, '/api/health', null, 5000);
-  const health3000Raw = await new Promise((resolve, reject) => {
+  const health3000 = await new Promise((resolve, reject) => {
+    const startedAt = Date.now();
     const req = http.get('http://127.0.0.1:3000', res => {
       let data = '';
       res.on('data', c => { data += c; });
-      res.on('end', () => resolve({ statusCode: res.statusCode, body: data.trim() }));
+      res.on('end', () => resolve({ statusCode: res.statusCode, body: data.trim(), elapsedMs: Date.now() - startedAt }));
     });
-    req.setTimeout(5000, () => req.destroy(new Error('HTTP_TIMEOUT_3000')));
+    req.setTimeout(5000, () => req.destroy(new Error('HTTP_3000_TIMEOUT_5000MS')));
     req.on('error', reject);
   });
 
   const command = `MILES runtime acceptance ${Date.now()}: check current outbound campaign health and report what needs attention. Do not make any external changes.`;
-  const started = Date.now();
   const submitted = await requestJson('POST', 8787, '/api/command', { command }, 5000);
-  const responseMs = Date.now() - started;
   const operation = submitted.body && submitted.body.operation;
   const operationId = operation && operation.id;
-  const settled = operationId ? await waitForOperation(operationId, 30000) : { operation: null, task: null };
-  const queuedOperation = settled.operation;
-  const matchingTask = settled.task;
-  const enqueue = submitted.body && submitted.body.enqueueResult;
+
+  const bridged = operationId ? await waitForBridge(operationId, 60000) : { operation: null, task: null, elapsed: 0 };
+  const queuedOperation = bridged.operation;
+  const matchingTask = bridged.task;
+
+  const enqueueResult = submitted.body && submitted.body.enqueueResult;
+  const serialized = JSON.stringify({ submitted: submitted.body, operation: queuedOperation, task: matchingTask });
 
   const checks = {
-    api3000Listening: health3000Raw.statusCode >= 200 && health3000Raw.statusCode < 500,
+    api3000Listening: health3000.statusCode >= 200 && health3000.statusCode < 500,
     commandCenterHealthy: health8787.statusCode === 200 && health8787.body && health8787.body.ok === true,
+    commandCenterResponsive: health8787.elapsedMs < 5000,
     commandAccepted: submitted.statusCode === 200 && submitted.body && submitted.body.ok === true,
-    commandResponseFast: responseMs < 5000,
+    commandResponseFast: submitted.elapsedMs < 5000,
     operationIdCreated: Boolean(operationId),
-    targetedBridgeScheduled: Boolean(enqueue && enqueue.ok === true && enqueue.status === 'BRIDGE_SCHEDULED' && enqueue.taskType === 'WORKFORCE_STEP'),
-    businessOperationBridged: Boolean(queuedOperation && String(queuedOperation.status).toUpperCase() === 'BRIDGED'),
+    executionDelegated: Boolean(enqueueResult && enqueueResult.ok === true && enqueueResult.status === 'QUEUED_FOR_PRODUCTION_BRIDGE' && enqueueResult.executionOwner === 'AUTONOMOUS_COO'),
+    businessOperationBridged: Boolean(queuedOperation && String(queuedOperation.status || '').toUpperCase() === 'BRIDGED'),
     workforceStepCreated: Boolean(matchingTask && matchingTask.type === 'WORKFORCE_STEP'),
     sourceOperationLinked: Boolean(matchingTask && matchingTask.payload && matchingTask.payload.sourceOperationId === operationId),
-    noLegacyWorkerDispatchFailure: !/WORKER_NOT_FOUND|CUSTOM_TASK_NOT_IMPLEMENTED/.test(JSON.stringify({ enqueue, queuedOperation, matchingTask }))
+    noLegacyWorkerDispatchFailure: !/WORKER_NOT_FOUND|CUSTOM_TASK_NOT_IMPLEMENTED/.test(serialized),
+    commandCenterStillResponsiveAfterBridge: false
   };
+
+  try {
+    const healthAfter = await requestJson('GET', 8787, '/api/health', null, 5000);
+    checks.commandCenterStillResponsiveAfterBridge = healthAfter.statusCode === 200 && healthAfter.body && healthAfter.body.ok === true && healthAfter.elapsedMs < 5000;
+  } catch {
+    checks.commandCenterStillResponsiveAfterBridge = false;
+  }
 
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
   const ok = failed.length === 0;
@@ -100,14 +129,19 @@ async function waitForOperation(operationId, timeoutMs = 30000) {
   console.log(JSON.stringify({
     ok,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
-    version: '1.1-async-bridge-polling',
+    version: '1.2-process-isolated-command-center',
     externalWritesRequested: false,
-    responseMs,
     command,
     operationId,
+    timings: {
+      health8787Ms: health8787.elapsedMs,
+      health3000Ms: health3000.elapsedMs,
+      commandResponseMs: submitted.elapsedMs,
+      bridgeWaitMs: bridged.elapsed
+    },
     checks,
     failed,
-    enqueueResult: enqueue,
+    enqueueResult,
     operationStatus: queuedOperation && queuedOperation.status,
     operationError: queuedOperation && queuedOperation.error,
     task: matchingTask ? {
@@ -124,6 +158,7 @@ async function waitForOperation(operationId, timeoutMs = 30000) {
   console.error(JSON.stringify({
     ok: false,
     gate: 'MILES_PRODUCTION_RUNTIME_ACCEPTANCE',
+    version: '1.2-process-isolated-command-center',
     error: error.stack || error.message
   }, null, 2));
   process.exitCode = 1;
