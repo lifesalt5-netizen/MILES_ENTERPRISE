@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const DEFAULT_ROOT = process.env.MILES_ROOT || process.cwd();
+const DEFAULT_MAX_CSV_BYTES = Number(process.env.MILES_OUTBOUND_MAX_CSV_BYTES || 128 * 1024 * 1024);
 
 const APPROVED_VERIFIED_FILE_PATTERNS = [
   /SBS_FILTERED_TARGETS_OK_ONLY_MILLIONVERIFIER\.csv$/i,
@@ -60,8 +61,18 @@ function parseCsvLine(line) {
   values.push(current); return values;
 }
 
-function readCsv(file) {
+function readCsv(file, options = {}) {
   if (!fs.existsSync(file)) return [];
+  const maxBytes = Number(options.maxBytes || DEFAULT_MAX_CSV_BYTES);
+  let size = 0;
+  try { size = fs.statSync(file).size; } catch { return []; }
+  if (size > maxBytes) {
+    const err = new Error(`CSV_TOO_LARGE:${size}:${file}`);
+    err.code = "CSV_TOO_LARGE";
+    err.file = file;
+    err.size = size;
+    throw err;
+  }
   const lines = fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "").split(/\r?\n/).filter(x => x.trim());
   if (lines.length < 2) return [];
   const headers = parseCsvLine(lines[0]).map(x => x.trim());
@@ -145,57 +156,107 @@ function companyKey(row) {
 }
 
 function classifyFamily(file, explicit = "") {
-  const s = lower(`${explicit} ${path.basename(file)}`);
+  const s = lower(`${explicit} ${path.basename(file)} ${file}`);
   if (s.includes("state") || s.includes("sled")) return "SLED";
   return "FEDERAL";
-}
-
-function discoverFiles(roots, maxFiles = 15000) {
-  const out = []; const seen = new Set();
-  const skip = /node_modules|\.git|queue_backups|queue_archives|recovery|backup/i;
-  function walk(dir, depth) {
-    if (out.length >= maxFiles || depth > 7 || !fs.existsSync(dir)) return;
-    let entries = [];
-    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
-    for (const e of entries) {
-      if (out.length >= maxFiles) break;
-      const full = path.join(dir, e.name);
-      if (e.isDirectory()) { if (!skip.test(full)) walk(full, depth + 1); }
-      else if (/\.csv$/i.test(e.name)) {
-        const key = lower(full); if (!seen.has(key)) { seen.add(key); out.push(full); }
-      }
-    }
-  }
-  roots.filter(Boolean).forEach(root => walk(root, 0));
-  return out;
 }
 
 function approvedVerifiedFile(file) { return APPROVED_VERIFIED_FILE_PATTERNS.some(p => p.test(path.basename(file))); }
 function masterFile(file) { return MASTER_PATTERNS.some(p => p.test(path.basename(file))); }
 function segmentFile(file) { return SEGMENT_PATTERNS.some(p => p.test(path.basename(file))); }
+function relevantLeadFile(file) { return approvedVerifiedFile(file) || masterFile(file) || segmentFile(file); }
+
+function uniqueExistingTargets(targets) {
+  const seen = new Set();
+  return targets.filter(t => {
+    if (!t || !t.root || !fs.existsSync(t.root)) return false;
+    const key = lower(path.resolve(t.root));
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function defaultScanTargets(root) {
+  const userProfile = process.env.USERPROFILE || "C:\\Users\\lifes";
+  const candidates = [
+    { root: path.join(root, "DATA", "OUTBOUND"), maxDepth: 6 },
+    { root: path.join(root, "DATA", "staging"), maxDepth: 5 },
+    { root: "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\OUTBOUND", maxDepth: 6 },
+    { root: "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\staging", maxDepth: 5 },
+    { root: "C:\\P2GC_Intelligence\\ORION_CORE", maxDepth: 4 },
+    { root: "D:\\P2GC_Intelligence\\ORION_CORE", maxDepth: 4 },
+    { root: path.join(userProfile, "Downloads"), maxDepth: 3 },
+    { root: "C:\\P2GC_Intelligence", maxDepth: 2 },
+    { root: "D:\\P2GC_Intelligence", maxDepth: 2 }
+  ];
+  return uniqueExistingTargets(candidates);
+}
+
+function discoverFiles(targets, options = {}) {
+  const maxFiles = Number(options.maxFiles || 2500);
+  const out = []; const seen = new Set(); const stats = { directoriesVisited: 0, csvCandidatesSeen: 0, irrelevantCsvSkipped: 0 };
+  const skip = /node_modules|\.git|queue_backups|queue_archives|recovery|backup|generated_downloads|government_data[\\/](?:awards?|fpds|usaspending)|Opportunity_Engine[\\/]Input/i;
+
+  function walk(dir, depth, maxDepth) {
+    if (out.length >= maxFiles || depth > maxDepth || !fs.existsSync(dir)) return;
+    stats.directoriesVisited += 1;
+    let entries = [];
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      if (out.length >= maxFiles) break;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) {
+        if (!skip.test(full)) walk(full, depth + 1, maxDepth);
+      } else if (/\.csv$/i.test(e.name)) {
+        stats.csvCandidatesSeen += 1;
+        if (!relevantLeadFile(full)) { stats.irrelevantCsvSkipped += 1; continue; }
+        const key = lower(full);
+        if (!seen.has(key)) { seen.add(key); out.push(full); }
+      }
+    }
+  }
+
+  for (const target of targets) walk(target.root, 0, Number(target.maxDepth || 4));
+  return { files: out, stats };
+}
 
 class OutboundLeadGovernanceConvergenceService {
   constructor(options = {}) {
     this.root = options.rootDir || DEFAULT_ROOT;
-    this.scanRoots = options.scanRoots || [
-      path.join(this.root, "DATA"),
-      "C:\\P2GC_Intelligence",
-      "D:\\P2GC_Intelligence",
-      path.join(process.env.USERPROFILE || "C:\\Users\\lifes", "Downloads")
-    ];
+    if (Array.isArray(options.scanRoots) && options.scanRoots.length) {
+      this.scanTargets = uniqueExistingTargets(options.scanRoots.map(root => ({ root, maxDepth: Number(options.maxDepth || 5) })));
+    } else {
+      this.scanTargets = defaultScanTargets(this.root);
+    }
+    this.scanRoots = this.scanTargets.map(x => x.root);
+    this.maxCsvBytes = Number(options.maxCsvBytes || DEFAULT_MAX_CSV_BYTES);
     this.outputDir = options.outputDir || path.join(this.root, "DATA", "OUTBOUND", "GOVERNED_LEAD_REPOSITORY");
   }
 
   run() {
-    const files = discoverFiles(this.scanRoots);
+    const discovery = discoverFiles(this.scanTargets);
+    const files = discovery.files;
     const masters = files.filter(masterFile);
     const verifiedFiles = files.filter(approvedVerifiedFile);
     const segmentFiles = files.filter(segmentFile).filter(f => !/SEGMENT_INVENTORY_MASTER/i.test(f));
+    const skippedOversizedFiles = [];
+
+    const safeReadCsv = file => {
+      try { return readCsv(file, { maxBytes: this.maxCsvBytes }); }
+      catch (err) {
+        if (err && err.code === "CSV_TOO_LARGE") {
+          skippedOversizedFiles.push({ file, bytes: err.size, reason: "CSV_TOO_LARGE_FOR_MEMORY_SAFE_GOVERNANCE_SCAN" });
+          return [];
+        }
+        throw err;
+      }
+    };
 
     const verifiedByEmail = new Map();
     let rejectedEmails = 0; let rawVerifiedRows = 0;
     for (const file of verifiedFiles) {
-      const rows = readCsv(file); rawVerifiedRows += rows.length;
+      const rows = safeReadCsv(file); rawVerifiedRows += rows.length;
       for (const row of rows) {
         const email = recordEmail(row); if (!email) continue;
         const status = verificationStatus(row, file);
@@ -214,7 +275,7 @@ class OutboundLeadGovernanceConvergenceService {
       const segment = path.basename(file, path.extname(file));
       const priority = segmentPriority(segment);
       const family = classifyFamily(file, segment);
-      for (const row of readCsv(file)) {
+      for (const row of safeReadCsv(file)) {
         const membership = { segment, priority, family, sourceFile: file };
         const email = recordEmail(row);
         const ckey = companyKey(row);
@@ -265,7 +326,6 @@ class OutboundLeadGovernanceConvergenceService {
       const carr = companies.get(ckey) || []; carr.push(record); companies.set(ckey, carr);
     }
 
-    // One company -> one assigned segment; preserve all distinct verified contacts at that company.
     for (const [, contacts] of companies.entries()) {
       const best = contacts.slice().sort((a, b) => Number(a.segment_priority) - Number(b.segment_priority))[0];
       for (const contact of contacts) {
@@ -332,9 +392,11 @@ class OutboundLeadGovernanceConvergenceService {
     const result = {
       ok: routed.length > 0,
       gate: "OUTBOUND_LEAD_GOVERNANCE_CONVERGENCE",
+      version: "2.0-bounded-memory-safe-discovery",
       generatedAt: now(),
       scanRoots: this.scanRoots,
-      discovered: { csvFiles: files.length, masterFiles: masters, verifiedFiles, segmentFiles: segmentFiles.length },
+      discoveryStats: discovery.stats,
+      discovered: { csvFiles: files.length, masterFiles: masters, verifiedFiles, segmentFiles: segmentFiles.length, skippedOversizedFiles },
       counts: { rawVerifiedRows, uniqueApprovedVerifiedEmails: verifiedByEmail.size, rejectedEmails, governedContacts: routed.length, uniqueCompanies: companies.size, federalContacts: federal.length, sledContacts: sled.length, unassignedContacts: unassigned.length, duplicateEmailsSuppressed: duplicateEmails.length },
       outputs: { routedFile, summaryFile, refreshRegistry: path.join(this.outputDir, "MONTHLY_REFRESH_REGISTRY.json"), governanceManifest: path.join(this.outputDir, "OUTBOUND_GOVERNANCE_MANIFEST.json") },
       liveCampaignsMutated: false,
