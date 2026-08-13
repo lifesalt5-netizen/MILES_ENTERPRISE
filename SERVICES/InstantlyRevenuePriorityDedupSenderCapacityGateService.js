@@ -164,14 +164,24 @@ async function run() {
     const assigned = c.currentSenderEmails.map(normalizeEmail).map(e => senderByEmail.get(e)).filter(Boolean);
     const unhealthy = assigned.filter(x => x.vitalHealth === false).length;
     const unknown = assigned.filter(x => x.vitalHealth == null).length;
+    const missingAccounts = c.currentSenderEmails.map(normalizeEmail).filter(e => !senderByEmail.get(e)?.accountPresent).length;
     c.senderHealth = {
       assigned: assigned.length,
       healthy: assigned.filter(x => x.vitalHealth === true).length,
       unhealthy,
       unknown,
+      missingAccounts,
       vitalsError
     };
-    c.readyForMessageAndActivationGate = c.readyForSenderHealthGate && unhealthy === 0 && assigned.length > 0;
+    const configReady = c.readyForSenderHealthGate && assigned.length > 0 && missingAccounts === 0;
+    const senderHealthConfirmed = unhealthy === 0 && unknown === 0 && assigned.length > 0;
+    c.readyForMessageAndActivationGate = configReady && senderHealthConfirmed;
+    c.readinessBlockers = [];
+    if (!c.readyForSenderHealthGate) c.readinessBlockers.push('LEADS_SEQUENCE_OR_SENDER_CONFIG_INCOMPLETE');
+    if (missingAccounts > 0) c.readinessBlockers.push('SENDER_ACCOUNT_NOT_PRESENT');
+    if (unhealthy > 0) c.readinessBlockers.push('UNHEALTHY_SENDER_ACCOUNT');
+    if (unknown > 0) c.readinessBlockers.push('SENDER_HEALTH_UNCONFIRMED');
+    if (vitalsError) c.readinessBlockers.push('ACCOUNT_VITALS_REQUEST_FAILED');
   }
 
   const result = {
