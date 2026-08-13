@@ -11,6 +11,7 @@ const AUTHORIZATION = "AUTHORIZE_P2GC_EDWOSB_CANARY_10";
 const CAMPAIGN_ID = "39286fa1-1da5-46d6-9e85-83bb8b1ffabb";
 const CAMPAIGN_NAME = "EDWOSB";
 const LIMIT = 10;
+const EXACT_SEGMENT = "SETASIDE_EDWOSB";
 
 const governedMaster = path.join(ROOT,"DATA","OUTBOUND","GOVERNED_LEAD_REPOSITORY","MASTER_GOVERNED_VERIFIED_ROUTING.csv");
 const finalGate = path.join(ROOT,"DATA","OUTBOUND","PRODUCTION_FINISH","P2GC_AUTONOMOUS_COO_FINAL_GATE.json");
@@ -43,8 +44,21 @@ function parseCsv(text){
   const headers=(rows.shift()||[]).map(h=>norm(h));
   return rows.filter(r=>r.some(v=>norm(v))).map(values=>Object.fromEntries(headers.map((h,i)=>[h,values[i]??""])));
 }
-function first(row,names){
-  for(const name of names){ if(Object.prototype.hasOwnProperty.call(row,name) && norm(row[name])) return row[name]; }
+function rowHasExactSegment(row){
+  return Object.values(row).some(value => norm(value).toUpperCase() === EXACT_SEGMENT);
+}
+function emailFromRow(row){
+  const preferred = ["email","Email","verified_email","Verified_Email","contact_email","Contact_Email","email_address","Email_Address"];
+  for(const key of preferred){
+    if(Object.prototype.hasOwnProperty.call(row,key)){
+      const candidate=email(row[key]);
+      if(validEmail(candidate)) return candidate;
+    }
+  }
+  for(const value of Object.values(row)){
+    const candidate=email(value);
+    if(validEmail(candidate)) return candidate;
+  }
   return "";
 }
 function campaignReady(c){
@@ -73,14 +87,15 @@ async function main(){
 
   const rows=parseCsv(fs.readFileSync(governedMaster,"utf8").replace(/^\uFEFF/,""));
   const candidates=[]; const seen=new Set();
+  let exactSegmentRows=0;
   for(const row of rows){
-    const seg=norm(first(row,["Segment_Name","segment_name","segment","Segment","route","Route"])).toUpperCase();
-    if(!seg.includes("EDWOSB")) continue;
-    const e=email(first(row,["email","Email","verified_email","Verified_Email","contact_email","Contact_Email"]));
-    if(!validEmail(e) || seen.has(e)) continue;
+    if(!rowHasExactSegment(row)) continue;
+    exactSegmentRows++;
+    const e=emailFromRow(row);
+    if(!e || seen.has(e)) continue;
     seen.add(e); candidates.push({email:e});
   }
-  if(candidates.length < LIMIT) throw new Error(`Need at least ${LIMIT} governed EDWOSB emails; found ${candidates.length}.`);
+  if(candidates.length < LIMIT) throw new Error(`Need at least ${LIMIT} governed ${EXACT_SEGMENT} emails; exactSegmentRows=${exactSegmentRows}, validUniqueEmails=${candidates.length}.`);
   const selected=candidates.slice(0,LIMIT);
 
   const campaign=await instantly.getCampaign(CAMPAIGN_ID);
@@ -88,7 +103,7 @@ async function main(){
   if(!readiness.ok) throw new Error("EDWOSB campaign is not ready: "+JSON.stringify(readiness));
 
   if(!input.apply){
-    console.log(JSON.stringify({ok:true,mode:"PLAN_ONLY",gate:"P2GC_EDWOSB_CANARY",campaignId:CAMPAIGN_ID,campaignName:CAMPAIGN_NAME,selected:LIMIT,readiness,providerWritesAuthorized:false,emailsSent:false,campaignActivated:false},null,2));
+    console.log(JSON.stringify({ok:true,mode:"PLAN_ONLY",gate:"P2GC_EDWOSB_CANARY",segment:EXACT_SEGMENT,campaignId:CAMPAIGN_ID,campaignName:CAMPAIGN_NAME,exactSegmentRows,governedCandidates:candidates.length,selected:LIMIT,readiness,providerWritesAuthorized:false,emailsSent:false,campaignActivated:false},null,2));
     return;
   }
   if(!input.live) throw new Error("--live is required.");
@@ -101,7 +116,7 @@ async function main(){
     if(progress.has(row.email)) continue;
     const result=await instantly.createLead({email:row.email,campaign:CAMPAIGN_ID});
     if(!result || result.dryRun===true || result.mutationExecuted===false) throw new Error("Lead creation not confirmed for "+row.email);
-    const item={email:row.email,campaignId:CAMPAIGN_ID,campaignName:CAMPAIGN_NAME,uploadedAt:new Date().toISOString(),providerLeadId:result.id||result.lead_id||result.uuid||null};
+    const item={email:row.email,segment:EXACT_SEGMENT,campaignId:CAMPAIGN_ID,campaignName:CAMPAIGN_NAME,uploadedAt:new Date().toISOString(),providerLeadId:result.id||result.lead_id||result.uuid||null};
     appendProgress(item); progress.set(row.email,item); uploadedThisRun++;
   }
   const completed=selected.filter(r=>progress.has(r.email)).length;
@@ -115,8 +130,9 @@ async function main(){
     gate:"P2GC_EDWOSB_CANARY_LIVE",
     generatedAt:new Date().toISOString(),
     authorization:AUTHORIZATION,
+    segment:EXACT_SEGMENT,
     campaign:{id:CAMPAIGN_ID,name:CAMPAIGN_NAME},
-    summary:{governedCandidates:candidates.length,selected:LIMIT,uploaded:completed,uploadedThisRun},
+    summary:{exactSegmentRows,governedCandidates:candidates.length,selected:LIMIT,uploaded:completed,uploadedThisRun},
     readiness,
     providerWritesAuthorized:true,
     providerWriteScope:"CREATE_10_GOVERNED_EDWOSB_LEADS_AND_ACTIVATE_EDWOSB_ONLY",
