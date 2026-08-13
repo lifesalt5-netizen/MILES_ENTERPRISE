@@ -10,6 +10,7 @@
  */
 
 const path = require("path");
+const { execFileSync } = require("child_process");
 const json = require("./JsonFileService");
 const time = require("./TimeUtil");
 
@@ -24,6 +25,20 @@ const RUNTIME_DIR = path.join(ROOT, "DATA", "runtime");
 const LATEST_CYCLE_FILE = path.join(RUNTIME_DIR, "latest_coo_cycle.json");
 const CYCLE_HISTORY_FILE = path.join(RUNTIME_DIR, "coo_cycle_history.json");
 const LOOP_REPORT_FILE = path.join(RUNTIME_DIR, "coo_loop_report.md");
+
+function runInstantlyCapacityController() {
+    const script = path.join(ROOT, "SCRIPTS", "RunInstantlyCapacityController.js");
+    const stdout = execFileSync(process.execPath, [script], {
+        cwd: ROOT,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        timeout: 30000,
+        env: process.env
+    });
+    const start = stdout.lastIndexOf("{\n");
+    if (start < 0) throw new Error("Instantly capacity controller returned no JSON report.");
+    return JSON.parse(stdout.slice(start));
+}
 
 class ContinuousCOOLoopService {
     constructor() {
@@ -117,6 +132,7 @@ class ContinuousCOOLoopService {
 
         await step("HEARTBEAT", () => heartbeat.run({ cycleId, loopMode: input.loopMode }));
         await step("QUEUE_RECOVERY", () => queueRecovery.run(input));
+        await step("INSTANTLY_CAPACITY_CONTROLLER", () => runInstantlyCapacityController());
         await step("EXECUTIVE_BRAIN", () => require("./ExecutiveBrainService").run({
             source: "ContinuousCOOLoopService",
             objective: input.objective || "Review P2GC operating state and determine next best action.",
