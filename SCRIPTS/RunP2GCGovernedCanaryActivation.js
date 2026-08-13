@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
-const instantly = require("../CONNECTORS/INSTANTLY/instantly");
 
 const AUTHORIZATION = "AUTHORIZE_P2GC_EDWOSB_CANARY_10";
 const CAMPAIGN_ID = "39286fa1-1da5-46d6-9e85-83bb8b1ffabb";
@@ -80,6 +79,15 @@ function appendProgress(x){ fs.mkdirSync(outDir,{recursive:true}); fs.appendFile
 
 async function main(){
   const input=parseArgs(process.argv.slice(2));
+
+  if(input.apply && input.live){
+    process.env.MILES_DRY_RUN="false";
+    process.env.MILES_ALLOW_INSTANTLY_MUTATIONS="true";
+  }
+
+  // Load Instantly only after live flags are set so connector configuration is evaluated correctly.
+  const instantly = require("../CONNECTORS/INSTANTLY/instantly");
+
   if(!fs.existsSync(finalGate)) throw new Error("Final readiness gate evidence is missing.");
   const gate=readJson(finalGate);
   if(gate.ok!==true || gate.decision!=="READY_FOR_CONTROLLED_WRITE_ENABLEMENT" || (gate.failedChecks||[]).length!==0) throw new Error("Final readiness gate is not green.");
@@ -147,9 +155,5 @@ async function main(){
 }
 
 if(require.main===module){
-  if(process.argv.includes("--apply") && process.argv.includes("--live")){
-    process.env.MILES_DRY_RUN="false";
-    process.env.MILES_ALLOW_INSTANTLY_MUTATIONS="true";
-  }
   main().catch(err=>{ console.error(err.stack||err); process.exitCode=1; });
 }
