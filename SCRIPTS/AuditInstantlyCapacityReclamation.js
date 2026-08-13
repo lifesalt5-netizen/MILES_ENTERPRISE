@@ -52,13 +52,19 @@ function extract(response){
   }
   throw new Error("Instantly lead response does not contain an array.");
 }
+function leadId(record){ return norm(record?.id || record?.lead_id || record?.uuid || record?._id); }
 async function readCampaignLeads(campaignId){
   const records=[]; const cursors=new Set(); let startingAfter=null;
   for(let page=0;page<1000;page++){
     const response=await instantly.listLeads({campaign:campaignId,limit:100,...(startingAfter?{starting_after:startingAfter}:{})});
     const x=extract(response); records.push(...x.items);
     if(!x.next) return records;
-    const cursor=norm(x.next);
+    let cursor=norm(x.next);
+    // Instantly v2 requires starting_after to be a lead ID when distinct_contacts=false.
+    // Some responses return a non-ID cursor token; in that case use the last lead ID from the page.
+    const lastId=leadId(x.items[x.items.length-1]);
+    if(lastId) cursor=lastId;
+    if(!cursor) return records;
     if(cursors.has(cursor)) throw new Error("Repeated Instantly cursor for "+campaignId);
     cursors.add(cursor); startingAfter=cursor;
   }
