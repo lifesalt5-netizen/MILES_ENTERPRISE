@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "rule": "NEVER_CONFLATE_FEDERAL_VA_FSS_WITH_STATE_VIRGINIA",
+  "federal": {
+    "namespace": "FEDERAL_VA_FSS",
+    "meaning": "U.S. Department of Veterans Affairs / Federal Supply Schedule",
+    "acceptedLabels": ["VA", "VA_FSS", "VA/FSS", "VA FSS"],
+    "campaignNames": ["VA No Sales", "VA 0-500k", "VA 501k-3m", "VA 3-5m", "VA 5m+", "Expiring VA 12 Months - Verified"],
+    "family": "FEDERAL"
+  },
+  "state": {
+    "namespace": "STATE_SLED_VIRGINIA",
+    "meaning": "Commonwealth of Virginia state/local procurement",
+    "acceptedLabels": ["STATE SLED - VA", "Virginia", "VA_STATE"],
+    "campaignNames": ["STATE SLED - VA"],
+    "family": "SLED"
+  },
+  "matchingRules": {
+    "federalVaMayMatchStateVirginia": false,
+    "stateVirginiaMayMatchFederalVaFss": false,
+    "requireFamilyBeforeVaInterpretation": true,
+    "stateSledPrefixOverridesVaAcronym": true
+  }
+}
