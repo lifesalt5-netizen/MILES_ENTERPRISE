@@ -46,21 +46,31 @@ function main(){
   }
 
   const recon = JSON.parse(fs.readFileSync(RECON,"utf8"));
+  // The reconciliation writer persists the master payload directly, while
+  // some callers wrap it as { master }. Support both shapes canonically.
+  const master = recon?.master && typeof recon.master === "object"
+    ? recon.master
+    : recon;
+
   const observed = Number(
-    recon?.master?.totals?.leadsObservedAcrossCampaignMemberships || 0
+    master?.totals?.leadsObservedAcrossCampaignMemberships || 0
   );
 
   const activeCampaigns = Number(
-    recon?.master?.byStatus?.ACTIVE || 0
+    master?.byStatus?.ACTIVE || 0
   );
 
   const draftCampaigns = Number(
-    recon?.master?.byStatus?.DRAFT || 0
+    master?.byStatus?.DRAFT || 0
   );
 
   const replies = Number(
-    recon?.master?.totals?.replies || 0
+    master?.totals?.replies || 0
   );
+
+  if(observed <= 0){
+    throw new Error("CAPACITY_CONTROLLER_RECONCILIATION_COUNT_INVALID");
+  }
 
   const headroom = Math.max(0, LIMIT - observed);
   const refillToTarget = Math.max(0, TARGET - observed);
