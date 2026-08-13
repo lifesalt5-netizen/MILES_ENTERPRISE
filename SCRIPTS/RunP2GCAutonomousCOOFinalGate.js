@@ -3,7 +3,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const http = require("http");
+const net = require("net");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const instantly = require("../CONNECTORS/INSTANTLY/instantly");
@@ -21,10 +21,18 @@ function readJson(file){ return JSON.parse(fs.readFileSync(file,"utf8").replace(
 function lineCount(file){ return fs.readFileSync(file,"utf8").split(/\r?\n/).filter(Boolean).length - 1; }
 function checkPort(port){
   return new Promise(resolve => {
-    const req = http.request({host:"127.0.0.1",port,path:"/",method:"GET",timeout:1500},res=>{res.resume();resolve(true);});
-    req.on("error",()=>resolve(false));
-    req.on("timeout",()=>{req.destroy();resolve(false);});
-    req.end();
+    const socket = net.createConnection({host:"127.0.0.1",port});
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      try { socket.destroy(); } catch {}
+      resolve(value);
+    };
+    socket.setTimeout(2000);
+    socket.once("connect",()=>finish(true));
+    socket.once("error",()=>finish(false));
+    socket.once("timeout",()=>finish(false));
   });
 }
 
