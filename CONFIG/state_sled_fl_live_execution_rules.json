@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "gate": "P1.3K_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
   "authorizationToken": "AUTHORIZE_STATE_SLED_FL_CREATE_CONFIGURE_UPLOAD_NO_LAUNCH",
   "state": "FL",
@@ -17,8 +17,8 @@
         {
           "name": "P2GC Weekdays Eastern",
           "timing": {
-            "from": "09:00",
-            "to": "17:00"
+            "from": "08:00",
+            "to": "18:00"
           },
           "days": {
             "0": true,
@@ -29,7 +29,7 @@
             "5": false,
             "6": false
           },
-          "timezone": "America/Detroit"
+          "timezone": "America/New_York"
         }
       ]
     },
