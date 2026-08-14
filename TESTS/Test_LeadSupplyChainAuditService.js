@@ -19,11 +19,36 @@ assert.strictEqual(unique.length, 2);
 assert.strictEqual(unique[0].rows, 100);
 assert.strictEqual(unique[1].rows, 50);
 
+assert.strictEqual(
+  audit.classifyUniverse({ name: 'P2GC_SEGMENT_IT_SERVICES', category: 'SAM', file: 'D:\\SAM_Registry\\it.csv' }),
+  'FEDERAL'
+);
+assert.strictEqual(
+  audit.classifyUniverse({ name: 'STATE SLED - FL', category: 'SEGMENT', file: 'D:\\STATE_SLED\\fl.csv' }),
+  'SLED'
+);
+
+assert.ok(audit.overlapScore('GSA No Sales', 'GSA_NO_SALES.csv') > 0.9);
+
+const resolution = audit.resolveInventorySource(
+  { segmentName: 'GSA No Sales', companyCount: 10 },
+  { segments: {} },
+  [
+    { name: 'GSA_NO_SALES', file: 'D:\\GSA_NO_SALES.csv', rows: 22775 },
+    { name: 'SAM_NO_SALES', file: 'D:\\SAM_NO_SALES.csv', rows: 20000 }
+  ]
+);
+assert.strictEqual(resolution.sourceRows, 22775);
+assert.strictEqual(resolution.resolution, 'HIGH_CONFIDENCE');
+
 const result = audit.run();
 assert.strictEqual(result.gate, 'P0_LEAD_SUPPLY_CHAIN_AUDIT');
 assert.ok(Array.isArray(result.defects));
 assert.ok(result.sourceRegistry.registeredEntries > 0);
 assert.ok(result.sourceRegistry.nonUniqueRowSum > 0);
 assert.ok(result.canonicalRegistry.mappedSegments > 0);
+assert.ok(result.outputs.federalSourceInventory.endsWith('FED_SOURCE_INVENTORY.csv'));
+assert.ok(result.outputs.sledSourceInventory.endsWith('SLED_SOURCE_INVENTORY.csv'));
+assert.ok(result.outputs.outboundSegmentSourceResolution.endsWith('OUTBOUND_SEGMENT_SOURCE_RESOLUTION.csv'));
 
 console.log('LEAD_SUPPLY_CHAIN_AUDIT_SERVICE_TEST=PASS');
