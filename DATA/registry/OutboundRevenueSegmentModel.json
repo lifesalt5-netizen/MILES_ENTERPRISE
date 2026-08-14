@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "name": "P2GC Outbound Revenue Segment Model",
+  "purpose": "Complete revenue-first outbound segmentation model used for inventory reconciliation, one-campaign ownership, and lead replenishment health checks.",
+  "assignmentPolicy": {
+    "oneCampaignPerEmail": true,
+    "onePrimaryCampaignPerCompany": true,
+    "preserveUnderlyingQualifiedRecords": true,
+    "highestPrioritySegmentWins": true,
+    "priorityOrder": [
+      "EXPIRED_EVERYTHING",
+      "EXPIRING_6M",
+      "EXPIRING_12M",
+      "GSA",
+      "VA",
+      "SAM",
+      "CERTIFICATIONS",
+      "SBS",
+      "SLED_STATE"
+    ]
+  },
+  "healthThresholds": {
+    "healthy": 5000,
+    "moderate": 2500,
+    "replenish": 1000,
+    "highPriority": 500,
+    "critical": 100
+  },
+  "segments": [
+    {"id":"expired_everything","name":"Expired Everything","universe":"FEDERAL","group":"EXPIRED_EVERYTHING","assignmentPriority":100,"enabled":true,"sourceHints":["EXPIRED EVERYTHING","EXPIRED","EXPIRATION"]},
+    {"id":"expiring_6m","name":"Expiring 6 Months","universe":"FEDERAL","group":"EXPIRING_6M","assignmentPriority":200,"enabled":true,"sourceHints":["EXPIRING 6","6 MONTH","6M"]},
+    {"id":"expiring_12m","name":"Expiring 12 Months","universe":"FEDERAL","group":"EXPIRING_12M","assignmentPriority":300,"enabled":true,"sourceHints":["EXPIRING 12","12 MONTH","12M"]},
+    {"id":"expiring_24m","name":"Expiring 24 Months","universe":"FEDERAL","group":"EXPIRING_12M","assignmentPriority":310,"enabled":true,"sourceHints":["EXPIRING 24","24 MONTH","24M"]},
+
+    {"id":"gsa_no_sales","name":"GSA No Sales","universe":"FEDERAL","group":"GSA","assignmentPriority":400,"enabled":true,"sourceHints":["GSA NO SALES","GSA_NO_SALES"]},
+    {"id":"gsa_0_500k","name":"GSA $0-$500K","universe":"FEDERAL","group":"GSA","assignmentPriority":410,"enabled":true,"sourceHints":["GSA 0 500","GSA LOW SALES","GSA_LOW_SALES"]},
+    {"id":"gsa_500k_3m","name":"GSA $500K-$3M","universe":"FEDERAL","group":"GSA","assignmentPriority":420,"enabled":true,"sourceHints":["GSA 500 3M","GSA LOW SALES","GSA_LOW_SALES"]},
+    {"id":"gsa_3m_5m","name":"GSA $3M-$5M","universe":"FEDERAL","group":"GSA","assignmentPriority":430,"enabled":true,"sourceHints":["GSA 3 5M","GSA GROWTH","GSA_GROWTH_3_5M"]},
+    {"id":"gsa_5m_plus","name":"GSA $5M+","universe":"FEDERAL","group":"GSA","assignmentPriority":440,"enabled":true,"sourceHints":["GSA 5M","GSA GROWTH XL","GSA_GROWTH_XL","GSA ABOVE 10M"]},
+
+    {"id":"va_no_sales","name":"VA No Sales","universe":"FEDERAL","group":"VA","assignmentPriority":500,"enabled":true,"sourceHints":["VA NO SALES","VA_NO_SALES","VA FSS NO SALES"]},
+    {"id":"va_0_500k","name":"VA $0-$500K","universe":"FEDERAL","group":"VA","assignmentPriority":510,"enabled":true,"sourceHints":["VA 0 500","VA LOW SALES","VA_LOW_SALES"]},
+    {"id":"va_500k_3m","name":"VA $500K-$3M","universe":"FEDERAL","group":"VA","assignmentPriority":520,"enabled":true,"sourceHints":["VA 500 3M","VA LOW SALES","VA_LOW_SALES"]},
+    {"id":"va_3m_5m","name":"VA $3M-$5M","universe":"FEDERAL","group":"VA","assignmentPriority":530,"enabled":true,"sourceHints":["VA 3 5M","VA GROWTH"]},
+    {"id":"va_5m_plus","name":"VA $5M+","universe":"FEDERAL","group":"VA","assignmentPriority":540,"enabled":true,"sourceHints":["VA 5M","VA GROWTH XL","VA ABOVE 10M"]},
+
+    {"id":"sam_no_sales","name":"SAM No Sales","universe":"FEDERAL","group":"SAM","assignmentPriority":600,"enabled":true,"sourceHints":["SAM NO SALES","SAM_NO_SALES","FIRST CONTRACT TARGETS"]},
+    {"id":"sam_low_sales","name":"SAM Low Sales","universe":"FEDERAL","group":"SAM","assignmentPriority":610,"enabled":true,"sourceHints":["SAM LOW SALES","SAM_LOW_SALES","TRYING NOT WINNING"]},
+    {"id":"sam_growth","name":"SAM Growth","universe":"FEDERAL","group":"SAM","assignmentPriority":620,"enabled":true,"sourceHints":["SAM GROWTH","GROWTH"]},
+    {"id":"sam_high_growth","name":"SAM High Growth","universe":"FEDERAL","group":"SAM","assignmentPriority":630,"enabled":true,"sourceHints":["SAM HIGH GROWTH","HIGH GROWTH"]},
+
+    {"id":"cert_8a","name":"8(a)","universe":"FEDERAL","group":"CERTIFICATIONS","assignmentPriority":700,"enabled":true,"sourceHints":["SETASIDE 8A","8A","8(A)"]},
+    {"id":"cert_hubzone","name":"HUBZone","universe":"FEDERAL","group":"CERTIFICATIONS","assignmentPriority":710,"enabled":true,"sourceHints":["HUBZONE","SETASIDE_HUBZONE"]},
+    {"id":"cert_wosb","name":"WOSB/EDWOSB","universe":"FEDERAL","group":"CERTIFICATIONS","assignmentPriority":720,"enabled":true,"sourceHints":["WOSB","EDWOSB","SETASIDE_WOSB","SETASIDE_EDWOSB"]},
+    {"id":"cert_sdvosb","name":"SDVOSB","universe":"FEDERAL","group":"CERTIFICATIONS","assignmentPriority":730,"enabled":true,"sourceHints":["SDVOSB","SETASIDE_SDVOSB"]},
+    {"id":"cert_vosb","name":"VOSB","universe":"FEDERAL","group":"CERTIFICATIONS","assignmentPriority":740,"enabled":true,"sourceHints":["VOSB","SETASIDE_VOSB"]},
+
+    {"id":"sbs_no_vehicle","name":"SBS / No Vehicle","universe":"FEDERAL","group":"SBS","assignmentPriority":800,"enabled":true,"sourceHints":["SBS","NO VEHICLE","NON HOLDERS","OPEN MARKET WINNERS"]},
+
+    {"id":"state_sled_fl","name":"STATE SLED - FL","universe":"SLED","group":"SLED_STATE","assignmentPriority":900,"enabled":true,"sourceHints":["STATE SLED FL","FLORIDA","STATE_SLED_FL"]},
+    {"id":"state_sled_tx","name":"STATE SLED - TX","universe":"SLED","group":"SLED_STATE","assignmentPriority":910,"enabled":true,"sourceHints":["STATE SLED TX","TEXAS","STATE_SLED_TX"]},
+    {"id":"state_sled_ca","name":"STATE SLED - CA","universe":"SLED","group":"SLED_STATE","assignmentPriority":920,"enabled":true,"sourceHints":["STATE SLED CA","CALIFORNIA","STATE_SLED_CA"]},
+    {"id":"state_sled_va","name":"STATE SLED - VA","universe":"SLED","group":"SLED_STATE","assignmentPriority":930,"enabled":true,"sourceHints":["STATE SLED VA","VIRGINIA","STATE_SLED_VA"]},
+    {"id":"state_sled_md","name":"STATE SLED - MD","universe":"SLED","group":"SLED_STATE","assignmentPriority":940,"enabled":true,"sourceHints":["STATE SLED MD","MARYLAND","STATE_SLED_MD"]}
+  ],
+  "sendingGovernance": {
+    "timezone": "America/New_York",
+    "days": ["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"],
+    "start": "08:00",
+    "stop": "18:00",
+    "backgroundProcessing24x7": true,
+    "outboundSendingOutsideWindow": false
+  }
+}
