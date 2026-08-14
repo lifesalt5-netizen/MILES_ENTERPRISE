@@ -18,22 +18,33 @@ function sum(rows, key) {
   return rows.reduce((n, row) => n + Number(row?.[key] || 0), 0);
 }
 
+function normalize(value) {
+  return String(value || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function uniqueSourceSummary(rows) {
   const byFile = new Map();
   for (const row of rows) {
     const file = String(row?.file || '').trim();
     if (!file) continue;
-    const existing = byFile.get(file);
+    const existing = byFile.get(file.toLowerCase());
     const candidate = Number(row?.exactRows || row?.estimatedRows || 0);
     if (!existing || candidate > existing.rows) {
-      byFile.set(file, {
+      byFile.set(file.toLowerCase(), {
         file,
         name: row?.name || row?.id || path.basename(file),
         category: row?.category || null,
         rows: candidate,
         hasEmailColumn: row?.hasEmailColumn === true,
         verified: row?.verified === true,
-        readyForUpload: row?.readyForUpload === true
+        readyForUpload: row?.readyForUpload === true,
+        status: row?.status || null,
+        assignedCampaign: row?.assignedCampaign || null
       });
     }
   }
@@ -47,6 +58,85 @@ function health(count) {
   if (count >= 500) return 'HIGH_PRIORITY';
   if (count >= 100) return 'CRITICAL';
   return 'EMERGENCY';
+}
+
+function classifyUniverse(source) {
+  const text = normalize(`${source.name} ${source.category} ${source.file}`);
+  const sledTerms = [
+    'SLED', 'STATE SLED', 'STATE PROCUREMENT', 'STATE VENDOR', 'STATE CONTRACT',
+    'LOCAL GOVERNMENT', 'COUNTY', 'MUNICIPAL', 'CITY PROCUREMENT', 'EDUCATION',
+    'SCHOOL DISTRICT', 'NASPO', 'SOURCEWELL', 'OMNIA', 'COOPERATIVE'
+  ];
+  if (sledTerms.some(term => text.includes(term))) return 'SLED';
+  const federalTerms = [
+    'SAM', 'GSA', 'VA ', 'VA FSS', 'USASPENDING', 'USA SPENDING', 'FPDS',
+    'FEDERAL', '8A', 'HUBZONE', 'WOSB', 'SDVOSB', 'VOSB', 'SBA'
+  ];
+  if (federalTerms.some(term => text.includes(term))) return 'FEDERAL';
+  return 'UNCLASSIFIED';
+}
+
+function tokens(value) {
+  return new Set(normalize(value).split(' ').filter(x => x.length >= 2));
+}
+
+function overlapScore(left, right) {
+  const a = tokens(left);
+  const b = tokens(right);
+  if (!a.size || !b.size) return 0;
+  let common = 0;
+  for (const token of a) if (b.has(token)) common += 1;
+  return common / Math.max(a.size, b.size);
+}
+
+function resolveInventorySource(segment, canonical, sources) {
+  const segmentName = segment.segmentName || segment.name || '';
+  const canonicalRow = canonical?.segments?.[segmentName] || null;
+  const candidates = [];
+
+  for (const source of sources) {
+    let score = overlapScore(segmentName, `${source.name} ${path.basename(source.file)}`);
+    if (canonicalRow?.primary && source.file.toLowerCase() === String(canonicalRow.primary).toLowerCase()) score = 1;
+    if (canonicalRow?.fallback && source.file.toLowerCase() === String(canonicalRow.fallback).toLowerCase()) score = 0.99;
+    if (score > 0) candidates.push({ ...source, score });
+  }
+
+  candidates.sort((a, b) => b.score - a.score || b.rows - a.rows);
+  const best = candidates[0] || null;
+
+  if (!best || best.score < 0.34) {
+    return {
+      segmentName,
+      sourceFile: null,
+      sourceRows: 0,
+      resolution: 'UNRESOLVED',
+      confidence: 0,
+      candidates: candidates.slice(0, 5)
+    };
+  }
+
+  return {
+    segmentName,
+    sourceFile: best.file,
+    sourceRows: best.rows,
+    resolution: best.score >= 0.75 ? 'HIGH_CONFIDENCE' : 'CANDIDATE_REVIEW',
+    confidence: Number(best.score.toFixed(3)),
+    sourceUniverse: classifyUniverse(best),
+    candidates: candidates.slice(0, 5)
+  };
+}
+
+function csvEscape(value) {
+  const text = Array.isArray(value) ? value.join('|') : String(value ?? '');
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function writeCsv(file, rows, columns) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const lines = [columns.map(csvEscape).join(',')];
+  for (const row of rows) lines.push(columns.map(column => csvEscape(row[column])).join(','));
+  fs.writeFileSync(file, `${lines.join('\n')}\n`, 'utf8');
+  return file;
 }
 
 function run() {
@@ -114,15 +204,56 @@ function run() {
     });
   }
 
-  const segmentHealth = inventorySegments.map(s => ({
-    segment: s.segmentName || s.name,
-    companies: Number(s.companyCount || 0),
-    contacts: Number(s.contactCount || 0),
-    verifiedEmails: Number(s.verifiedEmailCount || 0),
-    health: health(Number(s.companyCount || 0)),
-    sourceFile: s.sourceFile || null,
-    blockers: s.blockers || []
+  const sourceInventory = sources.map(source => ({
+    universe: classifyUniverse(source),
+    source: source.name,
+    rows: source.rows,
+    health: health(source.rows),
+    hasEmailColumn: source.hasEmailColumn,
+    verified: source.verified,
+    readyForUpload: source.readyForUpload,
+    status: source.status,
+    assignedCampaign: source.assignedCampaign,
+    file: source.file
   }));
+
+  const federalSources = sourceInventory.filter(row => row.universe === 'FEDERAL');
+  const sledSources = sourceInventory.filter(row => row.universe === 'SLED');
+  const unclassifiedSources = sourceInventory.filter(row => row.universe === 'UNCLASSIFIED');
+
+  const resolvedSegments = inventorySegments.map(segment => {
+    const resolved = resolveInventorySource(segment, canonical, sources);
+    return {
+      segment: segment.segmentName || segment.name,
+      reportedCompanies: Number(segment.companyCount || 0),
+      reportedVerifiedEmails: Number(segment.verifiedEmailCount || 0),
+      resolvedSourceRows: resolved.sourceRows,
+      sourceFile: resolved.sourceFile,
+      resolution: resolved.resolution,
+      confidence: resolved.confidence,
+      sourceUniverse: resolved.sourceUniverse || 'UNRESOLVED',
+      health: health(resolved.sourceRows || Number(segment.companyCount || 0)),
+      deltaVsReported: resolved.sourceRows ? resolved.sourceRows - Number(segment.companyCount || 0) : null,
+      candidates: resolved.candidates
+    };
+  });
+
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  const federalSourceFile = writeCsv(
+    path.join(OUT_DIR, 'FED_SOURCE_INVENTORY.csv'),
+    federalSources,
+    ['source', 'rows', 'health', 'hasEmailColumn', 'verified', 'readyForUpload', 'status', 'assignedCampaign', 'file']
+  );
+  const sledSourceFile = writeCsv(
+    path.join(OUT_DIR, 'SLED_SOURCE_INVENTORY.csv'),
+    sledSources,
+    ['source', 'rows', 'health', 'hasEmailColumn', 'verified', 'readyForUpload', 'status', 'assignedCampaign', 'file']
+  );
+  const resolutionFile = writeCsv(
+    path.join(OUT_DIR, 'OUTBOUND_SEGMENT_SOURCE_RESOLUTION.csv'),
+    resolvedSegments,
+    ['segment', 'reportedCompanies', 'reportedVerifiedEmails', 'resolvedSourceRows', 'deltaVsReported', 'health', 'sourceUniverse', 'resolution', 'confidence', 'sourceFile']
+  );
 
   const result = {
     ok: defects.length === 0,
@@ -130,14 +261,20 @@ function run() {
     generatedAt,
     reference: {
       historicalQualifiedUniverse: 320000,
-      note: 'Historical reference supplied by CEO; this audit must reconcile current canonical data to it rather than assume it is current.'
+      note: 'Historical reference supplied by CEO; reconcile current canonical data to it rather than assuming it is current.'
     },
     sourceRegistry: {
       file: MARKETING_REGISTRY,
       registeredEntries: Array.isArray(marketingRows) ? marketingRows.length : 0,
       uniqueFiles: sources.length,
       nonUniqueRowSum: sourceRowsNonUnique,
-      topSources: sources.slice(0, 50)
+      federalSourceFiles: federalSources.length,
+      federalNonUniqueRows: sum(federalSources, 'rows'),
+      sledSourceFiles: sledSources.length,
+      sledNonUniqueRows: sum(sledSources, 'rows'),
+      unclassifiedSourceFiles: unclassifiedSources.length,
+      unclassifiedNonUniqueRows: sum(unclassifiedSources, 'rows'),
+      topSources: sources.slice(0, 100)
     },
     canonicalRegistry: {
       file: CANONICAL_REGISTRY,
@@ -153,25 +290,37 @@ function run() {
       segmentCount: inventorySegments.length,
       reportedCompanies: inventoryCompanyTotal,
       reportedVerifiedEmails: inventoryVerifiedTotal,
-      segmentHealth
+      resolvedSegments
+    },
+    outputs: {
+      federalSourceInventory: federalSourceFile,
+      sledSourceInventory: sledSourceFile,
+      outboundSegmentSourceResolution: resolutionFile
     },
     defects,
     nextActions: [
-      'Resolve all active Federal and SLED segments to canonical source files.',
-      'Count unique companies by UEI/company identity before email filtering.',
-      'Count contacts separately from companies.',
+      'Expand CanonicalDatasetRegistry.json from four segments to every active Federal and SLED outbound segment.',
+      'Use OUTBOUND_SEGMENT_SOURCE_RESOLUTION.csv to approve/repair segment-to-source mappings.',
+      'Then calculate unique companies by UEI/company identity from resolved source files.',
+      'Count contacts separately from companies and preserve qualified companies lacking verified email in enrichment queues.',
       'Report email verification dispositions without deleting the underlying qualified company.',
       'Apply cross-segment priority as assignment, not destructive deletion.',
-      'Generate FED_SEGMENT_INVENTORY.csv and SLED_SEGMENT_INVENTORY.csv from canonical source data.',
-      'Generate a row-count waterfall for each filtering/dedupe stage.'
+      'Generate final FED_SEGMENT_INVENTORY.csv and SLED_SEGMENT_INVENTORY.csv only from approved canonical mappings.',
+      'Generate a row-count waterfall for every filtering/dedupe stage.'
     ]
   };
 
-  fs.mkdirSync(OUT_DIR, { recursive: true });
   const outputFile = path.join(OUT_DIR, 'LEAD_SUPPLY_CHAIN_AUDIT_LATEST.json');
   fs.writeFileSync(outputFile, JSON.stringify(result, null, 2));
   result.outputFile = outputFile;
   return result;
 }
 
-module.exports = { run, uniqueSourceSummary, health };
+module.exports = {
+  run,
+  uniqueSourceSummary,
+  health,
+  classifyUniverse,
+  overlapScore,
+  resolveInventorySource
+};
