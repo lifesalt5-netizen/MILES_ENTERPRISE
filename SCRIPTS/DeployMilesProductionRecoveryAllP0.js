@@ -28,6 +28,7 @@ function syntax(rel) {
 const components = [
   { name:"TaskQueue process-wide lock", target:"CORE/TaskQueue.js", marker:"__MILES_TASKQUEUE_PROCESS_LOCKS", installer:"RepairTaskQueueProcessWideReentrantLockP0.js" },
   { name:"Worker RAM watchdog", target:"StartProductionSystem.js", marker:"MILES_WORKER_MEMORY_WATCHDOG_P0", installer:"InstallWorkerMemoryWatchdogP0.js" },
+  { name:"Startup memory probe", target:"StartProductionSystem.js", marker:"MILES_STARTUP_MEMORY_PROBE_P0", installer:"InstallStartupMemoryProbeP0.js" },
   { name:"Canonical revenue truth", target:"SERVICES/RevenueMissionSourceService.js", marker:"readCanonicalRevenueTruth()", installer:"InstallCanonicalRevenueTruthWiringP0_v2.js" },
   { name:"8787 workforce result truth", target:"SERVICES/ExecutiveResponseService.js", marker:"readWorkforceResult(taskId)", installer:"Install8787WorkforceResultTruthP0_v2.js" },
   { name:"8787 department execution truth", target:"SERVICES/digital_coo/DepartmentDashboardService.js", marker:"collectWorkforceResults()", installer:"Install8787DepartmentTruthP0.js" },
