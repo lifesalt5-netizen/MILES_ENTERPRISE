@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MILES CEO Dashboard</title>
+  <link rel="stylesheet" href="/ceo.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">P2GC · CEO CONTROL CENTER</div>
+        <h1>MILES Executive Dashboard</h1>
+        <p>Your operating truth, $10K/week scorecard, approvals, priorities, and direct command channel to MILES.</p>
+      </div>
+      <div class="navlinks">
+        <a href="http://localhost:8787" target="_blank">MILES Execution</a>
+        <a href="/legacy" target="_blank">Legacy Dashboard</a>
+      </div>
+    </header>
+
+    <section class="score-grid" id="scoreGrid"></section>
+
+    <div class="two-col">
+      <section class="panel">
+        <div class="panel-head"><h2>Daily $10K/Week Brief</h2><button id="refreshBrief" class="secondary">Refresh</button></div>
+        <div id="briefStatus" class="status">Loading...</div>
+        <div id="briefBody"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Command MILES</h2>
+        <p class="muted">Tell MILES what you want done. The dashboard sends the command to the live 8787 execution engine and shows the accepted task/operation here.</p>
+        <textarea id="commandText" rows="8" placeholder="Example: Review all active revenue work and execute the top actions that do not require CEO approval."></textarea>
+        <div class="command-actions"><button id="sendCommand">Send to MILES</button></div>
+        <pre id="commandResult">No command sent yet.</pre>
+      </section>
+    </div>
+
+    <div class="two-col">
+      <section class="panel"><h2>Kevin Approval Queue</h2><div id="approvals"></div></section>
+      <section class="panel"><h2>Alerts / Blockers</h2><div id="alerts"></div></section>
+    </div>
+
+    <div class="two-col">
+      <section class="panel"><h2>Marketing / Instantly</h2><div id="marketing"></div></section>
+      <section class="panel"><h2>ORION</h2><div id="orion"></div></section>
+    </div>
+
+    <section class="panel"><h2>Recent Work</h2><div id="work"></div></section>
+    <section class="panel"><h2>Recent Activity</h2><div id="activity"></div></section>
+  </main>
+  <script src="/ceo.js"></script>
+</body>
+</html>
