@@ -23,7 +23,7 @@ $files = @(
   'SCRIPTS/InstallMiles8787DepartmentDashboardP0_v5.js',
   'SCRIPTS/InstallExecutiveDashboardTruthP0.js',
   'SCRIPTS/Install8787DemoTruthRoutesP0.js',
-  'SCRIPTS/Install8787HealthTruthP0.js',
+  'SCRIPTS/Install8787HealthTruthP0_v2.js',
   'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/DeployMilesProductionRecoveryAllP0.js',
   'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js',
