@@ -13,9 +13,8 @@ Write-Host "Rule   : GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"
 git fetch $Repo $Branch | Out-Host
 $Ref = 'FETCH_HEAD'
 
-# Canonical production files are copied directly where the branch now owns the
-# final implementation. Structural installers remain only for local files whose
-# current deployed shape may legitimately differ from GitHub.
+# Canonical source-of-record files are copied directly from GitHub. Structural
+# installers remain only where deployed local shape can legitimately differ.
 $files = @(
   'GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md',
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
@@ -32,6 +31,8 @@ $files = @(
   'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/DeployMilesProductionRecoveryAllP0.js',
   'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js',
+  'SERVICES/WorkforceService.js',
+  'CONNECTORS/MILES/connector.js',
   'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
   'SERVICES/digital_coo/DemoTruthReportService.js'
 )
@@ -55,7 +56,7 @@ if ($LASTEXITCODE -ne 0) {
   $accept = Join-Path $Root 'DATA\runtime_guardian\production_recovery_acceptance_latest.json'
   if (Test-Path $accept) { Get-Content $accept -Raw | Out-Host }
   $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
-  if (Test-Path $probe) { Get-Content $probe -Tail 16 | Out-Host }
+  if (Test-Path $probe) { Get-Content $probe -Tail 20 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
   if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
   throw 'Full-system reconciliation failed an acceptance gate. Evidence printed above; the next engineering action must follow the full-system fix rule.'
