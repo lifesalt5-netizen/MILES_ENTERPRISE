@@ -17,6 +17,7 @@ $files = @(
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
   'SCRIPTS/InstallWorkerMemoryWatchdogP0.js',
   'SCRIPTS/InstallStartupMemoryProbeP0_v2.js',
+  'SCRIPTS/InstallWorkforceServiceMemoryCacheP0.js',
   'SCRIPTS/InstallCanonicalRevenueTruthWiringP0_v2.js',
   'SCRIPTS/Install8787WorkforceResultTruthP0_v2.js',
   'SCRIPTS/Install8787DepartmentTruthP0.js',
