@@ -29,7 +29,7 @@ const components = [
   { name:"TaskQueue process-wide lock", target:"CORE/TaskQueue.js", marker:"__MILES_TASKQUEUE_PROCESS_LOCKS", installer:"RepairTaskQueueProcessWideReentrantLockP0.js" },
   { name:"Worker RAM watchdog", target:"StartProductionSystem.js", marker:"MILES_WORKER_MEMORY_WATCHDOG_P0", installer:"InstallWorkerMemoryWatchdogP0.js" },
   { name:"Canonical revenue truth", target:"SERVICES/RevenueMissionSourceService.js", marker:"readCanonicalRevenueTruth()", installer:"InstallCanonicalRevenueTruthWiringP0_v2.js" },
-  { name:"8787 workforce result truth", target:"SERVICES/ExecutiveResponseService.js", marker:"readWorkforceResult(taskId)", installer:"Install8787WorkforceResultTruthP0.js" },
+  { name:"8787 workforce result truth", target:"SERVICES/ExecutiveResponseService.js", marker:"readWorkforceResult(taskId)", installer:"Install8787WorkforceResultTruthP0_v2.js" },
   { name:"8787 department execution truth", target:"SERVICES/digital_coo/DepartmentDashboardService.js", marker:"collectWorkforceResults()", installer:"Install8787DepartmentTruthP0.js" },
   { name:"8787 department UI", target:"SERVICES/digital_coo/public/app.js", marker:"refreshDepartmentBoard", installer:"InstallMiles8787DepartmentDashboardP0_v5.js" },
   { name:"Executive dashboard canonical truth", target:"SERVICES/DashboardDataService.js", marker:"truthSources:", installer:"InstallExecutiveDashboardTruthP0.js" },
@@ -81,7 +81,7 @@ if (!failedInstall && checks.every(c => c.ok) && repairRuntime) {
   process.stderr.write(guardian.stderr);
 
   if (guardian.status === 0) {
-    acceptance = runNode("VerifyMilesProductionRecoveryAllP0.js");
+    acceptance = runNode("TestMilesProductionRecoveryAcceptanceP0.js");
     process.stdout.write(acceptance.stdout);
     process.stderr.write(acceptance.stderr);
   }
