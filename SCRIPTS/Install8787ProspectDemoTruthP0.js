@@ -12,24 +12,24 @@ const stamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
 const backup = `${file}.BEFORE_PROSPECT_DEMO_TRUTH_${stamp}`;
 fs.copyFileSync(file, backup);
 
-if (!text.includes("ProspectDemoTruthService")) {
+if (!text.includes("ProspectDemoRuntimeService")) {
   const anchors = [
     "const DemoTruthReportService = require('./DemoTruthReportService');",
     "const CEOIntentEngineService = require('../CEOIntentEngineService');"
   ];
   const anchor = anchors.find(x => text.includes(x));
-  if (!anchor) throw new Error("Could not locate Command Center require anchor for ProspectDemoTruthService.");
-  text = text.replace(anchor, `${anchor}\nconst ProspectDemoTruthService = require('./ProspectDemoTruthService');`);
+  if (!anchor) throw new Error("Could not locate Command Center require anchor for ProspectDemoRuntimeService.");
+  text = text.replace(anchor, `${anchor}\nconst ProspectDemoRuntimeService = require('./ProspectDemoRuntimeService');`);
 }
 
-if (!text.includes("const prospectDemoTruth = new ProspectDemoTruthService")) {
+if (!text.includes("const prospectDemoTruth = new ProspectDemoRuntimeService")) {
   const anchors = [
     "const demoTruthReport = new DemoTruthReportService({ rootDir: ROOT, departmentDashboard });",
     "const executiveResponses = new ExecutiveResponseService({\n  rootDir: ROOT\n});"
   ];
   const anchor = anchors.find(x => text.includes(x));
-  if (!anchor) throw new Error("Could not locate Command Center service-instance anchor for ProspectDemoTruthService.");
-  text = text.replace(anchor, `${anchor}\n\nconst prospectDemoTruth = new ProspectDemoTruthService({ rootDir: ROOT });`);
+  if (!anchor) throw new Error("Could not locate Command Center service-instance anchor for ProspectDemoRuntimeService.");
+  text = text.replace(anchor, `${anchor}\n\nconst prospectDemoTruth = new ProspectDemoRuntimeService({ rootDir: ROOT });`);
 }
 
 if (!text.includes("MILES_PROSPECT_DEMO_TRUTH_P0")) {
@@ -93,12 +93,13 @@ if (!text.includes("MILES_PROSPECT_DEMO_TRUTH_P0")) {
     "      try {",
     "        const url = new URL(req.url, 'http://localhost:' + PORT);",
     "        const term = String(url.searchParams.get('company') || url.searchParams.get('uei') || '').trim();",
+    "        const forceRefresh = url.searchParams.get('refresh') === '1';",
     "        if (!term) {",
     "          res.writeHead(200, { 'Content-Type':'application/json', 'Cache-Control':'no-store' });",
     "          res.end(JSON.stringify({ ok:true, status:'DEMO_READY_FOR_PROSPECT', readOnly:true, required:'company name or UEI', page:'/demo' }, null, 2));",
     "          return;",
     "        }",
-    "        const truth = await prospectDemoTruth.build(term);",
+    "        const truth = await prospectDemoTruth.build(term, { forceRefresh: forceRefresh });",
     "        res.writeHead(truth.ok ? 200 : 404, { 'Content-Type':'application/json', 'Cache-Control':'no-store' });",
     "        res.end(JSON.stringify(truth, null, 2));",
     "      } catch (error) {",
