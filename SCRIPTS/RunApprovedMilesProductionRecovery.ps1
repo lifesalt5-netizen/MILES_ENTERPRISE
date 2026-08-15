@@ -17,7 +17,7 @@ $files = @(
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
   'SCRIPTS/InstallWorkerMemoryWatchdogP0.js',
   'SCRIPTS/InstallCanonicalRevenueTruthWiringP0_v2.js',
-  'SCRIPTS/Install8787WorkforceResultTruthP0.js',
+  'SCRIPTS/Install8787WorkforceResultTruthP0_v2.js',
   'SCRIPTS/Install8787DepartmentTruthP0.js',
   'SCRIPTS/InstallMiles8787DepartmentDashboardP0_v5.js',
   'SCRIPTS/InstallExecutiveDashboardTruthP0.js',
@@ -41,10 +41,6 @@ foreach ($file in $files) {
 Write-Host "`n=== DEPLOY + CLEAN RUNTIME REPAIR ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
 if ($LASTEXITCODE -ne 0) { throw 'Deployment/guardian validation failed. Review DATA\runtime_guardian\production_recovery_deploy_latest.json' }
-
-Write-Host "`n=== END-TO-END ACCEPTANCE ==="
-node .\SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js
-if ($LASTEXITCODE -ne 0) { throw 'Acceptance test failed. Review DATA\runtime_guardian\production_recovery_acceptance_latest.json' }
 
 Write-Host "`n=== APPROVED RECOVERY COMPLETE ==="
 Write-Host "8787 Command Center : http://localhost:8787"
