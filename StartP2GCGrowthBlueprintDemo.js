@@ -1,0 +1,94 @@
+"use strict";
+
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const { URL } = require("url");
+const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
+
+const ROOT = __dirname;
+const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
+const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
+const service = new ExecutiveGrowthBlueprintDemoService();
+const cache = new Map();
+const TTL = Math.max(1000, Number(process.env.P2GC_GROWTH_DEMO_CACHE_MS || 300000));
+
+function send(res, status, type, body, extra = {}) {
+  res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store", ...extra });
+  res.end(body);
+}
+function json(res, status, body) { send(res, status, "application/json; charset=utf-8", JSON.stringify(body, null, 2)); }
+function safeFile(name) { return path.join(PUBLIC, name); }
+function staticFile(res, name, type) {
+  const file = safeFile(name);
+  if (!fs.existsSync(file)) return send(res, 404, "text/plain; charset=utf-8", "Not found");
+  send(res, 200, type, fs.readFileSync(file));
+}
+function key(term) { return String(term || "").trim().toUpperCase(); }
+function getModel(term, refresh = false) {
+  const k = key(term);
+  if (!refresh && cache.has(k)) {
+    const hit = cache.get(k);
+    if (Date.now() - hit.at < TTL) return { ...hit.model, cache:{ hit:true, ttlMs:TTL } };
+    cache.delete(k);
+  }
+  const model = service.build(term);
+  if (model?.ok) {
+    const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
+    const record = { at:Date.now(), model };
+    aliases.forEach(alias => cache.set(alias, record));
+  }
+  return model?.ok ? { ...model, cache:{ hit:false, ttlMs:TTL } } : model;
+}
+
+const server = http.createServer((req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const pathname = url.pathname;
+
+  if (req.method === "GET" && (pathname === "/" || pathname === "/demo")) return staticFile(res, "index.html", "text/html; charset=utf-8");
+  if (req.method === "GET" && pathname === "/app.js") return staticFile(res, "app.js", "application/javascript; charset=utf-8");
+  if (req.method === "GET" && pathname === "/styles.css") return staticFile(res, "styles.css", "text/css; charset=utf-8");
+  if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
+
+  if (req.method === "GET" && pathname === "/api/health") {
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", port:PORT, checkedAt:new Date().toISOString() });
+  }
+
+  if (req.method === "GET" && pathname === "/api/assessment") {
+    const term = String(url.searchParams.get("term") || "").trim();
+    if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
+    try {
+      const model = getModel(term, url.searchParams.get("refresh") === "1");
+      return json(res, model?.ok ? 200 : 404, model);
+    } catch (error) {
+      return json(res, 500, { ok:false, status:"ASSESSMENT_FAILED", error:error.message });
+    }
+  }
+
+  if (req.method === "GET" && pathname === "/api/blueprint") {
+    const term = String(url.searchParams.get("term") || "").trim();
+    const format = String(url.searchParams.get("format") || "md").toLowerCase();
+    if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED" });
+    try {
+      const model = getModel(term, false);
+      if (!model?.ok) return json(res, 404, model);
+      const safe = String(model.profile?.companyName || model.profile?.uei || "prospect").replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,80);
+      if (format === "json") {
+        return send(res, 200, "application/json; charset=utf-8", JSON.stringify(model, null, 2), { "Content-Disposition":`attachment; filename="P2GC_Growth_Blueprint_${safe}.json"` });
+      }
+      const markdown = service.toMarkdown(model);
+      return send(res, 200, "text/markdown; charset=utf-8", markdown, { "Content-Disposition":`attachment; filename="P2GC_Growth_Blueprint_${safe}.md"` });
+    } catch (error) {
+      return json(res, 500, { ok:false, status:"BLUEPRINT_EXPORT_FAILED", error:error.message });
+    }
+  }
+
+  send(res, 404, "text/plain; charset=utf-8", "Not found");
+});
+
+server.listen(PORT, "127.0.0.1", () => {
+  console.log(`P2GC Executive Government Growth Blueprint Demo: http://127.0.0.1:${PORT}`);
+});
+
+process.on("SIGINT", () => server.close(() => process.exit(0)));
+process.on("SIGTERM", () => server.close(() => process.exit(0)));
