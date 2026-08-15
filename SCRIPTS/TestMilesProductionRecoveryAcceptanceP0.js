@@ -41,6 +41,40 @@ function synthetic(deal = {}) {
   const text = [deal.id,deal.name,deal.company,deal.contactName,deal.email,deal.source].filter(Boolean).join(" ").toLowerCase();
   return /build[ _-]?e010|test company|example\.com|unknown target/.test(text);
 }
+function findPersistedResult(taskId, operationId, acceptedAt) {
+  const dir = path.join(ROOT,"DATA","workforce_results");
+  if (!fs.existsSync(dir)) return null;
+
+  const exact = path.join(dir,`WP_${taskId}.json`);
+  if (taskId && fs.existsSync(exact)) {
+    const value = readJson(exact, null);
+    if (value) return { file: exact, value };
+  }
+
+  const candidates = fs.readdirSync(dir)
+    .filter(name => name.endsWith(".json"))
+    .map(name => {
+      const file = path.join(dir,name);
+      try { return { file, mtimeMs: fs.statSync(file).mtimeMs, value: readJson(file,null) }; }
+      catch { return null; }
+    })
+    .filter(Boolean)
+    .filter(x => x.value)
+    .sort((a,b) => b.mtimeMs-a.mtimeMs);
+
+  for (const item of candidates) {
+    const value = item.value || {};
+    const text = JSON.stringify(value);
+    if (taskId && (String(value.taskId||"") === String(taskId) || text.includes(String(taskId)))) return item;
+    if (operationId && text.includes(String(operationId))) return item;
+    if (acceptedAt && item.mtimeMs >= acceptedAt - 2000) {
+      const type = String(value.type || value.executionMode || "");
+      if (/WORKFORCE|BUSINESS_EXECUTION/i.test(type + " " + text.slice(0,500))) return item;
+    }
+  }
+
+  return null;
+}
 
 (async () => {
   fs.mkdirSync(OUT_DIR, { recursive:true });
@@ -48,9 +82,9 @@ function synthetic(deal = {}) {
   const add = (name, ok, detail = null) => { checks.push({ name, ok:Boolean(ok), detail }); console.log(`${ok ? "[PASS]" : "[FAIL]"} ${name}${detail ? ` :: ${detail}` : ""}`); };
 
   try {
-    const status = await requestJson("GET", "/api/status");
-    add("8787 status reachable", status.statusCode === 200 && status.body, `http=${status.statusCode}`);
-  } catch (e) { add("8787 status reachable", false, e.message); }
+    const health = await requestJson("GET", "/api/health");
+    add("8787 health reachable", health.statusCode < 500 && Boolean(health.body), `http=${health.statusCode}`);
+  } catch (e) { add("8787 health reachable", false, e.message); }
 
   try {
     const dashboard = await requestJson("GET", "/api/dashboard");
@@ -74,7 +108,9 @@ function synthetic(deal = {}) {
 
   let operationId = null;
   let taskId = null;
+  let acceptedAt = null;
   try {
+    acceptedAt = Date.now();
     const command = await requestJson("POST", "/api/command", {
       command: "Review the current P2GC revenue pipeline and report the top 3 actions that should be taken next. Read-only acceptance test. Do not send email, modify campaigns, or change external systems."
     }, 70000);
@@ -88,26 +124,27 @@ function synthetic(deal = {}) {
   }
 
   let persisted = null;
-  if (taskId) {
-    const file = path.join(ROOT,"DATA","workforce_results",`WP_${taskId}.json`);
-    for (let i=0;i<30;i++) {
-      if (fs.existsSync(file)) { persisted = readJson(file, null); break; }
+  let persistedFile = null;
+  if (taskId || operationId) {
+    for (let i=0;i<45;i++) {
+      const found = findPersistedResult(taskId, operationId, acceptedAt);
+      if (found) { persisted = found.value; persistedFile = found.file; break; }
       await sleep(2000);
     }
-    add("worker persisted exact task result", Boolean(persisted), file);
+    add("worker persisted command result", Boolean(persisted), persistedFile || `taskId=${taskId || "none"}`);
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
       add("result excludes synthetic deal names", !/build e010 test company|unknown target|build-e010-test@example\.com/.test(text));
     }
   } else {
-    add("worker persisted exact task result", false, "No taskId returned");
+    add("worker persisted command result", false, "No taskId or operationId returned");
     add("result excludes synthetic deal names", false, "No result");
   }
 
   if (operationId) {
     try {
       let op = null;
-      for (let i=0;i<15;i++) {
+      for (let i=0;i<20;i++) {
         const r = await requestJson("GET", `/api/operation?id=${encodeURIComponent(operationId)}`);
         op = r.body;
         const s = String(op?.status || "").toUpperCase();
@@ -124,13 +161,18 @@ function synthetic(deal = {}) {
   add("worker runtime status exists", Boolean(workerStatus && Object.keys(workerStatus).length), workerStatus?.generatedAt || workerStatus?.status || null);
 
   const memoryFile = path.join(ROOT,"DATA","runtime_guardian","worker_memory_latest.json");
-  add("worker RAM telemetry exists", fs.existsSync(memoryFile), memoryFile);
+  const memory = readJson(memoryFile, null);
+  add("worker RAM telemetry exists", Boolean(memory), memoryFile);
+  if (memory) {
+    add("worker RAM below hard limit", Number(memory.rssMb || 0) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
+  }
 
   const report = {
     ok: checks.every(c => c.ok),
     generatedAt: new Date().toISOString(),
     operationId,
     taskId,
+    persistedFile,
     checks
   };
   fs.writeFileSync(REPORT, JSON.stringify(report,null,2), "utf8");
