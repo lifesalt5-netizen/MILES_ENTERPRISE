@@ -43,7 +43,9 @@ foreach ($file in $files) {
 Write-Host "`n=== DEPLOY + CLEAN RUNTIME REPAIR ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "`n=== MEMORY ROOT-CAUSE EVIDENCE ==="
+  Write-Host "`n=== ACCEPTANCE / MEMORY EVIDENCE ==="
+  $accept = Join-Path $Root 'DATA\runtime_guardian\production_recovery_acceptance_latest.json'
+  if (Test-Path $accept) { Get-Content $accept -Raw | Out-Host }
   $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
   if (Test-Path $probe) { Get-Content $probe -Tail 16 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
