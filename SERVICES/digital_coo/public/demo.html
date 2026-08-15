@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MILES Prospect Demo</title>
+  <link rel="stylesheet" href="/demo.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">P2GC · ORION · MILES</div>
+        <h1>Government Growth Intelligence Demo</h1>
+        <p>Enter a real company name or UEI. MILES will show only evidence-backed facts and will mark unsupported facts unavailable.</p>
+      </div>
+      <a href="/" class="back">Command Center</a>
+    </header>
+
+    <section class="search-panel">
+      <label for="companyTerm">Company name or UEI</label>
+      <div class="search-row">
+        <input id="companyTerm" type="text" placeholder="Example: K & K CONSTRUCTION SUPPLY INC" autocomplete="off">
+        <button id="runDemo" type="button">Build Demo</button>
+        <button id="refreshDemo" type="button" class="secondary" disabled>Refresh</button>
+      </div>
+      <div id="demoStatus" class="status">Ready for a company.</div>
+    </section>
+
+    <section id="demoResult" class="hidden">
+      <div class="result-head">
+        <div>
+          <div class="eyebrow">EVIDENCE-BACKED ASSESSMENT</div>
+          <h2 id="companyName">—</h2>
+          <div id="generatedAt" class="muted"></div>
+        </div>
+        <div class="export-actions">
+          <a id="exportJson" class="button secondary" href="#">JSON</a>
+          <a id="exportMarkdown" class="button secondary" href="#">Markdown</a>
+          <a id="exportHtml" class="button secondary" href="#">HTML Report</a>
+        </div>
+      </div>
+
+      <div id="availability" class="chips"></div>
+      <div id="identityGrid" class="grid"></div>
+
+      <section class="card"><h3>Authoritative Award History</h3><div id="awards"></div></section>
+      <section class="card"><h3>Agency Alignment</h3><div id="agencies"></div></section>
+      <section class="card"><h3>Current Opportunity Signals</h3><div id="opportunities"></div></section>
+      <section class="card"><h3>Recompete Signals</h3><div id="recompetes"></div></section>
+      <section class="card"><h3>Vehicle Strategy</h3><div id="vehicle"></div></section>
+      <section class="card"><h3>Contact / Lead Facts</h3><div id="contacts"></div></section>
+      <section class="card"><h3>Priority Actions</h3><div id="actions"></div></section>
+      <section class="card"><h3>Evidence & Data Quality</h3><pre id="evidence"></pre></section>
+    </section>
+  </main>
+  <script src="/demo.js"></script>
+</body>
+</html>
