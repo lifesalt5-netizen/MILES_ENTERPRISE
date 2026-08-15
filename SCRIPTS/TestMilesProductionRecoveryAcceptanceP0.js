@@ -47,24 +47,26 @@ function resultFilesSince(sinceMs) {
         const stat = fs.statSync(file);
         return { file, name, mtimeMs:stat.mtimeMs, value:readJson(file,null) };
       })
-      .filter(x => x.value && x.mtimeMs >= sinceMs - 2000)
+      .filter(x => x.value && x.mtimeMs >= sinceMs - 1000)
       .sort((a,b)=>b.mtimeMs-a.mtimeMs);
   } catch { return []; }
 }
-function matchesExecution(record, taskId, operationId, command) {
+function matchesExecution(record, taskId, operationId) {
   const v = record.value || {};
   const text = JSON.stringify(v);
-  const directTask = String(v.taskId || "") === String(taskId || "");
+  const directTask = taskId && String(v.taskId || "") === String(taskId);
   const taskMention = taskId && text.includes(String(taskId));
   const opMention = operationId && text.includes(String(operationId));
-  const commandMention = command && text.includes(command.slice(0,80));
-  return directTask || taskMention || opMention || commandMention;
+  return Boolean(directTask || taskMention || opMention);
 }
 
 (async () => {
   fs.mkdirSync(OUT_DIR, { recursive:true });
   const checks = [];
-  const add = (name, ok, detail = null) => { checks.push({ name, ok:Boolean(ok), detail }); console.log(`${ok ? "[PASS]" : "[FAIL]"} ${name}${detail ? ` :: ${detail}` : ""}`); };
+  const add = (name, ok, detail = null) => {
+    checks.push({ name, ok:Boolean(ok), detail });
+    console.log(`${ok ? "[PASS]" : "[FAIL]"} ${name}${detail ? ` :: ${detail}` : ""}`);
+  };
 
   try {
     const health = await requestJson("GET", "/api/health");
@@ -93,10 +95,10 @@ function matchesExecution(record, taskId, operationId, command) {
 
   let operationId = null;
   let taskId = null;
-  let commandAcceptedAt = Date.now();
   const commandText = "Review the current P2GC revenue pipeline and report the top 3 actions that should be taken next. Read-only acceptance test. Do not send email, modify campaigns, or change external systems.";
+  const commandAcceptedAt = Date.now();
+
   try {
-    commandAcceptedAt = Date.now();
     const command = await requestJson("POST", "/api/command", { command: commandText }, 70000);
     operationId = command.body?.operation?.id || command.body?.operationId || null;
     taskId = command.body?.enqueueResult?.taskId || null;
@@ -113,10 +115,16 @@ function matchesExecution(record, taskId, operationId, command) {
     const exact = path.join(ROOT,"DATA","workforce_results",`WP_${taskId}.json`);
     for (let i=0;i<45;i++) {
       if (fs.existsSync(exact)) {
-        persisted = readJson(exact,null);
-        if (persisted) { persistedFile = exact; break; }
+        const exactValue = readJson(exact,null);
+        if (exactValue && matchesExecution({value:exactValue}, taskId, operationId)) {
+          persisted = exactValue;
+          persistedFile = exact;
+          break;
+        }
       }
-      const candidates = resultFilesSince(commandAcceptedAt).filter(r => matchesExecution(r,taskId,operationId,commandText));
+
+      const candidates = resultFilesSince(commandAcceptedAt)
+        .filter(r => matchesExecution(r, taskId, operationId));
       if (candidates.length) {
         persisted = candidates[0].value;
         persistedFile = candidates[0].file;
@@ -124,13 +132,14 @@ function matchesExecution(record, taskId, operationId, command) {
       }
       await sleep(2000);
     }
-    add("worker persisted command result", Boolean(persisted), persistedFile || exact);
+
+    add("worker persisted current command result", Boolean(persisted), persistedFile || exact);
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
       add("result excludes synthetic deal names", !/build e010 test company|unknown target|build-e010-test@example\.com/.test(text));
     }
   } else {
-    add("worker persisted command result", false, "No taskId returned");
+    add("worker persisted current command result", false, "No taskId returned");
     add("result excludes synthetic deal names", false, "No result");
   }
 
@@ -156,16 +165,28 @@ function matchesExecution(record, taskId, operationId, command) {
   const memoryFile = path.join(ROOT,"DATA","runtime_guardian","worker_memory_latest.json");
   const memory = readJson(memoryFile,null);
   add("worker RAM telemetry exists", Boolean(memory), memoryFile);
-  if (memory) add("worker RAM below hard limit", Number(memory.rssMb) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
+  if (memory) {
+    add("worker RAM below hard limit", Number(memory.rssMb) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
+  }
 
-  const report = { ok: checks.every(c => c.ok), generatedAt:new Date().toISOString(), operationId, taskId, persistedFile, checks };
+  const report = {
+    ok: checks.every(c => c.ok),
+    generatedAt:new Date().toISOString(),
+    operationId,
+    taskId,
+    persistedFile,
+    checks
+  };
   fs.writeFileSync(REPORT, JSON.stringify(report,null,2), "utf8");
   console.log(`=== ACCEPTANCE ${report.ok ? "PASS" : "FAIL"} ===`);
   console.log(`report: ${REPORT}`);
   process.exitCode = report.ok ? 0 : 1;
 })().catch(error => {
   const report = { ok:false, generatedAt:new Date().toISOString(), fatal:error.stack || error.message };
-  try { fs.mkdirSync(OUT_DIR,{recursive:true}); fs.writeFileSync(REPORT,JSON.stringify(report,null,2),"utf8"); } catch {}
+  try {
+    fs.mkdirSync(OUT_DIR,{recursive:true});
+    fs.writeFileSync(REPORT,JSON.stringify(report,null,2),"utf8");
+  } catch {}
   console.error(error.stack || error.message);
   process.exitCode = 1;
 });
