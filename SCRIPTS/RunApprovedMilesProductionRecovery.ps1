@@ -9,7 +9,6 @@ Write-Host "=== APPROVED MILES PRODUCTION RECOVERY ==="
 Write-Host "Root   : $Root"
 Write-Host "Branch : $Branch"
 
-# Pull only the approved recovery artifacts from GitHub. Do not merge unrelated branch content.
 git fetch $Repo $Branch | Out-Host
 $Ref = 'FETCH_HEAD'
 
@@ -24,6 +23,7 @@ $files = @(
   'SCRIPTS/InstallMiles8787DepartmentDashboardP0_v5.js',
   'SCRIPTS/InstallExecutiveDashboardTruthP0.js',
   'SCRIPTS/Install8787DemoTruthRoutesP0.js',
+  'SCRIPTS/Install8787HealthTruthP0.js',
   'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/DeployMilesProductionRecoveryAllP0.js',
   'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js',
