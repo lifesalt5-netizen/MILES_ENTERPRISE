@@ -16,6 +16,7 @@ $Ref = 'FETCH_HEAD'
 $files = @(
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
   'SCRIPTS/InstallWorkerMemoryWatchdogP0.js',
+  'SCRIPTS/InstallStartupMemoryProbeP0.js',
   'SCRIPTS/InstallCanonicalRevenueTruthWiringP0_v2.js',
   'SCRIPTS/Install8787WorkforceResultTruthP0_v2.js',
   'SCRIPTS/Install8787DepartmentTruthP0.js',
@@ -40,7 +41,14 @@ foreach ($file in $files) {
 
 Write-Host "`n=== DEPLOY + CLEAN RUNTIME REPAIR ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
-if ($LASTEXITCODE -ne 0) { throw 'Deployment/guardian validation failed. Review DATA\runtime_guardian\production_recovery_deploy_latest.json' }
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "`n=== MEMORY ROOT-CAUSE EVIDENCE ==="
+  $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
+  if (Test-Path $probe) { Get-Content $probe -Tail 12 | Out-Host }
+  $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
+  if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
+  throw 'Deployment/guardian validation failed. Memory evidence printed above; ChatGPT can take the next fix directly.'
+}
 
 Write-Host "`n=== APPROVED RECOVERY COMPLETE ==="
 Write-Host "8787 Command Center : http://localhost:8787"
