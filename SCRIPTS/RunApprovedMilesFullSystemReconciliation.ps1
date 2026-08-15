@@ -6,14 +6,12 @@ $SupportBranch = 'agent/miles-production-recovery-20260814'
 $Repo = 'origin'
 
 Set-Location $Root
-Write-Host "=== APPROVED MILES FULL-SYSTEM RECONCILIATION ==="
+Write-Host "=== APPROVED MILES + P2GC SALES DEMO RECONCILIATION ==="
 Write-Host "Root      : $Root"
 Write-Host "Canonical : $CanonicalBranch"
 Write-Host "Support   : $SupportBranch"
-Write-Host "Policy    : GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"
+Write-Host "Rule      : full-system fix; MILES execution, CEO dashboard, opportunities, and prospect demo remain separate surfaces"
 
-# Preserve the user's checked-out branch and local commit. This runner never
-# checkout/reset/merge/rebase/force-updates the local repository.
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
 Write-Host "Local branch protected: $LocalBranch"
@@ -30,16 +28,12 @@ $canonicalFiles = @(
   'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
   'SERVICES/revenue/ProspectGrowthAssessmentService.js',
   'SERVICES/revenue/ProspectDemoPresentationService.js',
-  'SERVICES/orion/AwardHistoryTruthService.js',
-  'SERVICES/governance/DemoProtectionService.js',
-  'SERVICES/digital_coo/ProspectDemoTruthService.js',
-  'SERVICES/digital_coo/ProspectDemoRuntimeService.js',
-  'SERVICES/digital_coo/public/demo.html',
-  'SERVICES/digital_coo/public/demo.js',
-  'SERVICES/digital_coo/public/demo.css',
-  'SCRIPTS/Install8787ProspectDemoTruthP0.js',
-  'SCRIPTS/TestMilesProspectDemoAcceptanceP0.js',
-  'TESTS/Test_ProspectDemoTruthP0.js'
+  'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
+  'SERVICES/demo/public/index.html',
+  'SERVICES/demo/public/app.js',
+  'SERVICES/demo/public/styles.css',
+  'StartP2GCGrowthBlueprintDemo.js',
+  'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js'
 )
 
 foreach ($file in $canonicalFiles) {
@@ -90,34 +84,24 @@ foreach ($file in $supportFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== PHASE 1: PRODUCTION RECOVERY ACCEPTANCE ==="
+Write-Host "`n=== PHASE 1: MILES PRODUCTION ACCEPTANCE ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
-$DeployExit = $LASTEXITCODE
-
-if ($DeployExit -ne 0) {
-  Write-Host "`n=== FULL-SYSTEM ACCEPTANCE / MEMORY EVIDENCE ==="
-  $deploy = Join-Path $Root 'DATA\runtime_guardian\production_recovery_deploy_latest.json'
-  if (Test-Path $deploy) { Get-Content $deploy -Raw | Out-Host }
+if ($LASTEXITCODE -ne 0) {
   $accept = Join-Path $Root 'DATA\runtime_guardian\production_recovery_acceptance_latest.json'
   if (Test-Path $accept) { Get-Content $accept -Raw | Out-Host }
-  $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
-  if (Test-Path $probe) { Get-Content $probe -Tail 24 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
   if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
-  throw 'Full-system reconciliation failed production acceptance. No local branch history was changed.'
+  throw 'MILES production acceptance failed. Prospect demo deployment stopped.'
 }
 
-Write-Host "`n=== PHASE 2: PROSPECT DEMO STATIC + REGRESSION GATES ==="
+Write-Host "`n=== PHASE 2: STANDALONE PROSPECT DEMO STATIC GATES ==="
 $demoChecks = @(
   'SERVICES\revenue\ProspectGrowthAssessmentService.js',
   'SERVICES\revenue\ProspectDemoPresentationService.js',
-  'SERVICES\orion\AwardHistoryTruthService.js',
-  'SERVICES\digital_coo\ProspectDemoTruthService.js',
-  'SERVICES\digital_coo\ProspectDemoRuntimeService.js',
-  'SERVICES\digital_coo\public\demo.js',
-  'SCRIPTS\Install8787ProspectDemoTruthP0.js',
-  'SCRIPTS\TestMilesProspectDemoAcceptanceP0.js',
-  'TESTS\Test_ProspectDemoTruthP0.js'
+  'SERVICES\demo\ExecutiveGrowthBlueprintDemoService.js',
+  'SERVICES\demo\public\app.js',
+  'StartP2GCGrowthBlueprintDemo.js',
+  'SCRIPTS\TestP2GCGrowthBlueprintDemoAcceptanceP0.js'
 )
 foreach ($file in $demoChecks) {
   node --check $file
@@ -125,28 +109,22 @@ foreach ($file in $demoChecks) {
   Write-Host "[DEMO CHECK OK] $file"
 }
 
-node .\TESTS\Test_ProspectDemoTruthP0.js
-if ($LASTEXITCODE -ne 0) { throw 'Prospect demo no-fabrication regression test failed.' }
-
-Write-Host "`n=== PHASE 3: INSTALL 8787 REAL-PROSPECT DEMO ==="
-node .\SCRIPTS\Install8787ProspectDemoTruthP0.js
-if ($LASTEXITCODE -ne 0) { throw '8787 prospect demo route installation failed.' }
-
-node --check .\SERVICES\digital_coo\MilesCommandCenter.js
-if ($LASTEXITCODE -ne 0) { throw 'MilesCommandCenter syntax failed after prospect-demo reconciliation.' }
-
-pm2 restart miles-command-center | Out-Host
-if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-command-center after prospect-demo reconciliation.' }
+Write-Host "`n=== PHASE 3: START SEPARATE P2GC SALES DEMO ==="
+pm2 describe p2gc-growth-demo *> $null
+if ($LASTEXITCODE -eq 0) {
+  pm2 restart p2gc-growth-demo | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw 'Unable to restart p2gc-growth-demo.' }
+} else {
+  pm2 start .\StartP2GCGrowthBlueprintDemo.js --name p2gc-growth-demo | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw 'Unable to start p2gc-growth-demo.' }
+}
 Start-Sleep -Seconds 8
+pm2 save | Out-Host
 
-Write-Host "`n=== PHASE 4: LIVE REAL-CONTRACTOR DEMO ACCEPTANCE ==="
-node .\SCRIPTS\TestMilesProspectDemoAcceptanceP0.js
-$DemoExit = $LASTEXITCODE
-if ($DemoExit -ne 0) {
-  Write-Host "`n=== PROSPECT DEMO ACCEPTANCE EVIDENCE ==="
-  $demoReport = Join-Path $Root 'DATA\runtime_guardian\prospect_demo_acceptance_latest.json'
-  if (Test-Path $demoReport) { Get-Content $demoReport -Raw | Out-Host }
-  throw 'Full-system reconciliation failed the real-prospect demo acceptance gate.'
+Write-Host "`n=== PHASE 4: REAL-PROSPECT GROWTH BLUEPRINT ACCEPTANCE ==="
+node .\SCRIPTS\TestP2GCGrowthBlueprintDemoAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) {
+  throw 'Standalone P2GC Growth Blueprint demo failed its real-prospect acceptance gate.'
 }
 
 $AfterBranch = (git branch --show-current).Trim()
@@ -155,11 +133,11 @@ if ($AfterBranch -ne $LocalBranch -or $AfterHead -ne $LocalHead) {
   throw "LOCAL_GIT_STATE_CHANGED_UNEXPECTEDLY: before=$LocalBranch/$LocalHead after=$AfterBranch/$AfterHead"
 }
 
-Write-Host "`n=== MILES FULL-SYSTEM RECONCILIATION COMPLETE ==="
-Write-Host "Production acceptance : PASS"
-Write-Host "Prospect demo acceptance: PASS"
-Write-Host "Local Git state preserved: $AfterBranch / $AfterHead"
-Write-Host "8787 Command Center : http://localhost:8787"
-Write-Host "8787 Prospect Demo  : http://localhost:8787/demo"
-Write-Host "Executive Dashboard : http://127.0.0.1:8737"
-Write-Host "Reports             : DATA\runtime_guardian"
+Write-Host "`n=== FULL-SYSTEM RECONCILIATION COMPLETE ==="
+Write-Host "MILES production acceptance : PASS"
+Write-Host "P2GC sales demo acceptance  : PASS"
+Write-Host "Local Git state preserved   : $AfterBranch / $AfterHead"
+Write-Host "MILES Command Center        : http://localhost:8787"
+Write-Host "P2GC Prospect Sales Demo    : http://127.0.0.1:8791"
+Write-Host "Executive Dashboard         : http://127.0.0.1:8737"
+Write-Host "Note: Opportunities remains a separate workspace; no prospect-demo code is installed into the MILES execution surface."
