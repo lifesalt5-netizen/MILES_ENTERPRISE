@@ -5,14 +5,19 @@ $Branch = 'agent/miles-production-recovery-20260814'
 $Repo = 'origin'
 
 Set-Location $Root
-Write-Host "=== APPROVED MILES PRODUCTION RECOVERY ==="
+Write-Host "=== APPROVED MILES FULL-SYSTEM RECONCILIATION ==="
 Write-Host "Root   : $Root"
 Write-Host "Branch : $Branch"
+Write-Host "Rule   : GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"
 
 git fetch $Repo $Branch | Out-Host
 $Ref = 'FETCH_HEAD'
 
+# Canonical production files are copied directly where the branch now owns the
+# final implementation. Structural installers remain only for local files whose
+# current deployed shape may legitimately differ from GitHub.
 $files = @(
+  'GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md',
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
   'SCRIPTS/InstallWorkerMemoryWatchdogP0.js',
   'SCRIPTS/InstallStartupMemoryProbeP0_v2.js',
@@ -27,6 +32,7 @@ $files = @(
   'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/DeployMilesProductionRecoveryAllP0.js',
   'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js',
+  'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
   'SERVICES/digital_coo/DemoTruthReportService.js'
 )
 
@@ -40,20 +46,22 @@ foreach ($file in $files) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== DEPLOY + CLEAN RUNTIME REPAIR ==="
+Write-Host "`n=== CONSOLIDATED DEPLOY + CLEAN RUNTIME REPAIR ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "`n=== ACCEPTANCE / MEMORY EVIDENCE ==="
+  Write-Host "`n=== FULL-SYSTEM ACCEPTANCE / MEMORY EVIDENCE ==="
+  $deploy = Join-Path $Root 'DATA\runtime_guardian\production_recovery_deploy_latest.json'
+  if (Test-Path $deploy) { Get-Content $deploy -Raw | Out-Host }
   $accept = Join-Path $Root 'DATA\runtime_guardian\production_recovery_acceptance_latest.json'
   if (Test-Path $accept) { Get-Content $accept -Raw | Out-Host }
   $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
   if (Test-Path $probe) { Get-Content $probe -Tail 16 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
   if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
-  throw 'Deployment/guardian validation failed. Evidence printed above; ChatGPT can take the next fix directly.'
+  throw 'Full-system reconciliation failed an acceptance gate. Evidence printed above; the next engineering action must follow the full-system fix rule.'
 }
 
-Write-Host "`n=== APPROVED RECOVERY COMPLETE ==="
+Write-Host "`n=== MILES FULL-SYSTEM RECONCILIATION COMPLETE ==="
 Write-Host "8787 Command Center : http://localhost:8787"
 Write-Host "8787 Demo           : http://localhost:8787/demo"
 Write-Host "Executive Dashboard : http://127.0.0.1:8737"
