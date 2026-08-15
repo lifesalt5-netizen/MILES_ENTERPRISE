@@ -17,7 +17,7 @@ $files = @(
   'SCRIPTS/RepairTaskQueueProcessWideReentrantLockP0.js',
   'SCRIPTS/InstallWorkerMemoryWatchdogP0.js',
   'SCRIPTS/InstallStartupMemoryProbeP0_v2.js',
-  'SCRIPTS/InstallWorkforceServiceMemoryCacheP0.js',
+  'SCRIPTS/InstallWorkforceServiceMemoryCacheP0_v2.js',
   'SCRIPTS/InstallCanonicalRevenueTruthWiringP0_v2.js',
   'SCRIPTS/Install8787WorkforceResultTruthP0_v2.js',
   'SCRIPTS/Install8787DepartmentTruthP0.js',
@@ -45,10 +45,10 @@ node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
 if ($LASTEXITCODE -ne 0) {
   Write-Host "`n=== MEMORY ROOT-CAUSE EVIDENCE ==="
   $probe = Join-Path $Root 'DATA\runtime_guardian\startup_memory_probe.jsonl'
-  if (Test-Path $probe) { Get-Content $probe -Tail 12 | Out-Host }
+  if (Test-Path $probe) { Get-Content $probe -Tail 16 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
   if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
-  throw 'Deployment/guardian validation failed. Memory evidence printed above; ChatGPT can take the next fix directly.'
+  throw 'Deployment/guardian validation failed. Evidence printed above; ChatGPT can take the next fix directly.'
 }
 
 Write-Host "`n=== APPROVED RECOVERY COMPLETE ==="
