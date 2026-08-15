@@ -17,11 +17,7 @@ function requestJson(method, pathname, body = null, timeoutMs = 15000) {
   return new Promise((resolve, reject) => {
     const payload = body == null ? null : JSON.stringify(body);
     const req = http.request({
-      hostname: "127.0.0.1",
-      port: 8787,
-      path: pathname,
-      method,
-      timeout: timeoutMs,
+      hostname: "127.0.0.1", port: 8787, path: pathname, method, timeout: timeoutMs,
       headers: payload ? { "Content-Type":"application/json", "Content-Length":Buffer.byteLength(payload) } : {}
     }, res => {
       let data = "";
@@ -41,39 +37,28 @@ function synthetic(deal = {}) {
   const text = [deal.id,deal.name,deal.company,deal.contactName,deal.email,deal.source].filter(Boolean).join(" ").toLowerCase();
   return /build[ _-]?e010|test company|example\.com|unknown target/.test(text);
 }
-function findPersistedResult(taskId, operationId, acceptedAt) {
+function resultFilesSince(sinceMs) {
   const dir = path.join(ROOT,"DATA","workforce_results");
-  if (!fs.existsSync(dir)) return null;
-
-  const exact = path.join(dir,`WP_${taskId}.json`);
-  if (taskId && fs.existsSync(exact)) {
-    const value = readJson(exact, null);
-    if (value) return { file: exact, value };
-  }
-
-  const candidates = fs.readdirSync(dir)
-    .filter(name => name.endsWith(".json"))
-    .map(name => {
-      const file = path.join(dir,name);
-      try { return { file, mtimeMs: fs.statSync(file).mtimeMs, value: readJson(file,null) }; }
-      catch { return null; }
-    })
-    .filter(Boolean)
-    .filter(x => x.value)
-    .sort((a,b) => b.mtimeMs-a.mtimeMs);
-
-  for (const item of candidates) {
-    const value = item.value || {};
-    const text = JSON.stringify(value);
-    if (taskId && (String(value.taskId||"") === String(taskId) || text.includes(String(taskId)))) return item;
-    if (operationId && text.includes(String(operationId))) return item;
-    if (acceptedAt && item.mtimeMs >= acceptedAt - 2000) {
-      const type = String(value.type || value.executionMode || "");
-      if (/WORKFORCE|BUSINESS_EXECUTION/i.test(type + " " + text.slice(0,500))) return item;
-    }
-  }
-
-  return null;
+  try {
+    return fs.readdirSync(dir)
+      .filter(n => n.endsWith(".json"))
+      .map(name => {
+        const file = path.join(dir,name);
+        const stat = fs.statSync(file);
+        return { file, name, mtimeMs:stat.mtimeMs, value:readJson(file,null) };
+      })
+      .filter(x => x.value && x.mtimeMs >= sinceMs - 2000)
+      .sort((a,b)=>b.mtimeMs-a.mtimeMs);
+  } catch { return []; }
+}
+function matchesExecution(record, taskId, operationId, command) {
+  const v = record.value || {};
+  const text = JSON.stringify(v);
+  const directTask = String(v.taskId || "") === String(taskId || "");
+  const taskMention = taskId && text.includes(String(taskId));
+  const opMention = operationId && text.includes(String(operationId));
+  const commandMention = command && text.includes(command.slice(0,80));
+  return directTask || taskMention || opMention || commandMention;
 }
 
 (async () => {
@@ -83,7 +68,7 @@ function findPersistedResult(taskId, operationId, acceptedAt) {
 
   try {
     const health = await requestJson("GET", "/api/health");
-    add("8787 health reachable", health.statusCode < 500 && Boolean(health.body), `http=${health.statusCode}`);
+    add("8787 health reachable", health.statusCode === 200 && health.body?.ok === true, `http=${health.statusCode} status=${health.body?.status || ""}`);
   } catch (e) { add("8787 health reachable", false, e.message); }
 
   try {
@@ -108,12 +93,11 @@ function findPersistedResult(taskId, operationId, acceptedAt) {
 
   let operationId = null;
   let taskId = null;
-  let acceptedAt = null;
+  let commandAcceptedAt = Date.now();
+  const commandText = "Review the current P2GC revenue pipeline and report the top 3 actions that should be taken next. Read-only acceptance test. Do not send email, modify campaigns, or change external systems.";
   try {
-    acceptedAt = Date.now();
-    const command = await requestJson("POST", "/api/command", {
-      command: "Review the current P2GC revenue pipeline and report the top 3 actions that should be taken next. Read-only acceptance test. Do not send email, modify campaigns, or change external systems."
-    }, 70000);
+    commandAcceptedAt = Date.now();
+    const command = await requestJson("POST", "/api/command", { command: commandText }, 70000);
     operationId = command.body?.operation?.id || command.body?.operationId || null;
     taskId = command.body?.enqueueResult?.taskId || null;
     add("read-only command accepted", command.body?.ok === true, `status=${command.body?.status || ""}`);
@@ -125,19 +109,28 @@ function findPersistedResult(taskId, operationId, acceptedAt) {
 
   let persisted = null;
   let persistedFile = null;
-  if (taskId || operationId) {
+  if (taskId) {
+    const exact = path.join(ROOT,"DATA","workforce_results",`WP_${taskId}.json`);
     for (let i=0;i<45;i++) {
-      const found = findPersistedResult(taskId, operationId, acceptedAt);
-      if (found) { persisted = found.value; persistedFile = found.file; break; }
+      if (fs.existsSync(exact)) {
+        persisted = readJson(exact,null);
+        if (persisted) { persistedFile = exact; break; }
+      }
+      const candidates = resultFilesSince(commandAcceptedAt).filter(r => matchesExecution(r,taskId,operationId,commandText));
+      if (candidates.length) {
+        persisted = candidates[0].value;
+        persistedFile = candidates[0].file;
+        break;
+      }
       await sleep(2000);
     }
-    add("worker persisted command result", Boolean(persisted), persistedFile || `taskId=${taskId || "none"}`);
+    add("worker persisted command result", Boolean(persisted), persistedFile || exact);
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
       add("result excludes synthetic deal names", !/build e010 test company|unknown target|build-e010-test@example\.com/.test(text));
     }
   } else {
-    add("worker persisted command result", false, "No taskId or operationId returned");
+    add("worker persisted command result", false, "No taskId returned");
     add("result excludes synthetic deal names", false, "No result");
   }
 
@@ -161,20 +154,11 @@ function findPersistedResult(taskId, operationId, acceptedAt) {
   add("worker runtime status exists", Boolean(workerStatus && Object.keys(workerStatus).length), workerStatus?.generatedAt || workerStatus?.status || null);
 
   const memoryFile = path.join(ROOT,"DATA","runtime_guardian","worker_memory_latest.json");
-  const memory = readJson(memoryFile, null);
+  const memory = readJson(memoryFile,null);
   add("worker RAM telemetry exists", Boolean(memory), memoryFile);
-  if (memory) {
-    add("worker RAM below hard limit", Number(memory.rssMb || 0) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
-  }
+  if (memory) add("worker RAM below hard limit", Number(memory.rssMb) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
 
-  const report = {
-    ok: checks.every(c => c.ok),
-    generatedAt: new Date().toISOString(),
-    operationId,
-    taskId,
-    persistedFile,
-    checks
-  };
+  const report = { ok: checks.every(c => c.ok), generatedAt:new Date().toISOString(), operationId, taskId, persistedFile, checks };
   fs.writeFileSync(REPORT, JSON.stringify(report,null,2), "utf8");
   console.log(`=== ACCEPTANCE ${report.ok ? "PASS" : "FAIL"} ===`);
   console.log(`report: ${REPORT}`);
