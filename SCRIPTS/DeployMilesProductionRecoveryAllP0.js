@@ -36,7 +36,7 @@ const components = [
   { name:"8787 department UI", target:"SERVICES/digital_coo/public/app.js", marker:"refreshDepartmentBoard", installer:"InstallMiles8787DepartmentDashboardP0_v5.js" },
   { name:"Executive dashboard canonical truth", target:"SERVICES/DashboardDataService.js", marker:"truthSources:", installer:"InstallExecutiveDashboardTruthP0.js" },
   { name:"8787 demo truth routes", target:"SERVICES/digital_coo/MilesCommandCenter.js", marker:"DemoTruthReportService", installer:"Install8787DemoTruthRoutesP0.js" },
-  { name:"8787 live health truth", target:"SERVICES/digital_coo/ExecutiveRuntimeHealthService.js", marker:"MILES_8787_HEALTH_TRUTH_P0", installer:"Install8787HealthTruthP0.js" }
+  { name:"8787 live health truth", target:"SERVICES/digital_coo/ExecutiveRuntimeHealthService.js", marker:"const liveProductionRuntime = this.livePm2Runtime();", installer:"Install8787HealthTruthP0_v2.js" }
 ];
 
 console.log("=== MILES PRODUCTION RECOVERY ALL P0 ===");
