@@ -27,7 +27,19 @@ $canonicalFiles = @(
   'GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md',
   'SERVICES/WorkforceService.js',
   'CONNECTORS/MILES/connector.js',
-  'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js'
+  'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
+  'SERVICES/revenue/ProspectGrowthAssessmentService.js',
+  'SERVICES/revenue/ProspectDemoPresentationService.js',
+  'SERVICES/orion/AwardHistoryTruthService.js',
+  'SERVICES/governance/DemoProtectionService.js',
+  'SERVICES/digital_coo/ProspectDemoTruthService.js',
+  'SERVICES/digital_coo/ProspectDemoRuntimeService.js',
+  'SERVICES/digital_coo/public/demo.html',
+  'SERVICES/digital_coo/public/demo.js',
+  'SERVICES/digital_coo/public/demo.css',
+  'SCRIPTS/Install8787ProspectDemoTruthP0.js',
+  'SCRIPTS/TestMilesProspectDemoAcceptanceP0.js',
+  'TESTS/Test_ProspectDemoTruthP0.js'
 )
 
 foreach ($file in $canonicalFiles) {
@@ -78,7 +90,7 @@ foreach ($file in $supportFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== CONSOLIDATED DEPLOY + CLEAN RUNTIME REPAIR ==="
+Write-Host "`n=== PHASE 1: PRODUCTION RECOVERY ACCEPTANCE ==="
 node .\SCRIPTS\DeployMilesProductionRecoveryAllP0.js --repair-runtime
 $DeployExit = $LASTEXITCODE
 
@@ -92,7 +104,49 @@ if ($DeployExit -ne 0) {
   if (Test-Path $probe) { Get-Content $probe -Tail 24 | Out-Host }
   $mem = Join-Path $Root 'DATA\runtime_guardian\worker_memory_latest.json'
   if (Test-Path $mem) { Get-Content $mem -Raw | Out-Host }
-  throw 'Full-system reconciliation failed an acceptance gate. No local branch history was changed.'
+  throw 'Full-system reconciliation failed production acceptance. No local branch history was changed.'
+}
+
+Write-Host "`n=== PHASE 2: PROSPECT DEMO STATIC + REGRESSION GATES ==="
+$demoChecks = @(
+  'SERVICES\revenue\ProspectGrowthAssessmentService.js',
+  'SERVICES\revenue\ProspectDemoPresentationService.js',
+  'SERVICES\orion\AwardHistoryTruthService.js',
+  'SERVICES\digital_coo\ProspectDemoTruthService.js',
+  'SERVICES\digital_coo\ProspectDemoRuntimeService.js',
+  'SERVICES\digital_coo\public\demo.js',
+  'SCRIPTS\Install8787ProspectDemoTruthP0.js',
+  'SCRIPTS\TestMilesProspectDemoAcceptanceP0.js',
+  'TESTS\Test_ProspectDemoTruthP0.js'
+)
+foreach ($file in $demoChecks) {
+  node --check $file
+  if ($LASTEXITCODE -ne 0) { throw "Prospect demo syntax gate failed: $file" }
+  Write-Host "[DEMO CHECK OK] $file"
+}
+
+node .\TESTS\Test_ProspectDemoTruthP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Prospect demo no-fabrication regression test failed.' }
+
+Write-Host "`n=== PHASE 3: INSTALL 8787 REAL-PROSPECT DEMO ==="
+node .\SCRIPTS\Install8787ProspectDemoTruthP0.js
+if ($LASTEXITCODE -ne 0) { throw '8787 prospect demo route installation failed.' }
+
+node --check .\SERVICES\digital_coo\MilesCommandCenter.js
+if ($LASTEXITCODE -ne 0) { throw 'MilesCommandCenter syntax failed after prospect-demo reconciliation.' }
+
+pm2 restart miles-command-center | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-command-center after prospect-demo reconciliation.' }
+Start-Sleep -Seconds 8
+
+Write-Host "`n=== PHASE 4: LIVE REAL-CONTRACTOR DEMO ACCEPTANCE ==="
+node .\SCRIPTS\TestMilesProspectDemoAcceptanceP0.js
+$DemoExit = $LASTEXITCODE
+if ($DemoExit -ne 0) {
+  Write-Host "`n=== PROSPECT DEMO ACCEPTANCE EVIDENCE ==="
+  $demoReport = Join-Path $Root 'DATA\runtime_guardian\prospect_demo_acceptance_latest.json'
+  if (Test-Path $demoReport) { Get-Content $demoReport -Raw | Out-Host }
+  throw 'Full-system reconciliation failed the real-prospect demo acceptance gate.'
 }
 
 $AfterBranch = (git branch --show-current).Trim()
@@ -102,8 +156,10 @@ if ($AfterBranch -ne $LocalBranch -or $AfterHead -ne $LocalHead) {
 }
 
 Write-Host "`n=== MILES FULL-SYSTEM RECONCILIATION COMPLETE ==="
+Write-Host "Production acceptance : PASS"
+Write-Host "Prospect demo acceptance: PASS"
 Write-Host "Local Git state preserved: $AfterBranch / $AfterHead"
 Write-Host "8787 Command Center : http://localhost:8787"
-Write-Host "8787 Demo           : http://localhost:8787/demo"
+Write-Host "8787 Prospect Demo  : http://localhost:8787/demo"
 Write-Host "Executive Dashboard : http://127.0.0.1:8737"
 Write-Host "Reports             : DATA\runtime_guardian"
