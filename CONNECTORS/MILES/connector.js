@@ -4,133 +4,56 @@
   MILES Enterprise
   File: CONNECTORS/MILES/connector.js
 
-  Purpose:
-  Route MILES-native connector actions to their authoritative
-  internal execution services.
-
-  Routing policy:
-  - Business orchestration actions go to runtime business services.
-  - Capability-building actions go to the autonomous capability builder.
-  - Repository actions go to RepositorySearchService.
-  - Unsupported actions fail explicitly and are never silently rerouted.
+  Canonical production policy:
+  - Do not eagerly load the business execution/capability-building stack at connector registration.
+  - Resolve each action handler only when that action is executed.
+  - Cache resolved handlers after first use.
 */
 
-const businessExecutionEngine =
-  require("../../SERVICES/BusinessExecutionEngineService");
-
-const providerAuthority =
-  require("../../SERVICES/ProviderAuthorityRegistryService");
-
-const providerSynchronization =
-  require("../../SERVICES/ProviderSynchronizationService");
-
-const instantlyLive =
-  require("../../SERVICES/InstantlyLiveIntegrationService");
-
-const controlledWrite =
-  require("../../SERVICES/ControlledWriteService");
-
-const builder =
-  require("../../SERVICES/capability_builder/AutonomousCapabilityBuilderService");
-
-const repositorySearch =
-  require("../../SERVICES/RepositorySearchService");
-
-/*
-  Authoritative MILES connector routing.
-
-  BUSINESS_EXECUTION owns the complete orchestration sequence.
-
-  The individual phase routes remain available because
-  CapabilityDispatcherService may dispatch them independently.
-*/
-const ACTION_HANDLERS = Object.freeze({
-  BUSINESS_EXECUTION:
-    businessExecutionEngine,
-
-  PROVIDER_AUTHORITY:
-    providerAuthority,
-
-  PROVIDER_AUTHORITY_REGISTRY:
-    providerAuthority,
-
-  PROVIDER_SYNC:
-    providerSynchronization,
-
-  PROVIDER_SYNCHRONIZATION:
-    providerSynchronization,
-
-  INSTANTLY_LIVE:
-    instantlyLive,
-
-  CONTROLLED_WRITE:
-    controlledWrite,
-
-  BUILD_CAPABILITY:
-    builder,
-
-  CAPABILITY_BUILD:
-    builder,
-
-  AUTONOMOUS_CAPABILITY_BUILD:
-    builder,
-
-  REPOSITORY_SEARCH:
-    repositorySearch,
-
-  CODE_WRITER_CAPABILITY_AUDIT:
-    repositorySearch,
-
-  REPOSITORY_EVIDENCE_REPORT:
-    repositorySearch
+const HANDLER_PATHS = Object.freeze({
+  BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineService",
+  PROVIDER_AUTHORITY: "../../SERVICES/ProviderAuthorityRegistryService",
+  PROVIDER_AUTHORITY_REGISTRY: "../../SERVICES/ProviderAuthorityRegistryService",
+  PROVIDER_SYNC: "../../SERVICES/ProviderSynchronizationService",
+  PROVIDER_SYNCHRONIZATION: "../../SERVICES/ProviderSynchronizationService",
+  INSTANTLY_LIVE: "../../SERVICES/InstantlyLiveIntegrationService",
+  CONTROLLED_WRITE: "../../SERVICES/ControlledWriteService",
+  BUILD_CAPABILITY: "../../SERVICES/capability_builder/AutonomousCapabilityBuilderService",
+  CAPABILITY_BUILD: "../../SERVICES/capability_builder/AutonomousCapabilityBuilderService",
+  AUTONOMOUS_CAPABILITY_BUILD: "../../SERVICES/capability_builder/AutonomousCapabilityBuilderService",
+  REPOSITORY_SEARCH: "../../SERVICES/RepositorySearchService",
+  CODE_WRITER_CAPABILITY_AUDIT: "../../SERVICES/RepositorySearchService",
+  REPOSITORY_EVIDENCE_REPORT: "../../SERVICES/RepositorySearchService"
 });
 
+const HANDLER_CACHE = new Map();
+
 function resolveAction(task = {}) {
-  const payload =
-    task.payload || {};
-
-  const plan =
-    payload.plan ||
-    task.plan ||
-    {};
-
+  const payload = task.payload || {};
+  const plan = payload.plan || task.plan || {};
   return String(
     task.action ||
     payload.action ||
     plan.action ||
     task.type ||
     "BUILD_CAPABILITY"
-  )
-    .trim()
-    .toUpperCase();
+  ).trim().toUpperCase();
 }
 
-async function invokeHandler(
-  handler,
-  task,
-  action
-) {
-  if (
-    handler &&
-    typeof handler.execute === "function"
-  ) {
-    return handler.execute(task);
-  }
+function loadHandler(action) {
+  const modulePath = HANDLER_PATHS[action];
+  if (!modulePath) return null;
+  if (HANDLER_CACHE.has(modulePath)) return HANDLER_CACHE.get(modulePath);
+  const handler = require(modulePath);
+  HANDLER_CACHE.set(modulePath, handler);
+  return handler;
+}
 
-  if (
-    handler &&
-    typeof handler.run === "function"
-  ) {
-    return handler.run(task);
-  }
-
-  if (typeof handler === "function") {
-    return handler(task);
-  }
-
-  throw new Error(
-    `MILES handler for "${action}" exposes neither execute() nor run().`
-  );
+async function invokeHandler(handler, task, action) {
+  if (handler && typeof handler.execute === "function") return handler.execute(task);
+  if (handler && typeof handler.run === "function") return handler.run(task);
+  if (typeof handler === "function") return handler(task);
+  throw new Error(`MILES handler for "${action}" exposes neither execute() nor run().`);
 }
 
 module.exports = {
@@ -140,12 +63,11 @@ module.exports = {
     return {
       ok: true,
       status: "READY",
-      service:
-        "MILES Internal Capability Connector",
-      supportedActions:
-        Object.keys(ACTION_HANDLERS),
-      initializedAt:
-        new Date().toISOString()
+      service: "MILES Internal Capability Connector",
+      supportedActions: Object.keys(HANDLER_PATHS),
+      lazyHandlers: true,
+      handlersLoaded: HANDLER_CACHE.size,
+      initializedAt: new Date().toISOString()
     };
   },
 
@@ -153,62 +75,44 @@ module.exports = {
     return {
       status: "OK",
       ok: true,
-      service:
-        "MILES Internal Capability Connector",
-      message:
-        "Explicit MILES business and capability routing operational.",
-      supportedActionCount:
-        Object.keys(ACTION_HANDLERS).length,
-      checkedAt:
-        new Date().toISOString()
+      service: "MILES Internal Capability Connector",
+      message: "Explicit MILES business and capability routing operational.",
+      supportedActionCount: Object.keys(HANDLER_PATHS).length,
+      lazyHandlers: true,
+      handlersLoaded: HANDLER_CACHE.size,
+      checkedAt: new Date().toISOString()
     };
   },
 
   async execute(task = {}) {
-    const action =
-      resolveAction(task);
-
-    const handler =
-      ACTION_HANDLERS[action];
-
+    const action = resolveAction(task);
+    const handler = loadHandler(action);
     if (!handler) {
-      const supportedActions =
-        Object.keys(ACTION_HANDLERS)
-          .sort();
-
-      const error =
-        new Error(
-          `Unsupported MILES connector action: ${action}. ` +
-          `Supported actions: ${supportedActions.join(", ")}`
-        );
-
-      error.code =
-        "MILES_ACTION_NOT_SUPPORTED";
-
-      error.action =
-        action;
-
-      error.supportedActions =
-        supportedActions;
-
+      const supportedActions = Object.keys(HANDLER_PATHS).sort();
+      const error = new Error(
+        `Unsupported MILES connector action: ${action}. Supported actions: ${supportedActions.join(", ")}`
+      );
+      error.code = "MILES_ACTION_NOT_SUPPORTED";
+      error.action = action;
+      error.supportedActions = supportedActions;
       throw error;
     }
-
-    return invokeHandler(
-      handler,
-      task,
-      action
-    );
+    return invokeHandler(handler, task, action);
   },
 
   async shutdown() {
+    for (const handler of new Set(HANDLER_CACHE.values())) {
+      try {
+        if (handler && typeof handler.shutdown === "function") await handler.shutdown();
+        else if (handler && typeof handler.stop === "function") await handler.stop();
+      } catch {}
+    }
+    HANDLER_CACHE.clear();
     return {
       ok: true,
       status: "SHUTDOWN",
-      service:
-        "MILES Internal Capability Connector",
-      shutdownAt:
-        new Date().toISOString()
+      service: "MILES Internal Capability Connector",
+      shutdownAt: new Date().toISOString()
     };
   }
 };
