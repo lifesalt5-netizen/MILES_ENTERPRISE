@@ -47,6 +47,7 @@ jobs:
             'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
             'SCRIPTS\ReconcileMilesProductionSurfaces.js',
             'SCRIPTS\MilesProductionGuardian.js',
+            'SCRIPTS\MilesEphemeralExecutor.js',
             'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
             'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
             'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
@@ -54,6 +55,7 @@ jobs:
             'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
             'SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
             'SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js',
+            'SCRIPTS\TestMilesCoreHttpProbeP0.js',
             'SCRIPTS\StartMilesApi.js',
             'StartProductionSystem.js',
             'SERVICES\digital_coo\MilesCommandCenter.js',
@@ -70,6 +72,7 @@ jobs:
             'CONNECTORS\ORION\connector.js',
             'TESTS\TestGovernanceNegationP0.js',
             'TESTS\TestExecutiveMissionExecutionP0.js',
+            'TESTS\TestEphemeralConnectorBootstrapP0.js',
             'StartP2GCCustomerDelivery.js',
             'StartExecutiveDashboard.js',
             'StartMiles.js',
@@ -95,6 +98,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Negation-aware governance tests failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Executive mission execution test failed.' }
+          node .\TESTS\TestEphemeralConnectorBootstrapP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Ephemeral child connector bootstrap test failed.' }
           node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Customer delivery acceptance failed.' }
           node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
