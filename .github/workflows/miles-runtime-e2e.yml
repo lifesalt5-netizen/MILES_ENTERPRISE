@@ -58,10 +58,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Direct PM2 state query failed.' }
           Write-Host '[PM2] clean runner state reachable through direct Node transport'
 
-      - name: Run isolated P2GC service acceptance
+      - name: Run isolated P2GC and mission acceptance
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
+          node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Business work planner execution contract failed.' }
+          node .\TESTS\TestExecutiveMissionExecutionP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Read-only executive mission semantics failed.' }
           node .\TESTS\TestEphemeralConnectorBootstrapP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Ephemeral connector bootstrap acceptance failed.' }
           node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
@@ -118,7 +122,7 @@ jobs:
             $failures | ConvertTo-Json -Depth 6 | Write-Host
             throw 'Final MILES/P2GC surface and CEO command acceptance failed.'
           }
-          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful persisted result + customer/growth/demo layer'
+          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful read-only result with zero external side effects + customer/growth/demo layer'
 
       - name: Persist PM2 map and show logs through direct transport
         if: always()
