@@ -43,9 +43,17 @@ jobs:
             'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
             'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
             'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
+            'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
+            'SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
+            'SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js',
             'SCRIPTS\StartMilesApi.js',
             'StartProductionSystem.js',
             'SERVICES\digital_coo\MilesCommandCenter.js',
+            'SERVICES\DashboardServerService.js',
+            'SERVICES\customer\P2GCCustomerDeliveryService.js',
+            'SERVICES\growth\P2GCGrowthAssetService.js',
+            'SERVICES\revenue\RevenueTruthGateService.js',
+            'StartP2GCCustomerDelivery.js',
             'StartExecutiveDashboard.js',
             'StartMiles.js',
             'StartAutonomousCOO.js',
@@ -58,11 +66,18 @@ jobs:
             Write-Host "[NODE CHECK OK] $file"
           }
 
-      - name: PM2 reconciliation regression tests
+      - name: Internal isolated acceptance gates
         shell: powershell
         run: |
+          $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
           if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation unit tests failed.' }
+          node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Customer delivery acceptance failed.' }
+          node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Growth asset acceptance failed.' }
+          node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
+          if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap acceptance failed.' }
 
       - name: Install PM2 for Windows integration
         shell: powershell
