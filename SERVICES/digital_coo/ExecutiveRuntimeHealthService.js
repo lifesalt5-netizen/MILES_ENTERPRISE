@@ -34,89 +34,31 @@ function parseTimestamp(value) {
 class ExecutiveRuntimeHealthService {
   constructor(options = {}) {
     this.service = "EXECUTIVE_RUNTIME_HEALTH";
-    this.rootDir =
-      options.rootDir ||
-      process.env.MILES_ROOT ||
-      path.resolve(__dirname, "..", "..");
-
-    this.runtimeDir =
-      options.runtimeDir ||
-      path.join(this.rootDir, "DATA", "runtime");
-
-    this.bootstrapStatusFile =
-      options.bootstrapStatusFile ||
-      path.join(this.runtimeDir, "production_bootstrap_status.json");
-
-    this.workerStatusFile =
-      options.workerStatusFile ||
-      path.join(this.runtimeDir, "worker_runtime_status.json");
-
-    this.maxAgeMs = positiveNumber(
-      options.maxAgeMs || process.env.MILES_EXECUTIVE_HEALTH_MAX_AGE_MS,
-      90000
-    );
-
+    this.rootDir = options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, "..", "..");
+    this.runtimeDir = options.runtimeDir || path.join(this.rootDir, "DATA", "runtime");
+    this.bootstrapStatusFile = options.bootstrapStatusFile || path.join(this.runtimeDir, "production_bootstrap_status.json");
+    this.workerStatusFile = options.workerStatusFile || path.join(this.runtimeDir, "worker_runtime_status.json");
+    this.maxAgeMs = positiveNumber(options.maxAgeMs || process.env.MILES_EXECUTIVE_HEALTH_MAX_AGE_MS, 90000);
     this.now = options.now || (() => Date.now());
   }
 
   readSnapshot(label, filePath) {
-    if (!fs.existsSync(filePath)) {
-      return { ok: false, label, status: "SNAPSHOT_MISSING", filePath };
-    }
-
+    if (!fs.existsSync(filePath)) return { ok: false, label, status: "SNAPSHOT_MISSING", filePath };
     try {
       const snapshot = JSON.parse(fs.readFileSync(filePath, "utf8"));
       const generatedAtMs = parseTimestamp(snapshot.generatedAt);
-
-      if (generatedAtMs === null) {
-        return {
-          ok: false,
-          label,
-          status: "SNAPSHOT_TIMESTAMP_INVALID",
-          filePath,
-          snapshot
-        };
-      }
-
+      if (generatedAtMs === null) return { ok: false, label, status: "SNAPSHOT_TIMESTAMP_INVALID", filePath, snapshot };
       const ageMs = Math.max(0, this.now() - generatedAtMs);
-      if (ageMs > this.maxAgeMs) {
-        return {
-          ok: false,
-          label,
-          status: "SNAPSHOT_STALE",
-          filePath,
-          ageMs,
-          maxAgeMs: this.maxAgeMs,
-          snapshot
-        };
-      }
-
-      return {
-        ok: true,
-        label,
-        status: "SNAPSHOT_CURRENT",
-        filePath,
-        ageMs,
-        snapshot
-      };
+      if (ageMs > this.maxAgeMs) return { ok: false, label, status: "SNAPSHOT_STALE", filePath, ageMs, maxAgeMs: this.maxAgeMs, snapshot };
+      return { ok: true, label, status: "SNAPSHOT_CURRENT", filePath, ageMs, snapshot };
     } catch (error) {
-      return {
-        ok: false,
-        label,
-        status: "SNAPSHOT_INVALID",
-        filePath,
-        error: error.message
-      };
+      return { ok: false, label, status: "SNAPSHOT_INVALID", filePath, error: error.message };
     }
   }
 
   livePm2Runtime() {
     try {
-      const raw = execSync("pm2 jlist", {
-        cwd: this.rootDir,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"]
-      });
+      const raw = execSync("pm2 jlist", { cwd: this.rootDir, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
       const apps = JSON.parse(raw);
       const byName = new Map(apps.map(app => [app.name, app]));
       const services = REQUIRED_PM2_APPS.map(name => {
@@ -132,7 +74,6 @@ class ExecutiveRuntimeHealthService {
         };
       });
       const ok = services.every(service => service.running && service.ready && service.pid);
-
       return {
         ok,
         status: ok ? "HEALTHY" : "DEGRADED",
@@ -146,22 +87,15 @@ class ExecutiveRuntimeHealthService {
         generatedAt: new Date(this.now()).toISOString()
       };
     } catch (error) {
-      return {
-        ok: false,
-        status: "UNAVAILABLE",
-        source: "PM2_LIVE",
-        error: error.message
-      };
+      return { ok: false, status: "UNAVAILABLE", source: "PM2_LIVE", error: error.message };
     }
   }
 
   validateProductionRuntime(result) {
     if (!result.ok) return result;
-
     const snapshot = result.snapshot;
     const services = Array.isArray(snapshot.services) ? snapshot.services : [];
     const byName = new Map(services.map(service => [service.name, service]));
-
     const requiredServices = REQUIRED_SERVICES.map(name => {
       const service = byName.get(name);
       return {
@@ -170,26 +104,11 @@ class ExecutiveRuntimeHealthService {
         ready: service?.ready === true,
         pid: service?.pid || null,
         restartCount: Number(service?.restartCount || 0),
-        ok:
-          service?.running === true &&
-          service?.ready === true &&
-          Number.isInteger(Number(service?.pid)) &&
-          Number(service.pid) > 0
+        ok: service?.running === true && service?.ready === true && Number(service?.pid) > 0
       };
     });
-
-    const restartCount = requiredServices.reduce(
-      (total, service) => total + service.restartCount,
-      0
-    );
-
-    const ok =
-      snapshot.ok === true &&
-      snapshot.startupComplete === true &&
-      snapshot.shuttingDown !== true &&
-      services.length === REQUIRED_SERVICES.length &&
-      requiredServices.every(service => service.ok);
-
+    const restartCount = requiredServices.reduce((total, service) => total + service.restartCount, 0);
+    const ok = snapshot.ok === true && snapshot.startupComplete === true && snapshot.shuttingDown !== true && services.length === REQUIRED_SERVICES.length && requiredServices.every(service => service.ok);
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
@@ -207,16 +126,9 @@ class ExecutiveRuntimeHealthService {
 
   validateWorker(result) {
     if (!result.ok) return result;
-
     const snapshot = result.snapshot;
     const lifecycle = snapshot.lifecycle || {};
-    const ok =
-      snapshot.ok === true &&
-      lifecycle.started === true &&
-      lifecycle.shuttingDown !== true &&
-      Number.isInteger(Number(snapshot.pid)) &&
-      Number(snapshot.pid) > 0;
-
+    const ok = snapshot.ok === true && lifecycle.started === true && lifecycle.shuttingDown !== true && Number(snapshot.pid) > 0;
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
@@ -224,38 +136,18 @@ class ExecutiveRuntimeHealthService {
       generatedAt: snapshot.generatedAt,
       ageMs: result.ageMs,
       lifecycle,
+      memory: snapshot.memory || null,
       evidence: result.filePath
     };
   }
 
   validateQueue(result) {
     if (!result.ok) return result;
-
     const queue = result.snapshot.queue;
-    const fields = [
-      "total",
-      "queued",
-      "running",
-      "completed",
-      "failed",
-      "awaitingApproval",
-      "other"
-    ];
-
-    const numeric =
-      queue &&
-      fields.every(field =>
-        Number.isInteger(Number(queue[field])) && Number(queue[field]) >= 0
-      );
-
-    const classified = numeric
-      ? fields
-          .filter(field => field !== "total")
-          .reduce((total, field) => total + Number(queue[field]), 0)
-      : null;
-
+    const fields = ["total", "queued", "running", "completed", "failed", "awaitingApproval", "other"];
+    const numeric = queue && fields.every(field => Number.isInteger(Number(queue[field])) && Number(queue[field]) >= 0);
+    const classified = numeric ? fields.filter(field => field !== "total").reduce((total, field) => total + Number(queue[field]), 0) : null;
     const ok = numeric && Number(queue.total) === classified;
-
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
@@ -269,24 +161,37 @@ class ExecutiveRuntimeHealthService {
 
   validateProviders(result) {
     if (!result.ok) return result;
-
     const resolution = result.snapshot.resolutionHealth || {};
+
+    const providerRegistry = resolution.providerRegistry || {};
+    const capabilityRegistry = resolution.capabilityRegistry || {};
+    const connectorRegistry = resolution.connectorRegistry || {};
+    const routing = resolution.routing || {};
+
     const components = {
-      providerRegistry: resolution.providerRegistry?.ok === true,
-      capabilityRegistry: resolution.capabilityRegistry?.ok === true,
-      connectorRegistry: resolution.connectorRegistry?.ok === true,
-      routing: resolution.routing?.ok === true
+      providerRegistry: providerRegistry.ok === true,
+      capabilityRegistry: capabilityRegistry.ok === true,
+      connectorRegistry: connectorRegistry.ok === true,
+      routing: routing.ok === true
     };
 
     const ok = resolution.ok === true && Object.values(components).every(Boolean);
+
+    const firstNumber = (...values) => {
+      for (const value of values) {
+        const n = Number(value);
+        if (Number.isFinite(n)) return n;
+      }
+      return null;
+    };
 
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
       components,
-      providerCount: resolution.providerRegistry?.validation?.providerCount ?? null,
-      capabilityCount: resolution.capabilityRegistry?.capabilityCount ?? null,
-      connectorCount: resolution.connectorRegistry?.connectorCount ?? null,
+      providerCount: firstNumber(providerRegistry.count, providerRegistry.providerCount, providerRegistry.validation?.providerCount),
+      capabilityCount: firstNumber(capabilityRegistry.count, capabilityRegistry.capabilityCount),
+      connectorCount: firstNumber(connectorRegistry.count, connectorRegistry.connectorCount),
       checkedAt: resolution.checkedAt || null,
       generatedAt: result.snapshot.generatedAt,
       ageMs: result.ageMs,
@@ -295,27 +200,15 @@ class ExecutiveRuntimeHealthService {
   }
 
   async healthCheck() {
-    const bootstrapSnapshot = this.readSnapshot(
-      "productionBootstrap",
-      this.bootstrapStatusFile
-    );
-    const workerSnapshot = this.readSnapshot(
-      "workerRuntime",
-      this.workerStatusFile
-    );
-
-    const snapshotProductionRuntime =
-      this.validateProductionRuntime(bootstrapSnapshot);
+    const bootstrapSnapshot = this.readSnapshot("productionBootstrap", this.bootstrapStatusFile);
+    const workerSnapshot = this.readSnapshot("workerRuntime", this.workerStatusFile);
+    const snapshotProductionRuntime = this.validateProductionRuntime(bootstrapSnapshot);
     const liveProductionRuntime = this.livePm2Runtime();
-
     const productionRuntime = liveProductionRuntime.ok
       ? {
           ...liveProductionRuntime,
           snapshotStatus: snapshotProductionRuntime.status || null,
-          snapshotEvidence:
-            snapshotProductionRuntime.evidence ||
-            bootstrapSnapshot.filePath ||
-            null
+          snapshotEvidence: snapshotProductionRuntime.evidence || bootstrapSnapshot.filePath || null
         }
       : snapshotProductionRuntime;
 
@@ -325,9 +218,7 @@ class ExecutiveRuntimeHealthService {
       queue: this.validateQueue(workerSnapshot),
       providers: this.validateProviders(workerSnapshot)
     };
-
     const ok = Object.values(components).every(component => component.ok === true);
-
     return {
       ok,
       service: this.service,
