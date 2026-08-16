@@ -41,6 +41,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $files = @(
+            'CORE\ExecutionActionContracts.js',
             'SCRIPTS\ReconcilePm2Process.js',
             'SCRIPTS\Pm2DirectCommand.js',
             'SCRIPTS\TestReconcilePm2ProcessUnit.js',
@@ -69,6 +70,7 @@ jobs:
             'SERVICES\BusinessWorkPlannerService.js',
             'SERVICES\ProviderAuthorityRegistryService.js',
             'SERVICES\governance\CommandPreflightService.js',
+            'SERVICES\governance\ExecutionActionCapabilityService.js',
             'SERVICES\governance\PolicyEngineService.js',
             'SERVICES\governance\DemoProtectionService.js',
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
@@ -83,6 +85,7 @@ jobs:
             'TESTS\TestBusinessWorkPlannerExecutionContractP0.js',
             'TESTS\TestEphemeralConnectorBootstrapP0.js',
             'TESTS\TestProviderAuthorityEnvironmentP0.js',
+            'TESTS\TestExecutionActionContractsP0.js',
             'TESTS\TestCommandPreflightP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js',
@@ -115,6 +118,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Negation-aware governance tests failed.' }
           node .\TESTS\TestProviderAuthorityEnvironmentP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Provider authority environment truth test failed.' }
+          node .\TESTS\TestExecutionActionContractsP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Execution action contract test failed.' }
           node .\TESTS\TestCommandPreflightP0.js
           if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight contract failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
