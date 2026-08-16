@@ -16,12 +16,24 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
 
 (async()=>{
   for(const [name,file] of [
-    ["MILES Digital COO","StartAutonomousCOO.js"],["Executive Dashboard","StartExecutiveDashboard.js"],["Command Center","SERVICES/digital_coo/MilesCommandCenter.js"],["Desktop UI","StartMiles.js"],["Worker Runtime","StartProductionSystem.js"],["Workflow Engine","SERVICES/WorkflowEngineService.js"],["Queue Management","CORE/TaskQueue.js"],["Business Operations Bridge","SERVICES/BusinessOperationsBridgeService.js"],["Event Bus","CORE/EventBus.js"],["Revenue Truth Gate","SERVICES/revenue/RevenueTruthGateService.js"]
+    ["MILES Digital COO","StartAutonomousCOO.js"],
+    ["Executive Dashboard","StartExecutiveDashboard.js"],
+    ["Command Center","SERVICES/digital_coo/MilesCommandCenter.js"],
+    ["Desktop UI","StartMiles.js"],
+    ["Worker Runtime","StartProductionSystem.js"],
+    ["Workflow Engine","SERVICES/WorkflowService.js"],
+    ["Queue Management","CORE/TaskQueue.js"],
+    ["Business Operations Bridge","SERVICES/BusinessOperationsBridgeService.js"],
+    ["Event Bus","CORE/EventBus.js"],
+    ["Revenue Truth Gate","SERVICES/revenue/RevenueTruthGateService.js"]
   ]) internalFile("OPERATIONS",name,file);
   internalFile("OPERATIONS","Provider Framework","SERVICES/ProviderRouterService.js");
   internalFile("OPERATIONS","Self-Development Workers","SERVICES/WorkerBootstrap.js");
   internalFile("OPERATIONS","Marketing Operations","PROVIDERS/providers/MarketingProvider.js");
   internalFile("OPERATIONS","ORION Intelligence Platform","CONNECTORS/ORION/connector.js");
+
+  const revenueTruth=require("../SERVICES/revenue/RevenueTruthGateService").run();
+  add("OPERATIONS","Revenue Truth Gate executes",revenueTruth.ok&&revenueTruth.rules?.syntheticExcluded?"PASS":"FAIL_INTERNAL",`real=${revenueTruth.counts?.real||0} excluded=${revenueTruth.counts?.excludedSynthetic||0}`);
 
   const providerRouter=require("../SERVICES/ProviderRouterService");
   const providerStatus=providerRouter.status();
@@ -33,6 +45,10 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
     if(p.credentialsPresent) add("CONNECTORS",key,p.capabilities.write.enabled?"PASS":"PASS_READ_ONLY",p.status);
     else add("CONNECTORS",key,"BLOCKED_EXTERNAL",`missing: ${p.credentials?.missingEnv?.join(", ")||"credentials"}`);
   }
+  add("CONNECTORS","MillionVerifier",process.env.MILLIONVERIFIER_API_KEY?"PASS_READ_ONLY":"BLOCKED_EXTERNAL",process.env.MILLIONVERIFIER_API_KEY?"credential present":"MILLIONVERIFIER_API_KEY not configured in this environment");
+  add("CONNECTORS","LinkedIn publisher",process.env.LINKEDIN_ACCESS_TOKEN?"PASS_READ_ONLY":"BLOCKED_EXTERNAL",process.env.LINKEDIN_ACCESS_TOKEN?"credential present":"governed LinkedIn publisher credential not configured");
+  add("CONNECTORS","B12 publisher",process.env.B12_API_KEY?"PASS_READ_ONLY":"BLOCKED_EXTERNAL",process.env.B12_API_KEY?"credential present":"governed B12 publisher credential not configured");
+  add("CONNECTORS","Payment provider",process.env.STRIPE_SECRET_KEY?"PASS_READ_ONLY":"BLOCKED_EXTERNAL",process.env.STRIPE_SECRET_KEY?"credential present":"payment provider credential not configured; ledger remains fail-closed");
 
   const WorkerExecutionBridge=require("../SERVICES/WorkerExecutionBridge");
   const registry=require("../SERVICES/WorkerRegistry");
@@ -40,10 +56,25 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
   for(const w of ["SELF_DEVELOPMENT","ARCHITECT","BUILDER","VALIDATOR","TESTER","DEPLOYER","RECOVERY","ATLAS"]){const worker=registry.get(w);add("WORKFORCE",w,worker&&typeof worker.execute==="function"?"PASS":"FAIL_INTERNAL",worker?"registered":"missing");}
 
   for(const [name,file] of [
-    ["Executive Government Growth Blueprint","SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js"],["Discovery process","SERVICES/revenue/ProspectGrowthAssessmentService.js"],["Gap analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],["Competitor analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],["Agency alignment","SERVICES/revenue/ProspectGrowthAssessmentService.js"],["Proposal system","SERVICES/growth/P2GCGrowthAssetService.js"],["Qualification gate","GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"],["GO/NO-GO framework","GOVERNANCE"],["Capture positioning","CONNECTORS/ORION/connector.js"]
+    ["Executive Government Growth Blueprint","SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js"],
+    ["Discovery process","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
+    ["Gap analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
+    ["Competitor analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
+    ["Agency alignment","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
+    ["Proposal system","SERVICES/growth/P2GCGrowthAssetService.js"],
+    ["Qualification gate","GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"],
+    ["GO/NO-GO framework","GOVERNANCE"],
+    ["Capture positioning","CONNECTORS/ORION/connector.js"]
   ]) internalFile("SALES",name,file);
 
-  for(const [name,file] of [["Campaign segmentation","SERVICES/revenue/RevenueSegmentReadinessService.js"],["MillionVerifier verification","SERVICES/revenue/RevenueVerificationReconciliationService.js"],["Verified lead activation","SERVICES/revenue/RevenueVerifiedSegmentActivationService.js"],["Reply routing","SERVICES/ReplyIntelligenceEngine.js"],["CRM workflow","SERVICES/customer/P2GCCustomerDeliveryService.js"],["Monthly data refresh","SERVICES/revenue/RevenueLeadInventoryClassificationService.js"]]) internalFile("MARKETING",name,file);
+  for(const [name,file] of [
+    ["Campaign segmentation","SERVICES/revenue/RevenueSegmentReadinessService.js"],
+    ["MillionVerifier verification","SERVICES/revenue/RevenueVerificationReconciliationService.js"],
+    ["Verified lead activation","SERVICES/revenue/RevenueVerifiedSegmentActivationService.js"],
+    ["Reply routing","SERVICES/ReplyIntelligenceEngine.js"],
+    ["CRM workflow","SERVICES/customer/P2GCCustomerDeliveryService.js"],
+    ["Monthly data refresh","SERVICES/revenue/RevenueLeadInventoryClassificationService.js"]
+  ]) internalFile("MARKETING",name,file);
 
   const customer=require("../SERVICES/customer/P2GCCustomerDeliveryService");
   add("CUSTOMER DELIVERY","CRM",customer.healthCheck().ok?"PASS":"FAIL_INTERNAL");
@@ -55,15 +86,14 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
   const growth=require("../SERVICES/growth/P2GCGrowthAssetService");
   const gd=growth.dashboard();
   for(const name of ["Proposal library","Knowledge base","Social media automation","Newsletter","Case studies","Lead magnets","Website backlog"]) add("GROWTH ASSETS",name,gd.ok?"PASS_INTERNAL":"FAIL_INTERNAL");
-  add("GROWTH ASSETS","LinkedIn live publishing",gd.publishing.linkedin?"PASS":"BLOCKED_EXTERNAL","governed publisher not configured");
-  add("GROWTH ASSETS","B12 live publishing",gd.publishing.b12?"PASS":"BLOCKED_EXTERNAL","governed publisher not configured");
-  add("GROWTH ASSETS","Newsletter live publishing",gd.publishing.emailNewsletter?"PASS":"BLOCKED_EXTERNAL","governed publisher not configured");
+  add("GROWTH ASSETS","LinkedIn content preparation",gd.ok?"PASS_INTERNAL":"FAIL_INTERNAL","publishing remains governed");
+  add("GROWTH ASSETS","B12 website change preparation",gd.ok?"PASS_INTERNAL":"FAIL_INTERNAL","publishing remains governed");
 
   for(const [name,file] of [["SAM","CONNECTORS/ORION/connector.js"],["GSA","CONNECTORS/ORION/connector.js"],["VA","CONNECTORS/ORION/connector.js"],["SBA","CONNECTORS/ORION/connector.js"],["Award data","CONNECTORS/ORION/connector.js"],["Forecast data","CONNECTORS/ORION/connector.js"],["Recompete data","CONNECTORS/ORION/connector.js"],["SLED data","CONNECTORS/ORION/connector.js"]]) internalFile("DATA",name,file);
 
-  for(const n of ["Eleanor","Jeff","Victoria","Allison","Claudia","Daniel","Cora","Jackson","Keith","Marcus","Maya","Riley","Atlas","Aden","Natalie"]) add("AI TWINS",n,exists("CONFIG/WORKFORCE/MILES_WORKFORCE_REGISTRY.json")?"PASS_INTERNAL":"FAIL_INTERNAL","registry-backed role requires production data/provider acceptance");
+  for(const n of ["Eleanor","Jeff","Victoria","Allison","Claudia","Daniel","Cora","Jackson","Keith","Marcus","Maya","Riley","Atlas","Aden","Natalie"]) add("AI TWINS",n,exists("CONFIG/WORKFORCE/MILES_WORKFORCE_REGISTRY.json")?"PASS_INTERNAL":"FAIL_INTERNAL","registry-backed role; live intelligence depends on production ORION/provider truth");
 
-  const endpoints=[["MILES API",3000,"/"],["Command Center",8787,"/api/health"],["CEO Dashboard",8737,"/api/state"],["CEO Revenue",8737,"/api/revenue"],["Desktop UI",3737,"/api/status"],["Customer Delivery",8792,"/api/health"],["Prospect Demo",8791,"/api/health"]];
+  const endpoints=[["MILES API",3000,"/"],["Command Center",8787,"/api/health"],["CEO Dashboard",8737,"/api/state"],["CEO Revenue",8737,"/api/revenue"],["CEO Growth Assets",8737,"/api/growth-assets"],["Desktop UI",3737,"/api/status"],["Customer Delivery",8792,"/api/health"],["Prospect Demo",8791,"/api/health"]];
   for(const [name,port,p] of endpoints){try{const r=await req(port,p);add("LIVE SURFACES",name,r.status===200?"PASS":"FAIL_INTERNAL",`http=${r.status}`);}catch(e){add("LIVE SURFACES",name,STRICT?"FAIL_INTERNAL":"NOT_RUNNING_IN_THIS_ENV",e.message);}}
   for(const name of ["miles-api","miles-worker","miles-command-center","miles-executive-dashboard","miles-desktop-ui","miles-autonomous-coo","p2gc-customer-delivery","p2gc-growth-demo"]){const online=pm2(name);add("PM2",name,online?"PASS":(STRICT?"FAIL_INTERNAL":"NOT_RUNNING_IN_THIS_ENV"),online?"online":"not online");}
 
