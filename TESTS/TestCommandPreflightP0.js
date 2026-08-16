@@ -120,19 +120,32 @@ try {
   });
   expect(!writeGoverned.ok && writeGoverned.blockers.some(x => x.code === "PROVIDER_WRITE_GOVERNED"), "external write remains blocked when provider write authority is disabled", writeGoverned.blockers);
 
+  const protectedOperation = {
+    id: "op_approval",
+    source: "MILES_COMMAND_CENTER",
+    provider: "MILES",
+    connector: "MILES",
+    action: "CHANGE_PRICING",
+    approvalRequired: true,
+    command: "Change our pricing."
+  };
+
   const approval = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
-    operation: {
-      id: "op_approval",
-      source: "MILES_COMMAND_CENTER",
-      provider: "MILES",
-      connector: "MILES",
-      action: "CHANGE_PRICING",
-      approvalRequired: true,
-      command: "Change our pricing."
-    },
+    operation: protectedOperation,
     task: { type: "CHANGE_PRICING", payload: {} }
   });
   expect(!approval.ok && approval.blockers.some(x => x.code === "CEO_APPROVAL_REQUIRED"), "protected CEO action cannot enter TaskQueue before approval", approval.blockers);
+
+  const approved = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
+    operation: {
+      ...protectedOperation,
+      approvalDecision: "APPROVED",
+      approvedBy: "CEO",
+      approvedAt: new Date(currentTime).toISOString()
+    },
+    task: { type: "CHANGE_PRICING", payload: {} }
+  });
+  expect(approved.ok && approved.approvalSatisfied === true && approved.checks.some(x => x.code === "CEO_APPROVAL_VERIFIED"), "recorded CEO approval releases protected action to queue", approved);
 
   fs.writeFileSync(path.join(runtime, "task_queue.json"), Buffer.alloc(2 * 1024 * 1024, 32));
   const oversized = makeService({ queueMaxBytes: 1024 * 1024 }).evaluate({
