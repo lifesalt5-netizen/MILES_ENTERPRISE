@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
-const { execSync } = require("child_process");
+const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const OUT_DIR = path.join(ROOT, "DATA", "runtime_guardian");
@@ -60,9 +60,21 @@ function matchesExecution(record, taskId, operationId) {
   const opMention = operationId && text.includes(String(operationId));
   return Boolean(directTask || taskMention || opMention);
 }
+function successfulExecutionResult(value) {
+  if (!value || typeof value !== "object") return false;
+  const status = String(value.status || value.result?.status || value.workforceResult?.status || value.result?.workforceResult?.status || "").toUpperCase();
+  if (["FAILED","ERROR","BLOCKED"].includes(status)) return false;
+  const flags = [
+    value.ok,
+    value.result?.ok,
+    value.workforceResult?.ok,
+    value.result?.workforceResult?.ok
+  ].filter(v => typeof v === "boolean");
+  return flags.includes(true) && !flags.includes(false);
+}
 function pm2State(name) {
   try {
-    const apps = JSON.parse(execSync("pm2 jlist", { cwd: ROOT, encoding: "utf8", stdio:["ignore","pipe","pipe"] }));
+    const apps = parsePm2Jlist(runPm2(["jlist"]).stdout);
     const app = apps.find(item => item.name === name);
     return app ? {
       name,
@@ -148,12 +160,16 @@ function pm2State(name) {
       await sleep(2000);
     }
     add("worker persisted current command result", Boolean(persisted), persistedFile || exact);
+    add("persisted command result succeeded", successfulExecutionResult(persisted), persisted ? `status=${persisted.status || persisted.result?.status || "unknown"} ok=${persisted.ok}` : "no persisted result");
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
       add("result excludes synthetic deal names", !/build e010 test company|unknown target|build-e010-test@example\.com/.test(text));
+    } else {
+      add("result excludes synthetic deal names", false, "No persisted result");
     }
   } else {
     add("worker persisted current command result", false, "No taskId returned");
+    add("persisted command result succeeded", false, "No taskId returned");
     add("result excludes synthetic deal names", false, "No result");
   }
 
@@ -167,10 +183,13 @@ function pm2State(name) {
         if (["COMPLETED","AWAITING_VERIFICATION","FAILED","ERROR"].includes(s) || op?.latestTask?.result || op?.result) break;
         await sleep(2000);
       }
-      add("8787 operation polling returns execution truth", Boolean(op && (op.latestTask?.result || op.result || /COMPLETED|AWAITING_VERIFICATION/.test(String(op.status||"")))), `status=${op?.status || "unknown"}`);
-    } catch (e) { add("8787 operation polling returns execution truth", false, e.message); }
+      const opStatus = String(op?.status || "").toUpperCase();
+      const opResult = op?.latestTask?.result || op?.result || null;
+      const opOk = Boolean(op && !["FAILED","ERROR"].includes(opStatus) && (opResult || ["COMPLETED","AWAITING_VERIFICATION"].includes(opStatus)) && opResult?.ok !== false);
+      add("8787 operation polling returns successful execution truth", opOk, `status=${op?.status || "unknown"}`);
+    } catch (e) { add("8787 operation polling returns successful execution truth", false, e.message); }
   } else {
-    add("8787 operation polling returns execution truth", false, "No operationId returned");
+    add("8787 operation polling returns successful execution truth", false, "No operationId returned");
   }
 
   await sleep(5000);
