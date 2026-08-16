@@ -29,6 +29,7 @@ $canonicalFiles = @(
   'SCRIPTS/StartMilesApi.js',
   'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/ReconcilePm2Process.js',
+  'SCRIPTS/Pm2DirectCommand.js',
   'SCRIPTS/TestReconcilePm2ProcessUnit.js',
   'SCRIPTS/ReconcileMilesProductionSurfaces.js',
   'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
@@ -76,6 +77,26 @@ function Invoke-CanonicalPm2Process([string]$Name, [string]$ScriptPath, [string[
   if ($LASTEXITCODE -ne 0) { throw "Unable to reconcile canonical PM2 app: $Name" }
 }
 
+function Invoke-Pm2Direct([string[]]$Arguments, [switch]$AllowFailure) {
+  $output = & node .\SCRIPTS\Pm2DirectCommand.js @Arguments 2>&1
+  $code = $LASTEXITCODE
+  if ($output) { $output | Out-Host }
+  if ($code -ne 0 -and -not $AllowFailure) {
+    throw "Direct PM2 command failed ($code): $($Arguments -join ' ')"
+  }
+  return @{ Code = $code; Output = $output }
+}
+
+function Get-Pm2Pid([string]$Name) {
+  $output = & node .\SCRIPTS\Pm2DirectCommand.js pid $Name 2>$null
+  if ($LASTEXITCODE -ne 0) { return 0 }
+  foreach ($line in @($output)) {
+    $value = 0
+    if ([int]::TryParse(([string]$line).Trim(), [ref]$value) -and $value -gt 0) { return $value }
+  }
+  return 0
+}
+
 Write-Host "`n=== PHASE 0: CANONICAL LEAN + EPHEMERAL WORKER RUNTIME ==="
 $runtimeChecks = @(
   'CORE\Supervisor.js',
@@ -86,6 +107,7 @@ $runtimeChecks = @(
   'SCRIPTS\StartMilesApi.js',
   'SCRIPTS\MilesProductionGuardian.js',
   'SCRIPTS\ReconcilePm2Process.js',
+  'SCRIPTS\Pm2DirectCommand.js',
   'SCRIPTS\TestReconcilePm2ProcessUnit.js',
   'SCRIPTS\ReconcileMilesProductionSurfaces.js',
   'SERVICES\WorkforceService.js',
@@ -109,18 +131,16 @@ Invoke-CanonicalPm2Process 'miles-api' '.\SCRIPTS\StartMilesApi.js'
 Start-Sleep -Seconds 3
 
 Write-Host "`n=== CLEAN REPLACEMENT: MILES WORKER ==="
-$oldPidRaw = (pm2 pid miles-worker 2>$null)
-$oldPid = 0
-[int]::TryParse(($oldPidRaw | Select-Object -First 1), [ref]$oldPid) | Out-Null
+$oldPid = Get-Pm2Pid 'miles-worker'
 Write-Host "Old worker PID: $oldPid"
 
-pm2 stop miles-worker | Out-Host
-Start-Sleep -Seconds 5
+$deleteResult = Invoke-Pm2Direct @('delete','miles-worker') -AllowFailure
+Start-Sleep -Seconds 3
 
 if ($oldPid -gt 0) {
   $oldProcess = Get-Process -Id $oldPid -ErrorAction SilentlyContinue
   if ($oldProcess) {
-    Write-Host "Old worker PID still alive after PM2 stop; terminating PID $oldPid"
+    Write-Host "Old worker PID still alive after PM2 delete; terminating PID $oldPid"
     Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 2
   }
@@ -144,8 +164,8 @@ if (Test-Path $lockOwnerFile) {
 Invoke-CanonicalPm2Process 'miles-worker' '.\StartProductionSystem.js'
 Start-Sleep -Seconds 45
 
-$workerPid = [int](pm2 pid miles-worker)
-$workerProcess = Get-Process -Id $workerPid -ErrorAction SilentlyContinue
+$workerPid = Get-Pm2Pid 'miles-worker'
+$workerProcess = if ($workerPid -gt 0) { Get-Process -Id $workerPid -ErrorAction SilentlyContinue } else { $null }
 if (-not $workerProcess) { throw 'miles-worker is not running after clean replacement.' }
 $workerRam = [math]::Round($workerProcess.WorkingSet64 / 1MB, 0)
 Write-Host "Lean core settled RAM: $workerRam MB (pid=$workerPid)"
@@ -180,8 +200,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Start-Sleep -Seconds 10
-$workerPidAfterAcceptance = [int](pm2 pid miles-worker)
-$workerAfterAcceptance = Get-Process -Id $workerPidAfterAcceptance -ErrorAction SilentlyContinue
+$workerPidAfterAcceptance = Get-Pm2Pid 'miles-worker'
+$workerAfterAcceptance = if ($workerPidAfterAcceptance -gt 0) { Get-Process -Id $workerPidAfterAcceptance -ErrorAction SilentlyContinue } else { $null }
 if (-not $workerAfterAcceptance) { throw 'miles-worker is not running after acceptance.' }
 $workerRamAfterAcceptance = [math]::Round($workerAfterAcceptance.WorkingSet64 / 1MB, 0)
 Write-Host "Lean core RAM after command acceptance: $workerRamAfterAcceptance MB (pid=$workerPidAfterAcceptance)"
@@ -210,7 +230,7 @@ foreach ($file in $demoChecks) {
 Write-Host "`n=== PHASE 3: START SEPARATE P2GC SALES DEMO ==="
 Invoke-CanonicalPm2Process 'p2gc-growth-demo' '.\StartP2GCGrowthBlueprintDemo.js'
 Start-Sleep -Seconds 8
-pm2 save | Out-Host
+Invoke-Pm2Direct @('save') | Out-Null
 
 Write-Host "`n=== PHASE 4: REAL-PROSPECT GROWTH BLUEPRINT ACCEPTANCE ==="
 node .\SCRIPTS\TestP2GCGrowthBlueprintDemoAcceptanceP0.js
@@ -235,4 +255,4 @@ Write-Host "MILES Command Center        : http://localhost:8787"
 Write-Host "MILES CEO Dashboard         : http://127.0.0.1:8737"
 Write-Host "MILES Desktop UI            : http://127.0.0.1:3737"
 Write-Host "P2GC Prospect Sales Demo    : http://127.0.0.1:8791"
-Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes; API is separate; canonical PM2 identity is repaired by script path and name."
+Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes; PM2 commands use direct node.exe transport; canonical identity is repaired by script path and name."
