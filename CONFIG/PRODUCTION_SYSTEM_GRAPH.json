@@ -1,7 +1,7 @@
 {
-  "version": 4,
+  "version": 5,
   "name": "MILES Production System Graph",
-  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, product surfaces, and persistence all pass.",
+  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, product surfaces, reply intelligence, and persistence all pass.",
   "protectedRuntimePaths": [
     ".git/",
     ".env",
@@ -29,7 +29,9 @@
   "productSurfaces": [
     {"name":"Executive Government Growth Blueprint","port":8791,"path":"/","api":"/api/assessment","mode":"read-only-prospect-intelligence"},
     {"name":"Sub2Prime Prime-Sub Teaming Intelligence","port":8791,"path":"/teaming","api":"/api/teaming","mode":"read-only-prospect-intelligence"},
-    {"name":"Customer Delivery and Revenue Command Center","port":8792,"path":"/","api":"/api/revenue","mode":"internal-client-delivery"}
+    {"name":"Customer Delivery and Revenue Command Center","port":8792,"path":"/","api":"/api/revenue","mode":"internal-client-delivery"},
+    {"name":"Meeting Pipeline","port":8792,"path":"/api/meetings","api":"/api/meetings","mode":"internal-sales-operations"},
+    {"name":"Client Success","port":8792,"path":"/api/client-success","api":"/api/client-success","mode":"internal-client-operations"}
   ],
   "acceptanceRoots": [
     "SCRIPTS/TestMilesCoreHttpProbeP0.js",
@@ -42,6 +44,7 @@
     "SCRIPTS/TestP2GCGrowthAssetsAcceptanceP0.js",
     "SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js",
     "SCRIPTS/TestP2GCPrimeSubTeamingAcceptanceP0.js",
+    "SCRIPTS/TestP2GCReplyIntelligenceAcceptanceP0.js",
     "SCRIPTS/TestTaskQueueCompactionP0.js",
     "TESTS/TestProviderAuthorityEnvironmentP0.js",
     "TESTS/TestExecutionActionContractsP0.js",
@@ -65,6 +68,8 @@
     "SERVICES/governance/ExecutionActionCapabilityService.js",
     "SERVICES/revenue/RevenueTruthGateService.js",
     "SERVICES/teaming/P2GCPrimeSubTeamingService.js",
+    "SERVICES/ReplyIntelligenceEngine.js",
+    "SERVICES/customer/P2GCCustomerDeliveryService.js",
     "SERVICES/BusinessExecutionEngineServiceV2.js",
     "SERVICES/governance/PolicyEngineService.js",
     "SERVICES/ProviderAuthorityRegistryService.js",
@@ -98,6 +103,19 @@
     "PERSISTED_RESULT",
     "CEO_EVIDENCE"
   ],
+  "outboundRevenueChain": [
+    "COLLECT_LEADS",
+    "VERIFY_EMAILS",
+    "GLOBAL_DEDUPLICATION",
+    "ASSIGN_HIGHEST_PRIORITY_SEGMENT",
+    "PREPARE_CAMPAIGN_ACTIVATION",
+    "GOVERN_EXTERNAL_MUTATION",
+    "CLASSIFY_REPLIES",
+    "ROUTE_POSITIVE_NEGATIVE_OOO_TECHNICAL",
+    "QUALIFIED_MEETING_HANDOFF",
+    "CRM_PIPELINE",
+    "BLUEPRINT_DEMO"
+  ],
   "releaseGates": [
     "SOURCE_CLOSURE",
     "MACHINE_PREREQUISITES",
@@ -110,6 +128,7 @@
     "CEO_COMMAND_EXECUTION",
     "BUSINESS_CAPABILITIES",
     "PRODUCT_SURFACES",
+    "REPLY_AND_MEETING_ROUTING",
     "PERSISTENCE_AND_SELF_HEAL"
   ]
 }
