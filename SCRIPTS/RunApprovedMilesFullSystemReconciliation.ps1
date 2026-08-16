@@ -34,7 +34,7 @@ $canonicalFiles = @(
   'SERVICES/demo/public/styles.css',
   'StartP2GCGrowthBlueprintDemo.js',
   'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js',
-  'SCRIPTS/InstallMinimalWorkerRuntimeP0.js'
+  'SCRIPTS/InstallMinimalWorkerRuntimeP0_v2.js'
 )
 
 foreach ($file in $canonicalFiles) {
@@ -85,9 +85,11 @@ foreach ($file in $supportFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== PHASE 0: MINIMAL WORKER RUNTIME CONSOLIDATION ==="
-node .\SCRIPTS\InstallMinimalWorkerRuntimeP0.js
-if ($LASTEXITCODE -ne 0) { throw 'Minimal worker runtime migration failed.' }
+Write-Host "`n=== PHASE 0: MINIMAL WORKER RUNTIME CONSOLIDATION V2 ==="
+node --check .\SCRIPTS\InstallMinimalWorkerRuntimeP0_v2.js
+if ($LASTEXITCODE -ne 0) { throw 'Minimal worker migration script syntax failed before execution.' }
+node .\SCRIPTS\InstallMinimalWorkerRuntimeP0_v2.js
+if ($LASTEXITCODE -ne 0) { throw 'Minimal worker runtime migration V2 failed.' }
 
 $runtimeChecks = @(
   'CORE\Supervisor.js',
