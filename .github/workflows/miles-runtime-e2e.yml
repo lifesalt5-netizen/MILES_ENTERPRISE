@@ -66,6 +66,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'CEO Dashboard promotion closure failed.' }
           node .\SCRIPTS\TestDashboardDeploymentSimulationP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Stale-local CEO Dashboard deployment simulation failed.' }
+          node .\TESTS\TestProviderAuthorityEnvironmentP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Provider authority environment truth failed.' }
+          node .\TESTS\TestExecutionActionContractsP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency-free execution action contract failed.' }
+          node .\TESTS\TestConnectorActionContractRuntimeP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Runtime connector action contract failed.' }
+          node .\TESTS\TestCommandPreflightP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Business work planner execution contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
@@ -126,7 +134,7 @@ jobs:
             $failures | ConvertTo-Json -Depth 6 | Write-Host
             throw 'Final MILES/P2GC surface and CEO command acceptance failed.'
           }
-          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful read-only result with zero external side effects + customer/growth/demo layer'
+          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command preflight -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful read-only result with zero external side effects + customer/growth/demo layer'
 
       - name: Persist PM2 map and show logs through direct transport
         if: always()
