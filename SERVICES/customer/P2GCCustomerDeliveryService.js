@@ -155,7 +155,7 @@ class P2GCCustomerDeliveryService {
 
   revenueCommandCenter() {
     const s=this.load(); const activeSubs=s.subscriptions.filter(x=>x.status==="ACTIVE"); const prospects=s.prospects.filter(x=>x.stage!=="CLIENT");
-    return {ok:true,status:"READY",generatedAt:now(),metrics:{prospects:prospects.length,meetingsBooked:s.prospects.filter(x=>x.meetingAt).length,blueprints:s.prospects.filter(x=>x.blueprintStatus).length,proposals:s.prospects.filter(x=>x.proposalStatus).length,activeClients:s.clients.filter(x=>x.status==="ACTIVE").length,monthlyRecurringRevenue:money(activeSubs.reduce((n,x)=>n+money(x.monthlyAmount),0)),pipelineValue:money(s.prospects.reduce((n,x)=>n+money(x.pipelineValue),0)),openInvoices:s.invoices.filter(x=>!["PAID","VOID"].includes(x.status)).length,renewalsDue:s.clients.filter(x=>x.renewalDate).length,referrals:s.referrals.length},pipeline:s.prospects,clients:s.clients,subscriptions:activeSubs};
+    return {ok:true,status:"READY",generatedAt:now(),metrics:{prospects:prospects.length,meetingsBooked:s.prospects.filter(x=>x.meetingAt).length,blueprints:s.prospects.filter(x=>x.blueprintStatus).length,proposals:s.prospects.filter(x=>x.proposalStatus).length,activeClients:s.clients.filter(x=>x.status==="ACTIVE").length,monthlyRecurringRevenue:money(activeSubs.reduce((n,x)=>n+money(x.monthlyAmount),0)),pipelineValue:money(prospects.reduce((n,x)=>n+money(x.pipelineValue),0)),openInvoices:s.invoices.filter(x=>!["PAID","VOID"].includes(x.status)).length,renewalsDue:s.clients.filter(x=>x.renewalDate).length,referrals:s.referrals.length},pipeline:prospects,clients:s.clients,subscriptions:activeSubs};
   }
 
   executiveBrief(clientId) {
