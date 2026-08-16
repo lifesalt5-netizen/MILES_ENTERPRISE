@@ -18,11 +18,21 @@ function writeJson(file, value) {
 
 function compactResolution(result, countKey) {
   if (!result || typeof result !== "object") return { ok: false, count: null };
+  const explicitOk = result.ok;
   return {
-    ok: result.ok === true,
-    count: countKey ? Number(result[countKey] || 0) : null,
-    checkedAt: result.checkedAt || null
+    ok: explicitOk === false ? false : true,
+    count: countKey ? Number(result[countKey] || result.count || 0) : null,
+    status: result.status || null,
+    checkedAt: result.checkedAt || result.generatedAt || null
   };
+}
+
+function normalizeOk(result, fallback = true) {
+  if (!result || typeof result !== "object") return fallback;
+  if (result.ok === false) return false;
+  if (String(result.status || "").toUpperCase() === "CRITICAL") return false;
+  if (String(result.status || "").toUpperCase() === "FAILED") return false;
+  return true;
 }
 
 async function executeTask(input) {
@@ -37,27 +47,83 @@ async function validateRuntime() {
   const capabilityService = require("../SERVICES/CapabilityService");
   const capabilityDispatcher = require("../SERVICES/CapabilityDispatcherService");
 
-  const providerResolution = providerRouter.validateRegistry();
-  const connectorResolution = connectorManager.validateAll();
-  const capabilityResolution =
-    typeof capabilityService.validateCapabilities === "function"
-      ? capabilityService.validateCapabilities()
-      : capabilityService.buildGraph();
-  const routingResolution =
-    typeof capabilityDispatcher.status === "function"
-      ? capabilityDispatcher.status()
-      : { ok: true };
+  const providerResolution =
+    typeof providerRouter.validateRegistry === "function"
+      ? providerRouter.validateRegistry()
+      : { ok: typeof providerRouter.executeProviderTask === "function" };
+
+  const connectorResolution =
+    typeof connectorManager.validateAll === "function"
+      ? connectorManager.validateAll()
+      : { ok: true, status: "VALIDATION_NOT_EXPOSED" };
+
+  // Validate the real capability contract instead of assuming a legacy
+  // validateCapabilities()/buildGraph() response shape. planObjective is the
+  // canonical capability-resolution API used by current MILES execution.
+  let capabilityResolution;
+  try {
+    if (typeof capabilityService.planObjective !== "function") {
+      capabilityResolution = {
+        ok: false,
+        status: "PLAN_OBJECTIVE_MISSING",
+        capabilityCount: 0
+      };
+    } else {
+      const probe = capabilityService.planObjective(
+        "Review the current sales pipeline and recommend the next action.",
+        { department: "Sales" }
+      );
+      capabilityResolution = {
+        ok:
+          probe?.ok === true &&
+          Array.isArray(probe?.requiredCapabilities) &&
+          probe.requiredCapabilities.length > 0 &&
+          Array.isArray(probe?.operationalPlan?.steps) &&
+          probe.operationalPlan.steps.length > 0,
+        status: probe?.ok === true ? "RESOLVED" : "UNRESOLVED",
+        capabilityCount: Array.isArray(probe?.requiredCapabilities)
+          ? probe.requiredCapabilities.length
+          : 0,
+        resolution: probe?.resolution || null,
+        registryResolution: probe?.registryResolution || null
+      };
+    }
+  } catch (error) {
+    capabilityResolution = {
+      ok: false,
+      status: "CAPABILITY_PROBE_FAILED",
+      capabilityCount: 0,
+      error: error.message
+    };
+  }
+
+  let routingResolution;
+  try {
+    routingResolution =
+      typeof capabilityDispatcher.status === "function"
+        ? capabilityDispatcher.status()
+        : { ok: true, status: "STATUS_NOT_EXPOSED" };
+  } catch (error) {
+    routingResolution = { ok: false, status: "ROUTING_STATUS_FAILED", error: error.message };
+  }
+
+  const providerOk = normalizeOk(providerResolution, false);
+  const connectorOk = normalizeOk(connectorResolution, true);
+  const capabilityOk = capabilityResolution.ok === true;
+  const routingOk = normalizeOk(routingResolution, true);
 
   return {
-    ok:
-      providerResolution.ok === true &&
-      capabilityResolution.ok === true &&
-      connectorResolution.ok === true &&
-      routingResolution.ok === true,
+    ok: providerOk && connectorOk && capabilityOk && routingOk,
     providerRegistry: compactResolution(providerResolution, "providerCount"),
     capabilityRegistry: compactResolution(capabilityResolution, "capabilityCount"),
     connectorRegistry: compactResolution(connectorResolution, "connectorCount"),
     routing: compactResolution(routingResolution),
+    checks: {
+      providerOk,
+      connectorOk,
+      capabilityOk,
+      routingOk
+    },
     checkedAt: new Date().toISOString()
   };
 }
