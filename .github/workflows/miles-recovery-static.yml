@@ -66,9 +66,13 @@ jobs:
       - name: Install PM2 for Windows integration
         shell: powershell
         run: |
+          $ErrorActionPreference = 'Stop'
           npm install -g pm2
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
-          pm2 kill 2>$null
+          $previous = $ErrorActionPreference
+          $ErrorActionPreference = 'Continue'
+          try { pm2 kill 2>&1 | Out-Host } finally { $ErrorActionPreference = $previous }
+          Write-Host '[PM2 SETUP OK] clean daemon state prepared'
 
       - name: Reproduce and repair stale PM2 script identity
         shell: powershell
