@@ -60,6 +60,7 @@ jobs:
             'SERVICES\DashboardServerService.js',
             'SERVICES\BusinessExecutionEngineServiceV2.js',
             'SERVICES\governance\PolicyEngineService.js',
+            'SERVICES\governance\DemoProtectionService.js',
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
             'SERVICES\growth\P2GCGrowthAssetService.js',
             'SERVICES\revenue\RevenueTruthGateService.js',
