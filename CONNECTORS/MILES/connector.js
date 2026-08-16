@@ -7,7 +7,13 @@
   - Do not eagerly load the business execution/capability-building stack at connector registration.
   - Resolve each action handler only when that action is executed.
   - Cache resolved handlers after first use.
+  - Supported action truth comes from CORE/ExecutionActionContracts.
 */
+
+const {
+  MILES_ACTIONS,
+  normalizeMilesAction
+} = require("../../CORE/ExecutionActionContracts");
 
 const HANDLER_PATHS = Object.freeze({
   BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineServiceV2",
@@ -30,13 +36,13 @@ const HANDLER_CACHE = new Map();
 function resolveAction(task = {}) {
   const payload = task.payload || {};
   const plan = payload.plan || task.plan || {};
-  return String(
+  const requested =
     task.action ||
     payload.action ||
     plan.action ||
     task.type ||
-    "BUILD_CAPABILITY"
-  ).trim().toUpperCase();
+    "BUILD_CAPABILITY";
+  return normalizeMilesAction(requested) || String(requested).trim().toUpperCase();
 }
 
 function loadHandler(action) {
@@ -55,30 +61,53 @@ async function invokeHandler(handler, task, action) {
   throw new Error(`MILES handler for "${action}" exposes neither execute() nor run().`);
 }
 
+function contractIntegrity() {
+  const contract = [...MILES_ACTIONS].sort();
+  const handlers = Object.keys(HANDLER_PATHS).sort();
+  const missingHandlers = contract.filter(action => !HANDLER_PATHS[action]);
+  const undeclaredHandlers = handlers.filter(action => !MILES_ACTIONS.includes(action));
+  return {
+    ok: missingHandlers.length === 0 && undeclaredHandlers.length === 0,
+    missingHandlers,
+    undeclaredHandlers
+  };
+}
+
 module.exports = {
   name: "MILES",
+  supportedActions: [...MILES_ACTIONS],
+  canExecuteAction(action) {
+    return Boolean(normalizeMilesAction(action) && HANDLER_PATHS[normalizeMilesAction(action)]);
+  },
+  contractIntegrity,
 
   async initialize() {
+    const integrity = contractIntegrity();
     return {
-      ok: true,
-      status: "READY",
+      ok: integrity.ok,
+      status: integrity.ok ? "READY" : "ACTION_CONTRACT_MISMATCH",
       service: "MILES Internal Capability Connector",
-      supportedActions: Object.keys(HANDLER_PATHS),
+      supportedActions: [...MILES_ACTIONS],
       lazyHandlers: true,
       handlersLoaded: HANDLER_CACHE.size,
+      contractIntegrity: integrity,
       initializedAt: new Date().toISOString()
     };
   },
 
   async healthCheck() {
+    const integrity = contractIntegrity();
     return {
-      status: "OK",
-      ok: true,
+      status: integrity.ok ? "OK" : "ERROR",
+      ok: integrity.ok,
       service: "MILES Internal Capability Connector",
-      message: "Explicit MILES business and capability routing operational.",
-      supportedActionCount: Object.keys(HANDLER_PATHS).length,
+      message: integrity.ok
+        ? "Explicit MILES business and capability routing operational."
+        : "MILES action contract and handler map disagree.",
+      supportedActionCount: MILES_ACTIONS.length,
       lazyHandlers: true,
       handlersLoaded: HANDLER_CACHE.size,
+      contractIntegrity: integrity,
       checkedAt: new Date().toISOString()
     };
   },
@@ -87,7 +116,7 @@ module.exports = {
     const action = resolveAction(task);
     const handler = loadHandler(action);
     if (!handler) {
-      const supportedActions = Object.keys(HANDLER_PATHS).sort();
+      const supportedActions = [...MILES_ACTIONS].sort();
       const error = new Error(
         `Unsupported MILES connector action: ${action}. Supported actions: ${supportedActions.join(", ")}`
       );
