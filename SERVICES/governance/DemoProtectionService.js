@@ -19,8 +19,15 @@ function load() {
     fs.readFileSync(
       POLICY_FILE,
       "utf8"
-    )
+    ).replace(/^\uFEFF/, "")
   );
+}
+
+function canonical(value) {
+  return String(value || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 function textOf(input = {}) {
@@ -32,20 +39,31 @@ function textOf(input = {}) {
     task.payload ||
     {};
 
-  return [
+  const plan =
+    payload.plan ||
+    task.plan ||
+    {};
+
+  return canonical([
     task.type,
     task.action,
     task.intent,
     task.workflow,
+    task.objective,
+    task.command,
     payload.action,
     payload.capability,
     payload.objective,
     payload.command,
-    payload.requestedView
+    payload.requestedView,
+    plan.intent,
+    plan.workflow,
+    plan.action,
+    plan.objective,
+    plan.originalCommand
   ]
     .filter(Boolean)
-    .join(" ")
-    .toUpperCase();
+    .join(" "));
 }
 
 class DemoProtectionService {
@@ -90,12 +108,15 @@ class DemoProtectionService {
 
     const blockedPattern =
       policy.blockedPatterns
-        .find(pattern =>
-          text.includes(
-            String(pattern)
-              .toUpperCase()
-          )
-        ) || null;
+        .find(pattern => {
+          const normalizedPattern =
+            canonical(pattern);
+
+          return (
+            normalizedPattern &&
+            text.includes(normalizedPattern)
+          );
+        }) || null;
 
     return {
       allowed:
