@@ -17,7 +17,8 @@ const checks = [
   { name: "Desktop UI", port: 3737, path: "/api/status", expect: value => value.json?.runtime === "running" },
   { name: "Customer delivery", port: 8792, path: "/api/health", expect: value => value.json?.ok === true },
   { name: "Revenue Command Center", port: 8792, path: "/api/revenue", expect: value => value.json?.ok === true },
-  { name: "P2GC prospect demo", port: 8791, path: "/api/health", expect: value => value.json?.status === "HEALTHY" }
+  { name: "P2GC prospect demo", port: 8791, path: "/api/health", expect: value => value.json?.status === "HEALTHY" && value.json?.capabilities?.includes("executive_growth_blueprint") && value.json?.capabilities?.includes("prime_sub_teaming") },
+  { name: "Sub2Prime teaming UI", port: 8791, path: "/teaming", expect: value => /Sub2Prime/i.test(value.text) && /Prime-Sub Teaming Intelligence/i.test(value.text) }
 ];
 
 function controlPlaneSourceContract() {
@@ -95,9 +96,7 @@ function request(port, pathname, timeoutMs = 30000) {
         taskQueueCacheHit:response.json?.taskQueue?.cacheHit ?? null
       });
       console.log(`[${ok ? "PASS" : "FAIL"}] ${check.name} http=${response.statusCode} bytes=${response.bytes} elapsed=${response.elapsedMs}ms${check.maxMs ? ` budget=${check.maxMs}ms` : ""}`);
-      if (!ok) {
-        console.log(response.text.slice(0, 1000));
-      }
+      if (!ok) console.log(response.text.slice(0,1000));
     } catch (error) {
       results.push({ name:check.name, ok:false, error:error.message });
       console.log(`[FAIL] ${check.name} :: ${error.message}`);
