@@ -78,25 +78,12 @@ jobs:
           node .\SCRIPTS\Pm2DirectCommand.js status | Out-Host
           if ($LASTEXITCODE -ne 0) { throw 'Unable to query PM2 through direct transport.' }
 
-      - name: Probe live endpoints
+      - name: Probe live endpoints with Node protocol client
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          $checks = @(
-            @{ Name='API'; Url='http://127.0.0.1:3000/' },
-            @{ Name='Command Center'; Url='http://127.0.0.1:8787/api/health' },
-            @{ Name='CEO Dashboard'; Url='http://127.0.0.1:8737/api/state' },
-            @{ Name='CEO Revenue'; Url='http://127.0.0.1:8737/api/revenue' },
-            @{ Name='CEO Growth Assets'; Url='http://127.0.0.1:8737/api/growth-assets' },
-            @{ Name='Desktop UI'; Url='http://127.0.0.1:3737/api/status' },
-            @{ Name='Customer Delivery'; Url='http://127.0.0.1:8792/api/health' },
-            @{ Name='Revenue Command Center'; Url='http://127.0.0.1:8792/api/revenue' }
-          )
-          foreach ($check in $checks) {
-            $response = Invoke-WebRequest -UseBasicParsing -Uri $check.Url -TimeoutSec 30
-            if ($response.StatusCode -ne 200) { throw "$($check.Name) failed HTTP probe: $($response.StatusCode)" }
-            Write-Host "[HTTP PASS] $($check.Name) $($check.Url)"
-          }
+          node .\SCRIPTS\TestMilesCoreHttpProbeP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'MILES core Node HTTP probe failed.' }
 
       - name: Run MILES live command acceptance
         shell: powershell
