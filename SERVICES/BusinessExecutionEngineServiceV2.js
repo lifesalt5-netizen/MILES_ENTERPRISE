@@ -319,21 +319,44 @@ class BusinessExecutionEngineServiceV2 {
     const businessWork = record.results.find(item => item.action === "BUSINESS_EXECUTION")?.result;
     const dashboard = record.results.find(item => item.action === "EXECUTIVE_DASHBOARD")?.result;
 
-    const priorities = Array.isArray(companyState?.priorities)
-      ? companyState.priorities.slice(0, 3)
-      : Array.isArray(businessWork?.workPackages)
-        ? businessWork.workPackages.slice(0, 3).map((item, index) => ({
-            priority: index + 1,
-            title: item.description || item.taskType || item.action,
-            area: item.provider || "Operations"
-          }))
-        : [];
+    const priorities = [];
+    const seen = new Set();
+
+    for (const item of Array.isArray(companyState?.priorities) ? companyState.priorities : []) {
+      const title = item?.title || item?.reason || "Executive priority";
+      const key = String(title).toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      priorities.push({
+        priority: priorities.length + 1,
+        area: item?.area || "Executive",
+        title,
+        reason: item?.reason || null
+      });
+      if (priorities.length >= 3) break;
+    }
+
+    if (priorities.length < 3) {
+      for (const item of Array.isArray(businessWork?.workPackages) ? businessWork.workPackages : []) {
+        const title = item?.description || item?.taskType || item?.action || "Business action";
+        const key = String(title).toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        priorities.push({
+          priority: priorities.length + 1,
+          area: item?.provider || "Operations",
+          title,
+          reason: "Generated from the canonical business work plan."
+        });
+        if (priorities.length >= 3) break;
+      }
+    }
 
     return {
       ok: record.failedSteps === 0,
       objective: record.objective,
       status: record.status,
-      topActions: priorities,
+      topActions: priorities.slice(0, 3),
       completedSteps: record.completedSteps,
       failedSteps: record.failedSteps,
       approvalSteps: record.approvalSteps,
