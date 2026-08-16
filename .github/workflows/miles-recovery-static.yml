@@ -27,6 +27,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $files = @(
+            'SCRIPTS\RunMilesEndToEndBootstrap.ps1',
             'SCRIPTS\RunApprovedMilesEndToEndFinal.ps1',
             'SCRIPTS\RunApprovedMilesFullSystemReconciliation.ps1'
           )
@@ -41,12 +42,15 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $files = @(
             'SCRIPTS\ReconcilePm2Process.js',
+            'SCRIPTS\Pm2DirectCommand.js',
             'SCRIPTS\TestReconcilePm2ProcessUnit.js',
             'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
             'SCRIPTS\ReconcileMilesProductionSurfaces.js',
+            'SCRIPTS\MilesProductionGuardian.js',
             'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
             'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
             'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
+            'SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js',
             'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
             'SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
             'SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js',
@@ -57,6 +61,9 @@ jobs:
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
             'SERVICES\growth\P2GCGrowthAssetService.js',
             'SERVICES\revenue\RevenueTruthGateService.js',
+            'CONNECTORS\INSTANTLY\connector.js',
+            'CONNECTORS\INSTANTLY\instantly.js',
+            'CONNECTORS\ORION\connector.js',
             'StartP2GCCustomerDelivery.js',
             'StartExecutiveDashboard.js',
             'StartMiles.js',
@@ -89,10 +96,19 @@ jobs:
           $ErrorActionPreference = 'Stop'
           npm install -g pm2
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
-          $previous = $ErrorActionPreference
-          $ErrorActionPreference = 'Continue'
-          try { pm2 kill 2>&1 | Out-Host } finally { $ErrorActionPreference = $previous }
-          Write-Host '[PM2 SETUP OK] clean daemon state prepared'
+          $pm2Cli = Join-Path $env:APPDATA 'npm\node_modules\pm2\bin\pm2'
+          if (-not (Test-Path $pm2Cli -PathType Leaf)) { throw "PM2 JavaScript CLI not found: $pm2Cli" }
+          & node $pm2Cli kill 2>&1 | Out-Host
+          "MILES_PM2_CLI=$pm2Cli" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PM2 SETUP OK] direct CLI=$pm2Cli"
+
+      - name: Prove direct PM2 transport
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node .\SCRIPTS\Pm2DirectCommand.js jlist | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw 'Direct PM2 command wrapper failed.' }
+          Write-Host '[DIRECT PM2 TRANSPORT PASS]'
 
       - name: Reproduce and repair stale PM2 script identity
         shell: powershell
