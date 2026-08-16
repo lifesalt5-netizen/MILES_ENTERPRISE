@@ -29,7 +29,8 @@ jobs:
           $files = @(
             'SCRIPTS\RunMilesEndToEndBootstrap.ps1',
             'SCRIPTS\RunApprovedMilesEndToEndFinal.ps1',
-            'SCRIPTS\RunApprovedMilesFullSystemReconciliation.ps1'
+            'SCRIPTS\RunApprovedMilesFullSystemReconciliation.ps1',
+            'SCRIPTS\RepairTaskQueueAndCompleteAcceptanceV2.ps1'
           )
           foreach ($file in $files) {
             [void][scriptblock]::Create((Get-Content $file -Raw))
