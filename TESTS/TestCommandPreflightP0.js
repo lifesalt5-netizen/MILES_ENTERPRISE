@@ -80,6 +80,7 @@ try {
     task: { type: "BUSINESS_EXECUTION", payload: {} }
   });
   expect(internal.ok && internal.allowedToQueue && internal.writeRequested === false, "read-only CEO mission preflights green", internal);
+  expect(internal.checks.some(x => x.area === "ACTION" && x.code === "CONNECTOR_ACTION_READY"), "supported MILES action is proven before TaskQueue", internal.checks);
 
   const instantlyRead = makeService().evaluate({
     operation: {
@@ -87,12 +88,26 @@ try {
       source: "MILES_COMMAND_CENTER",
       provider: "INSTANTLY",
       connector: "INSTANTLY",
-      action: "INSTANTLY_LIVE",
-      command: "Review Instantly campaign health and report results only."
+      action: "listCampaigns",
+      command: "Review Instantly campaign inventory and report results only."
     },
-    task: { type: "INSTANTLY_LIVE", payload: {} }
+    task: { type: "listCampaigns", payload: {} }
   });
   expect(instantlyRead.ok && instantlyRead.providers.includes("instantly"), "Instantly read command requires and passes canonical provider authority", instantlyRead);
+  expect(instantlyRead.checks.some(x => x.area === "ACTION" && x.detail?.canonicalAction === "listCampaigns"), "Instantly planner action resolves to an executable connector action", instantlyRead.checks);
+
+  const instantlyUpper = makeService().evaluate({
+    operation: {
+      id: "op_instantly_upper",
+      source: "MILES_COMMAND_CENTER",
+      provider: "INSTANTLY",
+      connector: "INSTANTLY",
+      action: "LISTCAMPAIGNS",
+      command: "Review Instantly campaign inventory only."
+    },
+    task: { type: "LISTCAMPAIGNS", payload: {} }
+  });
+  expect(instantlyUpper.ok && instantlyUpper.checks.some(x => x.detail?.canonicalAction === "listCampaigns"), "dispatcher-uppercase Instantly action remains executable", instantlyUpper.checks);
 
   const instantlyMissing = makeService({ providerAuthority: authority({ instantlyRead: false }) }).evaluate({
     operation: {
@@ -100,12 +115,25 @@ try {
       source: "MILES_COMMAND_CENTER",
       provider: "INSTANTLY",
       connector: "INSTANTLY",
-      action: "INSTANTLY_LIVE",
-      command: "Review Instantly campaign health and report results only."
+      action: "listCampaigns",
+      command: "Review Instantly campaign inventory and report results only."
     },
-    task: { type: "INSTANTLY_LIVE", payload: {} }
+    task: { type: "listCampaigns", payload: {} }
   });
   expect(!instantlyMissing.ok && instantlyMissing.blockers.some(x => x.code === "PROVIDER_READ_BLOCKED"), "missing external credential blocks before queueing", instantlyMissing.blockers);
+
+  const unknownInstantly = makeService({ providerAuthority: authority({ instantlyRead: true }) }).evaluate({
+    operation: {
+      id: "op_instantly_unknown",
+      source: "MILES_COMMAND_CENTER",
+      provider: "INSTANTLY",
+      connector: "INSTANTLY",
+      action: "DO_SOMETHING_UNKNOWN",
+      command: "Review only."
+    },
+    task: { type: "DO_SOMETHING_UNKNOWN", payload: {} }
+  });
+  expect(!unknownInstantly.ok && unknownInstantly.blockers.some(x => x.code === "ACTION_NOT_SUPPORTED"), "unsupported Instantly action is blocked before TaskQueue", unknownInstantly.blockers);
 
   const writeGoverned = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: false }) }).evaluate({
     operation: {
@@ -113,15 +141,15 @@ try {
       source: "MILES_COMMAND_CENTER",
       provider: "INSTANTLY",
       connector: "INSTANTLY",
-      action: "ACTIVATE_CAMPAIGN",
+      action: "activateCampaign",
       command: "Activate the approved Instantly campaign."
     },
-    task: { type: "ACTIVATE_CAMPAIGN", payload: {} }
+    task: { type: "activateCampaign", payload: {} }
   });
   expect(!writeGoverned.ok && writeGoverned.blockers.some(x => x.code === "PROVIDER_WRITE_GOVERNED"), "external write remains blocked when provider write authority is disabled", writeGoverned.blockers);
 
-  const protectedOperation = {
-    id: "op_approval",
+  const unsupportedProtected = {
+    id: "op_pricing",
     source: "MILES_COMMAND_CENTER",
     provider: "MILES",
     connector: "MILES",
@@ -130,22 +158,51 @@ try {
     command: "Change our pricing."
   };
 
-  const approval = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
-    operation: protectedOperation,
+  const pricingBeforeApproval = makeService().evaluate({
+    operation: unsupportedProtected,
     task: { type: "CHANGE_PRICING", payload: {} }
   });
-  expect(!approval.ok && approval.blockers.some(x => x.code === "CEO_APPROVAL_REQUIRED"), "protected CEO action cannot enter TaskQueue before approval", approval.blockers);
+  expect(!pricingBeforeApproval.ok && pricingBeforeApproval.blockers.some(x => x.code === "CEO_APPROVAL_REQUIRED"), "protected action blocks before CEO approval", pricingBeforeApproval.blockers);
+  expect(pricingBeforeApproval.blockers.some(x => x.code === "ACTION_NOT_SUPPORTED"), "unsupported protected action also exposes missing executor before approval", pricingBeforeApproval.blockers);
 
-  const approved = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
+  const pricingAfterApproval = makeService().evaluate({
     operation: {
-      ...protectedOperation,
+      ...unsupportedProtected,
       approvalDecision: "APPROVED",
       approvedBy: "CEO",
       approvedAt: new Date(currentTime).toISOString()
     },
     task: { type: "CHANGE_PRICING", payload: {} }
   });
-  expect(approved.ok && approved.approvalSatisfied === true && approved.checks.some(x => x.code === "CEO_APPROVAL_VERIFIED"), "recorded CEO approval releases protected action to queue", approved);
+  expect(!pricingAfterApproval.ok && pricingAfterApproval.approvalSatisfied === true && pricingAfterApproval.blockers.some(x => x.code === "ACTION_NOT_SUPPORTED"), "CEO approval cannot manufacture a missing execution handler", pricingAfterApproval.blockers);
+
+  const supportedProtected = {
+    id: "op_activate",
+    source: "MILES_COMMAND_CENTER",
+    provider: "INSTANTLY",
+    connector: "INSTANTLY",
+    action: "activateCampaign",
+    approvalRequired: true,
+    command: "Activate the approved Instantly campaign."
+  };
+
+  const supportedBeforeApproval = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
+    operation: supportedProtected,
+    task: { type: "activateCampaign", payload: {} }
+  });
+  expect(!supportedBeforeApproval.ok && supportedBeforeApproval.blockers.some(x => x.code === "CEO_APPROVAL_REQUIRED"), "supported protected write remains blocked until CEO approval", supportedBeforeApproval.blockers);
+  expect(!supportedBeforeApproval.blockers.some(x => x.code === "ACTION_NOT_SUPPORTED"), "supported protected write has a real executor before approval", supportedBeforeApproval.blockers);
+
+  const supportedAfterApproval = makeService({ providerAuthority: authority({ instantlyRead: true, instantlyWrite: true }) }).evaluate({
+    operation: {
+      ...supportedProtected,
+      approvalDecision: "APPROVED",
+      approvedBy: "CEO",
+      approvedAt: new Date(currentTime).toISOString()
+    },
+    task: { type: "activateCampaign", payload: {} }
+  });
+  expect(supportedAfterApproval.ok && supportedAfterApproval.approvalSatisfied === true && supportedAfterApproval.checks.some(x => x.code === "CEO_APPROVAL_VERIFIED"), "recorded CEO approval releases a supported governed action", supportedAfterApproval);
 
   fs.writeFileSync(path.join(runtime, "task_queue.json"), Buffer.alloc(2 * 1024 * 1024, 32));
   const oversized = makeService({ queueMaxBytes: 1024 * 1024 }).evaluate({
