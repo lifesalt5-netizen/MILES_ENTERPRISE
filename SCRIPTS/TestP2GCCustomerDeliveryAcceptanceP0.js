@@ -20,11 +20,15 @@ function request(method,p,body=null){return new Promise((resolve,reject)=>{const
   add("CRM prospect created",Boolean(prospect?.id),prospect?.id);
   add("lead scoring executes from CRM evidence",prospect.score===100&&prospect.scoreBand==="HOT"&&prospect.scoreModel==="P2GC_PIPELINE_ENGAGEMENT_V1",`score=${prospect.score} band=${prospect.scoreBand}`);
   add("pipeline value persists",prospect.pipelineValue===7500,String(prospect.pipelineValue));
+  const preConversionRevenue=service.revenueCommandCenter();
+  add("active prospect contributes to sales pipeline",preConversionRevenue.metrics.pipelineValue===7500&&preConversionRevenue.metrics.prospects===1,`pipeline=${preConversionRevenue.metrics.pipelineValue}`);
   const meetings=service.meetingPipeline();
   add("meeting pipeline identifies booked meeting",meetings.ok&&meetings.metrics.meetingsBooked===1&&meetings.metrics.upcoming===1,`meetings=${meetings.metrics.meetingsBooked}`);
 
   const client=service.upsertClient({prospectId:prospect.id,company:prospect.company,contactName:prospect.contactName,email:prospect.email,onboardingStatus:"NOT_STARTED",servicePlan:"Growth Plus",blueprint:{status:"DELIVERED"},opportunities:[{id:"opp1",title:"Example Opportunity"}],vehicles:[{name:"GSA MAS",status:"ACTIVE"}],recommendations:["Pursue target agency"],deliverables:["Blueprint"],tasks:[],renewalDate:"2027-08-15"}).client;
   add("prospect converts to client",Boolean(client?.id),client?.id);
+  const postConversionRevenue=service.revenueCommandCenter();
+  add("converted client exits active sales pipeline",postConversionRevenue.metrics.pipelineValue===0&&postConversionRevenue.metrics.prospects===0&&postConversionRevenue.pipeline.length===0,`pipeline=${postConversionRevenue.metrics.pipelineValue}`);
   const onboarding=service.startOnboarding({clientId:client.id});
   add("client onboarding workflow starts",onboarding.ok&&onboarding.status==="ONBOARDING_IN_PROGRESS"&&onboarding.checklist.length>=5,`tasks=${onboarding.checklist.length}`);
   const completed=service.completeOnboarding({clientId:client.id});
@@ -40,7 +44,7 @@ function request(method,p,body=null){return new Promise((resolve,reject)=>{const
   add("client portal aggregates delivery truth",portal.ok&&portal.opportunities.length===1&&portal.subscriptions.length===1&&portal.invoices.length===1);
   const revenue=service.revenueCommandCenter();
   add("revenue command center calculates MRR",revenue.metrics.monthlyRecurringRevenue===5000,String(revenue.metrics.monthlyRecurringRevenue));
-  add("revenue command center calculates pipeline value",revenue.metrics.pipelineValue===7500,String(revenue.metrics.pipelineValue));
+  add("revenue command center excludes converted pipeline value",revenue.metrics.pipelineValue===0&&revenue.metrics.prospects===0,String(revenue.metrics.pipelineValue));
   const brief=service.executiveBrief(client.id);
   add("automated executive brief generated",brief.ok&&brief.brief.company===client.company,brief.brief?.id);
   const health=service.healthCheck();
@@ -51,7 +55,7 @@ function request(method,p,body=null){return new Promise((resolve,reject)=>{const
   try{
     await new Promise(r=>setTimeout(r,1200));
     const h=await request("GET","/api/health"); add("customer delivery API responds",h.status===200&&h.json.ok===true,`http=${h.status}`);
-    const r=await request("GET","/api/revenue"); add("revenue command center API responds",r.status===200&&r.json.metrics.monthlyRecurringRevenue===5000&&r.json.metrics.pipelineValue===7500,`http=${r.status}`);
+    const r=await request("GET","/api/revenue"); add("revenue command center API responds",r.status===200&&r.json.metrics.monthlyRecurringRevenue===5000&&r.json.metrics.pipelineValue===0,`http=${r.status}`);
     const m=await request("GET","/api/meetings"); add("meeting pipeline API responds",m.status===200&&m.json.metrics.meetingsBooked===1,`http=${m.status}`);
     const cs=await request("GET","/api/client-success"); add("client success API responds",cs.status===200&&cs.json.metrics.activeClients===1,`http=${cs.status}`);
     const p=await request("GET",`/api/portal?clientId=${encodeURIComponent(client.id)}`); add("client portal API responds",p.status===200&&p.json.ok===true,`http=${p.status}`);
