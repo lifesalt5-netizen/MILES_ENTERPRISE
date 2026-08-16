@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sub2Prime™ | P2GC Prime-Sub Teaming Intelligence</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">PATHWAYS 2 GOVERNMENT CONTRACTING</div>
+      <h1>Sub2Prime™</h1>
+      <p class="sub">Prime-Sub Teaming Intelligence™ — identify modeled prime partners, agency alignment, subcontracting signals, and the next relationship actions.</p>
+    </div>
+    <div class="badge">Powered by ORION™</div>
+  </header>
+  <main>
+    <section class="search-card no-print">
+      <div>
+        <label for="term">Company</label>
+        <input id="term" placeholder="Company name, UEI, CAGE, or website">
+      </div>
+      <button id="analyze">Build Teaming Intelligence</button>
+      <a href="/" style="align-self:center">Back to Growth Blueprint</a>
+    </section>
+
+    <section id="welcome" class="welcome">
+      <h2>Prime/Sub Teaming Intelligence</h2>
+      <p>Enter a company to identify evidence-backed prime candidates, subcontracting signals, aligned agencies, and recommended teaming actions.</p>
+      <p class="disclosure">Candidates are decision-support intelligence. Modeled signals and current contacts must be validated before external reliance or outreach.</p>
+    </section>
+    <section id="loading" class="loading hidden">Building prime, agency, vehicle, and teaming intelligence…</section>
+    <section id="error" class="error hidden"></section>
+
+    <div id="report" class="hidden">
+      <section class="hero-card">
+        <div><div class="eyebrow">SUB2PRIME™ PROSPECT</div><h2 id="companyName">—</h2><div id="profileMeta" class="meta-grid"></div></div>
+        <div class="score-ring-wrap"><div id="readiness" class="score-ring">—</div><div class="score-caption">GovCon Readiness</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div><div class="eyebrow">PRIME TARGETING</div><h2>Potential Prime Partners</h2></div><span id="status" class="pill modeled"></span></div>
+        <div id="primes" class="table-wrap"></div>
+      </section>
+
+      <section class="two-col">
+        <article class="section"><div class="eyebrow">AGENCY ALIGNMENT</div><h2>Target Agencies</h2><div id="agencies"></div></article>
+        <article class="section"><div class="eyebrow">SUBCONTRACTING</div><h2>Current Teaming Signals</h2><div id="signals"></div></article>
+      </section>
+
+      <section class="section recommendation-section">
+        <div class="eyebrow">RELATIONSHIP PLAN</div><h2>Recommended Actions</h2><div id="actions"></div>
+      </section>
+      <section class="section"><div class="eyebrow">EVIDENCE STANDARD</div><h2>What to Validate Before Outreach</h2><p id="disclosure" class="disclosure"></p><p>Sub2Prime does not invent SBLO names, email addresses, phone numbers, contract relationships, or subcontracting availability when those facts are not present in the current intelligence record.</p></section>
+      <footer><span id="generatedAt"></span><span>Read-only decision support • Validate modeled signals before external reliance</span></footer>
+    </div>
+  </main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const money=v=>v==null?"Unavailable":"$"+Number(v).toLocaleString("en-US");
+function list(items, empty){return items&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>${esc(empty)}</p>`;}
+function render(m){
+  $("companyName").textContent=m.prospect.companyName||m.prospect.uei||"Prospect";
+  $("readiness").textContent=m.prospect.governmentReadiness==null?"—":m.prospect.governmentReadiness;
+  $("status").textContent=m.status;
+  $("profileMeta").innerHTML=[
+    ["UEI",m.prospect.uei||"Unavailable"],["CAGE",m.prospect.cage||"Unavailable"],["Primary NAICS",m.prospect.primaryNaics||"Unavailable"],["Vehicles",(m.prospect.currentVehicles||[]).join(", ")||"None identified"]
+  ].map(x=>`<div><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join("");
+  $("primes").innerHTML=m.primeCandidates.length?`<table><thead><tr><th>#</th><th>Prime candidate</th><th>Vehicle</th><th>Federal activity</th><th>Agencies</th><th>Why matched / next step</th></tr></thead><tbody>${m.primeCandidates.map(p=>`<tr><td>${p.rank}</td><td><strong>${esc(p.company||"Unavailable")}</strong><br><small>UEI ${esc(p.uei||"Unavailable")}</small><br><small>Contact: ${esc(p.contact.status)}</small></td><td>${esc(p.vehicle||"Unavailable")}</td><td>${money(p.federalRevenue)}<br>${p.awardCount==null?"?":p.awardCount} awards</td><td>${esc((p.agencies||[]).join(", ")||"Unavailable")}</td><td>${list(p.whyMatched,"No matching rationale available")}${esc(p.recommendedNextStep)}</td></tr>`).join("")}</tbody></table>`:"<p>No defensible prime candidates are available in the current record.</p>";
+  $("agencies").innerHTML=m.targetAgencies.length?m.targetAgencies.map(a=>`<p><strong>${esc(a.agency||"Unavailable")}</strong>${a.fitScore==null?"":` — ${a.fitScore}% modeled alignment`}<br><small>${esc(a.basis||"")}</small></p>`).join(""):"<p>No agency-alignment evidence is currently available.</p>";
+  $("signals").innerHTML=m.subcontractingOpportunities.records.length?m.subcontractingOpportunities.records.map(s=>`<p><strong>${esc(s.title||"Teaming signal")}</strong><br><small>${esc([s.source,s.status,s.dueDate].filter(Boolean).join(" • "))}</small></p>`).join(""):"<p>No current explicit subcontracting/team signal is identified.</p>";
+  $("actions").innerHTML=list(m.recommendedActions,"No partner action is defensible from the current evidence.");
+  $("disclosure").textContent=m.evidence.disclosure||"Validate modeled signals before external reliance.";
+  $("generatedAt").textContent="Generated "+new Date(m.generatedAt).toLocaleString();
+  $("welcome").classList.add("hidden"); $("report").classList.remove("hidden");
+}
+async function run(){
+  const term=$("term").value.trim(); if(!term)return;
+  $("error").classList.add("hidden"); $("report").classList.add("hidden"); $("welcome").classList.add("hidden"); $("loading").classList.remove("hidden");
+  try{const r=await fetch(`/api/teaming?term=${encodeURIComponent(term)}`,{cache:"no-store"});const m=await r.json();if(!r.ok||!m.ok)throw new Error(m.message||m.error||m.status||"Unable to build teaming intelligence");render(m);}catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");}finally{$("loading").classList.add("hidden");}
+}
+$("analyze").addEventListener("click",run); $("term").addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+</script>
+</body>
+</html>
