@@ -20,6 +20,8 @@ const server = http.createServer(async (req,res)=>{
   try {
     if(req.method==="GET" && url.pathname==="/api/health") return send(res,200,service.healthCheck());
     if(req.method==="GET" && url.pathname==="/api/revenue") return send(res,200,service.revenueCommandCenter());
+    if(req.method==="GET" && url.pathname==="/api/meetings") return send(res,200,service.meetingPipeline());
+    if(req.method==="GET" && url.pathname==="/api/client-success") return send(res,200,service.clientSuccessDashboard());
     if(req.method==="GET" && url.pathname==="/api/portal") return send(res,200,service.portal(url.searchParams.get("clientId")));
     if(req.method==="GET" && url.pathname==="/api/brief") return send(res,200,service.executiveBrief(url.searchParams.get("clientId")));
     if(req.method==="GET" && url.pathname==="/api/list") return send(res,200,service.list(url.searchParams.get("kind")||"prospects"));
@@ -27,6 +29,8 @@ const server = http.createServer(async (req,res)=>{
       const body=await readBody(req);
       if(url.pathname==="/api/prospect") return send(res,200,service.upsertProspect(body));
       if(url.pathname==="/api/client") return send(res,200,service.upsertClient(body));
+      if(url.pathname==="/api/onboarding/start") return send(res,200,service.startOnboarding(body));
+      if(url.pathname==="/api/onboarding/complete") return send(res,200,service.completeOnboarding(body));
       if(url.pathname==="/api/subscription") return send(res,200,service.upsertSubscription(body));
       if(url.pathname==="/api/invoice") return send(res,200,service.createInvoice(body));
       if(url.pathname==="/api/referral") return send(res,200,service.addReferral(body));
