@@ -3,7 +3,6 @@
 /*
   MILES Enterprise
   File: CONNECTORS/MILES/connector.js
-
   Canonical production policy:
   - Do not eagerly load the business execution/capability-building stack at connector registration.
   - Resolve each action handler only when that action is executed.
@@ -11,7 +10,7 @@
 */
 
 const HANDLER_PATHS = Object.freeze({
-  BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineService",
+  BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineServiceV2",
   PROVIDER_AUTHORITY: "../../SERVICES/ProviderAuthorityRegistryService",
   PROVIDER_AUTHORITY_REGISTRY: "../../SERVICES/ProviderAuthorityRegistryService",
   PROVIDER_SYNC: "../../SERVICES/ProviderSynchronizationService",
