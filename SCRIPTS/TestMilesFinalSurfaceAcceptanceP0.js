@@ -52,7 +52,7 @@ function readJson(file) {
 }
 
 (async () => {
-  for (const name of ["miles-api", "miles-worker", "miles-command-center", "miles-executive-dashboard", "miles-autonomous-coo", "p2gc-growth-demo"]) {
+  for (const name of ["miles-api", "miles-worker", "miles-command-center", "miles-executive-dashboard", "miles-desktop-ui", "miles-autonomous-coo", "p2gc-growth-demo"]) {
     const state = pm2Online(name);
     add(`PM2 ${name} online`, state?.ok === true, state ? `pid=${state.pid} status=${state.status}` : "missing");
   }
@@ -85,6 +85,12 @@ function readJson(file) {
     const json = parseJson(brief.text);
     add("CEO revenue brief responds", brief.statusCode === 200 && Boolean(json), `http=${brief.statusCode}`);
   } catch (e) { add("CEO revenue brief responds", false, e.message); }
+
+  try {
+    const desktop = await request(3737, "/api/status");
+    const json = parseJson(desktop.text);
+    add("MILES Desktop UI responds", desktop.statusCode === 200 && json?.runtime === "running", `http=${desktop.statusCode} runtime=${json?.runtime || ""}`);
+  } catch (e) { add("MILES Desktop UI responds", false, e.message); }
 
   try {
     const demo = await request(8791, "/api/health");
