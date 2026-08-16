@@ -18,6 +18,18 @@ function appPath(app) {
   return normalizePath(app && app.pm2_env && app.pm2_env.pm_exec_path);
 }
 
+function normalizeArgs(value) {
+  if (Array.isArray(value)) return value.map(v => String(v));
+  if (value == null || value === "") return [];
+  return [String(value)];
+}
+
+function argsEqual(a, b) {
+  const left = normalizeArgs(a);
+  const right = normalizeArgs(b);
+  return left.length === right.length && left.every((v, i) => v === right[i]);
+}
+
 function runPm2(args, allowFailure = false) {
   const result = spawnSync(PM2, args, {
     cwd: ROOT,
@@ -46,18 +58,20 @@ function readApps() {
   }
 }
 
-function buildPlan(apps, name, scriptPath) {
+function buildPlan(apps, name, scriptPath, scriptArgs = []) {
   const targetPath = normalizePath(scriptPath);
+  const desiredArgs = normalizeArgs(scriptArgs);
   const named = apps.find(app => String(app.name) === String(name)) || null;
   const sameScript = apps.filter(app => appPath(app) === targetPath);
   const deleteIds = [];
-  if (named && appPath(named) !== targetPath) deleteIds.push(named.pm_id);
+  if (named && (appPath(named) !== targetPath || !argsEqual(named.pm2_env?.args, desiredArgs))) deleteIds.push(named.pm_id);
   for (const app of sameScript) {
     if (String(app.name) !== String(name)) deleteIds.push(app.pm_id);
   }
   return {
     targetPath,
-    namedCorrect: Boolean(named && appPath(named) === targetPath),
+    namedCorrect: Boolean(named && appPath(named) === targetPath && argsEqual(named.pm2_env?.args, desiredArgs)),
+    desiredArgs,
     deleteIds: [...new Set(deleteIds.filter(v => v !== undefined && v !== null))]
   };
 }
@@ -84,9 +98,9 @@ function waitForOnline(name, scriptPath, timeoutMs = 20000) {
   throw new Error(`PM2 app ${name} did not become online. Last state=${JSON.stringify(last)}`);
 }
 
-function removeConflicts(name, scriptPath) {
+function removeConflicts(name, scriptPath, scriptArgs = []) {
   const apps = readApps();
-  const plan = buildPlan(apps, name, scriptPath);
+  const plan = buildPlan(apps, name, scriptPath, scriptArgs);
   for (const id of plan.deleteIds) {
     const r = runPm2(["delete", String(id)], true);
     if (r.code !== 0) throw new Error(`Unable to delete conflicting PM2 app id=${id}: ${r.stderr || r.stdout}`);
@@ -94,16 +108,19 @@ function removeConflicts(name, scriptPath) {
   return readApps();
 }
 
-function reconcile(name, scriptArg) {
+function reconcile(name, scriptArg, scriptArgs = []) {
   const scriptPath = path.resolve(ROOT, scriptArg);
-  let apps = removeConflicts(name, scriptPath);
+  const desiredArgs = normalizeArgs(scriptArgs);
+  let apps = removeConflicts(name, scriptPath, desiredArgs);
   const named = apps.find(app => String(app.name) === String(name)) || null;
 
-  if (named && appPath(named) === normalizePath(scriptPath)) {
+  if (named && appPath(named) === normalizePath(scriptPath) && argsEqual(named.pm2_env?.args, desiredArgs)) {
     const r = runPm2(["restart", name, "--update-env"], true);
     if (r.code !== 0) throw new Error(`Unable to restart ${name}: ${r.stderr || r.stdout}`);
   } else {
-    let r = runPm2(["start", scriptPath, "--name", name, "--update-env"], true);
+    const startArgs = ["start", scriptPath, "--name", name, "--update-env"];
+    if (desiredArgs.length) startArgs.push("--", ...desiredArgs);
+    let r = runPm2(startArgs, true);
     if (r.code !== 0 && /already launched/i.test(`${r.stdout}\n${r.stderr}`)) {
       apps = readApps();
       const same = apps.filter(app => appPath(app) === normalizePath(scriptPath));
@@ -111,7 +128,7 @@ function reconcile(name, scriptArg) {
         const del = runPm2(["delete", String(app.pm_id)], true);
         if (del.code !== 0) throw new Error(`Unable to remove stale script registration id=${app.pm_id}`);
       }
-      r = runPm2(["start", scriptPath, "--name", name, "--update-env"], true);
+      r = runPm2(startArgs, true);
     }
     if (r.code !== 0) {
       throw new Error(`Unable to create canonical PM2 app ${name}: ${r.stderr || r.stdout}`.trim());
@@ -131,24 +148,25 @@ function reconcile(name, scriptArg) {
     pid: Number(online.pid || 0),
     status: online.pm2_env?.status || null,
     script: online.pm2_env?.pm_exec_path || null,
-    pmId: online.pm_id
+    pmId: online.pm_id,
+    args: normalizeArgs(online.pm2_env?.args)
   };
   console.log(JSON.stringify(result));
   return result;
 }
 
 if (require.main === module) {
-  const [name, scriptArg] = process.argv.slice(2);
+  const [name, scriptArg, ...scriptArgs] = process.argv.slice(2);
   if (!name || !scriptArg) {
-    console.error("Usage: node SCRIPTS/ReconcilePm2Process.js <name> <scriptPath>");
+    console.error("Usage: node SCRIPTS/ReconcilePm2Process.js <name> <scriptPath> [script args...]");
     process.exit(2);
   }
   try {
-    reconcile(name, scriptArg);
+    reconcile(name, scriptArg, scriptArgs);
   } catch (error) {
     console.error(error.stack || error.message);
     process.exit(1);
   }
 }
 
-module.exports = { normalizePath, appPath, buildPlan, reconcile };
+module.exports = { normalizePath, appPath, normalizeArgs, argsEqual, buildPlan, reconcile };
