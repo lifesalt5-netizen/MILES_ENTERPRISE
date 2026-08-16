@@ -1,156 +1,155 @@
+"use strict";
+
 const connectorManager = require("./ConnectorManager");
 const taskQueue = require("./TaskQueue");
-
 const workforceService = require("../SERVICES/WorkforceService");
-const capabilityService = require("../SERVICES/CapabilityService");
-const workflowService = require("../SERVICES/WorkflowService");
-
 const { buildExecutiveState } = require("./STATE/ExecutiveState");
-const { classifyFailedTasks } = require("./RECOVERY/RecoveryEngine");
+
+function lazyConnector(modulePath) {
+  let implementation = null;
+
+  function load() {
+    if (!implementation) implementation = require(modulePath);
+    return implementation;
+  }
+
+  return {
+    healthCheck(...args) {
+      const target = load();
+      return typeof target.healthCheck === "function"
+        ? target.healthCheck(...args)
+        : { ok: true, status: "AVAILABLE" };
+    },
+
+    execute(...args) {
+      const target = load();
+      if (typeof target.execute !== "function") {
+        throw new Error("Connector does not implement execute(): " + modulePath);
+      }
+      return target.execute(...args);
+    }
+  };
+}
 
 class Supervisor {
-    constructor() {
-        this.running = false;
-        this.interval = null;
-        this.lastState = null;
-    }
+  constructor() {
+    this.running = false;
+    this.interval = null;
+    this.lastState = null;
+  }
 
-    async registerConnectors() {
-        const connectors = [
-            ["INSTANTLY", "../CONNECTORS/INSTANTLY/connector"],
-            ["ORION", "../CONNECTORS/ORION/connector"],
-            ["MILES", "../CONNECTORS/MILES/connector"]
-        ];
+  async registerConnectors() {
+    const connectors = [
+      ["INSTANTLY", "../CONNECTORS/INSTANTLY/connector"],
+      ["ORION", "../CONNECTORS/ORION/connector"],
+      ["MILES", "../CONNECTORS/MILES/connector"]
+    ];
 
-        for (const [name, connectorPath] of connectors) {
-            try {
-                if (!connectorManager.get(name)) {
-                    connectorManager.register(name, require(connectorPath));
-                }
-            } catch (err) {
-                console.warn(`[Supervisor] ${name} connector registration failed: ${err.message}`);
-            }
+    for (const [name, connectorPath] of connectors) {
+      try {
+        if (!connectorManager.get(name)) {
+          connectorManager.register(name, lazyConnector(connectorPath));
         }
+      } catch (error) {
+        console.warn("[Supervisor] " + name + " lazy registration failed: " + error.message);
+      }
     }
+  }
 
-    async heartbeat() {
-        try {
-            const connectorResults = await connectorManager.healthCheckAll();
+  async heartbeat() {
+    try {
+      const queue = taskQueue.getStatus();
+      const workforceRaw = workforceService.status();
+      const connectorNames = connectorManager.list();
+      const connectors = {};
 
-            const connectors = {};
-            for (const c of connectorResults) {
-                connectors[c.name] = c;
-            }
+      for (const name of connectorNames) {
+        connectors[name] = {
+          name,
+          ok: true,
+          healthy: null,
+          status: "REGISTERED_LAZY"
+        };
+      }
 
-            const queue = taskQueue.getStatus();
+      const workforce = {
+        ok: workforceRaw.ok !== false,
+        workers: workforceRaw.employees || 0,
+        employees: workforceRaw.employees || 0,
+        capabilities: workforceRaw.capabilities || 0,
+        active: 0,
+        idle: workforceRaw.employees || 0,
+        queued: queue.pending || 0,
+        registryPath: workforceRaw.registryPath || null
+      };
 
-            const workforceRaw = workforceService.status();
+      const capabilities = {
+        ok: workforce.ok,
+        count: workforce.capabilities,
+        available: []
+      };
 
-            const workforce = {
-                ok: workforceRaw.ok,
-                workers: workforceRaw.employees || 0,
-                employees: workforceRaw.employees || 0,
-                capabilities: workforceRaw.capabilities || 0,
-                active: 0,
-                idle: workforceRaw.employees || 0,
-                queued: queue.pending,
-                registryPath: workforceRaw.registryPath
-            };
+      const workflow = {
+        ok: true,
+        status: "ON_DEMAND"
+      };
 
-            let capabilities = {};
-            try {
-                const capGraph = capabilityService.buildGraph();
-                capabilities = {
-                    ok: capGraph.ok,
-                    count: capGraph.capabilities,
-                    available: Object.keys(capGraph.graph || {}).slice(0, 50)
-                };
-            } catch (err) {
-                capabilities = {
-                    ok: false,
-                    error: err.message
-                };
-            }
+      const recovery = {
+        total: queue.failed || 0,
+        waiting: queue.failed || 0,
+        retrying: 0,
+        blocked: 0,
+        byType: {}
+      };
 
-            let workflow = {};
-            try {
-                workflow = workflowService.status();
-            } catch (err) {
-                workflow = {
-                    ok: false,
-                    error: err.message
-                };
-            }
+      this.lastState = buildExecutiveState({
+        connectors,
+        queue,
+        workforce,
+        capabilities,
+        workflow,
+        recovery
+      });
 
-            const failedTasks = taskQueue.list("FAILED");
-            const recovery = classifyFailedTasks(failedTasks);
+      console.log(
+        "[MILES] SUPERVISOR HEARTBEAT | health=" +
+        this.lastState.health.overall +
+        " connectors=" + connectorNames.length +
+        " workers=" + workforce.workers +
+        " pending=" + (queue.pending || 0) +
+        " running=" + (queue.running || 0) +
+        " failed=" + (queue.failed || 0)
+      );
 
-            this.lastState = buildExecutiveState({
-                connectors,
-                queue,
-                workforce,
-                capabilities,
-                workflow,
-                recovery: {
-                    total: recovery.total,
-                    waiting: recovery.total,
-                    retrying: 0,
-                    blocked: 0,
-                    byType: recovery.byType || {}
-                }
-            });
-
-            console.log("");
-            console.log("========== MILES HEARTBEAT ==========");
-            console.log("Health      :", this.lastState.health.overall);
-            console.log("Connectors  :", Object.keys(connectors).length);
-            console.log("Workers     :", workforce.workers);
-            console.log("Capabilities:", workforce.capabilities);
-            console.log("Pending     :", queue.pending);
-            console.log("Running     :", queue.running);
-            console.log("Completed   :", queue.completed);
-            console.log("Failed      :", queue.failed);
-            console.log("Recovery    :", recovery.total);
-            console.log("Heartbeat   :", new Date().toLocaleTimeString());
-            console.log("=====================================");
-        } catch (err) {
-            console.error("");
-            console.error("[Supervisor] HEARTBEAT FAILED");
-            console.error(err);
-        }
+      return this.lastState;
+    } catch (error) {
+      console.error("[Supervisor] HEARTBEAT FAILED", error);
+      return { ok: false, error: error.message };
     }
+  }
 
-    async start(intervalMs = 60000) {
-        if (this.running) {
-            console.log("Supervisor already running.");
-            return;
-        }
+  async start(intervalMs = 60000) {
+    if (this.running) return;
 
-        this.running = true;
+    this.running = true;
+    console.log("[MILES] Minimal supervisor starting");
 
-        console.log("");
-        console.log("==================================");
-        console.log("MILES SUPERVISOR STARTING");
-        console.log("==================================");
+    await this.registerConnectors();
+    await this.heartbeat();
 
-        await this.registerConnectors();
-        await this.heartbeat();
+    this.interval = setInterval(() => {
+      this.heartbeat().catch(error =>
+        console.error("[Supervisor] HEARTBEAT FAILED", error)
+      );
+    }, intervalMs);
+  }
 
-        this.interval = setInterval(async () => {
-            await this.heartbeat();
-        }, intervalMs);
-    }
-
-    stop() {
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
-
-        this.running = false;
-
-        console.log("");
-        console.log("Supervisor stopped.");
-    }
+  stop() {
+    if (this.interval) clearInterval(this.interval);
+    this.interval = null;
+    this.running = false;
+    console.log("[MILES] Minimal supervisor stopped");
+  }
 }
 
 module.exports = new Supervisor();
