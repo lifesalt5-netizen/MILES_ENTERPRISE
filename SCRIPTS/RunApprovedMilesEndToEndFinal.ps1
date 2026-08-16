@@ -88,6 +88,8 @@ foreach ($file in $nodeChecks) {
 
 node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
 if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation regression tests failed.' }
+node .\SCRIPTS\TestReconcilePm2ProcessIntegration.js
+if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation integration test failed; production surfaces were not touched.' }
 node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'P2GC customer delivery acceptance failed.' }
 node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
