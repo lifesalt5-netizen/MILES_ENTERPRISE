@@ -14,9 +14,14 @@ function add(name, ok, detail = null) {
   console.log(`[${ok ? "PASS" : "FAIL"}] ${name}${detail ? ` :: ${detail}` : ""}`);
 }
 
-function request(port, pathname = "/", timeoutMs = 20000) {
+function request(port, pathname = "/", timeoutMs = 20000, method = "GET", body = null) {
   return new Promise((resolve, reject) => {
-    const req = http.request({ hostname: "127.0.0.1", port, path: pathname, method: "GET", timeout: timeoutMs }, res => {
+    const payload = body == null ? null : Buffer.from(JSON.stringify(body), "utf8");
+    const headers = payload ? {
+      "Content-Type": "application/json",
+      "Content-Length": payload.length
+    } : {};
+    const req = http.request({ hostname: "127.0.0.1", port, path: pathname, method, timeout: timeoutMs, headers }, res => {
       const chunks = [];
       res.on("data", c => chunks.push(c));
       res.on("end", () => resolve({
@@ -26,8 +31,13 @@ function request(port, pathname = "/", timeoutMs = 20000) {
     });
     req.on("timeout", () => req.destroy(new Error(`timeout http://127.0.0.1:${port}${pathname}`)));
     req.on("error", reject);
+    if (payload) req.write(payload);
     req.end();
   });
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function parseJson(text) {
@@ -86,6 +96,46 @@ function readJson(file) {
     add("CEO revenue brief responds", brief.statusCode === 200 && Boolean(json), `http=${brief.statusCode}`);
   } catch (e) { add("CEO revenue brief responds", false, e.message); }
 
+  let ceoTaskId = null;
+  let ceoOperationId = null;
+  try {
+    const command = await request(
+      8737,
+      "/api/command",
+      70000,
+      "POST",
+      { command: "Review the current P2GC revenue pipeline and report the single highest-priority action for the CEO. Read-only final acceptance. Do not send email, modify campaigns, or change external systems." }
+    );
+    const json = parseJson(command.text);
+    ceoOperationId = json?.operation?.id || json?.operationId || null;
+    ceoTaskId = json?.enqueueResult?.taskId || null;
+    add(
+      "CEO Dashboard accepts a MILES command",
+      command.statusCode === 200 && json?.ok === true && json?.enqueueResult?.ok === true,
+      `http=${command.statusCode} operation=${ceoOperationId || "none"} task=${ceoTaskId || "none"}`
+    );
+  } catch (e) {
+    add("CEO Dashboard accepts a MILES command", false, e.message);
+  }
+
+  if (ceoTaskId) {
+    const expected = path.join(ROOT, "DATA", "workforce_results", `WP_${ceoTaskId}.json`);
+    let completed = false;
+    for (let i = 0; i < 60; i++) {
+      if (fs.existsSync(expected)) {
+        const value = readJson(expected);
+        if (value) {
+          completed = true;
+          break;
+        }
+      }
+      await sleep(2000);
+    }
+    add("CEO Dashboard command reaches worker and persists result", completed, expected);
+  } else {
+    add("CEO Dashboard command reaches worker and persists result", false, "No task id returned");
+  }
+
   try {
     const desktop = await request(3737, "/api/status");
     const json = parseJson(desktop.text);
@@ -107,6 +157,8 @@ function readJson(file) {
   const report = {
     ok: checks.every(x => x.ok),
     generatedAt: new Date().toISOString(),
+    ceoOperationId,
+    ceoTaskId,
     checks
   };
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
