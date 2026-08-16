@@ -82,11 +82,15 @@ $promoteFiles = @(
   'SCRIPTS/TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS/ReconcileMilesProductionSurfaces.js',
   'SCRIPTS/MilesProductionGuardian.js',
+  'SCRIPTS/MilesEphemeralExecutor.js',
+  'SCRIPTS/TestMilesCoreHttpProbeP0.js',
   'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS/TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS/TestP2GCWholeSystemAcceptanceP0.js',
   'SCRIPTS/StartMilesApi.js',
   'StartProductionSystem.js',
+  'CORE/ConnectorManager.js',
+  'SERVICES/ExecutionService.js',
   'SERVICES/digital_coo/MilesCommandCenter.js',
   'SERVICES/DashboardServerService.js',
   'SERVICES/governance/PolicyEngineService.js',
@@ -94,6 +98,7 @@ $promoteFiles = @(
   'TESTS/Build052GovernanceTest.js',
   'TESTS/TestGovernanceNegationP0.js',
   'TESTS/TestExecutiveMissionExecutionP0.js',
+  'TESTS/TestEphemeralConnectorBootstrapP0.js',
   'SERVICES/BusinessExecutionEngineServiceV2.js',
   'SERVICES/BusinessWorkPlannerService.js',
   'SERVICES/BusinessOperationsBridgeService.js',
@@ -134,11 +139,15 @@ $nodeChecks = @(
   'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS\ReconcileMilesProductionSurfaces.js',
   'SCRIPTS\MilesProductionGuardian.js',
+  'SCRIPTS\MilesEphemeralExecutor.js',
+  'SCRIPTS\TestMilesCoreHttpProbeP0.js',
   'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
   'SCRIPTS\StartMilesApi.js',
   'StartProductionSystem.js',
+  'CORE\ConnectorManager.js',
+  'SERVICES\ExecutionService.js',
   'SERVICES\digital_coo\MilesCommandCenter.js',
   'SERVICES\DashboardServerService.js',
   'SERVICES\governance\PolicyEngineService.js',
@@ -146,6 +155,7 @@ $nodeChecks = @(
   'TESTS\Build052GovernanceTest.js',
   'TESTS\TestGovernanceNegationP0.js',
   'TESTS\TestExecutiveMissionExecutionP0.js',
+  'TESTS\TestEphemeralConnectorBootstrapP0.js',
   'SERVICES\BusinessExecutionEngineServiceV2.js',
   'CONNECTORS\MILES\connector.js',
   'StartExecutiveDashboard.js',
@@ -169,17 +179,20 @@ Invoke-Test '.\SCRIPTS\TestReconcilePm2ProcessIntegration.js' 'PM2 reconciliatio
 Invoke-Test '.\TESTS\Build052GovernanceTest.js' 'Baseline constitutional governance tests failed.'
 Invoke-Test '.\TESTS\TestGovernanceNegationP0.js' 'Negation-aware governance tests failed.'
 Invoke-Test '.\TESTS\TestExecutiveMissionExecutionP0.js' 'Executive mission execution regression failed.'
+Invoke-Test '.\TESTS\TestEphemeralConnectorBootstrapP0.js' 'Ephemeral child connector bootstrap regression failed.'
 Invoke-Test '.\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js' 'P2GC customer delivery acceptance failed.'
 Invoke-Test '.\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js' 'P2GC growth asset acceptance failed.'
 Invoke-Test '.\SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js' 'Live Instantly/ORION revenue connector acceptance failed; production surfaces were not changed.'
 
-Write-Host "`n=== PHASE B: CANONICALIZE CORE PRODUCTION SURFACES ==="
-node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery
-if ($LASTEXITCODE -ne 0) { throw 'Unable to canonicalize MILES core production surfaces.' }
+Write-Host "`n=== PHASE B: CANONICALIZE ALL PRODUCTION SURFACES ==="
+node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery p2gc-growth-demo
+if ($LASTEXITCODE -ne 0) { throw 'Unable to canonicalize MILES/P2GC production surfaces.' }
 
-Write-Host "`n=== PHASE C: CANONICALIZE PROSPECT DEMO ==="
-node .\SCRIPTS\ReconcileMilesProductionSurfaces.js p2gc-growth-demo
-if ($LASTEXITCODE -ne 0) { throw 'Unable to canonicalize P2GC prospect demo process.' }
+Write-Host "`n=== PHASE C: LIVE SURFACE PRE-PROBE ==="
+Start-Sleep -Seconds 8
+nnode = $null
+node .\SCRIPTS\TestMilesCoreHttpProbeP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Canonical MILES/P2GC HTTP pre-probe failed.' }
 
 Write-Host "`n=== PHASE D: FULL-SYSTEM CORE RECONCILIATION ==="
 powershell -NoProfile -ExecutionPolicy Bypass -File .\SCRIPTS\RunApprovedMilesFullSystemReconciliation.ps1
@@ -189,6 +202,7 @@ Write-Host "`n=== PHASE E: POST-RECONCILIATION SELF-HEAL ==="
 node .\SCRIPTS\ReconcileMilesProductionSurfaces.js
 if ($LASTEXITCODE -ne 0) { throw 'Post-reconciliation production surface repair failed.' }
 Start-Sleep -Seconds 8
+Invoke-Test '.\SCRIPTS\TestMilesCoreHttpProbeP0.js' 'Post-reconciliation live HTTP surface probe failed.'
 
 Write-Host "`n=== PHASE F: LIVE CEO COMMAND EXECUTION ==="
 Invoke-Test '.\SCRIPTS\RunMilesAcceptanceWithLiveMemory.js' 'MILES command execution acceptance failed after final surface reconciliation.'
@@ -233,6 +247,7 @@ Write-Host 'MILES CEO Dashboard / 8737       : PASS'
 Write-Host 'MILES Desktop UI / 3737          : PASS'
 Write-Host 'MILES Autonomous COO             : PASS'
 Write-Host 'MILES CEO command -> TaskQueue   : PASS'
+Write-Host 'Ephemeral connector bootstrap    : PASS'
 Write-Host 'MILES worker execution result    : PASS'
 Write-Host 'Governance intent/negation       : PASS'
 Write-Host 'Demo protection/redaction        : PASS'
