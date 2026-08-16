@@ -190,7 +190,6 @@ if ($LASTEXITCODE -ne 0) { throw 'Unable to canonicalize MILES/P2GC production s
 
 Write-Host "`n=== PHASE C: LIVE SURFACE PRE-PROBE ==="
 Start-Sleep -Seconds 8
-nnode = $null
 node .\SCRIPTS\TestMilesCoreHttpProbeP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Canonical MILES/P2GC HTTP pre-probe failed.' }
 
