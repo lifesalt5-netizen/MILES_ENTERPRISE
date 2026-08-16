@@ -1,0 +1,35 @@
+name: MILES Task Queue Maintenance
+
+on:
+  push:
+    branches:
+      - agent/miles-full-system-reconciliation-20260815
+  workflow_dispatch:
+
+jobs:
+  queue-maintenance-windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Node syntax
+        shell: pwsh
+        run: |
+          node --check .\SCRIPTS\CompactTaskQueueHistory.js
+          node --check .\SCRIPTS\TaskQueueMaintenanceService.js
+          node --check .\SCRIPTS\TestTaskQueueCompactionP0.js
+
+      - name: TaskQueue compaction regression
+        shell: pwsh
+        run: node .\SCRIPTS\TestTaskQueueCompactionP0.js
+
+      - name: PowerShell recovery parse
+        shell: pwsh
+        run: |
+          [scriptblock]::Create((Get-Content .\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1 -Raw)) | Out-Null
+          Write-Host 'PowerShell parse PASS'
