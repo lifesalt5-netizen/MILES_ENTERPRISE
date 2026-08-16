@@ -14,14 +14,38 @@ const path = require("path");
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
 
-// Provider authority must observe the same production environment used by
-// live connectors. Preserve meaningful exported values, but do not let an
-// inherited blank Windows variable suppress a valid value in ROOT/.env.
+function parseEnvFile(text) {
+    const values = {};
+    for (const rawLine of String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/)) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith("#")) continue;
+        const match = line.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+        if (!match) continue;
+        const key = match[1];
+        let value = match[2].trim();
+        if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+        ) {
+            value = value.slice(1, -1);
+        } else {
+            value = value.replace(/\s+#.*$/, "").trim();
+        }
+        values[key] = value
+            .replace(/\\n/g, "\n")
+            .replace(/\\r/g, "\r");
+    }
+    return values;
+}
+
+// Provider authority must be available during the minimal recovery/static
+// preflight too, before npm dependencies are guaranteed. Parse ROOT/.env
+// directly; preserve meaningful exported values and fill only absent/blank
+// inherited values.
 try {
-    const dotenv = require("dotenv");
     const envPath = path.join(ROOT, ".env");
     if (fs.existsSync(envPath)) {
-        const parsed = dotenv.parse(fs.readFileSync(envPath, "utf8"));
+        const parsed = parseEnvFile(fs.readFileSync(envPath, "utf8"));
         for (const [key, value] of Object.entries(parsed)) {
             const current = process.env[key];
             if (current === undefined || current === null || String(current).trim() === "") {
@@ -30,8 +54,7 @@ try {
         }
     }
 } catch {
-    // dotenv is a declared production dependency, but provider authority
-    // remains fail-closed if environment loading itself is unavailable.
+    // Fail closed below if required provider truth cannot be established.
 }
 
 const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
