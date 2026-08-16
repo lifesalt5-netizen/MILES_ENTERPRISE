@@ -86,6 +86,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'P2GC growth asset acceptance failed.' }
           node .\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) { throw 'P2GC Sub2Prime/Prime-Sub teaming acceptance failed.' }
+          node .\SCRIPTS\TestP2GCReplyIntelligenceAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'P2GC reply intelligence/meeting routing acceptance failed.' }
           node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
           if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap/self-development acceptance failed.' }
 
@@ -136,7 +138,7 @@ jobs:
             $failures | ConvertTo-Json -Depth 6 | Write-Host
             throw 'Final MILES/P2GC surface and CEO command acceptance failed.'
           }
-          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command preflight -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful read-only result with zero external side effects + customer/growth/Blueprint/Sub2Prime layer'
+          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command preflight -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful read-only result with zero external side effects + customer/growth/Blueprint/Sub2Prime/reply-intelligence layer'
 
       - name: Persist PM2 map and show logs through direct transport
         if: always()
