@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "name": "MILES Production System Graph",
-  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, and persistence all pass.",
+  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, product surfaces, and persistence all pass.",
   "protectedRuntimePaths": [
     ".git/",
     ".env",
@@ -22,9 +22,14 @@
     {"name":"CEO Dashboard","pm2":"miles-executive-dashboard","entry":"StartExecutiveDashboard.js","port":8737,"health":"/api/state"},
     {"name":"Desktop UI","pm2":"miles-desktop-ui","entry":"StartMiles.js","port":3737,"health":"/api/status"},
     {"name":"Autonomous COO","pm2":"miles-autonomous-coo","entry":"StartAutonomousCOO.js"},
-    {"name":"Prospect Blueprint","pm2":"p2gc-growth-demo","entry":"StartP2GCGrowthBlueprintDemo.js","port":8791,"health":"/api/health"},
+    {"name":"Prospect Blueprint + Sub2Prime","pm2":"p2gc-growth-demo","entry":"StartP2GCGrowthBlueprintDemo.js","port":8791,"health":"/api/health"},
     {"name":"Customer Delivery","pm2":"p2gc-customer-delivery","entry":"StartP2GCCustomerDelivery.js","port":8792,"health":"/api/health"},
     {"name":"Queue Maintainer","pm2":"miles-queue-maintainer","entry":"SCRIPTS/TaskQueueMaintenanceService.js"}
+  ],
+  "productSurfaces": [
+    {"name":"Executive Government Growth Blueprint","port":8791,"path":"/","api":"/api/assessment","mode":"read-only-prospect-intelligence"},
+    {"name":"Sub2Prime Prime-Sub Teaming Intelligence","port":8791,"path":"/teaming","api":"/api/teaming","mode":"read-only-prospect-intelligence"},
+    {"name":"Customer Delivery and Revenue Command Center","port":8792,"path":"/","api":"/api/revenue","mode":"internal-client-delivery"}
   ],
   "acceptanceRoots": [
     "SCRIPTS/TestMilesCoreHttpProbeP0.js",
@@ -36,6 +41,7 @@
     "SCRIPTS/TestP2GCCustomerDeliveryAcceptanceP0.js",
     "SCRIPTS/TestP2GCGrowthAssetsAcceptanceP0.js",
     "SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js",
+    "SCRIPTS/TestP2GCPrimeSubTeamingAcceptanceP0.js",
     "SCRIPTS/TestTaskQueueCompactionP0.js",
     "TESTS/TestProviderAuthorityEnvironmentP0.js",
     "TESTS/TestExecutionActionContractsP0.js",
@@ -47,6 +53,7 @@
     "SERVICES/ceo_dashboard/public/ceo.js",
     "SERVICES/ceo_dashboard/public/ceo.css",
     "SERVICES/demo/public/index.html",
+    "SERVICES/demo/public/teaming.html",
     "SERVICES/demo/public/app.js",
     "SERVICES/demo/public/styles.css"
   ],
@@ -57,6 +64,7 @@
     "SERVICES/governance/CommandPreflightService.js",
     "SERVICES/governance/ExecutionActionCapabilityService.js",
     "SERVICES/revenue/RevenueTruthGateService.js",
+    "SERVICES/teaming/P2GCPrimeSubTeamingService.js",
     "SERVICES/BusinessExecutionEngineServiceV2.js",
     "SERVICES/governance/PolicyEngineService.js",
     "SERVICES/ProviderAuthorityRegistryService.js",
@@ -101,6 +109,7 @@
     "CEO_COMMAND_PREFLIGHT",
     "CEO_COMMAND_EXECUTION",
     "BUSINESS_CAPABILITIES",
+    "PRODUCT_SURFACES",
     "PERSISTENCE_AND_SELF_HEAL"
   ]
 }
