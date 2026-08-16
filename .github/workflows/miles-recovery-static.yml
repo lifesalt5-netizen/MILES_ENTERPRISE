@@ -1,0 +1,64 @@
+name: MILES Recovery Static Validation
+
+on:
+  push:
+    branches:
+      - agent/miles-full-system-reconciliation-20260815
+  workflow_dispatch:
+
+jobs:
+  windows-validation:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Parse PowerShell recovery scripts
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'SCRIPTS\RunApprovedMilesEndToEndFinal.ps1',
+            'SCRIPTS\RunApprovedMilesFullSystemReconciliation.ps1'
+          )
+          foreach ($file in $files) {
+            [void][scriptblock]::Create((Get-Content $file -Raw))
+            Write-Host "[POWERSHELL PARSE OK] $file"
+          }
+
+      - name: Node syntax gates
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'SCRIPTS\ReconcilePm2Process.js',
+            'SCRIPTS\TestReconcilePm2ProcessUnit.js',
+            'SCRIPTS\ReconcileMilesProductionSurfaces.js',
+            'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
+            'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
+            'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
+            'SCRIPTS\StartMilesApi.js',
+            'StartProductionSystem.js',
+            'SERVICES\digital_coo\MilesCommandCenter.js',
+            'StartExecutiveDashboard.js',
+            'StartMiles.js',
+            'StartAutonomousCOO.js',
+            'StartP2GCGrowthBlueprintDemo.js',
+            'SCRIPTS\TestP2GCGrowthBlueprintDemoAcceptanceP0.js'
+          )
+          foreach ($file in $files) {
+            node --check $file
+            if ($LASTEXITCODE -ne 0) { throw "Node syntax failed: $file" }
+            Write-Host "[NODE CHECK OK] $file"
+          }
+
+      - name: PM2 reconciliation regression tests
+        shell: powershell
+        run: |
+          node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
+          if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation unit tests failed.' }
