@@ -67,15 +67,41 @@ function invoke(service, input) {
 class BusinessExecutionEngineServiceV2 {
   constructor(options = {}) {
     this.bridge = options.bridge || new BusinessOperationsBridgeService({ rootDir: ROOT });
+
+    // Lean executive core: always-available MILES services are loaded now.
     this.services = {
       COMPANY_STATE: options.companyState || CompanyStateService,
       TASK_ROUTER: options.taskRouter || TaskRouterService,
-      EXECUTIVE_DASHBOARD: options.executiveDashboard || ExecutiveDashboardService,
-      PROVIDER_AUTHORITY: options.providerAuthority || require("./ProviderAuthorityRegistryService"),
-      PROVIDER_SYNC: options.providerSync || require("./ProviderSynchronizationService"),
-      INSTANTLY_LIVE: options.instantlyLive || require("./InstantlyLiveIntegrationService"),
-      CONTROLLED_WRITE: options.controlledWrite || require("./ControlledWriteService")
+      EXECUTIVE_DASHBOARD: options.executiveDashboard || ExecutiveDashboardService
     };
+
+    // Heavy/external stacks are loaded only when a mission actually calls them.
+    this.lazyServicePaths = {
+      PROVIDER_AUTHORITY: "./ProviderAuthorityRegistryService",
+      PROVIDER_SYNC: "./ProviderSynchronizationService",
+      INSTANTLY_LIVE: "./InstantlyLiveIntegrationService",
+      CONTROLLED_WRITE: "./ControlledWriteService"
+    };
+
+    if (options.providerAuthority) this.services.PROVIDER_AUTHORITY = options.providerAuthority;
+    if (options.providerSync) this.services.PROVIDER_SYNC = options.providerSync;
+    if (options.instantlyLive) this.services.INSTANTLY_LIVE = options.instantlyLive;
+    if (options.controlledWrite) this.services.CONTROLLED_WRITE = options.controlledWrite;
+  }
+
+  resolveService(action) {
+    if (this.services[action]) {
+      return this.services[action];
+    }
+
+    const modulePath = this.lazyServicePaths[action];
+    if (!modulePath) {
+      return null;
+    }
+
+    const service = require(modulePath);
+    this.services[action] = service;
+    return service;
   }
 
   async run(task = {}) {
@@ -147,7 +173,7 @@ class BusinessExecutionEngineServiceV2 {
         return await this.planAndBridgeBusinessWork(base, normalized);
       }
 
-      const service = this.services[action];
+      const service = this.resolveService(action);
       if (!service) {
         base.status = "FAILED";
         base.error = `No canonical business execution service is registered for action ${action}.`;
