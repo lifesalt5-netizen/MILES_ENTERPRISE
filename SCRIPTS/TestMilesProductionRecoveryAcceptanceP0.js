@@ -8,10 +8,11 @@ const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const OUT_DIR = path.join(ROOT, "DATA", "runtime_guardian");
 const REPORT = path.join(OUT_DIR, "production_recovery_acceptance_latest.json");
+const TASK_QUEUE_FILE = path.join(ROOT, "DATA", "runtime", "task_queue.json");
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function readJson(file, fallback = null) {
-  try { return JSON.parse(fs.readFileSync(file, "utf8")); }
+  try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); }
   catch { return fallback; }
 }
 function requestJson(method, pathname, body = null, timeoutMs = 15000) {
@@ -55,22 +56,44 @@ function resultFilesSince(sinceMs) {
 function matchesExecution(record, taskId, operationId) {
   const v = record.value || {};
   const text = JSON.stringify(v);
-  const directTask = taskId && String(v.taskId || "") === String(taskId);
+  const directTask = taskId && String(v.taskId || v.id || "") === String(taskId);
   const taskMention = taskId && text.includes(String(taskId));
   const opMention = operationId && text.includes(String(operationId));
   return Boolean(directTask || taskMention || opMention);
 }
+function taskQueueExecution(taskId) {
+  if (!taskId) return null;
+  const queue = readJson(TASK_QUEUE_FILE, []);
+  if (!Array.isArray(queue)) return null;
+  const task = queue.find(item => String(item?.id || "") === String(taskId));
+  if (!task) return null;
+  const status = String(task.status || "").toUpperCase();
+  const terminal = ["COMPLETED","FAILED","BLOCKED","AWAITING_APPROVAL","AWAITING_CEO_APPROVAL","CANCELLED"].includes(status);
+  if (!terminal && !task.result) return null;
+  return {
+    value: {
+      taskId: task.id,
+      ok: status === "COMPLETED" && task.result?.ok !== false,
+      status,
+      result: task.result || null,
+      provider: task.provider || task.payload?.provider || null,
+      action: task.action || task.payload?.action || task.type || null,
+      persistedIn: "TaskQueue"
+    },
+    file: `${TASK_QUEUE_FILE}#${task.id}`
+  };
+}
 function successfulExecutionResult(value) {
   if (!value || typeof value !== "object") return false;
   const status = String(value.status || value.result?.status || value.workforceResult?.status || value.result?.workforceResult?.status || "").toUpperCase();
-  if (["FAILED","ERROR","BLOCKED"].includes(status)) return false;
+  if (["FAILED","ERROR","BLOCKED","AWAITING_APPROVAL","AWAITING_CEO_APPROVAL","CANCELLED","COMPLETED_WITH_ERRORS"].includes(status)) return false;
   const flags = [
     value.ok,
     value.result?.ok,
     value.workforceResult?.ok,
     value.result?.workforceResult?.ok
   ].filter(v => typeof v === "boolean");
-  return flags.includes(true) && !flags.includes(false);
+  return status === "COMPLETED" && flags.includes(true) && !flags.includes(false);
 }
 function pm2State(name) {
   try {
@@ -151,15 +174,24 @@ function pm2State(name) {
           break;
         }
       }
+
       const candidates = resultFilesSince(commandAcceptedAt).filter(r => matchesExecution(r, taskId, operationId));
       if (candidates.length) {
         persisted = candidates[0].value;
         persistedFile = candidates[0].file;
         break;
       }
+
+      const queueResult = taskQueueExecution(taskId);
+      if (queueResult) {
+        persisted = queueResult.value;
+        persistedFile = queueResult.file;
+        break;
+      }
+
       await sleep(2000);
     }
-    add("worker persisted current command result", Boolean(persisted), persistedFile || exact);
+    add("worker persisted current command result", Boolean(persisted), persistedFile || `${TASK_QUEUE_FILE}#${taskId}`);
     add("persisted command result succeeded", successfulExecutionResult(persisted), persisted ? `status=${persisted.status || persisted.result?.status || "unknown"} ok=${persisted.ok}` : "no persisted result");
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
@@ -180,12 +212,14 @@ function pm2State(name) {
         const r = await requestJson("GET", `/api/operation?id=${encodeURIComponent(operationId)}`);
         op = r.body;
         const s = String(op?.status || "").toUpperCase();
-        if (["COMPLETED","AWAITING_VERIFICATION","FAILED","ERROR"].includes(s) || op?.latestTask?.result || op?.result) break;
+        if (["COMPLETED","AWAITING_VERIFICATION","FAILED","ERROR","BLOCKED","AWAITING_APPROVAL"].includes(s) || op?.latestTask?.result || op?.result) break;
         await sleep(2000);
       }
       const opStatus = String(op?.status || "").toUpperCase();
       const opResult = op?.latestTask?.result || op?.result || null;
-      const opOk = Boolean(op && !["FAILED","ERROR"].includes(opStatus) && (opResult || ["COMPLETED","AWAITING_VERIFICATION"].includes(opStatus)) && opResult?.ok !== false);
+      const opOk = Boolean(
+        op && opStatus === "COMPLETED" && opResult && opResult?.ok !== false
+      );
       add("8787 operation polling returns successful execution truth", opOk, `status=${op?.status || "unknown"}`);
     } catch (e) { add("8787 operation polling returns successful execution truth", false, e.message); }
   } else {
@@ -205,9 +239,17 @@ function pm2State(name) {
   add("worker runtime status exists", Boolean(workerStatus && Object.keys(workerStatus).length), workerStatus?.generatedAt || workerStatus?.status || null);
   add("worker runtime lifecycle started", workerStatus?.lifecycle?.started === true && workerStatus?.lifecycle?.shuttingDown !== true, JSON.stringify(workerStatus?.lifecycle || {}));
 
-  const memoryFile = path.join(ROOT,"DATA","runtime_guardian","worker_memory_latest.json");
-  const memory = readJson(memoryFile,null);
-  add("worker RAM telemetry exists", Boolean(memory), memoryFile);
+  const dedicatedMemoryFile = path.join(ROOT,"DATA","runtime_guardian","worker_memory_latest.json");
+  const dedicatedMemory = readJson(dedicatedMemoryFile,null);
+  const runtimeMemory = workerStatus?.memory && Number.isFinite(Number(workerStatus.memory.rssMb))
+    ? {
+        ...workerStatus.memory,
+        hardMb: Number(process.env.MILES_WORKER_MEMORY_FAIL_MB || 3072),
+        source: "worker_runtime_status.json"
+      }
+    : null;
+  const memory = dedicatedMemory || runtimeMemory;
+  add("worker RAM telemetry exists", Boolean(memory && Number.isFinite(Number(memory.rssMb))), dedicatedMemory ? dedicatedMemoryFile : runtimeMemory ? "DATA/runtime/worker_runtime_status.json#memory" : "missing");
   if (memory) {
     add("worker RAM below hard limit", Number(memory.rssMb) < Number(memory.hardMb || 3072), `rss=${memory.rssMb}MB hard=${memory.hardMb || 3072}MB`);
   }
@@ -220,6 +262,7 @@ function pm2State(name) {
     persistedFile,
     workerBefore,
     workerAfter,
+    memory,
     checks
   };
   fs.writeFileSync(REPORT, JSON.stringify(report,null,2), "utf8");
