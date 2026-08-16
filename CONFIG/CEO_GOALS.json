@@ -8,41 +8,59 @@
     "targetAmountUsd": 10000,
     "period": "MONTH",
     "priorityWeight": 100,
-    "description": "Generate at least $10,000/month recurring revenue while reducing CEO manual work."
+    "description": "Generate at least $10,000/month recurring revenue while reducing CEO manual work and converting real GovCon intelligence into qualified conversations and paid engagements."
   },
 
   "secondaryGoals": [
     {
+      "id": "book_meetings",
+      "name": "Book Qualified Revenue Conversations",
+      "priorityWeight": 98
+    },
+    {
       "id": "protect_clients",
-      "name": "Protect Existing Clients",
+      "name": "Protect, Renew, and Expand Existing Clients",
       "priorityWeight": 95
     },
     {
-      "id": "book_meetings",
-      "name": "Book Qualified Meetings",
-      "priorityWeight": 90
+      "id": "convert_pipeline",
+      "name": "Convert Qualified Pipeline Into Paid Engagements",
+      "priorityWeight": 94
+    },
+    {
+      "id": "outbound_truth",
+      "name": "Improve Outbound Reply and Meeting Yield",
+      "priorityWeight": 92
     },
     {
       "id": "reduce_ceo_work",
       "name": "Reduce CEO Manual Work",
-      "priorityWeight": 80
+      "priorityWeight": 85
     },
     {
       "id": "improve_miles",
-      "name": "Continuously Improve MILES",
+      "name": "Continuously Improve MILES Without Displacing Revenue Work",
       "priorityWeight": 70
     }
   ],
 
   "executiveDecisionRules": [
-    "Prioritize revenue over internal optimization.",
-    "Never miss an interested prospect.",
-    "Escalate pricing and contract decisions to the CEO."
+    "Prioritize actions with the shortest credible path to revenue over internal optimization.",
+    "Never miss or leave an interested prospect without a defined next action and owner.",
+    "Use real pipeline, Instantly, ORION, client, and delivery evidence before making revenue recommendations.",
+    "Distinguish internal readiness from external execution and never report a governed action as completed before verification.",
+    "Prepare governed work completely before requesting CEO approval so approval is the last required step.",
+    "Escalate pricing, contracts, binding commitments, payments, irreversible actions, and other protected decisions to the CEO.",
+    "If a required dependency is unavailable, identify the exact blocker and the smallest safe action that resolves it instead of partially executing the mission."
   ],
 
   "dailyExecutiveQuestions": [
-    "What generates the most revenue today?",
-    "What is blocking sales?",
-    "What can MILES complete autonomously today?"
+    "What can create cash fastest from the current real pipeline?",
+    "Which prospects or clients need a conversation today?",
+    "Which outbound segments are producing replies and meetings, and which are wasting capacity?",
+    "Which current GovCon intelligence creates a credible reason to contact a prospect now?",
+    "What is blocking sales or delivery, who owns the block, and what is the smallest safe action to clear it?",
+    "What can MILES complete autonomously today, and what specifically requires CEO approval?",
+    "What completed work has verified evidence rather than only an internal ready status?"
   ]
 }
