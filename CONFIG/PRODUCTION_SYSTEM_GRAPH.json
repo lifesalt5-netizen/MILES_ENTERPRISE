@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "name": "MILES Production System Graph",
-  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, command execution, business capabilities, and persistence all pass.",
+  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, command preflight, command execution, business capabilities, and persistence all pass.",
   "protectedRuntimePaths": [
     ".git/",
     ".env",
@@ -10,6 +10,11 @@
     "logs/",
     "node_modules/"
   ],
+  "governanceConfig": {
+    "ceoGoals": "CONFIG/CEO_GOALS.json",
+    "ceoApprovalRules": "CONFIG/CEO_APPROVAL_RULES.json",
+    "ceoOperatingMission": "CONFIG/CEO_OPERATING_MISSION.json"
+  },
   "surfaces": [
     {"name":"MILES API","pm2":"miles-api","entry":"SCRIPTS/StartMilesApi.js","port":3000,"health":"/"},
     {"name":"MILES Worker","pm2":"miles-worker","entry":"StartProductionSystem.js"},
@@ -31,7 +36,9 @@
     "SCRIPTS/TestP2GCCustomerDeliveryAcceptanceP0.js",
     "SCRIPTS/TestP2GCGrowthAssetsAcceptanceP0.js",
     "SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js",
-    "SCRIPTS/TestTaskQueueCompactionP0.js"
+    "SCRIPTS/TestTaskQueueCompactionP0.js",
+    "TESTS/TestProviderAuthorityEnvironmentP0.js",
+    "TESTS/TestCommandPreflightP0.js"
   ],
   "staticAssets": [
     "SERVICES/ceo_dashboard/public/index.html",
@@ -44,9 +51,11 @@
   "criticalModules": [
     "CORE/TaskQueue.js",
     "SERVICES/BusinessOperationsBridgeService.js",
+    "SERVICES/governance/CommandPreflightService.js",
     "SERVICES/revenue/RevenueTruthGateService.js",
     "SERVICES/BusinessExecutionEngineServiceV2.js",
     "SERVICES/governance/PolicyEngineService.js",
+    "SERVICES/ProviderAuthorityRegistryService.js",
     "SERVICES/ProviderRouterService.js",
     "SERVICES/WorkerBootstrap.js",
     "CONNECTORS/ORION/connector.js"
@@ -62,8 +71,10 @@
     "INTENT_PARSE",
     "MISSION_PLAN",
     "NEGATION_AWARE_GOVERNANCE",
+    "SOURCE_CLOSURE_PREFLIGHT",
     "CONNECTOR_PROVIDER_RESOLUTION",
     "CREDENTIAL_AND_DATA_PREFLIGHT",
+    "WORKER_RUNTIME_PREFLIGHT",
     "QUEUE_CAPACITY_AND_LOCK_PREFLIGHT",
     "BUSINESS_OPERATIONS_BRIDGE",
     "TASK_QUEUE",
@@ -78,6 +89,7 @@
     "DATA_AND_CONNECTORS",
     "PROCESS_RECONCILIATION",
     "HTTP_SURFACES",
+    "CEO_COMMAND_PREFLIGHT",
     "CEO_COMMAND_EXECUTION",
     "BUSINESS_CAPABILITIES",
     "PERSISTENCE_AND_SELF_HEAL"
