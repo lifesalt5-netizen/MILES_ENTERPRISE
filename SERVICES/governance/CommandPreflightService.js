@@ -39,6 +39,12 @@ class CommandPreflightService {
     return source === "MILES_COMMAND_CENTER" || Boolean(sourceOperationId && String(sourceOperationId).startsWith("op_"));
   }
 
+  approvalSatisfied(operation = {}) {
+    const decision = String(operation.approvalDecision || "").toUpperCase();
+    const actor = String(operation.approvedBy || "").toUpperCase();
+    return decision === "APPROVED" && actor === "CEO" && Boolean(operation.approvedAt);
+  }
+
   normalizeProvider(value) {
     const raw = String(value || "MILES").trim().toLowerCase();
     const aliases = {
@@ -75,9 +81,7 @@ class CommandPreflightService {
     ];
 
     if (Array.isArray(plan.steps)) {
-      for (const step of plan.steps) {
-        values.push(step?.provider, step?.connector);
-      }
+      for (const step of plan.steps) values.push(step?.provider, step?.connector);
     }
 
     const providers = new Set();
@@ -130,36 +134,26 @@ class CommandPreflightService {
 
   sourceIntegrityCheck() {
     const graph = this.readJson(this.graphPath, null);
-    if (!graph) {
-      return { ok: false, code: "PRODUCTION_GRAPH_MISSING", detail: this.graphPath };
-    }
+    if (!graph) return { ok: false, code: "PRODUCTION_GRAPH_MISSING", detail: this.graphPath };
 
     const required = Array.isArray(graph.criticalModules) ? graph.criticalModules : [];
     const missing = required.filter(file => !fs.existsSync(path.join(this.rootDir, file)));
-    if (missing.length) {
-      return { ok: false, code: "SOURCE_CLOSURE_INCOMPLETE", detail: missing };
-    }
+    if (missing.length) return { ok: false, code: "SOURCE_CLOSURE_INCOMPLETE", detail: missing };
 
     return { ok: true, code: "SOURCE_CLOSURE_READY", detail: { criticalModules: required.length } };
   }
 
   workerCheck() {
     const status = this.readJson(this.workerStatusPath, null);
-    if (!status) {
-      return { ok: false, code: "WORKER_STATUS_MISSING", detail: this.workerStatusPath };
-    }
+    if (!status) return { ok: false, code: "WORKER_STATUS_MISSING", detail: this.workerStatusPath };
 
     const generated = new Date(status.generatedAt || 0).getTime();
     const ageMs = Number.isFinite(generated) && generated > 0 ? Math.max(0, this.now() - generated) : Number.MAX_SAFE_INTEGER;
     const lifecycle = status.lifecycle || {};
     const running = lifecycle.started === true && lifecycle.shuttingDown !== true;
 
-    if (!running) {
-      return { ok: false, code: "WORKER_NOT_READY", detail: { lifecycle, ageMs } };
-    }
-    if (ageMs > this.workerMaxAgeMs) {
-      return { ok: false, code: "WORKER_STATUS_STALE", detail: { ageMs, maxAgeMs: this.workerMaxAgeMs } };
-    }
+    if (!running) return { ok: false, code: "WORKER_NOT_READY", detail: { lifecycle, ageMs } };
+    if (ageMs > this.workerMaxAgeMs) return { ok: false, code: "WORKER_STATUS_STALE", detail: { ageMs, maxAgeMs: this.workerMaxAgeMs } };
 
     return {
       ok: true,
@@ -262,6 +256,9 @@ class CommandPreflightService {
       };
     }
 
+    const approvalRequired = operation.approvalRequired === true || operation.requiresKevin === true;
+    const approvalSatisfied = this.approvalSatisfied(operation);
+
     const checks = [
       { area: "SOURCE", ...this.sourceIntegrityCheck() },
       { area: "WORKER", ...this.workerCheck() },
@@ -269,7 +266,7 @@ class CommandPreflightService {
       ...this.providerChecks(operation, task).map(check => ({ area: "PROVIDER", ...check }))
     ];
 
-    if (operation.approvalRequired === true || operation.requiresKevin === true) {
+    if (approvalRequired && !approvalSatisfied) {
       checks.push({
         area: "GOVERNANCE",
         ok: false,
@@ -280,8 +277,10 @@ class CommandPreflightService {
       checks.push({
         area: "GOVERNANCE",
         ok: true,
-        code: "GOVERNANCE_READY",
-        detail: this.requestsWrite(operation, task) ? "write request is within enabled provider authority" : "read-only/internal command"
+        code: approvalRequired ? "CEO_APPROVAL_VERIFIED" : "GOVERNANCE_READY",
+        detail: approvalRequired
+          ? { approvedBy: operation.approvedBy, approvedAt: operation.approvedAt, approvalDecision: operation.approvalDecision }
+          : (this.requestsWrite(operation, task) ? "write request is within enabled provider authority" : "read-only/internal command")
       });
     }
 
@@ -298,6 +297,8 @@ class CommandPreflightService {
       action: operation.action || task.type || task.payload?.action || null,
       providers: this.requiredProviders(operation, task),
       writeRequested: this.requestsWrite(operation, task),
+      approvalRequired,
+      approvalSatisfied,
       checks,
       blockers
     };
