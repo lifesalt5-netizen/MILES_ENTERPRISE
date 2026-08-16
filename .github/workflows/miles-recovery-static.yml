@@ -57,6 +57,7 @@ jobs:
             'SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js',
             'SCRIPTS\TestMilesCoreHttpProbeP0.js',
             'SCRIPTS\TestDashboardPromotionClosureP0.js',
+            'SCRIPTS\TestDashboardDeploymentSimulationP0.js',
             'SCRIPTS\StartMilesApi.js',
             'StartProductionSystem.js',
             'SERVICES\digital_coo\MilesCommandCenter.js',
@@ -78,6 +79,8 @@ jobs:
             'TESTS\TestExecutiveMissionExecutionP0.js',
             'TESTS\TestBusinessWorkPlannerExecutionContractP0.js',
             'TESTS\TestEphemeralConnectorBootstrapP0.js',
+            'TESTS\TestLegacyMilesPm2AliasRetirementP0.js',
+            'TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js',
             'StartP2GCCustomerDelivery.js',
             'StartExecutiveDashboard.js',
             'StartMiles.js',
@@ -97,6 +100,8 @@ jobs:
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestDashboardPromotionClosureP0.js
           if ($LASTEXITCODE -ne 0) { throw 'CEO Dashboard promotion closure is incomplete.' }
+          node .\TESTS\TestLegacyMilesPm2AliasRetirementP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Legacy MILES PM2 alias retirement unit contract failed.' }
           node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
           if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation unit tests failed.' }
           node .\TESTS\Build052GovernanceTest.js
@@ -136,9 +141,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Direct PM2 command wrapper failed.' }
           Write-Host '[DIRECT PM2 TRANSPORT PASS]'
 
-      - name: Reproduce and repair stale PM2 script identity
+      - name: Reproduce and repair stale PM2 identities safely
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestReconcilePm2ProcessIntegration.js
-          if ($LASTEXITCODE -ne 0) { throw 'Real PM2 stale-identity repair integration failed.' }
+          if ($LASTEXITCODE -ne 0) { throw 'Real PM2 stale-script identity repair integration failed.' }
+          node .\TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js
+          if ($LASTEXITCODE -ne 0) { throw 'Real PM2 legacy MILES alias retirement integration failed.' }
