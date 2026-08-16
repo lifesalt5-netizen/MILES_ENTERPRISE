@@ -293,9 +293,7 @@ class RuntimeWorkerSupervisor {
             recoveredBy: "StartProductionSystem.executePass",
             claimedBy: "RuntimeWorkerSupervisor"
           })
-        : taskQueue.list("QUEUED")
-            .slice()
-            .sort((a, b) => Number(a.priority || 99) - Number(b.priority || 99))[0] || null;
+        : taskQueue.list("QUEUED").slice().sort((a, b) => Number(a.priority || 99) - Number(b.priority || 99))[0] || null;
 
       if (!selectedTask) {
         this.metrics.emptyQueuePasses += 1;
@@ -463,13 +461,11 @@ class RuntimeWorkerSupervisor {
 }
 
 async function main() {
-  require("./api/server");
-  require("./workers/cooWorker");
-  require("./workers/revenueWorker");
-  require("./workers/replyWorker");
-  require("./workers/dealWorker");
-  require("./workers/atlasWorker");
-
+  // The core worker deliberately does NOT require api/server or the legacy
+  // business worker modules here. Those modules load large dependency graphs
+  // and are not needed to supervise TaskQueue execution. Command Center/UI
+  // remain separate PM2 surfaces, while actual business execution runs in the
+  // ephemeral child executor and exits after each task.
   const runtime = new RuntimeWorkerSupervisor();
   let shutdownStarted = false;
 
