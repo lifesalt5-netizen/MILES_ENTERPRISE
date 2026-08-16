@@ -42,14 +42,14 @@ $canonicalFiles = @(
 )
 
 foreach ($file in $canonicalFiles) {
-  $target = Join-Path $Root ($file -replace '/', '\')
+  $target = Join-Path $Root ($file -replace '/', '\\')
   $dir = Split-Path $target -Parent
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
   if (Test-Path $target) {
     $backupDir = Join-Path $Root 'DATA\runtime_guardian\pre_reconciliation_backups'
     New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
-    $safe = ($file -replace '[\/:*?"<>|]','_')
+    $safe = ($file -replace '[\\/:*?"<>|]','_')
     $existingBackups = Get-ChildItem $backupDir -Filter "$safe.before_*" -File -ErrorAction SilentlyContinue |
       Sort-Object LastWriteTime -Descending
     $existingBackups | Select-Object -Skip 3 | Remove-Item -Force -ErrorAction SilentlyContinue
@@ -62,15 +62,29 @@ foreach ($file in $canonicalFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-function Test-Pm2AppExists([string]$Name) {
+function Invoke-Pm2RestartOrCreate([string]$Name, [string]$ScriptPath) {
+  $previousPreference = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
   try {
-    $raw = (& pm2 jlist 2>$null | Out-String).Trim()
-    if (-not $raw) { return $false }
-    $apps = $raw | ConvertFrom-Json
-    return @($apps | Where-Object { $_.name -eq $Name }).Count -gt 0
-  } catch {
-    return $false
+    $restartOutput = (& pm2 restart $Name 2>&1 | Out-String)
+    $restartCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousPreference
   }
+
+  if ($restartCode -eq 0) {
+    $restartOutput | Out-Host
+    return
+  }
+
+  if ($restartOutput -match "doesn't exist|not found|unknown process") {
+    Write-Host "[PM2] $Name not present; creating process."
+    & pm2 start $ScriptPath --name $Name | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "Unable to create PM2 app: $Name" }
+    return
+  }
+
+  throw "Unable to restart PM2 app $Name. Output: $restartOutput"
 }
 
 Write-Host "`n=== PHASE 0: CANONICAL LEAN + EPHEMERAL WORKER RUNTIME ==="
@@ -93,14 +107,7 @@ foreach ($file in $runtimeChecks) {
 }
 
 Write-Host "`n=== ENSURE STANDALONE MILES API ==="
-if (Test-Pm2AppExists 'miles-api') {
-  pm2 restart miles-api | Out-Host
-  if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-api.' }
-} else {
-  Write-Host '[PM2] miles-api not present; creating standalone API process.'
-  pm2 start .\SCRIPTS\StartMilesApi.js --name miles-api | Out-Host
-  if ($LASTEXITCODE -ne 0) { throw 'Unable to start standalone miles-api.' }
-}
+Invoke-Pm2RestartOrCreate 'miles-api' '.\SCRIPTS\StartMilesApi.js'
 Start-Sleep -Seconds 3
 
 Write-Host "`n=== CLEAN REPLACEMENT: MILES WORKER ==="
@@ -197,14 +204,7 @@ foreach ($file in $demoChecks) {
 }
 
 Write-Host "`n=== PHASE 3: START SEPARATE P2GC SALES DEMO ==="
-if (Test-Pm2AppExists 'p2gc-growth-demo') {
-  pm2 restart p2gc-growth-demo | Out-Host
-  if ($LASTEXITCODE -ne 0) { throw 'Unable to restart p2gc-growth-demo.' }
-} else {
-  Write-Host '[PM2] p2gc-growth-demo not present; creating standalone prospect-demo process.'
-  pm2 start .\StartP2GCGrowthBlueprintDemo.js --name p2gc-growth-demo | Out-Host
-  if ($LASTEXITCODE -ne 0) { throw 'Unable to start p2gc-growth-demo.' }
-}
+Invoke-Pm2RestartOrCreate 'p2gc-growth-demo' '.\StartP2GCGrowthBlueprintDemo.js'
 Start-Sleep -Seconds 8
 pm2 save | Out-Host
 
