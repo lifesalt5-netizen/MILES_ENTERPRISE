@@ -6,6 +6,8 @@ const { reconcile, normalizePath, runPm2 } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const fixture = path.join(ROOT, "SCRIPTS", "pm2-reconcile-fixture.js");
+const LEGACY_NAME = "miles-pm2-test-legacy";
+const CANONICAL_NAME = "miles-pm2-test-canonical";
 
 function apps() {
   const r = runPm2(["jlist"]);
@@ -14,37 +16,41 @@ function apps() {
   return parsed;
 }
 function assert(condition, message) { if (!condition) throw new Error(message); }
+function cleanup() {
+  runPm2(["delete", CANONICAL_NAME], true);
+  runPm2(["delete", LEGACY_NAME], true);
+  try { fs.unlinkSync(fixture); } catch {}
+}
 
 try {
+  cleanup();
   fs.writeFileSync(fixture, '"use strict";\nsetInterval(() => {}, 1000);\n', "utf8");
-  runPm2(["delete", "all"], true);
-  const start = runPm2(["start", fixture, "--name", "legacy-api"], true);
+
+  const start = runPm2(["start", fixture, "--name", LEGACY_NAME], true);
   if (start.code !== 0) throw new Error(`Unable to create stale PM2 fixture: ${start.stderr || start.stdout}`);
 
   const before = apps();
-  assert(before.some(app => app.name === "legacy-api"), "Stale legacy-api fixture was not registered");
-  assert(!before.some(app => app.name === "miles-api"), "Canonical miles-api unexpectedly existed before repair");
+  assert(before.some(app => app.name === LEGACY_NAME), "Stale integration fixture was not registered");
+  assert(!before.some(app => app.name === CANONICAL_NAME), "Canonical integration fixture unexpectedly existed before repair");
 
-  reconcile("miles-api", fixture, []);
+  reconcile(CANONICAL_NAME, fixture, []);
 
   const after = apps();
-  const canonical = after.filter(app => app.name === "miles-api");
-  const stale = after.filter(app => app.name === "legacy-api");
+  const canonical = after.filter(app => app.name === CANONICAL_NAME);
+  const stale = after.filter(app => app.name === LEGACY_NAME);
   const sameScript = after.filter(app => normalizePath(app.pm2_env?.pm_exec_path) === normalizePath(fixture));
 
-  assert(canonical.length === 1, `Expected exactly one canonical miles-api; found ${canonical.length}`);
-  assert(canonical[0].pm2_env?.status === "online", `Canonical miles-api status=${canonical[0].pm2_env?.status}`);
-  assert(Number(canonical[0].pid || 0) > 0, "Canonical miles-api has no live PID");
-  assert(stale.length === 0, `legacy-api registration still exists (${stale.length})`);
-  assert(sameScript.length === 1, `Expected exactly one registration for fixture script; found ${sameScript.length}`);
+  assert(canonical.length === 1, `Expected exactly one canonical integration app; found ${canonical.length}`);
+  assert(canonical[0].pm2_env?.status === "online", `Canonical integration status=${canonical[0].pm2_env?.status}`);
+  assert(Number(canonical[0].pid || 0) > 0, "Canonical integration app has no live PID");
+  assert(stale.length === 0, `Legacy integration registration still exists (${stale.length})`);
+  assert(sameScript.length === 1, `Expected exactly one registration for integration fixture; found ${sameScript.length}`);
 
-  console.log("[PM2 INTEGRATION PASS] stale script identity repaired without -f and without duplicates");
+  console.log("[PM2 INTEGRATION PASS] stale script identity repaired without -f, duplicates, or touching unrelated PM2 apps");
   process.exitCode = 0;
 } catch (error) {
   console.error(error.stack || error.message);
   process.exitCode = 1;
 } finally {
-  runPm2(["delete", "miles-api"], true);
-  runPm2(["delete", "legacy-api"], true);
-  try { fs.unlinkSync(fixture); } catch {}
+  cleanup();
 }
