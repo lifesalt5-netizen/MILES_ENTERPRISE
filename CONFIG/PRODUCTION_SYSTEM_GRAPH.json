@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "name": "MILES Production System Graph",
-  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, command preflight, command execution, business capabilities, and persistence all pass.",
+  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, and persistence all pass.",
   "protectedRuntimePaths": [
     ".git/",
     ".env",
@@ -38,6 +38,7 @@
     "SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js",
     "SCRIPTS/TestTaskQueueCompactionP0.js",
     "TESTS/TestProviderAuthorityEnvironmentP0.js",
+    "TESTS/TestExecutionActionContractsP0.js",
     "TESTS/TestCommandPreflightP0.js"
   ],
   "staticAssets": [
@@ -50,14 +51,18 @@
   ],
   "criticalModules": [
     "CORE/TaskQueue.js",
+    "CORE/ExecutionActionContracts.js",
     "SERVICES/BusinessOperationsBridgeService.js",
     "SERVICES/governance/CommandPreflightService.js",
+    "SERVICES/governance/ExecutionActionCapabilityService.js",
     "SERVICES/revenue/RevenueTruthGateService.js",
     "SERVICES/BusinessExecutionEngineServiceV2.js",
     "SERVICES/governance/PolicyEngineService.js",
     "SERVICES/ProviderAuthorityRegistryService.js",
     "SERVICES/ProviderRouterService.js",
     "SERVICES/WorkerBootstrap.js",
+    "CONNECTORS/MILES/connector.js",
+    "CONNECTORS/INSTANTLY/connector.js",
     "CONNECTORS/ORION/connector.js"
   ],
   "externalDependencies": [
@@ -73,6 +78,7 @@
     "NEGATION_AWARE_GOVERNANCE",
     "SOURCE_CLOSURE_PREFLIGHT",
     "CONNECTOR_PROVIDER_RESOLUTION",
+    "ACTION_CAPABILITY_PREFLIGHT",
     "CREDENTIAL_AND_DATA_PREFLIGHT",
     "WORKER_RUNTIME_PREFLIGHT",
     "QUEUE_CAPACITY_AND_LOCK_PREFLIGHT",
@@ -89,6 +95,8 @@
     "DATA_AND_CONNECTORS",
     "PROCESS_RECONCILIATION",
     "HTTP_SURFACES",
+    "PROVIDER_TRUTH",
+    "ACTION_CAPABILITY_PREFLIGHT",
     "CEO_COMMAND_PREFLIGHT",
     "CEO_COMMAND_EXECUTION",
     "BUSINESS_CAPABILITIES",
