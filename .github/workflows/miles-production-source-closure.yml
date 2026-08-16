@@ -1,0 +1,54 @@
+name: MILES Production Source Closure
+
+on:
+  push:
+    branches:
+      - agent/miles-full-system-reconciliation-20260815
+  workflow_dispatch:
+
+jobs:
+  stale-local-deployment:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install dependencies
+        shell: powershell
+        run: npm ci
+      - name: Parse canonical source sync and wrapper
+        shell: powershell
+        run: |
+          [scriptblock]::Create((Get-Content .\SCRIPTS\SyncCanonicalProductionSource.ps1 -Raw)) | Out-Null
+          [scriptblock]::Create((Get-Content .\SCRIPTS\RepairTaskQueueAndCompleteAcceptanceV2.ps1 -Raw)) | Out-Null
+          Write-Host 'PowerShell parse PASS'
+      - name: Production dependency graph on canonical checkout
+        shell: powershell
+        run: node .\SCRIPTS\TestProductionDependencyGraphP0.js
+      - name: Simulate stale protected local installation and canonical overlay
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $stale = Join-Path $env:RUNNER_TEMP 'miles-stale-local'
+          New-Item -ItemType Directory -Force -Path $stale | Out-Null
+          New-Item -ItemType Directory -Force -Path (Join-Path $stale 'DATA\runtime') | Out-Null
+          Set-Content (Join-Path $stale 'DATA\runtime\sentinel.txt') 'PRESERVE_ME'
+          Set-Content (Join-Path $stale '.env') 'KEEP_SECRET=true'
+          New-Item -ItemType Directory -Force -Path (Join-Path $stale 'SERVICES\revenue') | Out-Null
+          Set-Content (Join-Path $stale 'SERVICES\revenue\RevenueTruthGateService.js') 'BROKEN_STALE_FILE'
+
+          powershell -NoProfile -ExecutionPolicy Bypass -File .\SCRIPTS\SyncCanonicalProductionSource.ps1 -SourceRoot $env:GITHUB_WORKSPACE -DestinationRoot $stale -Ref HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical stale-local overlay failed.' }
+
+          if ((Get-Content (Join-Path $stale 'DATA\runtime\sentinel.txt') -Raw).Trim() -ne 'PRESERVE_ME') { throw 'Runtime DATA was modified.' }
+          if ((Get-Content (Join-Path $stale '.env') -Raw).Trim() -ne 'KEEP_SECRET=true') { throw '.env was modified.' }
+          $truth = Get-Content (Join-Path $stale 'SERVICES\revenue\RevenueTruthGateService.js') -Raw
+          if ($truth -match 'BROKEN_STALE_FILE') { throw 'Canonical source did not replace stale RevenueTruthGateService.' }
+
+          New-Item -ItemType Junction -Path (Join-Path $stale 'node_modules') -Target (Join-Path $env:GITHUB_WORKSPACE 'node_modules') | Out-Null
+          $env:MILES_ROOT = $stale
+          node (Join-Path $stale 'SCRIPTS\TestProductionDependencyGraphP0.js')
+          if ($LASTEXITCODE -ne 0) { throw 'Stale-local dependency graph failed after canonical overlay.' }
