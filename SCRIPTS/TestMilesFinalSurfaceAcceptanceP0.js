@@ -7,6 +7,7 @@ const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const REPORT = path.join(ROOT, "DATA", "runtime_guardian", "final_surface_acceptance_latest.json");
+const TASK_QUEUE_FILE = path.join(ROOT, "DATA", "runtime", "task_queue.json");
 const checks = [];
 
 function add(name, ok, detail = null) { checks.push({ name, ok: Boolean(ok), detail }); console.log(`[${ok ? "PASS" : "FAIL"}] ${name}${detail ? ` :: ${detail}` : ""}`); }
@@ -42,14 +43,36 @@ function resultFilesSince(sinceMs) {
 function matchesTask(value, taskId, operationId) {
   if (!value) return false;
   const text = JSON.stringify(value);
-  return Boolean((taskId && (String(value.taskId || "") === String(taskId) || text.includes(String(taskId)))) || (operationId && text.includes(String(operationId))));
+  return Boolean((taskId && (String(value.taskId || value.id || "") === String(taskId) || text.includes(String(taskId)))) || (operationId && text.includes(String(operationId))));
+}
+function taskQueueExecution(taskId) {
+  if (!taskId) return null;
+  const queue = readJson(TASK_QUEUE_FILE);
+  if (!Array.isArray(queue)) return null;
+  const task = queue.find(item => String(item?.id || "") === String(taskId));
+  if (!task) return null;
+  const status = String(task.status || "").toUpperCase();
+  const terminal = ["COMPLETED","FAILED","BLOCKED","AWAITING_APPROVAL","AWAITING_CEO_APPROVAL","CANCELLED"].includes(status);
+  if (!terminal && !task.result) return null;
+  return {
+    value: {
+      taskId: task.id,
+      ok: status === "COMPLETED" && task.result?.ok !== false,
+      status,
+      result: task.result || null,
+      provider: task.provider || task.payload?.provider || null,
+      action: task.action || task.payload?.action || task.type || null,
+      persistedIn: "TaskQueue"
+    },
+    file: `${TASK_QUEUE_FILE}#${task.id}`
+  };
 }
 function successfulExecutionResult(value) {
   if (!value || typeof value !== "object") return false;
   const status = String(value.status || value.result?.status || value.workforceResult?.status || value.result?.workforceResult?.status || "").toUpperCase();
-  if (["FAILED","ERROR","BLOCKED"].includes(status)) return false;
+  if (["FAILED","ERROR","BLOCKED","AWAITING_APPROVAL","AWAITING_CEO_APPROVAL","CANCELLED","COMPLETED_WITH_ERRORS"].includes(status)) return false;
   const flags = [value.ok, value.result?.ok, value.workforceResult?.ok, value.result?.workforceResult?.ok].filter(v => typeof v === "boolean");
-  return flags.includes(true) && !flags.includes(false);
+  return status === "COMPLETED" && flags.includes(true) && !flags.includes(false);
 }
 
 (async () => {
@@ -80,9 +103,11 @@ function successfulExecutionResult(value) {
       }
       const candidates = resultFilesSince(commandStartedAt).filter(x => matchesTask(x.value, ceoTaskId, ceoOperationId));
       if (candidates.length) { ceoPersisted = candidates[0].value; ceoPersistedFile = candidates[0].file; break; }
+      const queueResult = taskQueueExecution(ceoTaskId);
+      if (queueResult) { ceoPersisted = queueResult.value; ceoPersistedFile = queueResult.file; break; }
       await sleep(2000);
     }
-    add("CEO Dashboard command reaches worker and persists result", Boolean(ceoPersisted), ceoPersistedFile || expected);
+    add("CEO Dashboard command reaches worker and persists result", Boolean(ceoPersisted), ceoPersistedFile || `${TASK_QUEUE_FILE}#${ceoTaskId}`);
     add("CEO Dashboard persisted command result succeeded", successfulExecutionResult(ceoPersisted), ceoPersisted ? `status=${ceoPersisted.status || ceoPersisted.result?.status || "unknown"} ok=${ceoPersisted.ok}` : "no result");
   } else {
     add("CEO Dashboard command reaches worker and persists result", false, "No task id returned");
@@ -104,7 +129,7 @@ function successfulExecutionResult(value) {
 
   const prod = readJson(path.join(ROOT, "DATA", "runtime_guardian", "production_recovery_acceptance_latest.json"));
   add("latest command execution acceptance passed", prod?.ok === true, prod?.generatedAt || "missing/failed");
-  add("latest command produced persisted workforce result", Boolean(prod?.persistedFile), prod?.persistedFile || "missing");
+  add("latest command produced persisted execution result", Boolean(prod?.persistedFile), prod?.persistedFile || "missing");
   add("latest command has operation id", Boolean(prod?.operationId), prod?.operationId || "missing");
   add("latest command has task id", Boolean(prod?.taskId), prod?.taskId || "missing");
 
