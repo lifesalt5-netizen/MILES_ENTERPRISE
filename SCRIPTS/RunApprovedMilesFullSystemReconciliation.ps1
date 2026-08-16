@@ -8,7 +8,7 @@ Set-Location $Root
 Write-Host "=== APPROVED MILES + P2GC FULL-SYSTEM RECONCILIATION ==="
 Write-Host "Root      : $Root"
 Write-Host "Canonical : $CanonicalBranch"
-Write-Host "Rule      : replace old runtime; standalone API; lean MILES core; heavy execution is ephemeral; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
+Write-Host "Rule      : self-heal canonical PM2 identities; lean MILES core; heavy execution is ephemeral; CEO dashboard, desktop, autonomous COO, opportunities, execution, and prospect demo remain separate surfaces"
 
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
@@ -28,9 +28,17 @@ $canonicalFiles = @(
   'SCRIPTS/RunMilesAcceptanceWithLiveMemory.js',
   'SCRIPTS/StartMilesApi.js',
   'SCRIPTS/MilesProductionGuardian.js',
+  'SCRIPTS/ReconcilePm2Process.js',
+  'SCRIPTS/TestReconcilePm2ProcessUnit.js',
+  'SCRIPTS/ReconcileMilesProductionSurfaces.js',
+  'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
   'SERVICES/WorkforceService.js',
   'CONNECTORS/MILES/connector.js',
   'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
+  'SERVICES/digital_coo/MilesCommandCenter.js',
+  'StartExecutiveDashboard.js',
+  'StartMiles.js',
+  'StartAutonomousCOO.js',
   'SERVICES/revenue/ProspectGrowthAssessmentService.js',
   'SERVICES/revenue/ProspectDemoPresentationService.js',
   'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
@@ -62,29 +70,10 @@ foreach ($file in $canonicalFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-function Invoke-Pm2RestartOrCreate([string]$Name, [string]$ScriptPath) {
-  $previousPreference = $ErrorActionPreference
-  $ErrorActionPreference = 'Continue'
-  try {
-    $restartOutput = (& pm2 restart $Name 2>&1 | Out-String)
-    $restartCode = $LASTEXITCODE
-  } finally {
-    $ErrorActionPreference = $previousPreference
-  }
-
-  if ($restartCode -eq 0) {
-    $restartOutput | Out-Host
-    return
-  }
-
-  if ($restartOutput -match "doesn't exist|not found|unknown process") {
-    Write-Host "[PM2] $Name not present; creating process."
-    & pm2 start $ScriptPath --name $Name | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw "Unable to create PM2 app: $Name" }
-    return
-  }
-
-  throw "Unable to restart PM2 app $Name. Output: $restartOutput"
+function Invoke-CanonicalPm2Process([string]$Name, [string]$ScriptPath, [string[]]$ScriptArgs = @()) {
+  $arguments = @('.\SCRIPTS\ReconcilePm2Process.js', $Name, $ScriptPath) + $ScriptArgs
+  & node @arguments | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw "Unable to reconcile canonical PM2 app: $Name" }
 }
 
 Write-Host "`n=== PHASE 0: CANONICAL LEAN + EPHEMERAL WORKER RUNTIME ==="
@@ -96,18 +85,27 @@ $runtimeChecks = @(
   'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
   'SCRIPTS\StartMilesApi.js',
   'SCRIPTS\MilesProductionGuardian.js',
+  'SCRIPTS\ReconcilePm2Process.js',
+  'SCRIPTS\TestReconcilePm2ProcessUnit.js',
+  'SCRIPTS\ReconcileMilesProductionSurfaces.js',
   'SERVICES\WorkforceService.js',
   'CONNECTORS\MILES\connector.js',
-  'SERVICES\digital_coo\ExecutiveRuntimeHealthService.js'
+  'SERVICES\digital_coo\ExecutiveRuntimeHealthService.js',
+  'SERVICES\digital_coo\MilesCommandCenter.js',
+  'StartExecutiveDashboard.js',
+  'StartMiles.js',
+  'StartAutonomousCOO.js'
 )
 foreach ($file in $runtimeChecks) {
   node --check $file
   if ($LASTEXITCODE -ne 0) { throw "Lean runtime syntax gate failed: $file" }
   Write-Host "[RUNTIME CHECK OK] $file"
 }
+node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
+if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation regression gate failed.' }
 
 Write-Host "`n=== ENSURE STANDALONE MILES API ==="
-Invoke-Pm2RestartOrCreate 'miles-api' '.\SCRIPTS\StartMilesApi.js'
+Invoke-CanonicalPm2Process 'miles-api' '.\SCRIPTS\StartMilesApi.js'
 Start-Sleep -Seconds 3
 
 Write-Host "`n=== CLEAN REPLACEMENT: MILES WORKER ==="
@@ -143,8 +141,7 @@ if (Test-Path $lockOwnerFile) {
   }
 }
 
-pm2 start miles-worker | Out-Host
-if ($LASTEXITCODE -ne 0) { throw 'Unable to start miles-worker after clean replacement.' }
+Invoke-CanonicalPm2Process 'miles-worker' '.\StartProductionSystem.js'
 Start-Sleep -Seconds 45
 
 $workerPid = [int](pm2 pid miles-worker)
@@ -158,6 +155,13 @@ if ($workerRam -gt 1024) {
 if ($workerRam -ge 3072) {
   throw "Lean core still exceeds hard RAM ceiling before acceptance: $workerRam MB"
 }
+
+Write-Host "`n=== ENSURE CEO + AUTONOMOUS SURFACES ==="
+Invoke-CanonicalPm2Process 'miles-command-center' '.\SERVICES\digital_coo\MilesCommandCenter.js'
+Invoke-CanonicalPm2Process 'miles-executive-dashboard' '.\StartExecutiveDashboard.js'
+Invoke-CanonicalPm2Process 'miles-desktop-ui' '.\StartMiles.js'
+Invoke-CanonicalPm2Process 'miles-autonomous-coo' '.\StartAutonomousCOO.js' @('--loop')
+Start-Sleep -Seconds 8
 
 Write-Host "`n=== PHASE 1: CLEAN GUARDIAN + LIVE-MEMORY MILES ACCEPTANCE ==="
 node .\SCRIPTS\MilesProductionGuardian.js --repair
@@ -204,7 +208,7 @@ foreach ($file in $demoChecks) {
 }
 
 Write-Host "`n=== PHASE 3: START SEPARATE P2GC SALES DEMO ==="
-Invoke-Pm2RestartOrCreate 'p2gc-growth-demo' '.\StartP2GCGrowthBlueprintDemo.js'
+Invoke-CanonicalPm2Process 'p2gc-growth-demo' '.\StartP2GCGrowthBlueprintDemo.js'
 Start-Sleep -Seconds 8
 pm2 save | Out-Host
 
@@ -228,6 +232,7 @@ Write-Host "MILES production acceptance : PASS"
 Write-Host "P2GC sales demo acceptance  : PASS"
 Write-Host "Local Git state preserved   : $AfterBranch / $AfterHead"
 Write-Host "MILES Command Center        : http://localhost:8787"
+Write-Host "MILES CEO Dashboard         : http://127.0.0.1:8737"
+Write-Host "MILES Desktop UI            : http://127.0.0.1:3737"
 Write-Host "P2GC Prospect Sales Demo    : http://127.0.0.1:8791"
-Write-Host "Executive Dashboard         : http://127.0.0.1:8737"
-Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes; API is separate; core no longer owns port 3000."
+Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes; API is separate; canonical PM2 identity is repaired by script path and name."
