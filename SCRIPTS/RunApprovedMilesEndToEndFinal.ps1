@@ -8,6 +8,37 @@ Set-Location $Root
 Write-Host '=== MILES + P2GC FINAL END-TO-END RECOVERY ==='
 Write-Host 'Policy: no partial acceptance; canonical PM2 identity, worker execution, CEO surfaces, autonomous COO, live revenue connectors, customer delivery, growth assets, and real-prospect demo must all pass.'
 
+function Resolve-OrionDb {
+  $explicit = @($env:ORION_DB, $env:ORION_DB_PATH) | Where-Object { $_ }
+  foreach ($candidate in $explicit) {
+    if (Test-Path $candidate -PathType Leaf) { return (Resolve-Path $candidate).Path }
+  }
+
+  $parent = Split-Path $Root -Parent
+  $direct = @(
+    (Join-Path $parent 'Orion Demo 6126\orion_live_demo_ready\ORION_DEMO_LIVE_READY.db'),
+    'C:\P2GC_Intelligence\Orion Demo 6126\orion_live_demo_ready\ORION_DEMO_LIVE_READY.db',
+    'D:\P2GC_Intelligence\Orion Demo 6126\orion_live_demo_ready\ORION_DEMO_LIVE_READY.db',
+    (Join-Path $Root 'DATA\orion\ORION_DEMO_LIVE_READY.db')
+  )
+  foreach ($candidate in $direct) {
+    if ($candidate -and (Test-Path $candidate -PathType Leaf)) { return (Resolve-Path $candidate).Path }
+  }
+
+  foreach ($searchRoot in @('C:\P2GC_Intelligence', 'D:\P2GC_Intelligence')) {
+    if (-not (Test-Path $searchRoot -PathType Container)) { continue }
+    $orionDirs = Get-ChildItem -Path $searchRoot -Directory -ErrorAction SilentlyContinue |
+      Where-Object { $_.Name -match 'orion' }
+    foreach ($dir in $orionDirs) {
+      $match = Get-ChildItem -Path $dir.FullName -Filter 'ORION_DEMO_LIVE_READY.db' -File -Recurse -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+      if ($match) { return $match.FullName }
+    }
+  }
+
+  throw 'ORION_DEMO_LIVE_READY.db could not be resolved from ORION_DB/ORION_DB_PATH or the C:/D: P2GC_Intelligence roots.'
+}
+
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
 
@@ -15,14 +46,21 @@ git fetch $Repo $Branch | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch final reconciliation branch.' }
 $Ref = 'FETCH_HEAD'
 
+$orionDb = Resolve-OrionDb
+$env:ORION_DB = $orionDb
+$env:ORION_DB_PATH = $orionDb
+Write-Host "Resolved ORION DB: $orionDb"
+
 $promoteFiles = @(
   'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js',
   'SCRIPTS/RunMilesAcceptanceWithLiveMemory.js',
   'SCRIPTS/RunApprovedMilesFullSystemReconciliation.ps1',
   'SCRIPTS/ReconcilePm2Process.js',
+  'SCRIPTS/Pm2DirectCommand.js',
   'SCRIPTS/TestReconcilePm2ProcessUnit.js',
   'SCRIPTS/TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS/ReconcileMilesProductionSurfaces.js',
+  'SCRIPTS/MilesProductionGuardian.js',
   'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS/TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS/StartMilesApi.js',
@@ -65,9 +103,11 @@ $nodeChecks = @(
   'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
   'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
   'SCRIPTS\ReconcilePm2Process.js',
+  'SCRIPTS\Pm2DirectCommand.js',
   'SCRIPTS\TestReconcilePm2ProcessUnit.js',
   'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS\ReconcileMilesProductionSurfaces.js',
+  'SCRIPTS\MilesProductionGuardian.js',
   'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS\StartMilesApi.js',
@@ -151,8 +191,8 @@ if ($LASTEXITCODE -ne 0) {
   throw 'FINAL_SURFACE_ACCEPTANCE_FAILED'
 }
 
-pm2 save | Out-Host
-if ($LASTEXITCODE -ne 0) { throw 'Unable to persist final PM2 process map.' }
+node .\SCRIPTS\Pm2DirectCommand.js save | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Unable to persist final PM2 process map through direct Node transport.' }
 
 $AfterBranch = (git branch --show-current).Trim()
 $AfterHead = (git rev-parse HEAD).Trim()
@@ -170,6 +210,7 @@ Write-Host 'MILES Desktop UI / 3737          : PASS'
 Write-Host 'MILES Autonomous COO             : PASS'
 Write-Host 'MILES command execution          : PASS'
 Write-Host 'MILES persisted result truth     : PASS'
+Write-Host 'PM2 direct Node transport        : PASS'
 Write-Host 'Instantly live read connectivity : PASS'
 Write-Host 'ORION live intelligence database : PASS'
 Write-Host 'P2GC customer delivery / 8792    : PASS'
