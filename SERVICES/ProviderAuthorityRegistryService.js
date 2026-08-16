@@ -12,7 +12,21 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
+
+// Provider authority must observe the same production environment used by
+// live connectors. Never overwrite an already-exported process variable.
+try {
+    require("dotenv").config({
+        path: path.join(ROOT, ".env"),
+        override: false,
+        quiet: true
+    });
+} catch {
+    // dotenv is a declared production dependency, but provider authority
+    // remains fail-closed if environment loading itself is unavailable.
+}
+
 const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
 const OUT_FILE = path.join(OUT_DIR, "provider_authority_registry.json");
 
@@ -142,7 +156,7 @@ class ProviderAuthorityRegistryService {
                 writeEnabled: String(process.env.INSTANTLY_WRITE_ENABLED || "").toLowerCase() === "true"
             },
             filesystem: { credentialsPresent: true, writeEnabled: true },
-            orion: { credentialsPresent: Boolean(process.env.ORION_DB_PATH) || exists(path.join(ROOT, "DATA")), writeEnabled: String(process.env.ORION_WRITE_ENABLED || "").toLowerCase() === "true" },
+            orion: { credentialsPresent: Boolean(process.env.ORION_DB_PATH) || Boolean(process.env.ORION_DB) || exists(path.join(ROOT, "DATA")), writeEnabled: String(process.env.ORION_WRITE_ENABLED || "").toLowerCase() === "true" },
             website: { credentialsPresent: Boolean(process.env.WEBSITE_ROOT) || exists(path.join(ROOT, "DATA", "website")), writeEnabled: String(process.env.WEBSITE_WRITE_ENABLED || "").toLowerCase() === "true" },
             google_workspace: { credentialsPresent: Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_WORKSPACE_ADMIN_EMAIL), writeEnabled: String(process.env.GOOGLE_WORKSPACE_WRITE_ENABLED || "").toLowerCase() === "true" },
             namecheap: { credentialsPresent: Boolean(process.env.NAMECHEAP_API_USER && process.env.NAMECHEAP_API_KEY && process.env.NAMECHEAP_CLIENT_IP), writeEnabled: String(process.env.NAMECHEAP_WRITE_ENABLED || "").toLowerCase() === "true" }
