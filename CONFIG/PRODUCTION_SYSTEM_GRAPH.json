@@ -39,6 +39,7 @@
     "SCRIPTS/TestTaskQueueCompactionP0.js",
     "TESTS/TestProviderAuthorityEnvironmentP0.js",
     "TESTS/TestExecutionActionContractsP0.js",
+    "TESTS/TestConnectorActionContractRuntimeP0.js",
     "TESTS/TestCommandPreflightP0.js"
   ],
   "staticAssets": [
