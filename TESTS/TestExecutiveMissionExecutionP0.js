@@ -65,14 +65,31 @@ const taskQueue = require("../CORE/TaskQueue");
 
     assert.strictEqual(result.ok, true, JSON.stringify(result.results, null, 2));
     assert.strictEqual(result.status, "COMPLETED");
+    assert.strictEqual(result.readOnly, true);
     assert.strictEqual(result.failedSteps, 0);
     assert.strictEqual(result.completedSteps, 4);
     assert.ok(Array.isArray(result.executiveSummary.topActions));
-    assert.ok(result.executiveSummary.topActions.length >= 3);
+    assert.strictEqual(result.executiveSummary.topActions.length, 3);
+    assert.strictEqual(result.executiveSummary.readOnly, true);
+    assert.strictEqual(result.executiveSummary.workQueued, 0);
+
+    const businessStep = result.results.find(item => item.action === "BUSINESS_EXECUTION");
+    assert.strictEqual(businessStep?.result?.mode, "READ_ONLY_REVIEW");
+    assert.strictEqual(businessStep?.result?.operationsCreated, 0);
+    assert.strictEqual(businessStep?.result?.operationsQueued, 0);
+    assert.ok(Array.isArray(businessStep?.result?.recommendations));
+    assert.strictEqual(businessStep.result.recommendations.length, 3);
+
+    const routerStep = result.results.find(item => item.action === "TASK_ROUTER");
+    assert.strictEqual(routerStep?.result?.status, "READ_ONLY_ROUTE_SKIPPED");
+    assert.strictEqual(routerStep?.result?.routed, 0);
 
     const queued = taskQueue.list();
-    assert.ok(queued.length >= 8, `Expected planned work in TaskQueue, found ${queued.length}`);
-    assert.ok(queued.every(item => item.status === "QUEUED"), "Authorized read-only planning work must enter TaskQueue without false approval state.");
+    assert.strictEqual(
+      queued.length,
+      0,
+      `Read-only CEO review must not create follow-on TaskQueue work; found ${queued.length}`
+    );
 
     const latest = JSON.parse(fs.readFileSync(
       path.join(root, "DATA", "business_execution", "latest_business_execution.json"),
@@ -80,13 +97,15 @@ const taskQueue = require("../CORE/TaskQueue");
     ));
     assert.strictEqual(latest.executionId, result.executionId);
     assert.strictEqual(latest.ok, true);
+    assert.strictEqual(latest.readOnly, true);
 
     console.log(JSON.stringify({
       ok: true,
       test: "EXECUTIVE_MISSION_EXECUTION_P0",
       completedSteps: result.completedSteps,
       queuedTasks: queued.length,
-      topActions: result.executiveSummary.topActions.length
+      topActions: result.executiveSummary.topActions.length,
+      readOnlySideEffects: 0
     }, null, 2));
   } finally {
     process.chdir(os.tmpdir());
