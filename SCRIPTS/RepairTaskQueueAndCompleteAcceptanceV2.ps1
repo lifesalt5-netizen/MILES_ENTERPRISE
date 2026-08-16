@@ -6,7 +6,7 @@ $Repo = 'origin'
 Set-Location $Root
 
 Write-Host '=== MILES CANONICAL SOURCE CLOSURE + FINAL ACCEPTANCE ==='
-Write-Host 'Rule: sync complete canonical code surface first; preserve runtime data/credentials/Git state; prove dependency graph and executable CEO preflight locally; only then touch production runtime.'
+Write-Host 'Rule: sync complete canonical code surface first; preserve runtime data/credentials/Git state; prove dependency graph and executable CEO/product preflight locally; only then touch production runtime.'
 
 git fetch $Repo $Branch | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch canonical recovery branch.' }
@@ -39,16 +39,19 @@ foreach ($required in @(
   '.\SERVICES\governance\CommandPreflightService.js',
   '.\SERVICES\ProviderAuthorityRegistryService.js',
   '.\SERVICES\revenue\RevenueTruthGateService.js',
+  '.\SERVICES\teaming\P2GCPrimeSubTeamingService.js',
+  '.\SERVICES\demo\public\teaming.html',
   '.\TESTS\TestExecutionActionContractsP0.js',
   '.\TESTS\TestConnectorActionContractRuntimeP0.js',
   '.\TESTS\TestCommandPreflightP0.js',
+  '.\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js',
   '.\SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
   '.\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1'
 )) {
   if (-not (Test-Path $required -PathType Leaf)) { throw "Canonical deployment missing required file: $required" }
 }
 
-Write-Host "`n=== G1.5: LOCAL CEO PREFLIGHT CERTIFICATION (NO PM2 CHANGES) ==="
+Write-Host "`n=== G1.5: LOCAL CEO + PRODUCT PREFLIGHT CERTIFICATION (NO PM2 CHANGES) ==="
 node .\TESTS\TestProviderAuthorityEnvironmentP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Provider environment truth failed locally. Production was not touched.' }
 
@@ -61,7 +64,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime connector action contract failed local
 node .\TESTS\TestCommandPreflightP0.js
 if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight failed locally. Production was not touched.' }
 
-Write-Host '[LOCAL CEO PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules verified before PM2 changes.'
+node .\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Sub2Prime/Prime-Sub teaming product contract failed locally. Production was not touched.' }
+
+Write-Host '[LOCAL PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules + Sub2Prime product behavior verified before PM2 changes.'
 
 Write-Host "`n=== G2+: EXISTING TESTED QUEUE REPAIR + END-TO-END ACCEPTANCE ==="
 $env:MILES_REPAIR_EXPECTED_COMMIT = $actual
