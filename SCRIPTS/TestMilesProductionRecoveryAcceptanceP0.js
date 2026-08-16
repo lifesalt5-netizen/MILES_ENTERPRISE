@@ -78,6 +78,7 @@ function taskQueueExecution(taskId) {
       result: task.result || null,
       provider: task.provider || task.payload?.provider || null,
       action: task.action || task.payload?.action || task.type || null,
+      error: task.error || task.failure || null,
       persistedIn: "TaskQueue"
     },
     file: `${TASK_QUEUE_FILE}#${task.id}`
@@ -192,7 +193,13 @@ function pm2State(name) {
       await sleep(2000);
     }
     add("worker persisted current command result", Boolean(persisted), persistedFile || `${TASK_QUEUE_FILE}#${taskId}`);
-    add("persisted command result succeeded", successfulExecutionResult(persisted), persisted ? `status=${persisted.status || persisted.result?.status || "unknown"} ok=${persisted.ok}` : "no persisted result");
+    const persistedSucceeded = successfulExecutionResult(persisted);
+    add("persisted command result succeeded", persistedSucceeded, persisted ? `status=${persisted.status || persisted.result?.status || "unknown"} ok=${persisted.ok}` : "no persisted result");
+    if (persisted && !persistedSucceeded) {
+      console.log("=== LIVE MISSION FAILURE EVIDENCE ===");
+      console.log(JSON.stringify(persisted, null, 2));
+      console.log("=== END LIVE MISSION FAILURE EVIDENCE ===");
+    }
     if (persisted) {
       const text = JSON.stringify(persisted).toLowerCase();
       add("result excludes synthetic deal names", !/build e010 test company|unknown target|build-e010-test@example\.com/.test(text));
@@ -221,6 +228,11 @@ function pm2State(name) {
         op && opStatus === "COMPLETED" && opResult && opResult?.ok !== false
       );
       add("8787 operation polling returns successful execution truth", opOk, `status=${op?.status || "unknown"}`);
+      if (!opOk && op) {
+        console.log("=== OPERATION FAILURE EVIDENCE ===");
+        console.log(JSON.stringify(op, null, 2));
+        console.log("=== END OPERATION FAILURE EVIDENCE ===");
+      }
     } catch (e) { add("8787 operation polling returns successful execution truth", false, e.message); }
   } else {
     add("8787 operation polling returns successful execution truth", false, "No operationId returned");
