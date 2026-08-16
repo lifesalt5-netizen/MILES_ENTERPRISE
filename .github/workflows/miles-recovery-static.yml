@@ -6,6 +6,10 @@ on:
       - agent/miles-full-system-reconciliation-20260815
   workflow_dispatch:
 
+concurrency:
+  group: miles-recovery-static-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   windows-validation:
     runs-on: windows-latest
