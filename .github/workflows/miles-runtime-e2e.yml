@@ -58,10 +58,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Direct PM2 state query failed.' }
           Write-Host '[PM2] clean runner state reachable through direct Node transport'
 
-      - name: Run isolated P2GC and mission acceptance
+      - name: Run isolated P2GC and deployment acceptance
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
+          node .\SCRIPTS\TestDashboardPromotionClosureP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'CEO Dashboard promotion closure failed.' }
+          node .\SCRIPTS\TestDashboardDeploymentSimulationP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Stale-local CEO Dashboard deployment simulation failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Business work planner execution contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
