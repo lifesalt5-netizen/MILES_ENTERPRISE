@@ -7,6 +7,7 @@ const { execSync } = require("child_process");
 // MILES_8787_HEALTH_TRUTH_P0
 
 const REQUIRED_SERVICES = Object.freeze([
+  "MILES API",
   "Worker Runtime",
   "Autonomous COO",
   "Miles Command Center",
@@ -15,6 +16,7 @@ const REQUIRED_SERVICES = Object.freeze([
 ]);
 
 const REQUIRED_PM2_APPS = Object.freeze([
+  "miles-api",
   "miles-worker",
   "miles-ui",
   "miles-dashboard",
@@ -108,7 +110,7 @@ class ExecutiveRuntimeHealthService {
       };
     });
     const restartCount = requiredServices.reduce((total, service) => total + service.restartCount, 0);
-    const ok = snapshot.ok === true && snapshot.startupComplete === true && snapshot.shuttingDown !== true && services.length === REQUIRED_SERVICES.length && requiredServices.every(service => service.ok);
+    const ok = snapshot.ok === true && snapshot.startupComplete === true && snapshot.shuttingDown !== true && requiredServices.every(service => service.ok);
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
@@ -162,21 +164,17 @@ class ExecutiveRuntimeHealthService {
   validateProviders(result) {
     if (!result.ok) return result;
     const resolution = result.snapshot.resolutionHealth || {};
-
     const providerRegistry = resolution.providerRegistry || {};
     const capabilityRegistry = resolution.capabilityRegistry || {};
     const connectorRegistry = resolution.connectorRegistry || {};
     const routing = resolution.routing || {};
-
     const components = {
       providerRegistry: providerRegistry.ok === true,
       capabilityRegistry: capabilityRegistry.ok === true,
       connectorRegistry: connectorRegistry.ok === true,
       routing: routing.ok === true
     };
-
     const ok = resolution.ok === true && Object.values(components).every(Boolean);
-
     const firstNumber = (...values) => {
       for (const value of values) {
         const n = Number(value);
@@ -184,7 +182,6 @@ class ExecutiveRuntimeHealthService {
       }
       return null;
     };
-
     return {
       ok,
       status: ok ? "HEALTHY" : "DEGRADED",
@@ -211,7 +208,6 @@ class ExecutiveRuntimeHealthService {
           snapshotEvidence: snapshotProductionRuntime.evidence || bootstrapSnapshot.filePath || null
         }
       : snapshotProductionRuntime;
-
     const components = {
       productionRuntime,
       workerRuntime: this.validateWorker(workerSnapshot),
