@@ -3,14 +3,23 @@
 const fs = require("fs");
 const path = require("path");
 const net = require("net");
-const { execFileSync, execSync } = require("child_process");
+const { execFileSync } = require("child_process");
+const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
+const { run: reconcileSurfaces } = require("./ReconcileMilesProductionSurfaces");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const DATA = path.join(ROOT, "DATA");
 const RUNTIME = path.join(DATA, "runtime");
 const REPORT_DIR = path.join(DATA, "runtime_guardian");
 const REPAIR = process.argv.includes("--repair");
-const EXPECTED_APPS = ["miles-api", "miles-worker", "miles-ui", "miles-dashboard", "miles-command-center"];
+const EXPECTED_APPS = [
+  "miles-api",
+  "miles-worker",
+  "miles-command-center",
+  "miles-executive-dashboard",
+  "miles-desktop-ui",
+  "miles-autonomous-coo"
+];
 const MEMORY_WARN_MB = Number(process.env.MILES_WORKER_MEMORY_WARN_MB || 1024);
 const MEMORY_FAIL_MB = Number(process.env.MILES_WORKER_MEMORY_FAIL_MB || 3072);
 
@@ -18,15 +27,17 @@ function now() { return new Date().toISOString(); }
 function sleep(ms) { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms); }
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
 function safeJsonParse(text, fallback) { try { return JSON.parse(text); } catch { return fallback; } }
-function run(cmd) { return execSync(cmd, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }); }
 function ps(script) {
   return execFileSync("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script], {
     cwd: ROOT,
     encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ["ignore", "pipe", "pipe"],
+    windowsHide: true
   });
 }
-function pm2List() { return safeJsonParse(run("pm2 jlist"), []); }
+function pm2List() {
+  return parsePm2Jlist(runPm2(["jlist"]).stdout);
+}
 function portOpen(port, timeout = 2500) {
   return new Promise(resolve => {
     const socket = net.createConnection({ host: "127.0.0.1", port });
@@ -114,7 +125,8 @@ function appSnapshot() {
     status: p.pm2_env && p.pm2_env.status,
     restarts: p.pm2_env && p.pm2_env.restart_time,
     memoryMB: Math.round(((p.monit && p.monit.memory) || 0) / 1024 / 1024),
-    cpu: (p.monit && p.monit.cpu) || 0
+    cpu: (p.monit && p.monit.cpu) || 0,
+    script: p.pm2_env && p.pm2_env.pm_exec_path
   }));
 }
 async function verify() {
@@ -123,7 +135,12 @@ async function verify() {
   const missing = EXPECTED_APPS.filter(n => !byName.has(n));
   const offline = EXPECTED_APPS.filter(n => byName.has(n) && byName.get(n).status !== "online");
   const worker = byName.get("miles-worker") || null;
-  const ports = { api3000: await portOpen(3000), command8787: await portOpen(8787) };
+  const ports = {
+    api3000: await portOpen(3000),
+    desktop3737: await portOpen(3737),
+    dashboard8737: await portOpen(8737),
+    command8787: await portOpen(8787)
+  };
   const lockOwner = readLockOwner();
   const memory = systemMemory();
   const warnings = [];
@@ -131,6 +148,8 @@ async function verify() {
   if (missing.length) failures.push(`missing apps: ${missing.join(", ")}`);
   if (offline.length) failures.push(`offline apps: ${offline.join(", ")}`);
   if (!ports.api3000) failures.push("port 3000 unavailable");
+  if (!ports.desktop3737) failures.push("port 3737 unavailable");
+  if (!ports.dashboard8737) failures.push("port 8737 unavailable");
   if (!ports.command8787) failures.push("port 8787 unavailable");
   if (worker && worker.memoryMB >= MEMORY_FAIL_MB) failures.push(`worker memory critical ${worker.memoryMB} MB`);
   else if (worker && worker.memoryMB > MEMORY_WARN_MB) warnings.push(`worker memory above lean target ${worker.memoryMB} MB`);
@@ -141,17 +160,21 @@ async function main() {
   ensureDir(REPORT_DIR);
   const report = { service: "MILES_PRODUCTION_GUARDIAN", startedAt: now(), mode: REPAIR ? "REPAIR" : "VERIFY", expectedApps: EXPECTED_APPS, actions: [] };
   if (REPAIR) {
-    try { run("pm2 stop all"); report.actions.push({ action: "pm2_stop_all", ok: true }); }
-    catch (e) { report.actions.push({ action: "pm2_stop_all", ok: false, error: e.message }); }
-    sleep(5000);
-    report.actions.push({ action: "kill_orphan_pm2_forks", ok: true, pids: killForkChildren() });
-    sleep(1500);
+    try {
+      report.actions.push({ action: "kill_orphan_pm2_forks", ok: true, pids: killForkChildren() });
+    } catch (e) {
+      report.actions.push({ action: "kill_orphan_pm2_forks", ok: false, error: e.message });
+    }
     report.actions.push({ action: "reclaim_stale_taskqueue_lock", ok: true, result: reclaimStaleLock() });
     report.actions.push({ action: "archive_runtime_junk", ok: true, result: archiveRuntimeJunk() });
     report.actions.push({ action: "rotate_pm2_logs", ok: true, result: rotatePm2Logs() });
-    try { run("pm2 start all"); report.actions.push({ action: "pm2_start_all", ok: true }); }
-    catch (e) { report.actions.push({ action: "pm2_start_all", ok: false, error: e.message }); }
-    sleep(Number(process.env.MILES_GUARDIAN_STARTUP_WAIT_MS || 45000));
+    try {
+      const results = reconcileSurfaces(EXPECTED_APPS);
+      report.actions.push({ action: "reconcile_canonical_pm2_surfaces", ok: true, surfaces: results.map(x => ({ name:x.name, pid:x.pid, status:x.status, script:x.script })) });
+    } catch (e) {
+      report.actions.push({ action: "reconcile_canonical_pm2_surfaces", ok: false, error: e.stack || e.message });
+    }
+    sleep(Number(process.env.MILES_GUARDIAN_STARTUP_WAIT_MS || 8000));
   }
   report.verification = await verify();
   report.finishedAt = now();
@@ -163,8 +186,10 @@ async function main() {
   console.log("mode   :", report.mode);
   console.log("result :", report.ok ? "PASS" : "FAIL");
   console.log("report :", file);
-  for (const app of report.verification.apps) console.log(`${app.name.padEnd(22)} status=${app.status} pid=${app.pid} ramMB=${app.memoryMB} restarts=${app.restarts}`);
+  for (const app of report.verification.apps) console.log(`${String(app.name).padEnd(28)} status=${app.status} pid=${app.pid} ramMB=${app.memoryMB} restarts=${app.restarts}`);
   console.log("port3000:", report.verification.ports.api3000);
+  console.log("port3737:", report.verification.ports.desktop3737);
+  console.log("port8737:", report.verification.ports.dashboard8737);
   console.log("port8787:", report.verification.ports.command8787);
   if (report.verification.warnings.length) console.log("warnings:", report.verification.warnings.join(" | "));
   if (report.verification.failures.length) console.log("failures:", report.verification.failures.join(" | "));
