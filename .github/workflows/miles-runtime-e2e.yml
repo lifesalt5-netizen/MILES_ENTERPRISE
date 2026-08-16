@@ -22,6 +22,7 @@ jobs:
       MILES_DASHBOARD_PORT: '8737'
       MILES_PORT: '3737'
       P2GC_CUSTOMER_PORT: '8792'
+      P2GC_GROWTH_DEMO_PORT: '8791'
       MILES_AUTONOMOUS_INTERVAL_MS: '600000'
       MILES_AUTONOMOUS_WORK_INTERVAL_MS: '600000'
       MILES_INFRASTRUCTURE_HEALTH_INTERVAL_MS: '600000'
@@ -61,6 +62,8 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
+          node .\TESTS\TestEphemeralConnectorBootstrapP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Ephemeral connector bootstrap acceptance failed.' }
           node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) { throw 'P2GC customer delivery acceptance failed.' }
           node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
@@ -68,12 +71,12 @@ jobs:
           node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
           if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap/self-development acceptance failed.' }
 
-      - name: Start canonical MILES core surfaces
+      - name: Start canonical MILES and P2GC surfaces
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery
-          if ($LASTEXITCODE -ne 0) { throw 'Unable to start canonical MILES core surfaces.' }
+          node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery p2gc-growth-demo
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to start canonical MILES/P2GC surfaces.' }
           Start-Sleep -Seconds 15
           node .\SCRIPTS\Pm2DirectCommand.js status | Out-Host
           if ($LASTEXITCODE -ne 0) { throw 'Unable to query PM2 through direct transport.' }
@@ -83,7 +86,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestMilesCoreHttpProbeP0.js
-          if ($LASTEXITCODE -ne 0) { throw 'MILES core Node HTTP probe failed.' }
+          if ($LASTEXITCODE -ne 0) { throw 'MILES/P2GC Node HTTP probe failed.' }
 
       - name: Run MILES live command acceptance
         shell: powershell
@@ -110,12 +113,12 @@ jobs:
           node .\SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js
           if (Test-Path .\DATA\runtime_guardian\final_surface_acceptance_latest.json) { Get-Content .\DATA\runtime_guardian\final_surface_acceptance_latest.json -Raw | Write-Host }
           $report = Get-Content .\DATA\runtime_guardian\final_surface_acceptance_latest.json -Raw | ConvertFrom-Json
-          $coreFailures = @($report.checks | Where-Object { -not $_.ok -and $_.name -notmatch 'P2GC prospect demo' -and $_.name -notmatch 'p2gc-growth-demo' })
-          if ($coreFailures.Count -gt 0) {
-            $coreFailures | ConvertTo-Json -Depth 6 | Write-Host
-            throw 'CEO/core/customer-delivery final surface acceptance failed.'
+          $failures = @($report.checks | Where-Object { -not $_.ok })
+          if ($failures.Count -gt 0) {
+            $failures | ConvertTo-Json -Depth 6 | Write-Host
+            throw 'Final MILES/P2GC surface and CEO command acceptance failed.'
           }
-          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> successful persisted result + customer/growth layer'
+          Write-Host '[FULL E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> ephemeral connector bootstrap -> worker -> successful persisted result + customer/growth/demo layer'
 
       - name: Persist PM2 map and show logs through direct transport
         if: always()
@@ -123,4 +126,4 @@ jobs:
         run: |
           node .\SCRIPTS\Pm2DirectCommand.js save | Out-Host
           node .\SCRIPTS\Pm2DirectCommand.js status | Out-Host
-          node .\SCRIPTS\Pm2DirectCommand.js logs --nostream --lines 100 | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js logs --nostream --lines 120 | Out-Host
