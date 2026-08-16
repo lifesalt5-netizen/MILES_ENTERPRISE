@@ -3,19 +3,23 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/connector.js
-  Version: 2.0.0
+  Version: 2.1.0
 
   Purpose:
   - ConnectorRuntime-compatible Instantly adapter.
   - Normalize runtime requests.
   - Expose authorized Instantly API v2 actions.
+  - Share one action contract with CEO preflight and capability routing.
 */
 
-const instantly =
-  require('./instantly');
+const instantly = require('./instantly');
+const {
+  INSTANTLY_ACTIONS,
+  normalizeInstantlyAction
+} = require('../../CORE/ExecutionActionContracts');
 
 function resolveAction(task = {}) {
-  return (
+  const requested = (
     task.connectorAction ||
     task.method ||
     task.operation ||
@@ -25,6 +29,8 @@ function resolveAction(task = {}) {
     task.payload?.operation ||
     ''
   );
+
+  return normalizeInstantlyAction(requested) || String(requested || '').trim();
 }
 
 function resolvePayload(task = {}) {
@@ -45,14 +51,13 @@ function resolveCampaignId(payload = {}) {
 }
 
 module.exports = {
-  id:
-    'INSTANTLY',
-
-  name:
-    'Instantly Connector',
-
-  version:
-    '2.0.0',
+  id: 'INSTANTLY',
+  name: 'Instantly Connector',
+  version: '2.1.0',
+  supportedActions: [...INSTANTLY_ACTIONS],
+  canExecuteAction(action) {
+    return Boolean(normalizeInstantlyAction(action));
+  },
 
   capabilities: [
     'INSTANTLY_HEALTH',
@@ -76,169 +81,114 @@ module.exports = {
     return instantly.healthCheck();
   },
 
-  async execute(
-    task = {},
-    context = {}
-  ) {
-    const action =
-      resolveAction(task);
-
-    const payload =
-      resolvePayload(task);
+  async execute(task = {}, context = {}) {
+    const action = resolveAction(task);
+    const payload = resolvePayload(task);
 
     switch (action) {
-      case 'health':
       case 'healthCheck':
         return instantly.healthCheck();
 
       case 'getConfiguration':
         return {
           ok: true,
-          configuration:
-            instantly.getConfiguration()
+          configuration: instantly.getConfiguration()
         };
 
       case 'listCampaigns':
         return {
           ok: true,
-          campaigns:
-            await instantly.listCampaigns(
-              payload
-            )
+          campaigns: await instantly.listCampaigns(payload)
         };
 
       case 'getCampaign':
         return {
           ok: true,
-          campaign:
-            await instantly.getCampaign(
-              resolveCampaignId(payload)
-            )
+          campaign: await instantly.getCampaign(resolveCampaignId(payload))
         };
 
       case 'getCampaignAnalytics':
         return {
           ok: true,
-          analytics:
-            await instantly.getCampaignAnalytics(
-              payload
-            )
+          analytics: await instantly.getCampaignAnalytics(payload)
         };
 
       case 'getCampaignAnalyticsOverview':
         return {
           ok: true,
-          analytics:
-            await instantly.getCampaignAnalyticsOverview(
-              payload
-            )
+          analytics: await instantly.getCampaignAnalyticsOverview(payload)
         };
 
       case 'getCampaignDailyAnalytics':
         return {
           ok: true,
-          analytics:
-            await instantly.getCampaignDailyAnalytics(
-              payload
-            )
+          analytics: await instantly.getCampaignDailyAnalytics(payload)
         };
 
       case 'getCampaignStepsAnalytics':
         return {
           ok: true,
-          analytics:
-            await instantly.getCampaignStepsAnalytics(
-              payload
-            )
+          analytics: await instantly.getCampaignStepsAnalytics(payload)
         };
 
       case 'listAccounts':
         return {
           ok: true,
-          accounts:
-            await instantly.listAccounts(
-              payload
-            )
+          accounts: await instantly.listAccounts(payload)
         };
 
       case 'testAccountVitals':
         return {
           ok: true,
-          vitals:
-            await instantly.testAccountVitals(
-              payload.emails ||
-              []
-            )
+          vitals: await instantly.testAccountVitals(payload.emails || [])
         };
 
       case 'getWarmupAnalytics':
         return {
           ok: true,
-          warmupAnalytics:
-            await instantly.getWarmupAnalytics(
-              payload
-            )
+          warmupAnalytics: await instantly.getWarmupAnalytics(payload)
         };
 
       case 'getDailyAccountAnalytics':
         return {
           ok: true,
-          accountAnalytics:
-            await instantly.getDailyAccountAnalytics(
-              payload
-            )
+          accountAnalytics: await instantly.getDailyAccountAnalytics(payload)
         };
 
       case 'listLeads':
         return {
           ok: true,
-          leads:
-            await instantly.listLeads(
-              payload
-            )
+          leads: await instantly.listLeads(payload)
         };
 
       case 'createLead':
         return {
           ok: true,
-          result:
-            await instantly.createLead(
-              payload
-            )
+          result: await instantly.createLead(payload)
         };
 
       case 'createCampaign':
         return {
           ok: true,
-          result:
-            await instantly.createCampaign(
-              payload
-            )
+          result: await instantly.createCampaign(payload)
         };
 
       case 'updateCampaign':
         return {
           ok: true,
-          result:
-            await instantly.updateCampaign(
-              resolveCampaignId(payload),
-              payload.updates ||
-              payload.patch ||
-              payload.body ||
-              {}
-            )
+          result: await instantly.updateCampaign(
+            resolveCampaignId(payload),
+            payload.updates || payload.patch || payload.body || {}
+          )
         };
 
       case 'pauseCampaign':
         return {
           ok: true,
-          result:
-            await instantly.pauseCampaign(
-              resolveCampaignId(payload),
-              payload.reason ||
-              context.reason ||
-              ''
-            )
+          result: await instantly.pauseCampaign(
+            resolveCampaignId(payload),
+            payload.reason || context.reason || ''
+          )
         };
 
       case 'activateCampaign':
@@ -246,57 +196,26 @@ module.exports = {
       case 'startCampaign':
         return {
           ok: true,
-          result:
-            await instantly.activateCampaign(
-              resolveCampaignId(payload)
-            )
+          result: await instantly.activateCampaign(resolveCampaignId(payload))
         };
 
       case 'deleteCampaign':
         return {
           ok: true,
-          result:
-            await instantly.deleteCampaign(
-              resolveCampaignId(payload),
-              payload.confirmation ||
-              ''
-            )
+          result: await instantly.deleteCampaign(
+            resolveCampaignId(payload),
+            payload.confirmation || ''
+          )
         };
 
       default:
         return {
           ok: false,
-          provider:
-            'Instantly',
-          connector:
-            'INSTANTLY',
-          error:
-            `Unknown Instantly action: ${action}`,
-          supportedActions: [
-            'healthCheck',
-            'getConfiguration',
-            'listCampaigns',
-            'getCampaign',
-            'getCampaignAnalytics',
-            'getCampaignAnalyticsOverview',
-            'getCampaignDailyAnalytics',
-            'getCampaignStepsAnalytics',
-            'listAccounts',
-            'testAccountVitals',
-            'getWarmupAnalytics',
-            'getDailyAccountAnalytics',
-            'listLeads',
-            'createLead',
-            'createCampaign',
-            'updateCampaign',
-            'pauseCampaign',
-            'activateCampaign',
-            'resumeCampaign',
-            'startCampaign',
-            'deleteCampaign'
-          ],
-          received:
-            task
+          provider: 'Instantly',
+          connector: 'INSTANTLY',
+          error: `Unknown Instantly action: ${action}`,
+          supportedActions: [...INSTANTLY_ACTIONS],
+          received: task
         };
     }
   }
