@@ -45,15 +45,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
           $pm2Cli = (& node -e "process.stdout.write(require('./SCRIPTS/ReconcilePm2Process').resolvePm2Cli())").Trim()
           if ($LASTEXITCODE -ne 0 -or -not $pm2Cli -or -not (Test-Path $pm2Cli -PathType Leaf)) { throw "Production PM2 resolver failed: $pm2Cli" }
+          $env:MILES_PM2_CLI = $pm2Cli
           "MILES_PM2_CLI=$pm2Cli" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "[PM2 CLI] production resolver found $pm2Cli"
 
-      - name: Prepare clean PM2 state through direct Node transport
+      - name: Prove direct PM2 state access
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          & node $env:MILES_PM2_CLI kill 2>&1 | Out-Host
-          Write-Host '[PM2] clean state ready through direct CLI'
+          node .\SCRIPTS\Pm2DirectCommand.js jlist | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw 'Direct PM2 state query failed.' }
+          Write-Host '[PM2] clean runner state reachable through direct Node transport'
 
       - name: Run isolated P2GC service acceptance
         shell: powershell
@@ -132,6 +134,6 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          node .\SCRIPTS\Pm2DirectCommand.js save 2>&1 | Out-Host
-          node .\SCRIPTS\Pm2DirectCommand.js status 2>&1 | Out-Host
-          node .\SCRIPTS\Pm2DirectCommand.js logs --nostream --lines 100 2>&1 | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js save | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js status | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js logs --nostream --lines 100 | Out-Host
