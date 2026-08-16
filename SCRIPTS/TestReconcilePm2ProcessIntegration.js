@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { reconcile, normalizePath, runPm2 } = require("./ReconcilePm2Process");
+const { reconcile, normalizePath, runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const fixture = path.join(ROOT, "SCRIPTS", "pm2-reconcile-fixture.js");
@@ -11,9 +11,7 @@ const CANONICAL_NAME = "miles-pm2-test-canonical";
 
 function apps() {
   const r = runPm2(["jlist"]);
-  const parsed = JSON.parse(r.stdout || "[]");
-  if (!Array.isArray(parsed)) throw new Error("PM2 jlist did not return an array");
-  return parsed;
+  return parsePm2Jlist(r.stdout);
 }
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function cleanup() {
@@ -46,7 +44,7 @@ try {
   assert(stale.length === 0, `Legacy integration registration still exists (${stale.length})`);
   assert(sameScript.length === 1, `Expected exactly one registration for integration fixture; found ${sameScript.length}`);
 
-  console.log("[PM2 INTEGRATION PASS] stale script identity repaired without -f, duplicates, or touching unrelated PM2 apps");
+  console.log("[PM2 INTEGRATION PASS] stale script identity repaired without -f, duplicates, cmd.exe nesting, or touching unrelated PM2 apps");
   process.exitCode = 0;
 } catch (error) {
   console.error(error.stack || error.message);
