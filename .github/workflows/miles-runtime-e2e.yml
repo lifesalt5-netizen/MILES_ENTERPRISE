@@ -9,7 +9,7 @@ on:
 jobs:
   core-runtime-e2e:
     runs-on: windows-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       MILES_ROOT: ${{ github.workspace }}
       MILES_API_PORT: '3000'
@@ -48,12 +48,16 @@ jobs:
           try { pm2 kill 2>&1 | Out-Host } finally { $ErrorActionPreference = $previous }
           Write-Host '[PM2] clean state ready'
 
-      - name: Run customer delivery isolated acceptance
+      - name: Run isolated P2GC service acceptance
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) { throw 'P2GC customer delivery acceptance failed.' }
+          node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'P2GC growth asset acceptance failed.' }
+          node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
+          if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap/self-development acceptance failed.' }
 
       - name: Start canonical MILES core surfaces
         shell: powershell
@@ -72,6 +76,8 @@ jobs:
             @{ Name='API'; Url='http://127.0.0.1:3000/' },
             @{ Name='Command Center'; Url='http://127.0.0.1:8787/api/health' },
             @{ Name='CEO Dashboard'; Url='http://127.0.0.1:8737/api/state' },
+            @{ Name='CEO Revenue'; Url='http://127.0.0.1:8737/api/revenue' },
+            @{ Name='CEO Growth Assets'; Url='http://127.0.0.1:8737/api/growth-assets' },
             @{ Name='Desktop UI'; Url='http://127.0.0.1:3737/api/status' },
             @{ Name='Customer Delivery'; Url='http://127.0.0.1:8792/api/health' },
             @{ Name='Revenue Command Center'; Url='http://127.0.0.1:8792/api/revenue' }
@@ -92,6 +98,14 @@ jobs:
             throw 'MILES live command acceptance failed.'
           }
 
+      - name: Run whole-system acceptance matrix
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node .\SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js
+          if (Test-Path .\DATA\runtime_guardian\whole_system_acceptance_latest.json) { Get-Content .\DATA\runtime_guardian\whole_system_acceptance_latest.json -Raw | Write-Host }
+          if ($LASTEXITCODE -ne 0) { throw 'Whole-system internal acceptance failed.' }
+
       - name: Run CEO Dashboard command path acceptance
         shell: powershell
         run: |
@@ -104,11 +118,11 @@ jobs:
             $coreFailures | ConvertTo-Json -Depth 6 | Write-Host
             throw 'CEO/core/customer-delivery final surface acceptance failed.'
           }
-          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> persisted result + customer delivery'
+          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> persisted result + customer/growth layer'
 
       - name: Persist PM2 map and show logs
         if: always()
         shell: powershell
         run: |
           pm2 status 2>&1 | Out-Host
-          pm2 logs --nostream --lines 80 2>&1 | Out-Host
+          pm2 logs --nostream --lines 100 2>&1 | Out-Host
