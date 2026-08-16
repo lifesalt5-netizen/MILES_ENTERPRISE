@@ -35,7 +35,7 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - name: Install repository dependencies
+      - name: Install repository dependencies and PM2
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -43,14 +43,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'npm ci failed.' }
           npm install -g pm2
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
+          $pm2Cli = Join-Path $env:APPDATA 'npm\node_modules\pm2\bin\pm2'
+          if (-not (Test-Path $pm2Cli -PathType Leaf)) { throw "PM2 JavaScript CLI not found: $pm2Cli" }
+          "MILES_PM2_CLI=$pm2Cli" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "[PM2 CLI] $pm2Cli"
 
-      - name: Prepare clean PM2 state
+      - name: Prepare clean PM2 state through direct Node transport
         shell: powershell
         run: |
-          $previous = $ErrorActionPreference
-          $ErrorActionPreference = 'Continue'
-          try { pm2 kill 2>&1 | Out-Host } finally { $ErrorActionPreference = $previous }
-          Write-Host '[PM2] clean state ready'
+          $ErrorActionPreference = 'Stop'
+          & node $env:MILES_PM2_CLI kill 2>&1 | Out-Host
+          Write-Host '[PM2] clean state ready through direct CLI'
 
       - name: Run isolated P2GC service acceptance
         shell: powershell
@@ -70,7 +73,8 @@ jobs:
           node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery
           if ($LASTEXITCODE -ne 0) { throw 'Unable to start canonical MILES core surfaces.' }
           Start-Sleep -Seconds 15
-          pm2 status
+          node .\SCRIPTS\Pm2DirectCommand.js status | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to query PM2 through direct transport.' }
 
       - name: Probe live endpoints
         shell: powershell
@@ -122,11 +126,12 @@ jobs:
             $coreFailures | ConvertTo-Json -Depth 6 | Write-Host
             throw 'CEO/core/customer-delivery final surface acceptance failed.'
           }
-          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> persisted result + customer/growth layer'
+          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> successful persisted result + customer/growth layer'
 
-      - name: Persist PM2 map and show logs
+      - name: Persist PM2 map and show logs through direct transport
         if: always()
         shell: powershell
         run: |
-          pm2 status 2>&1 | Out-Host
-          pm2 logs --nostream --lines 100 2>&1 | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js save 2>&1 | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js status 2>&1 | Out-Host
+          node .\SCRIPTS\Pm2DirectCommand.js logs --nostream --lines 100 2>&1 | Out-Host
