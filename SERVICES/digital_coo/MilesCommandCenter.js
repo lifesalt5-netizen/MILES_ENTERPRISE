@@ -17,6 +17,16 @@ const LOGS_DIR = path.join(ROOT, 'logs');
 const QUEUE_FILE = path.join(STATE_DIR, 'business_operations_queue.json');
 const LOG_FILE = path.join(LOGS_DIR, 'miles_command_center.log');
 const PUBLIC_DIR = path.join(__dirname, 'public');
+const RUNTIME_DIR = path.join(ROOT, 'DATA', 'runtime');
+const TASK_QUEUE_FILE = path.join(RUNTIME_DIR, 'task_queue.json');
+const TASK_QUEUE_LAST_GOOD_FILE = path.join(RUNTIME_DIR, 'task_queue.last_good.json');
+const WORKER_STATUS_FILE = path.join(RUNTIME_DIR, 'worker_runtime_status.json');
+const CONTROL_PLANE_CACHE_MS = Math.max(250, Number(process.env.MILES_CONTROL_PLANE_CACHE_MS || 2000));
+const WORKER_STATUS_MAX_AGE_MS = Math.max(5000, Number(process.env.MILES_WORKER_STATUS_MAX_AGE_MS || 60000));
+const DASHBOARD_OPERATION_QUEUE_MAX_BYTES = Math.max(
+  1024 * 1024,
+  Number(process.env.MILES_DASHBOARD_OPERATION_QUEUE_MAX_BYTES || 8 * 1024 * 1024)
+);
 
 fs.mkdirSync(STATE_DIR, { recursive: true });
 fs.mkdirSync(LOGS_DIR, { recursive: true });
@@ -27,9 +37,7 @@ const bridge = new BusinessOperationsBridgeService({
   queueFile: QUEUE_FILE
 });
 
-const executiveResponses = new ExecutiveResponseService({
-  rootDir: ROOT
-});
+const executiveResponses = new ExecutiveResponseService({ rootDir: ROOT });
 
 const CANONICAL_DEPARTMENTS = Object.freeze([
   'Executive Operations',
@@ -49,6 +57,8 @@ const CANONICAL_DEPARTMENTS = Object.freeze([
   'Website Operations',
   'Engineering Operations'
 ]);
+
+let taskQueueSummaryCache = { at: 0, value: null };
 
 function now() {
   return new Date().toISOString();
@@ -96,11 +106,7 @@ function safeStringify(value) {
   return JSON.stringify(value, (key, item) => {
     if (typeof item === 'bigint') return item.toString();
     if (item instanceof Error) {
-      return {
-        name: item.name,
-        message: item.message,
-        stack: item.stack
-      };
+      return { name: item.name, message: item.message, stack: item.stack };
     }
     if (item && typeof item === 'object') {
       if (seen.has(item)) return '[Circular]';
@@ -185,6 +191,64 @@ function queueState() {
   });
   queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
   return queue;
+}
+
+function dashboardOperationSnapshot() {
+  try {
+    if (!fs.existsSync(QUEUE_FILE)) {
+      return {
+        operations: [],
+        metadata: {
+          ok: true,
+          source: 'MILES_COMMAND_CENTER',
+          total: 0,
+          displayed: 0,
+          fileBytes: 0,
+          historyOmitted: false
+        }
+      };
+    }
+
+    const stat = fs.statSync(QUEUE_FILE);
+    if (stat.size > DASHBOARD_OPERATION_QUEUE_MAX_BYTES) {
+      return {
+        operations: [],
+        metadata: {
+          ok: true,
+          source: 'MILES_COMMAND_CENTER',
+          total: null,
+          displayed: 0,
+          fileBytes: stat.size,
+          historyOmitted: true,
+          reason: 'HISTORICAL_OPERATION_QUEUE_TOO_LARGE_FOR_SYNCHRONOUS_CONTROL_PLANE_READ'
+        }
+      };
+    }
+
+    const queue = queueState();
+    return {
+      operations: queue.operations.slice(0, 50),
+      metadata: {
+        ok: true,
+        source: queue.source || 'MILES_COMMAND_CENTER',
+        generatedAt: queue.generatedAt || null,
+        total: queue.operations.length,
+        displayed: Math.min(50, queue.operations.length),
+        fileBytes: stat.size,
+        historyOmitted: false
+      }
+    };
+  } catch (error) {
+    return {
+      operations: [],
+      metadata: {
+        ok: false,
+        displayed: 0,
+        historyOmitted: true,
+        error: error.message
+      }
+    };
+  }
 }
 
 function saveOperation(operation) {
@@ -311,11 +375,7 @@ function bridgeOperation(operation) {
 async function handleCommand(command) {
   const clean = String(command || '').trim();
   if (!clean) {
-    return {
-      ok: false,
-      status: 'EMPTY_COMMAND',
-      message: 'command is required'
-    };
+    return { ok: false, status: 'EMPTY_COMMAND', message: 'command is required' };
   }
 
   const operation = makeOperation(clean);
@@ -382,31 +442,127 @@ async function handleCommand(command) {
   }
 }
 
-function taskQueueSummary() {
-  try {
-    const items = typeof taskQueue.list === 'function' ? taskQueue.list() : [];
-    const counts = {
-      total: items.length,
-      queued: 0,
-      running: 0,
-      completed: 0,
-      failed: 0,
-      awaitingApproval: 0,
-      other: 0
-    };
-    for (const item of items) {
-      const status = String(item?.status || '').toUpperCase();
-      if (['QUEUED', 'READY', 'PENDING'].includes(status)) counts.queued += 1;
-      else if (['RUNNING', 'IN_PROGRESS'].includes(status)) counts.running += 1;
-      else if (['COMPLETED', 'COMPLETE'].includes(status)) counts.completed += 1;
-      else if (status === 'FAILED') counts.failed += 1;
-      else if (['AWAITING_APPROVAL', 'AWAITING_CEO_APPROVAL'].includes(status)) counts.awaitingApproval += 1;
-      else counts.other += 1;
-    }
-    return { ok: true, ...counts };
-  } catch (error) {
-    return { ok: false, error: error.message };
+function normalizeQueueCounts(queue = {}) {
+  return {
+    total: Number(queue.total || 0),
+    queued: Number(queue.queued ?? queue.pending ?? 0),
+    running: Number(queue.running || 0),
+    completed: Number(queue.completed || 0),
+    failed: Number(queue.failed || 0),
+    awaitingApproval: Number(queue.awaitingApproval || 0),
+    other: Number(queue.other || 0),
+    healthScore: queue.healthScore == null ? null : Number(queue.healthScore)
+  };
+}
+
+function workerRuntimeQueueSummary() {
+  const status = readJson(WORKER_STATUS_FILE, null);
+  if (!status || !status.queue || typeof status.queue !== 'object') return null;
+
+  const generatedAt = status.generatedAt || null;
+  const timestamp = new Date(generatedAt || 0).getTime();
+  const ageMs = Number.isFinite(timestamp) && timestamp > 0
+    ? Math.max(0, Date.now() - timestamp)
+    : Number.MAX_SAFE_INTEGER;
+
+  return {
+    ok: true,
+    ...normalizeQueueCounts(status.queue),
+    source: 'WORKER_RUNTIME_STATUS',
+    generatedAt,
+    ageMs,
+    stale: ageMs > WORKER_STATUS_MAX_AGE_MS,
+    lockFree: true
+  };
+}
+
+function summarizeTaskArray(items) {
+  const counts = {
+    total: items.length,
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0,
+    healthScore: null
+  };
+
+  for (const item of items) {
+    const status = String(item?.status || '').toUpperCase();
+    if (['QUEUED', 'READY', 'PENDING'].includes(status)) counts.queued += 1;
+    else if (['RUNNING', 'IN_PROGRESS'].includes(status)) counts.running += 1;
+    else if (['COMPLETED', 'COMPLETE'].includes(status)) counts.completed += 1;
+    else if (status === 'FAILED') counts.failed += 1;
+    else if (['AWAITING_APPROVAL', 'AWAITING_CEO_APPROVAL'].includes(status)) counts.awaitingApproval += 1;
+    else counts.other += 1;
   }
+
+  return counts;
+}
+
+function directTaskQueueSnapshotSummary() {
+  const errors = [];
+  for (const candidate of [TASK_QUEUE_FILE, TASK_QUEUE_LAST_GOOD_FILE]) {
+    try {
+      if (!fs.existsSync(candidate)) continue;
+      const text = fs.readFileSync(candidate, 'utf8').replace(/^\uFEFF/, '').trim();
+      const items = text ? JSON.parse(text) : [];
+      if (!Array.isArray(items)) throw new Error('Task queue root is not an array.');
+      return {
+        ok: true,
+        ...summarizeTaskArray(items),
+        source: candidate === TASK_QUEUE_FILE ? 'TASK_QUEUE_ATOMIC_SNAPSHOT' : 'TASK_QUEUE_LAST_GOOD_SNAPSHOT',
+        generatedAt: now(),
+        fileBytes: Buffer.byteLength(text),
+        stale: candidate !== TASK_QUEUE_FILE,
+        lockFree: true
+      };
+    } catch (error) {
+      errors.push(`${candidate}: ${error.message}`);
+    }
+  }
+
+  return {
+    ok: false,
+    total: 0,
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0,
+    healthScore: null,
+    source: 'NO_READABLE_QUEUE_SNAPSHOT',
+    stale: true,
+    lockFree: true,
+    error: errors.join(' | ') || 'No task queue snapshot found.'
+  };
+}
+
+function taskQueueSummary() {
+  const current = Date.now();
+  if (
+    taskQueueSummaryCache.value &&
+    current - taskQueueSummaryCache.at <= CONTROL_PLANE_CACHE_MS
+  ) {
+    return { ...taskQueueSummaryCache.value, cacheHit: true };
+  }
+
+  const workerSnapshot = workerRuntimeQueueSummary();
+  let summary = workerSnapshot && !workerSnapshot.stale
+    ? workerSnapshot
+    : directTaskQueueSnapshotSummary();
+
+  if (!summary.ok && workerSnapshot) {
+    summary = {
+      ...workerSnapshot,
+      fallbackWarning: summary.error || 'Direct task queue snapshot unavailable.'
+    };
+  }
+
+  taskQueueSummaryCache = { at: current, value: summary };
+  return { ...summary, cacheHit: false };
 }
 
 function buildDepartments() {
@@ -423,35 +579,40 @@ function buildDepartments() {
       status: 'REGISTERED',
       health: workers.length ? 'WORKFORCE_MAPPED' : 'CONTROL_PLANE_READY',
       workerCount: workers.length,
-      workers: workers.slice(0, 8).map(employee => employee.name || employee.employee || employee.id).filter(Boolean)
+      workers: workers.slice(0, 8)
+        .map(employee => employee.name || employee.employee || employee.id)
+        .filter(Boolean)
     };
   });
 }
 
+function workforceStatus() {
+  try { return workforce.status(); }
+  catch (error) { return { ok: false, error: error.message }; }
+}
+
 function healthPayload() {
   const queue = taskQueueSummary();
-  let workforceStatus = null;
-  try { workforceStatus = workforce.status(); } catch (error) {
-    workforceStatus = { ok: false, error: error.message };
-  }
+  const status = workforceStatus();
+  const healthy = queue.ok === true && status?.ok === true;
   return {
-    ok: queue.ok === true && workforceStatus?.ok === true,
+    ok: healthy,
     service: 'MILES_COMMAND_CENTER',
-    status: queue.ok === true && workforceStatus?.ok === true ? 'HEALTHY' : 'DEGRADED',
+    status: healthy ? 'HEALTHY' : 'DEGRADED',
     architecture: 'LEAN_CONTROL_PLANE',
     executionOwner: 'miles-worker',
     autonomousOwner: 'miles-autonomous-coo',
     port: PORT,
     pid: process.pid,
     taskQueue: queue,
-    workforce: workforceStatus,
+    workforce: status,
     bridge: bridge.getStatus(),
     generatedAt: now()
   };
 }
 
 function dashboardPayload() {
-  const queue = queueState();
+  const operationSnapshot = dashboardOperationSnapshot();
   return {
     ok: true,
     service: 'MILES_COMMAND_CENTER',
@@ -459,11 +620,10 @@ function dashboardPayload() {
     generatedAt: now(),
     departments: buildDepartments(),
     taskQueue: taskQueueSummary(),
-    workforce: (() => {
-      try { return workforce.status(); } catch (error) { return { ok:false, error:error.message }; }
-    })(),
+    workforce: workforceStatus(),
     bridge: bridge.getStatus(),
-    operations: queue.operations.slice(0, 50),
+    operations: operationSnapshot.operations,
+    operationSnapshot: operationSnapshot.metadata,
     surfaces: {
       commandCenter: 'http://127.0.0.1:8787',
       ceoDashboard: 'http://127.0.0.1:8737',
@@ -500,9 +660,9 @@ function operationResponse(operationId) {
 function approveOperation(operationId, reason = '') {
   const queue = queueState();
   const operation = queue.operations.find(item => item && item.id === operationId);
-  if (!operation) return { ok:false, status:'NOT_FOUND', operationId };
+  if (!operation) return { ok: false, status: 'NOT_FOUND', operationId };
   if (!['AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL'].includes(String(operation.status || '').toUpperCase())) {
-    return { ok:false, status:'INVALID_STATUS', operationId, currentStatus:operation.status };
+    return { ok: false, status: 'INVALID_STATUS', operationId, currentStatus: operation.status };
   }
   const approved = updateOperation(operationId, {
     status: 'READY',
@@ -513,10 +673,15 @@ function approveOperation(operationId, reason = '') {
   });
   try {
     const enqueueResult = bridgeOperation(approved);
-    return { ok:enqueueResult.ok, status:enqueueResult.ok ? 'APPROVED_AND_BRIDGED' : 'APPROVED_BRIDGE_FAILED', operation:enqueueResult.operation, enqueueResult };
+    return {
+      ok: enqueueResult.ok,
+      status: enqueueResult.ok ? 'APPROVED_AND_BRIDGED' : 'APPROVED_BRIDGE_FAILED',
+      operation: enqueueResult.operation,
+      enqueueResult
+    };
   } catch (error) {
-    updateOperation(operationId, { status:'BRIDGE_FAILED', error:error.message });
-    return { ok:false, status:'APPROVED_BRIDGE_FAILED', operationId, error:error.message };
+    updateOperation(operationId, { status: 'BRIDGE_FAILED', error: error.message });
+    return { ok: false, status: 'APPROVED_BRIDGE_FAILED', operationId, error: error.message };
   }
 }
 
@@ -529,8 +694,8 @@ function rejectOperation(operationId, reason = '') {
     approvalReason: reason
   });
   return operation
-    ? { ok:true, status:'REJECTED', operation }
-    : { ok:false, status:'NOT_FOUND', operationId };
+    ? { ok: true, status: 'REJECTED', operation }
+    : { ok: false, status: 'NOT_FOUND', operationId };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -556,7 +721,7 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && url.pathname === '/api/operation') {
       const operationId = url.searchParams.get('id');
       if (!operationId) {
-        sendJson(res, 400, { ok:false, status:'OPERATION_ID_REQUIRED' });
+        sendJson(res, 400, { ok: false, status: 'OPERATION_ID_REQUIRED' });
         return;
       }
       const result = operationResponse(operationId);
@@ -569,7 +734,7 @@ const server = http.createServer(async (req, res) => {
       let payload;
       try { payload = JSON.parse(raw || '{}'); }
       catch {
-        sendJson(res, 400, { ok:false, status:'INVALID_JSON' });
+        sendJson(res, 400, { ok: false, status: 'INVALID_JSON' });
         return;
       }
       const result = await handleCommand(payload.command);
@@ -582,7 +747,7 @@ const server = http.createServer(async (req, res) => {
       const operationId = segments[2];
       const action = segments[3];
       if (!operationId || !['approve', 'reject'].includes(action || '')) {
-        sendJson(res, 400, { ok:false, status:'INVALID_OPERATION_ACTION' });
+        sendJson(res, 400, { ok: false, status: 'INVALID_OPERATION_ACTION' });
         return;
       }
       const raw = await readBody(req);
@@ -611,12 +776,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'GET' && url.pathname === '/favicon.ico') {
-      res.writeHead(204, { 'Cache-Control':'no-store' });
+      res.writeHead(204, { 'Cache-Control': 'no-store' });
       res.end();
       return;
     }
 
-    sendJson(res, 404, { ok:false, status:'NOT_FOUND', path:url.pathname });
+    sendJson(res, 404, { ok: false, status: 'NOT_FOUND', path: url.pathname });
   } catch (error) {
     log('ERROR', 'Unhandled Command Center request failure.', {
       method: req.method,
@@ -632,7 +797,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.on('clientError', (error, socket) => {
-  log('ERROR', 'HTTP client error.', { error:error.message });
+  log('ERROR', 'HTTP client error.', { error: error.message });
   try {
     if (socket.writable) {
       socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n');
