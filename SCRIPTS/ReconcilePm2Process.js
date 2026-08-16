@@ -1,9 +1,11 @@
 "use strict";
 
+const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
+let PM2_CLI_CACHE = null;
 
 function normalizePath(value) {
   if (!value) return "";
@@ -14,29 +16,86 @@ function appPath(app) { return normalizePath(app && app.pm2_env && app.pm2_env.p
 function normalizeArgs(value) { if (Array.isArray(value)) return value.map(v => String(v)); if (value == null || value === "") return []; return [String(value)]; }
 function argsEqual(a,b) { const left=normalizeArgs(a), right=normalizeArgs(b); return left.length===right.length && left.every((v,i)=>v===right[i]); }
 
+function existingFile(value) {
+  if (!value) return null;
+  try {
+    const resolved = path.resolve(String(value));
+    return fs.statSync(resolved).isFile() ? resolved : null;
+  } catch { return null; }
+}
+
+function pm2CliCandidates(env = process.env) {
+  const candidates = [];
+  const add = value => { if (value) candidates.push(value); };
+
+  add(env.MILES_PM2_CLI);
+  add(path.join(ROOT, "node_modules", "pm2", "bin", "pm2"));
+  if (env.APPDATA) add(path.join(env.APPDATA, "npm", "node_modules", "pm2", "bin", "pm2"));
+  if (env.npm_config_prefix) add(path.join(env.npm_config_prefix, "node_modules", "pm2", "bin", "pm2"));
+  if (env.NPM_CONFIG_PREFIX) add(path.join(env.NPM_CONFIG_PREFIX, "node_modules", "pm2", "bin", "pm2"));
+
+  if (process.platform === "win32") {
+    try {
+      const where = spawnSync("where.exe", ["pm2"], { cwd: ROOT, env, encoding: "utf8", windowsHide: true });
+      const wrappers = String(where.stdout || "").split(/\r?\n/).map(v => v.trim()).filter(Boolean);
+      for (const wrapper of wrappers) {
+        const dir = path.dirname(wrapper);
+        add(path.join(dir, "node_modules", "pm2", "bin", "pm2"));
+      }
+    } catch {}
+  }
+
+  return [...new Set(candidates.map(v => path.resolve(String(v))))];
+}
+
+function resolvePm2Cli(env = process.env) {
+  if (PM2_CLI_CACHE && existingFile(PM2_CLI_CACHE)) return PM2_CLI_CACHE;
+  for (const candidate of pm2CliCandidates(env)) {
+    const found = existingFile(candidate);
+    if (found) {
+      PM2_CLI_CACHE = found;
+      return found;
+    }
+  }
+  const searched = pm2CliCandidates(env);
+  throw new Error(`PM2 CLI JavaScript entry point not found. Searched: ${searched.join(", ") || "no candidates"}. Set MILES_PM2_CLI to the full path of pm2\\bin\\pm2 if PM2 is installed in a custom location.`);
+}
+
 function spawnPm2(args) {
   const common = { cwd:ROOT, env:process.env, encoding:"utf8", windowsHide:true };
-  if (process.platform === "win32") {
-    const comspec = process.env.ComSpec || process.env.COMSPEC || "cmd.exe";
-    return spawnSync(comspec, ["/d", "/s", "/c", "pm2", ...args], common);
-  }
-  return spawnSync("pm2", args, common);
+  const cli = resolvePm2Cli(process.env);
+  return spawnSync(process.execPath, [cli, ...args], common);
 }
 
 function runPm2(args, allowFailure = false) {
   const result = spawnPm2(args);
   const stdout = String(result.stdout || "");
-  const stderr = String(result.stderr || "");
+  const stderr = String(result.stderr || result.error?.stack || result.error?.message || "");
   const code = typeof result.status === "number" ? result.status : 1;
   if (result.error && !allowFailure) throw result.error;
   if (code !== 0 && !allowFailure) throw new Error(`pm2 ${args.join(" ")} failed (${code}): ${stderr || stdout}`.trim());
   return { code, stdout, stderr };
 }
 
+function parsePm2Jlist(raw) {
+  const text = String(raw || "").replace(/\u001b\[[0-9;]*m/g, "").trim();
+  try {
+    const parsed = JSON.parse(text || "[]");
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+  const lines = text.split(/\r?\n/).map(v => v.trim()).filter(Boolean);
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    try {
+      const parsed = JSON.parse(lines[i]);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+  }
+  throw new Error(`Unable to parse PM2 jlist output: ${text.slice(0, 2000)}`);
+}
+
 function readApps() {
   const r=runPm2(["jlist"]);
-  try { const apps=JSON.parse(r.stdout||"[]"); if(!Array.isArray(apps)) throw new Error("not an array"); return apps; }
-  catch(error){ throw new Error(`Unable to parse PM2 jlist: ${error.message}\n${r.stdout}\n${r.stderr}`.trim()); }
+  return parsePm2Jlist(r.stdout);
 }
 
 function buildPlan(apps,name,scriptPath,scriptArgs=[]) {
@@ -62,8 +121,8 @@ function reconcile(name,scriptArg,scriptArgs=[]) {
     if(r.code!==0)throw new Error(`Unable to create canonical PM2 app ${name}: ${r.stderr||r.stdout}`.trim());
   }
   const online=waitForOnline(name,scriptPath);const finalApps=readApps();const duplicates=finalApps.filter(app=>appPath(app)===normalizePath(scriptPath)&&String(app.name)!==String(name));if(duplicates.length)throw new Error(`Duplicate PM2 registrations remain for ${scriptPath}: ${duplicates.map(x=>`${x.name}#${x.pm_id}`).join(", ")}`);
-  const result={ok:true,name,pid:Number(online.pid||0),status:online.pm2_env?.status||null,script:online.pm2_env?.pm_exec_path||null,pmId:online.pm_id,args:normalizeArgs(online.pm2_env?.args)};console.log(JSON.stringify(result));return result;
+  const result={ok:true,name,pid:Number(online.pid||0),status:online.pm2_env?.status||null,script:online.pm2_env?.pm_exec_path||null,pmId:online.pm_id,args:normalizeArgs(online.pm2_env?.args),pm2Cli:resolvePm2Cli(process.env)};console.log(JSON.stringify(result));return result;
 }
 
 if(require.main===module){const [name,scriptArg,...scriptArgs]=process.argv.slice(2);if(!name||!scriptArg){console.error("Usage: node SCRIPTS/ReconcilePm2Process.js <name> <scriptPath> [script args...]");process.exit(2);}try{reconcile(name,scriptArg,scriptArgs)}catch(error){console.error(error.stack||error.message);process.exit(1);}}
-module.exports={normalizePath,appPath,normalizeArgs,argsEqual,buildPlan,reconcile,runPm2,spawnPm2};
+module.exports={normalizePath,appPath,normalizeArgs,argsEqual,buildPlan,reconcile,runPm2,spawnPm2,pm2CliCandidates,resolvePm2Cli,parsePm2Jlist};
