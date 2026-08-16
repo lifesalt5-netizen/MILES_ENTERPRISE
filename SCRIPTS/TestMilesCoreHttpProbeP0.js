@@ -1,11 +1,16 @@
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
 const http = require("http");
+
+const ROOT = process.env.MILES_ROOT || process.cwd();
+const COMMAND_CENTER_FILE = path.join(ROOT, "SERVICES", "digital_coo", "MilesCommandCenter.js");
 
 const checks = [
   { name: "MILES API", port: 3000, path: "/", expect: value => /MILES OS is running/i.test(value.text) },
-  { name: "Command Center health", port: 8787, path: "/api/health", expect: value => value.json?.ok === true },
-  { name: "Command Center dashboard", port: 8787, path: "/api/dashboard", expect: value => value.json?.ok === true },
+  { name: "Command Center health", port: 8787, path: "/api/health", maxMs: 5000, expect: value => value.json?.ok === true && value.json?.taskQueue?.lockFree === true },
+  { name: "Command Center dashboard", port: 8787, path: "/api/dashboard", maxMs: 5000, expect: value => value.json?.ok === true && value.json?.taskQueue?.lockFree === true },
   { name: "CEO Dashboard state", port: 8737, path: "/api/state", expect: value => Boolean(value.json) },
   { name: "CEO revenue", port: 8737, path: "/api/revenue", expect: value => value.json?.ok === true },
   { name: "CEO growth assets", port: 8737, path: "/api/growth-assets", expect: value => value.json?.ok === true },
@@ -15,8 +20,26 @@ const checks = [
   { name: "P2GC prospect demo", port: 8791, path: "/api/health", expect: value => value.json?.status === "HEALTHY" }
 ];
 
+function controlPlaneSourceContract() {
+  try {
+    const source = fs.readFileSync(COMMAND_CENTER_FILE, "utf8");
+    const directLockedList = /taskQueue\.list\s*\(/.test(source);
+    const workerSnapshot = /WORKER_RUNTIME_STATUS/.test(source);
+    const lockFreeMarker = /lockFree\s*:\s*true/.test(source);
+    return {
+      ok: !directLockedList && workerSnapshot && lockFreeMarker,
+      directLockedList,
+      workerSnapshot,
+      lockFreeMarker
+    };
+  } catch (error) {
+    return { ok:false, error:error.message };
+  }
+}
+
 function request(port, pathname, timeoutMs = 30000) {
   return new Promise((resolve, reject) => {
+    const startedAt = Date.now();
     const req = http.request({
       hostname: "127.0.0.1",
       port,
@@ -38,7 +61,8 @@ function request(port, pathname, timeoutMs = 30000) {
           headers: res.headers,
           text,
           json,
-          bytes: Buffer.byteLength(text)
+          bytes: Buffer.byteLength(text),
+          elapsedMs: Date.now() - startedAt
         });
       });
     });
@@ -50,12 +74,27 @@ function request(port, pathname, timeoutMs = 30000) {
 
 (async () => {
   const results = [];
+  const sourceContract = controlPlaneSourceContract();
+  results.push({ name:"Command Center lock-free source contract", ok:sourceContract.ok, ...sourceContract });
+  console.log(`[${sourceContract.ok ? "PASS" : "FAIL"}] Command Center lock-free source contract`);
+
   for (const check of checks) {
     try {
       const response = await request(check.port, check.path);
-      const ok = response.statusCode === 200 && check.expect(response);
-      results.push({ name:check.name, ok, statusCode:response.statusCode, bytes:response.bytes, headers:response.headers });
-      console.log(`[${ok ? "PASS" : "FAIL"}] ${check.name} http=${response.statusCode} bytes=${response.bytes}`);
+      const withinBudget = !check.maxMs || response.elapsedMs <= check.maxMs;
+      const ok = response.statusCode === 200 && withinBudget && check.expect(response);
+      results.push({
+        name:check.name,
+        ok,
+        statusCode:response.statusCode,
+        bytes:response.bytes,
+        elapsedMs:response.elapsedMs,
+        maxMs:check.maxMs || null,
+        headers:response.headers,
+        taskQueueSource:response.json?.taskQueue?.source || null,
+        taskQueueCacheHit:response.json?.taskQueue?.cacheHit ?? null
+      });
+      console.log(`[${ok ? "PASS" : "FAIL"}] ${check.name} http=${response.statusCode} bytes=${response.bytes} elapsed=${response.elapsedMs}ms${check.maxMs ? ` budget=${check.maxMs}ms` : ""}`);
       if (!ok) {
         console.log(response.text.slice(0, 1000));
       }
