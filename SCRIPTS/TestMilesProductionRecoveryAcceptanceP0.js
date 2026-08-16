@@ -96,6 +96,52 @@ function successfulExecutionResult(value) {
   ].filter(v => typeof v === "boolean");
   return status === "COMPLETED" && flags.includes(true) && !flags.includes(false);
 }
+function findNestedObject(value, predicate, seen = new Set()) {
+  if (!value || typeof value !== "object") return null;
+  if (seen.has(value)) return null;
+  seen.add(value);
+  if (predicate(value)) return value;
+  const children = Array.isArray(value) ? value : Object.values(value);
+  for (const child of children) {
+    const found = findNestedObject(child, predicate, seen);
+    if (found) return found;
+  }
+  return null;
+}
+function readOnlyMissionEvidence(value) {
+  const mission = findNestedObject(
+    value,
+    item => item?.service === "BusinessExecutionEngineServiceV2" && Array.isArray(item?.results)
+  );
+  const businessStep = mission?.results?.find(item => item?.action === "BUSINESS_EXECUTION") || null;
+  const plan = businessStep?.result || null;
+  const routerStep = mission?.results?.find(item => item?.action === "TASK_ROUTER") || null;
+  const ok = Boolean(
+    mission &&
+    mission.readOnly === true &&
+    mission.executiveSummary?.readOnly === true &&
+    Number(mission.executiveSummary?.workQueued || 0) === 0 &&
+    plan?.mode === "READ_ONLY_REVIEW" &&
+    plan?.readOnly === true &&
+    Number(plan?.operationsCreated || 0) === 0 &&
+    Number(plan?.operationsQueued || 0) === 0 &&
+    Number(plan?.operationsFailed || 0) === 0 &&
+    routerStep?.result?.status === "READ_ONLY_ROUTE_SKIPPED" &&
+    Number(routerStep?.result?.routed || 0) === 0
+  );
+  return {
+    ok,
+    missionFound: Boolean(mission),
+    missionReadOnly: mission?.readOnly ?? null,
+    mode: plan?.mode || null,
+    operationsCreated: plan?.operationsCreated ?? null,
+    operationsQueued: plan?.operationsQueued ?? null,
+    routerStatus: routerStep?.result?.status || null,
+    topActions: Array.isArray(mission?.executiveSummary?.topActions)
+      ? mission.executiveSummary.topActions.length
+      : 0
+  };
+}
 function pm2State(name) {
   try {
     const apps = parsePm2Jlist(runPm2(["jlist"]).stdout);
@@ -164,6 +210,7 @@ function pm2State(name) {
 
   let persisted = null;
   let persistedFile = null;
+  let readOnlyEvidence = null;
   if (taskId) {
     const exact = path.join(ROOT,"DATA","workforce_results",`WP_${taskId}.json`);
     for (let i=0;i<60;i++) {
@@ -195,7 +242,13 @@ function pm2State(name) {
     add("worker persisted current command result", Boolean(persisted), persistedFile || `${TASK_QUEUE_FILE}#${taskId}`);
     const persistedSucceeded = successfulExecutionResult(persisted);
     add("persisted command result succeeded", persistedSucceeded, persisted ? `status=${persisted.status || persisted.result?.status || "unknown"} ok=${persisted.ok}` : "no persisted result");
-    if (persisted && !persistedSucceeded) {
+    readOnlyEvidence = readOnlyMissionEvidence(persisted);
+    add(
+      "read-only mission created zero follow-on work",
+      readOnlyEvidence.ok,
+      `mission=${readOnlyEvidence.missionFound} mode=${readOnlyEvidence.mode || "none"} created=${readOnlyEvidence.operationsCreated} queued=${readOnlyEvidence.operationsQueued} router=${readOnlyEvidence.routerStatus || "none"} topActions=${readOnlyEvidence.topActions}`
+    );
+    if (persisted && (!persistedSucceeded || !readOnlyEvidence.ok)) {
       console.log("=== LIVE MISSION FAILURE EVIDENCE ===");
       console.log(JSON.stringify(persisted, null, 2));
       console.log("=== END LIVE MISSION FAILURE EVIDENCE ===");
@@ -209,6 +262,7 @@ function pm2State(name) {
   } else {
     add("worker persisted current command result", false, "No taskId returned");
     add("persisted command result succeeded", false, "No taskId returned");
+    add("read-only mission created zero follow-on work", false, "No taskId returned");
     add("result excludes synthetic deal names", false, "No result");
   }
 
@@ -272,6 +326,7 @@ function pm2State(name) {
     operationId,
     taskId,
     persistedFile,
+    readOnlyEvidence,
     workerBefore,
     workerAfter,
     memory,
