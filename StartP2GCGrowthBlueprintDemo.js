@@ -5,16 +5,18 @@ const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
+const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
 const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
 const service = new ExecutiveGrowthBlueprintDemoService();
+const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const cache = new Map();
 const TTL = Math.max(1000, Number(process.env.P2GC_GROWTH_DEMO_CACHE_MS || 300000));
 
 function send(res, status, type, body, extra = {}) {
-  res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store", ...extra });
+  res.writeHead(status, { "Content-Type": type, "Cache-Control":"no-store", ...extra });
   res.end(body);
 }
 function json(res, status, body) { send(res, status, "application/json; charset=utf-8", JSON.stringify(body, null, 2)); }
@@ -46,12 +48,13 @@ const server = http.createServer((req, res) => {
   const pathname = url.pathname;
 
   if (req.method === "GET" && (pathname === "/" || pathname === "/demo")) return staticFile(res, "index.html", "text/html; charset=utf-8");
+  if (req.method === "GET" && pathname === "/teaming") return staticFile(res, "teaming.html", "text/html; charset=utf-8");
   if (req.method === "GET" && pathname === "/app.js") return staticFile(res, "app.js", "application/javascript; charset=utf-8");
   if (req.method === "GET" && pathname === "/styles.css") return staticFile(res, "styles.css", "text/css; charset=utf-8");
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","prime_sub_teaming"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/assessment") {
@@ -62,6 +65,18 @@ const server = http.createServer((req, res) => {
       return json(res, model?.ok ? 200 : 404, model);
     } catch (error) {
       return json(res, 500, { ok:false, status:"ASSESSMENT_FAILED", error:error.message });
+    }
+  }
+
+  if (req.method === "GET" && pathname === "/api/teaming") {
+    const term = String(url.searchParams.get("term") || "").trim();
+    if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
+    try {
+      const model = getModel(term, url.searchParams.get("refresh") === "1");
+      if (!model?.ok) return json(res, 404, model);
+      return json(res, 200, teaming.fromBlueprint(model));
+    } catch (error) {
+      return json(res, 500, { ok:false, status:"TEAMING_INTELLIGENCE_FAILED", error:error.message });
     }
   }
 
@@ -88,6 +103,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`P2GC Executive Government Growth Blueprint Demo: http://127.0.0.1:${PORT}`);
+  console.log(`P2GC Sub2Prime Teaming Intelligence: http://127.0.0.1:${PORT}/teaming`);
 });
 
 process.on("SIGINT", () => server.close(() => process.exit(0)));
