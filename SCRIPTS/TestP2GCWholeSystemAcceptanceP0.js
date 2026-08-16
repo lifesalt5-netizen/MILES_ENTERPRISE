@@ -61,11 +61,15 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
     ["Gap analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
     ["Competitor analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
     ["Agency alignment","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
-    ["Proposal system","SERVICES/growth/P2GCGrowthAssetService.js"],
-    ["Qualification gate","GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md"],
-    ["GO/NO-GO framework","GOVERNANCE"],
     ["Capture positioning","CONNECTORS/ORION/connector.js"]
   ]) internalFile("SALES",name,file);
+  internalFile("SALES","Qualification + GO/NO-GO service","SERVICES/sales/P2GCSalesQualificationService.js");
+  const salesGate=require("../SERVICES/sales/P2GCSalesQualificationService");
+  const qualified=salesGate.qualify({opportunityId:"WHOLE_SYSTEM",primeEligibility:true,minimumQualifications:true,corporateExperience:true,requiredReferences:true,keyPersonnel:true,securityRequirements:true,vehicleEligibility:true,solicitationCompliance:true});
+  const proposal=salesGate.buildProposalPackage({opportunityId:"WHOLE_SYSTEM",qualification:qualified,technicalSections:["Approach"],complianceMatrix:[{requirement:"Acceptance",status:"MAPPED"}]});
+  add("SALES","GO/NO-GO qualification executes",qualified.decision==="GO"&&qualified.proposalAuthorized?"PASS":"FAIL_INTERNAL",qualified.decision);
+  add("SALES","Proposal package generation executes",proposal.ok&&proposal.status==="DRAFT_READY_FOR_REVIEW"&&proposal.submission?.submitted===false?"PASS":"FAIL_INTERNAL",proposal.status||proposal.decision);
+  internalFile("SALES","Proposal library","SERVICES/growth/P2GCGrowthAssetService.js");
 
   for(const [name,file] of [
     ["Campaign segmentation","SERVICES/revenue/RevenueSegmentReadinessService.js"],
