@@ -4,12 +4,15 @@ require("dotenv").config();
 
 const fs = require("fs");
 const path = require("path");
+const { spawn } = require("child_process");
 
 process.env.MILES_ROOT = process.env.MILES_ROOT || __dirname;
 const ROOT = process.env.MILES_ROOT;
 const RUNTIME_DIR = path.join(ROOT, "DATA", "runtime");
+const EPHEMERAL_DIR = path.join(RUNTIME_DIR, "ephemeral_executor");
 const STATUS_FILE = path.join(RUNTIME_DIR, "worker_runtime_status.json");
 const EXECUTION_HISTORY_FILE = path.join(RUNTIME_DIR, "execution_history.jsonl");
+const EPHEMERAL_EXECUTOR = path.join(ROOT, "SCRIPTS", "MilesEphemeralExecutor.js");
 
 function positiveNumber(value, fallback) {
   const parsed = Number(value);
@@ -21,30 +24,27 @@ const HEARTBEAT_INTERVAL_MS = positiveNumber(process.env.MILES_HEARTBEAT_INTERVA
 const HEALTH_INTERVAL_MS = positiveNumber(process.env.MILES_INFRASTRUCTURE_HEALTH_INTERVAL_MS, 5 * 60 * 1000);
 const WORK_GENERATION_INTERVAL_MS = positiveNumber(process.env.MILES_AUTONOMOUS_WORK_INTERVAL_MS, 5 * 60 * 1000);
 const STARTUP_SETTLE_MS = positiveNumber(process.env.MILES_WORKER_STARTUP_SETTLE_MS, 1000);
+const EPHEMERAL_TIMEOUT_MS = positiveNumber(process.env.MILES_EPHEMERAL_EXECUTOR_TIMEOUT_MS, 10 * 60 * 1000);
 
 const taskQueue = require("./CORE/TaskQueue");
-
-function lazyAccessor(modulePath) {
-  let loaded = null;
-  return function getModule() {
-    if (!loaded) loaded = require(modulePath);
-    return loaded;
-  };
-}
-
-const getSupervisor = lazyAccessor("./CORE/Supervisor");
-const getExecutionService = lazyAccessor("./SERVICES/ExecutionService");
-const getInfrastructureHealthManager = lazyAccessor("./SERVICES/InfrastructureHealthManagerService");
-const getAutonomousWorkGenerator = lazyAccessor("./SERVICES/AutonomousWorkGenerationService");
-const getProviderRouter = lazyAccessor("./SERVICES/ProviderRouterService");
-const getConnectorManager = lazyAccessor("./CORE/ConnectorManager");
-const getCapabilityService = lazyAccessor("./SERVICES/CapabilityService");
-const getCapabilityDispatcher = lazyAccessor("./SERVICES/CapabilityDispatcherService");
-const getEventBus = lazyAccessor("./event-bus/emitter");
+const supervisor = require("./CORE/Supervisor");
 
 function now() { return new Date().toISOString(); }
 function delay(milliseconds) { return new Promise(resolve => setTimeout(resolve, milliseconds)); }
-function ensureRuntimeDir() { fs.mkdirSync(RUNTIME_DIR, { recursive: true }); }
+
+function ensureRuntimeDir() {
+  fs.mkdirSync(RUNTIME_DIR, { recursive: true });
+  fs.mkdirSync(EPHEMERAL_DIR, { recursive: true });
+}
+
+function safeUnlink(file) {
+  try { if (file && fs.existsSync(file)) fs.unlinkSync(file); } catch {}
+}
+
+function readJson(file, fallback = null) {
+  try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); }
+  catch { return fallback; }
+}
 
 function writeJsonAtomic(filePath, value) {
   ensureRuntimeDir();
@@ -53,7 +53,7 @@ function writeJsonAtomic(filePath, value) {
   try { fs.renameSync(temporaryFile, filePath); }
   catch {
     fs.copyFileSync(temporaryFile, filePath);
-    try { fs.unlinkSync(temporaryFile); } catch {}
+    safeUnlink(temporaryFile);
   }
 }
 
@@ -77,18 +77,19 @@ function compactResult(result) {
   };
 }
 
-function compactResolution(result, countKey) {
-  if (!result || typeof result !== "object") return { ok: false, count: null, checkedAt: null };
-  return {
-    ok: result.ok === true,
-    count: countKey ? Number(result[countKey] || 0) : null,
-    checkedAt: result.checkedAt || null
-  };
-}
-
 function queueCounts() {
   const items = typeof taskQueue.list === "function" ? taskQueue.list() : [];
-  const counts = { total: items.length, queued: 0, running: 0, completed: 0, failed: 0, awaitingApproval: 0, other: 0 };
+  const counts = {
+    total: items.length,
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0,
+    healthScore: null
+  };
+
   for (const item of items) {
     const status = normalizeStatus(item?.status);
     if (["QUEUED", "READY", "PENDING"].includes(status)) counts.queued += 1;
@@ -98,23 +99,82 @@ function queueCounts() {
     else if (["AWAITING_APPROVAL", "AWAITING_CEO_APPROVAL"].includes(status)) counts.awaitingApproval += 1;
     else counts.other += 1;
   }
+
   try {
     const status = typeof taskQueue.getStatus === "function" ? taskQueue.getStatus() : null;
     counts.healthScore = status?.healthScore ?? null;
-  } catch { counts.healthScore = null; }
+  } catch {}
+
   return counts;
 }
 
-function emitCooTick(payload) {
-  try {
-    const eventBus = getEventBus();
-    const bus = eventBus?.bus || eventBus;
-    if (bus && typeof bus.emit === "function") { bus.emit("COO_TICK", payload); return true; }
-    if (bus && typeof bus.publish === "function") { bus.publish("COO_TICK", payload); return true; }
-  } catch (error) {
-    console.error("[MILES] COO_TICK emission failed:", error.message);
-  }
-  return false;
+function runEphemeral(mode, input = null) {
+  ensureRuntimeDir();
+  const token = process.pid + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+  const inputFile = input == null ? "-" : path.join(EPHEMERAL_DIR, token + ".input.json");
+  const outputFile = path.join(EPHEMERAL_DIR, token + ".output.json");
+
+  if (input != null) fs.writeFileSync(inputFile, JSON.stringify(input), "utf8");
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const child = spawn(
+      process.execPath,
+      [EPHEMERAL_EXECUTOR, mode, inputFile, outputFile],
+      {
+        cwd: ROOT,
+        env: { ...process.env, MILES_ROOT: ROOT },
+        stdio: ["ignore", "inherit", "inherit"],
+        windowsHide: true
+      }
+    );
+
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      try { child.kill("SIGKILL"); } catch {}
+      const error = new Error("Ephemeral executor timed out: " + mode);
+      error.code = "EPHEMERAL_TIMEOUT";
+      safeUnlink(inputFile === "-" ? null : inputFile);
+      safeUnlink(outputFile);
+      reject(error);
+    }, EPHEMERAL_TIMEOUT_MS);
+
+    child.once("error", error => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      safeUnlink(inputFile === "-" ? null : inputFile);
+      safeUnlink(outputFile);
+      reject(error);
+    });
+
+    child.once("exit", code => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      const envelope = readJson(outputFile, null);
+      safeUnlink(inputFile === "-" ? null : inputFile);
+      safeUnlink(outputFile);
+
+      if (!envelope) {
+        const error = new Error("Ephemeral executor produced no result: " + mode + " exit=" + code);
+        error.code = "EPHEMERAL_NO_RESULT";
+        reject(error);
+        return;
+      }
+
+      if (code !== 0 && envelope.ok !== true) {
+        const error = new Error(envelope.error || ("Ephemeral executor failed: " + mode));
+        error.code = "EPHEMERAL_EXECUTOR_FAILED";
+        error.envelope = envelope;
+        reject(error);
+        return;
+      }
+
+      resolve(envelope.result);
+    });
+  });
 }
 
 class RuntimeWorkerSupervisor {
@@ -144,6 +204,8 @@ class RuntimeWorkerSupervisor {
       workGenerationCycles: 0,
       workGenerationFailures: 0,
       heartbeatCount: 0,
+      ephemeralExecutions: 0,
+      ephemeralFailures: 0,
       lastExecutionStartedAt: null,
       lastExecutionCompletedAt: null,
       lastExecutionDurationMs: null,
@@ -167,7 +229,7 @@ class RuntimeWorkerSupervisor {
     return {
       ok: this.started && !this.shuttingDown,
       service: "RuntimeWorkerSupervisor",
-      type: "MILES_MINIMAL_WORKER_RUNTIME",
+      type: "MILES_MINIMAL_EPHEMERAL_WORKER_RUNTIME",
       generatedAt: now(),
       root: ROOT,
       pid: process.pid,
@@ -192,31 +254,17 @@ class RuntimeWorkerSupervisor {
       },
       queue: queueCounts(),
       metrics: {
-        pid: this.metrics.pid,
-        startedAt: this.metrics.startedAt,
-        stoppedAt: this.metrics.stoppedAt,
-        executionPasses: this.metrics.executionPasses,
-        executionPassesSkipped: this.metrics.executionPassesSkipped,
-        completed: this.metrics.completed,
-        failed: this.metrics.failed,
-        awaitingApproval: this.metrics.awaitingApproval,
-        emptyQueuePasses: this.metrics.emptyQueuePasses,
-        healthCycles: this.metrics.healthCycles,
-        healthCycleFailures: this.metrics.healthCycleFailures,
-        workGenerationCycles: this.metrics.workGenerationCycles,
-        workGenerationFailures: this.metrics.workGenerationFailures,
-        heartbeatCount: this.metrics.heartbeatCount,
-        lastExecutionStartedAt: this.metrics.lastExecutionStartedAt,
-        lastExecutionCompletedAt: this.metrics.lastExecutionCompletedAt,
-        lastExecutionDurationMs: this.metrics.lastExecutionDurationMs,
-        lastExecutionTaskId: this.metrics.lastExecutionTaskId,
+        ...this.metrics,
         lastExecutionResult: compactResult(this.metrics.lastExecutionResult),
-        lastHealthCycleAt: this.metrics.lastHealthCycleAt,
         lastHealthResult: compactResult(this.metrics.lastHealthResult),
-        lastWorkGenerationAt: this.metrics.lastWorkGenerationAt,
         lastWorkGenerationResult: compactResult(this.metrics.lastWorkGenerationResult),
-        lastHeartbeatAt: this.metrics.lastHeartbeatAt,
-        lastError: this.metrics.lastError ? { area: this.metrics.lastError.area || null, message: this.metrics.lastError.message || null, createdAt: this.metrics.lastError.createdAt || null } : null
+        lastError: this.metrics.lastError
+          ? {
+              area: this.metrics.lastError.area || null,
+              message: this.metrics.lastError.message || null,
+              createdAt: this.metrics.lastError.createdAt || null
+            }
+          : null
       },
       resolutionHealth: this.resolutionHealth
     };
@@ -241,8 +289,13 @@ class RuntimeWorkerSupervisor {
 
     try {
       const selectedTask = typeof taskQueue.claimNextExecutableTask === "function"
-        ? taskQueue.claimNextExecutableTask({ recoveredBy: "StartProductionSystem.executePass", claimedBy: "RuntimeWorkerSupervisor" })
-        : taskQueue.list("QUEUED").slice().sort((a, b) => Number(a.priority || 99) - Number(b.priority || 99))[0] || null;
+        ? taskQueue.claimNextExecutableTask({
+            recoveredBy: "StartProductionSystem.executePass",
+            claimedBy: "RuntimeWorkerSupervisor"
+          })
+        : taskQueue.list("QUEUED")
+            .slice()
+            .sort((a, b) => Number(a.priority || 99) - Number(b.priority || 99))[0] || null;
 
       if (!selectedTask) {
         this.metrics.emptyQueuePasses += 1;
@@ -252,8 +305,8 @@ class RuntimeWorkerSupervisor {
       }
 
       this.metrics.lastExecutionTaskId = selectedTask.id || null;
-      const executionService = getExecutionService();
-      const result = await executionService.execute(selectedTask);
+      this.metrics.ephemeralExecutions += 1;
+      const result = await runEphemeral("execute", { task: selectedTask });
       this.metrics.lastExecutionResult = compactResult(result);
 
       if (result?.status === "AWAITING_APPROVAL") this.metrics.awaitingApproval += 1;
@@ -261,7 +314,7 @@ class RuntimeWorkerSupervisor {
       else this.metrics.failed += 1;
 
       this.recordHistory({
-        type: "EXECUTION_PASS",
+        type: "EPHEMERAL_EXECUTION_PASS",
         taskId: selectedTask.id,
         provider: selectedTask.payload?.provider || selectedTask.provider || null,
         action: selectedTask.payload?.action || selectedTask.action || selectedTask.type || null,
@@ -272,9 +325,10 @@ class RuntimeWorkerSupervisor {
       return result;
     } catch (error) {
       this.metrics.failed += 1;
-      this.metrics.lastError = { area: "EXECUTION_PASS", message: error.message, createdAt: now() };
-      this.recordHistory({ type: "EXECUTION_PASS_ERROR", error: error.message });
-      console.error("[MILES] EXECUTION LOOP ERROR", error);
+      this.metrics.ephemeralFailures += 1;
+      this.metrics.lastError = { area: "EPHEMERAL_EXECUTION_PASS", message: error.message, createdAt: now() };
+      this.recordHistory({ type: "EPHEMERAL_EXECUTION_PASS_ERROR", error: error.message });
+      console.error("[MILES] EPHEMERAL EXECUTION ERROR", error);
       return { ok: false, status: "EXECUTION_PASS_FAILED", error: error.message };
     } finally {
       this.metrics.lastExecutionCompletedAt = now();
@@ -288,17 +342,17 @@ class RuntimeWorkerSupervisor {
     if (this.healthCycleRunning || this.shuttingDown) return { ok: true, skipped: true };
     this.healthCycleRunning = true;
     try {
-      const manager = getInfrastructureHealthManager();
-      const result = await manager.runCycle();
+      const result = await runEphemeral("health");
       this.metrics.healthCycles += 1;
       this.metrics.lastHealthCycleAt = now();
       this.metrics.lastHealthResult = compactResult(result);
-      this.recordHistory({ type: "INFRASTRUCTURE_HEALTH_CYCLE", ok: result?.ok === true, durationMs: result?.durationMs || null, failures: Array.isArray(result?.failures) ? result.failures.slice(0, 10) : [] });
+      this.recordHistory({ type: "EPHEMERAL_INFRASTRUCTURE_HEALTH", ok: result?.ok === true, status: result?.status || null });
       return result;
     } catch (error) {
       this.metrics.healthCycleFailures += 1;
-      this.metrics.lastError = { area: "INFRASTRUCTURE_HEALTH", message: error.message, createdAt: now() };
-      console.error("[MILES] INFRASTRUCTURE HEALTH ERROR", error);
+      this.metrics.ephemeralFailures += 1;
+      this.metrics.lastError = { area: "EPHEMERAL_INFRASTRUCTURE_HEALTH", message: error.message, createdAt: now() };
+      console.error("[MILES] EPHEMERAL INFRASTRUCTURE HEALTH ERROR", error);
       return { ok: false, error: error.message };
     } finally {
       this.healthCycleRunning = false;
@@ -306,21 +360,21 @@ class RuntimeWorkerSupervisor {
     }
   }
 
-  runAutonomousWorkGenerationCycle() {
+  async runAutonomousWorkGenerationCycle() {
     if (this.workGenerationRunning || this.shuttingDown) return { ok: true, skipped: true };
     this.workGenerationRunning = true;
     try {
-      const generator = getAutonomousWorkGenerator();
-      const result = generator.runCycle();
+      const result = await runEphemeral("autonomous");
       this.metrics.workGenerationCycles += 1;
       this.metrics.lastWorkGenerationAt = now();
       this.metrics.lastWorkGenerationResult = compactResult(result);
-      this.recordHistory({ type: "AUTONOMOUS_WORK_GENERATION", ok: result?.ok === true, status: result?.status || null });
+      this.recordHistory({ type: "EPHEMERAL_AUTONOMOUS_WORK", ok: result?.ok === true, status: result?.status || null });
       return result;
     } catch (error) {
       this.metrics.workGenerationFailures += 1;
-      this.metrics.lastError = { area: "AUTONOMOUS_WORK_GENERATION", message: error.message, createdAt: now() };
-      console.error("[MILES] AUTONOMOUS WORK ERROR", error);
+      this.metrics.ephemeralFailures += 1;
+      this.metrics.lastError = { area: "EPHEMERAL_AUTONOMOUS_WORK", message: error.message, createdAt: now() };
+      console.error("[MILES] EPHEMERAL AUTONOMOUS WORK ERROR", error);
       return { ok: false, error: error.message };
     } finally {
       this.workGenerationRunning = false;
@@ -329,84 +383,51 @@ class RuntimeWorkerSupervisor {
   }
 
   emitHeartbeat() {
-    const queue = queueCounts();
     this.metrics.heartbeatCount += 1;
     this.metrics.lastHeartbeatAt = now();
-    const payload = {
-      generatedAt: this.metrics.lastHeartbeatAt,
-      queue,
-      metrics: {
-        executionPasses: this.metrics.executionPasses,
-        completed: this.metrics.completed,
-        failed: this.metrics.failed,
-        healthCycles: this.metrics.healthCycles,
-        workGenerationCycles: this.metrics.workGenerationCycles
-      }
-    };
-    emitCooTick(payload);
-    this.persistStatus();
-    return payload;
+    return this.persistStatus();
   }
 
   startExecutionLoop() {
-    console.log("[MILES] Canonical execution loop starting (" + EXECUTION_INTERVAL_MS + " ms).");
-    this.executePass().catch(error => console.error("[MILES] INITIAL EXECUTION PASS ERROR", error));
+    console.log("[MILES] Minimal core execution scheduler starting (" + EXECUTION_INTERVAL_MS + " ms).");
+    this.executePass().catch(error => console.error("[MILES] INITIAL EPHEMERAL EXECUTION ERROR", error));
     this.executionTimer = setInterval(() => {
-      this.executePass().catch(error => console.error("[MILES] EXECUTION LOOP ERROR", error));
+      this.executePass().catch(error => console.error("[MILES] EPHEMERAL EXECUTION LOOP ERROR", error));
     }, EXECUTION_INTERVAL_MS);
   }
 
   startHeartbeatLoop() {
-    console.log("[MILES] Heartbeat loop starting (" + HEARTBEAT_INTERVAL_MS + " ms).");
+    console.log("[MILES] Minimal heartbeat starting (" + HEARTBEAT_INTERVAL_MS + " ms).");
     this.emitHeartbeat();
     this.heartbeatTimer = setInterval(() => this.emitHeartbeat(), HEARTBEAT_INTERVAL_MS);
   }
 
   startInfrastructureHealthLoop() {
-    console.log("[MILES] Infrastructure health scheduled (" + HEALTH_INTERVAL_MS + " ms; deferred startup).");
+    console.log("[MILES] Infrastructure health scheduled in ephemeral process (" + HEALTH_INTERVAL_MS + " ms).");
     this.healthTimer = setInterval(() => {
-      this.runInfrastructureHealthCycle().catch(error => console.error("[MILES] INFRASTRUCTURE HEALTH LOOP ERROR", error));
+      this.runInfrastructureHealthCycle().catch(error => console.error("[MILES] HEALTH CHILD ERROR", error));
     }, HEALTH_INTERVAL_MS);
   }
 
   startAutonomousWorkLoop() {
-    console.log("[MILES] Autonomous work scheduled (" + WORK_GENERATION_INTERVAL_MS + " ms; deferred startup).");
+    console.log("[MILES] Autonomous work scheduled in ephemeral process (" + WORK_GENERATION_INTERVAL_MS + " ms).");
     this.workGenerationTimer = setInterval(() => {
-      try { this.runAutonomousWorkGenerationCycle(); }
-      catch (error) { console.error("[MILES] AUTONOMOUS WORK LOOP ERROR", error); }
+      this.runAutonomousWorkGenerationCycle().catch(error => console.error("[MILES] AUTONOMOUS CHILD ERROR", error));
     }, WORK_GENERATION_INTERVAL_MS);
   }
 
+  async validateResolutionHealth() {
+    const validation = await runEphemeral("validate");
+    this.resolutionHealth = validation;
+    if (!validation?.ok) throw new Error("PROVIDER_CAPABILITY_RESOLUTION_FAILED");
+    return validation;
+  }
+
   async boot() {
-    if (this.started) return this.persistStatus();
-
-    console.log("[MILES] AUTONOMOUS SYSTEM ONLINE");
-    console.log("[MILES] GOVERNED MINIMAL WORKER RUNTIME ACTIVE");
-
-    const supervisor = getSupervisor();
-    await supervisor.start();
-
-    const providerRouter = getProviderRouter();
-    const capabilityService = getCapabilityService();
-    const connectorManager = getConnectorManager();
-    const capabilityDispatcher = getCapabilityDispatcher();
-
-    const providerResolution = providerRouter.status();
-    const capabilityResolution = capabilityService.validateRegistry(providerRouter);
-    const connectorResolution = connectorManager.validateAll();
-    const routingResolution = capabilityDispatcher.validate(connectorManager);
-
-    this.resolutionHealth = {
-      ok: providerResolution.ok === true && capabilityResolution.ok === true && connectorResolution.ok === true && routingResolution.ok === true,
-      providerRegistry: compactResolution(providerResolution.validation || providerResolution, "providerCount"),
-      capabilityRegistry: compactResolution(capabilityResolution, "capabilityCount"),
-      connectorRegistry: compactResolution(connectorResolution, "connectorCount"),
-      routing: compactResolution(routingResolution),
-      checkedAt: now()
-    };
-
-    if (!this.resolutionHealth.ok) throw new Error("PROVIDER_CAPABILITY_RESOLUTION_FAILED");
-
+    ensureRuntimeDir();
+    console.log("[MILES] Minimal core booting; heavy execution isolated to ephemeral child processes.");
+    await supervisor.start(60000);
+    await this.validateResolutionHealth();
     await delay(STARTUP_SETTLE_MS);
 
     this.started = true;
@@ -417,35 +438,23 @@ class RuntimeWorkerSupervisor {
     this.startInfrastructureHealthLoop();
     this.startAutonomousWorkLoop();
 
-    console.log("[MILES] Minimal workers online");
+    console.log("[MILES] Minimal core online");
     return this.persistStatus();
   }
 
   async shutdown(signal = "MANUAL") {
     if (this.shuttingDown) return;
     this.shuttingDown = true;
-    console.log("[MILES] Worker runtime shutdown requested: " + signal);
+    console.log("[MILES] Minimal core shutdown requested: " + signal);
 
     for (const timer of [this.executionTimer, this.heartbeatTimer, this.healthTimer, this.workGenerationTimer]) {
-      if (timer) { clearInterval(timer); clearTimeout(timer); }
+      if (timer) {
+        clearInterval(timer);
+        clearTimeout(timer);
+      }
     }
 
-    try {
-      const manager = getInfrastructureHealthManager();
-      if (typeof manager.stop === "function") await manager.stop();
-    } catch {}
-    try {
-      const generator = getAutonomousWorkGenerator();
-      if (typeof generator.stop === "function") generator.stop();
-    } catch {}
-    try {
-      const providerRouter = getProviderRouter();
-      if (typeof providerRouter.shutdown === "function") await providerRouter.shutdown();
-    } catch {}
-    try {
-      const supervisor = getSupervisor();
-      if (typeof supervisor.stop === "function") await supervisor.stop();
-    } catch {}
+    try { if (typeof supervisor.stop === "function") await supervisor.stop(); } catch {}
 
     this.started = false;
     this.metrics.stoppedAt = now();
@@ -495,4 +504,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { RuntimeWorkerSupervisor, main };
+module.exports = { RuntimeWorkerSupervisor, main, runEphemeral };
