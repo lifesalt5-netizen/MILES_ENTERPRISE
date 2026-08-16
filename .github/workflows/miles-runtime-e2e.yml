@@ -17,6 +17,7 @@ jobs:
       MILES_COMMAND_CENTER_PORT: '8787'
       MILES_DASHBOARD_PORT: '8737'
       MILES_PORT: '3737'
+      P2GC_CUSTOMER_PORT: '8792'
       MILES_AUTONOMOUS_INTERVAL_MS: '600000'
       MILES_AUTONOMOUS_WORK_INTERVAL_MS: '600000'
       MILES_INFRASTRUCTURE_HEALTH_INTERVAL_MS: '600000'
@@ -47,11 +48,18 @@ jobs:
           try { pm2 kill 2>&1 | Out-Host } finally { $ErrorActionPreference = $previous }
           Write-Host '[PM2] clean state ready'
 
+      - name: Run customer delivery isolated acceptance
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'P2GC customer delivery acceptance failed.' }
+
       - name: Start canonical MILES core surfaces
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo
+          node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery
           if ($LASTEXITCODE -ne 0) { throw 'Unable to start canonical MILES core surfaces.' }
           Start-Sleep -Seconds 15
           pm2 status
@@ -64,7 +72,9 @@ jobs:
             @{ Name='API'; Url='http://127.0.0.1:3000/' },
             @{ Name='Command Center'; Url='http://127.0.0.1:8787/api/health' },
             @{ Name='CEO Dashboard'; Url='http://127.0.0.1:8737/api/state' },
-            @{ Name='Desktop UI'; Url='http://127.0.0.1:3737/api/status' }
+            @{ Name='Desktop UI'; Url='http://127.0.0.1:3737/api/status' },
+            @{ Name='Customer Delivery'; Url='http://127.0.0.1:8792/api/health' },
+            @{ Name='Revenue Command Center'; Url='http://127.0.0.1:8792/api/revenue' }
           )
           foreach ($check in $checks) {
             $response = Invoke-WebRequest -UseBasicParsing -Uri $check.Url -TimeoutSec 30
@@ -78,9 +88,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) {
-            if (Test-Path .\DATA\runtime_guardian\production_recovery_acceptance_latest.json) {
-              Get-Content .\DATA\runtime_guardian\production_recovery_acceptance_latest.json -Raw | Write-Host
-            }
+            if (Test-Path .\DATA\runtime_guardian\production_recovery_acceptance_latest.json) { Get-Content .\DATA\runtime_guardian\production_recovery_acceptance_latest.json -Raw | Write-Host }
             throw 'MILES live command acceptance failed.'
           }
 
@@ -89,22 +97,14 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           node .\SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js
-          $code = $LASTEXITCODE
-          if (Test-Path .\DATA\runtime_guardian\final_surface_acceptance_latest.json) {
-            Get-Content .\DATA\runtime_guardian\final_surface_acceptance_latest.json -Raw | Write-Host
-          }
-          # The final test also requires the separate real-prospect demo, which is intentionally not
-          # started in this clean CI job because the production ORION database is external to GitHub.
-          # Fail only if one of the core MILES surfaces / CEO command chain failed.
+          if (Test-Path .\DATA\runtime_guardian\final_surface_acceptance_latest.json) { Get-Content .\DATA\runtime_guardian\final_surface_acceptance_latest.json -Raw | Write-Host }
           $report = Get-Content .\DATA\runtime_guardian\final_surface_acceptance_latest.json -Raw | ConvertFrom-Json
-          $coreFailures = @($report.checks | Where-Object {
-            -not $_.ok -and $_.name -notmatch 'P2GC prospect demo'
-          })
+          $coreFailures = @($report.checks | Where-Object { -not $_.ok -and $_.name -notmatch 'P2GC prospect demo' -and $_.name -notmatch 'p2gc-growth-demo' })
           if ($coreFailures.Count -gt 0) {
             $coreFailures | ConvertTo-Json -Depth 6 | Write-Host
-            throw 'CEO/core MILES final surface acceptance failed.'
+            throw 'CEO/core/customer-delivery final surface acceptance failed.'
           }
-          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> persisted result'
+          Write-Host '[CORE E2E PASS] CEO Dashboard -> Command Center -> TaskQueue -> worker -> persisted result + customer delivery'
 
       - name: Persist PM2 map and show logs
         if: always()
