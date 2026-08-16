@@ -11,7 +11,8 @@ const checks = [
   { name: "CEO growth assets", port: 8737, path: "/api/growth-assets", expect: value => value.json?.ok === true },
   { name: "Desktop UI", port: 3737, path: "/api/status", expect: value => value.json?.runtime === "running" },
   { name: "Customer delivery", port: 8792, path: "/api/health", expect: value => value.json?.ok === true },
-  { name: "Revenue Command Center", port: 8792, path: "/api/revenue", expect: value => value.json?.ok === true }
+  { name: "Revenue Command Center", port: 8792, path: "/api/revenue", expect: value => value.json?.ok === true },
+  { name: "P2GC prospect demo", port: 8791, path: "/api/health", expect: value => value.json?.status === "HEALTHY" }
 ];
 
 function request(port, pathname, timeoutMs = 30000) {
