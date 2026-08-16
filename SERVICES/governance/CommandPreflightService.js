@@ -2,11 +2,13 @@
 
 const fs = require("fs");
 const path = require("path");
+const ExecutionActionCapabilityService = require("./ExecutionActionCapabilityService");
 
 class CommandPreflightService {
   constructor(options = {}) {
     this.rootDir = options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, "..", "..");
     this.providerAuthority = options.providerAuthority || require("../ProviderAuthorityRegistryService");
+    this.actionCapability = options.actionCapability || new ExecutionActionCapabilityService({ rootDir: this.rootDir });
     this.queueMaxBytes = Math.max(1024 * 1024, Number(options.queueMaxBytes || process.env.MILES_CEO_QUEUE_MAX_BYTES || 64 * 1024 * 1024));
     this.workerMaxAgeMs = Math.max(5000, Number(options.workerMaxAgeMs || process.env.MILES_CEO_WORKER_STATUS_MAX_AGE_MS || 120000));
     this.now = typeof options.now === "function" ? options.now : () => Date.now();
@@ -143,6 +145,18 @@ class CommandPreflightService {
     return { ok: true, code: "SOURCE_CLOSURE_READY", detail: { criticalModules: required.length } };
   }
 
+  actionCapabilityCheck(operation = {}, task = {}) {
+    try {
+      return this.actionCapability.evaluate({ operation, task });
+    } catch (error) {
+      return {
+        ok: false,
+        code: "ACTION_CAPABILITY_PREFLIGHT_FAILED",
+        detail: error.message
+      };
+    }
+  }
+
   workerCheck() {
     const status = this.readJson(this.workerStatusPath, null);
     if (!status) return { ok: false, code: "WORKER_STATUS_MISSING", detail: this.workerStatusPath };
@@ -261,6 +275,7 @@ class CommandPreflightService {
 
     const checks = [
       { area: "SOURCE", ...this.sourceIntegrityCheck() },
+      { area: "ACTION", ...this.actionCapabilityCheck(operation, task) },
       { area: "WORKER", ...this.workerCheck() },
       { area: "QUEUE", ...this.queueCheck() },
       ...this.providerChecks(operation, task).map(check => ({ area: "PROVIDER", ...check }))
@@ -299,6 +314,7 @@ class CommandPreflightService {
       writeRequested: this.requestsWrite(operation, task),
       approvalRequired,
       approvalSatisfied,
+      executionRoute: checks.find(check => check.area === "ACTION")?.route || null,
       checks,
       blockers
     };
