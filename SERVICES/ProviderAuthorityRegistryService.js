@@ -15,13 +15,20 @@ const path = require("path");
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
 
 // Provider authority must observe the same production environment used by
-// live connectors. Never overwrite an already-exported process variable.
+// live connectors. Preserve meaningful exported values, but do not let an
+// inherited blank Windows variable suppress a valid value in ROOT/.env.
 try {
-    require("dotenv").config({
-        path: path.join(ROOT, ".env"),
-        override: false,
-        quiet: true
-    });
+    const dotenv = require("dotenv");
+    const envPath = path.join(ROOT, ".env");
+    if (fs.existsSync(envPath)) {
+        const parsed = dotenv.parse(fs.readFileSync(envPath, "utf8"));
+        for (const [key, value] of Object.entries(parsed)) {
+            const current = process.env[key];
+            if (current === undefined || current === null || String(current).trim() === "") {
+                process.env[key] = value;
+            }
+        }
+    }
 } catch {
     // dotenv is a declared production dependency, but provider authority
     // remains fail-closed if environment loading itself is unavailable.
