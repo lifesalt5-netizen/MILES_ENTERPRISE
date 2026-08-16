@@ -13,7 +13,8 @@ const surfaces = [
   { name: "miles-executive-dashboard", script: "StartExecutiveDashboard.js", args: [] },
   { name: "miles-desktop-ui", script: "StartMiles.js", args: [] },
   { name: "miles-autonomous-coo", script: "StartAutonomousCOO.js", args: ["--loop"] },
-  { name: "p2gc-growth-demo", script: "StartP2GCGrowthBlueprintDemo.js", args: [] }
+  { name: "p2gc-growth-demo", script: "StartP2GCGrowthBlueprintDemo.js", args: [] },
+  { name: "p2gc-customer-delivery", script: "StartP2GCCustomerDelivery.js", args: [] }
 ];
 
 function exists(relativePath) {
