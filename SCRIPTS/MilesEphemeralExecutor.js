@@ -6,6 +6,12 @@ const path = require("path");
 process.env.MILES_ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
 const ROOT = process.env.MILES_ROOT;
 
+const EPHEMERAL_CONNECTOR_PATHS = Object.freeze({
+  MILES: "../CONNECTORS/MILES/connector",
+  INSTANTLY: "../CONNECTORS/INSTANTLY/connector",
+  ORION: "../CONNECTORS/ORION/connector"
+});
+
 function readJson(file, fallback = null) {
   try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); }
   catch { return fallback; }
@@ -35,10 +41,82 @@ function normalizeOk(result, fallback = true) {
   return true;
 }
 
+function resolveTaskConnector(task = {}) {
+  const payload = task.payload || {};
+  const plan = payload.plan || task.plan || {};
+
+  return String(
+    task.connector ||
+    payload.connector ||
+    plan.connector ||
+    task.system ||
+    payload.system ||
+    plan.system ||
+    task.provider ||
+    payload.provider ||
+    plan.provider ||
+    ""
+  ).trim().toUpperCase();
+}
+
+/*
+ * ConnectorManager is process-local. The parent Supervisor owns the canonical
+ * registry, but ExecutionService runs inside a fresh ephemeral child. Therefore
+ * the child must register the ONE connector required by its claimed task before
+ * invoking ExecutionService. This preserves the lean parent runtime and avoids
+ * eagerly loading every external integration into every child.
+ */
+function ensureTaskConnector(task = {}) {
+  const connectorName = resolveTaskConnector(task);
+  const modulePath = EPHEMERAL_CONNECTOR_PATHS[connectorName];
+
+  if (!modulePath) {
+    return {
+      ok: true,
+      status: connectorName ? "NO_EPHEMERAL_CONNECTOR_BOOTSTRAP_REQUIRED" : "NO_CONNECTOR_DECLARED",
+      connector: connectorName || null,
+      registered: false
+    };
+  }
+
+  const connectorManager = require("../CORE/ConnectorManager");
+
+  if (connectorManager.has(connectorName)) {
+    return {
+      ok: true,
+      status: "CONNECTOR_ALREADY_REGISTERED",
+      connector: connectorName,
+      registered: false
+    };
+  }
+
+  const implementation = require(modulePath);
+  connectorManager.register(connectorName, implementation);
+
+  return {
+    ok: true,
+    status: "EPHEMERAL_CONNECTOR_REGISTERED",
+    connector: connectorName,
+    registered: true,
+    modulePath
+  };
+}
+
 async function executeTask(input) {
-  const executionService = require("../SERVICES/ExecutionService");
   if (!input || !input.task) throw new Error("Ephemeral executor requires input.task");
-  return executionService.execute(input.task);
+
+  const connectorBootstrap = ensureTaskConnector(input.task);
+  const executionService = require("../SERVICES/ExecutionService");
+  const result = await executionService.execute(input.task);
+
+  if (result && typeof result === "object") {
+    return {
+      ...result,
+      ephemeralConnectorBootstrap: connectorBootstrap
+    };
+  }
+
+  return result;
 }
 
 async function validateRuntime() {
@@ -51,14 +129,11 @@ async function validateRuntime() {
       ? providerRouter.validateRegistry()
       : { ok: typeof providerRouter.executeProviderTask === "function" };
 
-  // Connector registration is process-local. The parent Supervisor owns and
-  // validates the live connector registry before this child is launched.
-  // Re-validating ConnectorManager inside an ephemeral child always sees an
-  // empty registry and creates a false boot failure, so the child records the
-  // architectural ownership instead of pretending it owns live connectors.
+  // Connector registration remains owned by the parent Supervisor at runtime.
+  // Execution children separately bootstrap only their claimed task connector.
   const connectorResolution = {
     ok: true,
-    status: "VALIDATED_BY_PARENT_SUPERVISOR",
+    status: "PARENT_VALIDATED_CHILD_BOOTSTRAPS_TASK_CONNECTOR",
     connectorCount: null,
     checkedAt: new Date().toISOString()
   };
@@ -178,20 +253,30 @@ async function main() {
   });
 }
 
-main()
-  .then(() => { process.exitCode = 0; })
-  .catch(error => {
-    const outputFile = process.argv[4] || null;
-    const failure = {
-      ok: false,
-      mode: process.argv[2] || null,
-      pid: process.pid,
-      generatedAt: new Date().toISOString(),
-      error: error.stack || error.message || String(error)
-    };
-    if (outputFile) {
-      try { writeJson(outputFile, failure); } catch {}
-    }
-    console.error(error.stack || error.message || String(error));
-    process.exitCode = 1;
-  });
+if (require.main === module) {
+  main()
+    .then(() => { process.exitCode = 0; })
+    .catch(error => {
+      const outputFile = process.argv[4] || null;
+      const failure = {
+        ok: false,
+        mode: process.argv[2] || null,
+        pid: process.pid,
+        generatedAt: new Date().toISOString(),
+        error: error.stack || error.message || String(error)
+      };
+      if (outputFile) {
+        try { writeJson(outputFile, failure); } catch {}
+      }
+      console.error(error.stack || error.message || String(error));
+      process.exitCode = 1;
+    });
+}
+
+module.exports = {
+  EPHEMERAL_CONNECTOR_PATHS,
+  resolveTaskConnector,
+  ensureTaskConnector,
+  executeTask,
+  validateRuntime
+};
