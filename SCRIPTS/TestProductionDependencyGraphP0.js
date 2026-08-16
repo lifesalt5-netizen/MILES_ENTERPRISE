@@ -21,9 +21,14 @@ function resolveRelative(fromFile, specifier) {
   }
   throw new Error(`Unable to resolve ${specifier} from ${fromFile}`);
 }
+function stripComments(text) {
+  return String(text || "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:\"\'])\/\/.*$/gm, "$1");
+}
 function specs(file) {
   if (!/\.(?:c?js|mjs)$/i.test(file)) return [];
-  const text = read(file);
+  const text = stripComments(read(file));
   const out = [];
   const patterns = [
     /require\(\s*["']([^"']+)["']\s*\)/g,
@@ -100,4 +105,4 @@ if (require.main === module) {
   catch (error) { console.error(error.stack || error.message); process.exit(1); }
 }
 
-module.exports = { normalize, resolveRelative, specs, collect };
+module.exports = { normalize, stripComments, resolveRelative, specs, collect };
