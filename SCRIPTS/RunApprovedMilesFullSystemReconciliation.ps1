@@ -6,11 +6,11 @@ $SupportBranch = 'agent/miles-production-recovery-20260814'
 $Repo = 'origin'
 
 Set-Location $Root
-Write-Host "=== APPROVED MILES + P2GC SALES DEMO RECONCILIATION ==="
+Write-Host "=== APPROVED MILES + P2GC FULL-SYSTEM RECONCILIATION ==="
 Write-Host "Root      : $Root"
 Write-Host "Canonical : $CanonicalBranch"
 Write-Host "Support   : $SupportBranch"
-Write-Host "Rule      : full-system fix; MILES execution, CEO dashboard, opportunities, and prospect demo remain separate surfaces"
+Write-Host "Rule      : full-system fix; minimal MILES core; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
 
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
@@ -33,17 +33,18 @@ $canonicalFiles = @(
   'SERVICES/demo/public/app.js',
   'SERVICES/demo/public/styles.css',
   'StartP2GCGrowthBlueprintDemo.js',
-  'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js'
+  'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js',
+  'SCRIPTS/InstallMinimalWorkerRuntimeP0.js'
 )
 
 foreach ($file in $canonicalFiles) {
-  $target = Join-Path $Root ($file -replace '/', '\\')
+  $target = Join-Path $Root ($file -replace '/', '\')
   $dir = Split-Path $target -Parent
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
   if (Test-Path $target) {
     $backupDir = Join-Path $Root 'DATA\runtime_guardian\pre_reconciliation_backups'
     New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
-    $safe = ($file -replace '[\\/:*?"<>|]','_')
+    $safe = ($file -replace '[\/:*?"<>|]','_')
     Copy-Item $target (Join-Path $backupDir ("${safe}.before_" + (Get-Date -Format 'yyyyMMdd_HHmmss'))) -Force
   }
   Write-Host "[CANONICAL] $file"
@@ -75,13 +76,44 @@ $supportFiles = @(
 )
 
 foreach ($file in $supportFiles) {
-  $target = Join-Path $Root ($file -replace '/', '\\')
+  $target = Join-Path $Root ($file -replace '/', '\')
   $dir = Split-Path $target -Parent
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
   Write-Host "[SUPPORT] $file"
   $content = git show "$SupportRef`:$file"
   if ($LASTEXITCODE -ne 0) { throw "Unable to fetch verified support file: $file" }
   $content | Set-Content $target -Encoding UTF8
+}
+
+Write-Host "`n=== PHASE 0: MINIMAL WORKER RUNTIME CONSOLIDATION ==="
+node .\SCRIPTS\InstallMinimalWorkerRuntimeP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Minimal worker runtime migration failed.' }
+
+$runtimeChecks = @(
+  'CORE\Supervisor.js',
+  'SERVICES\ProviderRouterService.js',
+  'StartProductionSystem.js',
+  'SERVICES\WorkforceService.js',
+  'CONNECTORS\MILES\connector.js'
+)
+foreach ($file in $runtimeChecks) {
+  node --check $file
+  if ($LASTEXITCODE -ne 0) { throw "Minimal runtime syntax gate failed: $file" }
+  Write-Host "[RUNTIME CHECK OK] $file"
+}
+
+Write-Host "`n=== CLEAN RESTART: MILES WORKER ONLY ==="
+pm2 restart miles-worker | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-worker after minimal-runtime migration.' }
+Start-Sleep -Seconds 60
+
+$workerPid = [int](pm2 pid miles-worker)
+$workerProcess = Get-Process -Id $workerPid -ErrorAction SilentlyContinue
+if (-not $workerProcess) { throw 'miles-worker is not running after minimal-runtime migration.' }
+$workerRam = [math]::Round($workerProcess.WorkingSet64 / 1MB, 0)
+Write-Host "Minimal worker settled RAM: $workerRam MB (pid=$workerPid)"
+if ($workerRam -ge 3072) {
+  throw "Minimal worker still exceeds hard RAM ceiling before acceptance: $workerRam MB"
 }
 
 Write-Host "`n=== PHASE 1: MILES PRODUCTION ACCEPTANCE ==="
@@ -134,6 +166,7 @@ if ($AfterBranch -ne $LocalBranch -or $AfterHead -ne $LocalHead) {
 }
 
 Write-Host "`n=== FULL-SYSTEM RECONCILIATION COMPLETE ==="
+Write-Host "MILES minimal-runtime gate    : PASS ($workerRam MB after settle)"
 Write-Host "MILES production acceptance : PASS"
 Write-Host "P2GC sales demo acceptance  : PASS"
 Write-Host "Local Git state preserved   : $AfterBranch / $AfterHead"
