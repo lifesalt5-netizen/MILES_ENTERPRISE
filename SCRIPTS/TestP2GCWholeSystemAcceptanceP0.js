@@ -59,6 +59,7 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
 
   for(const [name,file] of [
     ["Executive Government Growth Blueprint","SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js"],
+    ["Sub2Prime Prime/Sub Teaming Intelligence","SERVICES/teaming/P2GCPrimeSubTeamingService.js"],
     ["Discovery process","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
     ["Gap analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
     ["Competitor analysis","SERVICES/revenue/ProspectGrowthAssessmentService.js"],
@@ -72,6 +73,11 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
   add("SALES","GO/NO-GO qualification executes",qualified.decision==="GO"&&qualified.proposalAuthorized?"PASS":"FAIL_INTERNAL",qualified.decision);
   add("SALES","Proposal package generation executes",proposal.ok&&proposal.status==="DRAFT_READY_FOR_REVIEW"&&proposal.submission?.submitted===false?"PASS":"FAIL_INTERNAL",proposal.status||proposal.decision);
   internalFile("SALES","Proposal library","SERVICES/growth/P2GCGrowthAssetService.js");
+
+  const TeamingService=require("../SERVICES/teaming/P2GCPrimeSubTeamingService");
+  const teamingFixture={ok:true,profile:{companyName:"Acceptance Prospect",uei:"ACCEPTANCE001",naicsCodes:["541512"],certifications:[],contractVehicles:["GSA MAS"]},readiness:{overall:80},pathway:{type:"GROWTH_PATHWAY"},competitors:{status:"ORION_MARKET_PEER_MODEL"},primePartners:{status:"ORION_MARKET_PEER_MODEL",records:[{company:"Acceptance Prime",uei:"PRIME001",federalRevenue:1000000,awardCount:2,vehicle:"GSA MAS",agencies:["Agency A"],basis:"Shares primary NAICS 541512",confidence:"MODELED_CANDIDATE"}],strategy:["Validate prime fit."]},subcontracting:{status:"NO_CURRENT_TEAMING_SIGNAL_IDENTIFIED",records:[]},agencyAlignment:{status:"ORION_HISTORICAL_ALIGNMENT_MODEL",agencies:[{agency:"Agency A",fitScore:90,basis:"Historical ORION buyer alignment"}]},evidence:{disclosure:"Validate modeled signals."}};
+  const teaming=new TeamingService({blueprintService:{build:()=>teamingFixture}}).build("Acceptance Prospect");
+  add("SALES","Sub2Prime behavior executes",teaming.ok&&teaming.primeCandidates?.length===1&&teaming.targetAgencies?.length===1&&teaming.safety?.contactsInvented===false?"PASS":"FAIL_INTERNAL",teaming.status);
 
   for(const [name,file] of [
     ["Campaign segmentation","SERVICES/revenue/RevenueSegmentReadinessService.js"],
@@ -99,8 +105,9 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
 
   for(const n of ["Eleanor","Jeff","Victoria","Allison","Claudia","Daniel","Cora","Jackson","Keith","Marcus","Maya","Riley","Atlas","Aden","Natalie"]) add("AI TWINS",n,exists("CONFIG/WORKFORCE/MILES_WORKFORCE_REGISTRY.json")?"PASS_INTERNAL":"FAIL_INTERNAL","registry-backed role; live intelligence depends on production ORION/provider truth");
 
-  const endpoints=[["MILES API",3000,"/"],["Command Center",8787,"/api/health"],["CEO Dashboard",8737,"/api/state"],["CEO Revenue",8737,"/api/revenue"],["CEO Growth Assets",8737,"/api/growth-assets"],["Desktop UI",3737,"/api/status"],["Customer Delivery",8792,"/api/health"],["Prospect Demo",8791,"/api/health"]];
+  const endpoints=[["MILES API",3000,"/"],["Command Center",8787,"/api/health"],["CEO Dashboard",8737,"/api/state"],["CEO Revenue",8737,"/api/revenue"],["CEO Growth Assets",8737,"/api/growth-assets"],["Desktop UI",3737,"/api/status"],["Customer Delivery",8792,"/api/health"],["Prospect Demo",8791,"/api/health"],["Sub2Prime UI",8791,"/teaming"]];
   for(const [name,port,p] of endpoints){try{const r=await req(port,p);add("LIVE SURFACES",name,r.status===200?"PASS":"FAIL_INTERNAL",`http=${r.status}`);}catch(e){add("LIVE SURFACES",name,STRICT?"FAIL_INTERNAL":"NOT_RUNNING_IN_THIS_ENV",e.message);}}
+  try{const h=await req(8791,"/api/health");const caps=h.json?.capabilities||[];add("LIVE SURFACES","8791 Blueprint + Sub2Prime capability contract",h.status===200&&caps.includes("executive_growth_blueprint")&&caps.includes("prime_sub_teaming")?"PASS":"FAIL_INTERNAL",caps.join(","));}catch(e){add("LIVE SURFACES","8791 Blueprint + Sub2Prime capability contract",STRICT?"FAIL_INTERNAL":"NOT_RUNNING_IN_THIS_ENV",e.message);}
   for(const name of ["miles-api","miles-worker","miles-command-center","miles-executive-dashboard","miles-desktop-ui","miles-autonomous-coo","p2gc-customer-delivery","p2gc-growth-demo"]){const online=pm2(name);add("PM2",name,online?"PASS":(STRICT?"FAIL_INTERNAL":"NOT_RUNNING_IN_THIS_ENV"),online?"online":"not online");}
 
   const internalFailures=checks.filter(x=>x.status==="FAIL_INTERNAL");
