@@ -3,6 +3,10 @@
 const Database = require("better-sqlite3");
 const fs = require("fs");
 const path = require("path");
+const {
+    ORION_ACTIONS,
+    normalizeOrionAction
+} = require("../../CORE/ExecutionActionContracts");
 
 const DB_NAME = "ORION_DEMO_LIVE_READY.db";
 
@@ -82,6 +86,11 @@ class OrionConnector {
 
     constructor() {
         this.db = null;
+        this.supportedActions = [...ORION_ACTIONS];
+    }
+
+    canExecuteAction(action) {
+        return Boolean(normalizeOrionAction(action));
     }
 
     initialize() {
@@ -121,6 +130,7 @@ class OrionConnector {
             status: "OK",
             db: ORION_DB,
             tableCount,
+            supportedActions: [...ORION_ACTIONS],
             checkedAt: new Date().toISOString()
         };
     }
@@ -253,55 +263,13 @@ class OrionConnector {
     }
 
     normalizeAction(task = {}) {
-        let action =
+        const requested =
             task.payload?.action ||
             task.action ||
             task.type ||
             "ORION_HEALTH";
 
-        const text = String(action).toLowerCase();
-
-        if (text.includes("health") || text.includes("system health")) {
-            return "ORION_HEALTH";
-        }
-
-        if (text.includes("summary") || text.includes("executive")) {
-            return "ORION_SUMMARY";
-        }
-
-        if (text.includes("table")) {
-            return "ORION_TABLES";
-        }
-
-        if (text.includes("contractor")) {
-            return "ORION_CONTRACTORS";
-        }
-
-        if (text.includes("buyer")) {
-            return "ORION_BUYERS";
-        }
-
-        if (text.includes("opportunit")) {
-            return "ORION_OPPORTUNITIES";
-        }
-
-        if (text.includes("recompete")) {
-            return "ORION_RECOMPETES";
-        }
-
-        if (text.includes("recommend")) {
-            return "ORION_RECOMMENDATIONS";
-        }
-
-        if (text.includes("persona")) {
-            return "ORION_PERSONAS";
-        }
-
-        if (text.includes("search")) {
-            return "ORION_SEARCH_CONTRACTORS";
-        }
-
-        return action;
+        return normalizeOrionAction(requested) || String(requested).trim().toUpperCase();
     }
 
     execute(task = {}) {
@@ -379,6 +347,7 @@ class OrionConnector {
                 return {
                     ok: false,
                     error: `Unsupported ORION action: ${action}`,
+                    supportedActions: [...ORION_ACTIONS],
                     originalAction:
                         task.payload?.action ||
                         task.action ||
