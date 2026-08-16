@@ -37,9 +37,13 @@ try {
   $files = @(Get-ChildItem -Path $extract -File -Recurse)
   if ($files.Count -lt 25) { throw "Canonical source archive unexpectedly small: $($files.Count) files" }
 
+  $extractPrefix = $extract.TrimEnd('\','/') + [IO.Path]::DirectorySeparatorChar
   $copied = 0
   foreach ($file in $files) {
-    $relative = [IO.Path]::GetRelativePath($extract, $file.FullName)
+    if (-not $file.FullName.StartsWith($extractPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+      throw "Archive file escaped extraction root: $($file.FullName)"
+    }
+    $relative = $file.FullName.Substring($extractPrefix.Length)
     if ($relative -match '(^|[\\/])\.env($|\.)') { continue }
     if ($relative -match '^(DATA|logs|node_modules|\.git|\.github)[\\/]') { continue }
 
