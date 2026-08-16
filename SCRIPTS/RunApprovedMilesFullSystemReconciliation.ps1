@@ -2,15 +2,13 @@ $ErrorActionPreference = 'Stop'
 
 $Root = 'C:\P2GC_Intelligence\MILES_ENTERPRISE'
 $CanonicalBranch = 'agent/miles-full-system-reconciliation-20260815'
-$SupportBranch = 'agent/miles-production-recovery-20260814'
 $Repo = 'origin'
 
 Set-Location $Root
 Write-Host "=== APPROVED MILES + P2GC FULL-SYSTEM RECONCILIATION ==="
 Write-Host "Root      : $Root"
 Write-Host "Canonical : $CanonicalBranch"
-Write-Host "Support   : $SupportBranch"
-Write-Host "Rule      : replace old runtime; lean MILES core; heavy execution is ephemeral; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
+Write-Host "Rule      : replace old runtime; standalone API; lean MILES core; heavy execution is ephemeral; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
 
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
@@ -28,6 +26,8 @@ $canonicalFiles = @(
   'StartProductionSystem.js',
   'SCRIPTS/MilesEphemeralExecutor.js',
   'SCRIPTS/RunMilesAcceptanceWithLiveMemory.js',
+  'SCRIPTS/StartMilesApi.js',
+  'SCRIPTS/MilesProductionGuardian.js',
   'SERVICES/WorkforceService.js',
   'CONNECTORS/MILES/connector.js',
   'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
@@ -62,25 +62,6 @@ foreach ($file in $canonicalFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-git fetch $Repo $SupportBranch | Out-Host
-if ($LASTEXITCODE -ne 0) { throw "Unable to fetch verified support branch." }
-$SupportRef = 'FETCH_HEAD'
-
-$supportFiles = @(
-  'SCRIPTS/MilesProductionGuardian.js',
-  'SCRIPTS/TestMilesProductionRecoveryAcceptanceP0.js'
-)
-
-foreach ($file in $supportFiles) {
-  $target = Join-Path $Root ($file -replace '/', '\')
-  $dir = Split-Path $target -Parent
-  New-Item -ItemType Directory -Force -Path $dir | Out-Null
-  Write-Host "[SUPPORT] $file"
-  $content = git show "$SupportRef`:$file"
-  if ($LASTEXITCODE -ne 0) { throw "Unable to fetch verified support file: $file" }
-  $content | Set-Content $target -Encoding UTF8
-}
-
 Write-Host "`n=== PHASE 0: CANONICAL LEAN + EPHEMERAL WORKER RUNTIME ==="
 $runtimeChecks = @(
   'CORE\Supervisor.js',
@@ -88,6 +69,8 @@ $runtimeChecks = @(
   'StartProductionSystem.js',
   'SCRIPTS\MilesEphemeralExecutor.js',
   'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
+  'SCRIPTS\StartMilesApi.js',
+  'SCRIPTS\MilesProductionGuardian.js',
   'SERVICES\WorkforceService.js',
   'CONNECTORS\MILES\connector.js',
   'SERVICES\digital_coo\ExecutiveRuntimeHealthService.js'
@@ -97,6 +80,17 @@ foreach ($file in $runtimeChecks) {
   if ($LASTEXITCODE -ne 0) { throw "Lean runtime syntax gate failed: $file" }
   Write-Host "[RUNTIME CHECK OK] $file"
 }
+
+Write-Host "`n=== ENSURE STANDALONE MILES API ==="
+pm2 describe miles-api *> $null
+if ($LASTEXITCODE -eq 0) {
+  pm2 restart miles-api | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-api.' }
+} else {
+  pm2 start .\SCRIPTS\StartMilesApi.js --name miles-api | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw 'Unable to start standalone miles-api.' }
+}
+Start-Sleep -Seconds 3
 
 Write-Host "`n=== CLEAN REPLACEMENT: MILES WORKER ==="
 $oldPidRaw = (pm2 pid miles-worker 2>$null)
@@ -150,7 +144,7 @@ if ($workerRam -ge 3072) {
 Write-Host "`n=== PHASE 1: CLEAN GUARDIAN + LIVE-MEMORY MILES ACCEPTANCE ==="
 node .\SCRIPTS\MilesProductionGuardian.js --repair
 if ($LASTEXITCODE -ne 0) {
-  throw 'MILES Guardian failed after canonical lean/ephemeral runtime deployment.'
+  throw 'MILES Guardian failed after standalone API + lean/ephemeral runtime deployment.'
 }
 
 Start-Sleep -Seconds 10
@@ -216,12 +210,13 @@ if ($AfterBranch -ne $LocalBranch -or $AfterHead -ne $LocalHead) {
 }
 
 Write-Host "`n=== FULL-SYSTEM RECONCILIATION COMPLETE ==="
-Write-Host "MILES lean core initial      : $workerRam MB"
-Write-Host "MILES core after acceptance  : $workerRamAfterAcceptance MB"
-Write-Host "MILES production acceptance  : PASS"
-Write-Host "P2GC sales demo acceptance   : PASS"
-Write-Host "Local Git state preserved    : $AfterBranch / $AfterHead"
-Write-Host "MILES Command Center         : http://localhost:8787"
-Write-Host "P2GC Prospect Sales Demo     : http://127.0.0.1:8791"
-Write-Host "Executive Dashboard          : http://127.0.0.1:8737"
-Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes, and the core no longer loads legacy business workers or api/server."
+Write-Host "MILES API                   : standalone on port 3000"
+Write-Host "MILES lean core initial     : $workerRam MB"
+Write-Host "MILES core after acceptance : $workerRamAfterAcceptance MB"
+Write-Host "MILES production acceptance : PASS"
+Write-Host "P2GC sales demo acceptance  : PASS"
+Write-Host "Local Git state preserved   : $AfterBranch / $AfterHead"
+Write-Host "MILES Command Center        : http://localhost:8787"
+Write-Host "P2GC Prospect Sales Demo    : http://127.0.0.1:8791"
+Write-Host "Executive Dashboard         : http://127.0.0.1:8737"
+Write-Host "Note: Heavy MILES execution/health/autonomous work runs in ephemeral child processes; API is separate; core no longer owns port 3000."
