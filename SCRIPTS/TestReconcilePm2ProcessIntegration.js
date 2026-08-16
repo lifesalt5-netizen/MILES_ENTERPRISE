@@ -2,38 +2,26 @@
 
 const fs = require("fs");
 const path = require("path");
-const { spawnSync } = require("child_process");
-const { reconcile, normalizePath } = require("./ReconcilePm2Process");
+const { reconcile, normalizePath, runPm2 } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
-const PM2 = process.platform === "win32" ? "pm2.cmd" : "pm2";
 const fixture = path.join(ROOT, "SCRIPTS", "pm2-reconcile-fixture.js");
 
-function run(args, allowFailure = false) {
-  const r = spawnSync(PM2, args, { cwd: ROOT, encoding: "utf8", windowsHide: true });
-  const out = `${r.stdout || ""}${r.stderr || ""}`;
-  if (r.error && !allowFailure) throw r.error;
-  if ((r.status || 0) !== 0 && !allowFailure) throw new Error(`pm2 ${args.join(" ")} failed: ${out}`);
-  return { code: r.status || 0, out };
-}
-
 function apps() {
-  const r = run(["jlist"]);
-  const parsed = JSON.parse(r.out || "[]");
+  const r = runPm2(["jlist"]);
+  const parsed = JSON.parse(r.stdout || "[]");
   if (!Array.isArray(parsed)) throw new Error("PM2 jlist did not return an array");
   return parsed;
 }
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
+function assert(condition, message) { if (!condition) throw new Error(message); }
 
 try {
   fs.writeFileSync(fixture, '"use strict";\nsetInterval(() => {}, 1000);\n', "utf8");
-  run(["delete", "all"], true);
-  run(["start", fixture, "--name", "legacy-api"]);
+  runPm2(["delete", "all"], true);
+  const start = runPm2(["start", fixture, "--name", "legacy-api"], true);
+  if (start.code !== 0) throw new Error(`Unable to create stale PM2 fixture: ${start.stderr || start.stdout}`);
 
-  let before = apps();
+  const before = apps();
   assert(before.some(app => app.name === "legacy-api"), "Stale legacy-api fixture was not registered");
   assert(!before.some(app => app.name === "miles-api"), "Canonical miles-api unexpectedly existed before repair");
 
@@ -56,7 +44,7 @@ try {
   console.error(error.stack || error.message);
   process.exitCode = 1;
 } finally {
-  run(["delete", "miles-api"], true);
-  run(["delete", "legacy-api"], true);
+  runPm2(["delete", "miles-api"], true);
+  runPm2(["delete", "legacy-api"], true);
   try { fs.unlinkSync(fixture); } catch {}
 }
