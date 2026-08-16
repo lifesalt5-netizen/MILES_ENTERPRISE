@@ -12,15 +12,22 @@ function normalize(value) {
 
 function readPromotionManifest() {
   const text = fs.readFileSync(RUNNER, "utf8").replace(/^\uFEFF/, "");
-  const start = text.indexOf("$promoteFiles = @(");
+  const marker = "$promoteFiles = @(";
+  const start = text.indexOf(marker);
   if (start < 0) throw new Error("Promotion manifest not found in final runner.");
-  const end = text.indexOf("\n)\n\nforeach ($file in $promoteFiles)", start);
-  if (end < 0) throw new Error("Promotion manifest terminator not found in final runner.");
-  const block = text.slice(start, end);
+  const afterStart = text.slice(start + marker.length);
+  const foreachMarker = "foreach ($file in $promoteFiles)";
+  const foreachIndex = afterStart.indexOf(foreachMarker);
+  if (foreachIndex < 0) throw new Error("Promotion manifest foreach marker not found in final runner.");
+  const beforeForeach = afterStart.slice(0, foreachIndex);
+  const closingIndex = beforeForeach.lastIndexOf(")");
+  if (closingIndex < 0) throw new Error("Promotion manifest closing parenthesis not found in final runner.");
+  const block = beforeForeach.slice(0, closingIndex);
   const files = [];
   const regex = /'([^']+)'/g;
   let match;
   while ((match = regex.exec(block))) files.push(normalize(match[1]));
+  if (!files.length) throw new Error("Promotion manifest parsed zero files.");
   return new Set(files);
 }
 
