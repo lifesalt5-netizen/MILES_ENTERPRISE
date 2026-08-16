@@ -61,6 +61,7 @@ jobs:
             'SERVICES\digital_coo\MilesCommandCenter.js',
             'SERVICES\DashboardServerService.js',
             'SERVICES\BusinessExecutionEngineServiceV2.js',
+            'SERVICES\BusinessWorkPlannerService.js',
             'SERVICES\governance\PolicyEngineService.js',
             'SERVICES\governance\DemoProtectionService.js',
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
@@ -72,6 +73,7 @@ jobs:
             'CONNECTORS\ORION\connector.js',
             'TESTS\TestGovernanceNegationP0.js',
             'TESTS\TestExecutiveMissionExecutionP0.js',
+            'TESTS\TestBusinessWorkPlannerExecutionContractP0.js',
             'TESTS\TestEphemeralConnectorBootstrapP0.js',
             'StartP2GCCustomerDelivery.js',
             'StartExecutiveDashboard.js',
@@ -96,6 +98,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Baseline constitutional governance tests failed.' }
           node .\TESTS\TestGovernanceNegationP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Negation-aware governance tests failed.' }
+          node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Business work planner connector/read-only contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Executive mission execution test failed.' }
           node .\TESTS\TestEphemeralConnectorBootstrapP0.js
