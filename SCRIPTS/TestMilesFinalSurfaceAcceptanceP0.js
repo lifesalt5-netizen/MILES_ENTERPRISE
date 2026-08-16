@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
-const { execSync } = require("child_process");
+const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const REPORT = path.join(ROOT, "DATA", "runtime_guardian", "final_surface_acceptance_latest.json");
@@ -22,9 +22,35 @@ function request(port, pathname = "/", timeoutMs = 20000, method = "GET", body =
 }
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 function parseJson(text) { try { return JSON.parse(text || "{}"); } catch { return null; } }
-function pm2Apps() { try { return JSON.parse(execSync("pm2 jlist", { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })); } catch { return []; } }
+function pm2Apps() { try { return parsePm2Jlist(runPm2(["jlist"]).stdout); } catch { return []; } }
 function pm2Online(name) { const app = pm2Apps().find(x => x.name === name); return app ? { ok: app.pm2_env?.status === "online" && Number(app.pid || 0) > 0, pid: Number(app.pid || 0), status: app.pm2_env?.status || null, script: app.pm2_env?.pm_exec_path || null } : null; }
 function readJson(file) { try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return null; } }
+function resultFilesSince(sinceMs) {
+  const dir = path.join(ROOT, "DATA", "workforce_results");
+  try {
+    return fs.readdirSync(dir)
+      .filter(name => name.endsWith(".json"))
+      .map(name => {
+        const file = path.join(dir, name);
+        const stat = fs.statSync(file);
+        return { file, mtimeMs: stat.mtimeMs, value: readJson(file) };
+      })
+      .filter(x => x.value && x.mtimeMs >= sinceMs - 1000)
+      .sort((a,b) => b.mtimeMs - a.mtimeMs);
+  } catch { return []; }
+}
+function matchesTask(value, taskId, operationId) {
+  if (!value) return false;
+  const text = JSON.stringify(value);
+  return Boolean((taskId && (String(value.taskId || "") === String(taskId) || text.includes(String(taskId)))) || (operationId && text.includes(String(operationId))));
+}
+function successfulExecutionResult(value) {
+  if (!value || typeof value !== "object") return false;
+  const status = String(value.status || value.result?.status || value.workforceResult?.status || value.result?.workforceResult?.status || "").toUpperCase();
+  if (["FAILED","ERROR","BLOCKED"].includes(status)) return false;
+  const flags = [value.ok, value.result?.ok, value.workforceResult?.ok, value.result?.workforceResult?.ok].filter(v => typeof v === "boolean");
+  return flags.includes(true) && !flags.includes(false);
+}
 
 (async () => {
   for (const name of ["miles-api", "miles-worker", "miles-command-center", "miles-executive-dashboard", "miles-desktop-ui", "miles-autonomous-coo", "p2gc-customer-delivery", "p2gc-growth-demo"]) {
@@ -37,7 +63,8 @@ function readJson(file) { try { return JSON.parse(fs.readFileSync(file, "utf8").
   try { const state = await request(8737, "/api/state"); const json = parseJson(state.text); add("CEO Executive Dashboard state responds", state.statusCode === 200 && Boolean(json), `http=${state.statusCode}`); } catch (e) { add("CEO Executive Dashboard state responds", false, e.message); }
   try { const brief = await request(8737, "/api/brief"); const json = parseJson(brief.text); add("CEO revenue brief responds", brief.statusCode === 200 && Boolean(json), `http=${brief.statusCode}`); } catch (e) { add("CEO revenue brief responds", false, e.message); }
 
-  let ceoTaskId = null; let ceoOperationId = null;
+  let ceoTaskId = null; let ceoOperationId = null; let ceoPersisted = null; let ceoPersistedFile = null;
+  const commandStartedAt = Date.now();
   try {
     const command = await request(8737, "/api/command", 70000, "POST", { command: "Review the current P2GC revenue pipeline and report the single highest-priority action for the CEO. Read-only final acceptance. Do not send email, modify campaigns, or change external systems." });
     const json = parseJson(command.text); ceoOperationId = json?.operation?.id || json?.operationId || null; ceoTaskId = json?.enqueueResult?.taskId || null;
@@ -45,10 +72,22 @@ function readJson(file) { try { return JSON.parse(fs.readFileSync(file, "utf8").
   } catch (e) { add("CEO Dashboard accepts a MILES command", false, e.message); }
 
   if (ceoTaskId) {
-    const expected = path.join(ROOT, "DATA", "workforce_results", `WP_${ceoTaskId}.json`); let completed = false;
-    for (let i = 0; i < 60; i++) { if (fs.existsSync(expected) && readJson(expected)) { completed = true; break; } await sleep(2000); }
-    add("CEO Dashboard command reaches worker and persists result", completed, expected);
-  } else add("CEO Dashboard command reaches worker and persists result", false, "No task id returned");
+    const expected = path.join(ROOT, "DATA", "workforce_results", `WP_${ceoTaskId}.json`);
+    for (let i = 0; i < 60; i++) {
+      if (fs.existsSync(expected)) {
+        const value = readJson(expected);
+        if (matchesTask(value, ceoTaskId, ceoOperationId)) { ceoPersisted = value; ceoPersistedFile = expected; break; }
+      }
+      const candidates = resultFilesSince(commandStartedAt).filter(x => matchesTask(x.value, ceoTaskId, ceoOperationId));
+      if (candidates.length) { ceoPersisted = candidates[0].value; ceoPersistedFile = candidates[0].file; break; }
+      await sleep(2000);
+    }
+    add("CEO Dashboard command reaches worker and persists result", Boolean(ceoPersisted), ceoPersistedFile || expected);
+    add("CEO Dashboard persisted command result succeeded", successfulExecutionResult(ceoPersisted), ceoPersisted ? `status=${ceoPersisted.status || ceoPersisted.result?.status || "unknown"} ok=${ceoPersisted.ok}` : "no result");
+  } else {
+    add("CEO Dashboard command reaches worker and persists result", false, "No task id returned");
+    add("CEO Dashboard persisted command result succeeded", false, "No task id returned");
+  }
 
   try { const desktop = await request(3737, "/api/status"); const json = parseJson(desktop.text); add("MILES Desktop UI responds", desktop.statusCode === 200 && json?.runtime === "running", `http=${desktop.statusCode} runtime=${json?.runtime || ""}`); } catch (e) { add("MILES Desktop UI responds", false, e.message); }
 
@@ -69,7 +108,7 @@ function readJson(file) { try { return JSON.parse(fs.readFileSync(file, "utf8").
   add("latest command has operation id", Boolean(prod?.operationId), prod?.operationId || "missing");
   add("latest command has task id", Boolean(prod?.taskId), prod?.taskId || "missing");
 
-  const report = { ok: checks.every(x => x.ok), generatedAt: new Date().toISOString(), ceoOperationId, ceoTaskId, checks };
+  const report = { ok: checks.every(x => x.ok), generatedAt: new Date().toISOString(), ceoOperationId, ceoTaskId, ceoPersistedFile, checks };
   fs.mkdirSync(path.dirname(REPORT), { recursive: true }); fs.writeFileSync(REPORT, JSON.stringify(report, null, 2), "utf8");
   console.log(`=== FINAL SURFACE ACCEPTANCE ${report.ok ? "PASS" : "FAIL"} ===`); console.log(`report: ${REPORT}`); process.exitCode = report.ok ? 0 : 1;
 })().catch(error => { console.error(error.stack || error.message); process.exit(1); });
