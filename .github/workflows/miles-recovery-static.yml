@@ -90,7 +90,7 @@ jobs:
           node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
           if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap acceptance failed.' }
 
-      - name: Install PM2 for Windows integration
+      - name: Install and resolve PM2 for Windows integration
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -98,7 +98,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
           $pm2Cli = (& node -e "process.stdout.write(require('./SCRIPTS/ReconcilePm2Process').resolvePm2Cli())").Trim()
           if ($LASTEXITCODE -ne 0 -or -not $pm2Cli -or -not (Test-Path $pm2Cli -PathType Leaf)) { throw "Production PM2 resolver failed: $pm2Cli" }
-          & node $pm2Cli kill 2>&1 | Out-Host
+          $env:MILES_PM2_CLI = $pm2Cli
           "MILES_PM2_CLI=$pm2Cli" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "[PM2 SETUP OK] production resolver found direct CLI=$pm2Cli"
 
