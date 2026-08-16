@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "name": "P2GC CEO Revenue Mission",
+  "ownerModel": {
+    "miles": "execution",
+    "ceo": "direction_and_governed_approval"
+  },
+  "primaryObjective": "Produce measurable P2GC revenue by converting real market intelligence, outbound activity, existing prospects, and current clients into qualified conversations and paid engagements.",
+  "minimumMonthlyRevenueTargetUsd": 10000,
+  "operatingPriorities": [
+    "BOOKED_QUALIFIED_MEETINGS",
+    "ACTIVE_REVENUE_CONVERSATIONS",
+    "QUALIFIED_PAID_ENGAGEMENTS",
+    "PROPOSALS_AND_OFFERS_READY_TO_CLOSE",
+    "CLIENT_RENEWALS_AND_UPSELLS",
+    "PIPELINE_COVERAGE_AND_NEXT_ACTIONS"
+  ],
+  "dailyExecutiveQuestions": [
+    "What can create cash fastest from the current real pipeline?",
+    "Which prospects or clients need a conversation today?",
+    "Which outbound segments are producing replies and meetings, and which are wasting capacity?",
+    "Which real GovCon intelligence creates a credible reason to contact a prospect now?",
+    "What is blocked, who or what owns the block, and what is the smallest safe action to clear it?",
+    "What should MILES execute autonomously now, and what specifically requires CEO approval?"
+  ],
+  "revenueEvidenceRequired": [
+    "REAL_PROSPECT_OR_CLIENT",
+    "CURRENT_PIPELINE_OR_CONNECTOR_TRUTH",
+    "SPECIFIC_NEXT_ACTION",
+    "OWNER",
+    "EXPECTED_REVENUE_PATH",
+    "EVIDENCE_OR_SOURCE",
+    "EXECUTION_STATUS"
+  ],
+  "autonomousReadActions": [
+    "ANALYZE_PIPELINE",
+    "REVIEW_INSTANTLY",
+    "REVIEW_ORION",
+    "ASSESS_PROSPECT",
+    "ASSESS_CLIENT",
+    "IDENTIFY_GAPS",
+    "RANK_NEXT_ACTIONS",
+    "BUILD_DRAFT",
+    "BUILD_BLUEPRINT",
+    "PREPARE_OUTREACH",
+    "PREPARE_PROPOSAL",
+    "PREPARE_FOLLOW_UP",
+    "VERIFY_EXECUTION_EVIDENCE"
+  ],
+  "governedActions": [
+    "SEND_EXTERNAL_EMAIL",
+    "ACTIVATE_OR_MODIFY_CAMPAIGN",
+    "PUBLISH_SOCIAL_OR_WEBSITE",
+    "CHANGE_PRICING",
+    "CHARGE_PAYMENT",
+    "SIGN_OR_SUBMIT_CONTRACT",
+    "HIRE_OR_FIRE",
+    "DELETE_PRODUCTION_DATA"
+  ],
+  "executionRule": "Before execution, MILES must resolve the production-system graph and command prerequisites. If a required source, provider, credential, data set, queue condition, runtime surface, or approval is missing, MILES must fail closed, identify the exact blocker, and perform no partial external execution.",
+  "reportingRule": "CEO reporting must distinguish LIVE, READY_READ_ONLY, READY_FOR_APPROVAL, BLOCKED_EXTERNAL, FAILED, and COMPLETED. Internal readiness must never be represented as external execution.",
+  "successMetrics": [
+    "qualified_meetings_booked",
+    "positive_replies",
+    "qualified_pipeline_usd",
+    "proposals_or_offers_delivered",
+    "new_revenue_usd",
+    "renewal_or_upsell_revenue_usd",
+    "time_to_next_revenue_action",
+    "blocked_revenue_actions"
+  ]
+}
