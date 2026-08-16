@@ -43,10 +43,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'npm ci failed.' }
           npm install -g pm2
           if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
-          $pm2Cli = Join-Path $env:APPDATA 'npm\node_modules\pm2\bin\pm2'
-          if (-not (Test-Path $pm2Cli -PathType Leaf)) { throw "PM2 JavaScript CLI not found: $pm2Cli" }
+          $pm2Cli = (& node -e "process.stdout.write(require('./SCRIPTS/ReconcilePm2Process').resolvePm2Cli())").Trim()
+          if ($LASTEXITCODE -ne 0 -or -not $pm2Cli -or -not (Test-Path $pm2Cli -PathType Leaf)) { throw "Production PM2 resolver failed: $pm2Cli" }
           "MILES_PM2_CLI=$pm2Cli" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "[PM2 CLI] $pm2Cli"
+          Write-Host "[PM2 CLI] production resolver found $pm2Cli"
 
       - name: Prepare clean PM2 state through direct Node transport
         shell: powershell
