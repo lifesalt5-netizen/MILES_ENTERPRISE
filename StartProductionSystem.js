@@ -24,26 +24,23 @@ const STARTUP_SETTLE_MS = positiveNumber(process.env.MILES_WORKER_STARTUP_SETTLE
 
 const taskQueue = require("./CORE/TaskQueue");
 
-function lazyModule(modulePath) {
+function lazyAccessor(modulePath) {
   let loaded = null;
-  return new Proxy({}, {
-    get(_target, property) {
-      if (!loaded) loaded = require(modulePath);
-      const value = loaded[property];
-      return typeof value === "function" ? value.bind(loaded) : value;
-    }
-  });
+  return function getModule() {
+    if (!loaded) loaded = require(modulePath);
+    return loaded;
+  };
 }
 
-const supervisor = lazyModule("./CORE/Supervisor");
-const executionService = lazyModule("./SERVICES/ExecutionService");
-const infrastructureHealthManager = lazyModule("./SERVICES/InfrastructureHealthManagerService");
-const autonomousWorkGenerator = lazyModule("./SERVICES/AutonomousWorkGenerationService");
-const providerRouter = lazyModule("./SERVICES/ProviderRouterService");
-const connectorManager = lazyModule("./CORE/ConnectorManager");
-const capabilityService = lazyModule("./SERVICES/CapabilityService");
-const capabilityDispatcher = lazyModule("./SERVICES/CapabilityDispatcherService");
-const eventBus = lazyModule("./event-bus/emitter");
+const getSupervisor = lazyAccessor("./CORE/Supervisor");
+const getExecutionService = lazyAccessor("./SERVICES/ExecutionService");
+const getInfrastructureHealthManager = lazyAccessor("./SERVICES/InfrastructureHealthManagerService");
+const getAutonomousWorkGenerator = lazyAccessor("./SERVICES/AutonomousWorkGenerationService");
+const getProviderRouter = lazyAccessor("./SERVICES/ProviderRouterService");
+const getConnectorManager = lazyAccessor("./CORE/ConnectorManager");
+const getCapabilityService = lazyAccessor("./SERVICES/CapabilityService");
+const getCapabilityDispatcher = lazyAccessor("./SERVICES/CapabilityDispatcherService");
+const getEventBus = lazyAccessor("./event-bus/emitter");
 
 function now() { return new Date().toISOString(); }
 function delay(milliseconds) { return new Promise(resolve => setTimeout(resolve, milliseconds)); }
@@ -110,6 +107,7 @@ function queueCounts() {
 
 function emitCooTick(payload) {
   try {
+    const eventBus = getEventBus();
     const bus = eventBus?.bus || eventBus;
     if (bus && typeof bus.emit === "function") { bus.emit("COO_TICK", payload); return true; }
     if (bus && typeof bus.publish === "function") { bus.publish("COO_TICK", payload); return true; }
@@ -254,6 +252,7 @@ class RuntimeWorkerSupervisor {
       }
 
       this.metrics.lastExecutionTaskId = selectedTask.id || null;
+      const executionService = getExecutionService();
       const result = await executionService.execute(selectedTask);
       this.metrics.lastExecutionResult = compactResult(result);
 
@@ -289,7 +288,8 @@ class RuntimeWorkerSupervisor {
     if (this.healthCycleRunning || this.shuttingDown) return { ok: true, skipped: true };
     this.healthCycleRunning = true;
     try {
-      const result = await infrastructureHealthManager.runCycle();
+      const manager = getInfrastructureHealthManager();
+      const result = await manager.runCycle();
       this.metrics.healthCycles += 1;
       this.metrics.lastHealthCycleAt = now();
       this.metrics.lastHealthResult = compactResult(result);
@@ -310,7 +310,8 @@ class RuntimeWorkerSupervisor {
     if (this.workGenerationRunning || this.shuttingDown) return { ok: true, skipped: true };
     this.workGenerationRunning = true;
     try {
-      const result = autonomousWorkGenerator.runCycle();
+      const generator = getAutonomousWorkGenerator();
+      const result = generator.runCycle();
       this.metrics.workGenerationCycles += 1;
       this.metrics.lastWorkGenerationAt = now();
       this.metrics.lastWorkGenerationResult = compactResult(result);
@@ -382,7 +383,13 @@ class RuntimeWorkerSupervisor {
     console.log("[MILES] AUTONOMOUS SYSTEM ONLINE");
     console.log("[MILES] GOVERNED MINIMAL WORKER RUNTIME ACTIVE");
 
+    const supervisor = getSupervisor();
     await supervisor.start();
+
+    const providerRouter = getProviderRouter();
+    const capabilityService = getCapabilityService();
+    const connectorManager = getConnectorManager();
+    const capabilityDispatcher = getCapabilityDispatcher();
 
     const providerResolution = providerRouter.status();
     const capabilityResolution = capabilityService.validateRegistry(providerRouter);
@@ -423,10 +430,22 @@ class RuntimeWorkerSupervisor {
       if (timer) { clearInterval(timer); clearTimeout(timer); }
     }
 
-    try { if (typeof infrastructureHealthManager.stop === "function") await infrastructureHealthManager.stop(); } catch {}
-    try { if (typeof autonomousWorkGenerator.stop === "function") autonomousWorkGenerator.stop(); } catch {}
-    try { if (typeof providerRouter.shutdown === "function") await providerRouter.shutdown(); } catch {}
-    try { if (typeof supervisor.stop === "function") await supervisor.stop(); } catch {}
+    try {
+      const manager = getInfrastructureHealthManager();
+      if (typeof manager.stop === "function") await manager.stop();
+    } catch {}
+    try {
+      const generator = getAutonomousWorkGenerator();
+      if (typeof generator.stop === "function") generator.stop();
+    } catch {}
+    try {
+      const providerRouter = getProviderRouter();
+      if (typeof providerRouter.shutdown === "function") await providerRouter.shutdown();
+    } catch {}
+    try {
+      const supervisor = getSupervisor();
+      if (typeof supervisor.stop === "function") await supervisor.stop();
+    } catch {}
 
     this.started = false;
     this.metrics.stoppedAt = now();
