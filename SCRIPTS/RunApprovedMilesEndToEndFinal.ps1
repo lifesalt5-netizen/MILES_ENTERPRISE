@@ -87,12 +87,18 @@ $promoteFiles = @(
   'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS/TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS/TestP2GCWholeSystemAcceptanceP0.js',
+  'SCRIPTS/TestDashboardPromotionClosureP0.js',
   'SCRIPTS/StartMilesApi.js',
   'StartProductionSystem.js',
   'CORE/ConnectorManager.js',
   'SERVICES/ExecutionService.js',
   'SERVICES/digital_coo/MilesCommandCenter.js',
   'SERVICES/DashboardServerService.js',
+  'SERVICES/DashboardDataService.js',
+  'SERVICES/CEORevenueBriefService.js',
+  'SERVICES/ceo_dashboard/public/index.html',
+  'SERVICES/ceo_dashboard/public/ceo.js',
+  'SERVICES/ceo_dashboard/public/ceo.css',
   'SERVICES/governance/PolicyEngineService.js',
   'SERVICES/governance/DemoProtectionService.js',
   'TESTS/Build052GovernanceTest.js',
@@ -145,12 +151,15 @@ $nodeChecks = @(
   'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
   'SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
+  'SCRIPTS\TestDashboardPromotionClosureP0.js',
   'SCRIPTS\StartMilesApi.js',
   'StartProductionSystem.js',
   'CORE\ConnectorManager.js',
   'SERVICES\ExecutionService.js',
   'SERVICES\digital_coo\MilesCommandCenter.js',
   'SERVICES\DashboardServerService.js',
+  'SERVICES\DashboardDataService.js',
+  'SERVICES\CEORevenueBriefService.js',
   'SERVICES\governance\PolicyEngineService.js',
   'SERVICES\governance\DemoProtectionService.js',
   'TESTS\Build052GovernanceTest.js',
@@ -177,6 +186,7 @@ $nodeChecks = @(
 )
 foreach ($file in $nodeChecks) { Invoke-NodeGate $file }
 
+Invoke-Test '.\SCRIPTS\TestDashboardPromotionClosureP0.js' 'CEO Dashboard deployment closure is incomplete; production surfaces were not touched.'
 Invoke-Test '.\SCRIPTS\TestReconcilePm2ProcessUnit.js' 'PM2 reconciliation regression tests failed.'
 Invoke-Test '.\SCRIPTS\TestReconcilePm2ProcessIntegration.js' 'PM2 reconciliation integration test failed; production surfaces were not touched.'
 Invoke-Test '.\TESTS\Build052GovernanceTest.js' 'Baseline constitutional governance tests failed.'
