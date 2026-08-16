@@ -3,7 +3,7 @@
 const fs=require("fs");
 const path=require("path");
 const http=require("http");
-const {execSync}=require("child_process");
+const {runPm2,parsePm2Jlist}=require("./ReconcilePm2Process");
 const ROOT=process.env.MILES_ROOT||process.cwd();
 const STRICT=/^(1|true|yes)$/i.test(String(process.env.P2GC_WHOLE_SYSTEM_STRICT||""));
 const OUT=path.join(ROOT,"DATA","runtime_guardian","whole_system_acceptance_latest.json");
@@ -11,7 +11,7 @@ const checks=[];
 function add(area,name,status,detail=null){const ok=status==="PASS"||status==="PASS_READ_ONLY"||status==="PASS_INTERNAL";checks.push({area,name,status,ok,detail});console.log(`[${status}] ${area} :: ${name}${detail?` :: ${detail}`:""}`);}
 function exists(p){return fs.existsSync(path.join(ROOT,p));}
 function req(port,p){return new Promise((resolve,reject)=>{const r=http.request({hostname:"127.0.0.1",port,path:p,method:"GET",timeout:15000},res=>{let d="";res.on("data",c=>d+=c);res.on("end",()=>{let j=null;try{j=JSON.parse(d)}catch{}resolve({status:res.statusCode,text:d,json:j});});});r.on("timeout",()=>r.destroy(new Error("timeout")));r.on("error",reject);r.end();});}
-function pm2(name){try{const apps=JSON.parse(execSync("pm2 jlist",{encoding:"utf8",stdio:["ignore","pipe","pipe"]}));const a=apps.find(x=>x.name===name);return a&&a.pm2_env?.status==="online"&&Number(a.pid||0)>0;}catch{return false;}}
+function pm2(name){try{const apps=parsePm2Jlist(runPm2(["jlist"]).stdout);const a=apps.find(x=>x.name===name);return Boolean(a&&a.pm2_env?.status==="online"&&Number(a.pid||0)>0);}catch{return false;}}
 function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL":"FAIL_INTERNAL",file);}
 
 (async()=>{
@@ -25,7 +25,9 @@ function internalFile(area,name,file){add(area,name,exists(file)?"PASS_INTERNAL"
     ["Queue Management","CORE/TaskQueue.js"],
     ["Business Operations Bridge","SERVICES/BusinessOperationsBridgeService.js"],
     ["Event Bus","CORE/EventBus.js"],
-    ["Revenue Truth Gate","SERVICES/revenue/RevenueTruthGateService.js"]
+    ["Revenue Truth Gate","SERVICES/revenue/RevenueTruthGateService.js"],
+    ["Executive Mission Engine","SERVICES/BusinessExecutionEngineServiceV2.js"],
+    ["Negation-aware Governance","SERVICES/governance/PolicyEngineService.js"]
   ]) internalFile("OPERATIONS",name,file);
   internalFile("OPERATIONS","Provider Framework","SERVICES/ProviderRouterService.js");
   internalFile("OPERATIONS","Self-Development Workers","SERVICES/WorkerBootstrap.js");
