@@ -62,3 +62,46 @@ jobs:
         run: |
           node .\SCRIPTS\TestReconcilePm2ProcessUnit.js
           if ($LASTEXITCODE -ne 0) { throw 'PM2 reconciliation unit tests failed.' }
+
+      - name: Install PM2 for Windows integration
+        shell: powershell
+        run: |
+          npm install -g pm2
+          if ($LASTEXITCODE -ne 0) { throw 'PM2 install failed.' }
+          pm2 kill 2>$null
+
+      - name: Reproduce and repair stale PM2 script identity
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $fixture = Join-Path $PWD 'SCRIPTS\pm2-reconcile-fixture.js'
+          @'
+          "use strict";
+          setInterval(() => {}, 1000);
+          '@ | Set-Content $fixture -Encoding UTF8
+
+          pm2 start $fixture --name legacy-api
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to create stale PM2 fixture.' }
+
+          $before = pm2 jlist | ConvertFrom-Json
+          $legacy = $before | Where-Object { $_.name -eq 'legacy-api' }
+          if (-not $legacy) { throw 'Stale PM2 fixture was not registered.' }
+
+          node .\SCRIPTS\ReconcilePm2Process.js miles-api $fixture
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical PM2 reconciliation failed.' }
+
+          $after = pm2 jlist | ConvertFrom-Json
+          $canonical = @($after | Where-Object { $_.name -eq 'miles-api' })
+          $stale = @($after | Where-Object { $_.name -eq 'legacy-api' })
+          $sameScript = @($after | Where-Object {
+            [IO.Path]::GetFullPath($_.pm2_env.pm_exec_path).ToLowerInvariant() -eq [IO.Path]::GetFullPath($fixture).ToLowerInvariant()
+          })
+
+          if ($canonical.Count -ne 1) { throw "Expected one canonical miles-api; found $($canonical.Count)." }
+          if ($canonical[0].pm2_env.status -ne 'online') { throw "Canonical miles-api is not online: $($canonical[0].pm2_env.status)" }
+          if ($stale.Count -ne 0) { throw 'legacy-api registration still exists.' }
+          if ($sameScript.Count -ne 1) { throw "Expected one registration for fixture script; found $($sameScript.Count)." }
+
+          Write-Host '[PM2 INTEGRATION PASS] stale script identity repaired without -f and without duplicates'
+          pm2 delete miles-api
+          Remove-Item $fixture -Force
