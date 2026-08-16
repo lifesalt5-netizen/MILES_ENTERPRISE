@@ -97,6 +97,7 @@ $promoteFiles = @(
   'SERVICES/governance/DemoProtectionService.js',
   'TESTS/Build052GovernanceTest.js',
   'TESTS/TestGovernanceNegationP0.js',
+  'TESTS/TestBusinessWorkPlannerExecutionContractP0.js',
   'TESTS/TestExecutiveMissionExecutionP0.js',
   'TESTS/TestEphemeralConnectorBootstrapP0.js',
   'SERVICES/BusinessExecutionEngineServiceV2.js',
@@ -154,9 +155,11 @@ $nodeChecks = @(
   'SERVICES\governance\DemoProtectionService.js',
   'TESTS\Build052GovernanceTest.js',
   'TESTS\TestGovernanceNegationP0.js',
+  'TESTS\TestBusinessWorkPlannerExecutionContractP0.js',
   'TESTS\TestExecutiveMissionExecutionP0.js',
   'TESTS\TestEphemeralConnectorBootstrapP0.js',
   'SERVICES\BusinessExecutionEngineServiceV2.js',
+  'SERVICES\BusinessWorkPlannerService.js',
   'CONNECTORS\MILES\connector.js',
   'StartExecutiveDashboard.js',
   'StartMiles.js',
@@ -178,6 +181,7 @@ Invoke-Test '.\SCRIPTS\TestReconcilePm2ProcessUnit.js' 'PM2 reconciliation regre
 Invoke-Test '.\SCRIPTS\TestReconcilePm2ProcessIntegration.js' 'PM2 reconciliation integration test failed; production surfaces were not touched.'
 Invoke-Test '.\TESTS\Build052GovernanceTest.js' 'Baseline constitutional governance tests failed.'
 Invoke-Test '.\TESTS\TestGovernanceNegationP0.js' 'Negation-aware governance tests failed.'
+Invoke-Test '.\TESTS\TestBusinessWorkPlannerExecutionContractP0.js' 'Business work planner connector/read-only contract failed.'
 Invoke-Test '.\TESTS\TestExecutiveMissionExecutionP0.js' 'Executive mission execution regression failed.'
 Invoke-Test '.\TESTS\TestEphemeralConnectorBootstrapP0.js' 'Ephemeral child connector bootstrap regression failed.'
 Invoke-Test '.\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js' 'P2GC customer delivery acceptance failed.'
@@ -246,6 +250,8 @@ Write-Host 'MILES CEO Dashboard / 8737       : PASS'
 Write-Host 'MILES Desktop UI / 3737          : PASS'
 Write-Host 'MILES Autonomous COO             : PASS'
 Write-Host 'MILES CEO command -> TaskQueue   : PASS'
+Write-Host 'Read-only CEO command semantics  : PASS'
+Write-Host 'Canonical planner connectors     : PASS'
 Write-Host 'Ephemeral connector bootstrap    : PASS'
 Write-Host 'MILES worker execution result    : PASS'
 Write-Host 'Governance intent/negation       : PASS'
