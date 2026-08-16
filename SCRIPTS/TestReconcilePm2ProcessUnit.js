@@ -2,7 +2,7 @@
 
 const assert = require("assert");
 const path = require("path");
-const { buildPlan } = require("./ReconcilePm2Process");
+const { buildPlan, parsePm2Jlist, pm2CliCandidates } = require("./ReconcilePm2Process");
 
 const target = path.resolve("SCRIPTS/StartMilesApi.js");
 const other = path.resolve("OTHER/SomeApi.js");
@@ -35,5 +35,14 @@ plan = buildPlan([app(6, "miles-autonomous-coo", path.resolve("StartAutonomousCO
 assert.equal(plan.namedCorrect, true);
 assert.deepEqual(plan.deleteIds, []);
 
+const bannerApps = [app(9, "miles-api", target)];
+assert.deepEqual(parsePm2Jlist(`[PM2] Spawning PM2 daemon\n${JSON.stringify(bannerApps)}`), bannerApps);
+assert.deepEqual(parsePm2Jlist(JSON.stringify([])), []);
+
+const fakeCli = path.resolve("fixtures", "pm2", "bin", "pm2");
+const candidates = pm2CliCandidates({ MILES_PM2_CLI: fakeCli });
+assert.equal(candidates[0], fakeCli);
+
 console.log("ReconcilePm2Process unit tests PASS");
 console.log("ReconcilePm2Process args tests PASS");
+console.log("ReconcilePm2Process direct-PM2 parsing tests PASS");
