@@ -68,14 +68,12 @@ class BusinessExecutionEngineServiceV2 {
   constructor(options = {}) {
     this.bridge = options.bridge || new BusinessOperationsBridgeService({ rootDir: ROOT });
 
-    // Lean executive core: always-available MILES services are loaded now.
     this.services = {
       COMPANY_STATE: options.companyState || CompanyStateService,
       TASK_ROUTER: options.taskRouter || TaskRouterService,
       EXECUTIVE_DASHBOARD: options.executiveDashboard || ExecutiveDashboardService
     };
 
-    // Heavy/external stacks are loaded only when a mission actually calls them.
     this.lazyServicePaths = {
       PROVIDER_AUTHORITY: "./ProviderAuthorityRegistryService",
       PROVIDER_SYNC: "./ProviderSynchronizationService",
@@ -90,18 +88,21 @@ class BusinessExecutionEngineServiceV2 {
   }
 
   resolveService(action) {
-    if (this.services[action]) {
-      return this.services[action];
-    }
-
+    if (this.services[action]) return this.services[action];
     const modulePath = this.lazyServicePaths[action];
-    if (!modulePath) {
-      return null;
-    }
-
+    if (!modulePath) return null;
     const service = require(modulePath);
     this.services[action] = service;
     return service;
+  }
+
+  isReadOnly(normalized = {}) {
+    return Boolean(
+      BusinessWorkPlannerService.isReadOnlyReview &&
+      BusinessWorkPlannerService.isReadOnlyReview(
+        normalized.originalCommand || normalized.objective || ""
+      )
+    );
   }
 
   async run(task = {}) {
@@ -115,6 +116,7 @@ class BusinessExecutionEngineServiceV2 {
       taskId: task.id || null,
       objective: normalized.objective,
       originalCommand: normalized.originalCommand,
+      readOnly: this.isReadOnly(normalized),
       startedAt: now(),
       completedAt: null,
       stepCount: normalized.steps.length,
@@ -154,6 +156,7 @@ class BusinessExecutionEngineServiceV2 {
 
   async executeStep(step = {}, normalized, executionId) {
     const action = String(step.action || step.capability || "").trim().toUpperCase();
+    const readOnly = this.isReadOnly(normalized);
     const base = {
       step: Number(step.step || 0),
       action,
@@ -161,6 +164,7 @@ class BusinessExecutionEngineServiceV2 {
       connector: step.connector || "MILES",
       objective: step.objective || normalized.objective,
       executionId,
+      readOnly,
       startedAt: now(),
       completedAt: null,
       status: "RUNNING",
@@ -171,6 +175,18 @@ class BusinessExecutionEngineServiceV2 {
     try {
       if (action === "BUSINESS_EXECUTION") {
         return await this.planAndBridgeBusinessWork(base, normalized);
+      }
+
+      if (action === "TASK_ROUTER" && readOnly) {
+        base.status = "COMPLETED";
+        base.result = {
+          ok: true,
+          status: "READ_ONLY_ROUTE_SKIPPED",
+          routed: 0,
+          reason: "The CEO requested a read-only review; MILES did not route or create follow-on execution work."
+        };
+        base.completedAt = now();
+        return base;
       }
 
       const service = this.resolveService(action);
@@ -233,10 +249,55 @@ class BusinessExecutionEngineServiceV2 {
     const workPackages = Array.isArray(workPlan.workPackages)
       ? workPlan.workPackages
       : [];
+    const recommendedActions = Array.isArray(workPlan.recommendations)
+      ? workPlan.recommendations
+      : [];
 
-    if (!workPlan.ok || workPackages.length === 0) {
+    if (!workPlan.ok) {
       base.status = "FAILED";
-      base.error = "BusinessWorkPlannerService returned no executable work packages.";
+      base.error = "BusinessWorkPlannerService failed to produce a valid plan.";
+      base.completedAt = now();
+      return base;
+    }
+
+    if (workPlan.readOnly === true || workPlan.mode === "READ_ONLY_REVIEW") {
+      base.status = "COMPLETED";
+      base.result = {
+        ok: true,
+        service: workPlan.service,
+        mode: "READ_ONLY_REVIEW",
+        readOnly: true,
+        objective: normalized.objective,
+        recommendations: recommendedActions,
+        recommendationCount: recommendedActions.length,
+        workPackageCount: 0,
+        operationsCreated: 0,
+        operationsQueued: 0,
+        operationsAwaitingApproval: 0,
+        operationsFailed: 0,
+        tasks: [],
+        workPackages: [],
+        generatedAt: workPlan.generatedAt
+      };
+      base.completedAt = now();
+      return base;
+    }
+
+    if (workPackages.length === 0) {
+      base.status = "FAILED";
+      base.error = "Execution-mode business plan returned no executable work packages.";
+      base.completedAt = now();
+      return base;
+    }
+
+    const invalidPackages = workPackages.filter(item => {
+      const connector = String(item?.connector || item?.provider || "").toUpperCase();
+      return !["MILES", "INSTANTLY", "ORION"].includes(connector);
+    });
+
+    if (invalidPackages.length) {
+      base.status = "FAILED";
+      base.error = `Business plan contains non-canonical connector identities: ${invalidPackages.map(item => item.connector || item.provider).join(", ")}`;
       base.completedAt = now();
       return base;
     }
@@ -245,16 +306,17 @@ class BusinessExecutionEngineServiceV2 {
     queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
 
     const created = workPackages.map((workPackage, index) => {
-      const provider = workPackage.provider || workPackage.connector || "MILES";
+      const provider = String(workPackage.provider || workPackage.connector || "MILES").toUpperCase();
+      const connector = String(workPackage.connector || provider).toUpperCase();
       const action = workPackage.action || workPackage.taskType || "BUSINESS_OPERATION";
       return {
         id: `${base.executionId}-WORK-${String(index + 1).padStart(3, "0")}`,
         source: "BusinessExecutionEngineServiceV2",
         sourceExecutionId: base.executionId,
-        department: workPackage.department || provider,
+        department: workPackage.department || "Revenue",
         provider,
-        connector: workPackage.connector || provider,
-        system: workPackage.system || provider,
+        connector,
+        system: workPackage.system || connector,
         action,
         capability: workPackage.capability || action,
         type: workPackage.taskType || action,
@@ -264,12 +326,14 @@ class BusinessExecutionEngineServiceV2 {
         objective: workPackage.objective || workPackage.description || normalized.objective,
         description: workPackage.description || "",
         priority: workPackage.priority || index + 1,
+        readOnly: workPackage.readOnly === true,
         requiresKevin: workPackage.requiresKevin === true,
         status: workPackage.requiresKevin === true ? "AWAITING_APPROVAL" : "READY",
         plan: {
           ...workPackage,
           provider,
-          connector: workPackage.connector || provider,
+          connector,
+          system: workPackage.system || connector,
           action,
           capability: workPackage.capability || action,
           objective: workPackage.objective || workPackage.description || normalized.objective,
@@ -318,7 +382,11 @@ class BusinessExecutionEngineServiceV2 {
     base.result = {
       ok: failed === 0,
       service: workPlan.service,
+      mode: workPlan.mode || "EXECUTION",
+      readOnly: false,
       objective: normalized.objective,
+      recommendations: recommendedActions,
+      recommendationCount: recommendedActions.length,
       workPackageCount: workPackages.length,
       operationsCreated: created.length,
       operationsQueued: queued,
@@ -347,50 +415,53 @@ class BusinessExecutionEngineServiceV2 {
 
     const priorities = [];
     const seen = new Set();
-
-    for (const item of Array.isArray(companyState?.priorities) ? companyState.priorities : []) {
-      const title = item?.title || item?.reason || "Executive priority";
+    const addPriority = (item = {}, defaultArea = "Executive", defaultReason = null) => {
+      const title = item.title || item.description || item.taskType || item.action || item.reason || "Executive priority";
       const key = String(title).toLowerCase();
-      if (seen.has(key)) continue;
+      if (seen.has(key) || priorities.length >= 3) return;
       seen.add(key);
       priorities.push({
         priority: priorities.length + 1,
-        area: item?.area || "Executive",
+        area: item.area || item.provider || defaultArea,
         title,
-        reason: item?.reason || null
+        reason: item.reason || defaultReason
       });
-      if (priorities.length >= 3) break;
+    };
+
+    for (const item of Array.isArray(companyState?.priorities) ? companyState.priorities : []) {
+      addPriority(item, "Executive");
+    }
+
+    if (priorities.length < 3) {
+      for (const item of Array.isArray(businessWork?.recommendations) ? businessWork.recommendations : []) {
+        addPriority(item, "Revenue", "Generated from the canonical executive business review.");
+      }
     }
 
     if (priorities.length < 3) {
       for (const item of Array.isArray(businessWork?.workPackages) ? businessWork.workPackages : []) {
-        const title = item?.description || item?.taskType || item?.action || "Business action";
-        const key = String(title).toLowerCase();
-        if (seen.has(key)) continue;
-        seen.add(key);
-        priorities.push({
-          priority: priorities.length + 1,
-          area: item?.provider || "Operations",
-          title,
-          reason: "Generated from the canonical business work plan."
-        });
-        if (priorities.length >= 3) break;
+        addPriority(item, "Operations", "Generated from the canonical business work plan.");
       }
     }
+
+    const readOnly = businessWork?.readOnly === true || record.readOnly === true;
 
     return {
       ok: record.failedSteps === 0,
       objective: record.objective,
       status: record.status,
+      readOnly,
       topActions: priorities.slice(0, 3),
       completedSteps: record.completedSteps,
       failedSteps: record.failedSteps,
       approvalSteps: record.approvalSteps,
       workQueued: Number(businessWork?.operationsQueued || 0),
       dashboardSummary: dashboard?.summary || null,
-      message: record.failedSteps === 0
-        ? "MILES reviewed the operating state, produced prioritized actions, and routed authorized work through the canonical execution queue."
-        : "MILES completed the executive mission with one or more step failures."
+      message: record.failedSteps > 0
+        ? "MILES completed the executive mission with one or more step failures."
+        : readOnly
+          ? "MILES completed the read-only executive review and returned prioritized recommendations without queuing or changing external systems."
+          : "MILES reviewed the operating state, produced prioritized actions, and routed authorized work through the canonical execution queue."
     };
   }
 
