@@ -90,6 +90,8 @@ $promoteFiles = @(
   'SERVICES/digital_coo/MilesCommandCenter.js',
   'SERVICES/DashboardServerService.js',
   'SERVICES/governance/PolicyEngineService.js',
+  'SERVICES/governance/DemoProtectionService.js',
+  'TESTS/Build052GovernanceTest.js',
   'TESTS/TestGovernanceNegationP0.js',
   'TESTS/TestExecutiveMissionExecutionP0.js',
   'SERVICES/BusinessExecutionEngineServiceV2.js',
@@ -140,6 +142,8 @@ $nodeChecks = @(
   'SERVICES\digital_coo\MilesCommandCenter.js',
   'SERVICES\DashboardServerService.js',
   'SERVICES\governance\PolicyEngineService.js',
+  'SERVICES\governance\DemoProtectionService.js',
+  'TESTS\Build052GovernanceTest.js',
   'TESTS\TestGovernanceNegationP0.js',
   'TESTS\TestExecutiveMissionExecutionP0.js',
   'SERVICES\BusinessExecutionEngineServiceV2.js',
@@ -231,6 +235,7 @@ Write-Host 'MILES Autonomous COO             : PASS'
 Write-Host 'MILES CEO command -> TaskQueue   : PASS'
 Write-Host 'MILES worker execution result    : PASS'
 Write-Host 'Governance intent/negation       : PASS'
+Write-Host 'Demo protection/redaction        : PASS'
 Write-Host 'Executive mission chain          : PASS'
 Write-Host 'PM2 direct Node transport        : PASS'
 Write-Host 'Instantly live read connectivity : PASS'
