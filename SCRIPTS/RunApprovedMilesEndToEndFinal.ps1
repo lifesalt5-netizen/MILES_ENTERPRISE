@@ -6,7 +6,7 @@ $Repo = 'origin'
 
 Set-Location $Root
 Write-Host '=== MILES + P2GC FINAL END-TO-END RECOVERY ==='
-Write-Host 'Policy: no partial acceptance; canonical PM2 identity, worker execution, CEO surfaces, autonomous COO, customer delivery, growth assets, and real-prospect demo must all pass.'
+Write-Host 'Policy: no partial acceptance; canonical PM2 identity, worker execution, CEO surfaces, autonomous COO, live revenue connectors, customer delivery, growth assets, and real-prospect demo must all pass.'
 
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
@@ -24,6 +24,7 @@ $promoteFiles = @(
   'SCRIPTS/TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS/ReconcileMilesProductionSurfaces.js',
   'SCRIPTS/TestMilesFinalSurfaceAcceptanceP0.js',
+  'SCRIPTS/TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS/StartMilesApi.js',
   'StartProductionSystem.js',
   'SERVICES/digital_coo/MilesCommandCenter.js',
@@ -31,6 +32,9 @@ $promoteFiles = @(
   'StartExecutiveDashboard.js',
   'StartMiles.js',
   'StartAutonomousCOO.js',
+  'CONNECTORS/INSTANTLY/connector.js',
+  'CONNECTORS/INSTANTLY/instantly.js',
+  'CONNECTORS/ORION/connector.js',
   'SERVICES/customer/P2GCCustomerDeliveryService.js',
   'StartP2GCCustomerDelivery.js',
   'SCRIPTS/TestP2GCCustomerDeliveryAcceptanceP0.js',
@@ -56,7 +60,7 @@ foreach ($file in $promoteFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== PHASE A: STATIC + REGRESSION GATES ==="
+Write-Host "`n=== PHASE A: STATIC + REGRESSION + REVENUE CONNECTOR GATES ==="
 $nodeChecks = @(
   'SCRIPTS\TestMilesProductionRecoveryAcceptanceP0.js',
   'SCRIPTS\RunMilesAcceptanceWithLiveMemory.js',
@@ -65,6 +69,7 @@ $nodeChecks = @(
   'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
   'SCRIPTS\ReconcileMilesProductionSurfaces.js',
   'SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js',
+  'SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js',
   'SCRIPTS\StartMilesApi.js',
   'StartProductionSystem.js',
   'SERVICES\digital_coo\MilesCommandCenter.js',
@@ -72,6 +77,9 @@ $nodeChecks = @(
   'StartExecutiveDashboard.js',
   'StartMiles.js',
   'StartAutonomousCOO.js',
+  'CONNECTORS\INSTANTLY\connector.js',
+  'CONNECTORS\INSTANTLY\instantly.js',
+  'CONNECTORS\ORION\connector.js',
   'SERVICES\customer\P2GCCustomerDeliveryService.js',
   'StartP2GCCustomerDelivery.js',
   'SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
@@ -94,6 +102,8 @@ node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'P2GC customer delivery acceptance failed.' }
 node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'P2GC growth asset acceptance failed.' }
+node .\SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Live Instantly/ORION revenue connector acceptance failed; production surfaces were not changed.' }
 
 Write-Host "`n=== PHASE B: CANONICALIZE CORE PRODUCTION SURFACES ==="
 node .\SCRIPTS\ReconcileMilesProductionSurfaces.js miles-api miles-worker miles-command-center miles-executive-dashboard miles-desktop-ui miles-autonomous-coo p2gc-customer-delivery
@@ -125,11 +135,15 @@ Write-Host "`n=== PHASE H: GROWTH ASSET ACCEPTANCE ==="
 node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'P2GC growth asset acceptance failed.' }
 
-Write-Host "`n=== PHASE I: REAL-PROSPECT BLUEPRINT ACCEPTANCE ==="
+Write-Host "`n=== PHASE I: LIVE REVENUE CONNECTOR RECHECK ==="
+node .\SCRIPTS\TestMilesRevenueConnectorAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Live Instantly/ORION revenue connector acceptance failed after reconciliation.' }
+
+Write-Host "`n=== PHASE J: REAL-PROSPECT BLUEPRINT ACCEPTANCE ==="
 node .\SCRIPTS\TestP2GCGrowthBlueprintDemoAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'P2GC real-prospect Growth Blueprint acceptance failed.' }
 
-Write-Host "`n=== PHASE J: FINAL SURFACE TRUTH GATE ==="
+Write-Host "`n=== PHASE K: FINAL SURFACE TRUTH GATE ==="
 node .\SCRIPTS\TestMilesFinalSurfaceAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) {
   $surfaceReport = Join-Path $Root 'DATA\runtime_guardian\final_surface_acceptance_latest.json'
@@ -156,6 +170,8 @@ Write-Host 'MILES Desktop UI / 3737          : PASS'
 Write-Host 'MILES Autonomous COO             : PASS'
 Write-Host 'MILES command execution          : PASS'
 Write-Host 'MILES persisted result truth     : PASS'
+Write-Host 'Instantly live read connectivity : PASS'
+Write-Host 'ORION live intelligence database : PASS'
 Write-Host 'P2GC customer delivery / 8792    : PASS'
 Write-Host 'P2GC CRM + client portal         : PASS'
 Write-Host 'P2GC subscription/invoice ledger : PASS'
