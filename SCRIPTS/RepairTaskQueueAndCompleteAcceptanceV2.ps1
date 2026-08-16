@@ -40,11 +40,15 @@ foreach ($required in @(
   '.\SERVICES\ProviderAuthorityRegistryService.js',
   '.\SERVICES\revenue\RevenueTruthGateService.js',
   '.\SERVICES\teaming\P2GCPrimeSubTeamingService.js',
+  '.\SERVICES\ReplyIntelligenceEngine.js',
+  '.\SERVICES\customer\P2GCCustomerDeliveryService.js',
   '.\SERVICES\demo\public\teaming.html',
   '.\TESTS\TestExecutionActionContractsP0.js',
   '.\TESTS\TestConnectorActionContractRuntimeP0.js',
   '.\TESTS\TestCommandPreflightP0.js',
   '.\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js',
+  '.\SCRIPTS\TestP2GCReplyIntelligenceAcceptanceP0.js',
+  '.\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
   '.\SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
   '.\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1'
 )) {
@@ -67,7 +71,13 @@ if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight failed locally. Producti
 node .\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Sub2Prime/Prime-Sub teaming product contract failed locally. Production was not touched.' }
 
-Write-Host '[LOCAL PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules + Sub2Prime product behavior verified before PM2 changes.'
+node .\SCRIPTS\TestP2GCReplyIntelligenceAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Reply intelligence and qualified-meeting routing failed locally. Production was not touched.' }
+
+node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
+if ($LASTEXITCODE -ne 0) { throw 'CRM/meeting pipeline/onboarding/client-success product contract failed locally. Production was not touched.' }
+
+Write-Host '[LOCAL PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules + Sub2Prime + reply intelligence + CRM/meeting/onboarding/client-success behavior verified before PM2 changes.'
 
 Write-Host "`n=== G2+: EXISTING TESTED QUEUE REPAIR + END-TO-END ACCEPTANCE ==="
 $env:MILES_REPAIR_EXPECTED_COMMIT = $actual
