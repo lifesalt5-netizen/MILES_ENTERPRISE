@@ -62,6 +62,17 @@ foreach ($file in $canonicalFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
+function Test-Pm2AppExists([string]$Name) {
+  try {
+    $raw = (& pm2 jlist 2>$null | Out-String).Trim()
+    if (-not $raw) { return $false }
+    $apps = $raw | ConvertFrom-Json
+    return @($apps | Where-Object { $_.name -eq $Name }).Count -gt 0
+  } catch {
+    return $false
+  }
+}
+
 Write-Host "`n=== PHASE 0: CANONICAL LEAN + EPHEMERAL WORKER RUNTIME ==="
 $runtimeChecks = @(
   'CORE\Supervisor.js',
@@ -82,11 +93,11 @@ foreach ($file in $runtimeChecks) {
 }
 
 Write-Host "`n=== ENSURE STANDALONE MILES API ==="
-pm2 describe miles-api *> $null
-if ($LASTEXITCODE -eq 0) {
+if (Test-Pm2AppExists 'miles-api') {
   pm2 restart miles-api | Out-Host
   if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-api.' }
 } else {
+  Write-Host '[PM2] miles-api not present; creating standalone API process.'
   pm2 start .\SCRIPTS\StartMilesApi.js --name miles-api | Out-Host
   if ($LASTEXITCODE -ne 0) { throw 'Unable to start standalone miles-api.' }
 }
@@ -186,11 +197,11 @@ foreach ($file in $demoChecks) {
 }
 
 Write-Host "`n=== PHASE 3: START SEPARATE P2GC SALES DEMO ==="
-pm2 describe p2gc-growth-demo *> $null
-if ($LASTEXITCODE -eq 0) {
+if (Test-Pm2AppExists 'p2gc-growth-demo') {
   pm2 restart p2gc-growth-demo | Out-Host
   if ($LASTEXITCODE -ne 0) { throw 'Unable to restart p2gc-growth-demo.' }
 } else {
+  Write-Host '[PM2] p2gc-growth-demo not present; creating standalone prospect-demo process.'
   pm2 start .\StartP2GCGrowthBlueprintDemo.js --name p2gc-growth-demo | Out-Host
   if ($LASTEXITCODE -ne 0) { throw 'Unable to start p2gc-growth-demo.' }
 }
