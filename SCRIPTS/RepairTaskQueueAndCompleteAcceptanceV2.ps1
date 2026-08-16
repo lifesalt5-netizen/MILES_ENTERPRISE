@@ -6,7 +6,7 @@ $Repo = 'origin'
 Set-Location $Root
 
 Write-Host '=== MILES CANONICAL SOURCE CLOSURE + FINAL ACCEPTANCE ==='
-Write-Host 'Rule: sync complete canonical code surface first; preserve runtime data/credentials/Git state; prove dependency graph; only then run repair and acceptance.'
+Write-Host 'Rule: sync complete canonical code surface first; preserve runtime data/credentials/Git state; prove dependency graph and executable CEO preflight locally; only then touch production runtime.'
 
 git fetch $Repo $Branch | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch canonical recovery branch.' }
@@ -34,12 +34,34 @@ node .\SCRIPTS\TestProductionDependencyGraphP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Production dependency graph is incomplete. Production was not touched.' }
 
 foreach ($required in @(
+  '.\CORE\ExecutionActionContracts.js',
+  '.\SERVICES\governance\ExecutionActionCapabilityService.js',
+  '.\SERVICES\governance\CommandPreflightService.js',
+  '.\SERVICES\ProviderAuthorityRegistryService.js',
   '.\SERVICES\revenue\RevenueTruthGateService.js',
+  '.\TESTS\TestExecutionActionContractsP0.js',
+  '.\TESTS\TestConnectorActionContractRuntimeP0.js',
+  '.\TESTS\TestCommandPreflightP0.js',
   '.\SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
   '.\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1'
 )) {
   if (-not (Test-Path $required -PathType Leaf)) { throw "Canonical deployment missing required file: $required" }
 }
+
+Write-Host "`n=== G1.5: LOCAL CEO PREFLIGHT CERTIFICATION (NO PM2 CHANGES) ==="
+node .\TESTS\TestProviderAuthorityEnvironmentP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Provider environment truth failed locally. Production was not touched.' }
+
+node .\TESTS\TestExecutionActionContractsP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Execution action contract failed locally. Production was not touched.' }
+
+node .\TESTS\TestConnectorActionContractRuntimeP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Runtime connector action contract failed locally. Production was not touched.' }
+
+node .\TESTS\TestCommandPreflightP0.js
+if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight failed locally. Production was not touched.' }
+
+Write-Host '[LOCAL CEO PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules verified before PM2 changes.'
 
 Write-Host "`n=== G2+: EXISTING TESTED QUEUE REPAIR + END-TO-END ACCEPTANCE ==="
 $env:MILES_REPAIR_EXPECTED_COMMIT = $actual
