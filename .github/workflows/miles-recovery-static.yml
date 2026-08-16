@@ -64,9 +64,11 @@ jobs:
             'SERVICES\DashboardServerService.js',
             'SERVICES\DashboardDataService.js',
             'SERVICES\CEORevenueBriefService.js',
+            'SERVICES\BusinessOperationsBridgeService.js',
             'SERVICES\BusinessExecutionEngineServiceV2.js',
             'SERVICES\BusinessWorkPlannerService.js',
             'SERVICES\ProviderAuthorityRegistryService.js',
+            'SERVICES\governance\CommandPreflightService.js',
             'SERVICES\governance\PolicyEngineService.js',
             'SERVICES\governance\DemoProtectionService.js',
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
@@ -81,6 +83,7 @@ jobs:
             'TESTS\TestBusinessWorkPlannerExecutionContractP0.js',
             'TESTS\TestEphemeralConnectorBootstrapP0.js',
             'TESTS\TestProviderAuthorityEnvironmentP0.js',
+            'TESTS\TestCommandPreflightP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js',
             'StartP2GCCustomerDelivery.js',
@@ -112,6 +115,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Negation-aware governance tests failed.' }
           node .\TESTS\TestProviderAuthorityEnvironmentP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Provider authority environment truth test failed.' }
+          node .\TESTS\TestCommandPreflightP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight contract failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Business work planner connector/read-only contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
