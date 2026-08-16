@@ -8,31 +8,6 @@ Set-Location $Root
 Write-Host '=== MILES END-TO-END BOOTSTRAP PREFLIGHT ==='
 Write-Host 'Rule: prove machine dependencies before touching production surfaces.'
 
-function Resolve-Pm2Cli {
-  $candidates = New-Object System.Collections.Generic.List[string]
-  if ($env:MILES_PM2_CLI) { $candidates.Add($env:MILES_PM2_CLI) }
-  $candidates.Add((Join-Path $Root 'node_modules\pm2\bin\pm2'))
-  if ($env:APPDATA) { $candidates.Add((Join-Path $env:APPDATA 'npm\node_modules\pm2\bin\pm2')) }
-  if ($env:npm_config_prefix) { $candidates.Add((Join-Path $env:npm_config_prefix 'node_modules\pm2\bin\pm2')) }
-  if ($env:NPM_CONFIG_PREFIX) { $candidates.Add((Join-Path $env:NPM_CONFIG_PREFIX 'node_modules\pm2\bin\pm2')) }
-
-  try {
-    $command = Get-Command pm2 -ErrorAction Stop
-    if ($command.Source) {
-      $wrapperDir = Split-Path $command.Source -Parent
-      $candidates.Add((Join-Path $wrapperDir 'node_modules\pm2\bin\pm2'))
-    }
-  } catch {}
-
-  foreach ($candidate in ($candidates | Select-Object -Unique)) {
-    if ($candidate -and (Test-Path $candidate -PathType Leaf)) {
-      return (Resolve-Path $candidate).Path
-    }
-  }
-
-  throw "PM2 JavaScript CLI was not found. Checked: $($candidates -join '; ')"
-}
-
 function Resolve-OrionDb {
   $explicit = @($env:ORION_DB, $env:ORION_DB_PATH) | Where-Object { $_ }
   foreach ($candidate in $explicit) {
@@ -69,28 +44,45 @@ git fetch $Repo $Branch | Out-Host
 if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch canonical reconciliation branch.' }
 $Ref = 'FETCH_HEAD'
 
-Write-Host "`n=== PREFLIGHT 2: DIRECT PM2 CLI ==="
-$pm2Cli = Resolve-Pm2Cli
+Write-Host "`n=== PREFLIGHT 2: PROMOTE TESTED PM2 TRANSPORT ==="
+$preflightFiles = @(
+  'SCRIPTS/ReconcilePm2Process.js',
+  'SCRIPTS/Pm2DirectCommand.js'
+)
+foreach ($file in $preflightFiles) {
+  $target = Join-Path $Root ($file -replace '/', '\\')
+  $content = git show "$Ref`:$file"
+  if ($LASTEXITCODE -ne 0) { throw "Unable to fetch PM2 preflight file: $file" }
+  $content | Set-Content $target -Encoding UTF8
+  node --check $target
+  if ($LASTEXITCODE -ne 0) { throw "PM2 preflight syntax failed: $file" }
+  Write-Host "[PROMOTED] $file"
+}
+
+Write-Host "`n=== PREFLIGHT 3: DIRECT PM2 CLI ==="
+$pm2Cli = (& node -e "process.stdout.write(require('./SCRIPTS/ReconcilePm2Process').resolvePm2Cli())").Trim()
+if ($LASTEXITCODE -ne 0 -or -not $pm2Cli -or -not (Test-Path $pm2Cli -PathType Leaf)) {
+  throw "Production PM2 resolver could not find the PM2 JavaScript CLI: $pm2Cli"
+}
 $env:MILES_PM2_CLI = $pm2Cli
 Write-Host "PM2 CLI: $pm2Cli"
-$pm2Json = & node $pm2Cli jlist
-if ($LASTEXITCODE -ne 0) { throw 'Direct node.exe -> PM2 CLI preflight failed.' }
-$pm2Text = ($pm2Json | Out-String).Trim()
-if (-not $pm2Text) { throw 'Direct PM2 jlist returned no output.' }
-Write-Host '[PASS] node.exe can query PM2 without nested cmd.exe.'
+node .\SCRIPTS\Pm2DirectCommand.js jlist | Out-Host
+if ($LASTEXITCODE -ne 0) { throw 'Direct node.exe -> PM2 JavaScript CLI preflight failed.' }
+Write-Host '[PASS] PM2 queried through node.exe without nested cmd.exe.'
 
-Write-Host "`n=== PREFLIGHT 3: ORION DATABASE ==="
+Write-Host "`n=== PREFLIGHT 4: ORION DATABASE ==="
 $orionDb = Resolve-OrionDb
 $env:ORION_DB = $orionDb
 $env:ORION_DB_PATH = $orionDb
 Write-Host "ORION DB: $orionDb"
 Write-Host '[PASS] ORION database path resolved.'
 
-Write-Host "`n=== PREFLIGHT 4: PROMOTE FINAL RUNNER ==="
+Write-Host "`n=== PREFLIGHT 5: PROMOTE FINAL RUNNER ==="
 $finalPath = Join-Path $Root 'SCRIPTS\RunApprovedMilesEndToEndFinal.ps1'
 $final = git show "$Ref`:SCRIPTS/RunApprovedMilesEndToEndFinal.ps1"
 if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch canonical final runner.' }
 $final | Set-Content $finalPath -Encoding UTF8
+[void][scriptblock]::Create((Get-Content $finalPath -Raw))
 Write-Host "Final runner: $finalPath"
 
 Write-Host "`n=== EXECUTE END-TO-END RECOVERY ==="
