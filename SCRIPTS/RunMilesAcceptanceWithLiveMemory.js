@@ -2,7 +2,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync, spawn } = require("child_process");
+const { spawn } = require("child_process");
+const { runPm2, parsePm2Jlist } = require("./ReconcilePm2Process");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const OUT_DIR = path.join(ROOT, "DATA", "runtime_guardian");
@@ -13,8 +14,7 @@ const HARD_MB = Number(process.env.MILES_WORKER_MEMORY_FAIL_MB || 3072);
 
 function sample() {
   try {
-    const raw = execSync("pm2 jlist", { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-    const apps = JSON.parse(raw);
+    const apps = parsePm2Jlist(runPm2(["jlist"]).stdout);
     const worker = apps.find(app => app.name === "miles-worker");
     if (!worker) return null;
     const rssMb = Math.round(Number(worker?.monit?.memory || 0) / 1024 / 1024);
@@ -28,12 +28,13 @@ function sample() {
       externalMb: null,
       warnMb: WARN_MB,
       hardMb: HARD_MB,
-      source: "PM2_LIVE_MEMORY"
+      source: "PM2_LIVE_MEMORY_DIRECT_NODE_CLI"
     };
     fs.mkdirSync(OUT_DIR, { recursive: true });
     fs.writeFileSync(MEMORY_FILE, JSON.stringify(record, null, 2), "utf8");
     return record;
-  } catch {
+  } catch (error) {
+    console.error(`[MILES MEMORY SAMPLE] ${error.message}`);
     return null;
   }
 }
