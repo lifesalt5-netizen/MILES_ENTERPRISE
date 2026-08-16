@@ -56,6 +56,7 @@ jobs:
             'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
             'SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
             'SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js',
+            'SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js',
             'SCRIPTS\TestMilesCoreHttpProbeP0.js',
             'SCRIPTS\TestDashboardPromotionClosureP0.js',
             'SCRIPTS\TestDashboardDeploymentSimulationP0.js',
@@ -75,6 +76,7 @@ jobs:
             'SERVICES\governance\DemoProtectionService.js',
             'SERVICES\customer\P2GCCustomerDeliveryService.js',
             'SERVICES\growth\P2GCGrowthAssetService.js',
+            'SERVICES\teaming\P2GCPrimeSubTeamingService.js',
             'SERVICES\revenue\RevenueTruthGateService.js',
             'CONNECTORS\MILES\connector.js',
             'CONNECTORS\INSTANTLY\connector.js',
@@ -132,6 +134,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Customer delivery acceptance failed.' }
           node .\SCRIPTS\TestP2GCGrowthAssetsAcceptanceP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Growth asset acceptance failed.' }
+          node .\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Sub2Prime/Prime-Sub teaming acceptance failed.' }
           node .\TESTS\TestWorkerExecutionBridgeBootstrap.js
           if ($LASTEXITCODE -ne 0) { throw 'Worker bootstrap acceptance failed.' }
 
