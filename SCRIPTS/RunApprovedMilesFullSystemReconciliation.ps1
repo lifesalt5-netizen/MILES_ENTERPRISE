@@ -10,7 +10,7 @@ Write-Host "=== APPROVED MILES + P2GC FULL-SYSTEM RECONCILIATION ==="
 Write-Host "Root      : $Root"
 Write-Host "Canonical : $CanonicalBranch"
 Write-Host "Support   : $SupportBranch"
-Write-Host "Rule      : full-system fix; minimal MILES core; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
+Write-Host "Rule      : full-system fix; canonical minimal MILES core; CEO dashboard, opportunities, execution, and prospect demo remain separate surfaces"
 
 $LocalBranch = (git branch --show-current).Trim()
 $LocalHead = (git rev-parse HEAD).Trim()
@@ -23,6 +23,9 @@ $CanonicalRef = 'FETCH_HEAD'
 
 $canonicalFiles = @(
   'GOVERNANCE/ENGINEERING_FULL_SYSTEM_FIX_RULE.md',
+  'CORE/Supervisor.js',
+  'SERVICES/ProviderRouterService.js',
+  'StartProductionSystem.js',
   'SERVICES/WorkforceService.js',
   'CONNECTORS/MILES/connector.js',
   'SERVICES/digital_coo/ExecutiveRuntimeHealthService.js',
@@ -33,8 +36,7 @@ $canonicalFiles = @(
   'SERVICES/demo/public/app.js',
   'SERVICES/demo/public/styles.css',
   'StartP2GCGrowthBlueprintDemo.js',
-  'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js',
-  'SCRIPTS/InstallMinimalWorkerRuntimeP0_v2.js'
+  'SCRIPTS/TestP2GCGrowthBlueprintDemoAcceptanceP0.js'
 )
 
 foreach ($file in $canonicalFiles) {
@@ -85,12 +87,7 @@ foreach ($file in $supportFiles) {
   $content | Set-Content $target -Encoding UTF8
 }
 
-Write-Host "`n=== PHASE 0: MINIMAL WORKER RUNTIME CONSOLIDATION V2 ==="
-node --check .\SCRIPTS\InstallMinimalWorkerRuntimeP0_v2.js
-if ($LASTEXITCODE -ne 0) { throw 'Minimal worker migration script syntax failed before execution.' }
-node .\SCRIPTS\InstallMinimalWorkerRuntimeP0_v2.js
-if ($LASTEXITCODE -ne 0) { throw 'Minimal worker runtime migration V2 failed.' }
-
+Write-Host "`n=== PHASE 0: CANONICAL MINIMAL WORKER RUNTIME ==="
 $runtimeChecks = @(
   'CORE\Supervisor.js',
   'SERVICES\ProviderRouterService.js',
@@ -106,16 +103,16 @@ foreach ($file in $runtimeChecks) {
 
 Write-Host "`n=== CLEAN RESTART: MILES WORKER ONLY ==="
 pm2 restart miles-worker | Out-Host
-if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-worker after minimal-runtime migration.' }
+if ($LASTEXITCODE -ne 0) { throw 'Unable to restart miles-worker after canonical minimal-runtime deployment.' }
 Start-Sleep -Seconds 60
 
 $workerPid = [int](pm2 pid miles-worker)
 $workerProcess = Get-Process -Id $workerPid -ErrorAction SilentlyContinue
-if (-not $workerProcess) { throw 'miles-worker is not running after minimal-runtime migration.' }
+if (-not $workerProcess) { throw 'miles-worker is not running after canonical minimal-runtime deployment.' }
 $workerRam = [math]::Round($workerProcess.WorkingSet64 / 1MB, 0)
 Write-Host "Minimal worker settled RAM: $workerRam MB (pid=$workerPid)"
 if ($workerRam -ge 3072) {
-  throw "Minimal worker still exceeds hard RAM ceiling before acceptance: $workerRam MB"
+  throw "Canonical minimal worker still exceeds hard RAM ceiling before acceptance: $workerRam MB"
 }
 
 Write-Host "`n=== PHASE 1: MILES PRODUCTION ACCEPTANCE ==="
@@ -168,7 +165,7 @@ if ($AfterBranch -ne $LocalBranch -or $AfterHead -ne $LocalHead) {
 }
 
 Write-Host "`n=== FULL-SYSTEM RECONCILIATION COMPLETE ==="
-Write-Host "MILES minimal-runtime gate    : PASS ($workerRam MB after settle)"
+Write-Host "MILES minimal-runtime gate   : PASS ($workerRam MB after settle)"
 Write-Host "MILES production acceptance : PASS"
 Write-Host "P2GC sales demo acceptance  : PASS"
 Write-Host "Local Git state preserved   : $AfterBranch / $AfterHead"
