@@ -92,6 +92,7 @@ jobs:
             'TESTS\TestProviderAuthorityEnvironmentP0.js',
             'TESTS\TestExecutionActionContractsP0.js',
             'TESTS\TestCommandPreflightP0.js',
+            'TESTS\TestRecoverySourceReloadContractP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js',
             'StartP2GCCustomerDelivery.js',
@@ -127,6 +128,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Execution action contract test failed.' }
           node .\TESTS\TestCommandPreflightP0.js
           if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight contract failed.' }
+          node .\TESTS\TestRecoverySourceReloadContractP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical source-reload deployment contract failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Business work planner connector/read-only contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
