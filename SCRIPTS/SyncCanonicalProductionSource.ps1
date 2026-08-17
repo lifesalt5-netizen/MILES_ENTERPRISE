@@ -62,6 +62,9 @@ try {
     'SERVICES\ceo_dashboard\public\index.html',
     'SERVICES\ceo_dashboard\public\ceo.css',
     'StartP2GCGrowthBlueprintDemo.js',
+    'SCRIPTS\WaitForHttpReady.js',
+    'SCRIPTS\TestMilesCoreHttpProbeP0.js',
+    'TESTS\TestHttpSurfaceReadinessP0.js',
     'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
     'CONFIG\PRODUCTION_SYSTEM_GRAPH.json',
     'SCRIPTS\TestProductionDependencyGraphP0.js'
@@ -83,11 +86,12 @@ try {
     commit = $actual
     copiedFiles = $copied
     dashboardBuild = 'P2GC_PRODUCT_LAUNCHPAD_V2'
+    httpReadinessGate = 'SCRIPTS\WaitForHttpReady.js'
     protectedRuntimeState = @('DATA', 'logs', '.env', 'node_modules', '.git')
     completedAt = (Get-Date).ToUniversalTime().ToString('o')
   }
   $report | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $stateDir 'canonical_source_sync_latest.json') -Encoding UTF8
-  Write-Host ("[CANONICAL SOURCE SYNC PASS] commit={0} files={1} dashboard={2}" -f $actual, $copied, 'P2GC_PRODUCT_LAUNCHPAD_V2')
+  Write-Host ("[CANONICAL SOURCE SYNC PASS] commit={0} files={1} dashboard={2} httpReadiness=required" -f $actual, $copied, 'P2GC_PRODUCT_LAUNCHPAD_V2')
 } finally {
   Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 }
