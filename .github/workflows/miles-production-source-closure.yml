@@ -19,15 +19,20 @@ jobs:
       - name: Install dependencies
         shell: powershell
         run: npm ci
-      - name: Parse canonical source sync and wrapper
+      - name: Parse canonical source sync and recovery controllers
         shell: powershell
         run: |
           [scriptblock]::Create((Get-Content .\SCRIPTS\SyncCanonicalProductionSource.ps1 -Raw)) | Out-Null
           [scriptblock]::Create((Get-Content .\SCRIPTS\RepairTaskQueueAndCompleteAcceptanceV2.ps1 -Raw)) | Out-Null
+          [scriptblock]::Create((Get-Content .\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1 -Raw)) | Out-Null
           Write-Host 'PowerShell parse PASS'
       - name: Production dependency graph on canonical checkout
         shell: powershell
-        run: node .\SCRIPTS\TestProductionDependencyGraphP0.js
+        run: |
+          node .\SCRIPTS\TestProductionDependencyGraphP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical dependency graph failed.' }
+          node .\TESTS\TestRecoverySourceReloadContractP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical source-reload contract failed.' }
       - name: Simulate stale protected local installation and canonical overlay
         shell: powershell
         run: |
@@ -52,3 +57,5 @@ jobs:
           $env:MILES_ROOT = $stale
           node (Join-Path $stale 'SCRIPTS\TestProductionDependencyGraphP0.js')
           if ($LASTEXITCODE -ne 0) { throw 'Stale-local dependency graph failed after canonical overlay.' }
+          node (Join-Path $stale 'TESTS\TestRecoverySourceReloadContractP0.js')
+          if ($LASTEXITCODE -ne 0) { throw 'Stale-local source-reload contract failed after canonical overlay.' }
