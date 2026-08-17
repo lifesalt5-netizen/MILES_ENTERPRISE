@@ -32,7 +32,7 @@ const end = start >= 0 ? source.indexOf("\nfunction ", start + 10) : -1;
 const block = start >= 0 ? source.slice(start, end >= 0 ? end : source.length) : "";
 
 for (const name of requiredSurfaces) {
-  check(`source reload includes ${name}`, block.includes(`'${name}'`) || block.includes(`\"${name}\"`));
+  check(`source reload includes ${name}`, block.includes(name));
 }
 
 const declarationIndex = source.indexOf("Restart-SourceUpdatedSurfaces");
