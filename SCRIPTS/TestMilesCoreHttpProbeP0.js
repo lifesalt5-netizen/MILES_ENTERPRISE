@@ -3,24 +3,25 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
+const { waitForHttpReady } = require("./WaitForHttpReady");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const COMMAND_CENTER_FILE = path.join(ROOT, "SERVICES", "digital_coo", "MilesCommandCenter.js");
 
 const checks = [
-  { name: "MILES API", port: 3000, path: "/", expect: value => /MILES OS is running/i.test(value.text) },
-  { name: "Command Center health", port: 8787, path: "/api/health", maxMs: 5000, expect: value => value.json?.ok === true && value.json?.taskQueue?.lockFree === true },
+  { name: "MILES API", port: 3000, path: "/", startupTimeoutMs:30000, expect: value => /MILES OS is running/i.test(value.text) },
+  { name: "Command Center health", port: 8787, path: "/api/health", startupTimeoutMs:30000, maxMs: 5000, expect: value => value.json?.ok === true && value.json?.taskQueue?.lockFree === true },
   { name: "Command Center dashboard", port: 8787, path: "/api/dashboard", maxMs: 5000, expect: value => value.json?.ok === true && value.json?.taskQueue?.lockFree === true },
-  { name: "CEO Dashboard state", port: 8737, path: "/api/state", expect: value => Boolean(value.json) },
+  { name: "CEO Dashboard state", port: 8737, path: "/api/state", readyPath:"/", startupTimeoutMs:45000, readinessRequestTimeoutMs:5000, expect: value => Boolean(value.json) },
   { name: "CEO product launchpad", port: 8737, path: "/", expect: value => /P2GC_PRODUCT_LAUNCHPAD_V2/i.test(value.text) && /P2GC Product Launchpad/i.test(value.text) && /Executive Government Growth Blueprint.*DEMO/i.test(value.text) && /OPEN LIVE PROSPECT DEMO/i.test(value.text) && /127\.0\.0\.1:8791\/demo/i.test(value.text) && /OPEN SUB2PRIME/i.test(value.text) && /OPEN OPPORTUNITY INTELLIGENCE/i.test(value.text) && /OPEN VEHICLE INTELLIGENCE/i.test(value.text) && /OPEN RECOMPETE INTELLIGENCE/i.test(value.text) && /127\.0\.0\.1:8791\/teaming/i.test(value.text) && /127\.0\.0\.1:8791\/opportunities/i.test(value.text) && /127\.0\.0\.1:8791\/vehicles/i.test(value.text) && /127\.0\.0\.1:8791\/recompetes/i.test(value.text) },
   { name: "CEO revenue", port: 8737, path: "/api/revenue", expect: value => value.json?.ok === true },
   { name: "CEO growth assets", port: 8737, path: "/api/growth-assets", expect: value => value.json?.ok === true },
-  { name: "Desktop UI", port: 3737, path: "/api/status", expect: value => value.json?.runtime === "running" },
-  { name: "Customer delivery", port: 8792, path: "/api/health", expect: value => value.json?.ok === true && value.json?.capabilities?.includes("lead_scoring") && value.json?.capabilities?.includes("client_onboarding") },
+  { name: "Desktop UI", port: 3737, path: "/api/status", startupTimeoutMs:30000, expect: value => value.json?.runtime === "running" },
+  { name: "Customer delivery", port: 8792, path: "/api/health", startupTimeoutMs:30000, expect: value => value.json?.ok === true && value.json?.capabilities?.includes("lead_scoring") && value.json?.capabilities?.includes("client_onboarding") },
   { name: "Revenue Command Center", port: 8792, path: "/api/revenue", expect: value => value.json?.ok === true },
   { name: "Meeting pipeline", port: 8792, path: "/api/meetings", expect: value => value.json?.ok === true && value.json?.metrics && Array.isArray(value.json?.meetings) },
   { name: "Client success", port: 8792, path: "/api/client-success", expect: value => value.json?.ok === true && value.json?.metrics && Array.isArray(value.json?.clients) },
-  { name: "P2GC prospect intelligence runtime", port: 8791, path: "/api/health", expect: value => value.json?.status === "HEALTHY" && ["executive_growth_blueprint","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence"].every(x=>value.json?.capabilities?.includes(x)) },
+  { name: "P2GC prospect intelligence runtime", port: 8791, path: "/api/health", startupTimeoutMs:30000, expect: value => value.json?.status === "HEALTHY" && ["executive_growth_blueprint","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence"].every(x=>value.json?.capabilities?.includes(x)) },
   { name: "Full Prospect Blueprint UI", port: 8791, path: "/demo", expect: value => /Executive Government Growth Blueprint/i.test(value.text) && /company name, UEI, CAGE, or website/i.test(value.text) && /Sub2Prime/i.test(value.text) },
   { name: "Sub2Prime teaming UI", port: 8791, path: "/teaming", expect: value => /Sub2Prime/i.test(value.text) && /Prime-Sub Teaming Intelligence/i.test(value.text) },
   { name: "Opportunity Intelligence UI", port: 8791, path: "/opportunities", expect: value => /Focused government contracting intelligence/i.test(value.text) && /opportunities/i.test(value.text) },
@@ -56,6 +57,20 @@ function request(port, pathname, timeoutMs = 30000) {
   });
 }
 
+async function requestForCheck(check) {
+  let readiness = null;
+  if (check.startupTimeoutMs) {
+    readiness = await waitForHttpReady({
+      port:check.port,
+      path:check.readyPath || check.path,
+      timeoutMs:check.startupTimeoutMs,
+      requestTimeoutMs:check.readinessRequestTimeoutMs || 3000
+    });
+  }
+  const response = await request(check.port, check.path);
+  return { response, readiness };
+}
+
 (async()=>{
   const results=[];
   const sourceContract=controlPlaneSourceContract();
@@ -63,13 +78,14 @@ function request(port, pathname, timeoutMs = 30000) {
   console.log(`[${sourceContract.ok?"PASS":"FAIL"}] Command Center lock-free source contract`);
   for(const check of checks){
     try{
-      const response=await request(check.port,check.path);
+      const { response, readiness }=await requestForCheck(check);
       const withinBudget=!check.maxMs||response.elapsedMs<=check.maxMs;
       const ok=response.statusCode===200&&withinBudget&&check.expect(response);
-      results.push({name:check.name,ok,statusCode:response.statusCode,bytes:response.bytes,elapsedMs:response.elapsedMs,maxMs:check.maxMs||null,headers:response.headers,taskQueueSource:response.json?.taskQueue?.source||null,taskQueueCacheHit:response.json?.taskQueue?.cacheHit??null});
-      console.log(`[${ok?"PASS":"FAIL"}] ${check.name} http=${response.statusCode} bytes=${response.bytes} elapsed=${response.elapsedMs}ms${check.maxMs?` budget=${check.maxMs}ms`:""}`);
+      results.push({name:check.name,ok,statusCode:response.statusCode,bytes:response.bytes,elapsedMs:response.elapsedMs,maxMs:check.maxMs||null,startupAttempts:readiness?.attempts||null,startupElapsedMs:readiness?.startupElapsedMs??null,headers:response.headers,taskQueueSource:response.json?.taskQueue?.source||null,taskQueueCacheHit:response.json?.taskQueue?.cacheHit??null});
+      const startupText=readiness?` startup=${readiness.startupElapsedMs}ms/${readiness.attempts} attempt(s)`:"";
+      console.log(`[${ok?"PASS":"FAIL"}] ${check.name} http=${response.statusCode} bytes=${response.bytes} elapsed=${response.elapsedMs}ms${check.maxMs?` budget=${check.maxMs}ms`:""}${startupText}`);
       if(!ok) console.log(response.text.slice(0,1000));
-    }catch(error){results.push({name:check.name,ok:false,error:error.message});console.log(`[FAIL] ${check.name} :: ${error.message}`);}
+    }catch(error){results.push({name:check.name,ok:false,error:error.message,code:error.code||null});console.log(`[FAIL] ${check.name} :: ${error.code?`${error.code} `:""}${error.message}`);}
   }
   const ok=results.every(item=>item.ok);
   console.log(`=== MILES CORE HTTP PROBE ${ok?"PASS":"FAIL"} ===`);
