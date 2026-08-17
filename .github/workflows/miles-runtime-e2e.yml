@@ -66,6 +66,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'CEO Dashboard promotion closure failed.' }
           node .\SCRIPTS\TestDashboardDeploymentSimulationP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Stale-local CEO Dashboard deployment simulation failed.' }
+          node .\TESTS\TestRecoverySourceReloadContractP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'Canonical source-reload deployment contract failed.' }
           node .\TESTS\TestProviderAuthorityEnvironmentP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Provider authority environment truth failed.' }
           node .\TESTS\TestExecutionActionContractsP0.js
