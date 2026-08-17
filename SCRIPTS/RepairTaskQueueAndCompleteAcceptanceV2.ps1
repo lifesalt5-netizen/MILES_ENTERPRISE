@@ -57,6 +57,9 @@ foreach ($required in @(
 }
 
 Write-Host "`n=== G1.5: LOCAL CEO + PRODUCT PREFLIGHT CERTIFICATION (NO PM2 CHANGES) ==="
+[void][scriptblock]::Create((Get-Content .\SCRIPTS\RepairTaskQueueAndCompleteAcceptance.ps1 -Raw))
+Write-Host '[PASS] inner recovery controller PowerShell parses before production changes'
+
 node .\TESTS\TestProviderAuthorityEnvironmentP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Provider environment truth failed locally. Production was not touched.' }
 
