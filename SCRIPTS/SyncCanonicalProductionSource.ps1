@@ -59,12 +59,21 @@ try {
     'SERVICES\BusinessOperationsBridgeService.js',
     'SERVICES\revenue\RevenueTruthGateService.js',
     'SERVICES\digital_coo\MilesCommandCenter.js',
+    'SERVICES\ceo_dashboard\public\index.html',
+    'SERVICES\ceo_dashboard\public\ceo.css',
+    'StartP2GCGrowthBlueprintDemo.js',
     'SCRIPTS\TestP2GCWholeSystemAcceptanceP0.js',
     'CONFIG\PRODUCTION_SYSTEM_GRAPH.json',
     'SCRIPTS\TestProductionDependencyGraphP0.js'
   )
   $missing = @($critical | Where-Object { -not (Test-Path (Join-Path $DestinationRoot $_) -PathType Leaf) })
   if ($missing.Count -gt 0) { throw "Canonical source sync incomplete. Missing: $($missing -join ', ')" }
+
+  $dashboardIndex = Join-Path $DestinationRoot 'SERVICES\ceo_dashboard\public\index.html'
+  $dashboardHtml = Get-Content $dashboardIndex -Raw
+  if ($dashboardHtml -notmatch 'P2GC_PRODUCT_LAUNCHPAD_V2' -or $dashboardHtml -notmatch 'OPEN LIVE PROSPECT DEMO') {
+    throw 'Canonical CEO dashboard sync is stale or incomplete: P2GC_PRODUCT_LAUNCHPAD_V2 marker/demo action missing.'
+  }
 
   $stateDir = Join-Path $DestinationRoot 'DATA\runtime_guardian'
   New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
@@ -73,11 +82,12 @@ try {
     ref = $Ref
     commit = $actual
     copiedFiles = $copied
+    dashboardBuild = 'P2GC_PRODUCT_LAUNCHPAD_V2'
     protectedRuntimeState = @('DATA', 'logs', '.env', 'node_modules', '.git')
     completedAt = (Get-Date).ToUniversalTime().ToString('o')
   }
   $report | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $stateDir 'canonical_source_sync_latest.json') -Encoding UTF8
-  Write-Host ("[CANONICAL SOURCE SYNC PASS] commit={0} files={1}" -f $actual, $copied)
+  Write-Host ("[CANONICAL SOURCE SYNC PASS] commit={0} files={1} dashboard={2}" -f $actual, $copied, 'P2GC_PRODUCT_LAUNCHPAD_V2')
 } finally {
   Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 }
