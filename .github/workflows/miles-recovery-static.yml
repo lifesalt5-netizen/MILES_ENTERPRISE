@@ -45,6 +45,7 @@ jobs:
             'CORE\ExecutionActionContracts.js',
             'SCRIPTS\ReconcilePm2Process.js',
             'SCRIPTS\Pm2DirectCommand.js',
+            'SCRIPTS\WaitForHttpReady.js',
             'SCRIPTS\TestReconcilePm2ProcessUnit.js',
             'SCRIPTS\TestReconcilePm2ProcessIntegration.js',
             'SCRIPTS\ReconcileMilesProductionSurfaces.js',
@@ -93,6 +94,7 @@ jobs:
             'TESTS\TestExecutionActionContractsP0.js',
             'TESTS\TestCommandPreflightP0.js',
             'TESTS\TestRecoverySourceReloadContractP0.js',
+            'TESTS\TestHttpSurfaceReadinessP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementP0.js',
             'TESTS\TestLegacyMilesPm2AliasRetirementIntegrationCI.js',
             'StartP2GCCustomerDelivery.js',
@@ -130,6 +132,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight contract failed.' }
           node .\TESTS\TestRecoverySourceReloadContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Canonical source-reload deployment contract failed.' }
+          node .\TESTS\TestHttpSurfaceReadinessP0.js
+          if ($LASTEXITCODE -ne 0) { throw 'HTTP startup readiness contract failed.' }
           node .\TESTS\TestBusinessWorkPlannerExecutionContractP0.js
           if ($LASTEXITCODE -ne 0) { throw 'Business work planner connector/read-only contract failed.' }
           node .\TESTS\TestExecutiveMissionExecutionP0.js
