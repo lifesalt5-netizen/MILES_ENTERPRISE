@@ -1,7 +1,7 @@
 {
-  "version": 5,
+  "version": 6,
   "name": "MILES Production System Graph",
-  "rule": "No production acceptance until source closure, machine prerequisites, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, product surfaces, reply intelligence, and persistence all pass.",
+  "rule": "No production acceptance until source closure, machine prerequisites, process reconciliation, bounded HTTP startup readiness, runtime surfaces, provider truth, executable action capability, command preflight, command execution, business capabilities, product surfaces, reply intelligence, and persistence all pass.",
   "protectedRuntimePaths": [
     ".git/",
     ".env",
@@ -16,19 +16,23 @@
     "ceoOperatingMission": "CONFIG/CEO_OPERATING_MISSION.json"
   },
   "surfaces": [
-    {"name":"MILES API","pm2":"miles-api","entry":"SCRIPTS/StartMilesApi.js","port":3000,"health":"/"},
+    {"name":"MILES API","pm2":"miles-api","entry":"SCRIPTS/StartMilesApi.js","port":3000,"readiness":"/","health":"/"},
     {"name":"MILES Worker","pm2":"miles-worker","entry":"StartProductionSystem.js"},
-    {"name":"Command Center","pm2":"miles-command-center","entry":"SERVICES/digital_coo/MilesCommandCenter.js","port":8787,"health":"/api/health"},
-    {"name":"CEO Dashboard","pm2":"miles-executive-dashboard","entry":"StartExecutiveDashboard.js","port":8737,"health":"/api/state"},
-    {"name":"Desktop UI","pm2":"miles-desktop-ui","entry":"StartMiles.js","port":3737,"health":"/api/status"},
+    {"name":"Command Center","pm2":"miles-command-center","entry":"SERVICES/digital_coo/MilesCommandCenter.js","port":8787,"readiness":"/api/health","health":"/api/health"},
+    {"name":"CEO Dashboard","pm2":"miles-executive-dashboard","entry":"StartExecutiveDashboard.js","port":8737,"readiness":"/","health":"/api/state"},
+    {"name":"Desktop UI","pm2":"miles-desktop-ui","entry":"StartMiles.js","port":3737,"readiness":"/api/status","health":"/api/status"},
     {"name":"Autonomous COO","pm2":"miles-autonomous-coo","entry":"StartAutonomousCOO.js"},
-    {"name":"Prospect Blueprint + Sub2Prime","pm2":"p2gc-growth-demo","entry":"StartP2GCGrowthBlueprintDemo.js","port":8791,"health":"/api/health"},
-    {"name":"Customer Delivery","pm2":"p2gc-customer-delivery","entry":"StartP2GCCustomerDelivery.js","port":8792,"health":"/api/health"},
+    {"name":"Prospect Blueprint + Revenue Intelligence Hub","pm2":"p2gc-growth-demo","entry":"StartP2GCGrowthBlueprintDemo.js","port":8791,"readiness":"/api/health","health":"/api/health"},
+    {"name":"Customer Delivery","pm2":"p2gc-customer-delivery","entry":"StartP2GCCustomerDelivery.js","port":8792,"readiness":"/api/health","health":"/api/health"},
     {"name":"Queue Maintainer","pm2":"miles-queue-maintainer","entry":"SCRIPTS/TaskQueueMaintenanceService.js"}
   ],
   "productSurfaces": [
-    {"name":"Executive Government Growth Blueprint","port":8791,"path":"/","api":"/api/assessment","mode":"read-only-prospect-intelligence"},
+    {"name":"CEO P2GC Product Launchpad","port":8737,"path":"/","mode":"internal-product-navigation","buildMarker":"P2GC_PRODUCT_LAUNCHPAD_V2"},
+    {"name":"Executive Government Growth Blueprint DEMO","port":8791,"path":"/demo","api":"/api/assessment","mode":"read-only-prospect-intelligence"},
     {"name":"Sub2Prime Prime-Sub Teaming Intelligence","port":8791,"path":"/teaming","api":"/api/teaming","mode":"read-only-prospect-intelligence"},
+    {"name":"Opportunity Intelligence","port":8791,"path":"/opportunities","api":"/api/intelligence?type=opportunities","mode":"read-only-prospect-intelligence"},
+    {"name":"Vehicle Intelligence","port":8791,"path":"/vehicles","api":"/api/intelligence?type=vehicles","mode":"read-only-prospect-intelligence"},
+    {"name":"Recompete Intelligence","port":8791,"path":"/recompetes","api":"/api/intelligence?type=recompetes","mode":"read-only-prospect-intelligence"},
     {"name":"Customer Delivery and Revenue Command Center","port":8792,"path":"/","api":"/api/revenue","mode":"internal-client-delivery"},
     {"name":"Meeting Pipeline","port":8792,"path":"/api/meetings","api":"/api/meetings","mode":"internal-sales-operations"},
     {"name":"Client Success","port":8792,"path":"/api/client-success","api":"/api/client-success","mode":"internal-client-operations"}
@@ -46,6 +50,7 @@
     "SCRIPTS/TestP2GCPrimeSubTeamingAcceptanceP0.js",
     "SCRIPTS/TestP2GCReplyIntelligenceAcceptanceP0.js",
     "SCRIPTS/TestTaskQueueCompactionP0.js",
+    "TESTS/TestHttpSurfaceReadinessP0.js",
     "TESTS/TestProviderAuthorityEnvironmentP0.js",
     "TESTS/TestExecutionActionContractsP0.js",
     "TESTS/TestConnectorActionContractRuntimeP0.js",
@@ -57,12 +62,14 @@
     "SERVICES/ceo_dashboard/public/ceo.css",
     "SERVICES/demo/public/index.html",
     "SERVICES/demo/public/teaming.html",
+    "SERVICES/demo/public/intelligence.html",
     "SERVICES/demo/public/app.js",
     "SERVICES/demo/public/styles.css"
   ],
   "criticalModules": [
     "CORE/TaskQueue.js",
     "CORE/ExecutionActionContracts.js",
+    "SCRIPTS/WaitForHttpReady.js",
     "SERVICES/BusinessOperationsBridgeService.js",
     "SERVICES/governance/CommandPreflightService.js",
     "SERVICES/governance/ExecutionActionCapabilityService.js",
@@ -121,6 +128,7 @@
     "MACHINE_PREREQUISITES",
     "DATA_AND_CONNECTORS",
     "PROCESS_RECONCILIATION",
+    "HTTP_STARTUP_READINESS",
     "HTTP_SURFACES",
     "PROVIDER_TRUTH",
     "ACTION_CAPABILITY_PREFLIGHT",
