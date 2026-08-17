@@ -46,6 +46,7 @@ foreach ($required in @(
   '.\TESTS\TestExecutionActionContractsP0.js',
   '.\TESTS\TestConnectorActionContractRuntimeP0.js',
   '.\TESTS\TestCommandPreflightP0.js',
+  '.\TESTS\TestRecoverySourceReloadContractP0.js',
   '.\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js',
   '.\SCRIPTS\TestP2GCReplyIntelligenceAcceptanceP0.js',
   '.\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js',
@@ -68,6 +69,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime connector action contract failed local
 node .\TESTS\TestCommandPreflightP0.js
 if ($LASTEXITCODE -ne 0) { throw 'CEO command preflight failed locally. Production was not touched.' }
 
+node .\TESTS\TestRecoverySourceReloadContractP0.js
+if ($LASTEXITCODE -ne 0) { throw 'Canonical source-reload deployment contract failed locally. Production was not touched.' }
+
 node .\SCRIPTS\TestP2GCPrimeSubTeamingAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'Sub2Prime/Prime-Sub teaming product contract failed locally. Production was not touched.' }
 
@@ -77,7 +81,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Reply intelligence and qualified-meeting routi
 node .\SCRIPTS\TestP2GCCustomerDeliveryAcceptanceP0.js
 if ($LASTEXITCODE -ne 0) { throw 'CRM/meeting pipeline/onboarding/client-success product contract failed locally. Production was not touched.' }
 
-Write-Host '[LOCAL PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules + Sub2Prime + reply intelligence + CRM/meeting/onboarding/client-success behavior verified before PM2 changes.'
+Write-Host '[LOCAL PREFLIGHT PASS] source + provider truth + action capability + approval/queue/worker rules + runtime source reload + Sub2Prime + reply intelligence + CRM/meeting/onboarding/client-success behavior verified before PM2 changes.'
 
 Write-Host "`n=== G2+: EXISTING TESTED QUEUE REPAIR + END-TO-END ACCEPTANCE ==="
 $env:MILES_REPAIR_EXPECTED_COMMIT = $actual
