@@ -6,7 +6,7 @@ $Repo = 'origin'
 
 Set-Location $Root
 Write-Host '=== MILES TASK QUEUE RECOVERY + FINAL ACCEPTANCE ==='
-Write-Host 'Policy: preserve full task history; shrink only the active execution queue; no broad PM2 deletion; restart only queue writers; then prove CEO execution end to end.'
+Write-Host 'Policy: preserve full task history; shrink only the active execution queue; no broad PM2 deletion; quiesce only queue writers; reload every source-updated canonical surface before acceptance.'
 
 function Resolve-OrionDb {
   $explicit = @($env:ORION_DB, $env:ORION_DB_PATH) | Where-Object { $_ }
@@ -68,6 +68,17 @@ function Start-QueueWriters {
   Write-Host '[RESTART] autonomous task-queue maintainer'
   node .\SCRIPTS\ReconcilePm2Process.js miles-queue-maintainer .\SCRIPTS\TaskQueueMaintenanceService.js | Out-Host
   if ($LASTEXITCODE -ne 0) { throw 'Unable to start autonomous task-queue maintainer.' }
+}
+
+function Restart-SourceUpdatedSurfaces {
+  Write-Host '[RELOAD] source-updated canonical runtime surfaces'
+  node .\SCRIPTS\ReconcileMilesProductionSurfaces.js `
+    miles-api `
+    miles-executive-dashboard `
+    miles-desktop-ui `
+    p2gc-customer-delivery `
+    p2gc-growth-demo | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw 'Unable to reload all source-updated canonical runtime surfaces.' }
 }
 
 $expected = [string]$env:MILES_REPAIR_EXPECTED_COMMIT
@@ -154,6 +165,8 @@ try {
   }
 }
 if ($repairFailure) { throw $repairFailure }
+
+Restart-SourceUpdatedSurfaces
 
 Write-Host "`n=== R3: POST-REPAIR SURFACE PROBE ==="
 Start-Sleep -Seconds 10
