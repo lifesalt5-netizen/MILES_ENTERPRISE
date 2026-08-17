@@ -35,12 +35,13 @@ for (const name of requiredSurfaces) {
   check(`source reload includes ${name}`, block.includes(`'${name}'`) || block.includes(`\"${name}\"`));
 }
 
-const callIndex = source.indexOf("Restart-SourceUpdatedSurfaces");
+const declarationIndex = source.indexOf("Restart-SourceUpdatedSurfaces");
+const invocationIndex = declarationIndex >= 0 ? source.indexOf("Restart-SourceUpdatedSurfaces", declarationIndex + 1) : -1;
 const r3Index = source.indexOf("=== R3: POST-REPAIR SURFACE PROBE ===");
 check(
   "source-updated surfaces reload before live HTTP probe",
-  callIndex >= 0 && r3Index >= 0 && source.indexOf("Restart-SourceUpdatedSurfaces", callIndex + 1) < r3Index,
-  `reloadCall=${source.indexOf("Restart-SourceUpdatedSurfaces", callIndex + 1)} r3=${r3Index}`
+  declarationIndex >= 0 && invocationIndex >= 0 && r3Index >= 0 && invocationIndex < r3Index,
+  `reloadCall=${invocationIndex} r3=${r3Index}`
 );
 
 const failed = checks.filter(x => !x.ok);
