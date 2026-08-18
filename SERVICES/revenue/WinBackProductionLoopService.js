@@ -5,6 +5,7 @@ const path = require("path");
 const WinBackLocalHistoryDiscoveryService = require("./WinBackLocalHistoryDiscoveryService");
 const WinBackProspectReconstructionService = require("./WinBackProspectReconstructionService");
 const WinBackCampaignService = require("./WinBackCampaignCrossGenService");
+const WinBackMasterExportService = require("./WinBackMasterExportService");
 
 const DEFAULT_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
@@ -22,6 +23,7 @@ class WinBackProductionLoopService {
     this.localDiscovery = options.localDiscovery || null;
     this.reconstruction = options.reconstruction || null;
     this.campaign = options.campaign || null;
+    this.exporter = options.exporter || null;
     this.timer = null;
     this.started = false;
     this.passRunning = false;
@@ -59,6 +61,11 @@ class WinBackProductionLoopService {
     return this.campaign;
   }
 
+  getExporter() {
+    if (!this.exporter) this.exporter = new WinBackMasterExportService({ rootDir: this.rootDir });
+    return this.exporter;
+  }
+
   writeReport(report) {
     fs.mkdirSync(path.dirname(this.reportFile), { recursive: true });
     const temporary = `${this.reportFile}.${process.pid}.${Date.now()}.tmp`;
@@ -83,6 +90,7 @@ class WinBackProductionLoopService {
     try {
       const localHistory = await Promise.resolve(this.getLocalDiscovery().execute({ writeReport: true }));
       const reconstruction = await Promise.resolve(this.getReconstruction(localHistory.seedPath).execute({ writeReport: true }));
+      const masterExport = await Promise.resolve(this.getExporter().execute({ reconstruction, localHistory }));
       const campaignPlan = await this.getCampaign().execute({
         priorConversationCandidates: reconstruction.priorConversationCandidates || [],
         reactivationCandidates: reconstruction.reactivationCandidates || [],
@@ -126,6 +134,14 @@ class WinBackProductionLoopService {
           blockedCount: Number(reconstruction?.blockedCount || 0),
           artifact: reconstruction?.artifact || null
         },
+        exports: {
+          masterCount: Number(masterExport?.masterCount || 0),
+          priorReadyCount: Number(masterExport?.priorReadyCount || 0),
+          reactivationReadyCount: Number(masterExport?.reactivationReadyCount || 0),
+          reviewCount: Number(masterExport?.reviewCount || 0),
+          evidenceEnrichedCount: Number(masterExport?.evidenceEnrichedCount || 0),
+          files: masterExport?.files || {}
+        },
         campaignPlan: {
           mode: "PLAN_ONLY",
           priorEligible: priorReady,
@@ -137,9 +153,9 @@ class WinBackProductionLoopService {
           artifact: campaignPlan?.artifact || null
         },
         nextAction: totalReady > 0
-          ? "REVIEW_RECOVERED_AUDIENCE_THEN_STAGE_WINBACK_DRAFTS"
-          : Number(localHistory?.reviewCount || 0) > 0
-            ? "VALIDATE_REVIEW_ONLY_HISTORY_RECORDS"
+          ? "REVIEW_WINBACK_MASTER_THEN_STAGE_DRAFTS"
+          : Number(masterExport?.reviewCount || 0) > 0
+            ? "REVIEW_WINBACK_REVIEW_QUEUE"
             : "LOCATE_ADDITIONAL_B12_OBSIDIAN_HISTORY_SOURCES",
         safety: {
           localScanReadOnly: true,
@@ -152,7 +168,7 @@ class WinBackProductionLoopService {
       };
 
       report.artifact = this.writeReport(report);
-      this.log(`${report.status}; recovered=${report.localHistory.recordsRecovered}; eligible=${totalReady}`);
+      this.log(`${report.status}; recovered=${report.localHistory.recordsRecovered}; master=${report.exports.masterCount}; eligible=${totalReady}`);
       return report;
     } catch (error) {
       const report = {

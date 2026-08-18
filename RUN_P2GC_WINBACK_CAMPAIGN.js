@@ -3,6 +3,7 @@
 const path = require("path");
 const WinBackLocalHistoryDiscoveryService = require("./SERVICES/revenue/WinBackLocalHistoryDiscoveryService");
 const WinBackProspectReconstructionService = require("./SERVICES/revenue/WinBackProspectReconstructionService");
+const WinBackMasterExportService = require("./SERVICES/revenue/WinBackMasterExportService");
 const WinBackCampaignService = require("./SERVICES/revenue/WinBackCampaignCrossGenService");
 
 function argValue(name) {
@@ -30,8 +31,13 @@ async function main() {
     ]
   });
   const campaign = new WinBackCampaignService({ rootDir });
+  const exporter = new WinBackMasterExportService({ rootDir });
 
   const reconstructionReport = reconstruction.execute({ writeReport: true });
+  const exportReport = exporter.execute({
+    reconstruction: reconstructionReport,
+    localHistory: localHistoryReport
+  });
   const apply = hasFlag("apply");
   const activate = hasFlag("activate");
 
@@ -70,6 +76,14 @@ async function main() {
       reactivationCount: reconstructionReport.reactivationCount,
       blockedCount: reconstructionReport.blockedCount,
       artifact: reconstructionReport.artifact
+    },
+    exports: {
+      masterCount: exportReport.masterCount,
+      priorReadyCount: exportReport.priorReadyCount,
+      reactivationReadyCount: exportReport.reactivationReadyCount,
+      reviewCount: exportReport.reviewCount,
+      evidenceEnrichedCount: exportReport.evidenceEnrichedCount,
+      files: exportReport.files
     },
     campaigns: {
       prior: {
