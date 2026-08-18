@@ -1,0 +1,109 @@
+{
+  "source": "google_calendar_and_gmail_recovery",
+  "generated_at": "2026-08-18T16:07:00-04:00",
+  "purpose": "Recover older P2GC meeting/booking records that were not present in the incomplete SOPHIA pipeline. Scheduled-only records remain blocked until completion status is validated. Direct email/phone evidence is preserved when available.",
+  "records": [
+    {
+      "full_name": "Ted Porter",
+      "first_name": "Ted",
+      "phone": "+13012772755",
+      "meeting_date": "2025-10-09",
+      "meeting_time": "09:00",
+      "meeting_type": "Pathway to Gov Contracts appointment",
+      "meeting_status": "SCHEDULED_ONLY",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Calendar confirms booking but not completed conversation."
+    },
+    {
+      "full_name": "Lillian Zheng",
+      "first_name": "Lillian",
+      "phone": "+16787996109",
+      "meeting_date": "2025-10-09",
+      "meeting_time": "13:30",
+      "meeting_type": "Pathway to Gov Contracts appointment",
+      "meeting_status": "SCHEDULED_ONLY",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Calendar confirms booking but not completed conversation."
+    },
+    {
+      "full_name": "Jonathan Mullany",
+      "first_name": "Jonathan",
+      "email": "j.mullany@readytohelp.care",
+      "phone": "+17177562034",
+      "company": "Ready To Help",
+      "job_title": "Chief Executive Officer",
+      "meeting_date": "2025-10-10",
+      "meeting_time": "10:00",
+      "meeting_type": "Pathway to Gov Contracts appointment",
+      "meeting_status": "MISSED_AND_RESCHEDULE_REQUESTED",
+      "relationship_status": "RESCHEDULED_UNCONFIRMED",
+      "source": "GOOGLE_CALENDAR_AND_GMAIL",
+      "prior_topic": "your federal growth strategy"
+    },
+    {
+      "full_name": "Wayne C. Meyer",
+      "first_name": "Wayne",
+      "phone": "+12624908922",
+      "meeting_date": "2025-10-10",
+      "meeting_time": "11:00",
+      "meeting_type": "Pathway to Gov Contracts appointment / GSA Marketing follow-up",
+      "meeting_status": "STATUS_UNCONFIRMED",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Calendar includes a same-day Pathways phone-call follow-up but does not prove the conversation occurred."
+    },
+    {
+      "full_name": "Jigar Padhiar",
+      "first_name": "Jigar",
+      "phone": "+12026830610",
+      "meeting_date": "2025-10-10",
+      "meeting_time": "14:00",
+      "meeting_type": "Pathway to Gov Contracts appointment",
+      "meeting_status": "SCHEDULED_ONLY",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Calendar confirms booking; later Jigar meetings exist but identity/completion must be reconciled before enrollment."
+    },
+    {
+      "full_name": "Terry S. Kimbel",
+      "first_name": "Terry",
+      "phone": "+17206643905",
+      "meeting_date": "2025-10-14",
+      "meeting_time": "14:00",
+      "meeting_type": "Pathway to Gov Contracts appointment",
+      "meeting_status": "SCHEDULED_ONLY",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Calendar confirms booking but not completed conversation."
+    },
+    {
+      "full_name": "Zachary Winter",
+      "first_name": "Zachary",
+      "email": "zachary.winter@witsconsult.com",
+      "phone": "9363711406",
+      "company": "WITS Consult",
+      "meeting_date": "2025-10-21",
+      "meeting_time": "16:30",
+      "meeting_type": "GSA Marketing call",
+      "meeting_status": "SCHEDULED_ONLY",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR_MEETING_REQUEST_FORM",
+      "prior_topic": "marketing, social media and proposal development assistance",
+      "review_required": "Calendar contains direct contact data and service interest, but completion still needs validation."
+    },
+    {
+      "full_name": "Logisoft",
+      "first_name": "",
+      "company": "Logisoft",
+      "meeting_date": "2025-11-17",
+      "meeting_time": "13:00",
+      "meeting_type": "Pathways 2 Government Contracting Zoom",
+      "meeting_status": "STATUS_UNCONFIRMED",
+      "relationship_status": "STATUS_VALIDATION_REQUIRED",
+      "source": "GOOGLE_CALENDAR",
+      "review_required": "Company-level calendar event lacks a confirmed person/email and completion evidence."
+    }
+  ]
+}
