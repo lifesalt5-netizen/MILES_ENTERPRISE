@@ -84,6 +84,10 @@ class FakeCampaignService {
       campaignCreated: true,
       campaignActivated: false,
       leadsUploaded: input.candidates.length,
+      uploadResult: {
+        ok: true,
+        uploaded: input.candidates.length
+      },
       artifact: "campaign-draft.json"
     };
   }
@@ -140,7 +144,9 @@ async function run() {
     campaignService: campaign,
     env: {
       CAPTURE_CAPACITY_AUTO_STAGE: "true",
-      INSTANTLY_WRITE_ENABLED: "false"
+      INSTANTLY_WRITE_ENABLED: "true",
+      MILES_DRY_RUN: "true",
+      MILES_ALLOW_INSTANTLY_MUTATIONS: "true"
     },
     now: () => new Date("2026-08-18T19:30:00.000Z")
   });
@@ -151,6 +157,8 @@ async function run() {
 
   assert.strictEqual(planned.ok, true);
   assert.strictEqual(planned.status, "READY_WRITE_GATE_DISABLED");
+  assert.strictEqual(planned.policy.apply, false);
+  assert.strictEqual(planned.policy.writeGateReason, "MILES_DRY_RUN_ENABLED");
   assert.strictEqual(campaign.executeCalls.length, 1);
   assert.strictEqual(campaign.executeCalls[0].apply, false);
   assert.strictEqual(campaign.executeCalls[0].activate, false);
@@ -164,6 +172,8 @@ async function run() {
     env: {
       CAPTURE_CAPACITY_AUTO_STAGE: "true",
       INSTANTLY_WRITE_ENABLED: "true",
+      MILES_DRY_RUN: "false",
+      MILES_ALLOW_INSTANTLY_MUTATIONS: "true",
       CAPTURE_CAPACITY_ACTIVATION_APPROVAL: "ACTIVATE:P2GC_CAPTURE_CAPACITY_2026Q3"
     },
     now: () => new Date("2026-08-18T19:31:00.000Z")
@@ -175,7 +185,10 @@ async function run() {
 
   assert.strictEqual(staged.ok, true);
   assert.strictEqual(staged.status, "CAMPAIGN_STAGED_DRAFT");
+  assert.strictEqual(staged.policy.apply, true);
+  assert.strictEqual(staged.policy.connectorWriteEnabled, true);
   assert.strictEqual(staged.policy.autoActivate, false);
+  assert.strictEqual(staged.policy.activationPolicy, "NEVER_AUTO_ACTIVATE");
   assert.strictEqual(campaign.executeCalls.length, 1);
   assert.strictEqual(campaign.executeCalls[0].apply, true);
   assert.strictEqual(campaign.executeCalls[0].activate, false);
@@ -214,7 +227,8 @@ async function run() {
     campaignService: new FakeCampaignService(),
     env: {
       CAPTURE_CAPACITY_AUTO_STAGE: "true",
-      INSTANTLY_WRITE_ENABLED: "true"
+      MILES_DRY_RUN: "false",
+      MILES_ALLOW_INSTANTLY_MUTATIONS: "true"
     }
   });
 
