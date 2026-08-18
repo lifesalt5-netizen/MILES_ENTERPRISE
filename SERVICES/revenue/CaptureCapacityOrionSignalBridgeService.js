@@ -4,7 +4,8 @@ const fs = require("fs");
 const path = require("path");
 
 const DEFAULT_LIMIT = 5000;
-const DEFAULT_LOOKBACK_DAYS = 730;
+const DEFAULT_FUTURE_DAYS = 730;
+const DEFAULT_PAST_GRACE_DAYS = 30;
 
 function clean(value) {
   return String(value ?? "").trim();
@@ -122,12 +123,12 @@ function eventDate(row = {}) {
   ]));
 }
 
-function withinWindow(value, nowMs, lookbackDays) {
+function withinRecompeteWindow(value, nowMs, pastGraceDays, futureDays) {
   const ts = parseDate(value);
-  if (ts === null) return true;
-  const windowMs = lookbackDays * 86400000;
-  const age = nowMs - ts;
-  return age >= -windowMs && age <= windowMs;
+  if (ts === null) return false;
+  const startMs = nowMs - pastGraceDays * 86400000;
+  const endMs = nowMs + futureDays * 86400000;
+  return ts >= startMs && ts <= endMs;
 }
 
 class CaptureCapacityOrionSignalBridgeService {
@@ -138,7 +139,8 @@ class CaptureCapacityOrionSignalBridgeService {
     this.orion = options.orion || null;
     this.now = options.now || (() => new Date());
     this.limit = Math.max(1, Math.min(Number(options.limit || DEFAULT_LIMIT), 25000));
-    this.lookbackDays = Math.max(1, Number(options.lookbackDays || DEFAULT_LOOKBACK_DAYS));
+    this.futureDays = Math.max(1, Number(options.futureDays || options.lookbackDays || DEFAULT_FUTURE_DAYS));
+    this.pastGraceDays = Math.max(0, Number(options.pastGraceDays ?? DEFAULT_PAST_GRACE_DAYS));
     this.baseDir = options.baseDir || path.join(
       this.rootDir,
       "DATA",
@@ -217,13 +219,12 @@ class CaptureCapacityOrionSignalBridgeService {
 
     if (recompeteColumns.has("recompete_date")) {
       const nowMs = this.now().getTime();
-      const windowMs = this.lookbackDays * 86400000;
-      const startMs = nowMs - windowMs;
-      const endMs = nowMs + windowMs;
+      const startMs = nowMs - this.pastGraceDays * 86400000;
+      const endMs = nowMs + this.futureDays * 86400000;
 
       where = `WHERE (
-        (r.recompete_date BETWEEN ? AND ?) OR
-        (r.recompete_date BETWEEN ? AND ?)
+        (length(r.recompete_date) = 10 AND r.recompete_date BETWEEN ? AND ?) OR
+        (length(r.recompete_date) = 8 AND r.recompete_date BETWEEN ? AND ?)
       )`;
       params.push(
         isoDate(startMs),
@@ -356,7 +357,7 @@ class CaptureCapacityOrionSignalBridgeService {
           continue;
         }
 
-        if (!withinWindow(date, nowMs, this.lookbackDays)) {
+        if (!withinRecompeteWindow(date, nowMs, this.pastGraceDays, this.futureDays)) {
           continue;
         }
 
@@ -403,6 +404,10 @@ class CaptureCapacityOrionSignalBridgeService {
       rowsEvaluated: loaded.rows.length,
       verifiedSignalCount: verifiedSignals.length,
       validationQueueCount: validationQueue.length,
+      signalWindow: {
+        pastGraceDays: this.pastGraceDays,
+        futureDays: this.futureDays
+      },
       signalFile: this.signalFile,
       validationFile: this.validationFile,
       schema: loaded.schema,
@@ -437,5 +442,5 @@ module.exports.helpers = {
   isMonitoringProfile,
   evidenceText,
   eventDate,
-  withinWindow
+  withinRecompeteWindow
 };
