@@ -9,6 +9,7 @@ on:
       - "SERVICES/revenue/CaptureCapacityCampaignService.js"
       - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
       - "SERVICES/revenue/CaptureCapacitySourceBootstrapService.js"
+      - "SERVICES/revenue/CaptureCapacityOrionSignalBridgeService.js"
       - "TESTS/capture_capacity_*"
       - ".github/workflows/capture-capacity-validation.yml"
   workflow_dispatch:
@@ -37,9 +38,11 @@ jobs:
           node --check SERVICES/revenue/CaptureCapacityCampaignService.js
           node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
           node --check SERVICES/revenue/CaptureCapacitySourceBootstrapService.js
+          node --check SERVICES/revenue/CaptureCapacityOrionSignalBridgeService.js
           node --check TESTS/capture_capacity_autonomous_execution_test.js
           node --check TESTS/capture_capacity_runtime_routing_test.js
           node --check TESTS/capture_capacity_source_bootstrap_test.js
+          node --check TESTS/capture_capacity_orion_signal_bridge_test.js
 
       - name: Autonomous staging tests
         run: node TESTS/capture_capacity_autonomous_execution_test.js
@@ -49,3 +52,6 @@ jobs:
 
       - name: Source bootstrap tests
         run: node TESTS/capture_capacity_source_bootstrap_test.js
+
+      - name: ORION signal bridge tests
+        run: node TESTS/capture_capacity_orion_signal_bridge_test.js
