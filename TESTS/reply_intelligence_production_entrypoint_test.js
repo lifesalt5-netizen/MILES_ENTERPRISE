@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert");
+const fs=require("fs");
+const path=require("path");
+const source=fs.readFileSync(path.join(__dirname,"..","StartAutonomousCOO.js"),"utf8");
+assert(source.includes("ReplyIntelligenceProductionLoopService"));
+assert(source.includes("replyIntelligence.start()"));
+assert(source.includes("replyIntelligence.runOnce()"));
+assert(source.includes("replyIntelligence.stop()"));
+assert(source.includes("qualifiedPositiveReplies"));
+assert(source.includes("global_suppression_master.json"));
+console.log("PASS reply_intelligence_production_entrypoint_test");
