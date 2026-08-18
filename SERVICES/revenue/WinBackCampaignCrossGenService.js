@@ -52,7 +52,7 @@ class WinBackCampaignCrossGenService extends WinBackCampaignService {
         day: 5,
         delay: 4,
         subject: "What you would actually see",
-        body: `{{first_name}},\n\nIf we reconnect, I do not want to spend the call giving you generic GovCon advice.\n\nI would rather show you current evidence for {{company_display}} and answer three questions:\n\n1. Where is the realistic federal opportunity?\n2. What is getting in the way?\n3. What should you do next?\n\nThat keeps the conversation practical and lets you decide quickly whether P2GC is useful.\n\nWant me to prepare it?\n\nKevin`
+        body: `{{first_name}},\n\nIf we reconnect, I do not want to spend the call giving you generic GovCon advice.\n\nI would rather show you current evidence for {{company_display}} around three things:\n\n1. The realistic federal opportunity.\n2. What is getting in the way.\n3. The next actions worth taking.\n\nThat keeps the conversation practical and lets you decide quickly whether P2GC is useful.\n\nWant me to prepare it?\n\nKevin`
       },
       {
         day: 12,
