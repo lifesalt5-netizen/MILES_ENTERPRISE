@@ -1,0 +1,42 @@
+name: P2GC Win-Back Validation
+
+on:
+  pull_request:
+    paths:
+      - "DATA/revenue/winback/**"
+      - "SERVICES/revenue/WinBackProspectReconstructionService.js"
+      - "SERVICES/revenue/WinBackCampaignService.js"
+      - "RUN_P2GC_WINBACK_CAMPAIGN.js"
+      - "TESTS/winback_*"
+      - ".github/workflows/winback-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/revenue/WinBackProspectReconstructionService.js
+          node --check SERVICES/revenue/WinBackCampaignService.js
+          node --check RUN_P2GC_WINBACK_CAMPAIGN.js
+          node --check TESTS/winback_reconstruction_test.js
+          node --check TESTS/winback_campaign_test.js
+
+      - name: Prospect reconstruction tests
+        run: node TESTS/winback_reconstruction_test.js
+
+      - name: Campaign safety and sequence tests
+        run: node TESTS/winback_campaign_test.js
