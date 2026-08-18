@@ -5,6 +5,7 @@ const path = require("path");
 
 const marketingDiscovery = require("./MarketingDiscovery");
 const orionDiscovery = require("./OrionDiscovery");
+const captureCapacityRevenueDiscovery = require("./CaptureCapacityRevenueDiscovery");
 const eventBus = require("../Events/EventBus");
 
 const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
@@ -229,6 +230,7 @@ class DiscoveryEngine {
       new InstantlyOperationalDiscovery(),
       marketingDiscovery,
       orionDiscovery,
+      captureCapacityRevenueDiscovery,
       new WebsiteGrowthDiscovery(),
       new LinkedInGrowthDiscovery(),
       new GovernmentDataDiscovery()
