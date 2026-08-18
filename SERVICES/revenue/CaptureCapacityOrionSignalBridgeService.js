@@ -114,25 +114,26 @@ class CaptureCapacityOrionSignalBridgeService {
     this.now = options.now || (() => new Date());
     this.limit = Math.max(1, Math.min(Number(options.limit || DEFAULT_LIMIT), 25000));
     this.lookbackDays = Math.max(1, Number(options.lookbackDays || DEFAULT_LOOKBACK_DAYS));
-    this.signalDir = options.signalDir || path.join(
+    this.baseDir = options.baseDir || path.join(
       this.rootDir,
       "DATA",
       "runtime",
       "revenue",
-      "capture_capacity",
-      "signals"
+      "capture_capacity"
     );
+    this.signalDir = options.signalDir || path.join(this.baseDir, "signals");
+    this.validationDir = options.validationDir || path.join(this.baseDir, "validation");
     this.signalFile = options.signalFile || path.join(
       this.signalDir,
       "capture_capacity_orion_verified_signals.json"
     );
     this.validationFile = options.validationFile || path.join(
-      this.signalDir,
-      "capture_capacity_orion_validation_queue.json"
+      this.validationDir,
+      "orion_recompete_validation_queue.json"
     );
     this.reportFile = options.reportFile || path.join(
-      this.signalDir,
-      "capture_capacity_orion_bridge_latest.json"
+      this.baseDir,
+      "orion_signal_bridge_latest.json"
     );
   }
 
@@ -259,27 +260,41 @@ class CaptureCapacityOrionSignalBridgeService {
     };
   }
 
+  unavailableReport(error) {
+    const report = {
+      ok: false,
+      status: "ORION_UNAVAILABLE",
+      error: clean(error?.message || error || "ORION initialization failed."),
+      verifiedSignalCount: 0,
+      validationQueueCount: 0,
+      signalFile: this.signalFile,
+      validationFile: this.validationFile,
+      safety: {
+        monitoringProfilesExcluded: true,
+        publicSourceRequired: true,
+        validationOutsideSignalDiscovery: true,
+        orionDatabaseWrites: false,
+        outboundWrites: false
+      },
+      generatedAt: this.now().toISOString()
+    };
+    report.artifact = this.writeJson(this.reportFile, report);
+    return report;
+  }
+
   apply() {
-    const orion = this.getOrion();
+    let orion;
     let init;
 
     try {
+      orion = this.getOrion();
       init = orion.initialize();
     } catch (error) {
-      init = { ok: false, message: error.message };
+      return this.unavailableReport(error);
     }
 
     if (!init?.ok) {
-      const report = {
-        ok: false,
-        status: "ORION_UNAVAILABLE",
-        error: init?.message || "ORION initialization failed.",
-        verifiedSignalCount: 0,
-        validationQueueCount: 0,
-        generatedAt: this.now().toISOString()
-      };
-      report.artifact = this.writeJson(this.reportFile, report);
-      return report;
+      return this.unavailableReport(init?.message || "ORION initialization failed.");
     }
 
     const loaded = this.loadRows(orion);
@@ -325,6 +340,7 @@ class CaptureCapacityOrionSignalBridgeService {
     const validationPayload = {
       ok: loaded.ok,
       source: "CaptureCapacityOrionSignalBridgeService",
+      outboundEligible: false,
       generatedAt: this.now().toISOString(),
       records: validationQueue
     };
@@ -350,6 +366,7 @@ class CaptureCapacityOrionSignalBridgeService {
       safety: {
         monitoringProfilesExcluded: true,
         publicSourceRequired: true,
+        validationOutsideSignalDiscovery: true,
         orionDatabaseWrites: false,
         outboundWrites: false
       },
