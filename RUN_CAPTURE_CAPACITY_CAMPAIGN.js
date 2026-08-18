@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const CaptureCapacityCampaignService = require("./SERVICES/revenue/CaptureCapacityCampaignService");
+const CaptureCapacityProspectDiscoveryService = require("./SERVICES/revenue/CaptureCapacityProspectDiscoveryService");
 
 function arg(name) {
   const prefix = `--${name}=`;
@@ -15,7 +16,7 @@ function hasFlag(name) {
 }
 
 function loadJson(filePath) {
-  if (!filePath) return [];
+  if (!filePath) return null;
   const resolved = path.resolve(filePath);
   if (!fs.existsSync(resolved)) throw new Error(`Candidate file not found: ${resolved}`);
   const parsed = JSON.parse(fs.readFileSync(resolved, "utf8").replace(/^\uFEFF/, ""));
@@ -27,7 +28,16 @@ function loadJson(filePath) {
 
 async function main() {
   const candidateFile = arg("candidates") || process.env.CAPTURE_CAPACITY_CANDIDATES;
-  const candidates = loadJson(candidateFile);
+  const maxAudience = Number(arg("max-audience") || process.env.CAPTURE_CAPACITY_MAX_AUDIENCE || 2000);
+  let candidates = loadJson(candidateFile);
+  let discovery = null;
+
+  if (!candidates) {
+    const discoveryService = new CaptureCapacityProspectDiscoveryService();
+    discovery = discoveryService.discover({ maxAudience });
+    candidates = discovery.candidates;
+  }
+
   const service = new CaptureCapacityCampaignService();
   const result = await service.execute({
     candidates,
@@ -35,9 +45,20 @@ async function main() {
     activate: hasFlag("activate"),
     activationApproval: arg("approval") || process.env.CAPTURE_CAPACITY_ACTIVATION_APPROVAL || "",
     dailyLimit: Number(arg("daily-limit") || process.env.CAPTURE_CAPACITY_DAILY_LIMIT || 50),
-    maxAudience: Number(arg("max-audience") || process.env.CAPTURE_CAPACITY_MAX_AUDIENCE || 2000)
+    maxAudience
   });
-  console.log(JSON.stringify(result, null, 2));
+
+  console.log(JSON.stringify({
+    ...result,
+    candidateSource: candidateFile ? "EXPLICIT_CANDIDATE_FILE" : "AUTO_DISCOVERY_FEED",
+    discovery: discovery ? {
+      artifact: discovery.artifact,
+      sourceCounts: discovery.sourceCounts,
+      campaignGate: discovery.campaignGate,
+      nextAction: discovery.nextAction
+    } : null
+  }, null, 2));
+
   if (!result.ok) process.exitCode = 2;
 }
 
