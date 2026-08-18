@@ -200,7 +200,10 @@ class WinBackProspectReconstructionService {
     this.maxFileBytes = Number(options.maxFileBytes || DEFAULT_MAX_FILE_BYTES);
     this.seedPaths = Array.isArray(options.seedPaths) && options.seedPaths.length
       ? options.seedPaths.map(item => path.resolve(item))
-      : [path.join(this.rootDir, "DATA", "revenue", "winback", "calendly_seed_20260818.json")];
+      : [
+          path.join(this.rootDir, "DATA", "revenue", "winback", "calendly_seed_20260818.json"),
+          path.join(this.rootDir, "DATA", "revenue", "winback", "calendar_recovered_seed_20260818.json")
+        ];
     this.outputPath = options.outputPath || path.join(
       this.rootDir,
       "DATA",
@@ -303,6 +306,18 @@ class WinBackProspectReconstructionService {
   }
 
   bestContactMatch(seed, wrappedContacts) {
+    const seedEmail = recordEmail(seed).toLowerCase();
+    if (validEmail(seedEmail)) {
+      const exactEmailMatches = wrappedContacts.filter(item => recordEmail(item.record).toLowerCase() === seedEmail);
+      if (exactEmailMatches.length > 0) {
+        return {
+          match: { ...exactEmailMatches[0], score: 120 },
+          ambiguous: false,
+          alternatives: exactEmailMatches.slice(1, 5).map(item => ({ ...item, score: 120 }))
+        };
+      }
+    }
+
     const scored = wrappedContacts
       .map(item => ({ ...item, score: this.matchScore(seed, item.record) }))
       .filter(item => item.score > 0)
@@ -327,8 +342,9 @@ class WinBackProspectReconstructionService {
     const contact = match?.record || {};
     const relationshipStatus = clean(seed.relationship_status || seed.meeting_status).toUpperCase();
     const meetingStatus = clean(seed.meeting_status).toUpperCase();
-    const status = contactStatus(contact);
-    const email = recordEmail(contact);
+    const status = contactStatus(contact) || clean(seed.crm_status || seed.status || seed.lead_status).toUpperCase();
+    const seedEmail = recordEmail(seed);
+    const email = validEmail(seedEmail) ? seedEmail : recordEmail(contact);
     const blockers = [];
 
     if (clean(seed.review_required)) blockers.push("MANUAL_REVIEW_REQUIRED");
@@ -338,13 +354,13 @@ class WinBackProspectReconstructionService {
     if (!COMPLETED_RELATIONSHIPS.has(relationshipStatus) && !REACTIVATION_RELATIONSHIPS.has(relationshipStatus)) {
       blockers.push("RELATIONSHIP_STATUS_VALIDATION_REQUIRED");
     }
-    if (matchResult.ambiguous) blockers.push("AMBIGUOUS_CONTACT_MATCH");
-    if (!match) blockers.push("CONTACT_MATCH_REQUIRED");
-    if (match && (!email || !validEmail(email))) blockers.push("VALID_EMAIL_REQUIRED");
+    if (matchResult.ambiguous && !validEmail(seedEmail)) blockers.push("AMBIGUOUS_CONTACT_MATCH");
+    if (!match && !validEmail(seedEmail)) blockers.push("CONTACT_MATCH_REQUIRED");
+    if (!email || !validEmail(email)) blockers.push("VALID_EMAIL_REQUIRED");
     if (statusMatches(status, SUPPRESSED_STATUS_PATTERNS)) blockers.push(`SUPPRESSED_STATUS:${status}`);
     if (statusMatches(status, ACTIVE_PIPELINE_PATTERNS)) blockers.push(`ACTIVE_PIPELINE_REVIEW:${status}`);
 
-    const company = recordCompany(contact) || clean(seed.company);
+    const company = recordCompany(seed) || recordCompany(contact);
     const firstName = clean(seed.first_name) || clean(first(contact, ["first_name", "firstName", "First Name"])) || clean(contactName(contact).split(/\s+/)[0]);
     const fullName = clean(seed.full_name || seed.name) || contactName(contact);
     const track = COMPLETED_RELATIONSHIPS.has(relationshipStatus)
@@ -357,13 +373,13 @@ class WinBackProspectReconstructionService {
       eligible: blockers.length === 0,
       track,
       first_name: firstName,
-      last_name: clean(first(contact, ["last_name", "lastName", "Last Name"])),
+      last_name: clean(seed.last_name || first(contact, ["last_name", "lastName", "Last Name"])),
       full_name: fullName,
       email,
       company,
       company_display: company || "your company",
-      phone: recordPhone(contact),
-      job_title: recordTitle(contact),
+      phone: recordPhone(seed) || recordPhone(contact),
+      job_title: recordTitle(seed) || recordTitle(contact),
       crm_status: status,
       relationship_status: relationshipStatus,
       meeting_status: meetingStatus,
@@ -372,10 +388,11 @@ class WinBackProspectReconstructionService {
       prior_topic: clean(seed.prior_topic || "your federal growth strategy"),
       meeting_type: clean(seed.meeting_type),
       calendly_selected_id: clean(seed.calendly_selected_id),
-      source: "CALENDLY_WINBACK_RECONSTRUCTION",
+      source: clean(seed.source || "CALENDLY_WINBACK_RECONSTRUCTION"),
       source_seed: seed._seedPath || "",
       source_contact: match?._sourcePath || "",
       match_score: Number(match?.score || 0),
+      direct_seed_email: validEmail(seedEmail),
       blockers: [...new Set(blockers)]
     };
   }
@@ -452,7 +469,9 @@ class WinBackProspectReconstructionService {
         noShowCopyMayClaimPriorConversation: false,
         currentClientsSuppressed: true,
         activePipelineRequiresReview: true,
-        ambiguousRecordsFailClosed: true
+        ambiguousRecordsFailClosed: true,
+        directVerifiedSeedEmailAccepted: true,
+        scheduledOnlyRecordsRequireStatusValidation: true
       }
     };
 
