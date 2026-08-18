@@ -1,0 +1,25 @@
+"use strict";
+const assert=require("assert");
+const fs=require("fs");
+const os=require("os");
+const path=require("path");
+(async()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),"miles-suppress-"));
+ process.env.MILES_ROOT=root;
+ process.env.MILES_DRY_RUN="true";
+ process.env.MILES_ALLOW_INSTANTLY_MUTATIONS="false";
+ const Suppression=require("../SERVICES/revenue/GlobalSuppressionService");
+ const suppression=new Suppression({rootDir:root});
+ suppression.upsert({email:"stop@example.com",reason:"UNSUBSCRIBE",evidence:"requested removal"});
+ const connector=require("../CONNECTORS/INSTANTLY/connector");
+ assert(connector.capabilities.includes("INSTANTLY_LIST_EMAILS"));
+ const single=await connector.execute({action:"createLead",payload:{email:"stop@example.com",campaign:"camp-1"}});
+ assert.strictEqual(single.result.globallySuppressed,true);
+ assert.strictEqual(single.result.mutationExecuted,false);
+ const batch=await connector.execute({action:"uploadLeads",payload:{campaignId:"camp-1",leads:[{email:"stop@example.com"}]}});
+ assert.strictEqual(batch.status,"ALL_LEADS_BLOCKED_GLOBAL_SUPPRESSION");
+ assert.strictEqual(batch.suppressed,1);
+ assert.strictEqual(batch.uploaded,0);
+ fs.rmSync(root,{recursive:true,force:true});
+ console.log("PASS reply_global_suppression_connector_test");
+})().catch(e=>{console.error(e);process.exitCode=1;});
