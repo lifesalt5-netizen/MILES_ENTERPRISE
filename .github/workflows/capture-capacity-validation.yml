@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - "CORE/Runtime/MilesRuntime.js"
+      - "SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js"
       - "SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js"
       - "SERVICES/revenue/CaptureCapacityCampaignService.js"
       - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
+      - "SERVICES/revenue/CaptureCapacitySourceBootstrapService.js"
       - "TESTS/capture_capacity_*"
       - ".github/workflows/capture-capacity-validation.yml"
   workflow_dispatch:
@@ -30,14 +32,20 @@ jobs:
       - name: Syntax validation
         run: |
           node --check CORE/Runtime/MilesRuntime.js
+          node --check SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js
           node --check SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js
           node --check SERVICES/revenue/CaptureCapacityCampaignService.js
           node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
+          node --check SERVICES/revenue/CaptureCapacitySourceBootstrapService.js
           node --check TESTS/capture_capacity_autonomous_execution_test.js
           node --check TESTS/capture_capacity_runtime_routing_test.js
+          node --check TESTS/capture_capacity_source_bootstrap_test.js
 
       - name: Autonomous staging tests
         run: node TESTS/capture_capacity_autonomous_execution_test.js
 
       - name: Runtime routing tests
         run: node TESTS/capture_capacity_runtime_routing_test.js
+
+      - name: Source bootstrap tests
+        run: node TESTS/capture_capacity_source_bootstrap_test.js

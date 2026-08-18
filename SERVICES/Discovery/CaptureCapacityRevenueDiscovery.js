@@ -1,13 +1,16 @@
 "use strict";
 
 const CaptureCapacityProspectDiscoveryService = require("../revenue/CaptureCapacityProspectDiscoveryService");
+const CaptureCapacitySourceBootstrapService = require("../revenue/CaptureCapacitySourceBootstrapService");
 
 class CaptureCapacityRevenueDiscovery {
   constructor(options = {}) {
     this.service = options.service || new CaptureCapacityProspectDiscoveryService({ maxFiles: 100 });
+    this.sourceBootstrap = options.sourceBootstrap || CaptureCapacitySourceBootstrapService;
   }
 
   async discover() {
+    const sourceBootstrap = this.sourceBootstrap.apply();
     const result = this.service.discover({ maxAudience: 2000 });
     const counts = result.sourceCounts || {};
     const work = [];
@@ -26,7 +29,9 @@ class CaptureCapacityRevenueDiscovery {
           qualifiedRows: counts.qualifiedRows,
           enrichedRows: counts.enrichedRows || 0,
           artifact: result.artifact || null,
-          nextAction: result.nextAction
+          nextAction: result.nextAction,
+          sourceBootstrapStatus: sourceBootstrap.status,
+          sourceBootstrapArtifact: sourceBootstrap.artifact || null
         },
         discoveredAt: new Date().toISOString()
       });
@@ -38,9 +43,16 @@ class CaptureCapacityRevenueDiscovery {
         domain: "Revenue Operations",
         priority: "CRITICAL",
         priorityScore: 98,
-        reason: "The Capture Capacity campaign has no usable contact supply to evaluate.",
+        reason: sourceBootstrap.ok
+          ? "External lead sources were located, but the Capture Capacity campaign still has no usable person-level contact supply to evaluate."
+          : "The Capture Capacity campaign has no usable contact supply and no current external contact source could be bootstrapped from the existing source index.",
         capability: "revenue.capture_capacity_contact_supply",
-        metadata: { artifact: result.artifact || null },
+        metadata: {
+          artifact: result.artifact || null,
+          sourceBootstrapStatus: sourceBootstrap.status,
+          sourceBootstrapArtifact: sourceBootstrap.artifact || null,
+          selectedContactSources: sourceBootstrap.selectedCount || 0
+        },
         discoveredAt: new Date().toISOString()
       });
     } else if ((counts.signalRows || 0) === 0) {
@@ -53,7 +65,12 @@ class CaptureCapacityRevenueDiscovery {
         priorityScore: 98,
         reason: "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
         capability: "revenue.capture_capacity_signal_refresh",
-        metadata: { contactRows: counts.contactRows || 0, artifact: result.artifact || null },
+        metadata: {
+          contactRows: counts.contactRows || 0,
+          artifact: result.artifact || null,
+          sourceBootstrapStatus: sourceBootstrap.status,
+          selectedContactSources: sourceBootstrap.selectedCount || 0
+        },
         discoveredAt: new Date().toISOString()
       });
     } else {
@@ -71,7 +88,9 @@ class CaptureCapacityRevenueDiscovery {
           signalRows: counts.signalRows || 0,
           enrichedRows: counts.enrichedRows || 0,
           blockedByCampaignGate: counts.blockedByCampaignGate || 0,
-          artifact: result.artifact || null
+          artifact: result.artifact || null,
+          sourceBootstrapStatus: sourceBootstrap.status,
+          selectedContactSources: sourceBootstrap.selectedCount || 0
         },
         discoveredAt: new Date().toISOString()
       });
@@ -84,7 +103,8 @@ class CaptureCapacityRevenueDiscovery {
         artifact: result.artifact || null,
         sourceCounts: counts,
         campaignGate: result.campaignGate,
-        nextAction: result.nextAction
+        nextAction: result.nextAction,
+        sourceBootstrap
       },
       work
     };
