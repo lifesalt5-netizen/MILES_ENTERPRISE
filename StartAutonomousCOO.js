@@ -5,6 +5,7 @@ require("dotenv").config();
 const supervisor = require("./CORE/Supervisor");
 const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
 const CaptureCapacityProductionLoopService = require("./SERVICES/revenue/CaptureCapacityProductionLoopService");
+const WinBackProductionLoopService = require("./SERVICES/revenue/WinBackProductionLoopService");
 
 function boolFromEnv(name, fallback) {
     const value = process.env[name];
@@ -61,6 +62,12 @@ async function main() {
             5 * 60 * 1000
         );
 
+    const winBackIntervalMs =
+        intFromEnv(
+            "P2GC_WINBACK_DISCOVERY_INTERVAL_MS",
+            6 * 60 * 60 * 1000
+        );
+
     const loop =
         new AutonomousCOOLoopService({
 
@@ -85,14 +92,22 @@ async function main() {
             enableExecution: execute
         });
 
-    const stopCaptureCapacity = () => {
+    const winBack =
+        new WinBackProductionLoopService({
+            intervalMs: winBackIntervalMs
+        });
+
+    const stopRevenueSidecars = () => {
         try {
             captureCapacity.stop();
         } catch {}
+        try {
+            winBack.stop();
+        } catch {}
     };
 
-    process.once("SIGINT", stopCaptureCapacity);
-    process.once("SIGTERM", stopCaptureCapacity);
+    process.once("SIGINT", stopRevenueSidecars);
+    process.once("SIGTERM", stopRevenueSidecars);
 
     if (mode === "loop") {
 
@@ -108,11 +123,18 @@ async function main() {
             "auto-activation=disabled"
         );
 
+        const winBackStart = winBack.start();
+        console.log(
+            `[MILES] Win-Back recovery lane: ${winBackStart.status}; ` +
+            `interval=${winBackIntervalMs}ms; ` +
+            "Instantly-mutation=disabled; auto-activation=disabled"
+        );
+
         try {
             const result = await loop.start();
             console.log(JSON.stringify(result, null, 2));
         } finally {
-            stopCaptureCapacity();
+            stopRevenueSidecars();
         }
 
         return;
@@ -121,6 +143,7 @@ async function main() {
     console.log("[MILES] Running one autonomous COO cycle.");
 
     const captureCapacityResult = await captureCapacity.runOnce();
+    const winBackResult = await winBack.runOnce();
     const result = await loop.runOnce();
 
     console.log(JSON.stringify({
@@ -158,6 +181,21 @@ async function main() {
             artifact: captureCapacityResult.artifact || null
         },
 
+        winBackRevenue: {
+            ok: winBackResult.ok,
+            status: winBackResult.status,
+            filesDiscovered: winBackResult.localHistory?.filesDiscovered || 0,
+            exactTargetFilesFound: winBackResult.localHistory?.exactTargetFilesFound || [],
+            recoveredRecords: winBackResult.localHistory?.recordsRecovered || 0,
+            priorConversationCandidates: winBackResult.reconstruction?.priorConversationCount || 0,
+            reactivationCandidates: winBackResult.reconstruction?.reactivationCount || 0,
+            eligibleForDraftStaging: winBackResult.campaignPlan?.totalEligible || 0,
+            nextAction: winBackResult.nextAction || null,
+            instantlyMutationRequested: false,
+            activationAllowed: false,
+            artifact: winBackResult.artifact || null
+        },
+
         outputs: {
 
             executive:
@@ -179,7 +217,10 @@ async function main() {
                 "DATA/runtime/latest_coo_cycle.json",
 
             captureCapacity:
-                "DATA/runtime/revenue/capture_capacity/production_lane_latest.json"
+                "DATA/runtime/revenue/capture_capacity/production_lane_latest.json",
+
+            winBack:
+                "DATA/runtime/revenue/winback/production_lane_latest.json"
 
         }
 
