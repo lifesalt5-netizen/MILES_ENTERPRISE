@@ -108,6 +108,18 @@ async function run() {
         };
       }
     },
+    signalBridge: {
+      apply() {
+        order.push("signalBridge");
+        return {
+          ok: true,
+          status: "ORION_PUBLIC_SIGNALS_EXPORTED",
+          verifiedSignalCount: 2,
+          validationQueueCount: 1,
+          artifact: "orion-bridge.json"
+        };
+      }
+    },
     service: {
       discover() {
         order.push("discover");
@@ -132,11 +144,14 @@ async function run() {
 
   const discoveryResult = await revenueDiscovery.discover();
 
-  assert.deepStrictEqual(order, ["bootstrap", "discover"]);
+  assert.deepStrictEqual(order, ["bootstrap", "signalBridge", "discover"]);
   assert.strictEqual(discoveryResult.work.length, 1);
   assert.strictEqual(discoveryResult.work[0].capability, "revenue.capture_capacity_handoff");
   assert.strictEqual(discoveryResult.work[0].metadata.sourceBootstrapStatus, "CONTACT_SOURCES_BOOTSTRAPPED");
+  assert.strictEqual(discoveryResult.work[0].metadata.signalBridgeStatus, "ORION_PUBLIC_SIGNALS_EXPORTED");
+  assert.strictEqual(discoveryResult.work[0].metadata.verifiedOrionSignals, 2);
   assert.strictEqual(discoveryResult.feed.sourceBootstrap.selectedCount, 2);
+  assert.strictEqual(discoveryResult.feed.signalBridge.validationQueueCount, 1);
 
   fs.rmSync(root, { recursive: true, force: true });
 
