@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const CaptureCapacityCampaignService = require("./SERVICES/revenue/CaptureCapacityCampaignService");
 const CaptureCapacityProspectDiscoveryService = require("./SERVICES/revenue/CaptureCapacityProspectDiscoveryService");
+const CampaignSuppressionOverlayService = require("./SERVICES/revenue/CampaignSuppressionOverlayService");
 
 function arg(name) {
   const prefix = `--${name}=`;
@@ -38,7 +39,12 @@ async function main() {
     candidates = discovery.candidates;
   }
 
-  const service = new CaptureCapacityCampaignService();
+  const rootDir = path.resolve(process.env.MILES_ROOT || __dirname);
+  const suppressionOverlay = new CampaignSuppressionOverlayService({ rootDir });
+  const suppression = suppressionOverlay.filter(candidates);
+  candidates = suppression.kept;
+
+  const service = new CaptureCapacityCampaignService({ rootDir });
   const result = await service.execute({
     candidates,
     apply: hasFlag("apply"),
@@ -51,6 +57,12 @@ async function main() {
   console.log(JSON.stringify({
     ...result,
     candidateSource: candidateFile ? "EXPLICIT_CANDIDATE_FILE" : "AUTO_DISCOVERY_FEED",
+    globalSuppression: {
+      evaluated: suppression.total,
+      blocked: suppression.suppressedCount,
+      remaining: suppression.kept.length,
+      file: suppression.suppressionFile
+    },
     discovery: discovery ? {
       artifact: discovery.artifact,
       sourceCounts: discovery.sourceCounts,

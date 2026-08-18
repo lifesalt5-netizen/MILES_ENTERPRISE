@@ -90,8 +90,10 @@ function Invoke-RevenueStep {
     }
 }
 
-Invoke-RevenueStep -Name "1 WINBACK RECOVERY AND CAMPAIGN PLAN" -Script ".\RUN_P2GC_WINBACK_CAMPAIGN.js"
-Invoke-RevenueStep -Name "2 LIVE INSTANTLY REPLY INTELLIGENCE" -Script ".\RUN_P2GC_REPLY_INTELLIGENCE.js"
+# Reply Intelligence runs first so its hard suppression master is available
+# to Win-Back and Capture Capacity planning in this same worktree.
+Invoke-RevenueStep -Name "1 LIVE INSTANTLY REPLY INTELLIGENCE" -Script ".\RUN_P2GC_REPLY_INTELLIGENCE.js"
+Invoke-RevenueStep -Name "2 WINBACK RECOVERY AND CAMPAIGN PLAN" -Script ".\RUN_P2GC_WINBACK_CAMPAIGN.js"
 Invoke-RevenueStep -Name "3 CAPTURE CAPACITY PROSPECT DISCOVERY" -Script ".\RUN_CAPTURE_CAPACITY_PROSPECT_DISCOVERY.js"
 Invoke-RevenueStep -Name "4 CAPTURE CAPACITY CAMPAIGN PLAN" -Script ".\RUN_CAPTURE_CAPACITY_CAMPAIGN.js"
 

@@ -5,6 +5,7 @@ const WinBackLocalHistoryDiscoveryService = require("./SERVICES/revenue/WinBackL
 const WinBackProspectReconstructionService = require("./SERVICES/revenue/WinBackProspectReconstructionService");
 const WinBackMasterExportService = require("./SERVICES/revenue/WinBackMasterExportService");
 const WinBackCampaignService = require("./SERVICES/revenue/WinBackCampaignCrossGenService");
+const CampaignSuppressionOverlayService = require("./SERVICES/revenue/CampaignSuppressionOverlayService");
 
 function argValue(name) {
   const prefix = `--${name}=`;
@@ -32,8 +33,25 @@ async function main() {
   });
   const campaign = new WinBackCampaignService({ rootDir });
   const exporter = new WinBackMasterExportService({ rootDir });
+  const suppressionOverlay = new CampaignSuppressionOverlayService({ rootDir });
 
-  const reconstructionReport = reconstruction.execute({ writeReport: true });
+  const rawReconstructionReport = reconstruction.execute({ writeReport: true });
+  const priorSuppression = suppressionOverlay.filter(rawReconstructionReport.priorConversationCandidates);
+  const reactivationSuppression = suppressionOverlay.filter(rawReconstructionReport.reactivationCandidates);
+  const suppressionBlocked = [...priorSuppression.blocked, ...reactivationSuppression.blocked];
+
+  const reconstructionReport = {
+    ...rawReconstructionReport,
+    priorConversationCandidates: priorSuppression.kept,
+    reactivationCandidates: reactivationSuppression.kept,
+    blocked: [...(rawReconstructionReport.blocked || []), ...suppressionBlocked],
+    priorConversationCount: priorSuppression.kept.length,
+    reactivationCount: reactivationSuppression.kept.length,
+    blockedCount: Number(rawReconstructionReport.blockedCount || 0) + suppressionBlocked.length,
+    globalSuppressionBlockedCount: suppressionBlocked.length,
+    globalSuppressionFile: priorSuppression.suppressionFile
+  };
+
   const exportReport = exporter.execute({
     reconstruction: reconstructionReport,
     localHistory: localHistoryReport
@@ -75,6 +93,8 @@ async function main() {
       priorConversationCount: reconstructionReport.priorConversationCount,
       reactivationCount: reconstructionReport.reactivationCount,
       blockedCount: reconstructionReport.blockedCount,
+      globalSuppressionBlockedCount: reconstructionReport.globalSuppressionBlockedCount,
+      globalSuppressionFile: reconstructionReport.globalSuppressionFile,
       artifact: reconstructionReport.artifact
     },
     exports: {
