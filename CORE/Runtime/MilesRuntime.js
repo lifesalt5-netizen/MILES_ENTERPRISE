@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const workflow = require("../../SERVICES/WorkflowService");
 const execution = require("../../SERVICES/WorkforceExecutionService");
@@ -7,6 +7,7 @@ const learning = require("../../SERVICES/Learning/LearningEngine");
 const memory = require("../../SERVICES/Memory/OperationalMemoryService");
 const providerRouter = require("../../SERVICES/ProviderRouterService");
 const supervisor = require("../../SERVICES/Supervisor/ExecutiveSupervisor");
+const captureCapacityAutonomousExecution = require("../../SERVICES/revenue/CaptureCapacityAutonomousExecutionService");
 
 const DEFAULT_INTERVAL_MS = 60_000;
 
@@ -16,6 +17,10 @@ class MilesRuntime {
       config.intervalMs ||
       Number(process.env.MILES_RUNTIME_INTERVAL_MS) ||
       DEFAULT_INTERVAL_MS;
+
+    this.captureCapacityExecution =
+      config.captureCapacityExecution ||
+      captureCapacityAutonomousExecution;
 
     this.running = false;
     this.loopCount = 0;
@@ -28,7 +33,10 @@ class MilesRuntime {
       tasksExecuted: 0,
       tasksCompleted: 0,
       tasksFailed: 0,
-      approvalRequired: 0
+      approvalRequired: 0,
+      captureCapacityExecutions: 0,
+      captureCapacityDraftsStaged: 0,
+      captureCapacityDraftRefreshes: 0
     };
   }
 
@@ -221,15 +229,23 @@ class MilesRuntime {
       }
     );
 
+    if (workItem.capability === "revenue.capture_capacity_handoff") {
+      return this.processCaptureCapacityHandoff(workItem, cycleId);
+    }
+
     const workflowResult = workflow.createWorkflow(objective, {
       source: "ExecutiveSupervisor",
       cycleId,
       provider: workItem.provider || null,
       domain: workItem.domain || null,
+      capability: workItem.capability || null,
+      action: workItem.action || null,
+      assignedTo: workItem.assignedTo || null,
       priority: workItem.priority || null,
       priorityScore: workItem.priorityScore || null,
       discoveredWorkId: workItem.id || null,
-      discoveryReason: workItem.reason || null
+      discoveryReason: workItem.reason || null,
+      metadata: workItem.metadata || null
     });
 
     this.stats.workflowsCreated += 1;
@@ -306,6 +322,74 @@ class MilesRuntime {
       {
         source: "MilesRuntime",
         workPackageId: workflowResult.workPackage?.id || null,
+        workItemId: workItem.id || null
+      }
+    );
+
+    return workSummary;
+  }
+
+  async processCaptureCapacityHandoff(workItem, cycleId) {
+    this.stats.tasksExecuted += 1;
+    this.stats.captureCapacityExecutions += 1;
+
+    let result;
+
+    try {
+      result = await this.captureCapacityExecution.execute({
+        workItem,
+        cycleId
+      });
+    } catch (error) {
+      result = {
+        ok: false,
+        status: "CAPTURE_CAPACITY_EXECUTION_FAILED",
+        error: error.stack || error.message
+      };
+    }
+
+    if (result.ok) {
+      this.stats.tasksCompleted += 1;
+    } else {
+      this.stats.tasksFailed += 1;
+    }
+
+    if (result.status === "CAMPAIGN_STAGED_DRAFT") {
+      this.stats.captureCapacityDraftsStaged += 1;
+    }
+
+    if (result.status === "EXISTING_DRAFT_REFRESHED") {
+      this.stats.captureCapacityDraftRefreshes += 1;
+    }
+
+    console.log(`Capture Capacity -> ${result.status}`);
+
+    const workSummary = {
+      ok: Boolean(result.ok),
+      status: result.status || (result.ok ? "COMPLETED" : "NEEDS_REVIEW"),
+      workItem,
+      workflowStatus: "DIRECT_GOVERNED_REVENUE_EXECUTION",
+      workPackageId: null,
+      taskCount: 1,
+      taskResults: [
+        {
+          taskId: workItem.id || "P2GC-CAPTURE-CAPACITY-QUALIFIED-HANDOFF",
+          ok: Boolean(result.ok),
+          status: result.status || null
+        }
+      ],
+      execution: result
+    };
+
+    eventBus.publish(
+      "coo.work.completed",
+      {
+        cycleId,
+        ...workSummary
+      },
+      {
+        source: "MilesRuntime",
+        workPackageId: null,
         workItemId: workItem.id || null
       }
     );
