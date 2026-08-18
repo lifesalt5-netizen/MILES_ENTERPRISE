@@ -3,6 +3,7 @@ const assert=require("assert");
 const fs=require("fs");
 const os=require("os");
 const path=require("path");
+const Module=require("module");
 (async()=>{
  const root=fs.mkdtempSync(path.join(os.tmpdir(),"miles-suppress-"));
  process.env.MILES_ROOT=root;
@@ -11,7 +12,14 @@ const path=require("path");
  const Suppression=require("../SERVICES/revenue/GlobalSuppressionService");
  const suppression=new Suppression({rootDir:root});
  suppression.upsert({email:"stop@example.com",reason:"UNSUBSCRIBE",evidence:"requested removal"});
+ const originalLoad=Module._load;
+ Module._load=function(request,parent,isMain){
+  if(request==="axios") return async()=>{throw new Error("axios should not be called for globally suppressed leads");};
+  if(request==="dotenv") return {config:()=>({parsed:{}})};
+  return originalLoad.call(this,request,parent,isMain);
+ };
  const connector=require("../CONNECTORS/INSTANTLY/connector");
+ Module._load=originalLoad;
  assert(connector.capabilities.includes("INSTANTLY_LIST_EMAILS"));
  const single=await connector.execute({action:"createLead",payload:{email:"stop@example.com",campaign:"camp-1"}});
  assert.strictEqual(single.result.globallySuppressed,true);
