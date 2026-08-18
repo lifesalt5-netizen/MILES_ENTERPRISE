@@ -8,6 +8,7 @@ on:
       - "SERVICES/revenue/WinBackCampaignService.js"
       - "SERVICES/revenue/WinBackCampaignCrossGenService.js"
       - "SERVICES/revenue/WinBackLocalHistoryDiscoveryService.js"
+      - "SERVICES/revenue/WinBackMasterExportService.js"
       - "SERVICES/revenue/WinBackProductionLoopService.js"
       - "SERVICES/marketing/P2GCEmailMessagingStandard.js"
       - "SCRIPTS/ExtractWinBackXlsx.ps1"
@@ -39,6 +40,7 @@ jobs:
           node --check SERVICES/revenue/WinBackCampaignService.js
           node --check SERVICES/revenue/WinBackCampaignCrossGenService.js
           node --check SERVICES/revenue/WinBackLocalHistoryDiscoveryService.js
+          node --check SERVICES/revenue/WinBackMasterExportService.js
           node --check SERVICES/revenue/WinBackProductionLoopService.js
           node --check SERVICES/marketing/P2GCEmailMessagingStandard.js
           node --check RUN_P2GC_WINBACK_CAMPAIGN.js
@@ -47,6 +49,7 @@ jobs:
           node --check TESTS/winback_campaign_test.js
           node --check TESTS/winback_local_history_test.js
           node --check TESTS/winback_crossgen_messaging_test.js
+          node --check TESTS/winback_master_export_test.js
           node --check TESTS/winback_production_loop_test.js
           node --check TESTS/winback_production_entrypoint_test.js
 
@@ -58,6 +61,9 @@ jobs:
 
       - name: Cross-generational messaging standard tests
         run: node TESTS/winback_crossgen_messaging_test.js
+
+      - name: Master and review export tests
+        run: node TESTS/winback_master_export_test.js
 
       - name: Production sidecar tests
         run: node TESTS/winback_production_loop_test.js
