@@ -1,0 +1,55 @@
+name: P2GC Reply Intelligence Validation
+
+on:
+  pull_request:
+    paths:
+      - "CONNECTORS/INSTANTLY/connector.js"
+      - "SERVICES/ReplyIntelligenceEngine.js"
+      - "SERVICES/revenue/GlobalSuppressionService.js"
+      - "SERVICES/revenue/ReplyIntelligenceService.js"
+      - "SERVICES/revenue/ReplyIntelligenceProductionLoopService.js"
+      - "StartAutonomousCOO.js"
+      - "TESTS/reply_*"
+      - ".github/workflows/reply-intelligence-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax validation
+        run: |
+          node --check CONNECTORS/INSTANTLY/connector.js
+          node --check SERVICES/ReplyIntelligenceEngine.js
+          node --check SERVICES/revenue/GlobalSuppressionService.js
+          node --check SERVICES/revenue/ReplyIntelligenceService.js
+          node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
+          node --check StartAutonomousCOO.js
+          node --check TESTS/reply_intelligence_classification_test.js
+          node --check TESTS/reply_intelligence_production_loop_test.js
+          node --check TESTS/reply_global_suppression_connector_test.js
+          node --check TESTS/reply_intelligence_production_entrypoint_test.js
+
+      - name: Classification tests
+        run: node TESTS/reply_intelligence_classification_test.js
+
+      - name: Production loop tests
+        run: node TESTS/reply_intelligence_production_loop_test.js
+
+      - name: Global suppression connector tests
+        run: node TESTS/reply_global_suppression_connector_test.js
+
+      - name: Production entrypoint tests
+        run: node TESTS/reply_intelligence_production_entrypoint_test.js
