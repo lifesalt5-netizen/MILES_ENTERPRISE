@@ -8,6 +8,7 @@ on:
       - "SERVICES/revenue/GlobalSuppressionService.js"
       - "SERVICES/revenue/ReplyIntelligenceService.js"
       - "SERVICES/revenue/ReplyIntelligenceProductionLoopService.js"
+      - "RUN_P2GC_REPLY_INTELLIGENCE.js"
       - "StartAutonomousCOO.js"
       - "TESTS/reply_*"
       - ".github/workflows/reply-intelligence-validation.yml"
@@ -36,6 +37,7 @@ jobs:
           node --check SERVICES/revenue/GlobalSuppressionService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
+          node --check RUN_P2GC_REPLY_INTELLIGENCE.js
           node --check StartAutonomousCOO.js
           node --check TESTS/reply_intelligence_classification_test.js
           node --check TESTS/reply_intelligence_production_loop_test.js
