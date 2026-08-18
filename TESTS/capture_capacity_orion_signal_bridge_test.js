@@ -46,8 +46,10 @@ class FakeOrion {
     if (/FROM recompetes r JOIN contractors c/i.test(sql)) {
       assert.match(sql, /recompete_date BETWEEN \? AND \?/i);
       assert.strictEqual(params.length, 5);
-      assert.strictEqual(params[0], "2024-08-18");
+      assert.strictEqual(params[0], "2026-07-19");
       assert.strictEqual(params[1], "2028-08-17");
+      assert.strictEqual(params[2], "20260719");
+      assert.strictEqual(params[3], "20280817");
       assert.strictEqual(params[4], 100);
 
       return [
@@ -150,6 +152,8 @@ function run() {
   assert.strictEqual(report.rowsEvaluated, 5);
   assert.strictEqual(report.verifiedSignalCount, 2);
   assert.strictEqual(report.validationQueueCount, 2);
+  assert.strictEqual(report.signalWindow.pastGraceDays, 30);
+  assert.strictEqual(report.signalWindow.futureDays, 730);
   assert.strictEqual(report.safety.monitoringProfilesExcluded, true);
   assert.strictEqual(report.safety.authoritativeProcurementSourceRequired, true);
   assert.strictEqual(report.safety.validationOutsideSignalDiscovery, true);
