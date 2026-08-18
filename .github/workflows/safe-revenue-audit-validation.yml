@@ -1,0 +1,28 @@
+name: P2GC Safe Revenue Audit Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/RUN_P2GC_SAFE_REVENUE_AUDIT.ps1"
+      - "TESTS/safe_revenue_audit_script_test.js"
+      - ".github/workflows/safe-revenue-audit-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static safety validation
+        run: node TESTS/safe_revenue_audit_script_test.js
