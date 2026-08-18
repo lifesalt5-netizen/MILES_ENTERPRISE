@@ -1,0 +1,39 @@
+name: P2GC Global Campaign Suppression Validation
+
+on:
+  pull_request:
+    paths:
+      - "SERVICES/revenue/GlobalSuppressionService.js"
+      - "SERVICES/revenue/CampaignSuppressionOverlayService.js"
+      - "RUN_P2GC_WINBACK_CAMPAIGN.js"
+      - "RUN_CAPTURE_CAPACITY_CAMPAIGN.js"
+      - "SCRIPTS/RUN_P2GC_SAFE_REVENUE_AUDIT.ps1"
+      - "TESTS/campaign_global_suppression_overlay_test.js"
+      - ".github/workflows/global-campaign-suppression-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/revenue/CampaignSuppressionOverlayService.js
+          node --check RUN_P2GC_WINBACK_CAMPAIGN.js
+          node --check RUN_CAPTURE_CAPACITY_CAMPAIGN.js
+          node --check TESTS/campaign_global_suppression_overlay_test.js
+
+      - name: Campaign suppression overlay tests
+        run: node TESTS/campaign_global_suppression_overlay_test.js
