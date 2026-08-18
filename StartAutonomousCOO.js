@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const supervisor = require("./CORE/Supervisor");
 const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
+const CaptureCapacityProductionLoopService = require("./SERVICES/revenue/CaptureCapacityProductionLoopService");
 
 function boolFromEnv(name, fallback) {
     const value = process.env[name];
@@ -78,6 +79,21 @@ async function main() {
 
         });
 
+    const captureCapacity =
+        new CaptureCapacityProductionLoopService({
+            intervalMs,
+            enableExecution: execute
+        });
+
+    const stopCaptureCapacity = () => {
+        try {
+            captureCapacity.stop();
+        } catch {}
+    };
+
+    process.once("SIGINT", stopCaptureCapacity);
+    process.once("SIGTERM", stopCaptureCapacity);
+
     if (mode === "loop") {
 
         console.log("[MILES] Autonomous COO loop starting.");
@@ -85,15 +101,26 @@ async function main() {
         console.log(`[MILES] Workflow queueing: ${queueWorkflows ? "enabled" : "disabled"}`);
         console.log(`[MILES] Interval: ${intervalMs}ms`);
 
-        const result = await loop.start();
+        const captureCapacityStart = captureCapacity.start();
+        console.log(
+            `[MILES] Capture Capacity revenue lane: ${captureCapacityStart.status}; ` +
+            `execution=${captureCapacityStart.executionEnabled ? "enabled" : "disabled"}; ` +
+            "auto-activation=disabled"
+        );
 
-        console.log(JSON.stringify(result, null, 2));
+        try {
+            const result = await loop.start();
+            console.log(JSON.stringify(result, null, 2));
+        } finally {
+            stopCaptureCapacity();
+        }
 
         return;
     }
 
     console.log("[MILES] Running one autonomous COO cycle.");
 
+    const captureCapacityResult = await captureCapacity.runOnce();
     const result = await loop.runOnce();
 
     console.log(JSON.stringify({
@@ -120,6 +147,17 @@ async function main() {
         executionPasses:
             result.executionResults?.length || 0,
 
+        captureCapacityRevenue: {
+            ok: captureCapacityResult.ok,
+            status: captureCapacityResult.status,
+            qualifiedRows: captureCapacityResult.handoff?.qualifiedRows || 0,
+            verifiedOrionSignals: captureCapacityResult.discovery?.verifiedOrionSignals || 0,
+            orionValidationQueue: captureCapacityResult.discovery?.orionValidationQueue || 0,
+            campaignId: captureCapacityResult.execution?.campaignId || null,
+            activationAllowed: false,
+            artifact: captureCapacityResult.artifact || null
+        },
+
         outputs: {
 
             executive:
@@ -138,7 +176,10 @@ async function main() {
                 "DATA/capability_backlog/latest_capability_backlog.json",
 
             cycle:
-                "DATA/runtime/latest_coo_cycle.json"
+                "DATA/runtime/latest_coo_cycle.json",
+
+            captureCapacity:
+                "DATA/runtime/revenue/capture_capacity/production_lane_latest.json"
 
         }
 
