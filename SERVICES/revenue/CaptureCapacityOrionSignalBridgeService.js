@@ -34,28 +34,53 @@ function parseDate(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function isoDate(ms) {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+function compactDate(ms) {
+  return isoDate(ms).replace(/-/g, "");
+}
+
 function normalizeUrl(value) {
   const raw = clean(value);
   return /^https?:\/\//i.test(raw) ? raw : "";
 }
 
+function isAuthoritativeProcurementUrl(value) {
+  const raw = normalizeUrl(value);
+  if (!raw) return false;
+
+  try {
+    const hostname = new URL(raw).hostname.toLowerCase().replace(/^www\./, "");
+    return hostname === "sam.gov" ||
+      hostname.endsWith(".sam.gov") ||
+      hostname === "usaspending.gov" ||
+      hostname.endsWith(".usaspending.gov") ||
+      hostname.endsWith(".gov") ||
+      hostname.endsWith(".mil");
+  } catch {
+    return false;
+  }
+}
+
 function externalSource(row = {}) {
-  const direct = first(row, [
-    "source_url",
-    "notice_url",
-    "sam_url",
-    "award_url",
-    "contract_url",
-    "public_url",
-    "url",
-    "link"
-  ]);
+  const candidates = [
+    row.source_url,
+    row.notice_url,
+    row.sam_url,
+    row.award_url,
+    row.contract_url,
+    row.public_url,
+    row.url,
+    row.link,
+    row.source
+  ];
 
-  const directUrl = normalizeUrl(direct);
-  if (directUrl) return directUrl;
-
-  const source = normalizeUrl(row.source);
-  if (source) return source;
+  for (const candidate of candidates) {
+    const url = normalizeUrl(candidate);
+    if (url && isAuthoritativeProcurementUrl(url)) return url;
+  }
 
   return "";
 }
@@ -186,14 +211,33 @@ class CaptureCapacityOrionSignalBridgeService {
     ].filter(Boolean);
 
     const select = ["r.*", ...contractorSelect].join(", ");
-    const orderBy = recompeteColumns.has("recompete_date")
-      ? "ORDER BY CASE WHEN r.recompete_date = '' OR r.recompete_date IS NULL THEN 1 ELSE 0 END, r.recompete_date ASC"
-      : "";
+    const params = [];
+    let where = "";
+    let orderBy = "";
+
+    if (recompeteColumns.has("recompete_date")) {
+      const nowMs = this.now().getTime();
+      const windowMs = this.lookbackDays * 86400000;
+      const startMs = nowMs - windowMs;
+      const endMs = nowMs + windowMs;
+
+      where = `WHERE (
+        (r.recompete_date BETWEEN ? AND ?) OR
+        (r.recompete_date BETWEEN ? AND ?)
+      )`;
+      params.push(
+        isoDate(startMs),
+        isoDate(endMs),
+        compactDate(startMs),
+        compactDate(endMs)
+      );
+      orderBy = "ORDER BY r.recompete_date ASC";
+    }
 
     try {
       const rows = orion.query(
-        `SELECT ${select} FROM recompetes r JOIN contractors c ON c.id = r.company_id ${orderBy} LIMIT ?`,
-        [this.limit]
+        `SELECT ${select} FROM recompetes r JOIN contractors c ON c.id = r.company_id ${where} ${orderBy} LIMIT ?`,
+        [...params, this.limit]
       );
 
       return {
@@ -238,7 +282,7 @@ class CaptureCapacityOrionSignalBridgeService {
       agency: clean(first(row, ["agency", "agency_name", "awarding_agency", "funding_agency", "customer"])),
       vehicle: clean(first(row, ["vehicle", "vehicle_name", "contract_vehicle", "gwac", "idiq", "schedule", "contractor_vehicle"])),
       contract_number: clean(first(row, ["contract_number", "award_id", "piid", "contract_id"])),
-      source_system: "ORION_RECOMPETES_PUBLIC_SOURCE_VERIFIED",
+      source_system: "ORION_RECOMPETES_AUTHORITATIVE_SOURCE_VERIFIED",
       orion_row_id: row.id ?? null
     };
   }
@@ -271,7 +315,7 @@ class CaptureCapacityOrionSignalBridgeService {
       validationFile: this.validationFile,
       safety: {
         monitoringProfilesExcluded: true,
-        publicSourceRequired: true,
+        authoritativeProcurementSourceRequired: true,
         validationOutsideSignalDiscovery: true,
         orionDatabaseWrites: false,
         outboundWrites: false
@@ -322,7 +366,7 @@ class CaptureCapacityOrionSignalBridgeService {
         }
 
         if (!externalSource(row)) {
-          validationQueue.push(this.normalizeValidationCandidate(row, "PUBLIC_SOURCE_URL_REQUIRED"));
+          validationQueue.push(this.normalizeValidationCandidate(row, "AUTHORITATIVE_PUBLIC_PROCUREMENT_SOURCE_REQUIRED"));
           continue;
         }
 
@@ -365,7 +409,7 @@ class CaptureCapacityOrionSignalBridgeService {
       error: loaded.error || null,
       safety: {
         monitoringProfilesExcluded: true,
-        publicSourceRequired: true,
+        authoritativeProcurementSourceRequired: true,
         validationOutsideSignalDiscovery: true,
         orionDatabaseWrites: false,
         outboundWrites: false
@@ -384,7 +428,10 @@ module.exports.helpers = {
   clean,
   first,
   parseDate,
+  isoDate,
+  compactDate,
   normalizeUrl,
+  isAuthoritativeProcurementUrl,
   externalSource,
   companyIdentity,
   isMonitoringProfile,
