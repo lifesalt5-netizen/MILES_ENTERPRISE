@@ -18,7 +18,7 @@ class FakeOrion {
     };
   }
 
-  query(sql) {
+  query(sql, params = []) {
     if (/PRAGMA table_info\(recompetes\)/i.test(sql)) {
       return [
         "id",
@@ -44,6 +44,12 @@ class FakeOrion {
     }
 
     if (/FROM recompetes r JOIN contractors c/i.test(sql)) {
+      assert.match(sql, /recompete_date BETWEEN \? AND \?/i);
+      assert.strictEqual(params.length, 5);
+      assert.strictEqual(params[0], "2024-08-18");
+      assert.strictEqual(params[1], "2028-08-17");
+      assert.strictEqual(params[4], 100);
+
       return [
         {
           id: 1,
@@ -68,7 +74,7 @@ class FakeOrion {
           website: "https://alpha.example",
           title: "Agency application support recompete",
           recompete_date: "2027-01-20",
-          source_url: "https://sam.gov/opp/alpha-two",
+          source_url: "https://acquisition.gov/example/alpha-two",
           agency: "Agency B",
           vehicle: "OASIS+",
           contract_number: "A-002"
@@ -82,7 +88,7 @@ class FakeOrion {
           website: "https://beta.example",
           title: "Recompete monitoring profile for Beta Federal",
           recompete_date: "2026-11-01",
-          source_url: "https://example.com/internal-derived-source",
+          source_url: "https://sam.gov/opp/beta-modeled",
           agency: "Agency C",
           vehicle: "CIO-SP3",
           contract_number: "B-001"
@@ -96,7 +102,7 @@ class FakeOrion {
           website: "https://gamma.example",
           title: "Infrastructure support recompete",
           recompete_date: "2026-12-01",
-          source_url: "",
+          source_url: "https://example.com/gamma-recompete",
           agency: "Agency D",
           vehicle: "SEWP",
           contract_number: "G-001"
@@ -145,7 +151,8 @@ function run() {
   assert.strictEqual(report.verifiedSignalCount, 2);
   assert.strictEqual(report.validationQueueCount, 2);
   assert.strictEqual(report.safety.monitoringProfilesExcluded, true);
-  assert.strictEqual(report.safety.publicSourceRequired, true);
+  assert.strictEqual(report.safety.authoritativeProcurementSourceRequired, true);
+  assert.strictEqual(report.safety.validationOutsideSignalDiscovery, true);
   assert.strictEqual(report.safety.orionDatabaseWrites, false);
   assert.strictEqual(report.safety.outboundWrites, false);
 
@@ -153,18 +160,22 @@ function run() {
   assert.strictEqual(verified.records.length, 2);
   assert.ok(verified.records.every(row => row.company === "Alpha Federal"));
   assert.ok(verified.records.every(row => row.trigger_type === "RECOMPETE_RECORD"));
-  assert.ok(verified.records.every(row => /^https:\/\//.test(row.source_url)));
+  assert.ok(verified.records.every(row => /\.gov\//.test(row.source_url)));
   assert.deepStrictEqual(
     verified.records.map(row => row.contract_number).sort(),
     ["A-001", "A-002"]
   );
 
   const validation = readJson(report.validationFile);
+  assert.strictEqual(validation.outboundEligible, false);
   assert.strictEqual(validation.records.length, 2);
   assert.ok(validation.records.some(row => row.reason === "MODELED_MONITORING_PROFILE_REQUIRES_PUBLIC_VALIDATION"));
-  assert.ok(validation.records.some(row => row.reason === "PUBLIC_SOURCE_URL_REQUIRED"));
+  assert.ok(validation.records.some(row => row.reason === "AUTHORITATIVE_PUBLIC_PROCUREMENT_SOURCE_REQUIRED"));
   assert.ok(!validation.records.some(row => row.company === "Old Federal"));
 
+  const signalRoot = `${path.resolve(service.signalDir)}${path.sep}`;
+  assert.ok(!path.resolve(report.validationFile).startsWith(signalRoot));
+  assert.ok(!path.resolve(report.artifact).startsWith(signalRoot));
   assert.ok(fs.existsSync(report.artifact));
 
   fs.rmSync(root, { recursive: true, force: true });
