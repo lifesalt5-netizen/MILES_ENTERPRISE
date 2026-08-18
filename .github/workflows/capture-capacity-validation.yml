@@ -1,0 +1,43 @@
+name: Capture Capacity Validation
+
+on:
+  pull_request:
+    paths:
+      - "CORE/Runtime/MilesRuntime.js"
+      - "SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js"
+      - "SERVICES/revenue/CaptureCapacityCampaignService.js"
+      - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
+      - "TESTS/capture_capacity_*"
+      - ".github/workflows/capture-capacity-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax validation
+        run: |
+          node --check CORE/Runtime/MilesRuntime.js
+          node --check SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js
+          node --check SERVICES/revenue/CaptureCapacityCampaignService.js
+          node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
+          node --check TESTS/capture_capacity_autonomous_execution_test.js
+          node --check TESTS/capture_capacity_runtime_routing_test.js
+
+      - name: Autonomous staging tests
+        run: node TESTS/capture_capacity_autonomous_execution_test.js
+
+      - name: Runtime routing tests
+        run: node TESTS/capture_capacity_runtime_routing_test.js
