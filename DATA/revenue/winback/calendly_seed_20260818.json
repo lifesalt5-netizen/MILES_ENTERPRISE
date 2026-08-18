@@ -1,0 +1,119 @@
+{
+  "source": "user_provided_calendly_history",
+  "generated_at": "2026-08-18T16:07:00-04:00",
+  "purpose": "Seed prior P2GC strategy-call history for win-back reconstruction. Completed appointments may enter the prior-conversation track after contact enrichment and suppression checks. No-shows/reschedules use a separate reactivation track. Ambiguous records stay blocked.",
+  "records": [
+    {
+      "full_name": "Jonathan Evans",
+      "first_name": "Jonathan",
+      "meeting_date": "2026-03-04",
+      "meeting_time": "12:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "NO_SHOW",
+      "relationship_status": "NO_SHOW",
+      "calendly_selected_id": "48993576-97ef-4da2-bf82-2c6687c2f228"
+    },
+    {
+      "full_name": "Chokha Palayamkottai",
+      "first_name": "Chokha",
+      "meeting_date": "2026-03-18",
+      "meeting_time": "16:15",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "a9a39775-656d-4ee7-91b6-3c3c505b3a5a"
+    },
+    {
+      "full_name": "Jigar",
+      "first_name": "Jigar",
+      "meeting_date": "2026-03-25",
+      "meeting_time": "13:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "c4546ff3-668d-4d88-8255-e1025596ca07"
+    },
+    {
+      "full_name": "Jay Flohr",
+      "first_name": "Jay",
+      "meeting_date": "2026-03-25",
+      "meeting_time": "14:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "7797a0fb-0168-4651-a43e-a5ac4818465e"
+    },
+    {
+      "full_name": "Ram Viswanathan",
+      "first_name": "Ram",
+      "meeting_date": "2026-03-30",
+      "meeting_time": "11:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "RESCHEDULED",
+      "relationship_status": "RESCHEDULED_UNCONFIRMED",
+      "calendly_selected_id": "d281a96a-c076-4dcc-a09a-c3db79fa48eb"
+    },
+    {
+      "full_name": "Bryant Strong",
+      "first_name": "Bryant",
+      "meeting_date": "2026-03-31",
+      "meeting_time": "12:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "NO_SHOW",
+      "relationship_status": "NO_SHOW",
+      "calendly_selected_id": "c707da03-226c-432d-a7cb-a5a1b4e8da9f"
+    },
+    {
+      "full_name": "Dennis Lee Jr",
+      "first_name": "Dennis",
+      "meeting_date": "2026-04-01",
+      "meeting_time": "12:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "80fc0a6a-1e55-4b91-9c8e-97b87d196a34"
+    },
+    {
+      "full_name": "Lisa Hodde",
+      "first_name": "Lisa",
+      "meeting_date": "2026-04-30",
+      "meeting_time": "10:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "13f2269e-b276-4ebe-87fd-df804a740aeb",
+      "review_required": "Cross-check client/current-engagement records before enrollment."
+    },
+    {
+      "full_name": "Kevin",
+      "first_name": "Kevin",
+      "meeting_date": "2026-06-05",
+      "meeting_time": "09:00",
+      "meeting_type": "One-off meeting",
+      "meeting_status": "AMBIGUOUS",
+      "relationship_status": "AMBIGUOUS_EXCLUDED",
+      "calendly_selected_id": "7a27ed58-6094-4b69-a842-cc1fda9cd2c6",
+      "review_required": "Ambiguous first-name-only record; do not enroll automatically."
+    },
+    {
+      "full_name": "Nigar Sultana",
+      "first_name": "Nigar",
+      "meeting_date": "2026-06-09",
+      "meeting_time": "13:30",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "e0026da5-d0f8-4dbd-a75a-fa79ca0e8537"
+    },
+    {
+      "full_name": "Melissa Vagi",
+      "first_name": "Melissa",
+      "meeting_date": "2026-07-15",
+      "meeting_time": "10:00",
+      "meeting_type": "Federal Strategy Call Pathways 2 Gov't Contracting",
+      "meeting_status": "COMPLETED",
+      "relationship_status": "PRIOR_CONVERSATION",
+      "calendly_selected_id": "1a620730-2e30-40ba-aad0-112737ba7c69"
+    }
+  ]
+}
