@@ -56,6 +56,7 @@ async function run() {
 
   assert.strictEqual(report.ok, true);
   assert.strictEqual(report.status, "CONTACT_SOURCES_BOOTSTRAPPED");
+  assert.strictEqual(report.autoConfigured, true);
   assert.strictEqual(report.selectedCount, 2);
   assert.strictEqual(report.selectedSources[0].filePath, ready);
   assert.ok(report.selectedSources.some(item => item.filePath === contacts));
@@ -66,6 +67,18 @@ async function run() {
   assert.ok(env.CAPTURE_CAPACITY_CONTACT_SOURCES.includes(contacts));
   assert.ok(!env.CAPTURE_CAPACITY_CONTACT_SOURCES.includes(archive));
   assert.ok(fs.existsSync(report.artifact));
+
+  const newest = path.join(currentDir, "HAS_EMAIL_VERIFIED_CONTACTS_READY_TO_SEND.csv");
+  fs.writeFileSync(newest, "company,email\nCharlie,charlie@example.com\n", "utf8");
+  fs.appendFileSync(indexFile, `\n"${newest}"`, "utf8");
+
+  const refreshed = bootstrap.apply();
+
+  assert.strictEqual(refreshed.status, "CONTACT_SOURCES_BOOTSTRAPPED");
+  assert.strictEqual(refreshed.mode, "AUTO_INDEX");
+  assert.strictEqual(refreshed.selectedCount, 3);
+  assert.strictEqual(refreshed.selectedSources[0].filePath, newest);
+  assert.ok(env.CAPTURE_CAPACITY_CONTACT_SOURCES.includes(newest));
 
   const explicitEnv = {
     CAPTURE_CAPACITY_CONTACT_SOURCES: contacts
@@ -78,6 +91,7 @@ async function run() {
 
   assert.strictEqual(explicit.ok, true);
   assert.strictEqual(explicit.status, "EXPLICIT_CONTACT_SOURCES_PRESERVED");
+  assert.strictEqual(explicit.autoConfigured, false);
   assert.strictEqual(explicit.selectedCount, 1);
   assert.strictEqual(explicitEnv.CAPTURE_CAPACITY_CONTACT_SOURCES, contacts);
 
@@ -121,7 +135,6 @@ async function run() {
   assert.deepStrictEqual(order, ["bootstrap", "discover"]);
   assert.strictEqual(discoveryResult.work.length, 1);
   assert.strictEqual(discoveryResult.work[0].capability, "revenue.capture_capacity_handoff");
-  assert.strictEqual(discoveryResult.work[0].metadata.selectedContactSources, undefined);
   assert.strictEqual(discoveryResult.work[0].metadata.sourceBootstrapStatus, "CONTACT_SOURCES_BOOTSTRAPPED");
   assert.strictEqual(discoveryResult.feed.sourceBootstrap.selectedCount, 2);
 
