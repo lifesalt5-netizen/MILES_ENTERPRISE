@@ -96,12 +96,14 @@ Invoke-RevenueStep -Name "1 LIVE INSTANTLY REPLY INTELLIGENCE" -Script ".\RUN_P2
 Invoke-RevenueStep -Name "2 WINBACK RECOVERY AND CAMPAIGN PLAN" -Script ".\RUN_P2GC_WINBACK_CAMPAIGN.js"
 Invoke-RevenueStep -Name "3 CAPTURE CAPACITY PROSPECT DISCOVERY" -Script ".\RUN_CAPTURE_CAPACITY_PROSPECT_DISCOVERY.js"
 Invoke-RevenueStep -Name "4 CAPTURE CAPACITY CAMPAIGN PLAN" -Script ".\RUN_CAPTURE_CAPACITY_CAMPAIGN.js"
+Invoke-RevenueStep -Name "5 CONSOLIDATED CURRENT PHASE STATUS" -Script ".\RUN_P2GC_CURRENT_PHASE_STATUS.js"
 
 Write-Section "AUDIT SUMMARY"
 $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host "Primary output locations:"
+Write-Host "  Current phase status:  $worktree\DATA\runtime\revenue\current_phase\current_phase_revenue_status_latest.json"
 Write-Host "  Win-Back master:       $worktree\DATA\runtime\revenue\winback\WINBACK_MASTER_LATEST.csv"
 Write-Host "  Win-Back prior ready:  $worktree\DATA\runtime\revenue\winback\WINBACK_READY_PRIOR_CONVERSATIONS.csv"
 Write-Host "  Win-Back reactivation: $worktree\DATA\runtime\revenue\winback\WINBACK_READY_REACTIVATION.csv"
@@ -117,9 +119,9 @@ Write-Host "Worktree retained for review: $worktree"
 
 $failed = @($results | Where-Object { $_.ExitCode -ne 0 })
 if ($failed.Count -gt 0) {
-    Write-Warning "$($failed.Count) audit step(s) reported a non-zero exit code. Review the step logs above."
+    Write-Warning "$($failed.Count) audit step(s) reported a non-zero exit code. Review the consolidated status and step logs above."
     exit 2
 }
 
-Write-Host "All four revenue audit steps completed successfully."
+Write-Host "All five revenue audit/status steps completed successfully."
 exit 0
