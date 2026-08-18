@@ -73,6 +73,7 @@ class CaptureCapacitySourceBootstrapService {
     this.maxSources = Math.max(1, Number(options.maxSources || DEFAULT_MAX_SOURCES));
     this.maxFileBytes = Math.max(1, Number(options.maxFileBytes || DEFAULT_MAX_FILE_BYTES));
     this.includeArchives = options.includeArchives === true;
+    this.autoConfiguredValue = options.autoConfiguredValue || null;
     this.indexFiles = Array.isArray(options.indexFiles)
       ? options.indexFiles
       : [
@@ -90,7 +91,13 @@ class CaptureCapacitySourceBootstrapService {
   }
 
   explicitSources() {
-    return clean(this.env.CAPTURE_CAPACITY_CONTACT_SOURCES)
+    const configured = clean(this.env.CAPTURE_CAPACITY_CONTACT_SOURCES);
+
+    if (!configured || configured === this.autoConfiguredValue) {
+      return [];
+    }
+
+    return configured
       .split(path.delimiter)
       .map(clean)
       .filter(Boolean);
@@ -179,6 +186,7 @@ class CaptureCapacitySourceBootstrapService {
         ok: true,
         status: "EXPLICIT_CONTACT_SOURCES_PRESERVED",
         mode: "EXPLICIT",
+        autoConfigured: false,
         selectedCount: explicit.length,
         selectedSources: explicit,
         indexFilesChecked: [],
@@ -219,9 +227,18 @@ class CaptureCapacitySourceBootstrapService {
       .slice(0, this.maxSources);
 
     if (selected.length > 0) {
-      this.env.CAPTURE_CAPACITY_CONTACT_SOURCES = selected
+      const autoConfiguredValue = selected
         .map(item => item.filePath)
         .join(path.delimiter);
+
+      this.env.CAPTURE_CAPACITY_CONTACT_SOURCES = autoConfiguredValue;
+      this.autoConfiguredValue = autoConfiguredValue;
+    } else if (
+      this.autoConfiguredValue &&
+      clean(this.env.CAPTURE_CAPACITY_CONTACT_SOURCES) === this.autoConfiguredValue
+    ) {
+      delete this.env.CAPTURE_CAPACITY_CONTACT_SOURCES;
+      this.autoConfiguredValue = null;
     }
 
     const rejectionCounts = {};
@@ -235,6 +252,7 @@ class CaptureCapacitySourceBootstrapService {
         ? "CONTACT_SOURCES_BOOTSTRAPPED"
         : "NO_EXTERNAL_CONTACT_SOURCES_FOUND",
       mode: "AUTO_INDEX",
+      autoConfigured: true,
       selectedCount: selected.length,
       selectedSources: selected.map(item => ({
         filePath: item.filePath,
