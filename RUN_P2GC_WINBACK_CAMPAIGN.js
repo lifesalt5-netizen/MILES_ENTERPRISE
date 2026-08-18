@@ -21,7 +21,14 @@ async function main() {
   const localDiscovery = new WinBackLocalHistoryDiscoveryService({ rootDir });
   const localHistoryReport = localDiscovery.execute({ writeReport: true });
 
-  const reconstruction = new WinBackProspectReconstructionService({ rootDir });
+  const reconstruction = new WinBackProspectReconstructionService({
+    rootDir,
+    seedPaths: [
+      path.join(rootDir, "DATA", "revenue", "winback", "calendly_seed_20260818.json"),
+      path.join(rootDir, "DATA", "revenue", "winback", "calendar_recovered_seed_20260818.json"),
+      localHistoryReport.seedPath
+    ]
+  });
   const campaign = new WinBackCampaignService({ rootDir });
 
   const reconstructionReport = reconstruction.execute({ writeReport: true });
