@@ -2,15 +2,18 @@
 
 const CaptureCapacityProspectDiscoveryService = require("../revenue/CaptureCapacityProspectDiscoveryService");
 const CaptureCapacitySourceBootstrapService = require("../revenue/CaptureCapacitySourceBootstrapService");
+const CaptureCapacityOrionSignalBridgeService = require("../revenue/CaptureCapacityOrionSignalBridgeService");
 
 class CaptureCapacityRevenueDiscovery {
   constructor(options = {}) {
     this.service = options.service || new CaptureCapacityProspectDiscoveryService({ maxFiles: 100 });
     this.sourceBootstrap = options.sourceBootstrap || CaptureCapacitySourceBootstrapService;
+    this.signalBridge = options.signalBridge || CaptureCapacityOrionSignalBridgeService;
   }
 
   async discover() {
     const sourceBootstrap = this.sourceBootstrap.apply();
+    const signalBridge = this.signalBridge.apply();
     const result = this.service.discover({ maxAudience: 2000 });
     const counts = result.sourceCounts || {};
     const work = [];
@@ -31,7 +34,11 @@ class CaptureCapacityRevenueDiscovery {
           artifact: result.artifact || null,
           nextAction: result.nextAction,
           sourceBootstrapStatus: sourceBootstrap.status,
-          sourceBootstrapArtifact: sourceBootstrap.artifact || null
+          sourceBootstrapArtifact: sourceBootstrap.artifact || null,
+          signalBridgeStatus: signalBridge.status,
+          verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
+          orionValidationQueue: signalBridge.validationQueueCount || 0,
+          signalBridgeArtifact: signalBridge.artifact || null
         },
         discoveredAt: new Date().toISOString()
       });
@@ -51,25 +58,35 @@ class CaptureCapacityRevenueDiscovery {
           artifact: result.artifact || null,
           sourceBootstrapStatus: sourceBootstrap.status,
           sourceBootstrapArtifact: sourceBootstrap.artifact || null,
-          selectedContactSources: sourceBootstrap.selectedCount || 0
+          selectedContactSources: sourceBootstrap.selectedCount || 0,
+          signalBridgeStatus: signalBridge.status,
+          verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
+          orionValidationQueue: signalBridge.validationQueueCount || 0
         },
         discoveredAt: new Date().toISOString()
       });
     } else if ((counts.signalRows || 0) === 0) {
       work.push({
         id: "P2GC-CAPTURE-CAPACITY-SIGNAL-REFRESH",
-        objective: "Collect fresh source-backed capture-capacity signals: capture/BD hiring, new IDIQ/GWAC or vehicle awards, agency expansion, recompetes, federal award growth, and acquisitions.",
+        objective: "Collect or validate fresh source-backed capture-capacity signals: capture/BD hiring, new IDIQ/GWAC or vehicle awards, agency expansion, recompetes, federal award growth, and acquisitions.",
         provider: "ORION",
         domain: "Revenue Intelligence",
         priority: "CRITICAL",
         priorityScore: 98,
-        reason: "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
+        reason: (signalBridge.validationQueueCount || 0) > 0
+          ? `${signalBridge.validationQueueCount} ORION signal candidates require public-source validation before they can be used for outbound personalization.`
+          : "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
         capability: "revenue.capture_capacity_signal_refresh",
         metadata: {
           contactRows: counts.contactRows || 0,
           artifact: result.artifact || null,
           sourceBootstrapStatus: sourceBootstrap.status,
-          selectedContactSources: sourceBootstrap.selectedCount || 0
+          selectedContactSources: sourceBootstrap.selectedCount || 0,
+          signalBridgeStatus: signalBridge.status,
+          verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
+          orionValidationQueue: signalBridge.validationQueueCount || 0,
+          orionValidationFile: signalBridge.validationFile || null,
+          signalBridgeArtifact: signalBridge.artifact || null
         },
         discoveredAt: new Date().toISOString()
       });
@@ -90,7 +107,10 @@ class CaptureCapacityRevenueDiscovery {
           blockedByCampaignGate: counts.blockedByCampaignGate || 0,
           artifact: result.artifact || null,
           sourceBootstrapStatus: sourceBootstrap.status,
-          selectedContactSources: sourceBootstrap.selectedCount || 0
+          selectedContactSources: sourceBootstrap.selectedCount || 0,
+          signalBridgeStatus: signalBridge.status,
+          verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
+          orionValidationQueue: signalBridge.validationQueueCount || 0
         },
         discoveredAt: new Date().toISOString()
       });
@@ -104,7 +124,8 @@ class CaptureCapacityRevenueDiscovery {
         sourceCounts: counts,
         campaignGate: result.campaignGate,
         nextAction: result.nextAction,
-        sourceBootstrap
+        sourceBootstrap,
+        signalBridge
       },
       work
     };
