@@ -50,7 +50,7 @@ function sourceScore(filePath) {
   if (/has[_ -]?email|email[_ -]?ready/.test(name)) score += 12;
   if (/with[_ -]?contacts?|contacts?/.test(name)) score += 10;
   if (/verified/.test(name)) score += 9;
-  if (/ready[_ -]?to[_ -]?send|outreach[_ -]?ready/.test(name)) score += 8;
+  if (/ready[_ -]?(?:to[_ -]?send|for[_ -]?outreach)|outreach[_ -]?ready/.test(name)) score += 8;
   if (/leads?/.test(name)) score += 7;
   if (/prospects?/.test(name)) score += 6;
   if (/master/.test(name)) score += 3;
