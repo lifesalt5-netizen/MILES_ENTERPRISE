@@ -236,7 +236,7 @@ class CaptureCapacityProspectDiscoveryService {
     const contactFiles = Array.isArray(input.contactFiles) && input.contactFiles.length ? input.contactFiles.map(path.resolve) : this.discoverFiles(plan.contactRoots, CONTACT_FILENAMES);
     const signalFiles = Array.isArray(input.signalFiles) && input.signalFiles.length ? input.signalFiles.map(path.resolve) : this.discoverFiles(plan.signalRoots, SIGNAL_FILENAMES);
     const contacts = Array.isArray(input.contacts) ? { rows: input.contacts.map(record => ({ record, _sourceFile: "INLINE", _sourceKind: "contact" })), errors: [] } : this.loadSources(contactFiles, "contact");
-    const signals = Array.isArray(input.signals) ? { rows: input.signals.map(record => ({ record, _sourceFile: clean(record.source) || "INLINE", _sourceKind: "signal" })), errors: [] } : this.loadSources(signalFiles, "signal");
+    const signals = Array.isArray(input.signals) ? { rows: input.signals.map(record => ({ record, _sourceFile: clean(record.source) || "", _sourceKind: "signal" })), errors: [] } : this.loadSources(signalFiles, "signal");
     const indexed = this.buildSignalIndex(signals.rows), enriched = this.enrichContacts(contacts.rows, indexed.index);
     const audience = this.getCampaignService().prepareAudience(enriched.enriched, { maxAudience: input.maxAudience || 2000 });
     const candidates = audience.eligible.map(item => item.lead);
