@@ -6,6 +6,10 @@ on:
       - "DATA/revenue/winback/**"
       - "SERVICES/revenue/WinBackProspectReconstructionService.js"
       - "SERVICES/revenue/WinBackCampaignService.js"
+      - "SERVICES/revenue/WinBackCampaignCrossGenService.js"
+      - "SERVICES/revenue/WinBackLocalHistoryDiscoveryService.js"
+      - "SERVICES/marketing/P2GCEmailMessagingStandard.js"
+      - "SCRIPTS/ExtractWinBackXlsx.ps1"
       - "RUN_P2GC_WINBACK_CAMPAIGN.js"
       - "TESTS/winback_*"
       - ".github/workflows/winback-validation.yml"
@@ -31,12 +35,23 @@ jobs:
         run: |
           node --check SERVICES/revenue/WinBackProspectReconstructionService.js
           node --check SERVICES/revenue/WinBackCampaignService.js
+          node --check SERVICES/revenue/WinBackCampaignCrossGenService.js
+          node --check SERVICES/revenue/WinBackLocalHistoryDiscoveryService.js
+          node --check SERVICES/marketing/P2GCEmailMessagingStandard.js
           node --check RUN_P2GC_WINBACK_CAMPAIGN.js
           node --check TESTS/winback_reconstruction_test.js
           node --check TESTS/winback_campaign_test.js
+          node --check TESTS/winback_local_history_test.js
+          node --check TESTS/winback_crossgen_messaging_test.js
 
       - name: Prospect reconstruction tests
         run: node TESTS/winback_reconstruction_test.js
+
+      - name: Local B12 and Obsidian history recovery tests
+        run: node TESTS/winback_local_history_test.js
+
+      - name: Cross-generational messaging standard tests
+        run: node TESTS/winback_crossgen_messaging_test.js
 
       - name: Campaign safety and sequence tests
         run: node TESTS/winback_campaign_test.js
