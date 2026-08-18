@@ -3,6 +3,7 @@ name: Capture Capacity Validation
 on:
   pull_request:
     paths:
+      - "StartAutonomousCOO.js"
       - "CORE/Runtime/MilesRuntime.js"
       - "SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js"
       - "SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js"
@@ -10,6 +11,7 @@ on:
       - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
       - "SERVICES/revenue/CaptureCapacitySourceBootstrapService.js"
       - "SERVICES/revenue/CaptureCapacityOrionSignalBridgeService.js"
+      - "SERVICES/revenue/CaptureCapacityProductionLoopService.js"
       - "TESTS/capture_capacity_*"
       - ".github/workflows/capture-capacity-validation.yml"
   workflow_dispatch:
@@ -32,6 +34,7 @@ jobs:
 
       - name: Syntax validation
         run: |
+          node --check StartAutonomousCOO.js
           node --check CORE/Runtime/MilesRuntime.js
           node --check SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js
           node --check SERVICES/revenue/CaptureCapacityAutonomousExecutionService.js
@@ -39,10 +42,13 @@ jobs:
           node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
           node --check SERVICES/revenue/CaptureCapacitySourceBootstrapService.js
           node --check SERVICES/revenue/CaptureCapacityOrionSignalBridgeService.js
+          node --check SERVICES/revenue/CaptureCapacityProductionLoopService.js
           node --check TESTS/capture_capacity_autonomous_execution_test.js
           node --check TESTS/capture_capacity_runtime_routing_test.js
           node --check TESTS/capture_capacity_source_bootstrap_test.js
           node --check TESTS/capture_capacity_orion_signal_bridge_test.js
+          node --check TESTS/capture_capacity_production_loop_test.js
+          node --check TESTS/capture_capacity_production_entrypoint_test.js
 
       - name: Autonomous staging tests
         run: node TESTS/capture_capacity_autonomous_execution_test.js
@@ -55,3 +61,9 @@ jobs:
 
       - name: ORION signal bridge tests
         run: node TESTS/capture_capacity_orion_signal_bridge_test.js
+
+      - name: Production loop tests
+        run: node TESTS/capture_capacity_production_loop_test.js
+
+      - name: Production entrypoint tests
+        run: node TESTS/capture_capacity_production_entrypoint_test.js
