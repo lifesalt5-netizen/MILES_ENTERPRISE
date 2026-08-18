@@ -18,6 +18,10 @@ function envBool(env, name, fallback = false) {
   return ["1", "true", "yes", "on", "enabled"].includes(clean(raw).toLowerCase());
 }
 
+function hasEnv(env, name) {
+  return Object.prototype.hasOwnProperty.call(env || {}, name);
+}
+
 function stableTrigger(trigger = {}) {
   return {
     type: clean(trigger.type || trigger.trigger || trigger.name).toUpperCase(),
@@ -61,12 +65,30 @@ class CaptureCapacityAutonomousExecutionService {
 
   policy() {
     const autoStageEnabled = envBool(this.env, "CAPTURE_CAPACITY_AUTO_STAGE", true);
-    const instantlyWriteEnabled = envBool(this.env, "INSTANTLY_WRITE_ENABLED", false);
+    const milesDryRun = envBool(this.env, "MILES_DRY_RUN", true);
+    const instantlyMutationsAllowed = envBool(this.env, "MILES_ALLOW_INSTANTLY_MUTATIONS", false);
+    const compatibilityWriteGateConfigured = hasEnv(this.env, "INSTANTLY_WRITE_ENABLED");
+    const compatibilityWriteGate = compatibilityWriteGateConfigured
+      ? envBool(this.env, "INSTANTLY_WRITE_ENABLED", false)
+      : true;
+    const connectorWriteEnabled = milesDryRun === false && instantlyMutationsAllowed === true;
+    const apply = autoStageEnabled && connectorWriteEnabled && compatibilityWriteGate;
+
+    let writeGateReason = "AUTHORIZED_DRAFT_STAGING";
+    if (!autoStageEnabled) writeGateReason = "CAPTURE_CAPACITY_AUTO_STAGE_DISABLED";
+    else if (milesDryRun) writeGateReason = "MILES_DRY_RUN_ENABLED";
+    else if (!instantlyMutationsAllowed) writeGateReason = "MILES_ALLOW_INSTANTLY_MUTATIONS_DISABLED";
+    else if (!compatibilityWriteGate) writeGateReason = "INSTANTLY_WRITE_ENABLED_DISABLED";
 
     return {
       autoStageEnabled,
-      instantlyWriteEnabled,
-      apply: autoStageEnabled && instantlyWriteEnabled,
+      milesDryRun,
+      instantlyMutationsAllowed,
+      compatibilityWriteGateConfigured,
+      compatibilityWriteGate,
+      connectorWriteEnabled,
+      apply,
+      writeGateReason,
       autoActivate: false,
       activationPolicy: "NEVER_AUTO_ACTIVATE"
     };
@@ -199,7 +221,11 @@ class CaptureCapacityAutonomousExecutionService {
       previousState?.campaignId &&
       previousState?.staged === true
     ) {
-      if (previousState.prospectFingerprint === prospectFingerprint) {
+      const exactSetAlreadyLoaded =
+        previousState.prospectFingerprint === prospectFingerprint &&
+        previousState.leadUploadComplete !== false;
+
+      if (exactSetAlreadyLoaded) {
         return {
           ok: true,
           status: "ALREADY_STAGED",
@@ -225,6 +251,7 @@ class CaptureCapacityAutonomousExecutionService {
           ...previousState,
           prospectFingerprint,
           qualifiedCount: candidates.length,
+          leadUploadComplete: true,
           lastRefreshAt: this.now().toISOString(),
           lastRefreshStatus: refresh.status,
           lastLeadsUploaded: refresh.leadsUploaded
@@ -255,14 +282,15 @@ class CaptureCapacityAutonomousExecutionService {
       maxAudience
     });
 
-    const staged = Boolean(
+    const draftCreated = Boolean(
       policy.apply &&
       campaign?.campaignCreated === true &&
       campaign?.campaignId &&
       campaign?.campaignActivated !== true
     );
+    const leadUploadComplete = campaign?.uploadResult?.ok !== false;
 
-    if (staged) {
+    if (draftCreated) {
       this.writeState({
         campaignKey: CAMPAIGN_KEY,
         campaignId: campaign.campaignId,
@@ -271,19 +299,24 @@ class CaptureCapacityAutonomousExecutionService {
         qualifiedCount: candidates.length,
         staged: true,
         activated: false,
+        leadUploadComplete,
         stagedAt: this.now().toISOString(),
         campaignStatus: campaign.status || "CAMPAIGN_PREPARED_DRAFT"
       });
     }
 
-    const status = staged
-      ? "CAMPAIGN_STAGED_DRAFT"
+    const status = draftCreated
+      ? leadUploadComplete
+        ? "CAMPAIGN_STAGED_DRAFT"
+        : "CAMPAIGN_STAGED_DRAFT_LEAD_UPLOAD_RETRY_REQUIRED"
       : !policy.apply
         ? "READY_WRITE_GATE_DISABLED"
         : campaign?.status || "CAMPAIGN_STAGE_FAILED";
 
     return {
-      ok: !policy.apply ? true : Boolean(campaign?.ok),
+      ok: !policy.apply
+        ? true
+        : Boolean(draftCreated && leadUploadComplete),
       status,
       capability: "revenue.capture_capacity_handoff",
       campaignKey: CAMPAIGN_KEY,
@@ -302,10 +335,11 @@ class CaptureCapacityAutonomousExecutionService {
         mode: campaign?.mode || null,
         campaignCreated: Boolean(campaign?.campaignCreated),
         leadsUploaded: Number(campaign?.leadsUploaded || 0),
+        leadUploadComplete,
         campaignActivated: Boolean(campaign?.campaignActivated),
         artifact: campaign?.artifact || null
       },
-      stateFile: staged ? this.stateFile : null,
+      stateFile: draftCreated ? this.stateFile : null,
       generatedAt: this.now().toISOString()
     };
   }
@@ -313,4 +347,4 @@ class CaptureCapacityAutonomousExecutionService {
 
 module.exports = new CaptureCapacityAutonomousExecutionService();
 module.exports.CaptureCapacityAutonomousExecutionService = CaptureCapacityAutonomousExecutionService;
-module.exports.helpers = { clean, envBool, stableTrigger };
+module.exports.helpers = { clean, envBool, hasEnv, stableTrigger };
