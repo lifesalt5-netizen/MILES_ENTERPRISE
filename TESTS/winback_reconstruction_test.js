@@ -21,6 +21,8 @@ function run() {
     records: [
       { full_name: "Chokha Palayamkottai", first_name: "Chokha", meeting_date: "2026-03-18", meeting_status: "COMPLETED", relationship_status: "PRIOR_CONVERSATION" },
       { full_name: "Jonathan Evans", first_name: "Jonathan", meeting_date: "2026-03-04", meeting_status: "NO_SHOW", relationship_status: "NO_SHOW" },
+      { full_name: "Jonathan Mullany", first_name: "Jonathan", email: "j.mullany@readytohelp.care", company: "Ready To Help", meeting_date: "2025-10-10", meeting_status: "MISSED_AND_RESCHEDULE_REQUESTED", relationship_status: "RESCHEDULED_UNCONFIRMED", source: "GOOGLE_CALENDAR_AND_GMAIL" },
+      { full_name: "Zachary Winter", first_name: "Zachary", email: "zachary.winter@witsconsult.com", company: "WITS Consult", meeting_date: "2025-10-21", meeting_status: "SCHEDULED_ONLY", relationship_status: "STATUS_VALIDATION_REQUIRED", review_required: "Completion not verified" },
       { full_name: "Lisa Hodde", first_name: "Lisa", meeting_date: "2026-04-30", meeting_status: "COMPLETED", relationship_status: "PRIOR_CONVERSATION" },
       { full_name: "Kevin", first_name: "Kevin", meeting_date: "2026-06-05", meeting_status: "AMBIGUOUS", relationship_status: "AMBIGUOUS_EXCLUDED" },
       { full_name: "Jigar", first_name: "Jigar", meeting_date: "2026-03-25", meeting_status: "COMPLETED", relationship_status: "PRIOR_CONVERSATION" }
@@ -49,9 +51,20 @@ function run() {
   assert.strictEqual(report.priorConversationCount, 1, "completed prior conversation should be reconstructed");
   assert.strictEqual(report.priorConversationCandidates[0].email, "chokha@example.com");
   assert.strictEqual(report.priorConversationCandidates[0].track, "PRIOR_CONVERSATION");
-  assert.strictEqual(report.reactivationCount, 1, "no-show should enter reactivation track only");
-  assert.strictEqual(report.reactivationCandidates[0].email, "jonathan@example.com");
-  assert.strictEqual(report.reactivationCandidates[0].track, "REACTIVATION");
+  assert.strictEqual(report.reactivationCount, 2, "no-show plus direct-email reschedule should enter reactivation track");
+  assert(report.reactivationCandidates.some(item => item.email === "jonathan@example.com"));
+
+  const mullany = report.reactivationCandidates.find(item => item.email === "j.mullany@readytohelp.care");
+  assert(mullany, "direct verified Calendar/Gmail email should be accepted without a local contact-file match");
+  assert.strictEqual(mullany.direct_seed_email, true);
+  assert.strictEqual(mullany.company, "Ready To Help");
+  assert.strictEqual(mullany.source, "GOOGLE_CALENDAR_AND_GMAIL");
+
+  const zachary = report.blocked.find(item => item.full_name === "Zachary Winter");
+  assert(zachary, "scheduled-only record must remain blocked even with a direct valid email");
+  assert(zachary.blockers.includes("RELATIONSHIP_STATUS_VALIDATION_REQUIRED"));
+  assert(zachary.blockers.includes("MANUAL_REVIEW_REQUIRED"));
+  assert(!zachary.blockers.includes("CONTACT_MATCH_REQUIRED"), "direct email should remove contact-match dependency");
 
   const lisa = report.blocked.find(item => item.full_name === "Lisa Hodde");
   assert(lisa, "current client must be blocked");
@@ -68,6 +81,8 @@ function run() {
   assert.strictEqual(report.rules.noShowCopyMayClaimPriorConversation, false);
   assert.strictEqual(report.rules.currentClientsSuppressed, true);
   assert.strictEqual(report.rules.ambiguousRecordsFailClosed, true);
+  assert.strictEqual(report.rules.directVerifiedSeedEmailAccepted, true);
+  assert.strictEqual(report.rules.scheduledOnlyRecordsRequireStatusValidation, true);
 
   fs.rmSync(root, { recursive: true, force: true });
   process.stdout.write("PASS winback_reconstruction_test\n");
