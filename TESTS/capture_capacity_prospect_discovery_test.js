@@ -70,7 +70,7 @@ function service() {
   const result = service().discover({
     writeReport: false,
     contacts: [{ first_name: "Sam", company: "NoSource Inc", email: "sam@nosource.com", website: "nosource.com" }],
-    signals: [{ company: "NoSource Inc", title: "Capture Manager opening", description: "Hiring capture manager", source: "", posted_date: "2026-08-10" }]
+    signals: [{ company: "NoSource Inc", title: "Capture Manager opening", description: "Hiring capture manager", agency: "DHS", source: "", posted_date: "2026-08-10" }]
   });
   assert.equal(result.sourceCounts.qualifiedRows, 0);
 })();
