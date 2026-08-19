@@ -1,0 +1,21 @@
+name: MILES Live Source Reconciliation Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/AUDIT_MILES_LIVE_SOURCE_RECONCILIATION.ps1'
+      - 'TESTS/live_source_reconciliation_safety_test.js'
+      - '.github/workflows/live-source-reconciliation-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Static safety test
+        run: node TESTS/live_source_reconciliation_safety_test.js
