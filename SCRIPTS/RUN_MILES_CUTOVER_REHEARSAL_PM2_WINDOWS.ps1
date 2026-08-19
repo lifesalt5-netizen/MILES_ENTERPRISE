@@ -74,41 +74,45 @@ function Get-PortOwnerRows {
     return @($rows)
 }
 
-function Get-LiveRootPm2Apps {
+function Get-LiveRootPm2State {
     $apps = @(Get-Pm2Apps)
+    $portOwnerPids = @((Get-PortOwnerRows) | Select-Object -ExpandProperty pid -Unique)
     $selected = @()
     foreach ($app in $apps) {
         $cwd = [string]$app.pm_cwd
         $execPath = [string]$app.pm_exec_path
         $rootOwned = (Test-PathInsideRoot $cwd $LiveRoot) -or (Test-PathInsideRoot $execPath $LiveRoot)
-        if ($rootOwned -and [string]$app.status -eq 'online') {
-            $selected += [pscustomobject]@{
-                pid=[int]$app.pid; pm_id=[int]$app.pm_id; name=[string]$app.name;
-                status=[string]$app.status; cwd=$cwd; exec_path=$execPath
-            }
+        if (-not $rootOwned) { continue }
+        $hadPid = ([int]$app.pid -gt 0)
+        $wasOnline = ([string]$app.status -eq 'online')
+        $ownedCanonicalPort = ($portOwnerPids -contains [int]$app.pid)
+        $selected += [pscustomobject]@{
+            pid=[int]$app.pid
+            pm_id=[int]$app.pm_id
+            name=[string]$app.name
+            status=[string]$app.status
+            cwd=$cwd
+            exec_path=$execPath
+            restore=[bool]($wasOnline -or $hadPid -or $ownedCanonicalPort)
         }
     }
     return @($selected | Sort-Object pm_id -Unique)
 }
 
-function Stop-RootOwnedCanonicalPortProcesses {
+function Stop-RootOwnedNodeProcesses {
     $stopped = @()
-    foreach ($row in @(Get-PortOwnerRows)) {
-        $proc = $null
-        try { $proc = Get-CimInstance Win32_Process -Filter "ProcessId=$($row.pid)" -ErrorAction Stop } catch {}
-        if (-not $proc) { continue }
+    $liveToken = Normalize-Root $LiveRoot
+    $candidateToken = Normalize-Root $CandidateRoot
+    foreach ($proc in @(Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue)) {
         $command = [string]$proc.CommandLine
-        $name = [string]$proc.Name
-        $rootOwned = $false
-        if ($command) {
-            $liveToken = Normalize-Root $LiveRoot
-            $candidateToken = Normalize-Root $CandidateRoot
-            $rootOwned = ($command.IndexOf($liveToken,[System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
-                ($command.IndexOf($candidateToken,[System.StringComparison]::OrdinalIgnoreCase) -ge 0)
-        }
-        if ($name -ieq 'node.exe' -and $rootOwned) {
-            try { Stop-Process -Id $row.pid -Force -ErrorAction Stop; $stopped += $row } catch {}
-        }
+        if (-not $command) { continue }
+        $rootOwned = ($command.IndexOf($liveToken,[System.StringComparison]::OrdinalIgnoreCase) -ge 0) -or
+            ($command.IndexOf($candidateToken,[System.StringComparison]::OrdinalIgnoreCase) -ge 0)
+        if (-not $rootOwned) { continue }
+        try {
+            Stop-Process -Id ([int]$proc.ProcessId) -Force -ErrorAction Stop
+            $stopped += [pscustomobject]@{ pid=[int]$proc.ProcessId; command_line=$command }
+        } catch {}
     }
     return @($stopped)
 }
@@ -137,8 +141,9 @@ $status = @(& git -C $CandidateRoot status --porcelain=v1 --untracked-files=all 
 if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect candidate Git status.' }
 if ($status.Count -ne 0) { throw "Candidate must be clean before rehearsal. Found $($status.Count) status entries." }
 
-$pm2Apps = @(Get-LiveRootPm2Apps)
-if ($pm2Apps.Count -eq 0) { throw 'No currently-online PM2 apps were proven to belong to the live MILES root.' }
+$pm2Apps = @(Get-LiveRootPm2State)
+if ($pm2Apps.Count -eq 0) { throw 'No PM2 apps were proven to belong to the live MILES root.' }
+$restoreApps = @($pm2Apps | Where-Object { $_.restore })
 $runnerExit = 1
 $restoreOk = $false
 
@@ -148,22 +153,25 @@ Write-Host '============================================================'
 Write-Host "Candidate: $CandidateRoot"
 Write-Host "Live:      $LiveRoot"
 Write-Host "Commit:    $ExpectedCommit"
-Write-Host "PM2 live-root apps to pause: $($pm2Apps.Count)"
-foreach ($app in $pm2Apps) { Write-Host "  pm_id=$($app.pm_id) name=$($app.name) pid=$($app.pid) cwd=$($app.cwd)" }
-Write-Host 'Safety: only PM2 apps proven to belong to the live MILES root may be stopped.'
-Write-Host 'Refusing to stop PM2 app entries outside the live MILES root.'
-Write-Host 'No PM2 app definitions are deleted or rewritten.'
+Write-Host "PM2 live-root entries to stop: $($pm2Apps.Count)"
+foreach ($app in $pm2Apps) {
+    Write-Host "  pm_id=$($app.pm_id) name=$($app.name) pid=$($app.pid) status=$($app.status) restore=$($app.restore) cwd=$($app.cwd)"
+}
+Write-Host "PM2 entries to restore afterward: $($restoreApps.Count)"
+Write-Host 'Safety: every PM2 entry stopped is proven to belong to the live MILES root.'
+Write-Host 'PM2 entries outside the live MILES root are never touched.'
+Write-Host 'No PM2 app definitions are deleted, rewritten, or saved.'
 
 try {
     Write-Host ''
-    Write-Host 'Stopping all currently-online PM2 apps owned by the live MILES root...'
+    Write-Host 'Stopping every PM2 app entry owned by the live MILES root...'
     foreach ($app in $pm2Apps) {
         & pm2 stop $app.pm_id | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "pm2 stop failed for id=$($app.pm_id) name=$($app.name)" }
     }
 
     Start-Sleep -Milliseconds 1000
-    Stop-RootOwnedCanonicalPortProcesses | Out-Null
+    Stop-RootOwnedNodeProcesses | Out-Null
     Wait-CanonicalPorts $false 30 | Out-Null
 
     Write-Host 'Launching zero-execution candidate rehearsal...'
@@ -177,9 +185,15 @@ try {
 }
 finally {
     Write-Host ''
-    Write-Host 'Restoring exact PM2 live-root apps that were online before rehearsal...'
+    Write-Host 'Removing any direct live/candidate Node runtime before PM2 restoration...'
+    Stop-RootOwnedNodeProcesses | Out-Null
+    try { Wait-CanonicalPorts $false 30 | Out-Null } catch {
+        Write-Host "Pre-restore port release warning: $($_.Exception.Message)"
+    }
+
+    Write-Host 'Restoring the PM2 live-root entries that were active before rehearsal...'
     $restoreErrors = @()
-    foreach ($app in $pm2Apps) {
+    foreach ($app in $restoreApps) {
         & pm2 restart $app.pm_id | Out-Null
         if ($LASTEXITCODE -ne 0) { $restoreErrors += "id=$($app.pm_id) name=$($app.name)" }
     }
