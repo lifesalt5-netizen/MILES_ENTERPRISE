@@ -1,0 +1,26 @@
+name: MILES Meeting Pipeline Read-Only Validation
+
+on:
+  pull_request:
+    paths:
+      - 'CONNECTORS/GOOGLE/calendar.js'
+      - 'SCRIPTS/AUDIT_MILES_MEETING_PIPELINE.js'
+      - 'TESTS/meeting_pipeline_readonly_safety_test.js'
+      - '.github/workflows/meeting-pipeline-readonly-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax validation
+        run: |
+          node --check CONNECTORS/GOOGLE/calendar.js
+          node --check SCRIPTS/AUDIT_MILES_MEETING_PIPELINE.js
+      - name: Read-only safety validation
+        run: node TESTS/meeting_pipeline_readonly_safety_test.js
