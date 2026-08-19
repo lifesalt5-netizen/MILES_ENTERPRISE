@@ -49,8 +49,11 @@ assert(/Refusing to kill unrelated processes/.test(windowsRunner), "Unrelated ca
 assert(/Assert-CanonicalPortsReleased/.test(windowsRunner), "Windows launcher must prove canonical ports are released before candidate boot");
 
 assert(/pm2\s+jlist/i.test(pm2Runner), "PM2 launcher must inspect the PM2 process table");
-assert(/pm2_env\.pm_cwd/i.test(pm2Runner), "PM2 launcher must inspect each app cwd");
-assert(/pm2_env\.pm_exec_path/i.test(pm2Runner), "PM2 launcher must inspect each app executable path");
+assert(/JSON\.parse/.test(pm2Runner), "PM2 launcher must parse raw jlist with Node to preserve case-sensitive duplicate env keys");
+assert(/pm_cwd/.test(pm2Runner), "PM2 launcher must project each app cwd");
+assert(/pm_exec_path/.test(pm2Runner), "PM2 launcher must project each app executable path");
+assert(!/\$raw\s*\|\s*ConvertFrom-Json/i.test(pm2Runner), "Raw PM2 jlist must never be parsed by Windows PowerShell ConvertFrom-Json");
+assert(/username and USERNAME/i.test(pm2Runner), "PM2 duplicate-key Windows regression must remain documented");
 assert(/Test-PathInsideRoot/.test(pm2Runner), "PM2 launcher must prove PM2 app ownership by live MILES root");
 assert(/Refusing to stop PM2 app/.test(pm2Runner), "PM2 launcher must refuse unrelated PM2 apps");
 assert(/pm2\s+stop\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher may stop only resolved PM2 app ids");
