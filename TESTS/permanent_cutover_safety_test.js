@@ -13,7 +13,9 @@ assert(/Candidate node_modules missing/i.test(script), "Cutover must require ins
 assert(/Candidate source\/control files changed/i.test(script), "Cutover must reject source drift after rehearsal");
 assert(/pm2\s+stop\s+\$app\.pm_id/i.test(script), "Cutover must stop resolved PM2 entries by exact id");
 assert(/pm2\s+restart\s+\$app\.pm_id/i.test(script), "Cutover must restart resolved PM2 entries by exact id");
-assert(/Copy-Item[^\n]+\.env/i.test(script), "Cutover must preserve live .env");
+assert(/\$liveEnv\s*=\s*Join-Path\s+\$LiveRoot\s+'\.env'/i.test(script), "Cutover must resolve live .env explicitly");
+assert(/\$candidateEnv\s*=\s*Join-Path\s+\$CandidateRoot\s+'\.env'/i.test(script), "Cutover must resolve candidate .env explicitly");
+assert(/Copy-Item\s+-LiteralPath\s+\$liveEnv\s+-Destination\s+\$candidateEnv\s+-Force/i.test(script), "Cutover must preserve live .env");
 assert(/robocopy\s+\$liveData\s+\$candidateData/i.test(script), "Cutover must preserve live DATA state");
 assert(/config_overlay_performed=\$false/i.test(script), "Cutover must certify deferred CONFIG is not overlaid");
 assert(/Rename-Item[^\n]+\$LiveRoot/i.test(script), "Cutover must preserve old live installation via rename");
