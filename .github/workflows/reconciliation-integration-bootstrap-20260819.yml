@@ -1,0 +1,86 @@
+name: MILES Reconciliation Integration Bootstrap 20260819
+
+on:
+  push:
+    branches:
+      - "agent/reconciliation-integration-candidate-20260819"
+    paths:
+      - "RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64"
+      - ".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-validated-payload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout integration branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode, validate, apply, test, and commit payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          B64="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64"
+          BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
+          if [[ ! -f "$B64" ]]; then
+            echo "Integration payload is not staged yet; nothing to apply."
+            exit 0
+          fi
+
+          rm -rf /tmp/miles-integration-payload
+          mkdir -p /tmp/miles-integration-payload
+          base64 --decode "$B64" > /tmp/miles-integration-payload.zip
+
+          if unzip -Z1 /tmp/miles-integration-payload.zip | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
+            echo "Unsafe ZIP path detected."
+            exit 3
+          fi
+
+          unzip -q /tmp/miles-integration-payload.zip -d /tmp/miles-integration-payload
+
+          pushd /tmp/miles-integration-payload >/dev/null
+          node TESTS/reconciliation_integration_candidate_manifest_test.js
+          popd >/dev/null
+
+          rsync -a /tmp/miles-integration-payload/ ./
+
+          npm ci
+          node TESTS/reconciliation_integration_candidate_manifest_test.js
+          node TESTS/reconciliation_stage4_bundle_safety_test.js
+          node TESTS/reconciliation_stage5_cutover_readiness_safety_test.js
+          node TESTS/reply_intelligence_classification_test.js
+          node TESTS/reply_intelligence_production_loop_test.js
+          node TESTS/reply_global_suppression_connector_test.js
+          node TESTS/reply_intelligence_production_entrypoint_test.js
+          node TESTS/winback_reconstruction_test.js
+          node TESTS/winback_local_history_test.js
+          node TESTS/winback_crossgen_messaging_test.js
+          node TESTS/winback_master_export_test.js
+          node TESTS/winback_production_loop_test.js
+          node TESTS/winback_production_entrypoint_test.js
+          node TESTS/winback_campaign_test.js
+          node TESTS/capture_capacity_autonomous_execution_test.js
+          node TESTS/capture_capacity_runtime_routing_test.js
+          node TESTS/capture_capacity_source_bootstrap_test.js
+          node TESTS/capture_capacity_orion_signal_bridge_test.js
+          node TESTS/capture_capacity_production_loop_test.js
+          node TESTS/capture_capacity_production_entrypoint_test.js
+
+          rm -f "$B64"
+          rm -f "$BOOTSTRAP"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No integration changes to commit."
+            exit 0
+          fi
+          git commit -m "Integrate validated MILES reconciliation candidate"
+          git push origin HEAD:agent/reconciliation-integration-candidate-20260819
