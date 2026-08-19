@@ -59,10 +59,14 @@ assert(!/\$raw\s*\|\s*ConvertFrom-Json/i.test(pm2Runner), "Raw PM2 jlist must ne
 assert(/username and USERNAME/i.test(pm2Runner), "PM2 duplicate-key Windows regression must remain documented");
 assert(!/foreach\s*\(\s*\$pid\b/i.test(pm2Runner), "PM2 launcher must not assign to PowerShell's read-only $PID automatic variable");
 assert(/foreach\s*\(\s*\$ownerPid\b/i.test(pm2Runner), "PM2 launcher must use a non-reserved variable for listener owner PIDs");
+assert(/Get-LiveRootPm2State/.test(pm2Runner), "PM2 launcher must inventory every live-root PM2 entry regardless of status");
+assert(/restore=\[bool\]\(\$wasOnline\s+-or\s+\$hadPid\s+-or\s+\$ownedCanonicalPort\)/i.test(pm2Runner), "PM2 launcher must preserve the pre-rehearsal active restore set");
 assert(/Test-PathInsideRoot/.test(pm2Runner), "PM2 launcher must prove PM2 app ownership by live MILES root");
-assert(/Refusing to stop PM2 app/.test(pm2Runner), "PM2 launcher must refuse unrelated PM2 apps");
-assert(/pm2\s+stop\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher may stop only resolved PM2 app ids");
-assert(/pm2\s+restart\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher must restore the same PM2 app ids");
+assert(/PM2 entries outside the live MILES root are never touched/i.test(pm2Runner), "PM2 launcher must document unrelated-app protection");
+assert(/foreach\s*\(\$app\s+in\s+\$pm2Apps\)[\s\S]*?pm2\s+stop\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher must stop every resolved live-root PM2 entry");
+assert(/foreach\s*\(\$app\s+in\s+\$restoreApps\)[\s\S]*?pm2\s+restart\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher must restore only the original active set");
+assert(/Stop-RootOwnedNodeProcesses/.test(pm2Runner), "PM2 launcher must remove direct live/candidate Node runtimes around PM2 restoration");
+assert(/Removing any direct live\/candidate Node runtime before PM2 restoration/i.test(pm2Runner), "PM2 launcher must clean direct runtime before PM2 restoration");
 assert(/finally\s*\{/i.test(pm2Runner), "PM2 restoration must be protected by a finally block");
 assert(/RUN_MILES_CUTOVER_REHEARSAL_WINDOWS\.ps1/i.test(pm2Runner), "PM2 launcher must delegate candidate validation to the Windows rehearsal runner");
 
