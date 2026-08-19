@@ -14,9 +14,13 @@ assert(/Candidate source\/control files changed/i.test(script), "Cutover must re
 assert(/pm2\s+stop\s+\$app\.pm_id/i.test(script), "Cutover must stop resolved PM2 entries by exact id");
 assert(/pm2\s+restart\s+\$app\.pm_id/i.test(script), "Cutover must restart resolved PM2 entries by exact id");
 assert(/\$liveEnv\s*=\s*Join-Path\s+\$LiveRoot\s+'\.env'/i.test(script), "Cutover must resolve live .env explicitly");
-assert(/\$candidateEnv\s*=\s*Join-Path\s+\$CandidateRoot\s+'\.env'/i.test(script), "Cutover must resolve candidate .env explicitly");
-assert(/Copy-Item\s+-LiteralPath\s+\$liveEnv\s+-Destination\s+\$candidateEnv\s+-Force/i.test(script), "Cutover must preserve live .env");
-assert(/robocopy\s+\$liveData\s+\$candidateData/i.test(script), "Cutover must preserve live DATA state");
+assert(/\$rollbackEnv\s*=\s*Join-Path\s+\$rollbackRoot\s+'\.env'/i.test(script), "Cutover must resolve rollback .env explicitly");
+assert(/Copy-Item\s+-LiteralPath\s+\$rollbackEnv\s+-Destination\s+\$newLiveEnv\s+-Force/i.test(script), "Cutover must preserve live .env after promotion");
+assert(/MIGRATE_STATE_ATOMIC/i.test(script), "Cutover must use the atomic state migration phase");
+assert(/Move-Item\s+-LiteralPath\s+\$rollbackData\s+-Destination\s+\$newLiveData/i.test(script), "Cutover must move authoritative live DATA intact into new production");
+assert(/Move-Item\s+-LiteralPath\s+\$currentLiveData\s+-Destination\s+\$rollbackData/i.test(script), "Rollback must restore authoritative DATA to the prior installation");
+assert(/candidateDataPark/i.test(script), "Candidate baseline DATA must be parked rather than destroyed");
+assert(!/\brobocopy\b/i.test(script), "Permanent cutover must not use robocopy for DATA migration");
 assert(/config_overlay_performed=\$false/i.test(script), "Cutover must certify deferred CONFIG is not overlaid");
 assert(/Rename-Item[^\n]+\$LiveRoot/i.test(script), "Cutover must preserve old live installation via rename");
 assert(/automatic rollback starting/i.test(script), "Cutover must contain automatic rollback path");
