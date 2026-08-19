@@ -1,0 +1,28 @@
+name: MILES Production Divergence Audit Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/AUDIT_MILES_PRODUCTION_DIVERGENCE.ps1"
+      - "TESTS/production_divergence_audit_safety_test.js"
+      - ".github/workflows/production-divergence-audit-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static safety test
+        run: node TESTS/production_divergence_audit_safety_test.js
