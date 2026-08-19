@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CHUNKS="RECONCILIATION/payload_xz2_chunks"
+          CHUNKS="RECONCILIATION/payload_xz_chunks"
           ARCHIVE="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.tar.xz"
           READY="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
@@ -34,7 +34,7 @@ jobs:
             exit 3
           fi
 
-          cat "$CHUNKS"/part-* > /tmp/miles-integration-payload.b64
+          cat "$CHUNKS"/part-*.b64 > /tmp/miles-integration-payload.b64
           base64 --decode /tmp/miles-integration-payload.b64 > "$ARCHIVE"
 
           EXPECTED_SHA="$(tr -d '\r\n ' < "$READY")"
@@ -79,7 +79,6 @@ jobs:
           node TESTS/capture_capacity_production_entrypoint_test.js
 
           rm -rf "$CHUNKS"
-          rm -rf "RECONCILIATION/payload_xz_chunks"
           rm -rf "RECONCILIATION/payload_chunks"
           rm -f "$ARCHIVE"
           rm -f "$READY"
