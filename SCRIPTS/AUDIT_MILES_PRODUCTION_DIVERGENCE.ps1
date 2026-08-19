@@ -63,8 +63,14 @@ Write-Host "Repository: $RepoRoot"
 Write-Host "No working-tree integration action will be performed."
 
 # Refresh remote metadata only. This does not alter the checked-out files.
-$fetchProbe = Invoke-GitProbe fetch origin main
-$fetchExit = $fetchProbe.exit_code
+$previousErrorActionPreference = $ErrorActionPreference
+try {
+    $ErrorActionPreference = "Continue"
+    $fetchOutput = & git fetch origin main 2>&1
+    $fetchExit = $LASTEXITCODE
+} finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+}
 if ($fetchExit -ne 0) {
     Write-Warning "git fetch origin main failed; audit will use the currently cached origin/main ref."
 }
