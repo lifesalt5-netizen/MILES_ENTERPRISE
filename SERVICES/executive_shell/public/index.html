@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>MILES Enterprise</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+
+      <div>
+        <h1>MILES</h1>
+        <p>Enterprise OS</p>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" data-section="home">
+        CEO Home
+      </button>
+
+      <button class="nav-item" data-section="miles">
+        Ask MILES
+      </button>
+
+      <button class="nav-item" data-section="approvals">
+        CEO Approvals
+        <span id="approvalBadge" class="badge">0</span>
+      </button>
+
+      <button class="nav-item" data-section="applications">
+        Applications
+      </button>
+
+      <button class="nav-item" data-section="operations">
+        Operations
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span id="shellStatusDot" class="status-dot"></span>
+      <span id="shellStatus">Checking systems</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PATHWAYS 2 GOVERNMENT CONTRACTING</p>
+        <h2 id="pageTitle">CEO Home</h2>
+      </div>
+
+      <div class="top-actions">
+        <button id="refreshButton" class="secondary-button">
+          Refresh
+        </button>
+
+        <button id="openCommandCenterButton" class="primary-button">
+          Open Command Center
+        </button>
+      </div>
+    </header>
+
+    <section id="home" class="page-section active">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">EXECUTIVE OPERATING SYSTEM</p>
+          <h3>Good day, Kevin.</h3>
+          <p>
+            MILES is supervising P2GC operations, intelligence,
+            revenue systems, and autonomous work.
+          </p>
+        </div>
+
+        <div class="hero-score">
+          <span>System State</span>
+          <strong id="overallState">Checking</strong>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <article class="metric-card">
+          <span>CEO Approvals</span>
+          <strong id="approvalCount">—</strong>
+          <small>Protected decisions requiring review</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Open Work</span>
+          <strong id="openWorkCount">—</strong>
+          <small>Active or queued work items</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Runtime Health</span>
+          <strong id="runtimeHealth">—</strong>
+          <small>Production worker condition</small>
+        </article>
+
+        <article class="metric-card">
+          <span>Connected Systems</span>
+          <strong id="connectedSystems">—</strong>
+          <small>Available platform services</small>
+        </article>
+      </div>
+
+      <div class="content-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">COMMAND</p>
+              <h3>Ask MILES</h3>
+            </div>
+          </div>
+
+          <form id="commandForm">
+            <textarea
+              id="commandInput"
+              rows="5"
+              placeholder="Tell MILES what outcome you want..."
+              required
+            ></textarea>
+
+            <button type="submit" class="primary-button">
+              Send to MILES
+            </button>
+          </form>
+
+          <div id="commandResult" class="result-box">
+            MILES is ready.
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">PRIORITY</p>
+              <h3>Executive Focus</h3>
+            </div>
+          </div>
+
+          <div id="priorityContent" class="priority-content">
+            Loading the current executive priority...
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="miles" class="page-section">
+      <article class="panel full-height">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">DIGITAL COO</p>
+            <h3>MILES Command Center</h3>
+          </div>
+        </div>
+
+        <form id="commandFormFull">
+          <textarea
+            id="commandInputFull"
+            rows="8"
+            placeholder="Enter a company objective, decision, audit, or execution request..."
+            required
+          ></textarea>
+
+          <button type="submit" class="primary-button">
+            Send Executive Command
+          </button>
+        </form>
+
+        <div id="commandResultFull" class="result-box large">
+          MILES is ready.
+        </div>
+      </article>
+    </section>
+
+    <section id="approvals" class="page-section">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">GOVERNANCE</p>
+            <h3>CEO Approval Queue</h3>
+          </div>
+
+          <button id="refreshApprovalsButton" class="secondary-button">
+            Refresh Approvals
+          </button>
+        </div>
+
+        <div id="approvalList" class="approval-list">
+          Loading approval requests...
+        </div>
+      </article>
+    </section>
+
+    <section id="applications" class="page-section">
+      <div class="application-grid" id="applicationGrid"></div>
+    </section>
+
+    <section id="operations" class="page-section">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">PLATFORM</p>
+            <h3>Service Health</h3>
+          </div>
+        </div>
+
+        <div id="serviceHealthList" class="service-list"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

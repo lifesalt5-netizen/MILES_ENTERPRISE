@@ -17,9 +17,10 @@
 const path = require('path');
 const instantly = require('./instantly');
 const GlobalSuppressionService = require('../../SERVICES/revenue/GlobalSuppressionService');
+const { INSTANTLY_ACTIONS, normalizeInstantlyAction } = require('../../CORE/ExecutionActionContracts');
 
 function resolveAction(task = {}) {
-  return (
+  const requested = (
     task.connectorAction ||
     task.method ||
     task.operation ||
@@ -29,6 +30,8 @@ function resolveAction(task = {}) {
     task.payload?.operation ||
     ''
   );
+
+  return normalizeInstantlyAction(requested) || String(requested || '').trim();
 }
 
 function resolvePayload(task = {}) {
@@ -144,7 +147,11 @@ async function uploadLeads(payload = {}) {
 module.exports = {
   id: 'INSTANTLY',
   name: 'Instantly Connector',
-  version: '2.2.0',
+  version: '2.3.0',
+  supportedActions: [...INSTANTLY_ACTIONS],
+  canExecuteAction(action) {
+    return Boolean(normalizeInstantlyAction(action));
+  },
 
   capabilities: [
     'INSTANTLY_HEALTH',
@@ -278,32 +285,7 @@ module.exports = {
           provider: 'Instantly',
           connector: 'INSTANTLY',
           error: `Unknown Instantly action: ${action}`,
-          supportedActions: [
-            'healthCheck',
-            'getConfiguration',
-            'listCampaigns',
-            'getCampaign',
-            'getCampaignAnalytics',
-            'getCampaignAnalyticsOverview',
-            'getCampaignDailyAnalytics',
-            'getCampaignStepsAnalytics',
-            'listAccounts',
-            'testAccountVitals',
-            'getWarmupAnalytics',
-            'getDailyAccountAnalytics',
-            'listLeads',
-            'listEmails',
-            'getEmail',
-            'createLead',
-            'uploadLeads',
-            'createCampaign',
-            'updateCampaign',
-            'pauseCampaign',
-            'activateCampaign',
-            'resumeCampaign',
-            'startCampaign',
-            'deleteCampaign'
-          ],
+          supportedActions: [...INSTANTLY_ACTIONS],
           received: task
         };
     }

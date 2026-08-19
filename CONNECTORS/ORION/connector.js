@@ -2,16 +2,95 @@
 
 const Database = require("better-sqlite3");
 const fs = require("fs");
+const path = require("path");
+const {
+    ORION_ACTIONS,
+    normalizeOrionAction
+} = require("../../CORE/ExecutionActionContracts");
 
-const ORION_DB =
-    process.env.ORION_DB ||
-    process.env.ORION_DB_PATH ||
-    "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db";
+const DB_NAME = "ORION_DEMO_LIVE_READY.db";
+
+function isFile(file) {
+    try {
+        return fs.statSync(file).isFile();
+    } catch {
+        return false;
+    }
+}
+
+function findNamedFile(root, maxDepth = 4) {
+    if (!root || !fs.existsSync(root)) return null;
+
+    const visit = (dir, depth) => {
+        if (depth > maxDepth) return null;
+        let entries;
+        try {
+            entries = fs.readdirSync(dir, { withFileTypes: true });
+        } catch {
+            return null;
+        }
+
+        for (const entry of entries) {
+            if (entry.isFile() && entry.name.toLowerCase() === DB_NAME.toLowerCase()) {
+                return path.join(dir, entry.name);
+            }
+        }
+
+        for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+            const found = visit(path.join(dir, entry.name), depth + 1);
+            if (found) return found;
+        }
+        return null;
+    };
+
+    return visit(root, 0);
+}
+
+function resolveOrionDb() {
+    const milesRoot = process.env.MILES_ROOT || process.cwd();
+    const parent = path.dirname(milesRoot);
+    const candidates = [
+        process.env.ORION_DB,
+        process.env.ORION_DB_PATH,
+        path.join(parent, "Orion Demo 6126", "orion_live_demo_ready", DB_NAME),
+        path.join(milesRoot, "DATA", "orion", DB_NAME),
+        "C:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db",
+        "D:\\P2GC_Intelligence\\Orion Demo 6126\\orion_live_demo_ready\\ORION_DEMO_LIVE_READY.db"
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
+        if (isFile(candidate)) return path.resolve(candidate);
+    }
+
+    for (const searchRoot of [parent, "C:\\P2GC_Intelligence", "D:\\P2GC_Intelligence"]) {
+        if (!searchRoot || !fs.existsSync(searchRoot)) continue;
+        let topLevel = [];
+        try {
+            topLevel = fs.readdirSync(searchRoot, { withFileTypes: true })
+                .filter(entry => entry.isDirectory() && /orion/i.test(entry.name))
+                .map(entry => path.join(searchRoot, entry.name));
+        } catch {}
+        for (const dir of topLevel) {
+            const found = findNamedFile(dir, 4);
+            if (found) return path.resolve(found);
+        }
+    }
+
+    return path.resolve(candidates[0] || path.join(parent, "Orion Demo 6126", "orion_live_demo_ready", DB_NAME));
+}
+
+const ORION_DB = resolveOrionDb();
 
 class OrionConnector {
 
     constructor() {
         this.db = null;
+        this.supportedActions = [...ORION_ACTIONS];
+    }
+
+    canExecuteAction(action) {
+        return Boolean(normalizeOrionAction(action));
     }
 
     initialize() {
@@ -19,7 +98,7 @@ class OrionConnector {
             return {
                 ok: false,
                 status: "ERROR",
-                message: `ORION DB not found: ${ORION_DB}`
+                message: `ORION DB not found after configured/P2GC-root discovery: ${ORION_DB}`
             };
         }
 
@@ -51,6 +130,7 @@ class OrionConnector {
             status: "OK",
             db: ORION_DB,
             tableCount,
+            supportedActions: [...ORION_ACTIONS],
             checkedAt: new Date().toISOString()
         };
     }
@@ -183,55 +263,13 @@ class OrionConnector {
     }
 
     normalizeAction(task = {}) {
-        let action =
+        const requested =
             task.payload?.action ||
             task.action ||
             task.type ||
             "ORION_HEALTH";
 
-        const text = String(action).toLowerCase();
-
-        if (text.includes("health") || text.includes("system health")) {
-            return "ORION_HEALTH";
-        }
-
-        if (text.includes("summary") || text.includes("executive")) {
-            return "ORION_SUMMARY";
-        }
-
-        if (text.includes("table")) {
-            return "ORION_TABLES";
-        }
-
-        if (text.includes("contractor")) {
-            return "ORION_CONTRACTORS";
-        }
-
-        if (text.includes("buyer")) {
-            return "ORION_BUYERS";
-        }
-
-        if (text.includes("opportunit")) {
-            return "ORION_OPPORTUNITIES";
-        }
-
-        if (text.includes("recompete")) {
-            return "ORION_RECOMPETES";
-        }
-
-        if (text.includes("recommend")) {
-            return "ORION_RECOMMENDATIONS";
-        }
-
-        if (text.includes("persona")) {
-            return "ORION_PERSONAS";
-        }
-
-        if (text.includes("search")) {
-            return "ORION_SEARCH_CONTRACTORS";
-        }
-
-        return action;
+        return normalizeOrionAction(requested) || String(requested).trim().toUpperCase();
     }
 
     execute(task = {}) {
@@ -309,6 +347,7 @@ class OrionConnector {
                 return {
                     ok: false,
                     error: `Unsupported ORION action: ${action}`,
+                    supportedActions: [...ORION_ACTIONS],
                     originalAction:
                         task.payload?.action ||
                         task.action ||
