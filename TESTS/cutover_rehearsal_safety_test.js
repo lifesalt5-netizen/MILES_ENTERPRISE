@@ -57,6 +57,8 @@ assert(/pm_cwd/.test(pm2Projector), "PM2 projector must project each app cwd");
 assert(/pm_exec_path/.test(pm2Projector), "PM2 projector must project each app executable path");
 assert(!/\$raw\s*\|\s*ConvertFrom-Json/i.test(pm2Runner), "Raw PM2 jlist must never be parsed by Windows PowerShell ConvertFrom-Json");
 assert(/username and USERNAME/i.test(pm2Runner), "PM2 duplicate-key Windows regression must remain documented");
+assert(!/foreach\s*\(\s*\$pid\b/i.test(pm2Runner), "PM2 launcher must not assign to PowerShell's read-only $PID automatic variable");
+assert(/foreach\s*\(\s*\$ownerPid\b/i.test(pm2Runner), "PM2 launcher must use a non-reserved variable for listener owner PIDs");
 assert(/Test-PathInsideRoot/.test(pm2Runner), "PM2 launcher must prove PM2 app ownership by live MILES root");
 assert(/Refusing to stop PM2 app/.test(pm2Runner), "PM2 launcher must refuse unrelated PM2 apps");
 assert(/pm2\s+stop\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher may stop only resolved PM2 app ids");
