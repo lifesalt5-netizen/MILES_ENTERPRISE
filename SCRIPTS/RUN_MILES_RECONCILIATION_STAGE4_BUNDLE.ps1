@@ -24,7 +24,10 @@ function Invoke-GitProbe {
         $ErrorActionPreference = "Continue"
         Push-Location $WorkingDirectory
         try {
-            $output = & git @Args 2>&1
+            # Keep stderr out of machine-readable stdout. Git may emit benign
+            # line-ending warnings on stderr while still returning exit code 0;
+            # mixing those warnings into stdout can make them look like paths.
+            $output = & git @Args 2>$null
             $code = $LASTEXITCODE
         } finally { Pop-Location }
     } finally { $ErrorActionPreference = $prior }
