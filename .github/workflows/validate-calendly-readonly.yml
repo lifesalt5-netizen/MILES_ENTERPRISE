@@ -1,0 +1,47 @@
+name: MILES Calendly Read-Only Validation
+
+on:
+  pull_request:
+    paths:
+      - 'CONNECTORS/CALENDLY/connector.js'
+      - 'SCRIPTS/AUDIT_MILES_CALENDLY_PIPELINE.js'
+      - '.github/workflows/validate-calendly-readonly.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax validation
+        run: |
+          node --check CONNECTORS/CALENDLY/connector.js
+          node --check SCRIPTS/AUDIT_MILES_CALENDLY_PIPELINE.js
+      - name: Read-only safety validation
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const connector = fs.readFileSync('CONNECTORS/CALENDLY/connector.js', 'utf8');
+          const audit = fs.readFileSync('SCRIPTS/AUDIT_MILES_CALENDLY_PIPELINE.js', 'utf8');
+          const forbidden = [
+            /method\s*:\s*['\"]POST['\"]/i,
+            /method\s*:\s*['\"]PATCH['\"]/i,
+            /method\s*:\s*['\"]PUT['\"]/i,
+            /method\s*:\s*['\"]DELETE['\"]/i,
+            /webhook_subscriptions/i,
+            /scheduled_events\/[^'\"`]+\/cancellation/i
+          ];
+          for (const pattern of forbidden) {
+            if (pattern.test(connector) || pattern.test(audit)) {
+              console.error('Read-only validation failed:', pattern);
+              process.exit(1);
+            }
+          }
+          if (!/method\s*:\s*['\"]GET['\"]/i.test(connector)) {
+            console.error('Connector does not explicitly use GET.');
+            process.exit(1);
+          }
+          console.log('Read-only Calendly validation passed.');
+          NODE
