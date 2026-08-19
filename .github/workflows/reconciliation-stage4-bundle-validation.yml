@@ -1,0 +1,28 @@
+name: MILES Reconciliation Stage 4 Bundle Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/RUN_MILES_RECONCILIATION_STAGE4_BUNDLE.ps1"
+      - "TESTS/reconciliation_stage4_bundle_safety_test.js"
+      - ".github/workflows/reconciliation-stage4-bundle-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static safety validation
+        run: node TESTS/reconciliation_stage4_bundle_safety_test.js
