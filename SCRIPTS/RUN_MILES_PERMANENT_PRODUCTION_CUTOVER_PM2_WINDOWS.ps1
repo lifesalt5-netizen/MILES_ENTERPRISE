@@ -9,11 +9,11 @@ $ErrorActionPreference = "Stop"
 $ports = @(3000,8787,3737,8737)
 $parentRoot = Split-Path -Parent $LiveRoot
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-$rollbackRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_ROLLBACK_{0}" -f $stamp)
-$failedRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_FAILED_{0}" -f $stamp)
-$candidateDataPark = Join-Path $parentRoot ("MILES_ENTERPRISE_CANDIDATE_DATA_{0}" -f $stamp)
+$rollbackRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_ROLLBACK_SOURCE_{0}" -f $stamp)
+$failedRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_FAILED_SOURCE_{0}" -f $stamp)
 $pm2Projector = Join-Path $CandidateRoot 'SCRIPTS\project_pm2_jlist.js'
 $cutoverReport = Join-Path $env:TEMP ("MILES_PERMANENT_CUTOVER_{0}.json" -f $stamp)
+$protectedTopLevel = @('DATA','CONFIG','.env')
 
 function Normalize-Root([string]$PathValue) {
     return [System.IO.Path]::GetFullPath($PathValue).TrimEnd('\')
@@ -139,12 +139,20 @@ function Get-ProductionAcceptance([string]$Root) {
     return [pscustomobject]@{path=$jsonPath;report=$report}
 }
 
+function Get-CandidateTopLevelItems {
+    $items = @()
+    foreach ($item in @(Get-ChildItem -LiteralPath $CandidateRoot -Force)) {
+        if ($protectedTopLevel -contains $item.Name) { continue }
+        $items += $item.Name
+    }
+    return @($items | Sort-Object -Unique)
+}
+
 if (-not (Test-Path -LiteralPath $LiveRoot -PathType Container)) { throw "Live root missing: $LiveRoot" }
 if (-not (Test-Path -LiteralPath $CandidateRoot -PathType Container)) { throw "Candidate root missing: $CandidateRoot" }
 if ((Normalize-Root $CandidateRoot) -eq (Normalize-Root $LiveRoot)) { throw 'CandidateRoot and LiveRoot must be different.' }
-foreach ($reserved in @($rollbackRoot,$failedRoot,$candidateDataPark)) {
-    if (Test-Path -LiteralPath $reserved) { throw "Reserved cutover path already exists: $reserved" }
-}
+if (Test-Path -LiteralPath $rollbackRoot) { throw "Rollback path already exists: $rollbackRoot" }
+if (Test-Path -LiteralPath $failedRoot) { throw "Failed-source path already exists: $failedRoot" }
 
 $actualHead = [string]((& git -C $CandidateRoot rev-parse HEAD 2>$null) | Select-Object -First 1)
 if ($LASTEXITCODE -ne 0 -or -not $actualHead) { throw 'Unable to resolve candidate HEAD.' }
@@ -164,27 +172,28 @@ if (-not (Test-Path -LiteralPath $liveData -PathType Container)) { throw "Live D
 $pm2Apps = @(Get-LiveRootPm2Apps $pm2Projector)
 if ($pm2Apps.Count -eq 0) { throw 'No PM2 entries were proven to belong to the live MILES root.' }
 $restoreApps = @($pm2Apps | Where-Object { $_.restore })
+$topLevelItems = @(Get-CandidateTopLevelItems)
+if ($topLevelItems.Count -eq 0) { throw 'Candidate contains no promotable top-level source/control items.' }
 
 $phase = 'PRECHECK'
-$swapped = $false
-$dataMoved = $false
-$candidateDataParked = $false
+$promotedItems = New-Object System.Collections.Generic.List[string]
+$parkedOldItems = New-Object System.Collections.Generic.List[string]
 $acceptance = $null
 $rollbackSucceeded = $false
 $cutoverSucceeded = $false
 $errorText = ''
 
 Write-Host '============================================================'
-Write-Host 'MILES PERMANENT PRODUCTION CUTOVER'
+Write-Host 'MILES PERMANENT PRODUCTION CUTOVER - IN PLACE'
 Write-Host '============================================================'
 Write-Host "Validated candidate: $CandidateRoot"
-Write-Host "Current live root:   $LiveRoot"
+Write-Host "Canonical live root: $LiveRoot"
 Write-Host "Expected commit:     $ExpectedCommit"
-Write-Host "Rollback root:       $rollbackRoot"
+Write-Host "Rollback source:     $rollbackRoot"
 Write-Host "PM2 live-root entries: $($pm2Apps.Count); restore after cutover: $($restoreApps.Count)"
-Write-Host 'Preserving live DATA by same-volume directory move; no robocopy.'
-Write-Host 'Preserving live .env by direct file copy after root promotion.'
-Write-Host 'Not overlaying live CONFIG or other deferred configuration trees.'
+Write-Host "Promotable top-level source/control items: $($topLevelItems.Count)"
+Write-Host 'Protected in place: .env, DATA, CONFIG.'
+Write-Host 'The canonical live root itself is never renamed.'
 
 try {
     $phase = 'STOP_LIVE'
@@ -196,26 +205,30 @@ try {
     Stop-RootOwnedNodeProcesses @($LiveRoot,$CandidateRoot)
     Wait-Ports $false 30
 
-    $phase = 'SWAP_ROOTS'
-    Rename-Item -LiteralPath $LiveRoot -NewName (Split-Path -Leaf $rollbackRoot)
-    Rename-Item -LiteralPath $CandidateRoot -NewName (Split-Path -Leaf $LiveRoot)
-    $swapped = $true
-
-    $phase = 'MIGRATE_STATE_ATOMIC'
-    $newLiveData = Join-Path $LiveRoot 'DATA'
-    $rollbackData = Join-Path $rollbackRoot 'DATA'
-    if (Test-Path -LiteralPath $newLiveData -PathType Container) {
-        Move-Item -LiteralPath $newLiveData -Destination $candidateDataPark
-        $candidateDataParked = $true
+    $phase = 'PARK_OLD_SOURCE'
+    New-Item -ItemType Directory -Path $rollbackRoot -Force | Out-Null
+    foreach ($name in $topLevelItems) {
+        $liveItem = Join-Path $LiveRoot $name
+        if (Test-Path -LiteralPath $liveItem) {
+            $rollbackItem = Join-Path $rollbackRoot $name
+            Move-Item -LiteralPath $liveItem -Destination $rollbackItem
+            $parkedOldItems.Add($name)
+        }
     }
-    if (-not (Test-Path -LiteralPath $rollbackData -PathType Container)) { throw "Rollback DATA missing after root swap: $rollbackData" }
-    Move-Item -LiteralPath $rollbackData -Destination $newLiveData
-    $dataMoved = $true
 
-    $rollbackEnv = Join-Path $rollbackRoot '.env'
-    $newLiveEnv = Join-Path $LiveRoot '.env'
-    if (-not (Test-Path -LiteralPath $rollbackEnv -PathType Leaf)) { throw "Rollback .env missing after root swap: $rollbackEnv" }
-    Copy-Item -LiteralPath $rollbackEnv -Destination $newLiveEnv -Force
+    $phase = 'PROMOTE_VALIDATED_SOURCE'
+    foreach ($name in $topLevelItems) {
+        $candidateItem = Join-Path $CandidateRoot $name
+        if (-not (Test-Path -LiteralPath $candidateItem)) { throw "Candidate item disappeared during promotion: $candidateItem" }
+        $liveItem = Join-Path $LiveRoot $name
+        Move-Item -LiteralPath $candidateItem -Destination $liveItem
+        $promotedItems.Add($name)
+    }
+
+    if (-not (Test-Path -LiteralPath (Join-Path $LiveRoot '.git') -PathType Container)) { throw 'Promoted live root is missing candidate .git metadata.' }
+    $newHead = [string]((& git -C $LiveRoot rev-parse HEAD 2>$null) | Select-Object -First 1)
+    if ($LASTEXITCODE -ne 0 -or -not $newHead) { throw 'Unable to resolve promoted live HEAD.' }
+    if ($newHead.Trim() -ne $ExpectedCommit) { throw "Promoted live HEAD mismatch. Expected $ExpectedCommit, found $($newHead.Trim())" }
 
     $phase = 'START_NEW_PRODUCTION'
     foreach ($app in $restoreApps) {
@@ -237,50 +250,43 @@ try {
 catch {
     $errorText = $_.Exception.Message
     Write-Host "CUTOVER ERROR in phase $phase`: $errorText"
-    if ($swapped) {
-        Write-Host 'Automatic rollback starting...'
-        try {
-            foreach ($app in $pm2Apps) { & pm2 stop $app.pm_id | Out-Null }
-            Start-Sleep -Milliseconds 750
-            Stop-RootOwnedNodeProcesses @($LiveRoot,$rollbackRoot)
-            try { Wait-Ports $false 30 } catch {}
-
-            if ($dataMoved) {
-                $currentLiveData = Join-Path $LiveRoot 'DATA'
-                $rollbackData = Join-Path $rollbackRoot 'DATA'
-                if (Test-Path -LiteralPath $rollbackData) { throw "Rollback DATA destination unexpectedly exists: $rollbackData" }
-                if (-not (Test-Path -LiteralPath $currentLiveData -PathType Container)) { throw "Current live DATA missing during rollback: $currentLiveData" }
-                Move-Item -LiteralPath $currentLiveData -Destination $rollbackData
-                $dataMoved = $false
-            }
-
-            if (Test-Path -LiteralPath $failedRoot) { throw "Failed-root destination already exists: $failedRoot" }
-            Rename-Item -LiteralPath $LiveRoot -NewName (Split-Path -Leaf $failedRoot)
-            Rename-Item -LiteralPath $rollbackRoot -NewName (Split-Path -Leaf $LiveRoot)
-
-            if ($candidateDataParked -and (Test-Path -LiteralPath $candidateDataPark -PathType Container)) {
-                $failedData = Join-Path $failedRoot 'DATA'
-                if (-not (Test-Path -LiteralPath $failedData)) {
-                    Move-Item -LiteralPath $candidateDataPark -Destination $failedData
-                }
-            }
-
-            foreach ($app in $restoreApps) {
-                & pm2 restart $app.pm_id | Out-Null
-                if ($LASTEXITCODE -ne 0) { throw "Rollback pm2 restart failed for id=$($app.pm_id) name=$($app.name)" }
-            }
-            Wait-Ports $true $TimeoutSeconds
-            $rollbackSucceeded = $true
-            Write-Host 'Automatic rollback completed successfully.'
-        } catch {
-            $rollbackSucceeded = $false
-            Write-Host "ROLLBACK ERROR: $($_.Exception.Message)"
+    Write-Host 'Automatic source rollback starting...'
+    try {
+        foreach ($app in $pm2Apps) {
+            try { & pm2 stop $app.pm_id | Out-Null } catch {}
         }
-    } else {
+        Start-Sleep -Milliseconds 750
+        Stop-RootOwnedNodeProcesses @($LiveRoot,$CandidateRoot,$rollbackRoot)
+        try { Wait-Ports $false 30 } catch {}
+
+        New-Item -ItemType Directory -Path $failedRoot -Force | Out-Null
+        foreach ($name in @($promotedItems.ToArray()) | Select-Object -Reverse) {
+            $liveItem = Join-Path $LiveRoot $name
+            if (Test-Path -LiteralPath $liveItem) {
+                $failedItem = Join-Path $failedRoot $name
+                Move-Item -LiteralPath $liveItem -Destination $failedItem
+            }
+        }
+
+        foreach ($name in @($parkedOldItems.ToArray())) {
+            $rollbackItem = Join-Path $rollbackRoot $name
+            if (Test-Path -LiteralPath $rollbackItem) {
+                $liveItem = Join-Path $LiveRoot $name
+                if (Test-Path -LiteralPath $liveItem) { throw "Rollback destination unexpectedly exists: $liveItem" }
+                Move-Item -LiteralPath $rollbackItem -Destination $liveItem
+            }
+        }
+
         foreach ($app in $restoreApps) {
-            try { & pm2 restart $app.pm_id | Out-Null } catch {}
+            & pm2 restart $app.pm_id | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Rollback pm2 restart failed for id=$($app.pm_id) name=$($app.name)" }
         }
-        try { Wait-Ports $true $TimeoutSeconds; $rollbackSucceeded = $true } catch {}
+        Wait-Ports $true $TimeoutSeconds
+        $rollbackSucceeded = $true
+        Write-Host 'Automatic source rollback completed successfully.'
+    } catch {
+        $rollbackSucceeded = $false
+        Write-Host "ROLLBACK ERROR: $($_.Exception.Message)"
     }
 }
 finally {
@@ -288,28 +294,29 @@ finally {
         generated_at=(Get-Date).ToUniversalTime().ToString('o')
         expected_commit=$ExpectedCommit
         live_root=$LiveRoot
-        rollback_root=$rollbackRoot
-        failed_root=if(Test-Path -LiteralPath $failedRoot){$failedRoot}else{''}
-        candidate_data_park=if(Test-Path -LiteralPath $candidateDataPark){$candidateDataPark}else{''}
+        candidate_root=$CandidateRoot
+        rollback_source_root=$rollbackRoot
+        failed_source_root=if(Test-Path -LiteralPath $failedRoot){$failedRoot}else{''}
         phase=$phase
         cutover_succeeded=$cutoverSucceeded
         automatic_rollback_succeeded=$rollbackSucceeded
         pm2_entries=@($pm2Apps | ForEach-Object { [pscustomobject]@{pm_id=$_.pm_id;name=$_.name;restore=$_.restore} })
+        promoted_top_level_items=@($promotedItems.ToArray())
+        parked_old_top_level_items=@($parkedOldItems.ToArray())
         acceptance_report=if($acceptance){$acceptance.path}else{''}
         acceptance_ready=if($acceptance){[bool]$acceptance.report.ready_for_daily_use}else{$false}
         error=$errorText
+        root_rename_performed=$false
         config_overlay_performed=$false
-        live_env_preserved=$true
-        live_data_preserved=$true
-        data_migration_mode='ATOMIC_SAME_VOLUME_DIRECTORY_MOVE'
+        live_env_preserved_in_place=$true
+        live_data_preserved_in_place=$true
     }
     $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $cutoverReport -Encoding UTF8
     Write-Host ''
     Write-Host "Permanent cutover succeeded: $cutoverSucceeded"
     Write-Host "New production acceptance ready: $(if($acceptance){[bool]$acceptance.report.ready_for_daily_use}else{$false})"
     Write-Host "Automatic rollback succeeded: $rollbackSucceeded"
-    Write-Host "Rollback installation: $rollbackRoot"
-    if (Test-Path -LiteralPath $candidateDataPark) { Write-Host "Candidate baseline DATA parked at: $candidateDataPark" }
+    Write-Host "Rollback source snapshot: $rollbackRoot"
     Write-Host "Cutover report: $cutoverReport"
 }
 
