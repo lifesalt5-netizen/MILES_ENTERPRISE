@@ -13,7 +13,7 @@ $rollbackRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_ROLLBACK_SOURCE_{0}" -f
 $failedRoot = Join-Path $parentRoot ("MILES_ENTERPRISE_FAILED_SOURCE_{0}" -f $stamp)
 $pm2Projector = Join-Path $CandidateRoot 'SCRIPTS\project_pm2_jlist.js'
 $cutoverReport = Join-Path $env:TEMP ("MILES_PERMANENT_CUTOVER_{0}.json" -f $stamp)
-$protectedTopLevel = @('DATA','CONFIG','.env')
+$protectedTopLevel = @('DATA','DATABASE','CONFIG','.env')
 
 function Normalize-Root([string]$PathValue) {
     return [System.IO.Path]::GetFullPath($PathValue).TrimEnd('\')
@@ -166,8 +166,10 @@ if ($sourceChanges.Count -gt 0) { throw "Candidate source/control files changed 
 
 $liveEnv = Join-Path $LiveRoot '.env'
 $liveData = Join-Path $LiveRoot 'DATA'
+$liveDatabase = Join-Path $LiveRoot 'DATABASE'
 if (-not (Test-Path -LiteralPath $liveEnv -PathType Leaf)) { throw "Live .env missing: $liveEnv" }
 if (-not (Test-Path -LiteralPath $liveData -PathType Container)) { throw "Live DATA missing: $liveData" }
+if (-not (Test-Path -LiteralPath $liveDatabase -PathType Container)) { throw "Live DATABASE missing: $liveDatabase" }
 
 $pm2Apps = @(Get-LiveRootPm2Apps $pm2Projector)
 if ($pm2Apps.Count -eq 0) { throw 'No PM2 entries were proven to belong to the live MILES root.' }
@@ -192,7 +194,7 @@ Write-Host "Expected commit:     $ExpectedCommit"
 Write-Host "Rollback source:     $rollbackRoot"
 Write-Host "PM2 live-root entries: $($pm2Apps.Count); restore after cutover: $($restoreApps.Count)"
 Write-Host "Promotable top-level source/control items: $($topLevelItems.Count)"
-Write-Host 'Protected in place: .env, DATA, CONFIG.'
+Write-Host 'Protected in place: .env, DATA, DATABASE, CONFIG.'
 Write-Host 'The canonical live root itself is never renamed.'
 
 try {
@@ -260,7 +262,9 @@ catch {
         try { Wait-Ports $false 30 } catch {}
 
         New-Item -ItemType Directory -Path $failedRoot -Force | Out-Null
-        foreach ($name in @($promotedItems.ToArray()) | Select-Object -Reverse) {
+        $promotedArray = @($promotedItems.ToArray())
+        for ($i = $promotedArray.Count - 1; $i -ge 0; $i--) {
+            $name = [string]$promotedArray[$i]
             $liveItem = Join-Path $LiveRoot $name
             if (Test-Path -LiteralPath $liveItem) {
                 $failedItem = Join-Path $failedRoot $name
@@ -310,6 +314,7 @@ finally {
         config_overlay_performed=$false
         live_env_preserved_in_place=$true
         live_data_preserved_in_place=$true
+        live_database_preserved_in_place=$true
     }
     $report | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $cutoverReport -Encoding UTF8
     Write-Host ''
