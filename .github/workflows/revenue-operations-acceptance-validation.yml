@@ -1,0 +1,33 @@
+name: MILES Revenue Operations Acceptance Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/AUDIT_MILES_REVENUE_OPERATIONS.js"
+      - ".github/workflows/revenue-operations-acceptance-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax validation
+        run: node --check SCRIPTS/AUDIT_MILES_REVENUE_OPERATIONS.js
+      - name: Read-only guard validation
+        shell: bash
+        run: |
+          if grep -Eq "createCampaign|createLead|uploadLeads|pauseCampaign|activateCampaign|deleteCampaign|updateCampaign" SCRIPTS/AUDIT_MILES_REVENUE_OPERATIONS.js; then
+            echo "Audit must not invoke Instantly mutation actions"
+            exit 1
+          fi
+          grep -q "READ_ONLY_EXTERNAL_AUDIT" SCRIPTS/AUDIT_MILES_REVENUE_OPERATIONS.js
