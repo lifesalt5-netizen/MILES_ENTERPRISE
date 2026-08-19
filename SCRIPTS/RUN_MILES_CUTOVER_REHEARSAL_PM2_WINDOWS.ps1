@@ -8,6 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 $ports = @(3000,8787,3737,8737)
 $windowsRunner = Join-Path $CandidateRoot 'SCRIPTS\RUN_MILES_CUTOVER_REHEARSAL_WINDOWS.ps1'
+$pm2Projector = Join-Path $CandidateRoot 'SCRIPTS\project_pm2_jlist.js'
 
 function Normalize-Root([string]$PathValue) {
     return [System.IO.Path]::GetFullPath($PathValue).TrimEnd('\')
@@ -32,6 +33,9 @@ function Get-Pm2Apps {
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
         throw 'node command not found in PATH.'
     }
+    if (-not (Test-Path -LiteralPath $pm2Projector -PathType Leaf)) {
+        throw "PM2 projector not found: $pm2Projector"
+    }
 
     $rawPath = Join-Path $env:TEMP ("MILES_PM2_JLIST_{0}.json" -f ([guid]::NewGuid().ToString('N')))
     try {
@@ -43,10 +47,10 @@ function Get-Pm2Apps {
 
         # Windows PowerShell ConvertFrom-Json is case-insensitive and rejects PM2 env
         # objects that legitimately contain both keys such as username and USERNAME.
-        # Node parses the original JSON and projects only the fields this rehearsal needs.
-        $nodeScript = 'const fs=require("fs");const a=JSON.parse(fs.readFileSync(process.argv[1],"utf8").replace(/^\uFEFF/,""));const clean=v=>String(v??"").replace(/[\t\r\n]/g," ");for(const x of a){const e=x.pm2_env||{};console.log([x.pid??"",x.pm_id??"",clean(x.name),clean(e.status),clean(e.pm_cwd),clean(e.pm_exec_path)].join("\t"));}'
-        $projected = @(& node -e $nodeScript $rawPath 2>$null)
-        if ($LASTEXITCODE -ne 0) { throw 'Node failed to parse/project pm2 jlist JSON.' }
+        # A checked-in Node helper parses the original JSON and projects only the
+        # six fields this rehearsal needs. Avoid inline eval because Windows quoting is fragile.
+        $projected = @(& node $pm2Projector $rawPath 2>$null)
+        if ($LASTEXITCODE -ne 0) { throw 'Node PM2 projector failed.' }
 
         $apps = @()
         foreach ($line in $projected) {
@@ -132,6 +136,9 @@ function Wait-CanonicalPorts([bool]$Listening,[int]$TimeoutSec) {
 
 if (-not (Test-Path -LiteralPath $windowsRunner -PathType Leaf)) {
     throw "Windows rehearsal runner not found: $windowsRunner"
+}
+if (-not (Test-Path -LiteralPath $pm2Projector -PathType Leaf)) {
+    throw "PM2 projector not found: $pm2Projector"
 }
 
 $actualHead = [string]((& git -C $CandidateRoot rev-parse HEAD 2>$null) | Select-Object -First 1)

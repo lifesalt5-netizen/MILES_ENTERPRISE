@@ -10,8 +10,9 @@ const worker = fs.readFileSync(path.join(root, "StartProductionSystemRehearsal.j
 const runner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL.ps1"), "utf8");
 const windowsRunner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL_WINDOWS.ps1"), "utf8");
 const pm2Runner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL_PM2_WINDOWS.ps1"), "utf8");
+const pm2Projector = fs.readFileSync(path.join(root, "SCRIPTS", "project_pm2_jlist.js"), "utf8");
 
-for (const [name, text] of [["bootstrap", bootstrap], ["worker", worker], ["runner", runner], ["windowsRunner", windowsRunner], ["pm2Runner", pm2Runner]]) {
+for (const [name, text] of [["bootstrap", bootstrap], ["worker", worker], ["runner", runner], ["windowsRunner", windowsRunner], ["pm2Runner", pm2Runner], ["pm2Projector", pm2Projector]]) {
   assert([...Buffer.from(text, "utf8")].every(byte => byte < 0x80), `${name} must remain ASCII-only for Windows PowerShell/runtime safety`);
 }
 
@@ -49,9 +50,11 @@ assert(/Refusing to kill unrelated processes/.test(windowsRunner), "Unrelated ca
 assert(/Assert-CanonicalPortsReleased/.test(windowsRunner), "Windows launcher must prove canonical ports are released before candidate boot");
 
 assert(/pm2\s+jlist/i.test(pm2Runner), "PM2 launcher must inspect the PM2 process table");
-assert(/JSON\.parse/.test(pm2Runner), "PM2 launcher must parse raw jlist with Node to preserve case-sensitive duplicate env keys");
-assert(/pm_cwd/.test(pm2Runner), "PM2 launcher must project each app cwd");
-assert(/pm_exec_path/.test(pm2Runner), "PM2 launcher must project each app executable path");
+assert(/project_pm2_jlist\.js/i.test(pm2Runner), "PM2 launcher must use the checked-in projector");
+assert(!/\bnode\s+-e\b/i.test(pm2Runner), "PM2 launcher must not use inline node eval on Windows");
+assert(/JSON\.parse/.test(pm2Projector), "PM2 projector must parse raw jlist with Node");
+assert(/pm_cwd/.test(pm2Projector), "PM2 projector must project each app cwd");
+assert(/pm_exec_path/.test(pm2Projector), "PM2 projector must project each app executable path");
 assert(!/\$raw\s*\|\s*ConvertFrom-Json/i.test(pm2Runner), "Raw PM2 jlist must never be parsed by Windows PowerShell ConvertFrom-Json");
 assert(/username and USERNAME/i.test(pm2Runner), "PM2 duplicate-key Windows regression must remain documented");
 assert(/Test-PathInsideRoot/.test(pm2Runner), "PM2 launcher must prove PM2 app ownership by live MILES root");
@@ -61,7 +64,7 @@ assert(/pm2\s+restart\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher must resto
 assert(/finally\s*\{/i.test(pm2Runner), "PM2 restoration must be protected by a finally block");
 assert(/RUN_MILES_CUTOVER_REHEARSAL_WINDOWS\.ps1/i.test(pm2Runner), "PM2 launcher must delegate candidate validation to the Windows rehearsal runner");
 
-const combined = `${bootstrap}\n${worker}\n${runner}\n${windowsRunner}\n${pm2Runner}`;
+const combined = `${bootstrap}\n${worker}\n${runner}\n${windowsRunner}\n${pm2Runner}\n${pm2Projector}`;
 const forbidden = [
   /\bgit\s+(?:push|reset|clean|checkout|merge)\b/i,
   /INSTANTLY_WRITE_ENABLED\s*=\s*["']true["']/i,
