@@ -16,7 +16,10 @@ function Invoke-GitProbe {
         $ErrorActionPreference = "Continue"
         Push-Location $WorkingDirectory
         try {
-            $output = & git @Args 2>&1
+            # Keep benign Git stderr warnings out of machine-readable stdout.
+            # Stage 5 parses stdout for HEAD/status truth and must not mistake
+            # CRLF/LF warning text for repository state.
+            $output = & git @Args 2>$null
             $code = $LASTEXITCODE
         } finally { Pop-Location }
     } finally { $ErrorActionPreference = $prior }
