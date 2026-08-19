@@ -77,8 +77,8 @@ function Get-PortOwnerRows {
     $rows = @()
     foreach ($port in $ports) {
         $listeners = @(Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue)
-        foreach ($pid in @($listeners | Select-Object -ExpandProperty OwningProcess -Unique)) {
-            $rows += [pscustomobject]@{ port=[int]$port; pid=[int]$pid }
+        foreach ($ownerPid in @($listeners | Select-Object -ExpandProperty OwningProcess -Unique)) {
+            $rows += [pscustomobject]@{ port=[int]$port; pid=[int]$ownerPid }
         }
     }
     return @($rows)
