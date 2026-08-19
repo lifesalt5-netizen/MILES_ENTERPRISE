@@ -95,6 +95,13 @@ $statusLines = @(Invoke-GitText status --porcelain=v1 --untracked-files=all)
 $trackedChanges = @($statusLines | Where-Object { $_ -notmatch '^\?\?' })
 $untracked = @($statusLines | Where-Object { $_ -match '^\?\?' })
 
+# Tree-to-tree comparison does not depend on a common ancestor. This is the
+# primary content reconciliation view when the histories are unrelated.
+$treeDiffNameStatus = @(Invoke-GitText diff --name-status --find-renames origin/main HEAD)
+$treeDiffStat = @(Invoke-GitText diff --stat --find-renames origin/main HEAD)
+$headTrackedFiles = @(Invoke-GitText ls-files)
+$originTrackedFiles = @(Invoke-GitText ls-tree -r --name-only origin/main)
+
 # Cap displayed commit inventories while retaining exact ahead/behind counts.
 $localOnly = @(Invoke-GitText log --oneline --decorate --no-merges --max-count=200 origin/main..HEAD)
 $remoteOnly = @(Invoke-GitText log --oneline --decorate --no-merges --max-count=200 HEAD..origin/main)
@@ -167,7 +174,7 @@ $classification = if (-not $historiesRelated) {
 }
 
 $nextAction = switch ($classification) {
-    "UNRELATED_HISTORY" { "Local HEAD and origin/main have no common ancestor. Preserve the live checkout exactly as-is. Do NOT merge with --allow-unrelated-histories, rebase, reset, pull, or force-update. Reconcile through a separate integration worktree/branch after reviewing local history and dirty files." }
+    "UNRELATED_HISTORY" { "Local HEAD and origin/main have no common ancestor. Preserve the live checkout exactly as-is. Do NOT merge with --allow-unrelated-histories, rebase, reset, pull, or force-update. Use the committed-tree diff plus dirty-file inventory to reconcile through a separate integration worktree/branch." }
     "IN_SYNC" { "Repository refs are aligned. Verify runtime root/commit before deployment actions." }
     "REMOTE_AHEAD_ONLY" { "Local branch has no unique commits; review dirty files before considering a fast-forward deployment." }
     "LOCAL_AHEAD_ONLY" { "Local branch contains unique commits; preserve/review them before publishing or integrating." }
@@ -200,6 +207,11 @@ $report = [ordered]@{
     classification = $classification
     local_commits_ahead = $localAhead
     remote_commits_ahead = $remoteAhead
+    local_head_tracked_file_count = $headTrackedFiles.Count
+    origin_main_tracked_file_count = $originTrackedFiles.Count
+    committed_tree_difference_count = $treeDiffNameStatus.Count
+    committed_tree_name_status = $treeDiffNameStatus
+    committed_tree_stat = $treeDiffStat
     working_tree_dirty = ($statusLines.Count -gt 0)
     tracked_change_count = $trackedChanges.Count
     untracked_count = $untracked.Count
@@ -237,8 +249,17 @@ $summaryLines = @(
     "Classification: $classification",
     "Local-only commits: $localAhead",
     "Remote-only commits: $remoteAhead",
-    "Tracked changes: $($trackedChanges.Count)",
+    "Local HEAD tracked files: $($headTrackedFiles.Count)",
+    "origin/main tracked files: $($originTrackedFiles.Count)",
+    "Committed-tree differences: $($treeDiffNameStatus.Count)",
+    "Tracked working-tree changes: $($trackedChanges.Count)",
     "Untracked files: $($untracked.Count)",
+    "",
+    "COMMITTED TREE DIFFERENCES (origin/main -> local HEAD):",
+    ($treeDiffNameStatus -join "`n"),
+    "",
+    "COMMITTED TREE DIFF STAT:",
+    ($treeDiffStat -join "`n"),
     "",
     "LOCAL-ONLY COMMITS (up to 200 shown):",
     ($localOnly -join "`n"),
@@ -264,8 +285,15 @@ Write-Host "HEAD root commit(s): $($headRoots -join ', ')"
 Write-Host "origin/main root commit(s): $($originRoots -join ', ')"
 Write-Host "Local-only commits: $localAhead"
 Write-Host "Remote-only commits: $remoteAhead"
-Write-Host "Tracked changes: $($trackedChanges.Count)"
+Write-Host "Local HEAD tracked files: $($headTrackedFiles.Count)"
+Write-Host "origin/main tracked files: $($originTrackedFiles.Count)"
+Write-Host "Committed-tree differences: $($treeDiffNameStatus.Count)"
+Write-Host "Tracked working-tree changes: $($trackedChanges.Count)"
 Write-Host "Untracked files: $($untracked.Count)"
+Write-Host ""
+Write-Host "Committed tree differences (first 100):"
+@($treeDiffNameStatus | Select-Object -First 100) | ForEach-Object { Write-Host "  $_" }
+if ($treeDiffNameStatus.Count -gt 100) { Write-Host "  ... $($treeDiffNameStatus.Count - 100) additional committed-tree differences are in the report." }
 Write-Host ""
 Write-Host "Recent local-only commits:"
 @($localOnly | Select-Object -First 25) | ForEach-Object { Write-Host "  $_" }
