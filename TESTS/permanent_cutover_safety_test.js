@@ -13,7 +13,8 @@ assert(/Candidate node_modules missing/i.test(script), "Cutover must require ins
 assert(/Candidate source\/control files changed/i.test(script), "Cutover must reject source drift after rehearsal");
 assert(/pm2\s+stop\s+\$app\.pm_id/i.test(script), "Cutover must stop resolved PM2 entries by exact id");
 assert(/pm2\s+restart\s+\$app\.pm_id/i.test(script), "Cutover must restart resolved PM2 entries by exact id");
-assert(/\$protectedTopLevel\s*=\s*@\('DATA','CONFIG','\.env'\)/i.test(script), "Cutover must protect DATA, CONFIG, and .env in place");
+assert(/\$protectedTopLevel\s*=\s*@\('DATA','DATABASE','CONFIG','\.env'\)/i.test(script), "Cutover must protect DATA, DATABASE, CONFIG, and .env in place");
+assert(/Live DATABASE missing/i.test(script), "Cutover must require the persistent live DATABASE before promotion");
 assert(/PARK_OLD_SOURCE/i.test(script), "Cutover must park old source before promotion");
 assert(/PROMOTE_VALIDATED_SOURCE/i.test(script), "Cutover must promote validated source in place");
 assert(/Move-Item\s+-LiteralPath\s+\$liveItem\s+-Destination\s+\$rollbackItem/i.test(script), "Cutover must snapshot replaced live source");
@@ -21,8 +22,11 @@ assert(/Move-Item\s+-LiteralPath\s+\$candidateItem\s+-Destination\s+\$liveItem/i
 assert(/root_rename_performed=\$false/i.test(script), "Cutover must certify canonical root was not renamed");
 assert(/live_env_preserved_in_place=\$true/i.test(script), "Cutover must preserve live .env in place");
 assert(/live_data_preserved_in_place=\$true/i.test(script), "Cutover must preserve live DATA in place");
+assert(/live_database_preserved_in_place=\$true/i.test(script), "Cutover must preserve live DATABASE in place");
 assert(/config_overlay_performed=\$false/i.test(script), "Cutover must not overlay deferred CONFIG");
 assert(/Automatic source rollback starting/i.test(script), "Cutover must contain automatic source rollback");
+assert(/for\s*\(\$i\s*=\s*\$promotedArray\.Count\s*-\s*1;\s*\$i\s*-ge\s*0;\s*\$i--\)/i.test(script), "Rollback must reverse promoted items with an explicit valid index loop");
+assert(!/Select-Object\s+-Reverse/i.test(script), "Rollback must not use the invalid Select-Object -Reverse switch");
 assert(/ready_for_daily_use/i.test(script), "Cutover must require production acceptance readiness");
 assert(/AUDIT_MILES_PRODUCTION_ACCEPTANCE\.ps1/i.test(script), "Cutover must run production acceptance after switching");
 assert(!/Rename-Item\s+-LiteralPath\s+\$LiveRoot/i.test(script), "Permanent cutover must never rename the canonical live root");
