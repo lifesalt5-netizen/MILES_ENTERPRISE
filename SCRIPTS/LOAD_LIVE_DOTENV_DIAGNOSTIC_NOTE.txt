@@ -1,0 +1,1 @@
+This branch verifies live dotenv loading from the repository node_modules when diagnostics are executed from %TEMP%.
