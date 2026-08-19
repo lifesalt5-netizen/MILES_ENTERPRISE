@@ -41,9 +41,12 @@ function run() {
   ].join("\n"));
   write(indexPath, `path\n${contactsPath}\n`);
 
+  // Pin this unit test to its fixture contact source. Production source bootstrap
+  // intentionally scans real P2GC roots on Windows; allowing that discovery here
+  // makes the test machine-dependent and can pull live contacts into assertions.
   const service = new WinBackProspectReconstructionService({
     rootDir: root,
-    env: {},
+    env: { WINBACK_CONTACT_SOURCES: contactsPath },
     seedPaths: [seedPath]
   });
   const report = service.execute({ writeReport: false });
