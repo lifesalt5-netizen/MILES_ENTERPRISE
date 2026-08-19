@@ -9,8 +9,9 @@ const bootstrap = fs.readFileSync(path.join(root, "StartMilesRehearsal.js"), "ut
 const worker = fs.readFileSync(path.join(root, "StartProductionSystemRehearsal.js"), "utf8");
 const runner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL.ps1"), "utf8");
 const windowsRunner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL_WINDOWS.ps1"), "utf8");
+const pm2Runner = fs.readFileSync(path.join(root, "SCRIPTS", "RUN_MILES_CUTOVER_REHEARSAL_PM2_WINDOWS.ps1"), "utf8");
 
-for (const [name, text] of [["bootstrap", bootstrap], ["worker", worker], ["runner", runner], ["windowsRunner", windowsRunner]]) {
+for (const [name, text] of [["bootstrap", bootstrap], ["worker", worker], ["runner", runner], ["windowsRunner", windowsRunner], ["pm2Runner", pm2Runner]]) {
   assert([...Buffer.from(text, "utf8")].every(byte => byte < 0x80), `${name} must remain ASCII-only for Windows PowerShell/runtime safety`);
 }
 
@@ -47,13 +48,25 @@ assert(/\$detail\.miles_root_owned/.test(windowsRunner), "Orphan cleanup must re
 assert(/Refusing to kill unrelated processes/.test(windowsRunner), "Unrelated canonical port owners must block rather than be killed");
 assert(/Assert-CanonicalPortsReleased/.test(windowsRunner), "Windows launcher must prove canonical ports are released before candidate boot");
 
+assert(/pm2\s+jlist/i.test(pm2Runner), "PM2 launcher must inspect the PM2 process table");
+assert(/pm2_env\.pm_cwd/i.test(pm2Runner), "PM2 launcher must inspect each app cwd");
+assert(/pm2_env\.pm_exec_path/i.test(pm2Runner), "PM2 launcher must inspect each app executable path");
+assert(/Test-PathInsideRoot/.test(pm2Runner), "PM2 launcher must prove PM2 app ownership by live MILES root");
+assert(/Refusing to stop PM2 app/.test(pm2Runner), "PM2 launcher must refuse unrelated PM2 apps");
+assert(/pm2\s+stop\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher may stop only resolved PM2 app ids");
+assert(/pm2\s+restart\s+\$app\.pm_id/i.test(pm2Runner), "PM2 launcher must restore the same PM2 app ids");
+assert(/finally\s*\{/i.test(pm2Runner), "PM2 restoration must be protected by a finally block");
+assert(/RUN_MILES_CUTOVER_REHEARSAL_WINDOWS\.ps1/i.test(pm2Runner), "PM2 launcher must delegate candidate validation to the Windows rehearsal runner");
+
+const combined = `${bootstrap}\n${worker}\n${runner}\n${windowsRunner}\n${pm2Runner}`;
 const forbidden = [
   /\bgit\s+(?:push|reset|clean|checkout|merge)\b/i,
   /INSTANTLY_WRITE_ENABLED\s*=\s*["']true["']/i,
-  /MILES_CONTROLLED_WRITE_ENABLED\s*=\s*["']true["']/i
+  /MILES_CONTROLLED_WRITE_ENABLED\s*=\s*["']true["']/i,
+  /\bpm2\s+(?:delete|kill|save)\b/i
 ];
 for (const pattern of forbidden) {
-  assert(!pattern.test(`${bootstrap}\n${worker}\n${runner}\n${windowsRunner}`), `Forbidden rehearsal behavior detected: ${pattern}`);
+  assert(!pattern.test(combined), `Forbidden rehearsal behavior detected: ${pattern}`);
 }
 
 console.log("PASS cutover_rehearsal_safety_test");
