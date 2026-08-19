@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>P2GC Focused Intelligence</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">PATHWAYS 2 GOVERNMENT CONTRACTING</div>
+      <h1 id="pageTitle">P2GC Intelligence</h1>
+      <p id="pageSub" class="sub">Focused government contracting intelligence powered by ORION™.</p>
+    </div>
+    <div class="badge">Powered by ORION™</div>
+  </header>
+  <main>
+    <section class="search-card no-print">
+      <div>
+        <label for="term">Company</label>
+        <input id="term" placeholder="Company name, UEI, CAGE, or website">
+      </div>
+      <button id="analyze">Analyze Company</button>
+      <a href="/" style="align-self:center">Full Growth Blueprint</a>
+      <a href="/teaming" style="align-self:center">Sub2Prime™</a>
+    </section>
+
+    <section id="welcome" class="welcome">
+      <h2 id="welcomeTitle">Focused Intelligence</h2>
+      <p id="welcomeText">Enter a company to build a focused, evidence-backed intelligence view.</p>
+      <p class="disclosure">Read-only decision support. Unavailable facts remain unavailable and modeled signals are labeled.</p>
+    </section>
+    <section id="loading" class="loading hidden">Building current ORION intelligence…</section>
+    <section id="error" class="error hidden"></section>
+
+    <div id="report" class="hidden">
+      <section class="hero-card">
+        <div><div id="reportEyebrow" class="eyebrow">P2GC INTELLIGENCE</div><h2 id="companyName">—</h2><div id="profileMeta" class="meta-grid"></div></div>
+        <div class="score-ring-wrap"><div id="readiness" class="score-ring">—</div><div class="score-caption">GovCon Readiness</div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div><div class="eyebrow">CURRENT INTELLIGENCE</div><h2 id="primaryTitle">Results</h2></div><span id="status" class="pill modeled"></span></div>
+        <div id="primary"></div>
+      </section>
+
+      <section class="two-col">
+        <article class="section"><div class="eyebrow">ALIGNMENT / READINESS</div><h2 id="secondaryTitle">Supporting Intelligence</h2><div id="secondary"></div></article>
+        <article class="section recommendation-section"><div class="eyebrow">NEXT ACTIONS</div><h2>Executive Recommendations</h2><div id="actions"></div></article>
+      </section>
+
+      <section class="section"><div class="eyebrow">EVIDENCE STANDARD</div><h2>What This View Can Claim</h2><p id="disclosure" class="disclosure"></p><div id="capability"></div></section>
+      <footer><span id="generatedAt"></span><span>Read-only prospect intelligence • Validate source-sensitive facts before external reliance</span></footer>
+    </div>
+  </main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+const money=v=>v==null?"Unavailable":"$"+Number(v).toLocaleString("en-US");
+const list=(items,empty)=>items&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>${esc(empty)}</p>`;
+const mode=location.pathname.includes("vehicles")?"vehicles":location.pathname.includes("recompetes")?"recompetes":"opportunities";
+const config={
+  opportunities:{title:"Opportunity Intelligence™",sub:"Live and forecast opportunity signals, agency alignment, qualification context, and recommended capture actions.",welcome:"Find opportunity signals that align to the prospect's current government-market evidence.",primary:"Matched Live / Forecast Opportunity Signals",secondary:"Agency Alignment"},
+  vehicles:{title:"Government Contract Vehicle Intelligence™",sub:"Current vehicle evidence, vehicle gaps, readiness, agency context, and recommended vehicle actions.",welcome:"Assess current contract-vehicle position and the next evidence-backed optimization actions.",primary:"Contract Vehicle Position",secondary:"Vehicle Readiness / Agency Context"},
+  recompetes:{title:"Recompete Intelligence™",sub:"Current ORION recompete signals, agencies, partner strategy, and explicit coverage limitations.",welcome:"Surface current recompete signals without inventing incumbents, dates, values, or alert coverage.",primary:"Recompete Signals",secondary:"Agency / Coverage Intelligence"}
+}[mode];
+document.title=config.title+" | P2GC";$("pageTitle").textContent=config.title;$("pageSub").textContent=config.sub;$("welcomeTitle").textContent=config.title;$("welcomeText").textContent=config.welcome;$("primaryTitle").textContent=config.primary;$("secondaryTitle").textContent=config.secondary;$("reportEyebrow").textContent=config.title.toUpperCase();
+function opportunityTable(records){return records&&records.length?`<div class="table-wrap"><table><thead><tr><th>Opportunity</th><th>Source</th><th>Status</th><th>Due date</th><th>Qualification</th></tr></thead><tbody>${records.map(r=>`<tr><td><strong>${esc(r.title||"Unavailable")}</strong></td><td>${esc(r.source||"Unavailable")}</td><td>${esc(r.status||"Unavailable")}</td><td>${esc(r.dueDate||"Unavailable")}</td><td>${esc(r.qualification||"")}</td></tr>`).join("")}</tbody></table></div>`:"<p>No current matched opportunity signal is available in the prospect-safe ORION record.</p>";}
+function recompeteTable(records){return records&&records.length?`<div class="table-wrap"><table><thead><tr><th>Recompete</th><th>Agency</th><th>Expected date</th><th>Value</th><th>Evidence</th></tr></thead><tbody>${records.map(r=>`<tr><td><strong>${esc(r.title||"Unavailable")}</strong></td><td>${esc(r.agency||"Unavailable")}</td><td>${esc(r.date||"Unavailable")}</td><td>${money(r.value)}</td><td>${esc(r.qualification||r.signalType||"Current ORION signal")}</td></tr>`).join("")}</tbody></table></div>`:"<p>No current recompete signal is available in the prospect-safe ORION record.</p>";}
+function agencyList(items){return items&&items.length?items.map(a=>typeof a==="string"?`<p><strong>${esc(a)}</strong></p>`:`<p><strong>${esc(a.agency||"Unavailable")}</strong>${a.fitScore==null?"":` — ${a.fitScore}% modeled alignment`}<br><small>${esc(a.basis||"")}</small></p>`).join(""):"<p>No agency-alignment evidence is currently available.</p>";}
+function render(m){
+  $("companyName").textContent=m.prospect.companyName||m.prospect.uei||"Prospect";$("readiness").textContent=m.prospect.readiness==null?"—":m.prospect.readiness;$("status").textContent=m.status;
+  $("profileMeta").innerHTML=[["UEI",m.prospect.uei||"Unavailable"],["CAGE",m.prospect.cage||"Unavailable"],["SAM",m.prospect.samStatus||"Unavailable"],["GSA",m.prospect.gsaStatus||"Unavailable"]].map(x=>`<div><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join("");
+  if(mode==="opportunities"){
+    $("primary").innerHTML=opportunityTable(m.records);$("secondary").innerHTML=agencyList(m.agencies);$("actions").innerHTML=list([...(m.recommendations||[]),...(m.immediateActions||[])],"No additional opportunity action is defensible from the current record.");$("capability").innerHTML=`<p>Current matched signals: <strong>${(m.records||[]).length}</strong>. Pathway: <strong>${esc(m.pathway?.title||"Unavailable")}</strong>.</p>`;
+  } else if(mode==="vehicles"){
+    $("primary").innerHTML=`<h3>Current Vehicles</h3>${list(m.currentVehicles,"No current vehicle identified in the ORION prospect record.")}<h3>Vehicle Gaps</h3>${list(m.vehicleGaps,"No vehicle-specific gap is identified from current evidence.")}`;$("secondary").innerHTML=`${m.readiness?`<p><strong>Vehicle readiness:</strong> ${esc(m.readiness.score)}%</p>`:""}${agencyList(m.agencies)}`;$("actions").innerHTML=list(m.recommendations,"No vehicle recommendation is defensible from the current record.");$("capability").innerHTML=`<p>Current vehicle records: <strong>${(m.currentVehicles||[]).length}</strong>. Recommendations: <strong>${(m.recommendations||[]).length}</strong>.</p>`;
+  } else {
+    $("primary").innerHTML=recompeteTable(m.records);$("secondary").innerHTML=`${agencyList(m.agencies)}<p><strong>Incumbent identity coverage:</strong> ${m.currentCapability?.incumbentIdentity?"Available":"Not claimed in this focused view"}</p><p><strong>Dedicated expiration alerts:</strong> ${m.currentCapability?.dedicatedExpirationAlerts?"Available":"Still in reconciliation"}</p>`;$("actions").innerHTML=list([...(m.opportunityRecommendations||[]),...(m.partnerRecommendations||[])],"No recompete-specific next action is defensible from the current record.");$("capability").innerHTML=`<p>Current recompete signals: <strong>${(m.records||[]).length}</strong>. The view explicitly fails closed on incumbent identity and alert coverage when not validated.</p>`;
+  }
+  $("disclosure").textContent=m.disclosure||m.evidence?.disclosure||"Validate source-sensitive facts before external reliance.";$("generatedAt").textContent="Generated "+new Date(m.generatedAt).toLocaleString();$("welcome").classList.add("hidden");$("report").classList.remove("hidden");
+}
+async function run(){const term=$("term").value.trim();if(!term)return;$("error").classList.add("hidden");$("report").classList.add("hidden");$("welcome").classList.add("hidden");$("loading").classList.remove("hidden");try{const r=await fetch(`/api/intelligence?type=${encodeURIComponent(mode)}&term=${encodeURIComponent(term)}`,{cache:"no-store"});const m=await r.json();if(!r.ok||!m.ok)throw new Error(m.message||m.error||m.status||"Unable to build intelligence");render(m);}catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");}finally{$("loading").classList.add("hidden");}}
+$("analyze").addEventListener("click",run);$("term").addEventListener("keydown",e=>{if(e.key==="Enter")run();});
+</script>
+</body>
+</html>

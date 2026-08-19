@@ -1,6 +1,7 @@
 "use strict";
 
 const RevenueMissionSourceService = require("./RevenueMissionSourceService");
+const CommandPreflightService = require("./governance/CommandPreflightService");
 
 const fs = require("fs");
 const path = require("path");
@@ -68,6 +69,12 @@ class BusinessOperationsBridgeService {
     this.revenueMissionSource =
       options.revenueMissionSource ||
       new RevenueMissionSourceService({
+        rootDir: this.rootDir
+      });
+
+    this.commandPreflight =
+      options.commandPreflight ||
+      new CommandPreflightService({
         rootDir: this.rootDir
       });
   }
@@ -494,6 +501,23 @@ class BusinessOperationsBridgeService {
     }
 
     const task = this.buildTaskParts(operation);
+    const preflight = this.commandPreflight.evaluate({ operation, task });
+
+    this.log(
+      `Preflight operation=${operation.id || "UNKNOWN"} status=${preflight.status} blockers=${preflight.blockers?.length || 0}`
+    );
+
+    if (!preflight.ok || preflight.allowedToQueue !== true) {
+      const blockerText = Array.isArray(preflight.blockers)
+        ? preflight.blockers.map(item => `${item.area || "UNKNOWN"}:${item.code || "BLOCKED"}`).join(", ")
+        : "UNKNOWN_PREFLIGHT_BLOCKER";
+      const error = new Error(`Command preflight blocked before TaskQueue: ${blockerText}`);
+      error.code = "MILES_COMMAND_PREFLIGHT_BLOCKED";
+      error.preflight = preflight;
+      throw error;
+    }
+
+    task.payload.preflight = preflight;
 
     this.log(
       `Routing trace operation=${operation.id || "UNKNOWN"} type=${task.type} action=${task.payload.action} capability=${task.payload.capability} workflow=${task.payload.workflow} connector=${task.payload.connector}`
@@ -593,7 +617,8 @@ class BusinessOperationsBridgeService {
           status: "BRIDGE_FAILED",
           bridgeFailedAt: now(),
           taskQueueStatus: "FAILED",
-          error: error.message
+          error: error.message,
+          preflight: error.preflight || null
         });
 
         failed++;
@@ -633,4 +658,3 @@ class BusinessOperationsBridgeService {
 }
 
 module.exports = BusinessOperationsBridgeService;
-

@@ -12,7 +12,51 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = process.env.MILES_ROOT || "D:\\P2GC_Intelligence\\MILES_OS";
+const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
+
+function parseEnvFile(text) {
+    const values = {};
+    for (const rawLine of String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/)) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith("#")) continue;
+        const match = line.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+        if (!match) continue;
+        const key = match[1];
+        let value = match[2].trim();
+        if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+        ) {
+            value = value.slice(1, -1);
+        } else {
+            value = value.replace(/\s+#.*$/, "").trim();
+        }
+        values[key] = value
+            .replace(/\\n/g, "\n")
+            .replace(/\\r/g, "\r");
+    }
+    return values;
+}
+
+// Provider authority must be available during the minimal recovery/static
+// preflight too, before npm dependencies are guaranteed. Parse ROOT/.env
+// directly; preserve meaningful exported values and fill only absent/blank
+// inherited values.
+try {
+    const envPath = path.join(ROOT, ".env");
+    if (fs.existsSync(envPath)) {
+        const parsed = parseEnvFile(fs.readFileSync(envPath, "utf8"));
+        for (const [key, value] of Object.entries(parsed)) {
+            const current = process.env[key];
+            if (current === undefined || current === null || String(current).trim() === "") {
+                process.env[key] = value;
+            }
+        }
+    }
+} catch {
+    // Fail closed below if required provider truth cannot be established.
+}
+
 const OUT_DIR = path.join(ROOT, "DATA", "provider_sync");
 const OUT_FILE = path.join(OUT_DIR, "provider_authority_registry.json");
 
@@ -142,7 +186,7 @@ class ProviderAuthorityRegistryService {
                 writeEnabled: String(process.env.INSTANTLY_WRITE_ENABLED || "").toLowerCase() === "true"
             },
             filesystem: { credentialsPresent: true, writeEnabled: true },
-            orion: { credentialsPresent: Boolean(process.env.ORION_DB_PATH) || exists(path.join(ROOT, "DATA")), writeEnabled: String(process.env.ORION_WRITE_ENABLED || "").toLowerCase() === "true" },
+            orion: { credentialsPresent: Boolean(process.env.ORION_DB_PATH) || Boolean(process.env.ORION_DB) || exists(path.join(ROOT, "DATA")), writeEnabled: String(process.env.ORION_WRITE_ENABLED || "").toLowerCase() === "true" },
             website: { credentialsPresent: Boolean(process.env.WEBSITE_ROOT) || exists(path.join(ROOT, "DATA", "website")), writeEnabled: String(process.env.WEBSITE_WRITE_ENABLED || "").toLowerCase() === "true" },
             google_workspace: { credentialsPresent: Boolean(process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_WORKSPACE_ADMIN_EMAIL), writeEnabled: String(process.env.GOOGLE_WORKSPACE_WRITE_ENABLED || "").toLowerCase() === "true" },
             namecheap: { credentialsPresent: Boolean(process.env.NAMECHEAP_API_USER && process.env.NAMECHEAP_API_KEY && process.env.NAMECHEAP_CLIENT_IP), writeEnabled: String(process.env.NAMECHEAP_WRITE_ENABLED || "").toLowerCase() === "true" }

@@ -1,24 +1,64 @@
-﻿'use strict';
+'use strict';
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const DigitalCOOHost = require('./DigitalCOOHost');
+
 const CommandIntentPlannerService = require('../CommandIntentPlannerService');
 const ExecutiveResponseService = require('../ExecutiveResponseService');
-const ExecutiveConversationService = require('../ExecutiveConversationService');
-const CEOIntentEngineService = require('../CEOIntentEngineService');
+const BusinessOperationsBridgeService = require('../BusinessOperationsBridgeService');
+const workforce = require('../WorkforceService');
+const taskQueue = require('../../CORE/TaskQueue');
 
-const ROOT = path.resolve(__dirname, '..', '..');
+const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, '..', '..');
 const PORT = Number(process.env.MILES_COMMAND_PORT || 8787);
+const STATE_DIR = path.join(ROOT, 'state');
+const LOGS_DIR = path.join(ROOT, 'logs');
+const QUEUE_FILE = path.join(STATE_DIR, 'business_operations_queue.json');
+const LOG_FILE = path.join(LOGS_DIR, 'miles_command_center.log');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const RUNTIME_DIR = path.join(ROOT, 'DATA', 'runtime');
+const TASK_QUEUE_FILE = path.join(RUNTIME_DIR, 'task_queue.json');
+const TASK_QUEUE_LAST_GOOD_FILE = path.join(RUNTIME_DIR, 'task_queue.last_good.json');
+const WORKER_STATUS_FILE = path.join(RUNTIME_DIR, 'worker_runtime_status.json');
+const CONTROL_PLANE_CACHE_MS = Math.max(250, Number(process.env.MILES_CONTROL_PLANE_CACHE_MS || 2000));
+const WORKER_STATUS_MAX_AGE_MS = Math.max(5000, Number(process.env.MILES_WORKER_STATUS_MAX_AGE_MS || 60000));
+const DASHBOARD_OPERATION_QUEUE_MAX_BYTES = Math.max(
+  1024 * 1024,
+  Number(process.env.MILES_DASHBOARD_OPERATION_QUEUE_MAX_BYTES || 8 * 1024 * 1024)
+);
 
-const stateDir = path.join(ROOT, 'state');
-const logsDir = path.join(ROOT, 'logs');
-const queueFile = path.join(stateDir, 'business_operations_queue.json');
-const logFile = path.join(logsDir, 'miles_command_center.log');
+fs.mkdirSync(STATE_DIR, { recursive: true });
+fs.mkdirSync(LOGS_DIR, { recursive: true });
 
-fs.mkdirSync(stateDir, { recursive: true });
-fs.mkdirSync(logsDir, { recursive: true });
+const bridge = new BusinessOperationsBridgeService({
+  rootDir: ROOT,
+  taskQueue,
+  queueFile: QUEUE_FILE
+});
+
+const executiveResponses = new ExecutiveResponseService({ rootDir: ROOT });
+
+const CANONICAL_DEPARTMENTS = Object.freeze([
+  'Executive Operations',
+  'Revenue Operations',
+  'Sales Operations',
+  'Marketing Operations',
+  'Client Delivery',
+  'Customer Success',
+  'Executive Demo Operations',
+  'ORION Intelligence',
+  'Government Intelligence',
+  'Opportunity Intelligence',
+  'Vehicle Intelligence',
+  'Recompete Intelligence',
+  'Capture Strategy',
+  'Proposal Operations',
+  'Website Operations',
+  'Engineering Operations'
+]);
+
+let taskQueueSummaryCache = { at: 0, value: null };
 
 function now() {
   return new Date().toISOString();
@@ -26,144 +66,226 @@ function now() {
 
 function readJson(file, fallback) {
   try {
-    if (!fs.existsSync(file)) {
-      return fallback;
-    }
-
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (!fs.existsSync(file)) return fallback;
+    return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
   } catch {
     return fallback;
   }
 }
 
 function writeJson(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const temporary = `${file}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(temporary, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    fs.renameSync(temporary, file);
+  } catch {
+    fs.copyFileSync(temporary, file);
+    try { fs.unlinkSync(temporary); } catch {}
+  }
 }
 
 function log(level, message, metadata = {}) {
-  fs.appendFileSync(
-    logFile,
-    JSON.stringify({
-      timestamp: now(),
-      level,
-      service: 'MILES_COMMAND_CENTER',
-      message,
-      metadata
-    }) + '\n'
-  );
+  try {
+    fs.appendFileSync(
+      LOG_FILE,
+      JSON.stringify({
+        timestamp: now(),
+        level,
+        service: 'MILES_COMMAND_CENTER',
+        message,
+        metadata
+      }) + '\n',
+      'utf8'
+    );
+  } catch {}
 }
 
-function classifyWorker(text, plan = {}) {
-  const provider = String(plan.provider || '').toUpperCase();
-  const action = String(plan.action || '').toUpperCase();
-  const t = String(text || '').toLowerCase();
-
-  if (provider === 'INSTANTLY') {
-    return 'revenueWorker';
-  }
-
-  if (provider === 'ORION') {
-    return 'atlasWorker';
-  }
-
-  if (provider === 'GOOGLE') {
-    return 'cooWorker';
-  }
-
-  if (provider === 'WEBSITE') {
-    return 'cooWorker';
-  }
-
-  if (provider === 'LINKEDIN') {
-    return 'cooWorker';
-  }
-
-  if (action.startsWith('INSTANTLY_')) {
-    return 'revenueWorker';
-  }
-
-  if (action.startsWith('ORION_')) {
-    return 'atlasWorker';
-  }
-
-  if (action.startsWith('GOOGLE_')) {
-    return 'cooWorker';
-  }
-
-  if (action.startsWith('WEBSITE_')) {
-    return 'cooWorker';
-  }
-
-  if (action.startsWith('LINKEDIN_')) {
-    return 'cooWorker';
-  }
-
-  if (
-    t.includes('instantly') ||
-    t.includes('campaign') ||
-    t.includes('email') ||
-    t.includes('lead')
-  ) {
-    return 'revenueWorker';
-  }
-
-  if (
-    t.includes('reply') ||
-    t.includes('respond') ||
-    t.includes('inbox')
-  ) {
-    return 'replyWorker';
-  }
-
-  if (
-    t.includes('deal') ||
-    t.includes('proposal') ||
-    t.includes('close')
-  ) {
-    return 'dealWorker';
-  }
-
-  if (
-    t.includes('orion') ||
-    t.includes('opportunit') ||
-    t.includes('sled') ||
-    t.includes('contract')
-  ) {
-    return 'atlasWorker';
-  }
-
-  if (
-    t.includes('website') ||
-    t.includes('linkedin') ||
-    t.includes('marketing')
-  ) {
-    return 'cooWorker';
-  }
-
-  if (
-    t.includes('run') ||
-    t.includes('start') ||
-    t.includes('check') ||
-    t.includes('status')
-  ) {
-    return 'dispatcherWorker';
-  }
-
-  return 'cooWorker';
+function safeStringify(value) {
+  const seen = new WeakSet();
+  return JSON.stringify(value, (key, item) => {
+    if (typeof item === 'bigint') return item.toString();
+    if (item instanceof Error) {
+      return { name: item.name, message: item.message, stack: item.stack };
+    }
+    if (item && typeof item === 'object') {
+      if (seen.has(item)) return '[Circular]';
+      seen.add(item);
+    }
+    return item;
+  }, 2);
 }
 
-function needsApproval(text, plan = {}) {
-  const t = String(text || '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim();
+function sendJson(res, statusCode, value) {
+  let body;
+  try {
+    body = safeStringify(value);
+  } catch (error) {
+    statusCode = 500;
+    body = JSON.stringify({
+      ok: false,
+      status: 'SERIALIZATION_FAILED',
+      error: error.message
+    }, null, 2);
+  }
 
+  if (res.headersSent) {
+    if (!res.writableEnded) res.end();
+    return;
+  }
+
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Length': Buffer.byteLength(body),
+    'Cache-Control': 'no-store',
+    'Connection': 'close'
+  });
+  res.end(body);
+}
+
+function sendText(res, statusCode, text, contentType = 'text/plain; charset=utf-8') {
+  const body = Buffer.isBuffer(text) ? text : Buffer.from(String(text), 'utf8');
+  res.writeHead(statusCode, {
+    'Content-Type': contentType,
+    'Content-Length': body.length,
+    'Cache-Control': 'no-store'
+  });
+  res.end(body);
+}
+
+function sendFile(res, file, contentType) {
+  try {
+    sendText(res, 200, fs.readFileSync(file), contentType);
+  } catch (error) {
+    sendJson(res, 500, {
+      ok: false,
+      status: 'STATIC_ASSET_FAILED',
+      error: error.message
+    });
+  }
+}
+
+function readBody(req, maxBytes = 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let total = 0;
+    req.on('data', chunk => {
+      total += chunk.length;
+      if (total > maxBytes) {
+        reject(new Error('Request body too large.'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('error', reject);
+  });
+}
+
+function queueState() {
+  const queue = readJson(QUEUE_FILE, {
+    generatedAt: null,
+    source: 'MILES_COMMAND_CENTER',
+    operations: []
+  });
+  queue.operations = Array.isArray(queue.operations) ? queue.operations : [];
+  return queue;
+}
+
+function dashboardOperationSnapshot() {
+  try {
+    if (!fs.existsSync(QUEUE_FILE)) {
+      return {
+        operations: [],
+        metadata: {
+          ok: true,
+          source: 'MILES_COMMAND_CENTER',
+          total: 0,
+          displayed: 0,
+          fileBytes: 0,
+          historyOmitted: false
+        }
+      };
+    }
+
+    const stat = fs.statSync(QUEUE_FILE);
+    if (stat.size > DASHBOARD_OPERATION_QUEUE_MAX_BYTES) {
+      return {
+        operations: [],
+        metadata: {
+          ok: true,
+          source: 'MILES_COMMAND_CENTER',
+          total: null,
+          displayed: 0,
+          fileBytes: stat.size,
+          historyOmitted: true,
+          reason: 'HISTORICAL_OPERATION_QUEUE_TOO_LARGE_FOR_SYNCHRONOUS_CONTROL_PLANE_READ'
+        }
+      };
+    }
+
+    const queue = queueState();
+    return {
+      operations: queue.operations.slice(0, 50),
+      metadata: {
+        ok: true,
+        source: queue.source || 'MILES_COMMAND_CENTER',
+        generatedAt: queue.generatedAt || null,
+        total: queue.operations.length,
+        displayed: Math.min(50, queue.operations.length),
+        fileBytes: stat.size,
+        historyOmitted: false
+      }
+    };
+  } catch (error) {
+    return {
+      operations: [],
+      metadata: {
+        ok: false,
+        displayed: 0,
+        historyOmitted: true,
+        error: error.message
+      }
+    };
+  }
+}
+
+function saveOperation(operation) {
+  const queue = queueState();
+  const index = queue.operations.findIndex(item => item && item.id === operation.id);
+  if (index >= 0) queue.operations[index] = operation;
+  else queue.operations.unshift(operation);
+  queue.generatedAt = now();
+  queue.source = 'MILES_COMMAND_CENTER';
+  writeJson(QUEUE_FILE, queue);
+  return operation;
+}
+
+function updateOperation(operationId, patch = {}) {
+  const queue = queueState();
+  const index = queue.operations.findIndex(item => item && item.id === operationId);
+  if (index < 0) return null;
+  queue.operations[index] = {
+    ...queue.operations[index],
+    ...patch,
+    updatedAt: now()
+  };
+  queue.generatedAt = now();
+  writeJson(QUEUE_FILE, queue);
+  return queue.operations[index];
+}
+
+function normalizeProvider(provider) {
+  const value = String(provider || 'MILES').trim();
+  if (value.toLowerCase() === 'website') return 'Website';
+  if (value.toLowerCase() === 'linkedin') return 'LinkedIn';
+  return value.toUpperCase();
+}
+
+function requiresCEOApproval(command, plan = {}) {
+  const text = String(command || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const action = String(plan.action || '').toUpperCase();
-
-  // Approval is for an actual protected action, not for merely mentioning a
-  // protected topic while defining governance, policy, data semantics, or
-  // escalation boundaries. Bare words such as "contract", "legal", "sign",
-  // and "financial commitment" are intentionally not sufficient by themselves.
   const protectedActions = new Set([
     'CHANGE_PRICING',
     'PRICING_CHANGE',
@@ -176,84 +298,50 @@ function needsApproval(text, plan = {}) {
     'DELETE_PRODUCTION_DATA',
     'MAKE_FINANCIAL_COMMITMENT'
   ]);
-
-  if (protectedActions.has(action)) {
-    return true;
-  }
-
-  const protectedActionPatterns = [
+  if (protectedActions.has(action)) return true;
+  return [
     /\b(change|set|increase|decrease|discount|override)\s+(our\s+)?pricing\b/,
     /\b(send|submit|deliver)\s+(the\s+|a\s+)?(final\s+)?proposal\b/,
     /\b(sign|execute)\s+(the\s+|a\s+|an\s+)?(agreement|contract|legal document)\b/,
     /\b(hire|fire|terminate)\s+(an?\s+|the\s+)?(employee|contractor|staff|person|worker)\b/,
     /\b(delete|drop|destroy|purge)\s+(production\s+)?(database|records?|data|campaign|account|repository|repo)\b/,
     /\b(make|approve|authorize|commit|spend|purchase|pay)\b.{0,60}\b(financial commitment|payment|expense|purchase|spend|budget)\b/
-  ];
-
-  return protectedActionPatterns.some((pattern) => pattern.test(t));
+  ].some(pattern => pattern.test(text));
 }
 
-function normalizeProvider(provider) {
-  const value = String(provider || 'MILES').trim();
-
-  if (value.toLowerCase() === 'website') {
-    return 'Website';
-  }
-
-  if (value.toLowerCase() === 'linkedin') {
-    return 'LinkedIn';
-  }
-
-  return value.toUpperCase();
-}
-
-function makeOperation(command, plan = {}) {
-  const normalizedPlan = plan && plan.ok
-    ? plan
-    : CommandIntentPlannerService.plan({ command });
-
-  const provider = normalizeProvider(
-    normalizedPlan.provider || 'MILES'
-  );
-
-  const action = normalizedPlan.action || 'MILES_EXECUTE';
-
-  const worker = classifyWorker(command, {
-    ...normalizedPlan,
-    provider,
-    action
-  });
-
-  const approvalRequired = needsApproval(command, normalizedPlan);
+function makeOperation(command, suppliedPlan = null) {
+  const plan = suppliedPlan || CommandIntentPlannerService.plan({ command });
+  const provider = normalizeProvider(plan.provider || 'MILES');
+  const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';
+  const approvalRequired = requiresCEOApproval(command, plan);
 
   return {
     id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     source: 'MILES_COMMAND_CENTER',
-    type: approvalRequired
-      ? 'CEO_APPROVAL_OPERATION'
-      : action,
-    status: approvalRequired
-      ? 'AWAITING_APPROVAL'
-      : 'READY',
+    type: action,
+    status: approvalRequired ? 'AWAITING_APPROVAL' : 'READY',
     priority: 1,
-    worker,
-    area: worker.replace('Worker', ''),
     provider,
-    system: normalizedPlan.system || provider,
-    connector: normalizedPlan.connector || provider,
-    department: normalizedPlan.department || provider,
-    title: String(command || '').slice(0, 120),
-    command,
+    system: plan.system || provider,
+    connector: plan.connector || provider,
+    department: plan.department || provider,
     action,
-    intent: normalizedPlan.intent,
-    objective: normalizedPlan.objective || command,
+    capability: plan.capability || action,
+    workflow: plan.workflow || null,
+    intent: plan.intent || null,
+    title: String(command || '').slice(0, 160),
+    command,
+    objective: plan.objective || command,
     plan: {
-      ...normalizedPlan,
+      ...plan,
       provider,
-      system: normalizedPlan.system || provider,
-      connector: normalizedPlan.connector || provider,
-      department: normalizedPlan.department || provider,
-      action
+      system: plan.system || provider,
+      connector: plan.connector || provider,
+      department: plan.department || provider,
+      action,
+      capability: plan.capability || action,
+      originalCommand: plan.originalCommand || command,
+      objective: plan.objective || command
     },
     approvalRequired,
     ceoEscalationOnly: approvalRequired,
@@ -263,65 +351,46 @@ function makeOperation(command, plan = {}) {
   };
 }
 
-function addToQueue(operation) {
-  const queue = readJson(queueFile, {
-    generatedAt: now(),
-    source: 'MILES_COMMAND_CENTER',
-    operations: []
+function bridgeOperation(operation) {
+  const task = bridge.enqueueTask(operation);
+  const taskId = task && (task.id || task.taskId) ? (task.id || task.taskId) : null;
+  const updated = updateOperation(operation.id, {
+    status: 'BRIDGED',
+    bridgedAt: now(),
+    taskQueueStatus: 'QUEUED',
+    taskId
   });
-
-  queue.operations = Array.isArray(queue.operations)
-    ? queue.operations
-    : [];
-
-  queue.operations.unshift(operation);
-  queue.generatedAt = now();
-
-  writeJson(queueFile, queue);
+  return {
+    ok: Boolean(taskId),
+    status: taskId ? 'BRIDGE_COMPLETED' : 'BRIDGE_FAILED',
+    operationId: operation.id,
+    taskId,
+    operationsFound: 1,
+    operationsQueued: taskId ? 1 : 0,
+    operationsFailed: taskId ? 0 : 1,
+    operation: updated || operation
+  };
 }
 
-const host = new DigitalCOOHost({
-  rootDir: ROOT
-});
-
-const executiveResponses = new ExecutiveResponseService({
-  rootDir: ROOT
-});
-
 async function handleCommand(command) {
-  const cleanCommand = String(command || '').trim();
-
-  if (!cleanCommand) {
-    return {
-      ok: false,
-      status: 'EMPTY_COMMAND',
-      message: 'No command was provided.'
-    };
+  const clean = String(command || '').trim();
+  if (!clean) {
+    return { ok: false, status: 'EMPTY_COMMAND', message: 'command is required' };
   }
 
-  const plan = CommandIntentPlannerService.plan({
-    command: cleanCommand
-  });
-
+  const plan = CommandIntentPlannerService.plan({ command: clean });
   const intent = String(plan.intent || '').toUpperCase();
 
   console.log('========================================');
   console.log('[COMMAND CENTER]');
-  console.log('Command :', cleanCommand);
+  console.log('Command :', clean);
   console.log('Intent  :', intent);
   console.log('Workflow:', plan.workflow);
   console.log('Action  :', plan.action);
   console.log('========================================');
 
-  if (
-    intent === 'QUESTION' ||
-    intent === 'CONVERSATION'
-  ) {
-    const response = await executiveResponses.respond({
-      command: cleanCommand,
-      plan
-    });
-
+  if (intent === 'QUESTION' || intent === 'CONVERSATION') {
+    const response = await executiveResponses.respond({ command: clean, plan });
     return {
       ok: true,
       status: 'CONVERSATION',
@@ -332,11 +401,7 @@ async function handleCommand(command) {
   }
 
   if (intent === 'AUDIT') {
-    const response = await executiveResponses.audit({
-      command: cleanCommand,
-      plan
-    });
-
+    const response = await executiveResponses.audit({ command: clean, plan });
     return {
       ok: true,
       status: 'AUDIT_COMPLETE',
@@ -346,398 +411,444 @@ async function handleCommand(command) {
     };
   }
 
-  const operation = makeOperation(cleanCommand, plan);
+  const operation = makeOperation(clean, plan);
+  saveOperation(operation);
 
-  addToQueue(operation);
-
-  let enqueueResult = null;
-
-  if (
-    host &&
-    typeof host.enqueueOperation === 'function'
-  ) {
-    enqueueResult = await host.enqueueOperation(operation);
+  if (operation.approvalRequired) {
+    log('INFO', 'Command routed to CEO approval.', {
+      operationId: operation.id,
+      action: operation.action
+    });
+    return {
+      ok: true,
+      status: 'AWAITING_APPROVAL',
+      operation,
+      enqueueResult: {
+        ok: false,
+        status: 'AWAITING_APPROVAL',
+        operationId: operation.id,
+        taskId: null
+      }
+    };
   }
 
-  log('INFO', `Command accepted: ${cleanCommand}`, {
-    operationId: operation.id,
-    provider: operation.provider,
-    action: operation.action,
-    worker: operation.worker,
-    approvalRequired: operation.approvalRequired
-  });
+  try {
+    const enqueueResult = bridgeOperation(operation);
+    log(enqueueResult.ok ? 'INFO' : 'ERROR', 'Command bridged to canonical TaskQueue.', {
+      operationId: operation.id,
+      taskId: enqueueResult.taskId,
+      provider: operation.provider,
+      action: operation.action
+    });
+    return {
+      ok: enqueueResult.ok,
+      status: enqueueResult.ok ? 'COMMAND_ACCEPTED' : 'BRIDGE_FAILED',
+      message: enqueueResult.ok
+        ? 'Miles accepted the CEO command and bridged it to the canonical execution queue.'
+        : 'Miles could not bridge the CEO command to the execution queue.',
+      operation: enqueueResult.operation,
+      enqueueResult
+    };
+  } catch (error) {
+    updateOperation(operation.id, {
+      status: 'BRIDGE_FAILED',
+      bridgeFailedAt: now(),
+      taskQueueStatus: 'FAILED',
+      error: error.message
+    });
+    log('ERROR', 'Command bridge failed.', {
+      operationId: operation.id,
+      error: error.message
+    });
+    return {
+      ok: false,
+      status: 'BRIDGE_FAILED',
+      operation,
+      enqueueResult: {
+        ok: false,
+        status: 'BRIDGE_FAILED',
+        operationId: operation.id,
+        taskId: null,
+        error: error.message
+      }
+    };
+  }
+}
 
+function normalizeQueueCounts(queue = {}) {
   return {
-    ok: true,
-    status: 'COMMAND_ACCEPTED',
-    message: operation.approvalRequired
-      ? 'Miles created a CEO approval item.'
-      : 'Miles accepted the work, planned the intent, and added it to the operations queue.',
-    operation,
-    enqueueResult
+    total: Number(queue.total || 0),
+    queued: Number(queue.queued ?? queue.pending ?? 0),
+    running: Number(queue.running || 0),
+    completed: Number(queue.completed || 0),
+    failed: Number(queue.failed || 0),
+    awaitingApproval: Number(queue.awaitingApproval || 0),
+    other: Number(queue.other || 0),
+    healthScore: queue.healthScore == null ? null : Number(queue.healthScore)
   };
 }
 
-function page() {
-  const file = path.join(
-    __dirname,
-    'public',
-    'index.html'
-  );
+function workerRuntimeQueueSummary() {
+  const status = readJson(WORKER_STATUS_FILE, null);
+  if (!status || !status.queue || typeof status.queue !== 'object') return null;
 
-  return fs.readFileSync(file, 'utf8');
+  const generatedAt = status.generatedAt || null;
+  const timestamp = new Date(generatedAt || 0).getTime();
+  const ageMs = Number.isFinite(timestamp) && timestamp > 0
+    ? Math.max(0, Date.now() - timestamp)
+    : Number.MAX_SAFE_INTEGER;
+
+  return {
+    ok: true,
+    ...normalizeQueueCounts(status.queue),
+    source: 'WORKER_RUNTIME_STATUS',
+    generatedAt,
+    ageMs,
+    stale: ageMs > WORKER_STATUS_MAX_AGE_MS,
+    lockFree: true
+  };
 }
 
-function sendStaticFile(res, file, contentType) {
-  try {
-    const contents = fs.readFileSync(file);
+function summarizeTaskArray(items) {
+  const counts = {
+    total: items.length,
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0,
+    healthScore: null
+  };
 
-    res.writeHead(200, {
-      'Content-Type': contentType,
-      'Cache-Control': 'no-store'
-    });
-
-    res.end(contents);
-  } catch (error) {
-    log('ERROR', 'Static asset serving failed', {
-      file,
-      error: error.message
-    });
-
-    res.writeHead(500, {
-      'Content-Type': 'text/plain; charset=utf-8'
-    });
-
-    res.end('Unable to load static asset.');
+  for (const item of items) {
+    const status = String(item?.status || '').toUpperCase();
+    if (['QUEUED', 'READY', 'PENDING'].includes(status)) counts.queued += 1;
+    else if (['RUNNING', 'IN_PROGRESS'].includes(status)) counts.running += 1;
+    else if (['COMPLETED', 'COMPLETE'].includes(status)) counts.completed += 1;
+    else if (status === 'FAILED') counts.failed += 1;
+    else if (['AWAITING_APPROVAL', 'AWAITING_CEO_APPROVAL'].includes(status)) counts.awaitingApproval += 1;
+    else counts.other += 1;
   }
+
+  return counts;
 }
 
-async function start() {
-  const hostStart = await host.start();
+function directTaskQueueSnapshotSummary() {
+  const errors = [];
+  for (const candidate of [TASK_QUEUE_FILE, TASK_QUEUE_LAST_GOOD_FILE]) {
+    try {
+      if (!fs.existsSync(candidate)) continue;
+      const text = fs.readFileSync(candidate, 'utf8').replace(/^\uFEFF/, '').trim();
+      const items = text ? JSON.parse(text) : [];
+      if (!Array.isArray(items)) throw new Error('Task queue root is not an array.');
+      return {
+        ok: true,
+        ...summarizeTaskArray(items),
+        source: candidate === TASK_QUEUE_FILE ? 'TASK_QUEUE_ATOMIC_SNAPSHOT' : 'TASK_QUEUE_LAST_GOOD_SNAPSHOT',
+        generatedAt: now(),
+        fileBytes: Buffer.byteLength(text),
+        stale: candidate !== TASK_QUEUE_FILE,
+        lockFree: true
+      };
+    } catch (error) {
+      errors.push(`${candidate}: ${error.message}`);
+    }
+  }
 
-  if (!hostStart || hostStart.ok === false) {
-    throw new Error(
-      `Digital COO host failed to start: ${
-        (hostStart && (hostStart.error || hostStart.status)) ||
-        'unknown error'
-      }`
+  return {
+    ok: false,
+    total: 0,
+    queued: 0,
+    running: 0,
+    completed: 0,
+    failed: 0,
+    awaitingApproval: 0,
+    other: 0,
+    healthScore: null,
+    source: 'NO_READABLE_QUEUE_SNAPSHOT',
+    stale: true,
+    lockFree: true,
+    error: errors.join(' | ') || 'No task queue snapshot found.'
+  };
+}
+
+function taskQueueSummary() {
+  const current = Date.now();
+  if (
+    taskQueueSummaryCache.value &&
+    current - taskQueueSummaryCache.at <= CONTROL_PLANE_CACHE_MS
+  ) {
+    return { ...taskQueueSummaryCache.value, cacheHit: true };
+  }
+
+  const workerSnapshot = workerRuntimeQueueSummary();
+  let summary = workerSnapshot && !workerSnapshot.stale
+    ? workerSnapshot
+    : directTaskQueueSnapshotSummary();
+
+  if (!summary.ok && workerSnapshot) {
+    summary = {
+      ...workerSnapshot,
+      fallbackWarning: summary.error || 'Direct task queue snapshot unavailable.'
+    };
+  }
+
+  taskQueueSummaryCache = { at: current, value: summary };
+  return { ...summary, cacheHit: false };
+}
+
+function buildDepartments() {
+  let employees = [];
+  try { employees = workforce.all(); } catch {}
+  return CANONICAL_DEPARTMENTS.map(name => {
+    const needle = name.toLowerCase().replace(/ operations| intelligence| strategy| delivery/g, '').trim();
+    const workers = employees.filter(employee =>
+      String(employee.department || '').toLowerCase().includes(needle) ||
+      String(employee.role || '').toLowerCase().includes(needle)
     );
+    return {
+      name,
+      status: 'REGISTERED',
+      health: workers.length ? 'WORKFORCE_MAPPED' : 'CONTROL_PLANE_READY',
+      workerCount: workers.length,
+      workers: workers.slice(0, 8)
+        .map(employee => employee.name || employee.employee || employee.id)
+        .filter(Boolean)
+    };
+  });
+}
+
+function workforceStatus() {
+  try { return workforce.status(); }
+  catch (error) { return { ok: false, error: error.message }; }
+}
+
+function healthPayload() {
+  const queue = taskQueueSummary();
+  const status = workforceStatus();
+  const healthy = queue.ok === true && status?.ok === true;
+  return {
+    ok: healthy,
+    service: 'MILES_COMMAND_CENTER',
+    status: healthy ? 'HEALTHY' : 'DEGRADED',
+    architecture: 'LEAN_CONTROL_PLANE',
+    executionOwner: 'miles-worker',
+    autonomousOwner: 'miles-autonomous-coo',
+    port: PORT,
+    pid: process.pid,
+    taskQueue: queue,
+    workforce: status,
+    bridge: bridge.getStatus(),
+    generatedAt: now()
+  };
+}
+
+function dashboardPayload() {
+  const operationSnapshot = dashboardOperationSnapshot();
+  return {
+    ok: true,
+    service: 'MILES_COMMAND_CENTER',
+    status: 'READY',
+    generatedAt: now(),
+    departments: buildDepartments(),
+    taskQueue: taskQueueSummary(),
+    workforce: workforceStatus(),
+    bridge: bridge.getStatus(),
+    operations: operationSnapshot.operations,
+    operationSnapshot: operationSnapshot.metadata,
+    surfaces: {
+      commandCenter: 'http://127.0.0.1:8787',
+      ceoDashboard: 'http://127.0.0.1:8737',
+      desktop: 'http://127.0.0.1:3737',
+      prospectDemo: 'http://127.0.0.1:8791',
+      customerDelivery: 'http://127.0.0.1:8792'
+    }
+  };
+}
+
+function demoPayload() {
+  return {
+    ok: true,
+    service: 'MILES_COMMAND_CENTER',
+    status: 'DEMO_CONTROL_READY',
+    readOnly: true,
+    writesEnabled: false,
+    prospectDemo: {
+      url: 'http://127.0.0.1:8791',
+      purpose: 'P2GC Executive Government Growth Blueprint prospect demonstration'
+    },
+    customerDelivery: {
+      url: 'http://127.0.0.1:8792',
+      purpose: 'P2GC customer delivery and revenue command layer'
+    },
+    generatedAt: now()
+  };
+}
+
+function operationResponse(operationId) {
+  return executiveResponses.getResponse(operationId);
+}
+
+function approveOperation(operationId, reason = '') {
+  const queue = queueState();
+  const operation = queue.operations.find(item => item && item.id === operationId);
+  if (!operation) return { ok: false, status: 'NOT_FOUND', operationId };
+  if (!['AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL'].includes(String(operation.status || '').toUpperCase())) {
+    return { ok: false, status: 'INVALID_STATUS', operationId, currentStatus: operation.status };
   }
+  const approved = updateOperation(operationId, {
+    status: 'READY',
+    approvalDecision: 'APPROVED',
+    approvedBy: 'CEO',
+    approvedAt: now(),
+    approvalReason: reason
+  });
+  try {
+    const enqueueResult = bridgeOperation(approved);
+    return {
+      ok: enqueueResult.ok,
+      status: enqueueResult.ok ? 'APPROVED_AND_BRIDGED' : 'APPROVED_BRIDGE_FAILED',
+      operation: enqueueResult.operation,
+      enqueueResult
+    };
+  } catch (error) {
+    updateOperation(operationId, { status: 'BRIDGE_FAILED', error: error.message });
+    return { ok: false, status: 'APPROVED_BRIDGE_FAILED', operationId, error: error.message };
+  }
+}
 
-  const server = http.createServer(async (req, res) => {
-    if (req.method === 'GET' && req.url === '/api/health') {
-      try {
-        const health = await host.healthCheck();
-        res.writeHead(health.ok ? 200 : 503, {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store'
-        });
-        res.end(JSON.stringify(health, null, 2));
-      } catch (error) {
-        res.writeHead(503, {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store'
-        });
-        res.end(JSON.stringify({ ok: false, status: 'HEALTH_FAILED', error: error.message }, null, 2));
+function rejectOperation(operationId, reason = '') {
+  const operation = updateOperation(operationId, {
+    status: 'REJECTED',
+    approvalDecision: 'REJECTED',
+    rejectedBy: 'CEO',
+    rejectedAt: now(),
+    approvalReason: reason
+  });
+  return operation
+    ? { ok: true, status: 'REJECTED', operation }
+    : { ok: false, status: 'NOT_FOUND', operationId };
+}
+
+const server = http.createServer(async (req, res) => {
+  try {
+    const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
+
+    if (req.method === 'GET' && url.pathname === '/api/health') {
+      const health = healthPayload();
+      sendJson(res, health.ok ? 200 : 503, health);
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/dashboard') {
+      sendJson(res, 200, dashboardPayload());
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/demo') {
+      sendJson(res, 200, demoPayload());
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/operation') {
+      const operationId = url.searchParams.get('id');
+      if (!operationId) {
+        sendJson(res, 400, { ok: false, status: 'OPERATION_ID_REQUIRED' });
+        return;
       }
+      const result = operationResponse(operationId);
+      sendJson(res, result?.ok ? 200 : 404, result);
       return;
     }
 
-    if (req.method === 'GET' && req.url === '/') {
-      try {
-        res.writeHead(200, {
-          'Content-Type': 'text/html; charset=utf-8',
-          'Cache-Control': 'no-store'
-        });
-
-        res.end(page());
-      } catch (error) {
-        log('ERROR', 'Command Center page failed', {
-          error: error.message
-        });
-
-        res.writeHead(500, {
-          'Content-Type': 'text/plain; charset=utf-8'
-        });
-
-        res.end('Unable to load Miles Command Center.');
+    if (req.method === 'POST' && url.pathname === '/api/command') {
+      const raw = await readBody(req);
+      let payload;
+      try { payload = JSON.parse(raw || '{}'); }
+      catch {
+        sendJson(res, 400, { ok: false, status: 'INVALID_JSON' });
+        return;
       }
-
+      const result = await handleCommand(payload.command);
+      sendJson(res, result.ok ? 200 : 500, result);
       return;
     }
 
-    if (
-      req.method === 'GET' &&
-      req.url === '/app.js'
-    ) {
-      const file = path.join(
-        __dirname,
-        'public',
-        'app.js'
-      );
-
-      sendStaticFile(
-        res,
-        file,
-        'application/javascript; charset=utf-8'
-      );
-
+    if (req.method === 'POST' && url.pathname.startsWith('/api/operations/')) {
+      const segments = url.pathname.split('/').filter(Boolean);
+      const operationId = segments[2];
+      const action = segments[3];
+      if (!operationId || !['approve', 'reject'].includes(action || '')) {
+        sendJson(res, 400, { ok: false, status: 'INVALID_OPERATION_ACTION' });
+        return;
+      }
+      const raw = await readBody(req);
+      let payload = {};
+      try { payload = JSON.parse(raw || '{}'); } catch {}
+      const result = action === 'approve'
+        ? approveOperation(operationId, payload.reason || '')
+        : rejectOperation(operationId, payload.reason || '');
+      sendJson(res, result.ok ? 200 : 400, result);
       return;
     }
 
-    if (
-      req.method === 'GET' &&
-      req.url === '/styles.css'
-    ) {
-      const file = path.join(
-        __dirname,
-        'public',
-        'styles.css'
-      );
-
-      sendStaticFile(
-        res,
-        file,
-        'text/css; charset=utf-8'
-      );
-
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
+      sendFile(res, path.join(PUBLIC_DIR, 'index.html'), 'text/html; charset=utf-8');
       return;
     }
 
-    if (
-      req.method === 'GET' &&
-      req.url === '/favicon.ico'
-    ) {
-      res.writeHead(204);
+    if (req.method === 'GET' && url.pathname === '/app.js') {
+      sendFile(res, path.join(PUBLIC_DIR, 'app.js'), 'application/javascript; charset=utf-8');
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/styles.css') {
+      sendFile(res, path.join(PUBLIC_DIR, 'styles.css'), 'text/css; charset=utf-8');
+      return;
+    }
+
+    if (req.method === 'GET' && url.pathname === '/favicon.ico') {
+      res.writeHead(204, { 'Cache-Control': 'no-store' });
       res.end();
       return;
     }
 
-    if (
-      req.method === 'GET' &&
-      req.url.startsWith('/api/operation')
-    ) {
-      try {
-        const url = new URL(
-          req.url,
-          `http://localhost:${PORT}`
-        );
-
-        const id = url.searchParams.get('id');
-
-        const result = executiveResponses.getResponse(id);
-
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        });
-
-        res.end(JSON.stringify(result, null, 2));
-      } catch (error) {
-        log('ERROR', 'Operation response failed', {
-          error: error.message
-        });
-
-        res.writeHead(500, {
-          'Content-Type': 'application/json'
-        });
-
-        res.end(
-          JSON.stringify(
-            {
-              ok: false,
-              error: error.message
-            },
-            null,
-            2
-          )
-        );
-      }
-
-      return;
-    }
-
-    if (
-      req.method === 'POST' &&
-      req.url.startsWith('/api/operations/')
-    ) {
-      try {
-        const url = new URL(
-          req.url,
-          `http://localhost:${PORT}`
-        );
-
-        const segments = url.pathname
-          .split('/')
-          .filter(Boolean);
-
-        const operationId = segments[2];
-        const action = segments[3];
-
-        if (
-          !operationId ||
-          !['approve', 'reject'].includes(action || '')
-        ) {
-          res.writeHead(400, {
-            'Content-Type': 'application/json'
-          });
-
-          res.end(
-            JSON.stringify(
-              {
-                ok: false,
-                error: 'Invalid operation action'
-              },
-              null,
-              2
-            )
-          );
-
-          return;
-        }
-
-        let body = '';
-
-        req.on('data', (chunk) => {
-          body += chunk;
-        });
-
-        req.on('end', async () => {
-          try {
-            const payload = JSON.parse(body || '{}');
-
-            const result = action === 'approve'
-              ? await executiveResponses.approveOperation(
-                operationId,
-                payload.reason || ''
-              )
-              : await executiveResponses.rejectOperation(
-                operationId,
-                payload.reason || ''
-              );
-
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            });
-
-            res.end(JSON.stringify(result, null, 2));
-          } catch (error) {
-            log('ERROR', 'Operation approval failed', {
-              error: error.message,
-              operationId,
-              action
-            });
-
-            res.writeHead(500, {
-              'Content-Type': 'application/json'
-            });
-
-            res.end(
-              JSON.stringify(
-                {
-                  ok: false,
-                  error: error.message
-                },
-                null,
-                2
-              )
-            );
-          }
-        });
-      } catch (error) {
-        log('ERROR', 'Operation approval route failed', {
-          error: error.message
-        });
-
-        res.writeHead(500, {
-          'Content-Type': 'application/json'
-        });
-
-        res.end(
-          JSON.stringify(
-            {
-              ok: false,
-              error: error.message
-            },
-            null,
-            2
-          )
-        );
-      }
-
-      return;
-    }
-
-    if (
-      req.method === 'POST' &&
-      req.url === '/api/command'
-    ) {
-      let body = '';
-
-      req.on('data', (chunk) => {
-        body += chunk;
-      });
-
-      req.on('end', async () => {
-        try {
-          const payload = JSON.parse(body || '{}');
-
-          const result = await handleCommand(
-            String(payload.command || '').trim()
-          );
-
-          res.writeHead(200, {
-            'Content-Type': 'application/json'
-          });
-
-          res.end(JSON.stringify(result, null, 2));
-        } catch (error) {
-          log('ERROR', 'Command handling failed', {
-            error: error.message
-          });
-
-          res.writeHead(500, {
-            'Content-Type': 'application/json'
-          });
-
-          res.end(
-            JSON.stringify(
-              {
-                ok: false,
-                error: error.message
-              },
-              null,
-              2
-            )
-          );
-        }
-      });
-
-      return;
-    }
-
-    res.writeHead(404, {
-      'Content-Type': 'text/plain; charset=utf-8'
+    sendJson(res, 404, { ok: false, status: 'NOT_FOUND', path: url.pathname });
+  } catch (error) {
+    log('ERROR', 'Unhandled Command Center request failure.', {
+      method: req.method,
+      url: req.url,
+      error: error.stack || error.message
     });
+    sendJson(res, 500, {
+      ok: false,
+      status: 'COMMAND_CENTER_REQUEST_FAILED',
+      error: error.message
+    });
+  }
+});
 
-    res.end('Not found');
-  });
+server.on('clientError', (error, socket) => {
+  log('ERROR', 'HTTP client error.', { error: error.message });
+  try {
+    if (socket.writable) {
+      socket.end('HTTP/1.1 400 Bad Request\r\nConnection: close\r\n\r\n');
+    }
+  } catch {}
+});
 
-  server.listen(PORT, () => {
-    console.log(
-      `Miles Command Center running: http://localhost:${PORT}`
-    );
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`Miles Command Center running: http://127.0.0.1:${PORT}`);
+  console.log('Architecture: lean control plane -> BusinessOperationsBridgeService -> TaskQueue -> miles-worker');
+});
 
-    console.log('Press Ctrl+C to stop.');
-  });
-
-  process.on('SIGINT', async () => {
-    console.log('\nStopping Miles...');
-    await host.stop();
-    process.exit(0);
-  });
+function shutdown(signal) {
+  console.log(`\nStopping Miles Command Center (${signal})...`);
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(0), 5000).unref();
 }
 
-start().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
