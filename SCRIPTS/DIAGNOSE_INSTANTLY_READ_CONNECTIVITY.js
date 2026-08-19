@@ -4,7 +4,8 @@ const path = require('path');
 
 const root = path.resolve(process.argv[2] || process.env.MILES_ROOT || process.cwd());
 process.env.MILES_ROOT = root;
-try { require('dotenv').config({ path: path.join(root, '.env'), override: false, quiet: true }); } catch {}
+const dotenv = require(path.join(root, 'node_modules', 'dotenv'));
+dotenv.config({ path: path.join(root, '.env'), override: false, quiet: true });
 
 const connector = require(path.join(root, 'CONNECTORS', 'INSTANTLY', 'connector.js'));
 
