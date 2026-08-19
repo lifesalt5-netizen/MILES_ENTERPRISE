@@ -5,8 +5,7 @@ on:
     branches:
       - "agent/reconciliation-integration-candidate-20260819"
     paths:
-      - "RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64.part*"
-      - ".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
+      - "RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
 
 permissions:
   contents: write
@@ -26,17 +25,31 @@ jobs:
         run: |
           set -euo pipefail
           PREFIX="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64.part"
+          READY="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
           shopt -s nullglob
           PARTS=("${PREFIX}"*)
-          if (( ${#PARTS[@]} < 2 )); then
-            echo "Integration payload chunks are not fully staged yet; nothing to apply."
-            exit 0
+          if [[ ! -f "$READY" ]]; then
+            echo "Ready marker missing; refusing to assemble payload."
+            exit 3
+          fi
+          if (( ${#PARTS[@]} < 1 )); then
+            echo "Integration payload chunks missing."
+            exit 3
           fi
 
           rm -rf /tmp/miles-integration-payload
           mkdir -p /tmp/miles-integration-payload
           cat "${PREFIX}"* | base64 --decode > /tmp/miles-integration-payload.zip
+
+          EXPECTED_ZIP_SHA="$(tr -d '\r\n ' < "$READY")"
+          ACTUAL_ZIP_SHA="$(sha256sum /tmp/miles-integration-payload.zip | awk '{print $1}')"
+          if [[ -z "$EXPECTED_ZIP_SHA" || "$ACTUAL_ZIP_SHA" != "$EXPECTED_ZIP_SHA" ]]; then
+            echo "Payload ZIP SHA-256 mismatch."
+            echo "Expected: $EXPECTED_ZIP_SHA"
+            echo "Actual:   $ACTUAL_ZIP_SHA"
+            exit 3
+          fi
 
           if unzip -Z1 /tmp/miles-integration-payload.zip | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
             echo "Unsafe ZIP path detected."
@@ -74,6 +87,7 @@ jobs:
           node TESTS/capture_capacity_production_entrypoint_test.js
 
           rm -f "${PREFIX}"*
+          rm -f "$READY"
           rm -f "$BOOTSTRAP"
 
           git config user.name "github-actions[bot]"
