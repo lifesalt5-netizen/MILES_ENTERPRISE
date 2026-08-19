@@ -1,0 +1,28 @@
+name: MILES Permanent Cutover Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/RUN_MILES_PERMANENT_PRODUCTION_CUTOVER_PM2_WINDOWS.ps1"
+      - "TESTS/permanent_cutover_safety_test.js"
+      - ".github/workflows/permanent-cutover-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static permanent cutover safety validation
+        run: node TESTS/permanent_cutover_safety_test.js
