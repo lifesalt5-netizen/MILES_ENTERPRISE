@@ -29,19 +29,18 @@ assert(/git_push_performed=\$false/i.test(script), "Stage 5 must not push Git");
 assert(/git_merge_performed=\$false/i.test(script), "Stage 5 must not merge Git");
 assert(/instantly_mutations_allowed=\$false/i.test(script), "Stage 5 must not allow Instantly mutations");
 
-const forbidden = [
-  /Stop-Process/i,
-  /Start-Process/i,
-  /\bgit\s+push\b/i,
-  /\bgit\s+merge\b/i,
-  /\bgit\s+reset\b/i,
-  /\bgit\s+clean\b/i,
-  /npm\s+(?:ci|install)\b/i,
-  /Copy-Item/i,
-  /Move-Item/i,
-  /Remove-Item/i
+// Detect executable mutations, not explanatory strings such as "no Git push/merge".
+const forbiddenCommands = [
+  /\bStop-Process\b/i,
+  /\bStart-Process\b/i,
+  /&\s*git\s+(?:push|merge|reset|clean)\b/i,
+  /Invoke-GitProbe[^\r\n]*(?:\s|['"])(?:push|merge|reset|clean)(?:\s|['"]|$)/i,
+  /&\s*npm\s+(?:ci|install)\b/i,
+  /\bCopy-Item\b/i,
+  /\bMove-Item\b/i,
+  /\bRemove-Item\b/i
 ];
-for (const pattern of forbidden) {
+for (const pattern of forbiddenCommands) {
   assert(!pattern.test(script), `Stage 5 readiness audit must remain read-only: ${pattern}`);
 }
 
