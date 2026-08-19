@@ -1,0 +1,21 @@
+name: MILES Reconciliation Stage 1 Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RUN_MILES_RECONCILIATION_STAGE1.ps1'
+      - 'TESTS/reconciliation_stage1_safety_test.js'
+      - '.github/workflows/reconciliation-stage1-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Static safety validation
+        run: node TESTS/reconciliation_stage1_safety_test.js
