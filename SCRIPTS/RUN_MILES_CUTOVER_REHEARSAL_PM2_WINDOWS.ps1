@@ -29,16 +29,43 @@ function Get-Pm2Apps {
     if (-not (Get-Command pm2 -ErrorAction SilentlyContinue)) {
         throw 'pm2 command not found in PATH.'
     }
+    if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+        throw 'node command not found in PATH.'
+    }
 
-    $lines = @(& pm2 jlist 2>$null)
-    if ($LASTEXITCODE -ne 0) { throw 'pm2 jlist failed.' }
-    $raw = ($lines | ForEach-Object { [string]$_ }) -join "`n"
-    if (-not $raw.Trim()) { throw 'pm2 jlist returned no data.' }
-
+    $rawPath = Join-Path $env:TEMP ("MILES_PM2_JLIST_{0}.json" -f ([guid]::NewGuid().ToString('N')))
     try {
-        return @($raw | ConvertFrom-Json)
-    } catch {
-        throw "Unable to parse pm2 jlist JSON: $($_.Exception.Message)"
+        $rawLines = @(& pm2 jlist 2>$null)
+        if ($LASTEXITCODE -ne 0) { throw 'pm2 jlist failed.' }
+        $raw = ($rawLines | ForEach-Object { [string]$_ }) -join "`n"
+        if (-not $raw.Trim()) { throw 'pm2 jlist returned no data.' }
+        [System.IO.File]::WriteAllText($rawPath, $raw, [System.Text.Encoding]::UTF8)
+
+        # Windows PowerShell ConvertFrom-Json is case-insensitive and rejects PM2 env
+        # objects that legitimately contain both keys such as username and USERNAME.
+        # Node parses the original JSON and projects only the fields this rehearsal needs.
+        $nodeScript = 'const fs=require("fs");const a=JSON.parse(fs.readFileSync(process.argv[1],"utf8").replace(/^\uFEFF/,""));const clean=v=>String(v??"").replace(/[\t\r\n]/g," ");for(const x of a){const e=x.pm2_env||{};console.log([x.pid??"",x.pm_id??"",clean(x.name),clean(e.status),clean(e.pm_cwd),clean(e.pm_exec_path)].join("\t"));}'
+        $projected = @(& node -e $nodeScript $rawPath 2>$null)
+        if ($LASTEXITCODE -ne 0) { throw 'Node failed to parse/project pm2 jlist JSON.' }
+
+        $apps = @()
+        foreach ($line in $projected) {
+            if (-not ([string]$line).Trim()) { continue }
+            $parts = ([string]$line) -split "`t", 6
+            if ($parts.Count -ne 6) { throw "Invalid PM2 projection row: $line" }
+            $apps += [pscustomobject]@{
+                pid = if($parts[0]){[int]$parts[0]}else{0}
+                pm_id = if($parts[1]){[int]$parts[1]}else{-1}
+                name = [string]$parts[2]
+                status = [string]$parts[3]
+                pm_cwd = [string]$parts[4]
+                pm_exec_path = [string]$parts[5]
+            }
+        }
+        return @($apps)
+    }
+    finally {
+        Remove-Item -LiteralPath $rawPath -Force -ErrorAction SilentlyContinue
     }
 }
 
@@ -66,8 +93,8 @@ function Resolve-Pm2MilesOwners {
         }
 
         $app = $matches[0]
-        $cwd = [string]$app.pm2_env.pm_cwd
-        $execPath = [string]$app.pm2_env.pm_exec_path
+        $cwd = [string]$app.pm_cwd
+        $execPath = [string]$app.pm_exec_path
         $rootOwned = (Test-PathInsideRoot $cwd $LiveRoot) -or (Test-PathInsideRoot $execPath $LiveRoot)
         if (-not $rootOwned) {
             throw "Refusing to stop PM2 app '$($app.name)' id=$($app.pm_id) for port $($owner.port): cwd/exec path is outside live MILES root. cwd=$cwd exec=$execPath"
@@ -78,7 +105,7 @@ function Resolve-Pm2MilesOwners {
             pid=[int]$owner.pid
             pm_id=[int]$app.pm_id
             name=[string]$app.name
-            status=[string]$app.pm2_env.status
+            status=[string]$app.status
             cwd=$cwd
             exec_path=$execPath
         }
