@@ -26,6 +26,10 @@ assert(/INSTANTLY_API_KEY/i.test(script), "Audit must inspect Instantly credenti
 assert(/env_values_read_or_reported=\$false/i.test(script), "Audit must not report environment values");
 assert(/mojibake_detected/i.test(script), "Audit must detect dashboard mojibake");
 assert(/0x0393/i.test(script) && /0xFFFD/i.test(script), "Audit must detect mojibake using encoding-safe character codes");
+assert(/\$dashboardHttpOk/i.test(script), "Audit must normalize dashboard HTTP health to an explicit boolean");
+assert(/\$dashboardStateOk/i.test(script), "Audit must normalize dashboard state health to an explicit boolean");
+assert(!/Invoke-HttpProbe\s+'[^']+'\s*,/i.test(script), "HTTP probe statements must not use trailing commas in Windows PowerShell");
+assert(/BLOCKER:/i.test(script) && /WARNING:/i.test(script), "Audit must print blocker and warning names, not counts only");
 assert(/reply_global_suppression_connector_test/i.test(script), "Audit must verify reply/global suppression safety coverage exists");
 assert(/winback_production_loop_test/i.test(script), "Audit must verify Win-Back safety coverage exists");
 assert(/capture_capacity_production_loop_test/i.test(script), "Audit must verify Capture Capacity safety coverage exists");
