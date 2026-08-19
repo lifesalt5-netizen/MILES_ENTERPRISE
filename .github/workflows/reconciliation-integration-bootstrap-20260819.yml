@@ -24,8 +24,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          CHUNKS="RECONCILIATION/payload_chunks"
-          ZIP="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip"
+          CHUNKS="RECONCILIATION/payload_xz_chunks"
+          ARCHIVE="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.tar.xz"
           READY="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
 
@@ -35,26 +35,20 @@ jobs:
           fi
 
           cat "$CHUNKS"/part-*.b64 > /tmp/miles-integration-payload.b64
-          base64 --decode /tmp/miles-integration-payload.b64 > "$ZIP"
+          base64 --decode /tmp/miles-integration-payload.b64 > "$ARCHIVE"
 
-          EXPECTED_ZIP_SHA="$(tr -d '\r\n ' < "$READY")"
-          ACTUAL_ZIP_SHA="$(sha256sum "$ZIP" | awk '{print $1}')"
-          if [[ -z "$EXPECTED_ZIP_SHA" || "$ACTUAL_ZIP_SHA" != "$EXPECTED_ZIP_SHA" ]]; then
-            echo "Payload ZIP SHA-256 mismatch."
-            echo "Expected: $EXPECTED_ZIP_SHA"
-            echo "Actual:   $ACTUAL_ZIP_SHA"
+          EXPECTED_SHA="$(tr -d '\r\n ' < "$READY")"
+          ACTUAL_SHA="$(sha256sum "$ARCHIVE" | awk '{print $1}')"
+          if [[ -z "$EXPECTED_SHA" || "$ACTUAL_SHA" != "$EXPECTED_SHA" ]]; then
+            echo "Payload archive SHA-256 mismatch."
+            echo "Expected: $EXPECTED_SHA"
+            echo "Actual:   $ACTUAL_SHA"
             exit 3
           fi
 
           rm -rf /tmp/miles-integration-payload
           mkdir -p /tmp/miles-integration-payload
-
-          if unzip -Z1 "$ZIP" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
-            echo "Unsafe ZIP path detected."
-            exit 3
-          fi
-
-          unzip -q "$ZIP" -d /tmp/miles-integration-payload
+          tar -xJf "$ARCHIVE" -C /tmp/miles-integration-payload
 
           pushd /tmp/miles-integration-payload >/dev/null
           node TESTS/reconciliation_integration_candidate_manifest_test.js
@@ -85,7 +79,8 @@ jobs:
           node TESTS/capture_capacity_production_entrypoint_test.js
 
           rm -rf "$CHUNKS"
-          rm -f "$ZIP"
+          rm -rf "RECONCILIATION/payload_chunks"
+          rm -f "$ARCHIVE"
           rm -f "$READY"
           rm -f "$BOOTSTRAP"
 
