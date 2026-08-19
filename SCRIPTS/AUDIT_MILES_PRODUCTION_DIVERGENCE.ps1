@@ -6,8 +6,19 @@ $ErrorActionPreference = "Stop"
 
 function Invoke-GitText {
     param([Parameter(ValueFromRemainingArguments=$true)][string[]]$Args)
-    $output = & git @Args 2>&1
-    $code = $LASTEXITCODE
+
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        # Native programs such as git may write informational text to stderr even
+        # when the command succeeds. With ErrorActionPreference=Stop PowerShell
+        # can otherwise convert that harmless stderr into a terminating error.
+        $ErrorActionPreference = "Continue"
+        $output = & git @Args 2>&1
+        $code = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
     if ($code -ne 0) {
         throw "git $($Args -join ' ') failed with exit code $code`n$($output -join "`n")"
     }
@@ -44,8 +55,14 @@ Write-Host "Repository: $RepoRoot"
 Write-Host "No working-tree integration action will be performed."
 
 # Refresh remote metadata only. This does not alter the checked-out files.
-$fetchOutput = & git fetch origin main 2>&1
-$fetchExit = $LASTEXITCODE
+$previousErrorActionPreference = $ErrorActionPreference
+try {
+    $ErrorActionPreference = "Continue"
+    $fetchOutput = & git fetch origin main 2>&1
+    $fetchExit = $LASTEXITCODE
+} finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+}
 if ($fetchExit -ne 0) {
     Write-Warning "git fetch origin main failed; audit will use the currently cached origin/main ref."
 }

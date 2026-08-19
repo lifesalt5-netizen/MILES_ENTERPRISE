@@ -15,6 +15,8 @@ assert(/HEAD\.\.origin\/main/i.test(text), "audit should list remote-only commit
 assert(/status --porcelain/i.test(text), "audit should capture working-tree changes");
 assert(/Get-CimInstance Win32_Process/i.test(text), "audit should inspect running Node processes");
 assert(/MILES_PRODUCTION_RECONCILIATION_/i.test(text), "audit should write reports outside the repository");
+assert(/\$ErrorActionPreference\s*=\s*"Continue"/i.test(text), "native git stderr should not terminate the audit when git exits successfully");
+assert(/\$fetchExit\s*=\s*\$LASTEXITCODE/i.test(text), "fetch success/failure must be determined by git exit code");
 
 const forbidden = [
   /\bgit\s+merge\b/i,
