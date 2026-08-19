@@ -122,19 +122,23 @@ $ports = @(3000,8787,3737,8737)
 $portRows = @($ports | ForEach-Object { Get-PortState $_ })
 $portsReady = (@($portRows | Where-Object { -not $_.listening }).Count -eq 0)
 
+# Each probe is a separate PowerShell statement. Do not use trailing commas here;
+# Windows PowerShell can bind the following expression into the Url argument.
 $httpRows = @(
-    Invoke-HttpProbe 'http://127.0.0.1:3000/',
-    Invoke-HttpProbe 'http://127.0.0.1:8787/',
-    Invoke-HttpProbe 'http://127.0.0.1:3737/',
-    Invoke-HttpProbe 'http://127.0.0.1:8737/',
-    Invoke-HttpProbe 'http://127.0.0.1:8737/api/state'
+    (Invoke-HttpProbe -Url 'http://127.0.0.1:3000/')
+    (Invoke-HttpProbe -Url 'http://127.0.0.1:8787/')
+    (Invoke-HttpProbe -Url 'http://127.0.0.1:3737/')
+    (Invoke-HttpProbe -Url 'http://127.0.0.1:8737/')
+    (Invoke-HttpProbe -Url 'http://127.0.0.1:8737/api/state')
 )
 
-$dashboardRoot = @($httpRows | Where-Object { $_.url -eq 'http://127.0.0.1:8737/' })[0]
-$dashboardState = @($httpRows | Where-Object { $_.url -eq 'http://127.0.0.1:8737/api/state' })[0]
-$dashboardMojibake = (Test-Mojibake $dashboardRoot.body)
+$dashboardRoot = $httpRows | Where-Object { $_.url -eq 'http://127.0.0.1:8737/' } | Select-Object -First 1
+$dashboardState = $httpRows | Where-Object { $_.url -eq 'http://127.0.0.1:8737/api/state' } | Select-Object -First 1
+$dashboardHttpOk = [bool]($dashboardRoot -and $dashboardRoot.ok)
+$dashboardStateOk = [bool]($dashboardState -and $dashboardState.ok)
+$dashboardMojibake = if ($dashboardRoot) { [bool](Test-Mojibake ([string]$dashboardRoot.body)) } else { $false }
 $dashboardStateJson = $null
-if ($dashboardState.ok -and $dashboardState.body) {
+if ($dashboardStateOk -and $dashboardState.body) {
     try { $dashboardStateJson = $dashboardState.body | ConvertFrom-Json } catch {}
 }
 
@@ -178,14 +182,14 @@ $hardBlockers = @()
 if (-not $entrypointsReady) { $hardBlockers += 'ENTRYPOINT_MISSING_OR_SYNTAX_FAILED' }
 if (-not $portsReady) { $hardBlockers += 'REQUIRED_PORT_NOT_LISTENING' }
 if (-not $workerRuntimeHealthy) { $hardBlockers += 'WORKER_RUNTIME_STATUS_NOT_HEALTHY' }
-if (-not $dashboardRoot.ok) { $hardBlockers += 'EXECUTIVE_DASHBOARD_HTTP_NOT_HEALTHY' }
+if (-not $dashboardHttpOk) { $hardBlockers += 'EXECUTIVE_DASHBOARD_HTTP_NOT_HEALTHY' }
 if ($dashboardMojibake) { $hardBlockers += 'EXECUTIVE_DASHBOARD_MOJIBAKE_DETECTED' }
 
 $warnings = @()
 if (-not $gitClean) { $warnings += 'LIVE_GIT_WORKTREE_NOT_CLEAN' }
 if (-not $instantlyKeyPresent) { $warnings += 'INSTANTLY_API_KEY_NAME_NOT_AVAILABLE' }
 if (-not $revenueSafetyCoverageReady) { $warnings += 'REVENUE_SAFETY_TEST_FILES_MISSING' }
-if (-not $dashboardState.ok) { $warnings += 'DASHBOARD_API_STATE_NOT_HEALTHY' }
+if (-not $dashboardStateOk) { $warnings += 'DASHBOARD_API_STATE_NOT_HEALTHY' }
 
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 $outDir = Join-Path $env:TEMP "MILES_PRODUCTION_ACCEPTANCE_$stamp"
@@ -208,8 +212,8 @@ $report = [ordered]@{
     worker_runtime_status_file=$workerStatusPath
     worker_runtime_healthy=$workerRuntimeHealthy
     dashboard=[ordered]@{
-        http_ok=[bool]$dashboardRoot.ok
-        api_state_ok=[bool]$dashboardState.ok
+        http_ok=$dashboardHttpOk
+        api_state_ok=$dashboardStateOk
         mojibake_detected=$dashboardMojibake
         state_generated_at=if($dashboardStateJson){[string]$dashboardStateJson.generatedAt}else{''}
     }
@@ -243,8 +247,8 @@ $summary = @(
     "Entrypoints ready: $entrypointsReady",
     "Required ports ready: $portsReady",
     "Worker runtime healthy: $workerRuntimeHealthy",
-    "Dashboard HTTP healthy: $($dashboardRoot.ok)",
-    "Dashboard API state healthy: $($dashboardState.ok)",
+    "Dashboard HTTP healthy: $dashboardHttpOk",
+    "Dashboard API state healthy: $dashboardStateOk",
     "Dashboard mojibake detected: $dashboardMojibake",
     "Instantly API key name available: $instantlyKeyPresent",
     "Revenue safety coverage ready: $revenueSafetyCoverageReady",
@@ -265,12 +269,17 @@ Write-Host "Ready for daily use: $($report.ready_for_daily_use)"
 Write-Host "Entrypoints ready: $entrypointsReady"
 Write-Host "Required ports ready: $portsReady"
 Write-Host "Worker runtime healthy: $workerRuntimeHealthy"
-Write-Host "Dashboard HTTP healthy: $($dashboardRoot.ok)"
-Write-Host "Dashboard API state healthy: $($dashboardState.ok)"
+Write-Host "Dashboard HTTP healthy: $dashboardHttpOk"
+Write-Host "Dashboard API state healthy: $dashboardStateOk"
 Write-Host "Dashboard mojibake detected: $dashboardMojibake"
 Write-Host "Instantly API key name available: $instantlyKeyPresent"
 Write-Host "Hard blockers: $($hardBlockers.Count)"
+if ($hardBlockers.Count -gt 0) { $hardBlockers | ForEach-Object { Write-Host "  BLOCKER: $_" } }
 Write-Host "Warnings: $($warnings.Count)"
+if ($warnings.Count -gt 0) { $warnings | ForEach-Object { Write-Host "  WARNING: $_" } }
+Write-Host ''
+Write-Host 'HTTP probes:'
+$httpRows | ForEach-Object { Write-Host "  $($_.url) -> ok=$($_.ok) status=$($_.status_code)" }
 Write-Host ''
 Write-Host 'Reports:'
 Write-Host "  $jsonPath"
