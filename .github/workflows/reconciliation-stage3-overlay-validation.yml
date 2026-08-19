@@ -1,0 +1,29 @@
+name: MILES Reconciliation Stage 3 Overlay Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/RUN_MILES_RECONCILIATION_STAGE3_OVERLAY.ps1"
+      - "SCRIPTS/MILES_RECONCILIATION_STAGE3_DECISION_TEMPLATE.json"
+      - "TESTS/reconciliation_stage3_overlay_safety_test.js"
+      - ".github/workflows/reconciliation-stage3-overlay-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static safety validation
+        run: node TESTS/reconciliation_stage3_overlay_safety_test.js
