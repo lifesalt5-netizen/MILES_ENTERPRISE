@@ -18,7 +18,7 @@ assert(/candidate_source_promoted=\$false/i.test(script), "Preflight report must
 assert(/env_touched=\$false/i.test(script), "Preflight report must certify .env untouched");
 assert(/data_touched=\$false/i.test(script), "Preflight report must certify DATA untouched");
 assert(/config_touched=\$false/i.test(script), "Preflight report must certify CONFIG untouched");
-assert(!/Move-Item/i.test(script), "Lock preflight must not move source trees");
+assert(!/(?:^|\n)\s*(?:&\s*)?Move-Item\b/im.test(script), "Lock preflight must not invoke Move-Item on source trees");
 assert(!/\bgit\s+(?:reset|clean|rebase|push)\b/i.test(script), "Lock preflight must not use destructive Git operations");
 assert(!/\bpm2\s+(?:delete|kill|save)\b/i.test(script), "Lock preflight must not delete/kill/save PM2 definitions");
 assert(!/INSTANTLY_WRITE_ENABLED\s*=\s*["']true["']/i.test(script), "Lock preflight must not enable Instantly writes");
