@@ -48,7 +48,7 @@ function Get-Pm2Apps {
         # Windows PowerShell ConvertFrom-Json is case-insensitive and rejects PM2 env
         # objects that legitimately contain both keys such as username and USERNAME.
         # A checked-in Node helper parses the original JSON and projects only the
-        # six fields this rehearsal needs. Avoid node -e because Windows quoting is fragile.
+        # six fields this rehearsal needs. Avoid inline eval because Windows quoting is fragile.
         $projected = @(& node $pm2Projector $rawPath 2>$null)
         if ($LASTEXITCODE -ne 0) { throw 'Node PM2 projector failed.' }
 
