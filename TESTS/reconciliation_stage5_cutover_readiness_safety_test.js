@@ -28,6 +28,8 @@ assert(/processes_started=\$false/i.test(script), "Stage 5 must not start proces
 assert(/git_push_performed=\$false/i.test(script), "Stage 5 must not push Git");
 assert(/git_merge_performed=\$false/i.test(script), "Stage 5 must not merge Git");
 assert(/instantly_mutations_allowed=\$false/i.test(script), "Stage 5 must not allow Instantly mutations");
+assert(!/& git @Args 2>&1/i.test(script), "Stage 5 must not merge Git stderr warnings into machine-readable repository state");
+assert(/& git @Args 2>\$null/i.test(script), "Stage 5 must keep Git stderr separate from machine-readable repository state");
 
 // Detect executable mutations, not explanatory strings such as "no Git push/merge".
 const forbiddenCommands = [
