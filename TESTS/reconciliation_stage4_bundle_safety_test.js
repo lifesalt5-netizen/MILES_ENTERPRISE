@@ -21,6 +21,8 @@ assert(/remote_repository_modified=\$false/i.test(script), "Stage 4 must report 
 assert(/git_push_performed=\$false/i.test(script), "Stage 4 must not push");
 assert(/git_merge_performed=\$false/i.test(script), "Stage 4 must not merge");
 assert(/MILES_STAGE4_INTEGRATION_BUNDLE_/i.test(script), "Stage 4 must produce a reviewable ZIP bundle");
+assert(!/& git @Args 2>&1/i.test(script), "Stage 4 must not merge Git stderr warnings into machine-readable path output");
+assert(/& git @Args 2>\$null/i.test(script), "Stage 4 must keep Git stderr separate from machine-readable path output");
 
 const forbidden = [
   /\bgit\s+push\b/i,
