@@ -1,0 +1,27 @@
+{
+  "expected_origin_main": "<COPY origin_main FROM STAGE2 MANIFEST>",
+  "decisions": [
+    {
+      "path": "SERVICES/example-local-preserve-candidate.js",
+      "action": "KEEP_LOCAL",
+      "rationale": "Reviewed local implementation contains required production behavior not present in canonical main."
+    },
+    {
+      "path": "SERVICES/example-remote-preferred.js",
+      "action": "USE_REMOTE",
+      "rationale": "Canonical GitHub implementation supersedes the legacy local version."
+    },
+    {
+      "path": "SERVICES/example-obsolete-local-only.js",
+      "action": "RETIRE",
+      "rationale": "Legacy local-only implementation is obsolete and should not enter the clean runtime."
+    },
+    {
+      "path": "SERVICES/example-semantic-merge.js",
+      "action": "MERGED_SOURCE",
+      "merged_source_path": "C:\\path\\to\\reviewed\\merged\\SERVICES\\example-semantic-merge.js",
+      "expected_merged_sha256": "<SHA256 OF REVIEWED MERGED SOURCE>",
+      "rationale": "Reviewed merge preserves required local behavior while retaining current canonical safeguards."
+    }
+  ]
+}
