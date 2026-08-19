@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - "SCRIPTS/RUN_MILES_PERMANENT_PRODUCTION_CUTOVER_PM2_WINDOWS.ps1"
+      - "SCRIPTS/PREFLIGHT_MILES_INPLACE_CUTOVER_LOCKS_WINDOWS.ps1"
       - "TESTS/permanent_cutover_safety_test.js"
+      - "TESTS/cutover_lock_preflight_safety_test.js"
       - ".github/workflows/permanent-cutover-validation.yml"
   workflow_dispatch:
 
@@ -26,3 +28,6 @@ jobs:
 
       - name: Static permanent cutover safety validation
         run: node TESTS/permanent_cutover_safety_test.js
+
+      - name: Static cutover lock preflight safety validation
+        run: node TESTS/cutover_lock_preflight_safety_test.js
