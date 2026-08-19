@@ -24,14 +24,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          CHUNKS="RECONCILIATION/payload_chunks"
           ZIP="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip"
           READY="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
 
-          if [[ ! -f "$READY" || ! -f "$ZIP" ]]; then
-            echo "Integration ZIP or ready marker missing."
+          if [[ ! -f "$READY" || ! -d "$CHUNKS" ]]; then
+            echo "Integration payload chunks or ready marker missing."
             exit 3
           fi
+
+          cat "$CHUNKS"/part-*.b64 > /tmp/miles-integration-payload.b64
+          base64 --decode /tmp/miles-integration-payload.b64 > "$ZIP"
 
           EXPECTED_ZIP_SHA="$(tr -d '\r\n ' < "$READY")"
           ACTUAL_ZIP_SHA="$(sha256sum "$ZIP" | awk '{print $1}')"
@@ -80,6 +84,7 @@ jobs:
           node TESTS/capture_capacity_production_loop_test.js
           node TESTS/capture_capacity_production_entrypoint_test.js
 
+          rm -rf "$CHUNKS"
           rm -f "$ZIP"
           rm -f "$READY"
           rm -f "$BOOTSTRAP"
