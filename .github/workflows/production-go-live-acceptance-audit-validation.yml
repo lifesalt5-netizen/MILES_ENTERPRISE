@@ -1,0 +1,28 @@
+name: MILES Production Go-Live Acceptance Audit Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1"
+      - "TESTS/production_go_live_acceptance_audit_safety_test.js"
+      - ".github/workflows/production-go-live-acceptance-audit-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Static safety validation
+        run: node TESTS/production_go_live_acceptance_audit_safety_test.js
