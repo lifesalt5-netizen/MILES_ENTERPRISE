@@ -5,7 +5,7 @@ on:
     branches:
       - "agent/reconciliation-integration-candidate-20260819"
     paths:
-      - "RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64"
+      - "RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64.part*"
       - ".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
 
 permissions:
@@ -25,16 +25,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          B64="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64"
+          PREFIX="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64.part"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
-          if [[ ! -f "$B64" ]]; then
-            echo "Integration payload is not staged yet; nothing to apply."
+          shopt -s nullglob
+          PARTS=("${PREFIX}"*)
+          if (( ${#PARTS[@]} < 2 )); then
+            echo "Integration payload chunks are not fully staged yet; nothing to apply."
             exit 0
           fi
 
           rm -rf /tmp/miles-integration-payload
           mkdir -p /tmp/miles-integration-payload
-          base64 --decode "$B64" > /tmp/miles-integration-payload.zip
+          cat "${PREFIX}"* | base64 --decode > /tmp/miles-integration-payload.zip
 
           if unzip -Z1 /tmp/miles-integration-payload.zip | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
             echo "Unsafe ZIP path detected."
@@ -71,7 +73,7 @@ jobs:
           node TESTS/capture_capacity_production_loop_test.js
           node TESTS/capture_capacity_production_entrypoint_test.js
 
-          rm -f "$B64"
+          rm -f "${PREFIX}"*
           rm -f "$BOOTSTRAP"
 
           git config user.name "github-actions[bot]"
