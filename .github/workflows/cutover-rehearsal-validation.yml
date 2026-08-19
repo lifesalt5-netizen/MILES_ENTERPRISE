@@ -7,6 +7,7 @@ on:
       - "StartProductionSystemRehearsal.js"
       - "SCRIPTS/RUN_MILES_CUTOVER_REHEARSAL.ps1"
       - "SCRIPTS/RUN_MILES_CUTOVER_REHEARSAL_WINDOWS.ps1"
+      - "SCRIPTS/RUN_MILES_CUTOVER_REHEARSAL_PM2_WINDOWS.ps1"
       - "TESTS/cutover_rehearsal_safety_test.js"
       - ".github/workflows/cutover-rehearsal-validation.yml"
   workflow_dispatch:
