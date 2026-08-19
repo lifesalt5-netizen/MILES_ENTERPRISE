@@ -6,7 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ports = @(3000,8787,3737,8737)
-$protectedTopLevel = @('DATA','CONFIG','.env')
+$protectedTopLevel = @('DATA','DATABASE','CONFIG','.env')
 $pm2Projector = Join-Path $CandidateRoot 'SCRIPTS\project_pm2_jlist.js'
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 $reportPath = Join-Path $env:TEMP ("MILES_CUTOVER_LOCK_PREFLIGHT_{0}.json" -f $stamp)
@@ -114,7 +114,7 @@ Write-Host "Candidate root: $CandidateRoot"
 Write-Host "PM2 live-root entries to pause: $($pm2Apps.Count)"
 Write-Host "Source/control items to test: $($items.Count)"
 Write-Host 'No candidate source will be promoted.'
-Write-Host 'Protected in place: .env, DATA, CONFIG.'
+Write-Host 'Protected in place: .env, DATA, DATABASE, CONFIG.'
 
 try {
     foreach ($app in $pm2Apps) {
@@ -163,6 +163,7 @@ finally {
         candidate_source_promoted=$false
         env_touched=$false
         data_touched=$false
+        database_touched=$false
         config_touched=$false
     }
     $report | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $reportPath -Encoding UTF8
