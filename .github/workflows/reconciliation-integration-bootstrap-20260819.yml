@@ -20,30 +20,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Decode, validate, apply, test, and commit payload
+      - name: Validate, apply, test, and commit payload
         shell: bash
         run: |
           set -euo pipefail
-          PREFIX="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip.b64.part"
+          ZIP="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.zip"
           READY="RECONCILIATION/MILES_INTEGRATION_PAYLOAD_20260819.ready"
           BOOTSTRAP=".github/workflows/reconciliation-integration-bootstrap-20260819.yml"
-          shopt -s nullglob
-          PARTS=("${PREFIX}"*)
-          if [[ ! -f "$READY" ]]; then
-            echo "Ready marker missing; refusing to assemble payload."
-            exit 3
-          fi
-          if (( ${#PARTS[@]} < 1 )); then
-            echo "Integration payload chunks missing."
-            exit 3
-          fi
 
-          rm -rf /tmp/miles-integration-payload
-          mkdir -p /tmp/miles-integration-payload
-          cat "${PREFIX}"* | base64 --decode > /tmp/miles-integration-payload.zip
+          if [[ ! -f "$READY" || ! -f "$ZIP" ]]; then
+            echo "Integration ZIP or ready marker missing."
+            exit 3
+          fi
 
           EXPECTED_ZIP_SHA="$(tr -d '\r\n ' < "$READY")"
-          ACTUAL_ZIP_SHA="$(sha256sum /tmp/miles-integration-payload.zip | awk '{print $1}')"
+          ACTUAL_ZIP_SHA="$(sha256sum "$ZIP" | awk '{print $1}')"
           if [[ -z "$EXPECTED_ZIP_SHA" || "$ACTUAL_ZIP_SHA" != "$EXPECTED_ZIP_SHA" ]]; then
             echo "Payload ZIP SHA-256 mismatch."
             echo "Expected: $EXPECTED_ZIP_SHA"
@@ -51,12 +42,15 @@ jobs:
             exit 3
           fi
 
-          if unzip -Z1 /tmp/miles-integration-payload.zip | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
+          rm -rf /tmp/miles-integration-payload
+          mkdir -p /tmp/miles-integration-payload
+
+          if unzip -Z1 "$ZIP" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
             echo "Unsafe ZIP path detected."
             exit 3
           fi
 
-          unzip -q /tmp/miles-integration-payload.zip -d /tmp/miles-integration-payload
+          unzip -q "$ZIP" -d /tmp/miles-integration-payload
 
           pushd /tmp/miles-integration-payload >/dev/null
           node TESTS/reconciliation_integration_candidate_manifest_test.js
@@ -86,7 +80,7 @@ jobs:
           node TESTS/capture_capacity_production_loop_test.js
           node TESTS/capture_capacity_production_entrypoint_test.js
 
-          rm -f "${PREFIX}"*
+          rm -f "$ZIP"
           rm -f "$READY"
           rm -f "$BOOTSTRAP"
 
