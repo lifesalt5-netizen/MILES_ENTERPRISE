@@ -1,0 +1,30 @@
+name: MILES Calendly Revenue Pipeline Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/CalendlyRevenuePipelineService.js'
+      - 'SCRIPTS/SYNC_CALENDLY_REVENUE_PIPELINE.js'
+      - '.github/workflows/calendly-revenue-pipeline-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/CalendlyRevenuePipelineService.js
+          node --check SCRIPTS/SYNC_CALENDLY_REVENUE_PIPELINE.js
+      - name: Read-only safety validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Ein "method:[[:space:]]*['\"](POST|PUT|PATCH|DELETE)['\"]|fetch\([^)]*,[^)]*(POST|PUT|PATCH|DELETE)" SERVICES/CalendlyRevenuePipelineService.js SCRIPTS/SYNC_CALENDLY_REVENUE_PIPELINE.js; then
+            echo 'External mutation method found.'
+            exit 1
+          fi
+          echo 'Read-only validation passed.'
