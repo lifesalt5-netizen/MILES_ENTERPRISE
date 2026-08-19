@@ -39,6 +39,14 @@ assert(/actualHead\s+-ne\s+\$ExpectedCommit/i.test(windowsRunner), "Windows laun
 assert(/\$headValues\s*=\s*@\(Get-GitValue/.test(windowsRunner), "Windows launcher patch must force array semantics before indexing HEAD");
 assert(/Expected exactly one candidate HEAD value/.test(windowsRunner), "Windows launcher must require exactly one HEAD value");
 
+assert(/Get-CanonicalPortOwnerDetails/.test(windowsRunner), "Windows launcher must inspect exact canonical port ownership");
+assert(/Get-CimInstance\s+Win32_Process/.test(windowsRunner), "Windows launcher must resolve owning process metadata");
+assert(/Test-MilesRootOwnedCommandLine/.test(windowsRunner), "Windows launcher must qualify a process against MILES roots before stopping it");
+assert(/\$detail\.name\s+-ieq\s+'node\.exe'/.test(windowsRunner), "Only Node processes may receive orphan cleanup");
+assert(/\$detail\.miles_root_owned/.test(windowsRunner), "Orphan cleanup must require MILES root ownership");
+assert(/Refusing to kill unrelated processes/.test(windowsRunner), "Unrelated canonical port owners must block rather than be killed");
+assert(/Assert-CanonicalPortsReleased/.test(windowsRunner), "Windows launcher must prove canonical ports are released before candidate boot");
+
 const forbidden = [
   /\bgit\s+(?:push|reset|clean|checkout|merge)\b/i,
   /INSTANTLY_WRITE_ENABLED\s*=\s*["']true["']/i,
