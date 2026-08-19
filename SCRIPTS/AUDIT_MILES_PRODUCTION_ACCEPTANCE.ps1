@@ -71,7 +71,22 @@ function Read-EnvKeyNames([string]$EnvPath) {
 
 function Test-Mojibake([string]$Text) {
     if (-not $Text) { return $false }
-    return [bool]($Text -match 'Γä|Ã.|Â.|â€™|â€œ|â€|â€“|â€”|ï¿½|�')
+
+    # Keep this source ASCII-only so Windows PowerShell 5.1 cannot corrupt
+    # mojibake detector literals while parsing the audit script.
+    $fragments = @(
+        [string]::Concat([char]0x0393, [char]0x00E4),
+        [string]([char]0x00C3),
+        [string]([char]0x00C2),
+        [string]::Concat([char]0x00E2, [char]0x20AC),
+        [string]::Concat([char]0x00EF, [char]0x00BF, [char]0x00BD),
+        [string]([char]0xFFFD)
+    )
+
+    foreach ($fragment in $fragments) {
+        if ($Text.Contains($fragment)) { return $true }
+    }
+    return $false
 }
 
 if (-not (Test-Path -LiteralPath $Root -PathType Container)) { throw "MILES root not found: $Root" }

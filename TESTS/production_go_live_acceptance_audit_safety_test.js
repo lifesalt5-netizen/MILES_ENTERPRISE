@@ -5,11 +5,14 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const script = fs.readFileSync(
-  path.join(root, "SCRIPTS", "AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1"),
-  "utf8"
-);
+const scriptPath = path.join(root, "SCRIPTS", "AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1");
+const scriptBuffer = fs.readFileSync(scriptPath);
+const script = scriptBuffer.toString("utf8");
 
+assert(
+  [...scriptBuffer].every(byte => byte < 0x80),
+  "Go-live acceptance audit must remain ASCII-only for Windows PowerShell 5.1 parser safety"
+);
 assert(/READ ONLY/i.test(script), "Go-live acceptance audit must be read-only");
 assert(/ready_for_daily_use/i.test(script), "Audit must produce a daily-use readiness decision");
 assert(/3000,8787,3737,8737/i.test(script), "Audit must verify the canonical MILES ports");
@@ -22,6 +25,7 @@ assert(/worker_runtime_status\.json/i.test(script), "Audit must inspect worker r
 assert(/INSTANTLY_API_KEY/i.test(script), "Audit must inspect Instantly credential-key availability");
 assert(/env_values_read_or_reported=\$false/i.test(script), "Audit must not report environment values");
 assert(/mojibake_detected/i.test(script), "Audit must detect dashboard mojibake");
+assert(/0x0393/i.test(script) && /0xFFFD/i.test(script), "Audit must detect mojibake using encoding-safe character codes");
 assert(/reply_global_suppression_connector_test/i.test(script), "Audit must verify reply/global suppression safety coverage exists");
 assert(/winback_production_loop_test/i.test(script), "Audit must verify Win-Back safety coverage exists");
 assert(/capture_capacity_production_loop_test/i.test(script), "Audit must verify Capture Capacity safety coverage exists");
