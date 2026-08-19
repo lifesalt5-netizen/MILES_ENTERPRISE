@@ -1,478 +1,61 @@
 "use strict";
 
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const { spawnSync } = require("child_process");
+const fs=require("fs");
+const os=require("os");
+const path=require("path");
+const {spawnSync}=require("child_process");
 
-const WINDOW_START = new Date("2025-09-01T00:00:00Z");
-const WINDOW_END = new Date("2026-05-31T23:59:59Z");
-const DEFAULT_MAX_FILES = 5000;
-const DEFAULT_MAX_DEPTH = 7;
-const DEFAULT_MAX_TEXT_BYTES = 8 * 1024 * 1024;
-const DEFAULT_MAX_XLSX_BYTES = 50 * 1024 * 1024;
-const CANDIDATE_EXTENSIONS = new Set([".md", ".csv", ".txt", ".json", ".xlsx", ".xls", ".xlsb", ".docx"]);
-const SKIP_DIRS = /(?:^|[\\/])(?:node_modules|\.git|runtime|PRODUCTION_CHECKPOINTS|_LEGACY_BUILDS|stabilization_backups|fix_now_backup)(?:[\\/]|$)/i;
+const WINDOW_START=new Date("2025-09-01T00:00:00Z");
+const WINDOW_END=new Date("2026-05-31T23:59:59Z");
+const DEFAULT_MAX_FILES=5000;
+const DEFAULT_MAX_DEPTH=7;
+const DEFAULT_MAX_TEXT_BYTES=8*1024*1024;
+const DEFAULT_MAX_XLSX_BYTES=50*1024*1024;
+const CANDIDATE_EXTENSIONS=new Set([".md",".csv",".txt",".json",".xlsx",".xls",".xlsb",".docx"]);
+const SKIP_DIRS=/(?:^|[\\/])(?:node_modules|\.git|runtime|PRODUCTION_CHECKPOINTS|_LEGACY_BUILDS|stabilization_backups|fix_now_backup)(?:[\\/]|$)/i;
+const EXACT_FILE_SCORES=Object.freeze({"companies.xls.xlsx":120,"contacts209625 (version 1).xlsb.xlsx":125,"master contacts list non gsa fromb12.csv":120,"b12 email statistics.xlsx":105,"response emails for clicked but didnt respond to emails.docx":95,"find website and emails for leads.xlsx":70});
+const NAME_SCORE_RULES=Object.freeze([[/prospect/i,24],[/companies?/i,18],[/contacts?/i,18],[/crm/i,20],[/b12/i,24],[/calendly|calendar/i,18],[/pipeline/i,18],[/response|replied|reply/i,18],[/pitch|proposal|meeting|call/i,16],[/follow.?up/i,14],[/sales/i,10]]);
+const COMPLETED_EVIDENCE=/\b(spoke|talked|conversation|call completed|completed call|meeting completed|met with|zoom with|pitched|presented|proposal sent|sent (?:a )?proposal|discovery call completed|strategy call completed|follow(?:ed)? up after (?:the )?call)\b/i;
+const REACTIVATION_NO_SHOW=/\b(no[ -]?show|did not show|missed (?:the )?(?:call|meeting|appointment))\b/i;
+const REACTIVATION_RESCHEDULE=/\b(rescheduled|reschedule requested|moved (?:the )?(?:call|meeting|appointment))\b/i;
+const WEAK_ENGAGEMENT=/\b(replied|responded|scheduled|appointment|booked|interested|follow.?up)\b/i;
+const HIGH_CONTEXT_PATH=/(?:prospects?|crm|pipeline|calendly|calendar|meeting|call|proposal|response|replied|b12)/i;
 
-const EXACT_FILE_SCORES = Object.freeze({
-  "companies.xls.xlsx": 120,
-  "contacts209625 (version 1).xlsb.xlsx": 125,
-  "master contacts list non gsa fromb12.csv": 120,
-  "b12 email statistics.xlsx": 105,
-  "response emails for clicked but didnt respond to emails.docx": 95,
-  "find website and emails for leads.xlsx": 70
-});
+function clean(value){return String(value??"").replace(/^\uFEFF/,"").trim();}
+function normalize(value){return clean(value).toUpperCase().replace(/&/g," AND ").replace(/[^A-Z0-9]+/g," ").replace(/\s+/g," ").trim();}
+function validEmail(value){return /^\S+@\S+\.\S+$/.test(clean(value));}
+function first(record,keys){for(const key of keys){const value=record?.[key];if(value!==undefined&&value!==null&&clean(value))return value;}return "";}
+function parseCsv(text){const rows=[];let row=[],field="",quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(quoted){if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}else if(ch==='"')quoted=false;else field+=ch;}else if(ch==='"')quoted=true;else if(ch===','){row.push(field);field="";}else if(ch==='\n'){row.push(field);rows.push(row);row=[];field="";}else if(ch!=='\r')field+=ch;}if(field||row.length){row.push(field);rows.push(row);}if(rows.length<2)return[];const headers=rows.shift().map((v,i)=>clean(v)||`column_${i+1}`);return rows.filter(r=>r.some(v=>clean(v))).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));}
+function rowsFromJson(parsed){if(Array.isArray(parsed))return parsed;for(const key of["records","rows","results","data","prospects","contacts","leads","companies"])if(Array.isArray(parsed?.[key]))return parsed[key];return parsed&&typeof parsed==="object"?[parsed]:[];}
+function rowObjectFromArrays(rows=[]){if(!Array.isArray(rows)||rows.length<2)return[];const headers=rows[0].map((v,i)=>clean(v)||`column_${i+1}`);return rows.slice(1).filter(r=>Array.isArray(r)&&r.some(v=>clean(v))).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));}
+function excelSerialDate(value){const n=Number(value);if(!Number.isFinite(n)||n<30000||n>70000)return null;const d=new Date(Date.UTC(1899,11,30)+Math.round(n*86400000));return Number.isNaN(d.getTime())?null:d;}
+function parseDate(value){const text=clean(value);if(!text)return null;const serial=excelSerialDate(text);if(serial)return serial;const d=new Date(text);return Number.isNaN(d.getTime())?null:d;}
+function isoDay(value){const d=value instanceof Date?value:parseDate(value);return d?d.toISOString().slice(0,10):"";}
+function inWindow(date){return date instanceof Date&&date>=WINDOW_START&&date<=WINDOW_END;}
+function evidenceExcerpt(text,max=420){const normalized=clean(text).replace(/\s+/g," ");return normalized.length<=max?normalized:`${normalized.slice(0,max-1)}…`;}
+function labeledValue(text,labels){for(const label of labels){const re=new RegExp(`(?:^|\\n)\\s*(?:[-*]\\s*)?${label}\\s*[:=-]\\s*([^\\n]+)`,`i`);const m=String(text||"").match(re);if(m)return clean(m[1]);}return "";}
+function emailFromText(text){const m=String(text||"").match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);return m?clean(m[0]):"";}
+function candidateFileScore(filePath,obsidianVaults=[]){const lower=filePath.toLowerCase(),name=path.basename(lower);let score=EXACT_FILE_SCORES[name]||0;for(const[pattern,points]of NAME_SCORE_RULES)if(pattern.test(name))score+=points;if(/from b12 042926/i.test(lower))score+=30;if(/p2gc|pathways/i.test(lower))score+=12;if(obsidianVaults.some(v=>lower.startsWith(v.toLowerCase())))score+=22;if(/archive/i.test(lower))score-=4;return score;}
 
-const NAME_SCORE_RULES = Object.freeze([
-  [/prospect/i, 24],
-  [/companies?/i, 18],
-  [/contacts?/i, 18],
-  [/crm/i, 20],
-  [/b12/i, 24],
-  [/calendly|calendar/i, 18],
-  [/pipeline/i, 18],
-  [/response|replied|reply/i, 18],
-  [/pitch|proposal|meeting|call/i, 16],
-  [/follow.?up/i, 14],
-  [/sales/i, 10]
-]);
-
-const COMPLETED_EVIDENCE = /\b(spoke|talked|conversation|call completed|completed call|meeting completed|met with|zoom with|pitched|presented|proposal sent|sent (?:a )?proposal|discovery call completed|strategy call completed|follow(?:ed)? up after (?:the )?call)\b/i;
-const REACTIVATION_NO_SHOW = /\b(no[ -]?show|did not show|missed (?:the )?(?:call|meeting|appointment))\b/i;
-const REACTIVATION_RESCHEDULE = /\b(rescheduled|reschedule requested|moved (?:the )?(?:call|meeting|appointment))\b/i;
-const WEAK_ENGAGEMENT = /\b(replied|responded|clicked|opened|scheduled|appointment|booked|interested|follow.?up)\b/i;
-
-function clean(value) {
-  return String(value ?? "").replace(/^\uFEFF/, "").trim();
+class WinBackLocalHistoryDiscoveryService{
+ constructor(options={}){this.rootDir=path.resolve(options.rootDir||process.env.MILES_ROOT||path.resolve(__dirname,"..",".."));this.env=options.env||process.env;this.platform=options.platform||process.platform;this.homeDir=options.homeDir||os.homedir();this.appData=options.appData||this.env.APPDATA||path.join(this.homeDir,"AppData","Roaming");this.maxFiles=Number(options.maxFiles||DEFAULT_MAX_FILES);this.maxDepth=Number(options.maxDepth||DEFAULT_MAX_DEPTH);this.maxTextBytes=Number(options.maxTextBytes||DEFAULT_MAX_TEXT_BYTES);this.maxXlsxBytes=Number(options.maxXlsxBytes||DEFAULT_MAX_XLSX_BYTES);this.xlsxReader=options.xlsxReader||null;this.outputDir=options.outputDir||path.join(this.rootDir,"DATA","runtime","revenue","winback");this.reportPath=options.reportPath||path.join(this.outputDir,"local_history_discovery_latest.json");this.seedPath=options.seedPath||path.join(this.outputDir,"local_history_seed_latest.json");}
+ discoverObsidianVaults(){const vaults=[];for(const configPath of[clean(this.env.WINBACK_OBSIDIAN_CONFIG),path.join(this.appData,"obsidian","obsidian.json")].filter(Boolean)){if(!fs.existsSync(configPath))continue;try{const parsed=JSON.parse(fs.readFileSync(configPath,"utf8").replace(/^\uFEFF/,""));for(const vault of Object.values(parsed?.vaults||{})){const p=clean(vault?.path||vault);if(p&&fs.existsSync(p))vaults.push(path.resolve(p));}}catch{}}return[...new Set(vaults)];}
+ candidateRoots(obsidianVaults=[]){const configured=clean(this.env.WINBACK_HISTORY_ROOTS).split(path.delimiter).map(clean).filter(Boolean);const common=["C:\\P2GC_Intelligence","D:\\P2GC_Intelligence",path.join(this.homeDir,"Documents"),path.join(this.homeDir,"Desktop"),path.join(this.homeDir,"Downloads"),path.join(this.homeDir,"OneDrive")];return[...configured,...obsidianVaults,...common].map(v=>path.resolve(v)).filter((v,i,a)=>a.indexOf(v)===i).filter(v=>fs.existsSync(v));}
+ walk(root,obsidianVaults,out,depth=0,limit=this.maxFiles*3){if(out.length>=limit||depth>this.maxDepth||!fs.existsSync(root))return;let entries=[];try{entries=fs.readdirSync(root,{withFileTypes:true});}catch{return;}for(const entry of entries){if(out.length>=limit)break;const full=path.join(root,entry.name);if(entry.isDirectory()){if(!SKIP_DIRS.test(full))this.walk(full,obsidianVaults,out,depth+1,limit);continue;}const ext=path.extname(entry.name).toLowerCase();if(!CANDIDATE_EXTENSIONS.has(ext))continue;const score=candidateFileScore(full,obsidianVaults);if(score<=0)continue;let stat;try{stat=fs.statSync(full);}catch{continue;}out.push({filePath:full,extension:ext,score,sizeBytes:stat.size,modifiedAt:stat.mtime.toISOString()});}}
+ findExactTargets(root,out,depth=0){if(depth>this.maxDepth||!fs.existsSync(root))return;let entries=[];try{entries=fs.readdirSync(root,{withFileTypes:true});}catch{return;}for(const entry of entries){const full=path.join(root,entry.name);if(entry.isDirectory()){if(!SKIP_DIRS.test(full))this.findExactTargets(full,out,depth+1);continue;}const name=entry.name.toLowerCase();if(!Object.prototype.hasOwnProperty.call(EXACT_FILE_SCORES,name))continue;let stat;try{stat=fs.statSync(full);}catch{continue;}out.push({filePath:full,extension:path.extname(entry.name).toLowerCase(),score:EXACT_FILE_SCORES[name],sizeBytes:stat.size,modifiedAt:stat.mtime.toISOString()});}}
+ discoverFiles(roots,obsidianVaults){const exact=[],general=[];for(const root of roots)this.findExactTargets(root,exact,0);for(const root of roots)this.walk(root,obsidianVaults,general,0);const unique=[...new Map([...exact,...general].map(item=>[item.filePath.toLowerCase(),item])).values()];return unique.sort((a,b)=>b.score-a.score||b.modifiedAt.localeCompare(a.modifiedAt)).slice(0,this.maxFiles);}
+ readXlsx(filePath){if(this.xlsxReader)return this.xlsxReader(filePath);if(this.platform!=="win32")return{rows:[],error:"XLSX_READER_WINDOWS_ONLY"};if(fs.statSync(filePath).size>this.maxXlsxBytes)return{rows:[],error:"XLSX_TOO_LARGE"};const scriptPath=path.join(this.rootDir,"SCRIPTS","ExtractWinBackXlsx.ps1");if(!fs.existsSync(scriptPath))return{rows:[],error:"XLSX_EXTRACTOR_NOT_FOUND"};const result=spawnSync("powershell.exe",["-NoProfile","-NonInteractive","-ExecutionPolicy","Bypass","-File",scriptPath,"-Path",filePath,"-MaxRows","5000","-MaxSheets","10"],{encoding:"utf8",windowsHide:true,maxBuffer:32*1024*1024});if(result.error)return{rows:[],error:result.error.message};if(result.status!==0)return{rows:[],error:clean(result.stderr)||`POWERSHELL_EXIT_${result.status}`};try{const parsed=JSON.parse(clean(result.stdout)||"[]"),sheets=Array.isArray(parsed)?parsed:[parsed],rows=[];for(const sheet of sheets)rows.push(...rowObjectFromArrays(sheet?.rows||[]));return{rows,error:null};}catch(error){return{rows:[],error:`XLSX_JSON_PARSE_FAILED:${error.message}`};}}
+ readStructured(file){if(file.extension===".xlsx")return this.readXlsx(file.filePath);if([".xls",".xlsb",".docx"].includes(file.extension))return{rows:[],error:`DISCOVERED_UNPARSED:${file.extension}`};if(file.sizeBytes>this.maxTextBytes)return{rows:[],error:"TEXT_FILE_TOO_LARGE"};const text=fs.readFileSync(file.filePath,"utf8").replace(/^\uFEFF/,"");if(file.extension===".csv")return{rows:parseCsv(text),error:null};if(file.extension===".json"){try{return{rows:rowsFromJson(JSON.parse(text)),error:null};}catch(error){return{rows:[],error:`JSON_PARSE_FAILED:${error.message}`};}}const blocks=text.split(/\n\s*\n|(?=^#{1,6}\s+)/m).map(clean).filter(Boolean);return{rows:blocks.map(block=>({_text_block:block})),error:null};}
+ recordText(record={}){if(record._text_block)return clean(record._text_block);return Object.entries(record).filter(([,v])=>typeof v==="string"||typeof v==="number").map(([k,v])=>`${k}: ${v}`).join(" | ");}
+ relationship(text){if(REACTIVATION_NO_SHOW.test(text))return{status:"NO_SHOW",strength:5,evidenceType:"NO_SHOW"};if(REACTIVATION_RESCHEDULE.test(text)&&!COMPLETED_EVIDENCE.test(text))return{status:"RESCHEDULED_UNCONFIRMED",strength:4,evidenceType:"RESCHEDULED"};if(COMPLETED_EVIDENCE.test(text))return{status:"PRIOR_CONVERSATION",strength:5,evidenceType:"COMPLETED_CONVERSATION"};if(WEAK_ENGAGEMENT.test(text))return{status:"STATUS_VALIDATION_REQUIRED",strength:2,evidenceType:"ENGAGEMENT_ONLY"};return{status:"CONTACT_RECORD_ONLY",strength:0,evidenceType:"CONTACT_RECORD_ONLY"};}
+ extractDate(record,text){const direct=first(record,["meeting_date","date","last_contact","Last Contact","last_contact_date","appointment","appointment_date","scheduled_date","created_at","updated_at","follow_up_date","Next Follow-Up"]);const candidates=[direct,...(String(text||"").match(/\b(?:20(?:25|26)[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}[\/]\d{1,2}[\/]20(?:25|26)|(?:Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May)\s+\d{1,2},?\s+20(?:25|26))\b/gi)||[])];for(const candidate of candidates){const parsed=parseDate(candidate);if(parsed)return parsed;}return null;}
+ extractIdentity(record,text){const directName=clean(first(record,["full_name","fullName","contact_name","contactName","Primary Contact","primary_contact","name","poc","POC"])),firstName=clean(first(record,["first_name","firstName","First Name","firstname"])),lastName=clean(first(record,["last_name","lastName","Last Name","lastname"])),labeledName=labeledValue(text,["Contact","Primary Contact","POC","Name"]),fullName=directName||clean(`${firstName} ${lastName}`)||labeledName,email=clean(first(record,["email","Email","work_email","contact_email","email_address"]))||emailFromText(text),company=clean(first(record,["company","Company","company_name","companyName","organization","business_name","legal_business_name"]))||labeledValue(text,["Company","Business","Organization"]),phone=clean(first(record,["phone","Phone","phone_number","contact_phone","mobile"]))||labeledValue(text,["Phone","Mobile"]),topic=clean(first(record,["service","Service / Offer","service_fit","pitch","proposal","interest","message","notes","Notes"]))||labeledValue(text,["Service","Interest","Topic","Pitch"]);return{fullName,firstName:firstName||clean(fullName.split(/\s+/)[0]),lastName,email,company,phone,topic};}
+ recordToSeed(record,file){const text=this.recordText(record),identity=this.extractIdentity(record,text);if(!identity.fullName&&!identity.company&&!validEmail(identity.email))return null;const relationship=this.relationship(text),date=this.extractDate(record,text);if(date&&!inWindow(date))return null;if(relationship.status==="CONTACT_RECORD_ONLY")return null;const highContext=Number(file.score||0)>=40||HIGH_CONTEXT_PATH.test(file.filePath);if(relationship.status==="STATUS_VALIDATION_REQUIRED"&&(!date||!highContext))return null;const blockers=[];if(!date)blockers.push("DATE_WINDOW_VALIDATION_REQUIRED");if(relationship.status==="STATUS_VALIDATION_REQUIRED")blockers.push("RELATIONSHIP_STATUS_VALIDATION_REQUIRED");if(!identity.fullName&&validEmail(identity.email))blockers.push("CONTACT_NAME_ENRICHMENT_REQUIRED");return{full_name:identity.fullName,first_name:identity.firstName,last_name:identity.lastName,email:validEmail(identity.email)?identity.email:"",company:identity.company,phone:identity.phone,meeting_date:isoDay(date),meeting_status:relationship.status,relationship_status:relationship.status,prior_topic:identity.topic||"your federal growth strategy",source:"LOCAL_HISTORY_RECOVERY",source_file:file.filePath,source_modified_at:file.modifiedAt,source_file_score:file.score,evidence_type:relationship.evidenceType,evidence_strength:relationship.strength,source_evidence:evidenceExcerpt(text),review_required:blockers.length?blockers.join(" | "):"",recovery_blockers:blockers};}
+ dedupe(records){const rank=r=>Number(r.evidence_strength||0)*100+Number(r.source_file_score||0),byKey=new Map();for(const record of records){const key=validEmail(record.email)?`EMAIL:${record.email.toLowerCase()}`:`IDENTITY:${normalize(record.full_name)}|${normalize(record.company)}`;if(key==="IDENTITY:|")continue;const existing=byKey.get(key);if(!existing||rank(record)>rank(existing))byKey.set(key,record);}return[...byKey.values()];}
+ writeJson(filePath,value){fs.mkdirSync(path.dirname(filePath),{recursive:true});const temp=`${filePath}.${process.pid}.${Date.now()}.tmp`;fs.writeFileSync(temp,JSON.stringify(value,null,2),"utf8");fs.renameSync(temp,filePath);}
+ execute(input={}){const obsidianVaults=this.discoverObsidianVaults(),roots=Array.isArray(input.roots)&&input.roots.length?input.roots.map(v=>path.resolve(v)).filter(v=>fs.existsSync(v)):this.candidateRoots(obsidianVaults),files=this.discoverFiles(roots,obsidianVaults),extracted=[],fileAudit=[];for(const file of files){const result=this.readStructured(file);let produced=0;for(const record of result.rows||[]){const seed=this.recordToSeed(record,file);if(seed){extracted.push(seed);produced++;}}fileAudit.push({...file,rowsRead:(result.rows||[]).length,prospectsExtracted:produced,error:result.error||null});}const records=this.dedupe(extracted),confirmedPrior=records.filter(r=>r.relationship_status==="PRIOR_CONVERSATION"&&!r.review_required),reactivation=records.filter(r=>["NO_SHOW","RESCHEDULED_UNCONFIRMED"].includes(r.relationship_status)&&!r.review_required),review=records.filter(r=>Boolean(r.review_required)),seed={generatedAt:new Date().toISOString(),source:"WINBACK_LOCAL_HISTORY_DISCOVERY",window:{start:WINDOW_START.toISOString(),end:WINDOW_END.toISOString()},records};const report={ok:records.length>0,service:"WINBACK_LOCAL_HISTORY_DISCOVERY",status:records.length>0?"LOCAL_HISTORY_RECOVERED":"LOCAL_HISTORY_NOT_FOUND",generatedAt:seed.generatedAt,window:seed.window,roots,obsidianVaults,filesDiscovered:files.length,filesParsed:fileAudit.filter(i=>!i.error).length,filesNeedingAlternateParser:fileAudit.filter(i=>i.error&&i.error.startsWith("DISCOVERED_UNPARSED")).length,recordsRecovered:records.length,confirmedPriorConversationCount:confirmedPrior.length,reactivationCount:reactivation.length,reviewCount:review.length,exactTargetFilesFound:fileAudit.filter(i=>Object.prototype.hasOwnProperty.call(EXACT_FILE_SCORES,path.basename(i.filePath).toLowerCase())).map(i=>i.filePath),fileAudit,seedPath:this.seedPath,safety:{rawMailingListsAreNotAutomaticallyWinBackEligible:true,relationshipEvidenceRequired:true,contactOnlyRowsIgnored:true,weakEngagementRequiresDatedHighConfidenceSource:true,dateWindow:"2025-09-01 through 2026-05-31",ambiguousRowsFailClosed:true,localScanReadOnly:true}};if(input.writeReport!==false){this.writeJson(this.seedPath,seed);this.writeJson(this.reportPath,report);}return{...report,records};}
 }
 
-function normalize(value) {
-  return clean(value).toUpperCase().replace(/&/g, " AND ").replace(/[^A-Z0-9]+/g, " ").replace(/\s+/g, " ").trim();
-}
-
-function validEmail(value) {
-  return /^\S+@\S+\.\S+$/.test(clean(value));
-}
-
-function first(record, keys) {
-  for (const key of keys) {
-    const value = record?.[key];
-    if (value !== undefined && value !== null && clean(value)) return value;
-  }
-  return "";
-}
-
-function parseCsv(text) {
-  const rows = [];
-  let row = [];
-  let field = "";
-  let quoted = false;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (quoted) {
-      if (char === '"' && text[index + 1] === '"') {
-        field += '"';
-        index += 1;
-      } else if (char === '"') quoted = false;
-      else field += char;
-    } else if (char === '"') quoted = true;
-    else if (char === ",") { row.push(field); field = ""; }
-    else if (char === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
-    else if (char !== "\r") field += char;
-  }
-  if (field || row.length) { row.push(field); rows.push(row); }
-  if (rows.length < 2) return [];
-  const headers = rows.shift().map((value, index) => clean(value) || `column_${index + 1}`);
-  return rows
-    .filter(candidate => candidate.some(value => clean(value)))
-    .map(candidate => Object.fromEntries(headers.map((header, index) => [header, candidate[index] ?? ""])));
-}
-
-function rowsFromJson(parsed) {
-  if (Array.isArray(parsed)) return parsed;
-  for (const key of ["records", "rows", "results", "data", "prospects", "contacts", "leads", "companies"]) {
-    if (Array.isArray(parsed?.[key])) return parsed[key];
-  }
-  return parsed && typeof parsed === "object" ? [parsed] : [];
-}
-
-function rowObjectFromArrays(rows = []) {
-  if (!Array.isArray(rows) || rows.length < 2) return [];
-  const headers = rows[0].map((value, index) => clean(value) || `column_${index + 1}`);
-  return rows.slice(1)
-    .filter(candidate => Array.isArray(candidate) && candidate.some(value => clean(value)))
-    .map(candidate => Object.fromEntries(headers.map((header, index) => [header, candidate[index] ?? ""])));
-}
-
-function excelSerialDate(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < 30000 || n > 70000) return null;
-  const millis = Date.UTC(1899, 11, 30) + Math.round(n * 86400000);
-  const date = new Date(millis);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function parseDate(value) {
-  const text = clean(value);
-  if (!text) return null;
-  const serial = excelSerialDate(text);
-  if (serial) return serial;
-  const parsed = new Date(text);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
-function isoDay(value) {
-  const date = value instanceof Date ? value : parseDate(value);
-  return date ? date.toISOString().slice(0, 10) : "";
-}
-
-function inWindow(date) {
-  return date instanceof Date && date >= WINDOW_START && date <= WINDOW_END;
-}
-
-function evidenceExcerpt(text, max = 420) {
-  const normalized = clean(text).replace(/\s+/g, " ");
-  return normalized.length <= max ? normalized : `${normalized.slice(0, max - 1)}…`;
-}
-
-function labeledValue(text, labels) {
-  for (const label of labels) {
-    const expression = new RegExp(`(?:^|\\n)\\s*(?:[-*]\\s*)?${label}\\s*[:=-]\\s*([^\\n]+)`, "i");
-    const match = String(text || "").match(expression);
-    if (match) return clean(match[1]);
-  }
-  return "";
-}
-
-function emailFromText(text) {
-  const match = String(text || "").match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-  return match ? clean(match[0]) : "";
-}
-
-function candidateFileScore(filePath, obsidianVaults = []) {
-  const lower = filePath.toLowerCase();
-  const name = path.basename(lower);
-  let score = EXACT_FILE_SCORES[name] || 0;
-  for (const [pattern, points] of NAME_SCORE_RULES) if (pattern.test(name)) score += points;
-  if (/from b12 042926/i.test(lower)) score += 30;
-  if (/p2gc|pathways/i.test(lower)) score += 12;
-  if (obsidianVaults.some(vault => lower.startsWith(vault.toLowerCase()))) score += 22;
-  if (/archive/i.test(lower)) score -= 4;
-  return score;
-}
-
-class WinBackLocalHistoryDiscoveryService {
-  constructor(options = {}) {
-    this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, "..", ".."));
-    this.env = options.env || process.env;
-    this.platform = options.platform || process.platform;
-    this.homeDir = options.homeDir || os.homedir();
-    this.appData = options.appData || this.env.APPDATA || path.join(this.homeDir, "AppData", "Roaming");
-    this.maxFiles = Number(options.maxFiles || DEFAULT_MAX_FILES);
-    this.maxDepth = Number(options.maxDepth || DEFAULT_MAX_DEPTH);
-    this.maxTextBytes = Number(options.maxTextBytes || DEFAULT_MAX_TEXT_BYTES);
-    this.maxXlsxBytes = Number(options.maxXlsxBytes || DEFAULT_MAX_XLSX_BYTES);
-    this.xlsxReader = options.xlsxReader || null;
-    this.outputDir = options.outputDir || path.join(this.rootDir, "DATA", "runtime", "revenue", "winback");
-    this.reportPath = options.reportPath || path.join(this.outputDir, "local_history_discovery_latest.json");
-    this.seedPath = options.seedPath || path.join(this.outputDir, "local_history_seed_latest.json");
-  }
-
-  discoverObsidianVaults() {
-    const vaults = [];
-    const configCandidates = [
-      clean(this.env.WINBACK_OBSIDIAN_CONFIG),
-      path.join(this.appData, "obsidian", "obsidian.json")
-    ].filter(Boolean);
-
-    for (const configPath of configCandidates) {
-      if (!fs.existsSync(configPath)) continue;
-      try {
-        const parsed = JSON.parse(fs.readFileSync(configPath, "utf8").replace(/^\uFEFF/, ""));
-        for (const vault of Object.values(parsed?.vaults || {})) {
-          const vaultPath = clean(vault?.path || vault);
-          if (vaultPath && fs.existsSync(vaultPath)) vaults.push(path.resolve(vaultPath));
-        }
-      } catch { /* keep searching */ }
-    }
-    return [...new Set(vaults)];
-  }
-
-  candidateRoots(obsidianVaults = []) {
-    const configured = clean(this.env.WINBACK_HISTORY_ROOTS).split(path.delimiter).map(clean).filter(Boolean);
-    const common = [
-      "C:\\P2GC_Intelligence",
-      "D:\\P2GC_Intelligence",
-      path.join(this.homeDir, "Documents"),
-      path.join(this.homeDir, "Desktop"),
-      path.join(this.homeDir, "Downloads"),
-      path.join(this.homeDir, "OneDrive")
-    ];
-    const roots = [...configured, ...obsidianVaults, ...common]
-      .map(value => path.resolve(value))
-      .filter((value, index, all) => all.indexOf(value) === index)
-      .filter(value => fs.existsSync(value));
-    return roots;
-  }
-
-  walk(root, obsidianVaults, out, depth = 0) {
-    if (out.length >= this.maxFiles || depth > this.maxDepth || !fs.existsSync(root)) return;
-    let entries = [];
-    try { entries = fs.readdirSync(root, { withFileTypes: true }); }
-    catch { return; }
-
-    for (const entry of entries) {
-      if (out.length >= this.maxFiles) break;
-      const fullPath = path.join(root, entry.name);
-      if (entry.isDirectory()) {
-        if (!SKIP_DIRS.test(fullPath)) this.walk(fullPath, obsidianVaults, out, depth + 1);
-        continue;
-      }
-      const extension = path.extname(entry.name).toLowerCase();
-      if (!CANDIDATE_EXTENSIONS.has(extension)) continue;
-      const score = candidateFileScore(fullPath, obsidianVaults);
-      if (score <= 0 && extension !== ".md") continue;
-      let stat;
-      try { stat = fs.statSync(fullPath); } catch { continue; }
-      out.push({ filePath: fullPath, extension, score, sizeBytes: stat.size, modifiedAt: stat.mtime.toISOString() });
-    }
-  }
-
-  discoverFiles(roots, obsidianVaults) {
-    const found = [];
-    for (const root of roots) this.walk(root, obsidianVaults, found, 0);
-    return [...new Map(found.map(item => [item.filePath.toLowerCase(), item])).values()]
-      .sort((a, b) => b.score - a.score || b.modifiedAt.localeCompare(a.modifiedAt));
-  }
-
-  readXlsx(filePath) {
-    if (this.xlsxReader) return this.xlsxReader(filePath);
-    if (this.platform !== "win32") return { rows: [], error: "XLSX_READER_WINDOWS_ONLY" };
-    if (fs.statSync(filePath).size > this.maxXlsxBytes) return { rows: [], error: "XLSX_TOO_LARGE" };
-    const scriptPath = path.join(this.rootDir, "SCRIPTS", "ExtractWinBackXlsx.ps1");
-    if (!fs.existsSync(scriptPath)) return { rows: [], error: "XLSX_EXTRACTOR_NOT_FOUND" };
-    const result = spawnSync("powershell.exe", [
-      "-NoProfile",
-      "-NonInteractive",
-      "-ExecutionPolicy", "Bypass",
-      "-File", scriptPath,
-      "-Path", filePath,
-      "-MaxRows", "5000",
-      "-MaxSheets", "10"
-    ], { encoding: "utf8", windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
-    if (result.error) return { rows: [], error: result.error.message };
-    if (result.status !== 0) return { rows: [], error: clean(result.stderr) || `POWERSHELL_EXIT_${result.status}` };
-    try {
-      const parsed = JSON.parse(clean(result.stdout) || "[]");
-      const sheets = Array.isArray(parsed) ? parsed : [parsed];
-      const rows = [];
-      for (const sheet of sheets) rows.push(...rowObjectFromArrays(sheet?.rows || []));
-      return { rows, error: null };
-    } catch (error) {
-      return { rows: [], error: `XLSX_JSON_PARSE_FAILED:${error.message}` };
-    }
-  }
-
-  readStructured(file) {
-    if (file.extension === ".xlsx") return this.readXlsx(file.filePath);
-    if ([".xls", ".xlsb", ".docx"].includes(file.extension)) return { rows: [], error: `DISCOVERED_UNPARSED:${file.extension}` };
-    if (file.sizeBytes > this.maxTextBytes) return { rows: [], error: "TEXT_FILE_TOO_LARGE" };
-    const text = fs.readFileSync(file.filePath, "utf8").replace(/^\uFEFF/, "");
-    if (file.extension === ".csv") return { rows: parseCsv(text), error: null };
-    if (file.extension === ".json") {
-      try { return { rows: rowsFromJson(JSON.parse(text)), error: null }; }
-      catch (error) { return { rows: [], error: `JSON_PARSE_FAILED:${error.message}` }; }
-    }
-    const blocks = text.split(/\n\s*\n|(?=^#{1,6}\s+)/m).map(clean).filter(Boolean);
-    return { rows: blocks.map(block => ({ _text_block: block })), error: null };
-  }
-
-  recordText(record = {}) {
-    if (record._text_block) return clean(record._text_block);
-    return Object.entries(record)
-      .filter(([, value]) => typeof value === "string" || typeof value === "number")
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(" | ");
-  }
-
-  relationship(text) {
-    if (REACTIVATION_NO_SHOW.test(text)) return { status: "NO_SHOW", strength: 5, evidenceType: "NO_SHOW" };
-    if (REACTIVATION_RESCHEDULE.test(text) && !COMPLETED_EVIDENCE.test(text)) {
-      return { status: "RESCHEDULED_UNCONFIRMED", strength: 4, evidenceType: "RESCHEDULED" };
-    }
-    if (COMPLETED_EVIDENCE.test(text)) return { status: "PRIOR_CONVERSATION", strength: 5, evidenceType: "COMPLETED_CONVERSATION" };
-    if (WEAK_ENGAGEMENT.test(text)) return { status: "STATUS_VALIDATION_REQUIRED", strength: 2, evidenceType: "ENGAGEMENT_ONLY" };
-    return { status: "STATUS_VALIDATION_REQUIRED", strength: 1, evidenceType: "CONTACT_RECORD_ONLY" };
-  }
-
-  extractDate(record, text) {
-    const direct = first(record, [
-      "meeting_date", "date", "last_contact", "Last Contact", "last_contact_date", "appointment", "appointment_date",
-      "scheduled_date", "created_at", "updated_at", "follow_up_date", "Next Follow-Up"
-    ]);
-    const candidates = [direct];
-    const matches = String(text || "").match(/\b(?:20(?:25|26)[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}[\/]\d{1,2}[\/]20(?:25|26)|(?:Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?|Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May)\s+\d{1,2},?\s+20(?:25|26))\b/gi) || [];
-    candidates.push(...matches);
-    for (const candidate of candidates) {
-      const parsed = parseDate(candidate);
-      if (parsed) return parsed;
-    }
-    return null;
-  }
-
-  extractIdentity(record, text) {
-    const directName = clean(first(record, ["full_name", "fullName", "contact_name", "contactName", "Primary Contact", "primary_contact", "name", "poc", "POC"]));
-    const firstName = clean(first(record, ["first_name", "firstName", "First Name", "firstname"]));
-    const lastName = clean(first(record, ["last_name", "lastName", "Last Name", "lastname"]));
-    const labeledName = labeledValue(text, ["Contact", "Primary Contact", "POC", "Name"]);
-    const fullName = directName || clean(`${firstName} ${lastName}`) || labeledName;
-    const email = clean(first(record, ["email", "Email", "work_email", "contact_email", "email_address"])) || emailFromText(text);
-    const company = clean(first(record, ["company", "Company", "company_name", "companyName", "organization", "business_name", "legal_business_name"])) || labeledValue(text, ["Company", "Business", "Organization"]);
-    const phone = clean(first(record, ["phone", "Phone", "phone_number", "contact_phone", "mobile"])) || labeledValue(text, ["Phone", "Mobile"]);
-    const topic = clean(first(record, ["service", "Service / Offer", "service_fit", "pitch", "proposal", "interest", "message", "notes", "Notes"])) || labeledValue(text, ["Service", "Interest", "Topic", "Pitch"]);
-    return { fullName, firstName: firstName || clean(fullName.split(/\s+/)[0]), lastName, email, company, phone, topic };
-  }
-
-  recordToSeed(record, file) {
-    const text = this.recordText(record);
-    const identity = this.extractIdentity(record, text);
-    if (!identity.fullName && !identity.company && !validEmail(identity.email)) return null;
-
-    const relationship = this.relationship(text);
-    const date = this.extractDate(record, text);
-    if (date && !inWindow(date)) return null;
-
-    const blockers = [];
-    if (!date) blockers.push("DATE_WINDOW_VALIDATION_REQUIRED");
-    if (relationship.status === "STATUS_VALIDATION_REQUIRED") blockers.push("RELATIONSHIP_STATUS_VALIDATION_REQUIRED");
-    if (!identity.fullName && validEmail(identity.email)) blockers.push("CONTACT_NAME_ENRICHMENT_REQUIRED");
-
-    return {
-      full_name: identity.fullName,
-      first_name: identity.firstName,
-      last_name: identity.lastName,
-      email: validEmail(identity.email) ? identity.email : "",
-      company: identity.company,
-      phone: identity.phone,
-      meeting_date: isoDay(date),
-      meeting_status: relationship.status,
-      relationship_status: relationship.status,
-      prior_topic: identity.topic || "your federal growth strategy",
-      source: "LOCAL_HISTORY_RECOVERY",
-      source_file: file.filePath,
-      source_modified_at: file.modifiedAt,
-      source_file_score: file.score,
-      evidence_type: relationship.evidenceType,
-      evidence_strength: relationship.strength,
-      source_evidence: evidenceExcerpt(text),
-      review_required: blockers.length ? blockers.join(" | ") : "",
-      recovery_blockers: blockers
-    };
-  }
-
-  dedupe(records) {
-    const rank = record => Number(record.evidence_strength || 0) * 100 + Number(record.source_file_score || 0);
-    const byKey = new Map();
-    for (const record of records) {
-      const key = validEmail(record.email)
-        ? `EMAIL:${record.email.toLowerCase()}`
-        : `IDENTITY:${normalize(record.full_name)}|${normalize(record.company)}`;
-      if (key === "IDENTITY:|") continue;
-      const existing = byKey.get(key);
-      if (!existing || rank(record) > rank(existing)) byKey.set(key, record);
-    }
-    return [...byKey.values()];
-  }
-
-  writeJson(filePath, value) {
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    const temporary = `${filePath}.${process.pid}.${Date.now()}.tmp`;
-    fs.writeFileSync(temporary, JSON.stringify(value, null, 2), "utf8");
-    fs.renameSync(temporary, filePath);
-  }
-
-  execute(input = {}) {
-    const obsidianVaults = this.discoverObsidianVaults();
-    const roots = Array.isArray(input.roots) && input.roots.length
-      ? input.roots.map(value => path.resolve(value)).filter(value => fs.existsSync(value))
-      : this.candidateRoots(obsidianVaults);
-    const files = this.discoverFiles(roots, obsidianVaults);
-    const extracted = [];
-    const fileAudit = [];
-
-    for (const file of files) {
-      const result = this.readStructured(file);
-      let produced = 0;
-      for (const record of result.rows || []) {
-        const seed = this.recordToSeed(record, file);
-        if (seed) { extracted.push(seed); produced += 1; }
-      }
-      fileAudit.push({ ...file, rowsRead: (result.rows || []).length, prospectsExtracted: produced, error: result.error || null });
-    }
-
-    const records = this.dedupe(extracted);
-    const confirmedPrior = records.filter(record => record.relationship_status === "PRIOR_CONVERSATION" && !record.review_required);
-    const reactivation = records.filter(record => ["NO_SHOW", "RESCHEDULED_UNCONFIRMED"].includes(record.relationship_status) && !record.review_required);
-    const review = records.filter(record => Boolean(record.review_required));
-
-    const seed = {
-      generatedAt: new Date().toISOString(),
-      source: "WINBACK_LOCAL_HISTORY_DISCOVERY",
-      window: { start: WINDOW_START.toISOString(), end: WINDOW_END.toISOString() },
-      records
-    };
-    const report = {
-      ok: records.length > 0,
-      service: "WINBACK_LOCAL_HISTORY_DISCOVERY",
-      status: records.length > 0 ? "LOCAL_HISTORY_RECOVERED" : "LOCAL_HISTORY_NOT_FOUND",
-      generatedAt: seed.generatedAt,
-      window: seed.window,
-      roots,
-      obsidianVaults,
-      filesDiscovered: files.length,
-      filesParsed: fileAudit.filter(item => !item.error).length,
-      filesNeedingAlternateParser: fileAudit.filter(item => item.error && item.error.startsWith("DISCOVERED_UNPARSED")).length,
-      recordsRecovered: records.length,
-      confirmedPriorConversationCount: confirmedPrior.length,
-      reactivationCount: reactivation.length,
-      reviewCount: review.length,
-      exactTargetFilesFound: fileAudit.filter(item => Object.prototype.hasOwnProperty.call(EXACT_FILE_SCORES, path.basename(item.filePath).toLowerCase())).map(item => item.filePath),
-      fileAudit,
-      seedPath: this.seedPath,
-      safety: {
-        rawMailingListsAreNotAutomaticallyWinBackEligible: true,
-        relationshipEvidenceRequired: true,
-        dateWindow: "2025-09-01 through 2026-05-31",
-        ambiguousRowsFailClosed: true,
-        localScanReadOnly: true
-      }
-    };
-
-    if (input.writeReport !== false) {
-      this.writeJson(this.seedPath, seed);
-      this.writeJson(this.reportPath, report);
-    }
-    return { ...report, records };
-  }
-}
-
-module.exports = WinBackLocalHistoryDiscoveryService;
-module.exports.WinBackLocalHistoryDiscoveryService = WinBackLocalHistoryDiscoveryService;
-module.exports.helpers = {
-  clean,
-  normalize,
-  validEmail,
-  parseCsv,
-  rowsFromJson,
-  rowObjectFromArrays,
-  parseDate,
-  isoDay,
-  inWindow,
-  candidateFileScore,
-  COMPLETED_EVIDENCE,
-  REACTIVATION_NO_SHOW,
-  REACTIVATION_RESCHEDULE,
-  WEAK_ENGAGEMENT,
-  WINDOW_START,
-  WINDOW_END
-};
+module.exports=WinBackLocalHistoryDiscoveryService;
+module.exports.WinBackLocalHistoryDiscoveryService=WinBackLocalHistoryDiscoveryService;
+module.exports.helpers={clean,normalize,validEmail,parseCsv,rowsFromJson,rowObjectFromArrays,parseDate,isoDay,inWindow,candidateFileScore,COMPLETED_EVIDENCE,REACTIVATION_NO_SHOW,REACTIVATION_RESCHEDULE,WEAK_ENGAGEMENT,WINDOW_START,WINDOW_END};
