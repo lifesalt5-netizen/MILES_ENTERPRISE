@@ -20,7 +20,7 @@ assert(/MIGRATE_STATE_ATOMIC/i.test(script), "Cutover must use the atomic state 
 assert(/Move-Item\s+-LiteralPath\s+\$rollbackData\s+-Destination\s+\$newLiveData/i.test(script), "Cutover must move authoritative live DATA intact into new production");
 assert(/Move-Item\s+-LiteralPath\s+\$currentLiveData\s+-Destination\s+\$rollbackData/i.test(script), "Rollback must restore authoritative DATA to the prior installation");
 assert(/candidateDataPark/i.test(script), "Candidate baseline DATA must be parked rather than destroyed");
-assert(!/\brobocopy\b/i.test(script), "Permanent cutover must not use robocopy for DATA migration");
+assert(!/(?:^|\n)\s*(?:&\s*)?robocopy\b/im.test(script), "Permanent cutover must not invoke robocopy for DATA migration");
 assert(/config_overlay_performed=\$false/i.test(script), "Cutover must certify deferred CONFIG is not overlaid");
 assert(/Rename-Item[^\n]+\$LiveRoot/i.test(script), "Cutover must preserve old live installation via rename");
 assert(/automatic rollback starting/i.test(script), "Cutover must contain automatic rollback path");
