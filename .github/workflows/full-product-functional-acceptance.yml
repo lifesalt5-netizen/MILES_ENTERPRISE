@@ -15,6 +15,8 @@ on:
       - "SERVICES/revenue/ReplyIntelligenceService.js"
       - "SERVICES/revenue/ExecutiveReplySurfacePolicyService.js"
       - "SERVICES/revenue/ReplacementContactRecoveryService.js"
+      - "SERVICES/revenue/ReplacementContactBackfillService.js"
+      - "RUN_REPLACEMENT_CONTACT_BACKFILL.js"
       - "SERVICES/demo/**"
       - "SERVICES/teaming/**"
       - "TESTS/full_product_functional_acceptance_test.js"
@@ -22,6 +24,7 @@ on:
       - "TESTS/executive_reply_surface_policy_test.js"
       - "TESTS/replacement_contact_recovery_test.js"
       - "TESTS/replacement_contact_execution_test.js"
+      - "TESTS/replacement_contact_backfill_test.js"
       - ".github/workflows/full-product-functional-acceptance.yml"
   workflow_dispatch:
 
@@ -54,11 +57,14 @@ jobs:
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/revenue/ExecutiveReplySurfacePolicyService.js
           node --check SERVICES/revenue/ReplacementContactRecoveryService.js
+          node --check SERVICES/revenue/ReplacementContactBackfillService.js
+          node --check RUN_REPLACEMENT_CONTACT_BACKFILL.js
           node --check TESTS/full_product_functional_acceptance_test.js
           node --check TESTS/reply_intelligence_production_loop_test.js
           node --check TESTS/executive_reply_surface_policy_test.js
           node --check TESTS/replacement_contact_recovery_test.js
           node --check TESTS/replacement_contact_execution_test.js
+          node --check TESTS/replacement_contact_backfill_test.js
 
       - name: Full product semantic acceptance
         run: node TESTS/full_product_functional_acceptance_test.js
@@ -69,6 +75,7 @@ jobs:
           node TESTS/reply_intelligence_production_loop_test.js
           node TESTS/replacement_contact_recovery_test.js
           node TESTS/replacement_contact_execution_test.js
+          node TESTS/replacement_contact_backfill_test.js
 
       - name: Capture Capacity regression suite
         run: |
