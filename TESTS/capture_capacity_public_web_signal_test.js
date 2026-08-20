@@ -45,6 +45,7 @@ const { CaptureCapacityRevenueDiscovery } = require("../SERVICES/Discovery/Captu
       rootDir: root,
       fetchImpl: fakeFetch,
       contactSources: [contacts],
+      useOrion: false,
       maxCompanies: 5,
       cacheMs: 0
     });
@@ -65,14 +66,86 @@ const { CaptureCapacityRevenueDiscovery } = require("../SERVICES/Discovery/Captu
     assert.strictEqual(hcrc.trigger_type, "CAPTURE_HIRING");
     assert.strictEqual(hcrc.source_provider, "APPLYTOJOB");
     assert.strictEqual(hcrc.source_type, "PUBLIC_CAREER_OR_ATS");
+    assert.strictEqual(hcrc.universe_source, "CONTACT_SOURCES");
     assert.ok(hcrc.source_url.includes("Capture-Manager"));
     assert.ok(/capture manager/i.test(hcrc.evidence));
+
+    const fakeOrion = {
+      initialize() { return { ok: true, status: "INITIALIZED" }; },
+      query(sql, params = []) {
+        if (/PRAGMA table_info\(contractors\)/i.test(sql)) {
+          return ["id", "company", "company_norm", "uei", "website"].map((name, i) => ({ cid: i, name }));
+        }
+        if (/COUNT\(\*\)/i.test(sql)) return [{ count: 2 }];
+        if (/FROM contractors/i.test(sql)) {
+          assert.deepStrictEqual(params, [2, 0]);
+          return [
+            { company: "Net New Federal Contractor", uei: "NETNEW123", website: "netnewfed.example" },
+            { company: "Other Federal Contractor", uei: "OTHER123", website: "otherfed.example" }
+          ];
+        }
+        throw new Error(`Unexpected ORION SQL: ${sql}`);
+      }
+    };
+
+    const netNewFetched = [];
+    const netNewFetch = async (url, request = {}) => {
+      const target = String(url);
+      netNewFetched.push(target);
+      assert.strictEqual(request.method, "GET");
+      if (target === "https://netnewfed.example" || target === "https://netnewfed.example/") {
+        return { ok: true, status: 200, async text() { return '<html><a href="https://jobs.lever.co/netnewfed">Careers</a></html>'; } };
+      }
+      if (target === "https://netnewfed.example/careers" || target === "https://netnewfed.example/jobs") {
+        return { ok: true, status: 200, async text() { return "<html></html>"; } };
+      }
+      if (target === "https://api.lever.co/v0/postings/netnewfed?mode=json") {
+        return {
+          ok: true,
+          status: 200,
+          async json() {
+            return [{
+              text: "Capture Director",
+              descriptionPlain: "Lead federal capture strategy, customer engagement, teaming and win planning.",
+              hostedUrl: "https://jobs.lever.co/netnewfed/capture-director"
+            }];
+          }
+        };
+      }
+      if (/otherfed\.example/.test(target)) return { ok: true, status: 200, async text() { return "<html></html>"; } };
+      throw new Error(`Unexpected net-new fetch ${target}`);
+    };
+
+    const netNewRoot = path.join(root, "net-new");
+    const netNewService = new CaptureCapacityPublicWebSignalService({
+      rootDir: netNewRoot,
+      fetchImpl: netNewFetch,
+      contactSources: [],
+      careerUrls: [],
+      orion: fakeOrion,
+      useOrion: true,
+      maxCompanies: 2,
+      cacheMs: 0
+    });
+    const netNewReport = await netNewService.runOnce();
+    assert.strictEqual(netNewReport.ok, true);
+    assert.strictEqual(netNewReport.status, "PUBLIC_JOB_SIGNALS_REFRESHED");
+    assert.strictEqual(netNewReport.universe.orionStatus, "ORION_CONTRACTOR_UNIVERSE_READY");
+    assert.strictEqual(netNewReport.universe.orionCandidates, 2);
+    assert.strictEqual(netNewReport.universe.orionTotalWithWebsite, 2);
+    assert.strictEqual(netNewReport.usableSignals, 1);
+    const netNewOutput = JSON.parse(fs.readFileSync(netNewReport.outputFile, "utf8"));
+    assert.strictEqual(netNewOutput.records[0].company, "Net New Federal Contractor");
+    assert.strictEqual(netNewOutput.records[0].trigger_type, "CAPTURE_HIRING");
+    assert.strictEqual(netNewOutput.records[0].universe_source, "ORION_CONTRACTORS");
+    assert.ok(netNewFetched.includes("https://api.lever.co/v0/postings/netnewfed?mode=json"));
 
     const noSources = new CaptureCapacityPublicWebSignalService({
       rootDir: path.join(root, "empty"),
       fetchImpl: fakeFetch,
       contactSources: [],
       careerUrls: [],
+      useOrion: false,
       cacheMs: 0
     });
     const unavailable = await noSources.runOnce();

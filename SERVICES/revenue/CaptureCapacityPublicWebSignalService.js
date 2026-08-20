@@ -26,6 +26,7 @@ function companyFromDomain(value) {
 }
 function absoluteUrl(base, href) { try { return new URL(href, base).toString(); } catch { return ""; } }
 function validHttpUrl(value) { try { const u = new URL(value); return ["http:", "https:"].includes(u.protocol); } catch { return false; } }
+function normalizeWebsite(value) { const raw=clean(value); if(!raw)return ""; const candidate=/^https?:\/\//i.test(raw)?raw:`https://${raw}`; return validHttpUrl(candidate)?candidate:""; }
 function uniqueBy(items, keyFn) { const map = new Map(); for (const item of items) { const key = keyFn(item); if (key && !map.has(key)) map.set(key, item); } return [...map.values()]; }
 function parseCsvLine(line) { const out=[]; let field="", quoted=false; for(let i=0;i<line.length;i++){const ch=line[i]; if(ch==='"'){ if(quoted&&line[i+1]==='"'){field+='"';i++;} else quoted=!quoted; } else if(ch===','&&!quoted){out.push(field);field="";} else field+=ch;} out.push(field); return out; }
 function rowsFromFile(file) {
@@ -59,13 +60,35 @@ class CaptureCapacityPublicWebSignalService {
     this.timeoutMs=Math.max(1000,Number(options.timeoutMs||DEFAULT_TIMEOUT_MS));
     this.contactSources=options.contactSources||null;
     this.explicitCareerUrls=options.careerUrls||null;
+    this.useOrion=options.useOrion!==false;
+    this.orion=options.orion||null;
     this.outputFile=options.outputFile||path.join(this.rootDir,"DATA","runtime","revenue","capture_capacity","signals","public_web_signals_latest.json");
     this.reportFile=options.reportFile||path.join(this.rootDir,"DATA","runtime","revenue","capture_capacity","public_web_signal_search_latest.json");
+    this.universeMeta={contactCandidates:0,orionCandidates:0,orionTotalWithWebsite:0,orionOffset:0,nextOrionOffset:0,orionStatus:this.useOrion?"NOT_EVALUATED":"DISABLED"};
   }
   writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const temp=`${file}.${process.pid}.${Date.now()}.tmp`;fs.writeFileSync(temp,JSON.stringify(value,null,2),"utf8");fs.renameSync(temp,file);return file;}
   configuredContactSources(){if(Array.isArray(this.contactSources))return this.contactSources;return clean(process.env.CAPTURE_CAPACITY_CONTACT_SOURCES).split(path.delimiter).map(clean).filter(Boolean);}
   configuredCareerUrls(){if(Array.isArray(this.explicitCareerUrls))return this.explicitCareerUrls;return clean(process.env.CAPTURE_CAPACITY_PUBLIC_CAREER_URLS).split(path.delimiter).map(clean).filter(Boolean);}
-  companyUniverse(){
+  getOrion(){if(!this.useOrion)return null;if(this.orion)return this.orion;try{this.orion=require("../../CONNECTORS/ORION/connector");return this.orion;}catch{return null;}}
+  priorOrionOffset(){try{if(!fs.existsSync(this.reportFile))return 0;const report=JSON.parse(fs.readFileSync(this.reportFile,"utf8"));return Math.max(0,Number(report?.universe?.nextOrionOffset||0));}catch{return 0;}}
+  loadOrionCompanies(limit){
+    if(!this.useOrion||limit<=0)return[];
+    const orion=this.getOrion(); if(!orion){this.universeMeta.orionStatus="ORION_CONNECTOR_UNAVAILABLE";return[];}
+    try{
+      const init=orion.initialize(); if(!init?.ok){this.universeMeta.orionStatus="ORION_UNAVAILABLE";return[];}
+      const schema=orion.query("PRAGMA table_info(contractors)",[]); const cols=new Set((Array.isArray(schema)?schema:[]).map(r=>clean(r.name)));
+      if(!cols.has("website")||(!cols.has("company")&&!cols.has("company_norm"))){this.universeMeta.orionStatus="ORION_CONTRACTOR_IDENTITY_COLUMNS_MISSING";return[];}
+      const companyExpr=cols.has("company")?"company":"company_norm"; const ueiExpr=cols.has("uei")?"uei":"''"; const idExpr=cols.has("id")?"id":"rowid";
+      const countRows=orion.query("SELECT COUNT(*) AS count FROM contractors WHERE website IS NOT NULL AND TRIM(website) <> ''",[]); const total=Math.max(0,Number(countRows?.[0]?.count||0));
+      this.universeMeta.orionTotalWithWebsite=total; if(!total){this.universeMeta.orionStatus="ORION_NO_CONTRACTOR_WEBSITES";return[];}
+      const requestedOffset=this.priorOrionOffset(); const offset=requestedOffset>=total?0:requestedOffset;
+      const rows=orion.query(`SELECT ${companyExpr} AS company, ${ueiExpr} AS uei, website FROM contractors WHERE website IS NOT NULL AND TRIM(website) <> '' ORDER BY ${idExpr} LIMIT ? OFFSET ?`,[limit,offset]);
+      const out=[]; for(const record of Array.isArray(rows)?rows:[]){const company=clean(record.company);const website=normalizeWebsite(record.website);if(company&&website)out.push({company,website,uei:clean(record.uei),universeSource:"ORION_CONTRACTORS"});}
+      this.universeMeta.orionCandidates=out.length; this.universeMeta.orionOffset=offset; this.universeMeta.nextOrionOffset=total?((offset+Math.max(out.length,limit))%total):0; this.universeMeta.orionStatus="ORION_CONTRACTOR_UNIVERSE_READY";
+      return out;
+    }catch(error){this.universeMeta.orionStatus="ORION_CONTRACTOR_UNIVERSE_FAILED";this.universeMeta.orionError=error.message;return[];}
+  }
+  contactCompanies(){
     const rows=[];
     for(const file of this.configuredContactSources()){
       if(!file||!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
@@ -73,13 +96,22 @@ class CaptureCapacityPublicWebSignalService {
         const company=first(record,["company","company_name","companyName","legal_business_name","organization","vendor_name"]);
         let website=first(record,["website","company_website","company_url","url","domain"]);
         const email=first(record,["email","work_email","contact_email"]);
-        if(!website&&email.includes("@"))website=`https://${email.split("@")[1]}`;
-        if(website&&!/^https?:\/\//i.test(website))website=`https://${website}`;
-        if(company&&validHttpUrl(website))rows.push({company,website});
-      }}catch{/* source-level failure is reported indirectly by missing candidates */}
+        if(!website&&email.includes("@"))website=email.split("@")[1];
+        website=normalizeWebsite(website);
+        if(company&&website)rows.push({company,website,universeSource:"CONTACT_SOURCES"});
+      }}catch{}
     }
-    for(const url of this.configuredCareerUrls())if(validHttpUrl(url))rows.push({company:companyFromDomain(url),website:url,explicitCareer:true});
-    return uniqueBy(rows,item=>`${item.company.toLowerCase()}|${new URL(item.website).hostname.toLowerCase()}`).slice(0,this.maxCompanies);
+    const unique=uniqueBy(rows,item=>`${item.company.toLowerCase()}|${new URL(item.website).hostname.toLowerCase()}`); this.universeMeta.contactCandidates=unique.length; return unique;
+  }
+  companyUniverse(){
+    const explicit=[]; for(const url of this.configuredCareerUrls())if(validHttpUrl(url))explicit.push({company:companyFromDomain(url),website:url,explicitCareer:true,universeSource:"EXPLICIT_CAREER_URL"});
+    const contacts=this.contactCompanies();
+    const reservedExplicit=Math.min(explicit.length,this.maxCompanies); const remaining=Math.max(0,this.maxCompanies-reservedExplicit);
+    const orionBudget=this.useOrion?Math.max(0,Math.ceil(remaining*0.7)):0; const contactBudget=Math.max(0,remaining-orionBudget);
+    const orionRows=this.loadOrionCompanies(orionBudget);
+    const selected=[...explicit.slice(0,reservedExplicit),...orionRows,...contacts.slice(0,contactBudget)];
+    if(selected.length<this.maxCompanies){const selectedHosts=new Set(selected.map(r=>new URL(r.website).hostname.toLowerCase()));for(const row of contacts){const host=new URL(row.website).hostname.toLowerCase();if(selectedHosts.has(host))continue;selected.push(row);selectedHosts.add(host);if(selected.length>=this.maxCompanies)break;}}
+    return uniqueBy(selected,item=>new URL(item.website).hostname.toLowerCase()).slice(0,this.maxCompanies);
   }
   async fetchResponse(url,{json=false}={}){
     if(!this.fetchImpl)throw new Error("Global fetch is unavailable");
@@ -90,26 +122,26 @@ class CaptureCapacityPublicWebSignalService {
       return json?await response.json():await response.text();
     } finally { if(timer)clearTimeout(timer); }
   }
-  normalizeJob({company,title,description,url,postedDate="",provider}){
+  normalizeJob({company,title,description,url,postedDate="",provider,universeSource=""}){
     const t=normalizeSpace(title); const evidence=stripHtml(description||title); const trigger=classify(`${t} ${evidence}`);
     if(!company||!url||!ROLE_PATTERN.test(`${t} ${evidence}`)||!trigger)return null;
-    return {company,trigger_type:trigger,title:t,evidence:normalizeSpace(`${t}. ${evidence}`).slice(0,1800),source_url:url,posted_date:clean(postedDate),source_provider:provider,source_type:"PUBLIC_CAREER_OR_ATS",retrieved_at:new Date().toISOString(),evidence_status:"PUBLIC_SOURCE_DISCOVERED_REQUIRES_STANDARD_IDENTITY_GATE"};
+    return {company,trigger_type:trigger,title:t,evidence:normalizeSpace(`${t}. ${evidence}`).slice(0,1800),source_url:url,posted_date:clean(postedDate),source_provider:provider,source_type:"PUBLIC_CAREER_OR_ATS",universe_source:universeSource,retrieved_at:new Date().toISOString(),evidence_status:"PUBLIC_SOURCE_DISCOVERED_REQUIRES_STANDARD_IDENTITY_GATE"};
   }
-  async jobsFromAts(company,descriptor){
-    const jobs=[];
+  async jobsFromAts(companyRow,descriptor){
+    const jobs=[]; const company=companyRow.company; const universeSource=companyRow.universeSource||"";
     if(descriptor.provider==="LEVER"){
       const payload=await this.fetchResponse(descriptor.api,{json:true});
-      for(const row of Array.isArray(payload)?payload:[]){const job=this.normalizeJob({company,title:row.text,description:[row.descriptionPlain,row.additionalPlain].filter(Boolean).join(" "),url:row.hostedUrl||row.applyUrl,provider:"LEVER"});if(job)jobs.push(job);}
+      for(const row of Array.isArray(payload)?payload:[]){const job=this.normalizeJob({company,title:row.text,description:[row.descriptionPlain,row.additionalPlain].filter(Boolean).join(" "),url:row.hostedUrl||row.applyUrl,provider:"LEVER",universeSource});if(job)jobs.push(job);}
     } else if(descriptor.provider==="GREENHOUSE"){
       const payload=await this.fetchResponse(descriptor.api,{json:true});
-      for(const row of Array.isArray(payload?.jobs)?payload.jobs:[]){const job=this.normalizeJob({company,title:row.title,description:row.content,url:row.absolute_url,postedDate:row.updated_at,provider:"GREENHOUSE"});if(job)jobs.push(job);}
+      for(const row of Array.isArray(payload?.jobs)?payload.jobs:[]){const job=this.normalizeJob({company,title:row.title,description:row.content,url:row.absolute_url,postedDate:row.updated_at,provider:"GREENHOUSE",universeSource});if(job)jobs.push(job);}
     } else if(descriptor.provider==="ASHBY"){
       const payload=await this.fetchResponse(descriptor.api,{json:true});
-      for(const row of Array.isArray(payload?.jobs)?payload.jobs:[]){const job=this.normalizeJob({company,title:row.title,description:[row.descriptionPlain,row.descriptionHtml].filter(Boolean).join(" "),url:row.jobUrl||row.applyUrl,postedDate:row.publishedAt,provider:"ASHBY"});if(job)jobs.push(job);}
+      for(const row of Array.isArray(payload?.jobs)?payload.jobs:[]){const job=this.normalizeJob({company,title:row.title,description:[row.descriptionPlain,row.descriptionHtml].filter(Boolean).join(" "),url:row.jobUrl||row.applyUrl,postedDate:row.publishedAt,provider:"ASHBY",universeSource});if(job)jobs.push(job);}
     } else if(descriptor.provider==="APPLYTOJOB"){
       const html=await this.fetchResponse(descriptor.api);
-      for(const link of extractLinks(html,descriptor.api))if(ROLE_PATTERN.test(link.text)){const job=this.normalizeJob({company,title:link.text,description:link.text,url:link.url,provider:"APPLYTOJOB"});if(job)jobs.push(job);}
-      if(!jobs.length&&ROLE_PATTERN.test(stripHtml(html))){const title=(stripHtml(html).match(ROLE_PATTERN)||[])[0]||"GovCon growth opening";const job=this.normalizeJob({company,title,description:stripHtml(html).slice(0,1800),url:descriptor.api,provider:"APPLYTOJOB"});if(job)jobs.push(job);}
+      for(const link of extractLinks(html,descriptor.api))if(ROLE_PATTERN.test(link.text)){const job=this.normalizeJob({company,title:link.text,description:link.text,url:link.url,provider:"APPLYTOJOB",universeSource});if(job)jobs.push(job);}
+      if(!jobs.length&&ROLE_PATTERN.test(stripHtml(html))){const title=(stripHtml(html).match(ROLE_PATTERN)||[])[0]||"GovCon growth opening";const job=this.normalizeJob({company,title,description:stripHtml(html).slice(0,1800),url:descriptor.api,provider:"APPLYTOJOB",universeSource});if(job)jobs.push(job);}
     }
     return jobs;
   }
@@ -121,11 +153,11 @@ class CaptureCapacityPublicWebSignalService {
         const direct=atsDescriptor(pageUrl); if(direct){descriptors.push(direct);continue;}
         const html=await this.fetchResponse(pageUrl); const links=extractLinks(html,pageUrl);
         for(const link of links){const descriptor=atsDescriptor(link.url);if(descriptor)descriptors.push(descriptor);}
-        for(const link of links){if(ROLE_PATTERN.test(link.text)){const job=this.normalizeJob({company,title:link.text,description:link.text,url:link.url,provider:"COMPANY_CAREERS"});if(job)jobs.push(job);}}
+        for(const link of links){if(ROLE_PATTERN.test(link.text)){const job=this.normalizeJob({company,title:link.text,description:link.text,url:link.url,provider:"COMPANY_CAREERS",universeSource:companyRow.universeSource});if(job)jobs.push(job);}}
       }catch(error){errors.push({url:pageUrl,error:error.message});}
     }
     for(const descriptor of uniqueBy(descriptors,d=>`${d.provider}|${d.key}`)){
-      try{jobs.push(...await this.jobsFromAts(company,descriptor));}catch(error){errors.push({provider:descriptor.provider,url:descriptor.api,error:error.message});}
+      try{jobs.push(...await this.jobsFromAts(companyRow,descriptor));}catch(error){errors.push({provider:descriptor.provider,url:descriptor.api,error:error.message});}
     }
     return {jobs,errors,atsSources:uniqueBy(descriptors,d=>`${d.provider}|${d.key}`).length};
   }
@@ -137,14 +169,14 @@ class CaptureCapacityPublicWebSignalService {
   async runOnce(){
     const cached=this.cachedReport(); if(cached)return cached;
     const generatedAt=new Date().toISOString(); const companies=this.companyUniverse();
-    if(!companies.length){const report={ok:true,status:"PUBLIC_JOB_SOURCE_UNAVAILABLE",provider:"PUBLIC_ATS_AND_CAREERS",configured:false,companiesChecked:0,atsSources:0,usableSignals:0,outputFile:this.outputFile,generatedAt};report.artifact=this.writeJson(this.reportFile,report);return report;}
+    if(!companies.length){const report={ok:true,status:"PUBLIC_JOB_SOURCE_UNAVAILABLE",provider:"PUBLIC_ATS_AND_CAREERS",configured:false,companiesChecked:0,atsSources:0,usableSignals:0,universe:this.universeMeta,outputFile:this.outputFile,generatedAt};report.artifact=this.writeJson(this.reportFile,report);return report;}
     const signals=[];const errors=[];let atsSources=0;
-    for(const company of companies){const result=await this.scanCompany(company);signals.push(...result.jobs);errors.push(...result.errors.map(e=>({company:company.company,...e})));atsSources+=result.atsSources;}
+    for(const company of companies){const result=await this.scanCompany(company);signals.push(...result.jobs);errors.push(...result.errors.map(e=>({company:company.company,universeSource:company.universeSource,...e})));atsSources+=result.atsSources;}
     const rows=uniqueBy(signals,s=>`${s.company.toLowerCase()}|${s.trigger_type}|${s.source_url.toLowerCase()}`);
-    this.writeJson(this.outputFile,{generatedAt,provider:"PUBLIC_ATS_AND_CAREERS",records:rows});
-    const report={ok:true,status:rows.length?"PUBLIC_JOB_SIGNALS_REFRESHED":"PUBLIC_JOB_SIGNALS_NO_USABLE_SIGNALS",provider:"PUBLIC_ATS_AND_CAREERS",configured:true,companiesChecked:companies.length,atsSources,usableSignals:rows.length,errors:errors.slice(0,100),outputFile:this.outputFile,generatedAt};report.artifact=this.writeJson(this.reportFile,report);return report;
+    this.writeJson(this.outputFile,{generatedAt,provider:"PUBLIC_ATS_AND_CAREERS",universe:this.universeMeta,records:rows});
+    const report={ok:true,status:rows.length?"PUBLIC_JOB_SIGNALS_REFRESHED":"PUBLIC_JOB_SIGNALS_NO_USABLE_SIGNALS",provider:"PUBLIC_ATS_AND_CAREERS",configured:true,companiesChecked:companies.length,atsSources,usableSignals:rows.length,universe:this.universeMeta,errors:errors.slice(0,100),outputFile:this.outputFile,generatedAt};report.artifact=this.writeJson(this.reportFile,report);return report;
   }
 }
 
 module.exports=CaptureCapacityPublicWebSignalService;
-module.exports.helpers={clean,normalizeSpace,stripHtml,classify,companyFromDomain,absoluteUrl,validHttpUrl,extractLinks,atsDescriptor,rowsFromFile};
+module.exports.helpers={clean,normalizeSpace,stripHtml,classify,companyFromDomain,absoluteUrl,validHttpUrl,normalizeWebsite,extractLinks,atsDescriptor,rowsFromFile};
