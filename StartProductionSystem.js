@@ -1455,8 +1455,6 @@ class RuntimeWorkerSupervisor {
 }
 
 async function main() {
-  require("./api/server");
-
   require("./workers/cooWorker");
   require("./workers/revenueWorker");
   require("./workers/replyWorker");
@@ -1602,5 +1600,4 @@ module.exports = {
   RuntimeWorkerSupervisor,
   main
 };
-
 
