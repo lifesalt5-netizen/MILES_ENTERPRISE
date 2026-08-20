@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "twin": "MONICA",
+  "mode": "DISCOVERY_ONLY",
+  "activationBlocked": true,
+  "mission": "Identify, quantify, and qualify net-new P2GC acquisition markets without colliding with existing Instantly or master lead populations.",
+  "candidateRoots": [
+    "DATA",
+    "D:\\P2GC_Intelligence\\ORION_CORE",
+    "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA"
+  ],
+  "suppressionRoots": [
+    "DATA\\OUTBOUND",
+    "DATA\\marketing_coo",
+    "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\OUTBOUND"
+  ],
+  "candidatePatterns": ["award","recompete","revenue","incumbent","vehicle","hiring","capture","subcontract","agency","orion"],
+  "suppressionPatterns": ["MASTER_DEDUPED_ALL_SEGMENTS","instantly","segment","lead","campaign"],
+  "minNetNewForBuildTest": 250
+}
