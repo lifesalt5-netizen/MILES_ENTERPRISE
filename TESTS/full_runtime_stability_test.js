@@ -34,4 +34,18 @@ assert.match(cutover, /miles-worker/);
 assert.match(cutover, /miles-autonomous-coo/);
 assert.match(cutover, /miles-queue-maintainer/);
 
+// Windows cutover regression: invoke the npm .cmd shim so the `--` separator
+// and RuntimeGenerationGuard arguments reach the child unchanged.
+assert.match(cutover, /Get-Command 'pm2\.cmd'/);
+assert.match(cutover, /\$workerStartArgs = @\('start',\$guard,'--name','miles-worker','--','--runtime','miles-worker','--entry','StartProductionSystem\.js'\)/);
+assert.match(cutover, /& \$pm2Cmd @workerStartArgs/);
+assert.match(cutover, /\$cooStartArgs = @\('start',\$guard,'--name','miles-autonomous-coo','--','--runtime','miles-autonomous-coo','--entry','StartAutonomousCOO\.js','--arg','--loop'\)/);
+assert.match(cutover, /& \$pm2Cmd @cooStartArgs/);
+
+// Missing guarded PM2 names are an idempotent cleanup condition, not a fatal error.
+assert.match(cutover, /\$currentPm2Names -contains \$name/);
+assert.match(cutover, /delete skipped/);
+assert.doesNotMatch(cutover, /& pm2 delete \$name/);
+assert.doesNotMatch(cutover, /& pm2 start \$guard/);
+
 console.log("FULL_RUNTIME_STABILITY_TEST: GREEN");
