@@ -1,0 +1,32 @@
+name: MILES Full Runtime Stability Validation
+
+on:
+  pull_request:
+    paths:
+      - 'StartAutonomousCOO.js'
+      - 'SCRIPTS/RuntimeGenerationGuard.js'
+      - 'SCRIPTS/TaskQueueMaintenanceService.js'
+      - 'SCRIPTS/RUN_MILES_FULL_RUNTIME_STABILITY_CUTOVER_WINDOWS.ps1'
+      - 'TESTS/full_runtime_stability_test.js'
+      - '.github/workflows/full-runtime-stability-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax validation
+        run: |
+          node --check StartAutonomousCOO.js
+          node --check SCRIPTS/RuntimeGenerationGuard.js
+          node --check SCRIPTS/TaskQueueMaintenanceService.js
+          node --check TESTS/full_runtime_stability_test.js
+      - name: Existing single-owner guards
+        run: |
+          node TESTS/single_taskqueue_executor_test.js
+          node TESTS/single_coo_planner_test.js
+      - name: Full runtime stability contract
+        run: node TESTS/full_runtime_stability_test.js

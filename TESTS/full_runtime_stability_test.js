@@ -1,0 +1,29 @@
+"use strict";
+
+const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
+const root = path.resolve(__dirname, "..");
+
+function text(file) { return fs.readFileSync(path.join(root, file), "utf8"); }
+
+const guard = text("SCRIPTS/RuntimeGenerationGuard.js");
+const maintainer = text("SCRIPTS/TaskQueueMaintenanceService.js");
+const coo = text("StartAutonomousCOO.js");
+const cutover = text("SCRIPTS/RUN_MILES_FULL_RUNTIME_STABILITY_CUTOVER_WINDOWS.ps1");
+
+assert.match(guard, /generation superseded/);
+assert.match(guard, /MILES_RUNTIME_GENERATION/);
+assert.match(guard, /taskkill/);
+assert.match(maintainer, /24 \* MB/);
+assert.match(maintainer, /12 \* MB/);
+assert.match(coo, /loop\.stop\(\)/);
+assert.match(coo, /process\.exit\(0\)/);
+assert.match(cutover, /CompactTaskQueueHistory\.js/);
+assert.match(cutover, /True PM2 orphans/);
+assert.match(cutover, /FULL RUNTIME STABILITY ACCEPTED/);
+assert.match(cutover, /miles-worker/);
+assert.match(cutover, /miles-autonomous-coo/);
+assert.match(cutover, /miles-queue-maintainer/);
+
+console.log("FULL_RUNTIME_STABILITY_TEST: GREEN");

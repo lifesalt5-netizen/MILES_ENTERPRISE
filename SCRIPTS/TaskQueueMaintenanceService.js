@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const fs = require("fs");
 const path = require("path");
@@ -7,9 +7,9 @@ const { compactQueue, paths } = require("./CompactTaskQueueHistory");
 const MB = 1024 * 1024;
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const STATUS_FILE = path.join(ROOT, "DATA", "runtime", "task_queue_maintenance_status.json");
-const INTERVAL_MS = Math.max(60000, Number(process.env.MILES_QUEUE_MAINTENANCE_INTERVAL_MS || 300000));
-const TRIGGER_BYTES = Math.max(8 * MB, Number(process.env.MILES_QUEUE_COMPACT_TRIGGER_BYTES || 64 * MB));
-const TARGET_BYTES = Math.max(4 * MB, Number(process.env.MILES_QUEUE_COMPACT_TARGET_BYTES || 16 * MB));
+const INTERVAL_MS = Math.max(60000, Number(process.env.MILES_QUEUE_MAINTENANCE_INTERVAL_MS || 120000));
+const TRIGGER_BYTES = Math.max(8 * MB, Number(process.env.MILES_QUEUE_COMPACT_TRIGGER_BYTES || 24 * MB));
+const TARGET_BYTES = Math.max(4 * MB, Number(process.env.MILES_QUEUE_COMPACT_TARGET_BYTES || 12 * MB));
 const HARD_BYTES = Math.max(TARGET_BYTES, Number(process.env.MILES_QUEUE_COMPACT_HARD_BYTES || 64 * MB));
 
 function now() { return new Date().toISOString(); }
@@ -87,11 +87,10 @@ if (require.main === module) {
       const result = cycle();
       if (result.status !== "IDLE_BELOW_TRIGGER") console.log(JSON.stringify(result));
     }, INTERVAL_MS);
-    timer.unref?.();
     process.on("SIGINT", () => { clearInterval(timer); process.exit(0); });
     process.on("SIGTERM", () => { clearInterval(timer); process.exit(0); });
-    // Keep the process alive even if unref is supported.
-    setInterval(() => {}, 60 * 60 * 1000);
+    // Keep the process alive without a second orphan-prone keepalive timer.
+    timer.ref?.();
   }
 }
 
