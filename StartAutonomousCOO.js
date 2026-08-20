@@ -35,11 +35,9 @@ async function main() {
     const intervalMs = intFromEnv("MILES_AUTONOMOUS_INTERVAL_MS", 5 * 60 * 1000);
     const winBackIntervalMs = intFromEnv("P2GC_WINBACK_DISCOVERY_INTERVAL_MS", 6 * 60 * 60 * 1000);
     const replyIntervalMs = intFromEnv("P2GC_REPLY_INTELLIGENCE_INTERVAL_MS", 5 * 60 * 1000);
+    const shutdownGraceMs = intFromEnv("MILES_COO_SHUTDOWN_GRACE_MS", 8000);
 
     // TaskQueue execution belongs exclusively to miles-worker / StartProductionSystem.js.
-    // The COO remains autonomous by planning and queueing work, while the worker claims
-    // and executes queued tasks. This prevents two PM2 processes from competing for the
-    // same TaskQueue lock.
     const cooQueueExecution = false;
 
     const loop = new AutonomousCOOLoopService({
@@ -63,14 +61,38 @@ async function main() {
         intervalMs: replyIntervalMs
     });
 
+    let shutdownStarted = false;
+
     const stopRevenueSidecars = () => {
         try { captureCapacity.stop(); } catch {}
         try { winBack.stop(); } catch {}
         try { replyIntelligence.stop(); } catch {}
     };
 
-    process.once("SIGINT", stopRevenueSidecars);
-    process.once("SIGTERM", stopRevenueSidecars);
+    const shutdown = signal => {
+        if (shutdownStarted) return;
+        shutdownStarted = true;
+        console.log(`[MILES] Autonomous COO shutdown requested: ${signal}`);
+
+        // Stop future COO cycles first, then all sidecars. Node does not exit
+        // automatically after a SIGTERM handler is installed, so explicitly
+        // terminate after a bounded grace period. This prevents PM2 from
+        // leaving an old COO generation alive behind its replacement.
+        try { loop.stop(); } catch {}
+        stopRevenueSidecars();
+
+        const timer = setTimeout(() => {
+            console.log("[MILES] Autonomous COO shutdown grace elapsed; exiting.");
+            process.exit(0);
+        }, shutdownGraceMs);
+        timer.unref?.();
+
+        // Give synchronous stop hooks and stdout a brief chance to flush.
+        setTimeout(() => process.exit(0), 250).unref?.();
+    };
+
+    process.once("SIGINT", () => shutdown("SIGINT"));
+    process.once("SIGTERM", () => shutdown("SIGTERM"));
 
     if (mode === "loop") {
         console.log("[MILES] Autonomous COO loop starting.");
@@ -126,7 +148,6 @@ async function main() {
         workCreated: result.workCreated?.total || 0,
         workflowsQueued: result.workflowResults?.length || 0,
         executionPasses: result.executionResults?.length || 0,
-
         captureCapacityRevenue: {
             ok: captureCapacityResult.ok,
             status: captureCapacityResult.status,
@@ -137,7 +158,6 @@ async function main() {
             activationAllowed: false,
             artifact: captureCapacityResult.artifact || null
         },
-
         winBackRevenue: {
             ok: winBackResult.ok,
             status: winBackResult.status,
@@ -152,7 +172,6 @@ async function main() {
             activationAllowed: false,
             artifact: winBackResult.artifact || null
         },
-
         replyIntelligenceRevenue: {
             ok: replyResult.ok,
             status: replyResult.status,
@@ -166,7 +185,6 @@ async function main() {
             instantlyReadOnly: true,
             autoRepliesAllowed: false
         },
-
         outputs: {
             executive: "DATA/executive/latest_coo_cycle.md",
             mission: "DATA/executive/latest_mission_plan.json",
