@@ -21,6 +21,8 @@ jobs:
           node --check SCRIPTS/RuntimeGenerationGuard.js
           node --check SCRIPTS/TaskQueueRuntimeOptimizer.js
           node --check TESTS/taskqueue_runtime_optimization_test.js
+      - name: Mirror Windows case-insensitive logger resolution
+        run: cp CORE/logger.js CORE/Logger.js
       - name: Queue reliability regression
         run: node TESTS/Test_QueueReliability.js
       - name: Runtime queue optimization
