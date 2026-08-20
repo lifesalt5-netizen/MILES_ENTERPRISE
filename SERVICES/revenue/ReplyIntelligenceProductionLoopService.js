@@ -5,6 +5,7 @@ const path = require("path");
 const ReplyIntelligenceService = require("./ReplyIntelligenceService");
 const GlobalSuppressionService = require("./GlobalSuppressionService");
 const ExecutiveReplySurfacePolicyService = require("./ExecutiveReplySurfacePolicyService");
+const ReplacementContactRecoveryService = require("./ReplacementContactRecoveryService");
 
 const DEFAULT_INTERVAL_MS = 5 * 60 * 1000;
 const DEFAULT_LOOKBACK_DAYS = 60;
@@ -49,6 +50,7 @@ class ReplyIntelligenceProductionLoopService {
     this.classifier=options.classifier||new ReplyIntelligenceService();
     this.suppression=options.suppression||new GlobalSuppressionService({rootDir:this.rootDir});
     this.surfacePolicy=options.surfacePolicy||new ExecutiveReplySurfacePolicyService({rootDir:this.rootDir});
+    this.replacementRecovery=options.replacementRecovery||new ReplacementContactRecoveryService();
     this.timer=null; this.running=false; this.passRunning=false;
     this.outputDir=options.outputDir||path.join(this.rootDir,"DATA","runtime","revenue","replies");
     this.statePath=path.join(this.outputDir,"reply_intelligence_state.json");
@@ -58,11 +60,12 @@ class ReplyIntelligenceProductionLoopService {
     this.qualifiedQueuePath=path.join(this.outputDir,"qualified_reply_queue.json");
     this.followupQueuePath=path.join(this.outputDir,"followup_queue.json");
     this.reviewQueuePath=path.join(this.outputDir,"manual_review_queue.json");
+    this.replacementQueuePath=path.join(this.outputDir,"replacement_contact_queue.json");
     this.log=options.log||(message=>console.log(`[REPLY-INTEL] ${message}`));
   }
 
   getEmailSource(){ if(this.emailSource) return this.emailSource; const instantly=require(path.join(this.rootDir,"CONNECTORS","INSTANTLY","instantly.js")); return {async listEmails(params){return instantly.request("/emails",{method:"GET",params});}}; }
-  initialState(){ return {version:3,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
+  initialState(){ return {version:4,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
   loadState(){ const state=readJson(this.statePath,this.initialState()); return {...this.initialState(),...state,processedIds:Array.isArray(state?.processedIds)?state.processedIds:[],cumulative:{...this.initialState().cumulative,...(state?.cumulative||{}),counts:{...(state?.cumulative?.counts||{})}}}; }
   saveState(state){ state.processedIds=[...new Set(state.processedIds||[])].slice(-MAX_PROCESSED_IDS); state.generatedAt=new Date().toISOString(); writeJsonAtomic(this.statePath,state); }
 
@@ -79,6 +82,46 @@ class ReplyIntelligenceProductionLoopService {
     queueRemove(this.qualifiedQueuePath,pred); queueRemove(this.followupQueuePath,pred); queueRemove(this.reviewQueuePath,pred);
   }
 
+  recoverReplacementContact(item, classification, base){
+    const replacement=this.replacementRecovery.detect(item);
+    if(!replacement) return null;
+
+    const departed=String(replacement.departedContactEmail||classification.from||"").toLowerCase();
+    if(departed){
+      this.suppression.upsert({
+        email:departed,
+        reason:"CONTACT_DEPARTED",
+        category:"CONTACT_DEPARTED",
+        source:"INSTANTLY_UNIBOX",
+        sourceId:classification.emailId,
+        campaignId:classification.campaignId,
+        evidence:replacement.evidence,
+        hard:true
+      });
+      const byEmail=row=>String(row?.from||row?.departedContactEmail||"").toLowerCase()===departed;
+      queueRemove(this.qualifiedQueuePath,byEmail);
+      queueRemove(this.followupQueuePath,byEmail);
+      queueRemove(this.reviewQueuePath,byEmail);
+    }
+
+    const recovery={
+      ...replacement,
+      conversationKey:base.conversationKey,
+      threadId:classification.threadId,
+      sourceEmailId:classification.emailId,
+      campaignId:classification.campaignId,
+      leadId:classification.leadId,
+      source:"INSTANTLY_UNIBOX",
+      status:"VERIFICATION_REQUIRED",
+      owner:"MILES",
+      nextAction:"VERIFY_SUPPRESSION_DEDUPE_AND_CREATE_REPLACEMENT_LEAD",
+      requiredGates:["VERIFY_EMAIL","SUPPRESSION_CHECK","DUPLICATE_CHECK","PRESERVE_CAMPAIGN_CONTEXT","CREATE_REPLACEMENT_LEAD","RETIRE_OLD_CONTACT"],
+      createdAt:new Date().toISOString()
+    };
+    queueUpsert(this.replacementQueuePath,recovery,row=>String(row?.replacementEmail||"").toLowerCase()+"|"+String(row?.campaignId||""));
+    return recovery;
+  }
+
   processClassification(item,classification,meta={}){
     const key=meta.conversationKey||conversationKey(classification);
     const base={...classification,conversationKey:key,threadMessageCount:Number(meta.threadMessageCount||1),source:"INSTANTLY_UNIBOX",processedAt:new Date().toISOString()};
@@ -87,7 +130,12 @@ class ReplyIntelligenceProductionLoopService {
     const queueKey=row=>this.queueKey(row);
 
     this.clearConversationQueues(base);
-    if(classification.qualifiedPositive) queueUpsert(this.qualifiedQueuePath,{...base,status:"OPEN",owner:"KEVIN"},queueKey);
+    const replacement=this.recoverReplacementContact(item,classification,base);
+    if(replacement){
+      base.replacementContact=replacement;
+      base.action="REPLACE_CONTACT_AND_CONTINUE";
+      base.priority="HIGH";
+    } else if(classification.qualifiedPositive) queueUpsert(this.qualifiedQueuePath,{...base,status:"OPEN",owner:"KEVIN"},queueKey);
     else if(classification.category==="OOO"||classification.category==="NOT_NOW") queueUpsert(this.followupQueuePath,{...base,status:"SCHEDULED"},queueKey);
     else if(classification.category==="NEUTRAL_QUESTION"||classification.category==="UNKNOWN") queueUpsert(this.reviewQueuePath,{...base,status:"OPEN",owner:"MILES"},queueKey);
 
@@ -117,35 +165,32 @@ class ReplyIntelligenceProductionLoopService {
 
       const executiveAlerts=routed.filter(item=>item.surfaceToExecutiveInbox===true);
       const suppressedFromExecutive=routed.filter(item=>item.surfaceToExecutiveInbox!==true);
+      const replacements=routed.filter(item=>item.replacementContact?.detected===true);
       const report={
         ok:true,
         service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",
-        status:executiveAlerts.length>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",
+        status:executiveAlerts.length>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":replacements.length>0?"REPLACEMENT_CONTACTS_REQUIRE_RECOVERY":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",
         fetched:{rows:fetched.items.length,newRows:fresh.length,pages:fetched.pages,minTimestamp:fetched.minTimestamp,truncated:fetched.truncated},
         latest:summary,
         cumulative:state.cumulative,
         alerts:executiveAlerts,
-        executiveSurface:{
-          policy:"QUALIFIED_POSITIVE_ONLY",
-          rawForwardingAllowed:false,
-          surfaced:executiveAlerts.length,
-          withheld:suppressedFromExecutive.length,
-          queue:this.surfacePolicy.queuePath
-        },
-        suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression).length,
-        followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)).length,
-        manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)).length,
-        queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,suppression:this.suppression.filePath,executiveSurface:this.surfacePolicy.queuePath},
-        safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false,nonQualifiedExecutiveInboxAllowed:false},
+        replacementContactsRecovered:replacements.length,
+        replacementContacts:replacements.map(item=>item.replacementContact),
+        executiveSurface:{policy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,surfaced:executiveAlerts.length,withheld:suppressedFromExecutive.length,queue:this.surfacePolicy.queuePath},
+        suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression||item.replacementContact?.departedContactEmail).length,
+        followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)&&!item.replacementContact).length,
+        manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)&&!item.replacementContact).length,
+        queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,replacementContacts:this.replacementQueuePath,suppression:this.suppression.filePath,executiveSurface:this.surfacePolicy.queuePath},
+        safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false,nonQualifiedExecutiveInboxAllowed:false,replacementLeadRequiresVerification:true},
         generatedAt:new Date().toISOString()
       };
-      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","MEETINGS","HELD_MEETINGS","BLUEPRINT_DEMOS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative,executiveSurface:report.executiveSurface});
-      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}; surfaced=${executiveAlerts.length}`); return report;
+      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","MEETINGS","HELD_MEETINGS","BLUEPRINT_DEMOS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative,executiveSurface:report.executiveSurface,replacementContactsRecovered:replacements.length});
+      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}; surfaced=${executiveAlerts.length}; replacements=${replacements.length}`); return report;
     }catch(error){ const report={ok:false,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:"REPLY_INTELLIGENCE_POLL_FAILED",error:error.stack||error.message,safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0},generatedAt:new Date().toISOString()}; writeJsonAtomic(this.latestPath,report); this.log(`${report.status}: ${error.message}`); return report; }
     finally{this.passRunning=false;}
   }
 
-  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:false,executiveSurfacePolicy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false}; }
+  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:false,executiveSurfacePolicy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,replacementContactRecovery:true}; }
   stop(){ if(this.timer) clearInterval(this.timer); this.timer=null; this.running=false; return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STOPPED"}; }
 }
 

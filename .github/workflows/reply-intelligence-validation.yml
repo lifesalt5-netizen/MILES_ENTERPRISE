@@ -8,9 +8,11 @@ on:
       - "SERVICES/revenue/GlobalSuppressionService.js"
       - "SERVICES/revenue/ReplyIntelligenceService.js"
       - "SERVICES/revenue/ReplyIntelligenceProductionLoopService.js"
+      - "SERVICES/revenue/ReplacementContactRecoveryService.js"
       - "RUN_P2GC_REPLY_INTELLIGENCE.js"
       - "StartAutonomousCOO.js"
       - "TESTS/reply_*"
+      - "TESTS/replacement_contact_recovery_test.js"
       - ".github/workflows/reply-intelligence-validation.yml"
   workflow_dispatch:
 
@@ -37,18 +39,23 @@ jobs:
           node --check SERVICES/revenue/GlobalSuppressionService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
+          node --check SERVICES/revenue/ReplacementContactRecoveryService.js
           node --check RUN_P2GC_REPLY_INTELLIGENCE.js
           node --check StartAutonomousCOO.js
           node --check TESTS/reply_intelligence_classification_test.js
           node --check TESTS/reply_intelligence_production_loop_test.js
           node --check TESTS/reply_global_suppression_connector_test.js
           node --check TESTS/reply_intelligence_production_entrypoint_test.js
+          node --check TESTS/replacement_contact_recovery_test.js
 
       - name: Classification tests
         run: node TESTS/reply_intelligence_classification_test.js
 
       - name: Production loop tests
         run: node TESTS/reply_intelligence_production_loop_test.js
+
+      - name: Replacement contact recovery tests
+        run: node TESTS/replacement_contact_recovery_test.js
 
       - name: Global suppression connector tests
         run: node TESTS/reply_global_suppression_connector_test.js
