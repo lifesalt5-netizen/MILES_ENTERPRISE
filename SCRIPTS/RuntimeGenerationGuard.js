@@ -6,8 +6,13 @@ const { spawn, spawnSync } = require("child_process");
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
 const RUNTIME_DIR = path.join(ROOT, "DATA", "runtime", "runtime_generations");
+const OPTIMIZER = path.join(ROOT, "SCRIPTS", "TaskQueueRuntimeOptimizer.js");
 const POLL_MS = Math.max(250, Number(process.env.MILES_RUNTIME_GENERATION_POLL_MS || 1000));
 const GRACE_MS = Math.max(1000, Number(process.env.MILES_RUNTIME_SHUTDOWN_GRACE_MS || 8000));
+const QUEUE_OPTIMIZED_RUNTIMES = new Set([
+  "miles-worker",
+  "miles-autonomous-coo"
+]);
 
 function parseArgs(argv) {
   const result = { args: [] };
@@ -51,10 +56,21 @@ function killTree(pid, force = false) {
   try { process.kill(pid, force ? "SIGKILL" : "SIGTERM"); } catch {}
 }
 
+function withOptimizerNodeOptions(existing = "") {
+  const option = `--require=${OPTIMIZER}`;
+  const value = String(existing || "").trim();
+  return value ? `${value} ${option}` : option;
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const entry = path.isAbsolute(options.entry) ? options.entry : path.join(ROOT, options.entry);
   if (!fs.existsSync(entry)) throw new Error(`Runtime entry missing: ${entry}`);
+
+  const optimizeQueue = QUEUE_OPTIMIZED_RUNTIMES.has(options.runtime);
+  if (optimizeQueue && !fs.existsSync(OPTIMIZER)) {
+    throw new Error(`TaskQueue runtime optimizer missing: ${OPTIMIZER}`);
+  }
 
   fs.mkdirSync(RUNTIME_DIR, { recursive: true });
   const leaseFile = path.join(RUNTIME_DIR, `${options.runtime}.json`);
@@ -67,18 +83,25 @@ async function main() {
     guardPid: process.pid,
     entry,
     startedAt,
+    queueOptimizer: optimizeQueue ? OPTIMIZER : null,
     heartbeatAt: startedAt
   });
 
+  const childEnv = {
+    ...process.env,
+    MILES_ROOT: ROOT,
+    MILES_RUNTIME_NAME: options.runtime,
+    MILES_RUNTIME_GENERATION: generation,
+    MILES_RUNTIME_GUARD_PID: String(process.pid)
+  };
+
+  if (optimizeQueue) {
+    childEnv.NODE_OPTIONS = withOptimizerNodeOptions(process.env.NODE_OPTIONS);
+  }
+
   const child = spawn(process.execPath, [entry, ...options.args], {
     cwd: ROOT,
-    env: {
-      ...process.env,
-      MILES_ROOT: ROOT,
-      MILES_RUNTIME_NAME: options.runtime,
-      MILES_RUNTIME_GENERATION: generation,
-      MILES_RUNTIME_GUARD_PID: String(process.pid)
-    },
+    env: childEnv,
     stdio: "inherit",
     windowsHide: true
   });
@@ -117,6 +140,7 @@ async function main() {
       childPid: child.pid,
       entry,
       startedAt,
+      queueOptimizer: optimizeQueue ? OPTIMIZER : null,
       heartbeatAt: new Date().toISOString()
     });
   }, POLL_MS);
@@ -139,7 +163,9 @@ async function main() {
     process.exit(Number.isInteger(code) ? code : (stopping ? 0 : 1));
   });
 
-  console.log(`[MILES RUNTIME GUARD] ${options.runtime} generation=${generation} guardPid=${process.pid} childPid=${child.pid}`);
+  console.log(
+    `[MILES RUNTIME GUARD] ${options.runtime} generation=${generation} guardPid=${process.pid} childPid=${child.pid} queueOptimizer=${optimizeQueue ? "enabled" : "disabled"}`
+  );
 }
 
 if (require.main === module) {
@@ -149,4 +175,11 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parseArgs, writeJsonAtomic, readJson, killTree, main };
+module.exports = {
+  parseArgs,
+  writeJsonAtomic,
+  readJson,
+  killTree,
+  withOptimizerNodeOptions,
+  main
+};
