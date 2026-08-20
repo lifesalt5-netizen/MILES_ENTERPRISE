@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "twin": "MONICA",
   "mode": "DISCOVERY_ONLY",
   "activationBlocked": true,
@@ -16,5 +16,6 @@
   ],
   "candidatePatterns": ["award","recompete","revenue","incumbent","vehicle","hiring","capture","subcontract","agency","orion"],
   "suppressionPatterns": ["MASTER_DEDUPED_ALL_SEGMENTS","instantly","segment","lead","campaign"],
-  "minNetNewForBuildTest": 250
+  "minNetNewForBuildTest": 250,
+  "maxSourceFileBytes": 134217728
 }
