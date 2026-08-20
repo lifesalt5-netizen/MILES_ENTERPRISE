@@ -1,0 +1,23 @@
+name: MILES Single TaskQueue Executor Validation
+
+on:
+  pull_request:
+    paths:
+      - 'StartAutonomousCOO.js'
+      - 'TESTS/single_taskqueue_executor_test.js'
+      - '.github/workflows/miles-single-taskqueue-executor-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax validation
+        run: |
+          node --check StartAutonomousCOO.js
+          node --check TESTS/single_taskqueue_executor_test.js
+      - name: Enforce single TaskQueue executor
+        run: node TESTS/single_taskqueue_executor_test.js
