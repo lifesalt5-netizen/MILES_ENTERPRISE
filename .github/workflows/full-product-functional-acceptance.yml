@@ -9,9 +9,14 @@ on:
       - "SERVICES/BusinessWorkPlannerService.js"
       - "SERVICES/digital_coo/public/app.js"
       - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
+      - "SERVICES/revenue/ReplyIntelligenceProductionLoopService.js"
+      - "SERVICES/revenue/ReplyIntelligenceService.js"
+      - "SERVICES/revenue/ExecutiveReplySurfacePolicyService.js"
       - "SERVICES/demo/**"
       - "SERVICES/teaming/**"
       - "TESTS/full_product_functional_acceptance_test.js"
+      - "TESTS/reply_intelligence_production_loop_test.js"
+      - "TESTS/executive_reply_surface_policy_test.js"
       - ".github/workflows/full-product-functional-acceptance.yml"
   workflow_dispatch:
 
@@ -38,10 +43,20 @@ jobs:
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
+          node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
+          node --check SERVICES/revenue/ReplyIntelligenceService.js
+          node --check SERVICES/revenue/ExecutiveReplySurfacePolicyService.js
           node --check TESTS/full_product_functional_acceptance_test.js
+          node --check TESTS/reply_intelligence_production_loop_test.js
+          node --check TESTS/executive_reply_surface_policy_test.js
 
       - name: Full product semantic acceptance
         run: node TESTS/full_product_functional_acceptance_test.js
+
+      - name: Reply intelligence semantic acceptance
+        run: |
+          node TESTS/executive_reply_surface_policy_test.js
+          node TESTS/reply_intelligence_production_loop_test.js
 
       - name: Capture Capacity regression suite
         run: |
