@@ -22,13 +22,13 @@ assert(
 );
 
 assert(
-  /const\s+revenueExecution\s*=\s*boolFromEnv\("MILES_AUTONOMOUS_EXECUTE",\s*true\)/.test(source),
-  "Revenue-sidecar execution governance must remain separately controlled."
+  /const\s+execute\s*=\s*boolFromEnv\("MILES_AUTONOMOUS_EXECUTE",\s*true\)/.test(source),
+  "Revenue-sidecar execution governance must remain controlled by MILES_AUTONOMOUS_EXECUTE."
 );
 
 assert(
-  /enableExecution:\s*revenueExecution/.test(source),
-  "Capture Capacity revenue execution must preserve the governed revenue flag."
+  /new\s+CaptureCapacityProductionLoopService\(\{[\s\S]*?enableExecution:\s*execute/.test(source),
+  "Capture Capacity revenue execution must preserve the governed execute flag."
 );
 
 console.log("SINGLE_TASKQUEUE_EXECUTOR_TEST: GREEN");
