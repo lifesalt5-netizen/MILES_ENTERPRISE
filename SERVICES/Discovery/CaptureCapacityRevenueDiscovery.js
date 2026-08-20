@@ -17,18 +17,18 @@ class CaptureCapacityRevenueDiscovery {
     const sourceBootstrap = this.sourceBootstrap.apply();
     const signalBridge = this.signalBridge.apply();
 
-    // Refresh public-web evidence before the canonical prospect discovery scan.
-    // The public source writes into the existing capture_capacity/signals folder,
-    // so all downstream identity, recency, evidence and campaign gates remain
-    // owned by CaptureCapacityProspectDiscoveryService.
+    // Refresh zero-cost public career/ATS evidence before the canonical prospect
+    // discovery scan. The public source writes into the existing
+    // capture_capacity/signals folder, so downstream identity, evidence,
+    // recency, personalization and campaign gates remain canonical.
     let publicWebSignals;
     try {
       publicWebSignals = await this.publicWebSignals.runOnce();
     } catch (error) {
       publicWebSignals = {
         ok: false,
-        status: "PUBLIC_WEB_SEARCH_FAILED",
-        configured: Boolean(process.env.TAVILY_API_KEY),
+        status: "PUBLIC_JOB_SIGNAL_REFRESH_FAILED",
+        provider: "PUBLIC_ATS_AND_CAREERS",
         error: error.message,
         generatedAt: new Date().toISOString()
       };
@@ -91,16 +91,16 @@ class CaptureCapacityRevenueDiscovery {
         discoveredAt: new Date().toISOString()
       });
     } else if ((counts.signalRows || 0) === 0) {
-      const publicSearchNotConfigured = publicWebSignals.status === "PUBLIC_WEB_SEARCH_NOT_CONFIGURED";
+      const publicSourceUnavailable = publicWebSignals.status === "PUBLIC_JOB_SOURCE_UNAVAILABLE";
       work.push({
         id: "P2GC-CAPTURE-CAPACITY-SIGNAL-REFRESH",
         objective: "Collect or validate fresh source-backed capture-capacity signals: capture/BD hiring, new IDIQ/GWAC or vehicle awards, agency expansion, recompetes, federal award growth, and acquisitions.",
-        provider: publicSearchNotConfigured ? "Revenue" : "ORION",
+        provider: publicSourceUnavailable ? "Revenue" : "ORION",
         domain: "Revenue Intelligence",
         priority: "CRITICAL",
         priorityScore: 98,
-        reason: publicSearchNotConfigured
-          ? "Prospects exist, but live public-web capture/growth signal search is not configured. Configure TAVILY_API_KEY to let MILES discover current hiring signals autonomously."
+        reason: publicSourceUnavailable
+          ? "Prospects exist, but no usable company website/career source was available in the current contact universe for zero-cost public job monitoring."
           : (signalBridge.validationQueueCount || 0) > 0
             ? `${signalBridge.validationQueueCount} ORION signal candidates require public-source validation before they can be used for outbound personalization.`
             : "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
