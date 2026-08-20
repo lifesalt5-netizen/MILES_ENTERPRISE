@@ -3,17 +3,37 @@
 const CaptureCapacityProspectDiscoveryService = require("../revenue/CaptureCapacityProspectDiscoveryService");
 const CaptureCapacitySourceBootstrapService = require("../revenue/CaptureCapacitySourceBootstrapService");
 const CaptureCapacityOrionSignalBridgeService = require("../revenue/CaptureCapacityOrionSignalBridgeService");
+const CaptureCapacityPublicWebSignalService = require("../revenue/CaptureCapacityPublicWebSignalService");
 
 class CaptureCapacityRevenueDiscovery {
   constructor(options = {}) {
     this.service = options.service || new CaptureCapacityProspectDiscoveryService({ maxFiles: 100 });
     this.sourceBootstrap = options.sourceBootstrap || CaptureCapacitySourceBootstrapService;
     this.signalBridge = options.signalBridge || CaptureCapacityOrionSignalBridgeService;
+    this.publicWebSignals = options.publicWebSignals || new CaptureCapacityPublicWebSignalService();
   }
 
   async discover() {
     const sourceBootstrap = this.sourceBootstrap.apply();
     const signalBridge = this.signalBridge.apply();
+
+    // Refresh public-web evidence before the canonical prospect discovery scan.
+    // The public source writes into the existing capture_capacity/signals folder,
+    // so all downstream identity, recency, evidence and campaign gates remain
+    // owned by CaptureCapacityProspectDiscoveryService.
+    let publicWebSignals;
+    try {
+      publicWebSignals = await this.publicWebSignals.runOnce();
+    } catch (error) {
+      publicWebSignals = {
+        ok: false,
+        status: "PUBLIC_WEB_SEARCH_FAILED",
+        configured: Boolean(process.env.TAVILY_API_KEY),
+        error: error.message,
+        generatedAt: new Date().toISOString()
+      };
+    }
+
     const result = this.service.discover({ maxAudience: 2000 });
     const counts = result.sourceCounts || {};
     const work = [];
@@ -38,7 +58,10 @@ class CaptureCapacityRevenueDiscovery {
           signalBridgeStatus: signalBridge.status,
           verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
           orionValidationQueue: signalBridge.validationQueueCount || 0,
-          signalBridgeArtifact: signalBridge.artifact || null
+          signalBridgeArtifact: signalBridge.artifact || null,
+          publicWebSignalStatus: publicWebSignals.status || null,
+          publicWebSignals: publicWebSignals.usableSignals || 0,
+          publicWebSignalArtifact: publicWebSignals.artifact || null
         },
         discoveredAt: new Date().toISOString()
       });
@@ -61,21 +84,26 @@ class CaptureCapacityRevenueDiscovery {
           selectedContactSources: sourceBootstrap.selectedCount || 0,
           signalBridgeStatus: signalBridge.status,
           verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
-          orionValidationQueue: signalBridge.validationQueueCount || 0
+          orionValidationQueue: signalBridge.validationQueueCount || 0,
+          publicWebSignalStatus: publicWebSignals.status || null,
+          publicWebSignals: publicWebSignals.usableSignals || 0
         },
         discoveredAt: new Date().toISOString()
       });
     } else if ((counts.signalRows || 0) === 0) {
+      const publicSearchNotConfigured = publicWebSignals.status === "PUBLIC_WEB_SEARCH_NOT_CONFIGURED";
       work.push({
         id: "P2GC-CAPTURE-CAPACITY-SIGNAL-REFRESH",
         objective: "Collect or validate fresh source-backed capture-capacity signals: capture/BD hiring, new IDIQ/GWAC or vehicle awards, agency expansion, recompetes, federal award growth, and acquisitions.",
-        provider: "ORION",
+        provider: publicSearchNotConfigured ? "Revenue" : "ORION",
         domain: "Revenue Intelligence",
         priority: "CRITICAL",
         priorityScore: 98,
-        reason: (signalBridge.validationQueueCount || 0) > 0
-          ? `${signalBridge.validationQueueCount} ORION signal candidates require public-source validation before they can be used for outbound personalization.`
-          : "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
+        reason: publicSearchNotConfigured
+          ? "Prospects exist, but live public-web capture/growth signal search is not configured. Configure TAVILY_API_KEY to let MILES discover current hiring signals autonomously."
+          : (signalBridge.validationQueueCount || 0) > 0
+            ? `${signalBridge.validationQueueCount} ORION signal candidates require public-source validation before they can be used for outbound personalization.`
+            : "Prospects exist, but the campaign cannot enroll them without evidence-backed current triggers.",
         capability: "revenue.capture_capacity_signal_refresh",
         metadata: {
           contactRows: counts.contactRows || 0,
@@ -86,7 +114,10 @@ class CaptureCapacityRevenueDiscovery {
           verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
           orionValidationQueue: signalBridge.validationQueueCount || 0,
           orionValidationFile: signalBridge.validationFile || null,
-          signalBridgeArtifact: signalBridge.artifact || null
+          signalBridgeArtifact: signalBridge.artifact || null,
+          publicWebSignalStatus: publicWebSignals.status || null,
+          publicWebSignals: publicWebSignals.usableSignals || 0,
+          publicWebSignalArtifact: publicWebSignals.artifact || null
         },
         discoveredAt: new Date().toISOString()
       });
@@ -110,7 +141,9 @@ class CaptureCapacityRevenueDiscovery {
           selectedContactSources: sourceBootstrap.selectedCount || 0,
           signalBridgeStatus: signalBridge.status,
           verifiedOrionSignals: signalBridge.verifiedSignalCount || 0,
-          orionValidationQueue: signalBridge.validationQueueCount || 0
+          orionValidationQueue: signalBridge.validationQueueCount || 0,
+          publicWebSignalStatus: publicWebSignals.status || null,
+          publicWebSignals: publicWebSignals.usableSignals || 0
         },
         discoveredAt: new Date().toISOString()
       });
@@ -125,7 +158,8 @@ class CaptureCapacityRevenueDiscovery {
         campaignGate: result.campaignGate,
         nextAction: result.nextAction,
         sourceBootstrap,
-        signalBridge
+        signalBridge,
+        publicWebSignals
       },
       work
     };
