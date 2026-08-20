@@ -10,6 +10,7 @@ process.env.MILES_ROOT = root;
 process.env.MILES_QUEUE_LOCK_TIMEOUT_MS = "250";
 process.env.MILES_QUEUE_LOCK_RETRY_MS = "10";
 process.env.MILES_QUEUE_TELEMETRY_CACHE_MS = "250";
+process.env.MILES_QUEUE_TELEMETRY_TEST_MODE = "1";
 
 const repoRoot = path.resolve(__dirname, "..");
 const queueModulePath = path.join(repoRoot, "CORE", "TaskQueue.js");
@@ -74,5 +75,6 @@ try {
 
   console.log("TASKQUEUE_RUNTIME_OPTIMIZATION_TEST: GREEN");
 } finally {
+  delete process.env.MILES_QUEUE_TELEMETRY_TEST_MODE;
   fs.rmSync(root, { recursive: true, force: true });
 }
