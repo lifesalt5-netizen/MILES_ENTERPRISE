@@ -1,0 +1,33 @@
+name: MILES Final Runtime Release Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RuntimeGenerationGuard.js'
+      - 'SCRIPTS/TaskQueueRuntimeOptimizer.js'
+      - 'TESTS/taskqueue_runtime_optimization_test.js'
+      - '.github/workflows/final-runtime-release-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax validation
+        run: |
+          node --check SCRIPTS/RuntimeGenerationGuard.js
+          node --check SCRIPTS/TaskQueueRuntimeOptimizer.js
+          node --check TESTS/taskqueue_runtime_optimization_test.js
+      - name: Queue reliability regression
+        run: node TESTS/Test_QueueReliability.js
+      - name: Runtime queue optimization
+        run: node TESTS/taskqueue_runtime_optimization_test.js
+      - name: Single owner regression
+        run: |
+          node TESTS/single_taskqueue_executor_test.js
+          node TESTS/single_coo_planner_test.js
+      - name: Full runtime stability contract
+        run: node TESTS/full_runtime_stability_test.js
