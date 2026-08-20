@@ -1,0 +1,25 @@
+name: MILES Revenue Zero Meeting Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/RevenueCOOService.js'
+      - 'SERVICES/RevenueMeetingInventoryService.js'
+      - 'TESTS/Test_RevenueCOO_ZeroMeetingResponse.js'
+      - '.github/workflows/miles-revenue-zero-meeting-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/RevenueCOOService.js
+          node --check SERVICES/RevenueMeetingInventoryService.js
+          node --check TESTS/Test_RevenueCOO_ZeroMeetingResponse.js
+      - name: Zero meeting revenue mission test
+        run: node TESTS/Test_RevenueCOO_ZeroMeetingResponse.js
