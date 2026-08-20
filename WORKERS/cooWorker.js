@@ -2,39 +2,24 @@
 
 const bus = require("../CORE/EventBus");
 
-let COOEngine;
-let engineName;
+// The dedicated miles-autonomous-coo PM2 process owns COO planning.
+// The resident miles-worker owns TaskQueue execution only. Historically this
+// worker subscribed to COO_TICK and launched a second AutonomousCOOLoopService,
+// which caused duplicate planning cycles and competing writes to latest_* COO
+// evidence files. Keep the event contract, but do not run a second planner here.
 
-try {
-  COOEngine = require("../SERVICES/AutonomousCOOLoopService");
-  engineName = "AutonomousCOOLoopService";
-} catch (err) {
-  console.error("[MILES] Autonomous COO unavailable:", err.message);
-  COOEngine = require("../SERVICES/ProductionCOOEngine");
-  engineName = "ProductionCOOEngine_FALLBACK";
-}
+console.log("[MILES] COO Worker planning delegated to miles-autonomous-coo");
 
-const coo = new COOEngine({});
+bus.on("COO_TICK", payload => {
+  const result = {
+    ok: true,
+    status: "COO_PLANNING_DELEGATED",
+    planner: "miles-autonomous-coo",
+    executor: "miles-worker",
+    observedAt: new Date().toISOString(),
+    heartbeat: payload || null
+  };
 
-console.log("[MILES] COO Worker using:", engineName);
-
-bus.on("COO_TICK", async () => {
-  try {
-    let result;
-
-    if (typeof coo.runOnce === "function") {
-      result = await coo.runOnce();
-    } else if (typeof coo.runCycle === "function") {
-      result = await coo.runCycle();
-    } else {
-      throw new Error("No COO run method found.");
-    }
-
-    console.log("[COO] Cycle completed via:", engineName);
-
-    bus.emit("COO_RESULT", result);
-  } catch (err) {
-    console.error("[COO] Fatal COO error:", err.message);
-    console.error(err.stack);
-  }
+  console.log("[COO] Tick observed; planning delegated to miles-autonomous-coo");
+  bus.emit("COO_RESULT", result);
 });
