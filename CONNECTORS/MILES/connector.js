@@ -17,6 +17,7 @@ const {
 
 const HANDLER_PATHS = Object.freeze({
   BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineServiceV2",
+  CAPTURE_CAPACITY_DISCOVERY: "../../SERVICES/revenue/CaptureCapacityAutonomousExecutionService",
   PROVIDER_AUTHORITY: "../../SERVICES/ProviderAuthorityRegistryService",
   PROVIDER_AUTHORITY_REGISTRY: "../../SERVICES/ProviderAuthorityRegistryService",
   PROVIDER_SYNC: "../../SERVICES/ProviderSynchronizationService",
