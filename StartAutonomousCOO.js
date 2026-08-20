@@ -36,8 +36,14 @@ async function main() {
     const winBackIntervalMs = intFromEnv("P2GC_WINBACK_DISCOVERY_INTERVAL_MS", 6 * 60 * 60 * 1000);
     const replyIntervalMs = intFromEnv("P2GC_REPLY_INTELLIGENCE_INTERVAL_MS", 5 * 60 * 1000);
 
+    // TaskQueue execution belongs exclusively to miles-worker / StartProductionSystem.js.
+    // The COO remains autonomous by planning and queueing work, while the worker claims
+    // and executes queued tasks. This prevents two PM2 processes from competing for the
+    // same TaskQueue lock.
+    const cooQueueExecution = false;
+
     const loop = new AutonomousCOOLoopService({
-        enableExecution: execute,
+        enableExecution: cooQueueExecution,
         enableWorkflowQueueing: queueWorkflows,
         maxExecutionPasses,
         intervalMs,
@@ -68,7 +74,8 @@ async function main() {
 
     if (mode === "loop") {
         console.log("[MILES] Autonomous COO loop starting.");
-        console.log(`[MILES] Execution: ${execute ? "enabled" : "disabled"}`);
+        console.log("[MILES] TaskQueue execution: delegated to miles-worker");
+        console.log(`[MILES] Revenue sidecar execution: ${execute ? "enabled" : "disabled"}`);
         console.log(`[MILES] Workflow queueing: ${queueWorkflows ? "enabled" : "disabled"}`);
         console.log(`[MILES] Interval: ${intervalMs}ms`);
 
