@@ -8,6 +8,7 @@ on:
       - 'CONFIG/WORKFORCE/MONICA_WORKFORCE_PROFILE.json'
       - 'SCRIPTS/RegisterMonicaTwin.js'
       - 'SCRIPTS/RunMonicaNetNewAcquisitionCensus.js'
+      - 'SCRIPTS/InstallMonicaStandalone.js'
       - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
       - 'MONICA.md'
       - '.github/workflows/monica-ci.yml'
@@ -19,6 +20,7 @@ on:
       - 'CONFIG/MONICA/**'
       - 'SCRIPTS/RegisterMonicaTwin.js'
       - 'SCRIPTS/RunMonicaNetNewAcquisitionCensus.js'
+      - 'SCRIPTS/InstallMonicaStandalone.js'
       - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
       - '.github/workflows/monica-ci.yml'
 
@@ -35,5 +37,6 @@ jobs:
           node --check SERVICES/monica/MonicaAcquisitionIntelligenceService.js
           node --check SCRIPTS/RegisterMonicaTwin.js
           node --check SCRIPTS/RunMonicaNetNewAcquisitionCensus.js
+          node --check SCRIPTS/InstallMonicaStandalone.js
       - name: MONICA unit and suppression tests
         run: node TESTS/Test_MonicaAcquisitionIntelligence.js
