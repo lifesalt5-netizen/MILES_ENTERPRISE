@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+const RevenueMeetingInventoryService = require("./RevenueMeetingInventoryService");
+
 function now() {
   return new Date().toISOString();
 }
@@ -17,6 +19,11 @@ class RevenueCOOService {
   constructor(options = {}) {
     this.bounceWarningRate = number(options.bounceWarningRate, 0.03);
     this.minimumActiveCampaigns = number(options.minimumActiveCampaigns, 2);
+    this.meetingInventory =
+      options.meetingInventory ||
+      new RevenueMeetingInventoryService({
+        root: options.root
+      });
   }
 
   analyze(executiveState = {}, cycleId = null) {
@@ -35,6 +42,8 @@ class RevenueCOOService {
       : Array.isArray(marketing.segments)
         ? marketing.segments
         : [];
+
+    const meetingInventory = this.meetingInventory.read();
 
     const activeCampaigns = campaigns.filter(c =>
       /active|running|enabled|launched/.test(statusText(c.status))
@@ -74,6 +83,42 @@ class RevenueCOOService {
     const bounceRate = totalSent > 0 ? totalBounces / totalSent : 0;
 
     const missions = [];
+
+    if (meetingInventory.ok && meetingInventory.upcomingMeetings === 0) {
+      missions.push({
+        priority: 1,
+        area: "Revenue Operations",
+        title: "Restore qualified P2GC meeting inventory",
+        objective: "Generate upcoming qualified Federal Strategy calls for P2GC",
+        reason:
+          `Calendly revenue pipeline is healthy but currently shows 0 upcoming P2GC meetings; ` +
+          `${meetingInventory.pastActiveMeetings} prior active meeting(s) and ` +
+          `${meetingInventory.canceledMeetings} canceled meeting(s) are visible.`,
+        recommendedAction:
+          "Run the meeting-generation recovery sequence: prioritize CURRENTLY_LOOKING_FOR_HELP first, then Expired Everything, Expiring 6M, Expiring 12M, GSA, VA, SAM, Certifications, and SBS; refresh Instantly campaign/reply/mailbox capacity; identify verified highest-intent prospects; prepare the next safe outbound and follow-up actions; preserve suppression/deduplication rules; do not enable Instantly mutations outside existing controlled-write governance; track every resulting booking back to segment and campaign when attribution evidence exists.",
+        expectedImpact:
+          "Refills the qualified meeting calendar and converts outbound activity into the primary P2GC revenue KPI.",
+        requiresKevin: false,
+        relatedProvider: "MarketingProvider",
+        metadata: {
+          trigger: "ZERO_UPCOMING_P2GC_MEETINGS",
+          source: "CalendlyRevenuePipeline",
+          meetingInventory,
+          targetSegmentOrder: [
+            "CURRENTLY_LOOKING_FOR_HELP",
+            "EXPIRED_EVERYTHING",
+            "EXPIRING_6M",
+            "EXPIRING_12M",
+            "GSA",
+            "VA",
+            "SAM",
+            "CERTIFICATIONS",
+            "SBS"
+          ],
+          instantlyMutationPolicy: "EXISTING_CONTROLLED_WRITE_GOVERNANCE_ONLY"
+        }
+      });
+    }
 
     if (unclassifiedReplies.length > 0) {
       missions.push({
@@ -192,8 +237,15 @@ class RevenueCOOService {
         segmentsDepleted: depletedSegments.length,
         sentObserved: totalSent,
         bouncesObserved: totalBounces,
-        bounceRate
+        bounceRate,
+        meetingPipelineStatus: meetingInventory.status,
+        p2gcMeetingEvents: meetingInventory.p2gcEvents,
+        meetingsActive: meetingInventory.activeMeetings,
+        meetingsUpcoming: meetingInventory.upcomingMeetings,
+        meetingsPastActive: meetingInventory.pastActiveMeetings,
+        meetingsCanceled: meetingInventory.canceledMeetings
       },
+      meetingInventory,
       missions,
       requiresKevin: false
     };
