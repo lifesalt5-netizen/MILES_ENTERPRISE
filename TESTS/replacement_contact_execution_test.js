@@ -4,6 +4,7 @@ const fs=require("fs");
 const os=require("os");
 const path=require("path");
 const RevenueMissionSourceService=require("../SERVICES/RevenueMissionSourceService");
+const BusinessOperationsBridgeService=require("../SERVICES/BusinessOperationsBridgeService");
 const contracts=require("../CORE/ExecutionActionContracts");
 
 (function(){
@@ -53,6 +54,19 @@ const contracts=require("../CORE/ExecutionActionContracts");
   assert.strictEqual(same.requiresKevin,false);
   assert.strictEqual(same.custom_variables.replacement_of,"old.person@example.com");
   assert.strictEqual(contracts.resolveConnectorAction(same.connector,same.action).supported,true);
+
+  const added=[];
+  const fakeTaskQueue={add(type,payload,priority){const task={id:"TASK-REPLACEMENT-1",type,payload,priority,status:"QUEUED"};added.push(task);return task;}};
+  const fakePreflight={evaluate({operation,task}){const resolved=contracts.resolveConnectorAction(operation.connector,task.type);return {ok:resolved.supported,allowedToQueue:resolved.supported,status:resolved.supported?"READY":"BLOCKED",blockers:resolved.supported?[]:[{area:"ACTION",code:"UNSUPPORTED"}]};}};
+  const bridge=new BusinessOperationsBridgeService({rootDir:root,taskQueue:fakeTaskQueue,commandPreflight:fakePreflight,revenueMissionSource:service,queueFile:path.join(root,"state","business_operations_queue.json"),marketingQueueFile:path.join(root,"missing_marketing_queue.json")});
+  const task=bridge.enqueueTask(same);
+  assert.strictEqual(task.type,"createLead");
+  assert.strictEqual(task.payload.connector,"INSTANTLY");
+  assert.strictEqual(task.payload.action,"createLead");
+  assert.strictEqual(task.payload.email,"new.person@example.com");
+  assert.strictEqual(task.payload.campaign,"campaign-123");
+  assert.strictEqual(task.payload.custom_variables.replacement_of,"old.person@example.com");
+  assert.strictEqual(added.length,1);
 
   const cross=replacements.find(row=>row.replacementEmail==="new.person@other.example");
   assert.strictEqual(cross.status,"VERIFICATION_REQUIRED");
