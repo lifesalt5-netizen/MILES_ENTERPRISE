@@ -1,10 +1,9 @@
 'use strict';
 
 const assert = require('assert');
-const COOOrchestratorService = require('../SERVICES/COOOrchestratorService');
+const { attachMeetingPipelineToBrief } = require('../SERVICES/CalendlyExecutiveBriefAdapter');
 
-const attach = COOOrchestratorService.prototype.attachMeetingPipelineToBrief;
-assert.strictEqual(typeof attach, 'function');
+assert.strictEqual(typeof attachMeetingPipelineToBrief, 'function');
 
 const brief = {
   todayPriorities: [
@@ -30,7 +29,7 @@ const pipeline = {
   ]
 };
 
-const result = attach.call({}, brief, pipeline);
+const result = attachMeetingPipelineToBrief(brief, pipeline);
 
 assert.strictEqual(result.meetingPipeline.status, 'Healthy');
 assert.strictEqual(result.meetingPipeline.source, 'CALENDLY');
@@ -42,7 +41,7 @@ assert.strictEqual(result.meetingPipeline.recentMeetings.length, 1);
 assert.match(result.todayPriorities[0].action, /0 upcoming meetings/i);
 assert.strictEqual(result.todayPriorities[0].requiresKevin, false);
 
-const upcomingResult = attach.call({}, { todayPriorities: [] }, {
+const upcomingResult = attachMeetingPipelineToBrief({ todayPriorities: [] }, {
   ...pipeline,
   metrics: { ...pipeline.metrics, upcomingMeetings: 2 },
   upcomingMeetings: [{ inviteeName: 'A' }, { inviteeName: 'B' }]
@@ -51,7 +50,7 @@ const upcomingResult = attach.call({}, { todayPriorities: [] }, {
 assert.match(upcomingResult.todayPriorities[0].action, /2 upcoming P2GC prospect meeting/i);
 assert.strictEqual(upcomingResult.todayPriorities[0].requiresKevin, true);
 
-const failedResult = attach.call({}, { todayPriorities: [] }, {
+const failedResult = attachMeetingPipelineToBrief({ todayPriorities: [] }, {
   ok: false,
   status: 'CALENDLY_REVENUE_PIPELINE_FAILED',
   error: 'example failure'
