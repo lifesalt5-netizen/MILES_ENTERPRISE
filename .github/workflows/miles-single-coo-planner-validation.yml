@@ -1,0 +1,24 @@
+name: MILES Single COO Planner Validation
+
+on:
+  pull_request:
+    paths:
+      - 'WORKERS/cooWorker.js'
+      - 'StartAutonomousCOO.js'
+      - 'TESTS/single_coo_planner_test.js'
+      - '.github/workflows/miles-single-coo-planner-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax validation
+        run: |
+          node --check WORKERS/cooWorker.js
+          node --check TESTS/single_coo_planner_test.js
+      - name: Enforce single COO planner
+        run: node TESTS/single_coo_planner_test.js
