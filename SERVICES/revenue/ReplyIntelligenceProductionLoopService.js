@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const ReplyIntelligenceService = require("./ReplyIntelligenceService");
 const GlobalSuppressionService = require("./GlobalSuppressionService");
+const ExecutiveReplySurfacePolicyService = require("./ExecutiveReplySurfacePolicyService");
 
 const DEFAULT_INTERVAL_MS = 5 * 60 * 1000;
 const DEFAULT_LOOKBACK_DAYS = 60;
@@ -47,6 +48,7 @@ class ReplyIntelligenceProductionLoopService {
     this.emailSource=options.emailSource||null;
     this.classifier=options.classifier||new ReplyIntelligenceService();
     this.suppression=options.suppression||new GlobalSuppressionService({rootDir:this.rootDir});
+    this.surfacePolicy=options.surfacePolicy||new ExecutiveReplySurfacePolicyService({rootDir:this.rootDir});
     this.timer=null; this.running=false; this.passRunning=false;
     this.outputDir=options.outputDir||path.join(this.rootDir,"DATA","runtime","revenue","replies");
     this.statePath=path.join(this.outputDir,"reply_intelligence_state.json");
@@ -60,7 +62,7 @@ class ReplyIntelligenceProductionLoopService {
   }
 
   getEmailSource(){ if(this.emailSource) return this.emailSource; const instantly=require(path.join(this.rootDir,"CONNECTORS","INSTANTLY","instantly.js")); return {async listEmails(params){return instantly.request("/emails",{method:"GET",params});}}; }
-  initialState(){ return {version:2,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
+  initialState(){ return {version:3,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
   loadState(){ const state=readJson(this.statePath,this.initialState()); return {...this.initialState(),...state,processedIds:Array.isArray(state?.processedIds)?state.processedIds:[],cumulative:{...this.initialState().cumulative,...(state?.cumulative||{}),counts:{...(state?.cumulative?.counts||{})}}}; }
   saveState(state){ state.processedIds=[...new Set(state.processedIds||[])].slice(-MAX_PROCESSED_IDS); state.generatedAt=new Date().toISOString(); writeJsonAtomic(this.statePath,state); }
 
@@ -84,18 +86,18 @@ class ReplyIntelligenceProductionLoopService {
     const email=classification.from;
     const queueKey=row=>this.queueKey(row);
 
-    // A newer conversation state replaces an older queue state for the same thread.
     this.clearConversationQueues(base);
     if(classification.qualifiedPositive) queueUpsert(this.qualifiedQueuePath,{...base,status:"OPEN",owner:"KEVIN"},queueKey);
     else if(classification.category==="OOO"||classification.category==="NOT_NOW") queueUpsert(this.followupQueuePath,{...base,status:"SCHEDULED"},queueKey);
-    else if(classification.category==="NEUTRAL_QUESTION"||classification.category==="UNKNOWN") queueUpsert(this.reviewQueuePath,{...base,status:"OPEN",owner:"KEVIN"},queueKey);
+    else if(classification.category==="NEUTRAL_QUESTION"||classification.category==="UNKNOWN") queueUpsert(this.reviewQueuePath,{...base,status:"OPEN",owner:"MILES"},queueKey);
 
     if(classification.hardSuppression&&email){
       this.suppression.upsert({email,reason:classification.category,category:classification.category,source:"INSTANTLY_UNIBOX",sourceId:classification.emailId,campaignId:classification.campaignId,evidence:`${classification.subject} ${classification.preview}`,hard:true});
       const byEmail=row=>String(row?.from||"").toLowerCase()===email;
       queueRemove(this.qualifiedQueuePath,byEmail); queueRemove(this.followupQueuePath,byEmail); queueRemove(this.reviewQueuePath,byEmail);
     }
-    return base;
+
+    return this.surfacePolicy.apply(base);
   }
 
   updateCumulative(state,summary){ const c=state.cumulative; c.rawReceived+=Number(summary.rawReceived||0); c.humanReplies+=Number(summary.humanReplies||0); c.meaningfulHumanReplies+=Number(summary.meaningfulHumanReplies||0); c.qualifiedPositiveReplies+=Number(summary.qualifiedPositiveReplies||0); for(const [category,count] of Object.entries(summary.counts||{})) c.counts[category]=Number(c.counts[category]||0)+Number(count||0); c.humanReplyRatePct=c.rawReceived?Number(((c.humanReplies/c.rawReceived)*100).toFixed(2)):0; c.qualifiedPositiveRatePct=c.humanReplies?Number(((c.qualifiedPositiveReplies/c.humanReplies)*100).toFixed(2)):0; }
@@ -113,14 +115,37 @@ class ReplyIntelligenceProductionLoopService {
       this.updateCumulative(state,summary);
       for(const item of fresh){const id=String(item?.id||item?.message_id||""); if(id) state.processedIds.push(id);} state.lastSuccessfulPollAt=new Date().toISOString(); this.saveState(state);
 
-      const report={ok:true,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:summary.qualifiedPositiveReplies>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",fetched:{rows:fetched.items.length,newRows:fresh.length,pages:fetched.pages,minTimestamp:fetched.minTimestamp,truncated:fetched.truncated},latest:summary,cumulative:state.cumulative,alerts:routed.filter(item=>item.qualifiedPositive),suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression).length,followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)).length,manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)).length,queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,suppression:this.suppression.filePath},safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false},generatedAt:new Date().toISOString()};
-      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","MEETINGS","HELD_MEETINGS","BLUEPRINT_DEMOS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative});
-      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}`); return report;
+      const executiveAlerts=routed.filter(item=>item.surfaceToExecutiveInbox===true);
+      const suppressedFromExecutive=routed.filter(item=>item.surfaceToExecutiveInbox!==true);
+      const report={
+        ok:true,
+        service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",
+        status:executiveAlerts.length>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",
+        fetched:{rows:fetched.items.length,newRows:fresh.length,pages:fetched.pages,minTimestamp:fetched.minTimestamp,truncated:fetched.truncated},
+        latest:summary,
+        cumulative:state.cumulative,
+        alerts:executiveAlerts,
+        executiveSurface:{
+          policy:"QUALIFIED_POSITIVE_ONLY",
+          rawForwardingAllowed:false,
+          surfaced:executiveAlerts.length,
+          withheld:suppressedFromExecutive.length,
+          queue:this.surfacePolicy.queuePath
+        },
+        suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression).length,
+        followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)).length,
+        manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)).length,
+        queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,suppression:this.suppression.filePath,executiveSurface:this.surfacePolicy.queuePath},
+        safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false,nonQualifiedExecutiveInboxAllowed:false},
+        generatedAt:new Date().toISOString()
+      };
+      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","MEETINGS","HELD_MEETINGS","BLUEPRINT_DEMOS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative,executiveSurface:report.executiveSurface});
+      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}; surfaced=${executiveAlerts.length}`); return report;
     }catch(error){ const report={ok:false,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:"REPLY_INTELLIGENCE_POLL_FAILED",error:error.stack||error.message,safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0},generatedAt:new Date().toISOString()}; writeJsonAtomic(this.latestPath,report); this.log(`${report.status}: ${error.message}`); return report; }
     finally{this.passRunning=false;}
   }
 
-  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:false}; }
+  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:false,executiveSurfacePolicy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false}; }
   stop(){ if(this.timer) clearInterval(this.timer); this.timer=null; this.running=false; return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STOPPED"}; }
 }
 
