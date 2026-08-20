@@ -3,13 +3,13 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
+const REPOSITORY_ROOT = path.resolve(__dirname, "..");
 const TELEMETRY_CACHE_MS = Math.max(
   250,
   Number(process.env.MILES_QUEUE_TELEMETRY_CACHE_MS || 5000)
 );
 
-const taskQueue = require(path.join(ROOT, "CORE", "TaskQueue"));
+const taskQueue = require(path.join(REPOSITORY_ROOT, "CORE", "TaskQueue"));
 
 if (!taskQueue.__milesRuntimeOptimized) {
   const originalWriteJsonDirect = taskQueue.writeJsonDirect.bind(taskQueue);
