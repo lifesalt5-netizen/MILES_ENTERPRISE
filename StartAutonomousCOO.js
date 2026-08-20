@@ -29,15 +29,21 @@ async function main() {
     );
 
     const mode = process.argv.includes("--loop") ? "loop" : "once";
-    const execute = boolFromEnv("MILES_AUTONOMOUS_EXECUTE", true);
+    const revenueExecution = boolFromEnv("MILES_AUTONOMOUS_EXECUTE", true);
     const queueWorkflows = boolFromEnv("MILES_AUTONOMOUS_QUEUE_WORKFLOWS", true);
     const maxExecutionPasses = intFromEnv("MILES_AUTONOMOUS_EXECUTION_PASSES", 5);
     const intervalMs = intFromEnv("MILES_AUTONOMOUS_INTERVAL_MS", 5 * 60 * 1000);
     const winBackIntervalMs = intFromEnv("P2GC_WINBACK_DISCOVERY_INTERVAL_MS", 6 * 60 * 60 * 1000);
     const replyIntervalMs = intFromEnv("P2GC_REPLY_INTELLIGENCE_INTERVAL_MS", 5 * 60 * 1000);
 
+    // TaskQueue execution belongs exclusively to miles-worker / StartProductionSystem.js.
+    // The COO remains autonomous by planning and queueing work, while the worker claims
+    // and executes queued tasks. This prevents two PM2 processes from competing for the
+    // same TaskQueue lock.
+    const cooQueueExecution = false;
+
     const loop = new AutonomousCOOLoopService({
-        enableExecution: execute,
+        enableExecution: cooQueueExecution,
         enableWorkflowQueueing: queueWorkflows,
         maxExecutionPasses,
         intervalMs,
@@ -46,7 +52,7 @@ async function main() {
 
     const captureCapacity = new CaptureCapacityProductionLoopService({
         intervalMs,
-        enableExecution: execute
+        enableExecution: revenueExecution
     });
 
     const winBack = new WinBackProductionLoopService({
@@ -68,7 +74,8 @@ async function main() {
 
     if (mode === "loop") {
         console.log("[MILES] Autonomous COO loop starting.");
-        console.log(`[MILES] Execution: ${execute ? "enabled" : "disabled"}`);
+        console.log("[MILES] TaskQueue execution: delegated to miles-worker");
+        console.log(`[MILES] Revenue sidecar execution: ${revenueExecution ? "enabled" : "disabled"}`);
         console.log(`[MILES] Workflow queueing: ${queueWorkflows ? "enabled" : "disabled"}`);
         console.log(`[MILES] Interval: ${intervalMs}ms`);
 
