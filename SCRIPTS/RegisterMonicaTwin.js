@@ -1,0 +1,16 @@
+"use strict";
+const fs=require("fs");
+const path=require("path");
+const root=process.env.MILES_ROOT || path.resolve(__dirname,"..");
+const registryPath=path.join(root,"CONFIG","WORKFORCE","MILES_WORKFORCE_REGISTRY.json");
+const profilePath=path.join(root,"CONFIG","WORKFORCE","MONICA_WORKFORCE_PROFILE.json");
+if (!fs.existsSync(registryPath)) throw new Error(`WORKFORCE_REGISTRY_NOT_FOUND:${registryPath}`);
+if (!fs.existsSync(profilePath)) throw new Error(`MONICA_PROFILE_NOT_FOUND:${profilePath}`);
+const registry=JSON.parse(fs.readFileSync(registryPath,"utf8"));
+const profile=JSON.parse(fs.readFileSync(profilePath,"utf8"));
+if (!Array.isArray(registry.employees)) throw new Error("INVALID_WORKFORCE_REGISTRY_EMPLOYEES");
+const idx=registry.employees.findIndex(e=>String(e.id||e.name||"").toLowerCase()==="monica");
+if (idx>=0) registry.employees[idx]=profile; else registry.employees.push(profile);
+registry.generatedAt=new Date().toISOString();
+fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+"\n","utf8");
+console.log(JSON.stringify({ok:true,action:idx>=0?"UPDATED":"ADDED",employee:"Monica",registryPath},null,2));
