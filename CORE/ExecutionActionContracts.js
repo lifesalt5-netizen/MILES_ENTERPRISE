@@ -14,6 +14,7 @@
 
 const MILES_ACTIONS = Object.freeze([
   "BUSINESS_EXECUTION",
+  "CAPTURE_CAPACITY_DISCOVERY",
   "PROVIDER_AUTHORITY",
   "PROVIDER_AUTHORITY_REGISTRY",
   "PROVIDER_SYNC",
@@ -151,4 +152,3 @@ module.exports = {
   supportedActionsFor,
   resolveConnectorAction
 };
-
