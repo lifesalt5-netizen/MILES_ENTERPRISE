@@ -3,7 +3,7 @@
 /*
   MILES OS
   File: SERVICES/COOOrchestratorService.js
-  Version: 1.1.0
+  Version: 1.2.0
   Purpose:
     Production COO orchestrator.
 
@@ -25,9 +25,16 @@ const WorkQueueService = require("./WorkQueueService");
 const WorkflowService = require("./WorkflowService");
 const ExecutionService = require("./ExecutionService");
 const BusinessOperationsBridgeService = require("./BusinessOperationsBridgeService");
+const CalendlyRevenuePipelineService = require("./CalendlyRevenuePipelineService");
+const { attachMeetingPipelineToBrief } = require("./CalendlyExecutiveBriefAdapter");
 
 class COOOrchestratorService {
   constructor(options = {}) {
+    this.rootDir =
+      options.rootDir ||
+      process.env.MILES_ROOT ||
+      process.cwd();
+
     this.intelligence =
       options.intelligence ||
       new ExecutiveIntelligenceService();
@@ -47,7 +54,13 @@ class COOOrchestratorService {
     this.businessBridge =
       options.businessBridge ||
       new BusinessOperationsBridgeService({
-        rootDir: options.rootDir || process.cwd()
+        rootDir: this.rootDir
+      });
+
+    this.calendlyRevenuePipeline =
+      options.calendlyRevenuePipeline ||
+      new CalendlyRevenuePipelineService({
+        rootDir: this.rootDir
       });
 
     this.executeRuntimeTasks =
@@ -80,6 +93,9 @@ class COOOrchestratorService {
         ? await this.runExecutionPasses()
         : [];
 
+    const calendlyRevenuePipelineResult =
+      await this.refreshCalendlyRevenuePipeline();
+
     await this.intelligence.refresh();
 
     const refreshedExecutiveState =
@@ -87,6 +103,12 @@ class COOOrchestratorService {
 
     const refreshedBrief =
       new ExecutiveBriefService(refreshedExecutiveState);
+
+    const executiveBrief =
+      attachMeetingPipelineToBrief(
+        refreshedBrief.generate(),
+        calendlyRevenuePipelineResult
+      );
 
     return {
       ok: true,
@@ -98,11 +120,36 @@ class COOOrchestratorService {
       workflowResults,
       businessBridgeResults,
       executionResults,
+      calendlyRevenuePipelineResult,
       openWorkCount: this.workQueue.getOpen().length,
       escalations: this.workQueue.getEscalations(),
       executiveState: refreshedExecutiveState,
-      executiveBrief: refreshedBrief.generate()
+      executiveBrief
     };
+  }
+
+  async refreshCalendlyRevenuePipeline() {
+    try {
+      if (
+        !this.calendlyRevenuePipeline ||
+        typeof this.calendlyRevenuePipeline.runOnce !== "function"
+      ) {
+        return {
+          ok: false,
+          status: "CALENDLY_REVENUE_PIPELINE_UNAVAILABLE",
+          error: "Calendly revenue pipeline service is unavailable."
+        };
+      }
+
+      return await this.calendlyRevenuePipeline.runOnce();
+    } catch (error) {
+      return {
+        ok: false,
+        status: "CALENDLY_REVENUE_PIPELINE_FAILED",
+        error: error.message,
+        generatedAt: new Date().toISOString()
+      };
+    }
   }
 
   async runBusinessOperationsBridge() {
