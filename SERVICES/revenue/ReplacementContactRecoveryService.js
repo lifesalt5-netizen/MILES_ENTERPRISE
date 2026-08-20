@@ -30,7 +30,7 @@ function extractReplacement(email = {}) {
   ].some(pattern => pattern.test(combined));
 
   const redirect = [
-    /\bplease (?:direct|send|forward) (?:all |future )?(?:inquiries|requests|emails?|messages?) to\b/i,
+    /\bplease (?:direct|send|forward) (?:(?:all|future)\s+)*(?:inquiries|requests|emails?|messages?) to\b/i,
     /\bplease (?:contact|reach out to|speak with)\b/i,
     /\bcontact .{0,100} instead\b/i,
     /\bfor (?:future|further) (?:inquiries|requests|assistance).{0,80}\b(?:contact|email|reach)\b/i
