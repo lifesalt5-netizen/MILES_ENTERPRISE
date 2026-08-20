@@ -1,0 +1,23 @@
+name: MILES Calendly COO Brief Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/COOOrchestratorService.js'
+      - 'TESTS/Test_CalendlyCOOBriefWiring.js'
+      - '.github/workflows/validate-calendly-coo-brief.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/COOOrchestratorService.js
+          node --check TESTS/Test_CalendlyCOOBriefWiring.js
+      - name: Brief wiring test
+        run: node TESTS/Test_CalendlyCOOBriefWiring.js
