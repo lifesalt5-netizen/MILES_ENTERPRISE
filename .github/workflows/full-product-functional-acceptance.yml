@@ -1,0 +1,61 @@
+name: MILES Full Product Functional Acceptance
+
+on:
+  pull_request:
+    paths:
+      - "CONFIG/PRODUCTION_SYSTEM_GRAPH.json"
+      - "CORE/ExecutionActionContracts.js"
+      - "CONNECTORS/MILES/connector.js"
+      - "SERVICES/BusinessWorkPlannerService.js"
+      - "SERVICES/digital_coo/public/app.js"
+      - "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js"
+      - "SERVICES/demo/**"
+      - "SERVICES/teaming/**"
+      - "TESTS/full_product_functional_acceptance_test.js"
+      - ".github/workflows/full-product-functional-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Syntax validation
+        run: |
+          node --check CORE/ExecutionActionContracts.js
+          node --check CONNECTORS/MILES/connector.js
+          node --check SERVICES/BusinessWorkPlannerService.js
+          node --check SERVICES/digital_coo/public/app.js
+          node --check SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js
+          node --check TESTS/full_product_functional_acceptance_test.js
+
+      - name: Full product semantic acceptance
+        run: node TESTS/full_product_functional_acceptance_test.js
+
+      - name: Capture Capacity regression suite
+        run: |
+          node TESTS/capture_capacity_autonomous_execution_test.js
+          node TESTS/capture_capacity_runtime_routing_test.js
+          node TESTS/capture_capacity_source_bootstrap_test.js
+          node TESTS/capture_capacity_orion_signal_bridge_test.js
+          node TESTS/capture_capacity_production_loop_test.js
+          node TESTS/capture_capacity_production_entrypoint_test.js
+
+      - name: Single-owner runtime regressions
+        run: |
+          node TESTS/single_taskqueue_executor_test.js
+          node TESTS/single_coo_planner_test.js
+
+      - name: Runtime stability contract regression
+        run: node TESTS/full_runtime_stability_test.js
