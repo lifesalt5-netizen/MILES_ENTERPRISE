@@ -29,6 +29,9 @@ if (!taskQueue.__milesRuntimeOptimized) {
 
   function telemetryCaller() {
     const stack = String(new Error().stack || "");
+    if (process.env.MILES_QUEUE_TELEMETRY_TEST_MODE === "1") {
+      return stack.includes("queueCounts");
+    }
     return stack.includes("queueCounts") && stack.includes("StartProductionSystem.js");
   }
 
@@ -164,7 +167,6 @@ if (!taskQueue.__milesRuntimeOptimized) {
           "[MILES] Queue telemetry temporarily unavailable:",
           error?.message || String(error)
         );
-        if (!cacheFresh()) setTelemetryCache(telemetryCache.items);
         const snapshot = telemetryCache.items.slice();
         return status ? snapshot.filter(item => item.status === status) : snapshot;
       }
@@ -189,7 +191,6 @@ if (!taskQueue.__milesRuntimeOptimized) {
           "[MILES] Queue telemetry temporarily unavailable:",
           error?.message || String(error)
         );
-        if (!cacheFresh()) setTelemetryCache(telemetryCache.items);
         return statusFromTasks(telemetryCache.items);
       }
       throw error;
@@ -201,7 +202,8 @@ if (!taskQueue.__milesRuntimeOptimized) {
     telemetryCacheMs: TELEMETRY_CACHE_MS,
     fastMutatorNames: fastMutatorNames.slice(),
     invalidateTelemetryCache,
-    statusFromTasks
+    statusFromTasks,
+    telemetryCaller
   };
 
   console.log(
