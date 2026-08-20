@@ -1,0 +1,35 @@
+name: MILES API Port Ownership Validation
+
+on:
+  pull_request:
+    paths:
+      - 'StartProductionSystem.js'
+      - 'SCRIPTS/StartMilesApi.js'
+      - 'API/server.js'
+  push:
+    branches: [ main ]
+    paths:
+      - 'StartProductionSystem.js'
+      - 'SCRIPTS/StartMilesApi.js'
+      - 'API/server.js'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax validation
+        run: |
+          node --check StartProductionSystem.js
+          node --check SCRIPTS/StartMilesApi.js
+          node --check API/server.js
+      - name: Enforce dedicated API ownership
+        run: |
+          if grep -Eq 'require\(["'"'"']\./api/server["'"'"']\)' StartProductionSystem.js; then
+            echo 'StartProductionSystem.js must not start API/server; miles-api owns port 3000.'
+            exit 1
+          fi
+          grep -Eq 'require\(["'"'"']\.\./API/server["'"'"']\)' SCRIPTS/StartMilesApi.js
