@@ -18,17 +18,18 @@ const { CaptureCapacityRevenueDiscovery } = require("../SERVICES/Discovery/Captu
 
     const fetched = [];
     const fakeFetch = async (url, request = {}) => {
-      fetched.push(String(url));
+      const target = String(url);
+      fetched.push(target);
       assert.strictEqual(request.method, "GET");
       assert.ok(/MILES-P2GC-Public-Signal-Monitor/.test(request.headers["User-Agent"]));
 
-      if (String(url) === "https://hcrconcepts.com/") {
+      if (target === "https://hcrconcepts.com" || target === "https://hcrconcepts.com/") {
         return { ok: true, status: 200, async text() { return '<html><a href="https://humancapitalresourcesandconcepts.applytojob.com/apply">Careers</a></html>'; } };
       }
-      if (String(url) === "https://hcrconcepts.com/careers" || String(url) === "https://hcrconcepts.com/jobs") {
+      if (target === "https://hcrconcepts.com/careers" || target === "https://hcrconcepts.com/jobs") {
         return { ok: true, status: 200, async text() { return "<html>No direct jobs here.</html>"; } };
       }
-      if (String(url) === "https://humancapitalresourcesandconcepts.applytojob.com/apply") {
+      if (target === "https://humancapitalresourcesandconcepts.applytojob.com/apply") {
         return {
           ok: true,
           status: 200,
