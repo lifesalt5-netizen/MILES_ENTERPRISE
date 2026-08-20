@@ -1,0 +1,42 @@
+name: MONICA CI
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/monica/**'
+      - 'CONFIG/MONICA/**'
+      - 'CONFIG/WORKFORCE/MONICA_WORKFORCE_PROFILE.json'
+      - 'SCRIPTS/RegisterMonicaTwin.js'
+      - 'SCRIPTS/RunMonicaNetNewAcquisitionCensus.js'
+      - 'SCRIPTS/InstallMonicaStandalone.js'
+      - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
+      - 'MONICA.md'
+      - '.github/workflows/monica-ci.yml'
+  push:
+    branches:
+      - feature/monica-acquisition-intelligence
+    paths:
+      - 'SERVICES/monica/**'
+      - 'CONFIG/MONICA/**'
+      - 'SCRIPTS/RegisterMonicaTwin.js'
+      - 'SCRIPTS/RunMonicaNetNewAcquisitionCensus.js'
+      - 'SCRIPTS/InstallMonicaStandalone.js'
+      - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
+      - '.github/workflows/monica-ci.yml'
+
+jobs:
+  monica-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/monica/MonicaAcquisitionIntelligenceService.js
+          node --check SCRIPTS/RegisterMonicaTwin.js
+          node --check SCRIPTS/RunMonicaNetNewAcquisitionCensus.js
+          node --check SCRIPTS/InstallMonicaStandalone.js
+      - name: MONICA unit and suppression tests
+        run: node TESTS/Test_MonicaAcquisitionIntelligence.js
