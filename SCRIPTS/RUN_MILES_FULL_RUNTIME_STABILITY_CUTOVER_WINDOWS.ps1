@@ -12,6 +12,9 @@ $compactor = Join-Path $Root 'SCRIPTS\CompactTaskQueueHistory.js'
 $maintainer = Join-Path $Root 'SCRIPTS\TaskQueueMaintenanceService.js'
 $queuePath = Join-Path $Root 'DATA\runtime\task_queue.json'
 $generationDir = Join-Path $Root 'DATA\runtime\runtime_generations'
+$pm2CmdInfo = Get-Command 'pm2.cmd' -ErrorAction SilentlyContinue
+if (-not $pm2CmdInfo) { throw 'pm2.cmd was not found. Windows cutover requires the npm command shim so -- arguments are forwarded unchanged.' }
+$pm2Cmd = $pm2CmdInfo.Source
 
 foreach ($required in @($guard,$compactor,$maintainer,(Join-Path $Root 'SCRIPTS\project_pm2_jlist.js'))) {
     if (-not (Test-Path $required)) { throw "Missing required runtime file: $required" }
@@ -38,13 +41,13 @@ $SoakSeconds = [Math]::Max(60,$SoakSeconds)
 function Get-Pm2Rows {
     $tmp = Join-Path $env:TEMP ("miles_pm2_{0}.json" -f [guid]::NewGuid().ToString('N'))
     try {
-        (& pm2 jlist 2>$null) -join "`n" | Set-Content -LiteralPath $tmp -Encoding UTF8
+        (& $pm2Cmd jlist 2>$null) -join "`n" | Set-Content -LiteralPath $tmp -Encoding UTF8
         & node (Join-Path $Root 'SCRIPTS\project_pm2_jlist.js') $tmp
     } finally { Remove-Item $tmp -Force -ErrorAction SilentlyContinue }
 }
 
 function Get-Pm2Json {
-    return ((& pm2 jlist 2>$null) -join "`n")
+    return ((& $pm2Cmd jlist 2>$null) -join "`n")
 }
 
 function Get-RootNodeProcesses {
@@ -141,7 +144,7 @@ foreach ($line in $rows) {
     }
 }
 
-foreach ($row in $rootRows) { & pm2 stop $row.pm_id | Out-Null }
+foreach ($row in $rootRows) { & $pm2Cmd stop $row.pm_id | Out-Null }
 Start-Sleep -Seconds 2
 
 $leftovers = @(Get-RootNodeProcesses)
@@ -164,25 +167,40 @@ $env:MILES_QUEUE_COMPACT_HARD_BYTES = '67108864'
 & node $compactor --apply --force
 if ($LASTEXITCODE -ne 0) { throw 'TaskQueue compaction failed.' }
 
+$currentPm2Names = @()
+foreach ($line in @(Get-Pm2Rows)) {
+    $parts = ([string]$line) -split "`t",6
+    if ($parts.Count -eq 6) { $currentPm2Names += [string]$parts[2] }
+}
 foreach ($name in @('miles-worker','miles-autonomous-coo','miles-queue-maintainer')) {
-    & pm2 delete $name 2>$null | Out-Null
+    if ($currentPm2Names -contains $name) {
+        & $pm2Cmd delete $name | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Failed to delete existing PM2 runtime: $name" }
+    } else {
+        Write-Host "PM2 runtime $name not present; delete skipped."
+    }
 }
 
 Write-Host 'Starting guarded singleton runtimes...'
 $env:MILES_QUEUE_MAINTENANCE_INTERVAL_MS = '120000'
 
-& pm2 start $guard --name miles-worker -- --runtime miles-worker --entry StartProductionSystem.js | Out-Null
+$workerStartArgs = @('start',$guard,'--name','miles-worker','--','--runtime','miles-worker','--entry','StartProductionSystem.js')
+& $pm2Cmd @workerStartArgs | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Failed to start guarded miles-worker.' }
-& pm2 start $guard --name miles-autonomous-coo -- --runtime miles-autonomous-coo --entry StartAutonomousCOO.js --arg --loop | Out-Null
+
+$cooStartArgs = @('start',$guard,'--name','miles-autonomous-coo','--','--runtime','miles-autonomous-coo','--entry','StartAutonomousCOO.js','--arg','--loop')
+& $pm2Cmd @cooStartArgs | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Failed to start guarded miles-autonomous-coo.' }
-& pm2 start $guard --name miles-queue-maintainer -- --runtime miles-queue-maintainer --entry SCRIPTS/TaskQueueMaintenanceService.js | Out-Null
+
+$maintainerStartArgs = @('start',$guard,'--name','miles-queue-maintainer','--','--runtime','miles-queue-maintainer','--entry','SCRIPTS/TaskQueueMaintenanceService.js')
+& $pm2Cmd @maintainerStartArgs | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Failed to start guarded miles-queue-maintainer.' }
 
 foreach ($row in $rootRows | Where-Object { $_.name -notin @('miles-worker','miles-autonomous-coo','miles-queue-maintainer') }) {
-    & pm2 restart $row.pm_id | Out-Null
+    & $pm2Cmd restart $row.pm_id | Out-Null
 }
 
-& pm2 save | Out-Null
+& $pm2Cmd save | Out-Null
 Start-Sleep -Seconds 15
 
 $baselineRows = @(Get-TrackedPm2Snapshot)
