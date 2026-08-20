@@ -29,7 +29,7 @@ async function main() {
     );
 
     const mode = process.argv.includes("--loop") ? "loop" : "once";
-    const revenueExecution = boolFromEnv("MILES_AUTONOMOUS_EXECUTE", true);
+    const execute = boolFromEnv("MILES_AUTONOMOUS_EXECUTE", true);
     const queueWorkflows = boolFromEnv("MILES_AUTONOMOUS_QUEUE_WORKFLOWS", true);
     const maxExecutionPasses = intFromEnv("MILES_AUTONOMOUS_EXECUTION_PASSES", 5);
     const intervalMs = intFromEnv("MILES_AUTONOMOUS_INTERVAL_MS", 5 * 60 * 1000);
@@ -52,7 +52,7 @@ async function main() {
 
     const captureCapacity = new CaptureCapacityProductionLoopService({
         intervalMs,
-        enableExecution: revenueExecution
+        enableExecution: execute
     });
 
     const winBack = new WinBackProductionLoopService({
@@ -75,7 +75,7 @@ async function main() {
     if (mode === "loop") {
         console.log("[MILES] Autonomous COO loop starting.");
         console.log("[MILES] TaskQueue execution: delegated to miles-worker");
-        console.log(`[MILES] Revenue sidecar execution: ${revenueExecution ? "enabled" : "disabled"}`);
+        console.log(`[MILES] Revenue sidecar execution: ${execute ? "enabled" : "disabled"}`);
         console.log(`[MILES] Workflow queueing: ${queueWorkflows ? "enabled" : "disabled"}`);
         console.log(`[MILES] Interval: ${intervalMs}ms`);
 
