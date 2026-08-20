@@ -1,0 +1,23 @@
+{
+  "version": "2026-08-20",
+  "purpose": "Canonical source-closure contract for CEO command and product functional acceptance.",
+  "criticalModules": [
+    "CORE/TaskQueue.js",
+    "CORE/ExecutionActionContracts.js",
+    "SERVICES/CommandIntentPlannerService.js",
+    "SERVICES/BusinessOperationsBridgeService.js",
+    "SERVICES/BusinessWorkPlannerService.js",
+    "SERVICES/BusinessExecutionEngineServiceV2.js",
+    "SERVICES/CapabilityDispatcherService.js",
+    "SERVICES/governance/CommandPreflightService.js",
+    "SERVICES/governance/ExecutionActionCapabilityService.js",
+    "SERVICES/digital_coo/MilesCommandCenter.js",
+    "CONNECTORS/MILES/connector.js",
+    "RUN_CAPTURE_CAPACITY_PROSPECT_DISCOVERY.js",
+    "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js",
+    "SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js",
+    "SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js",
+    "SERVICES/demo/P2GCFocusedIntelligenceService.js",
+    "SERVICES/teaming/P2GCPrimeSubTeamingService.js"
+  ]
+}
