@@ -5,6 +5,8 @@ on:
     paths:
       - "CONNECTORS/INSTANTLY/connector.js"
       - "SERVICES/ReplyIntelligenceEngine.js"
+      - "SERVICES/RevenueMissionSourceService.js"
+      - "SERVICES/BusinessOperationsBridgeService.js"
       - "SERVICES/revenue/GlobalSuppressionService.js"
       - "SERVICES/revenue/ReplyIntelligenceService.js"
       - "SERVICES/revenue/ReplyIntelligenceProductionLoopService.js"
@@ -13,6 +15,7 @@ on:
       - "StartAutonomousCOO.js"
       - "TESTS/reply_*"
       - "TESTS/replacement_contact_recovery_test.js"
+      - "TESTS/replacement_contact_execution_test.js"
       - ".github/workflows/reply-intelligence-validation.yml"
   workflow_dispatch:
 
@@ -36,6 +39,8 @@ jobs:
         run: |
           node --check CONNECTORS/INSTANTLY/connector.js
           node --check SERVICES/ReplyIntelligenceEngine.js
+          node --check SERVICES/RevenueMissionSourceService.js
+          node --check SERVICES/BusinessOperationsBridgeService.js
           node --check SERVICES/revenue/GlobalSuppressionService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
@@ -47,6 +52,7 @@ jobs:
           node --check TESTS/reply_global_suppression_connector_test.js
           node --check TESTS/reply_intelligence_production_entrypoint_test.js
           node --check TESTS/replacement_contact_recovery_test.js
+          node --check TESTS/replacement_contact_execution_test.js
 
       - name: Classification tests
         run: node TESTS/reply_intelligence_classification_test.js
@@ -56,6 +62,9 @@ jobs:
 
       - name: Replacement contact recovery tests
         run: node TESTS/replacement_contact_recovery_test.js
+
+      - name: Replacement contact execution routing tests
+        run: node TESTS/replacement_contact_execution_test.js
 
       - name: Global suppression connector tests
         run: node TESTS/reply_global_suppression_connector_test.js
