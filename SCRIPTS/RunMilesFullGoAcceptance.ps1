@@ -78,6 +78,7 @@ $plan = [ordered]@{
         'CRM_AND_CALENDLY',
         'TRUTH_RECOVERED_CONTACT_INTAKE',
         'TRUTH_RECOVERED_EMAIL_VERIFICATION_IF_PENDING',
+        'LEAD_SUPPLY_CHAIN_CLOSEOUT',
         'FULL_GO_DECISION'
     )
     safety = [ordered]@{
@@ -154,7 +155,8 @@ $controlTests = @(
  'TESTS/reply_intelligence_production_loop_test.js','TESTS/executive_reply_surface_policy_test.js','TESTS/replacement_contact_recovery_test.js',
  'TESTS/replacement_contact_execution_test.js','TESTS/Test_InstantlyGuardedReplySend.js','TESTS/Test_AutonomousQualifiedReplyPolicy.js',
  'TESTS/Test_QualifiedReplyRevenueBridge.js','TESTS/Test_QualifiedReplyWorkerExecution.js','TESTS/Test_InstantlyMutationExecutionTruth.js',
- 'TESTS/Test_RevenueCrmProgression.js','TESTS/Test_CooRevenueCrmProgressionWiring.js','TESTS/Test_OutboundToMeetingEndToEnd.js'
+ 'TESTS/Test_RevenueCrmProgression.js','TESTS/Test_CooRevenueCrmProgressionWiring.js','TESTS/Test_OutboundToMeetingEndToEnd.js',
+ 'TESTS/Test_LeadSupplyChainCloseoutV8.js'
 )
 $testFailures = @()
 foreach($test in $controlTests) {
@@ -190,6 +192,14 @@ try {
         }
     }
     Add-Check $checks 'TRUTH_RECOVERED_EMAIL_VERIFICATION' $verificationReady $verificationDetail $true
+
+    # 7. Produce #83's final named closeout artifacts from authoritative V8 + SLED verified master.
+    $closeoutArgs = @('SCRIPTS/FinalizeLeadSupplyChainAudit.js','--apply',"--root=$Root", "--intelligence-root=$IntelligenceRoot")
+    $closeoutRun = Invoke-External -FilePath 'node' -Arguments $closeoutArgs -WorkingDirectory $Root
+    $closeoutManifestPath = Join-Path $Root 'DATA\revenue\lead_supply_chain_closeout\LEAD_SUPPLY_CHAIN_CLOSEOUT_MANIFEST.json'
+    $closeout = Read-JsonSafe $closeoutManifestPath
+    $closeoutGreen = ($closeoutRun.exitCode -eq 0 -and $closeout -and $closeout.ok -eq $true -and [string]$closeout.status -eq 'LEAD_SUPPLY_CLOSEOUT_GREEN')
+    Add-Check $checks 'LEAD_SUPPLY_CHAIN_CLOSEOUT' $closeoutGreen "exit=$($closeoutRun.exitCode) status=$($closeout.status) companies=$($closeout.summary.authoritativeCompanies) fedSegments=$($closeout.summary.federalSegments) sledSegments=$($closeout.summary.sledSegments)" $true
 } finally {
     $env:P2GC_INTELLIGENCE_ROOT = $oldIntelligence
     if($AuthorizePaidVerification) { Remove-Item Env:MILES_TRUTH_VERIFICATION_AUTHORIZATION -ErrorAction SilentlyContinue }

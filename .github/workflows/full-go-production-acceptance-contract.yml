@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
+      - 'SCRIPTS/FinalizeLeadSupplyChainAudit.js'
+      - 'SERVICES/revenue/LeadSupplyChainCloseoutService.js'
+      - 'TESTS/Test_LeadSupplyChainCloseoutV8.js'
       - '.github/workflows/full-go-production-acceptance-contract.yml'
   workflow_dispatch:
 
@@ -13,6 +16,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install closeout parser dependency only
+        shell: powershell
+        run: npm install csv-parser@3.2.0 --no-save --ignore-scripts
       - name: PowerShell syntax and plan-only contract
         shell: powershell
         run: |
@@ -23,6 +32,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Plan-only execution failed.' }
           if ($plan -notmatch 'PLAN_ONLY') { throw 'Plan-only marker missing.' }
           if ($plan -notmatch 'noPaidVerificationWithoutExplicitSwitch') { throw 'Paid verification safety marker missing.' }
+          if ($plan -notmatch 'LEAD_SUPPLY_CHAIN_CLOSEOUT') { throw 'Lead supply closeout is not part of required FULL GO sequence.' }
       - name: Safety invariants
         shell: powershell
         run: |
@@ -36,7 +46,9 @@ jobs:
             "AUTHORIZE_TRUTH_RECOVERED_MILLIONVERIFIER_CREDIT_BURN",
             "AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1",
             "AUDIT_MILES_REVENUE_OPERATIONS.js",
-            "Test_OutboundToMeetingEndToEnd.js"
+            "Test_OutboundToMeetingEndToEnd.js",
+            "FinalizeLeadSupplyChainAudit.js",
+            "LEAD_SUPPLY_CHAIN_CLOSEOUT"
           )) {
             if ($text -notmatch [regex]::Escape($required)) { throw "Missing safety/acceptance invariant: $required" }
           }
@@ -44,3 +56,6 @@ jobs:
             throw 'Acceptance runner must not directly invoke Instantly mutation actions.'
           }
           Write-Host 'FULL_GO_ACCEPTANCE_CONTRACT=PASS'
+      - name: Lead supply closeout fixture
+        shell: powershell
+        run: node TESTS/Test_LeadSupplyChainCloseoutV8.js

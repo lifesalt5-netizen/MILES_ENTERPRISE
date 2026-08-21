@@ -9,6 +9,8 @@ on:
       - 'SERVICES/BusinessOperationsBridgeService.js'
       - 'SERVICES/RevenueMissionSourceService.js'
       - 'SERVICES/revenue/**'
+      - 'SCRIPTS/FinalizeLeadSupplyChainAudit.js'
+      - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
       - 'TESTS/**'
       - '.github/workflows/autonomous-revenue-control-plane-acceptance.yml'
   workflow_dispatch:
@@ -36,6 +38,7 @@ jobs:
           node TESTS/Test_RevenueOutboundReadinessAudit.js
           node TESTS/Test_RevenueSegmentConfigurationApply.js
           node TESTS/Test_StateRevenueDeploymentRunner.js
+          node TESTS/Test_LeadSupplyChainCloseoutV8.js
       - name: Reply intelligence and recovery
         run: |
           node TESTS/reply_intelligence_classification_test.js
