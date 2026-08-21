@@ -22,11 +22,24 @@ const NON_EXECUTIVE_CATEGORIES = new Set([
   "UNKNOWN"
 ]);
 
+const TERSE_ENGAGEMENT_PATTERNS = [
+  /^why\s*\??$/i,
+  /^why me\s*\??$/i,
+  /^why us\s*\??$/i,
+  /^how so\s*\??$/i,
+  /^which one\s*\??$/i,
+  /^what do you mean\s*\??$/i,
+  /^what are you referring to\s*\??$/i,
+  /^what\s*\??$/i,
+  /^how\s*\??$/i,
+  /^which\s*\??$/i
+];
+
 function writeJsonAtomic(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const temp = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   fs.writeFileSync(temp, JSON.stringify(value, null, 2), "utf8");
-  fs.renameSync(temp, filePath);
+  fs.renameSync(temp,filePath);
 }
 
 function readJson(filePath, fallback) {
@@ -47,6 +60,20 @@ function replyKey(reply = {}) {
   ).trim();
 }
 
+function isTerseEngagedQuestion(classification = {}) {
+  const category = String(classification.category || "").trim().toUpperCase();
+  if (category !== "NEUTRAL_QUESTION" || classification.humanReply !== true) return false;
+
+  const campaignId = String(classification.campaignId || classification.campaign_id || "").trim();
+  const leadId = String(classification.leadId || classification.lead_id || "").trim();
+  if (!campaignId && !leadId) return false;
+
+  const preview = String(classification.preview || "").replace(/\s+/g, " ").trim();
+  if (!preview || preview.length > 80) return false;
+
+  return TERSE_ENGAGEMENT_PATTERNS.some(pattern => pattern.test(preview));
+}
+
 class ExecutiveReplySurfacePolicyService {
   constructor(options = {}) {
     this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, "..", ".."));
@@ -58,6 +85,7 @@ class ExecutiveReplySurfacePolicyService {
   disposition(classification = {}) {
     const category = String(classification.category || "UNKNOWN").trim();
     const qualified = classification.qualifiedPositive === true || QUALIFIED_CATEGORIES.has(category);
+    const terseEngagedQuestion = isTerseEngagedQuestion(classification);
 
     if (qualified) {
       return {
@@ -65,6 +93,16 @@ class ExecutiveReplySurfacePolicyService {
         executiveDisposition: "SURFACE_QUALIFIED_REPLY",
         destination: "EXECUTIVE_INBOX",
         requiresHumanAttention: true
+      };
+    }
+
+    if (terseEngagedQuestion) {
+      return {
+        surfaceToExecutiveInbox: true,
+        executiveDisposition: "SURFACE_ENGAGED_QUESTION",
+        destination: "EXECUTIVE_INBOX",
+        requiresHumanAttention: true,
+        engagedQuestion: true
       };
     }
 
@@ -133,7 +171,7 @@ class ExecutiveReplySurfacePolicyService {
     writeJsonAtomic(this.latestPath, {
       ok: true,
       service: "EXECUTIVE_REPLY_SURFACE_POLICY",
-      policy: "QUALIFIED_POSITIVE_ONLY",
+      policy: "QUALIFIED_POSITIVE_PLUS_TERSE_ENGAGED_QUESTIONS",
       rawForwardingAllowed: false,
       nonQualifiedExecutiveInboxAllowed: false,
       queuePath: this.queuePath,
@@ -149,3 +187,5 @@ class ExecutiveReplySurfacePolicyService {
 module.exports = ExecutiveReplySurfacePolicyService;
 module.exports.ExecutiveReplySurfacePolicyService = ExecutiveReplySurfacePolicyService;
 module.exports.QUALIFIED_CATEGORIES = QUALIFIED_CATEGORIES;
+module.exports.isTerseEngagedQuestion = isTerseEngagedQuestion;
+module.exports.TERSE_ENGAGEMENT_PATTERNS = TERSE_ENGAGEMENT_PATTERNS;

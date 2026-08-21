@@ -15,11 +15,78 @@ function senderEmail(email = {}) {
   return clean(email?.from_address_email || email?.from || email?.sender_email || email?.lead || email?.lead_email).toLowerCase();
 }
 
+function contextForEmail(combined, target) {
+  const source = String(combined || "").replace(/\r\n/g, "\n");
+  const needle = String(target || "").toLowerCase();
+  if (!needle) return "";
+
+  // Departmental replacement notices are typically one address per line. Use the
+  // address-local line first so neighboring department labels cannot leak scores.
+  const lines = source.split("\n");
+  const lineIndex = lines.findIndex(line => line.toLowerCase().includes(needle));
+  if (lineIndex >= 0) {
+    const current = clean(lines[lineIndex]);
+    if (current) return current;
+  }
+
+  // Fallback for prose notices where the replacement appears inline.
+  const lower = source.toLowerCase();
+  const index = lower.indexOf(needle);
+  if (index < 0) return "";
+  const sentenceStart = Math.max(
+    lower.lastIndexOf(".", index - 1),
+    lower.lastIndexOf(";", index - 1),
+    lower.lastIndexOf("\n", index - 1)
+  );
+  const nextStops = [lower.indexOf(".", index + needle.length), lower.indexOf(";", index + needle.length), lower.indexOf("\n", index + needle.length)].filter(value => value >= 0);
+  const sentenceEnd = nextStops.length ? Math.min(...nextStops) : Math.min(source.length, index + needle.length + 120);
+  return clean(source.slice(sentenceStart + 1, sentenceEnd));
+}
+
+function roleScore(email, context = "") {
+  const value = String(email || "").toLowerCase();
+  const text = `${value} ${String(context || "").toLowerCase()}`;
+  let score = 0;
+  let role = "GENERAL";
+
+  if (/\b(business development|biz dev|bd|growth|sales|partnerships?|capture|strategic growth)\b/i.test(text)) {
+    score += 100;
+    role = "BUSINESS_DEVELOPMENT";
+  }
+  if (/\b(contracts?|contracting|procurement|bids?|proposals?)\b/i.test(text)) {
+    score += 70;
+    if (role === "GENERAL") role = "CONTRACTS";
+  }
+  if (/\b(all other inquiries|general inquiries|info|contact us)\b/i.test(text)) {
+    score += 25;
+    if (role === "GENERAL") role = "GENERAL_INQUIRY";
+  }
+  if (/\b(finance|accounts payable|payables?|billing|invoice|\bap\b)\b/i.test(text)) {
+    score -= 60;
+    role = "FINANCE_AP";
+  }
+  if (/\b(human resources|\bhr\b|careers?|jobs?|recruiting|talent)\b/i.test(text)) {
+    score -= 80;
+    role = "HR";
+  }
+
+  return { score, role };
+}
+
+function rankReplacementEmails(combined, emails = []) {
+  return emails
+    .map((email, index) => {
+      const context = contextForEmail(combined, email);
+      const scored = roleScore(email, context);
+      return { email, context, role: scored.role, score: scored.score, sourceOrder: index };
+    })
+    .sort((a, b) => b.score - a.score || a.sourceOrder - b.sourceOrder);
+}
+
 function extractReplacement(email = {}) {
   const subject = clean(email.subject);
   const body = bodyText(email);
   const combined = `${subject}\n${body}`;
-  const lower = combined.toLowerCase();
 
   const departed = [
     /\bno longer (?:with|at)\b/i,
@@ -33,7 +100,8 @@ function extractReplacement(email = {}) {
     /\bplease (?:direct|send|forward) (?:(?:all|future)\s+)*(?:inquiries|requests|emails?|messages?) to\b/i,
     /\bplease (?:contact|reach out to|speak with)\b/i,
     /\bcontact .{0,100} instead\b/i,
-    /\bfor (?:future|further) (?:inquiries|requests|assistance).{0,80}\b(?:contact|email|reach)\b/i
+    /\bfor (?:future|further) (?:inquiries|requests|assistance).{0,80}\b(?:contact|email|reach)\b/i,
+    /\bfor assistance,? please contact\b/i
   ].some(pattern => pattern.test(combined));
 
   if (!departed || !redirect) return null;
@@ -43,11 +111,11 @@ function extractReplacement(email = {}) {
     .filter(value => value !== original);
   if (emails.length === 0) return null;
 
-  const replacementEmail = emails[0];
-  const emailIndex = lower.indexOf(replacementEmail.toLowerCase());
-  const contextStart = Math.max(0, emailIndex - 140);
-  const context = clean(combined.slice(contextStart, emailIndex));
-  const nameMatch = context.match(/(?:to|contact|with|inquiries to)\s+([A-Z][A-Za-z'’-]+(?:\s+[A-Z][A-Za-z'’-]+){0,3})\s+(?:at\s+)?$/);
+  const ranked = rankReplacementEmails(combined, emails);
+  const primary = ranked[0];
+  const replacementEmail = primary.email;
+  const replacementContext = primary.context;
+  const nameMatch = replacementContext.match(/(?:to|contact|with|inquiries to)\s+([A-Z][A-Za-z'’-]+(?:\s+[A-Z][A-Za-z'’-]+){0,3})\s+(?:at\s+)?$/);
   const replacementName = nameMatch ? clean(nameMatch[1]) : "";
 
   return {
@@ -55,7 +123,10 @@ function extractReplacement(email = {}) {
     departedContactEmail: original,
     replacementEmail,
     replacementName,
-    evidence: clean(body).slice(0, 1000),
+    replacementRole: primary.role,
+    replacementScore: primary.score,
+    replacementCandidates: ranked,
+    evidence: clean(body).slice(0, 1500),
     evidenceType: "EXPLICIT_REPLACEMENT_CONTACT_NOTICE",
     confidence: 0.99,
     action: "REPLACE_CONTACT_AND_CONTINUE"
@@ -71,3 +142,5 @@ class ReplacementContactRecoveryService {
 module.exports = ReplacementContactRecoveryService;
 module.exports.ReplacementContactRecoveryService = ReplacementContactRecoveryService;
 module.exports.extractReplacement = extractReplacement;
+module.exports.rankReplacementEmails = rankReplacementEmails;
+module.exports.roleScore = roleScore;
