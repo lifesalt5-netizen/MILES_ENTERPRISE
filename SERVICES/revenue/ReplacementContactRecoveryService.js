@@ -16,10 +16,31 @@ function senderEmail(email = {}) {
 }
 
 function contextForEmail(combined, target) {
-  const lower = combined.toLowerCase();
-  const index = lower.indexOf(String(target || "").toLowerCase());
+  const source = String(combined || "").replace(/\r\n/g, "\n");
+  const needle = String(target || "").toLowerCase();
+  if (!needle) return "";
+
+  // Departmental replacement notices are typically one address per line. Use the
+  // address-local line first so neighboring department labels cannot leak scores.
+  const lines = source.split("\n");
+  const lineIndex = lines.findIndex(line => line.toLowerCase().includes(needle));
+  if (lineIndex >= 0) {
+    const current = clean(lines[lineIndex]);
+    if (current) return current;
+  }
+
+  // Fallback for prose notices where the replacement appears inline.
+  const lower = source.toLowerCase();
+  const index = lower.indexOf(needle);
   if (index < 0) return "";
-  return clean(combined.slice(Math.max(0, index - 180), Math.min(combined.length, index + target.length + 80)));
+  const sentenceStart = Math.max(
+    lower.lastIndexOf(".", index - 1),
+    lower.lastIndexOf(";", index - 1),
+    lower.lastIndexOf("\n", index - 1)
+  );
+  const nextStops = [lower.indexOf(".", index + needle.length), lower.indexOf(";", index + needle.length), lower.indexOf("\n", index + needle.length)].filter(value => value >= 0);
+  const sentenceEnd = nextStops.length ? Math.min(...nextStops) : Math.min(source.length, index + needle.length + 120);
+  return clean(source.slice(sentenceStart + 1, sentenceEnd));
 }
 
 function roleScore(email, context = "") {
@@ -40,11 +61,11 @@ function roleScore(email, context = "") {
     score += 25;
     if (role === "GENERAL") role = "GENERAL_INQUIRY";
   }
-  if (/\b(finance|accounts payable|payables?|billing|invoice|ap)\b/i.test(text)) {
+  if (/\b(finance|accounts payable|payables?|billing|invoice|\bap\b)\b/i.test(text)) {
     score -= 60;
     role = "FINANCE_AP";
   }
-  if (/\b(human resources|hr|careers?|jobs?|recruiting|talent)\b/i.test(text)) {
+  if (/\b(human resources|\bhr\b|careers?|jobs?|recruiting|talent)\b/i.test(text)) {
     score -= 80;
     role = "HR";
   }
