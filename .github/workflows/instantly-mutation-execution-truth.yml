@@ -1,0 +1,28 @@
+name: Instantly Mutation Execution Truth
+
+on:
+  pull_request:
+    paths:
+      - 'CONNECTORS/INSTANTLY/connector.js'
+      - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/Test_InstantlyMutationExecutionTruth.js'
+      - '.github/workflows/instantly-mutation-execution-truth.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: |
+          node --check CONNECTORS/INSTANTLY/connector.js
+          node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/Test_InstantlyMutationExecutionTruth.js
+      - name: Guarded reply truth
+        run: node TESTS/Test_InstantlyGuardedReplySend.js
+      - name: Mutation execution truth
+        run: node TESTS/Test_InstantlyMutationExecutionTruth.js
