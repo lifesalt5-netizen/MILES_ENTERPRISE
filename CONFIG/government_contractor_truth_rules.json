@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "name": "Government Contractor Truth Layer",
+  "identity": {
+    "primaryKey": "UEI",
+    "oneCanonicalCompanyRecord": true,
+    "preserveMultipleVehicleMemberships": true,
+    "dedupeWithinSegmentOnly": true,
+    "preserveCrossSegmentMembership": true
+  },
+  "annualRevenueBuckets": [
+    {"id":"NO_SALES","min":0,"max":0},
+    {"id":"LOW_SALES","min":1,"max":1000000},
+    {"id":"MEDIUM_SALES","min":1000001,"max":3000000},
+    {"id":"HIGH_SALES","min":3000001,"max":10000000},
+    {"id":"OVER_10M","min":10000001,"max":null}
+  ],
+  "revenueBehavior": {
+    "storeAnnualYears":[2022,2023,2024,2025,2026],
+    "classifications":["ACTIVE","LAPSED","RETURNING","NEW_ENTRANT","GROWING","DECLINING","DORMANT"],
+    "storeThreeYearAverage":true,
+    "storeYearsWithoutAwards":true
+  },
+  "setAsides": {
+    "asAttributesOnly": true,
+    "values":["8(a)","HUBZone","WOSB","EDWOSB","SDVOSB","VOSB","Small Business"],
+    "certificationOnlyFallbackWhenNoPrimarySegment": true
+  },
+  "awardHistory": {
+    "reuseExistingLocalAwardData": true,
+    "doNotRepullUnlessCoverageGapConfirmed": true
+  },
+  "contactLayer": {
+    "retain":["POC","POC Title","Email","Phone","Website","Address","City","State","ZIP"],
+    "recoverLegacyContacts": true,
+    "verifyEmailAfterQualification": true
+  },
+  "vehiclePolicy": {
+    "applyRevenueBucketsToEveryVehicle": true,
+    "allowMembershipInMultipleVehicles": true,
+    "samIsBaseRegistryNotExclusiveVehicle": true
+  },
+  "expirationPolicy": {
+    "requireVerifiedContractOrVehicleExpiration": true,
+    "rejectGenericRegistrationExpirationAsContractExpiration": true
+  }
+}
