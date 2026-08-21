@@ -30,6 +30,7 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   const service = new Service({
     rootDir: root,
     classificationRoot,
+    truthIntakeRoot: path.join(root, "truth-not-present"),
     outputRoot: path.join(root, "output"),
     generatedAt: () => "2026-08-07T00:00:00.000Z"
   });
@@ -66,6 +67,37 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults to plan-only", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, creditLimit: 0 }));
   await test("CLI parses explicit cap", async () => assert.deepStrictEqual(parseArguments(["--apply", "--credit-limit=7662"]), { apply: true, creditLimit: 7662 }));
 
-  console.log("REVENUE_EMAIL_VERIFICATION_BATCH_TEST_PASS " + passed + "/29");
+  const truthRoot = path.join(root, "truth");
+  fs.mkdirSync(truthRoot);
+  const truthRecords = [
+    { email: "gsa@example.com", segments: ["GSA"], sourceFamily: "GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY", truthUei: "U1", verificationRequired: true, classification: "PENDING_VERIFICATION" },
+    { email: "truth@example.com", segments: ["VA"], sourceFamily: "GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY", truthUei: "U2", verificationRequired: true, classification: "PENDING_VERIFICATION" }
+  ];
+  fs.writeFileSync(path.join(truthRoot, "pending_verification.jsonl"), truthRecords.map(JSON.stringify).join("\n") + "\n", "utf8");
+  fs.writeFileSync(path.join(truthRoot, "manifest.json"), JSON.stringify({
+    ok: true,
+    status: "TRUTH_CONTACT_VERIFICATION_INTAKE_PREPARED",
+    intakeFingerprint: "T".repeat(64),
+    verificationRequired: true,
+    summary: { verificationPending: truthRecords.length },
+    conservation: { ok: true }
+  }), "utf8");
+  const mergedService = new Service({
+    rootDir: root,
+    classificationRoot,
+    truthIntakeRoot: truthRoot,
+    outputRoot: path.join(root, "merged-output"),
+    generatedAt: () => "2026-08-20T23:58:00-04:00"
+  });
+  const merged = mergedService.build({ apply: true, creditLimit: 20 });
+  await test("truth intake is counted", async () => assert.strictEqual(merged.summary.truthRecoveredPending, 2));
+  await test("cross-source duplicate is counted once", async () => assert.strictEqual(merged.summary.duplicateOverlap, 1));
+  await test("unique pending total is conserved", async () => assert.strictEqual(merged.summary.pendingAvailable, 7));
+  const mergedCsv = fs.readFileSync(merged.artifacts.batch.filePath, "utf8");
+  await test("truth-only recovered contact enters verification batch", async () => assert.ok(mergedCsv.includes("truth@example.com")));
+  await test("truth UEI provenance enters authorized batch", async () => assert.ok(mergedCsv.includes("GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY,U2")));
+  await test("truth intake fingerprint is chained", async () => assert.strictEqual(merged.sourceTruthIntakeFingerprint, "T".repeat(64)));
+
+  console.log("REVENUE_EMAIL_VERIFICATION_BATCH_TEST_PASS " + passed + "/35");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });

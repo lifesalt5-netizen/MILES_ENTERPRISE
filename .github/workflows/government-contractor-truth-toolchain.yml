@@ -8,6 +8,13 @@ on:
       - 'SCRIPTS/*Truth*.py'
       - 'SCRIPTS/*Vehicle*.py'
       - 'SCRIPTS/RecoverNewVehicleContactsV2.py'
+      - 'SCRIPTS/PrepareGovernmentContractorTruthVerificationIntake.js'
+      - 'SERVICES/revenue/GovernmentContractorTruthVerificationIntakeService.js'
+      - 'SERVICES/revenue/RevenueEmailVerificationBatchService.js'
+      - 'SERVICES/revenue/RevenueVerificationReconciliationService.js'
+      - 'TESTS/Test_GovernmentContractorTruthVerificationIntake.js'
+      - 'TESTS/Test_RevenueEmailVerificationBatch.js'
+      - 'TESTS/Test_RevenueVerificationReconciliation.js'
       - '.github/workflows/government-contractor-truth-toolchain.yml'
 
 jobs:
@@ -18,6 +25,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Validate truth toolchain when present
         shell: bash
         run: |
@@ -50,3 +60,15 @@ jobs:
           assert 'sendemail' not in text
           print('GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY_SAFETY=PASS')
           PY
+      - name: Truth verification bridge syntax
+        run: |
+          node --check SERVICES/revenue/GovernmentContractorTruthVerificationIntakeService.js
+          node --check SCRIPTS/PrepareGovernmentContractorTruthVerificationIntake.js
+          node --check SERVICES/revenue/RevenueEmailVerificationBatchService.js
+          node --check SERVICES/revenue/RevenueVerificationReconciliationService.js
+      - name: Truth verification intake
+        run: node TESTS/Test_GovernmentContractorTruthVerificationIntake.js
+      - name: Verification batch merge and dedupe
+        run: node TESTS/Test_RevenueEmailVerificationBatch.js
+      - name: Verification reconciliation provenance
+        run: node TESTS/Test_RevenueVerificationReconciliation.js
