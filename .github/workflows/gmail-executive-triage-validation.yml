@@ -1,0 +1,41 @@
+name: Gmail Executive Triage Validation
+
+on:
+  pull_request:
+    paths:
+      - "SERVICES/revenue/GmailExecutiveTriageService.js"
+      - "SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js"
+      - "SCRIPTS/RunGmailExecutiveTriage.js"
+      - "TESTS/Test_GmailExecutiveTriageService.js"
+      - "StartAutonomousCOO.js"
+      - ".github/workflows/gmail-executive-triage-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "SERVICES/revenue/GmailExecutiveTriageService.js"
+      - "SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js"
+      - "SCRIPTS/RunGmailExecutiveTriage.js"
+      - "TESTS/Test_GmailExecutiveTriageService.js"
+      - "StartAutonomousCOO.js"
+      - ".github/workflows/gmail-executive-triage-validation.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/revenue/GmailExecutiveTriageService.js
+          node --check SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js
+          node --check SCRIPTS/RunGmailExecutiveTriage.js
+          node --check TESTS/Test_GmailExecutiveTriageService.js
+          node --check StartAutonomousCOO.js
+      - name: Governed triage regression
+        run: node TESTS/Test_GmailExecutiveTriageService.js

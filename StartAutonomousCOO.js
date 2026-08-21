@@ -7,6 +7,7 @@ const AutonomousCOOLoopService = require("./SERVICES/AutonomousCOOLoopService");
 const CaptureCapacityProductionLoopService = require("./SERVICES/revenue/CaptureCapacityProductionLoopService");
 const WinBackProductionLoopService = require("./SERVICES/revenue/WinBackProductionLoopService");
 const ReplyIntelligenceProductionLoopService = require("./SERVICES/revenue/ReplyIntelligenceProductionLoopService");
+const GmailExecutiveTriageProductionLoopService = require("./SERVICES/revenue/GmailExecutiveTriageProductionLoopService");
 
 function boolFromEnv(name, fallback) {
     const value = process.env[name];
@@ -35,6 +36,7 @@ async function main() {
     const intervalMs = intFromEnv("MILES_AUTONOMOUS_INTERVAL_MS", 5 * 60 * 1000);
     const winBackIntervalMs = intFromEnv("P2GC_WINBACK_DISCOVERY_INTERVAL_MS", 6 * 60 * 60 * 1000);
     const replyIntervalMs = intFromEnv("P2GC_REPLY_INTELLIGENCE_INTERVAL_MS", 5 * 60 * 1000);
+    const gmailTriageIntervalMs = intFromEnv("P2GC_GMAIL_TRIAGE_INTERVAL_MS", 5 * 60 * 1000);
     const shutdownGraceMs = intFromEnv("MILES_COO_SHUTDOWN_GRACE_MS", 8000);
 
     // TaskQueue execution belongs exclusively to miles-worker / StartProductionSystem.js.
@@ -61,12 +63,17 @@ async function main() {
         intervalMs: replyIntervalMs
     });
 
+    const gmailExecutiveTriage = new GmailExecutiveTriageProductionLoopService({
+        intervalMs: gmailTriageIntervalMs
+    });
+
     let shutdownStarted = false;
 
     const stopRevenueSidecars = () => {
         try { captureCapacity.stop(); } catch {}
         try { winBack.stop(); } catch {}
         try { replyIntelligence.stop(); } catch {}
+        try { gmailExecutiveTriage.stop(); } catch {}
     };
 
     const shutdown = signal => {
@@ -122,6 +129,13 @@ async function main() {
             "Instantly-read-only; prospect-facing-auto-replies=disabled"
         );
 
+        const gmailTriageStart = gmailExecutiveTriage.start();
+        console.log(
+            `[MILES] Gmail executive triage lane: ${gmailTriageStart.status}; ` +
+            `interval=${gmailTriageIntervalMs}ms; ` +
+            `execution=${gmailTriageStart.executionEnabled ? "enabled" : "disabled"}`
+        );
+
         try {
             const result = await loop.start();
             console.log(JSON.stringify(result, null, 2));
@@ -136,6 +150,7 @@ async function main() {
     const captureCapacityResult = await captureCapacity.runOnce();
     const winBackResult = await winBack.runOnce();
     const replyResult = await replyIntelligence.runOnce();
+    const gmailTriageResult = await gmailExecutiveTriage.runOnce();
     const result = await loop.runOnce();
 
     console.log(JSON.stringify({
@@ -185,6 +200,14 @@ async function main() {
             instantlyReadOnly: true,
             autoRepliesAllowed: false
         },
+        gmailExecutiveTriage: {
+            ok: gmailTriageResult.ok,
+            status: gmailTriageResult.status,
+            enabled: gmailTriageResult.enabled,
+            execute: gmailTriageResult.execute,
+            blockers: gmailTriageResult.blockers || (gmailTriageResult.blocker ? [{ blocker: gmailTriageResult.blocker }] : []),
+            artifact: gmailTriageResult.artifact || null
+        },
         outputs: {
             executive: "DATA/executive/latest_coo_cycle.md",
             mission: "DATA/executive/latest_mission_plan.json",
@@ -197,7 +220,8 @@ async function main() {
             replyIntelligence: "DATA/runtime/revenue/replies/reply_intelligence_latest.json",
             replyKpis: "DATA/runtime/revenue/replies/reply_kpis_latest.json",
             qualifiedReplyQueue: "DATA/runtime/revenue/replies/qualified_reply_queue.json",
-            suppressionMaster: "DATA/runtime/revenue/replies/global_suppression_master.json"
+            suppressionMaster: "DATA/runtime/revenue/replies/global_suppression_master.json",
+            gmailExecutiveTriage: "DATA/runtime/revenue/gmail_triage/gmail_executive_triage_latest.json"
         }
     }, null, 2));
 }
