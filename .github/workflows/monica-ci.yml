@@ -11,6 +11,7 @@ on:
       - 'SCRIPTS/InstallMonicaStandalone.js'
       - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
       - 'TESTS/Test_MonicaWorkforceIntegration.js'
+      - 'TESTS/Test_MonicaCensusContract.js'
       - 'MONICA.md'
       - '.github/workflows/monica-ci.yml'
   push:
@@ -24,6 +25,7 @@ on:
       - 'SCRIPTS/InstallMonicaStandalone.js'
       - 'TESTS/Test_MonicaAcquisitionIntelligence.js'
       - 'TESTS/Test_MonicaWorkforceIntegration.js'
+      - 'TESTS/Test_MonicaCensusContract.js'
       - '.github/workflows/monica-ci.yml'
 
 jobs:
@@ -41,8 +43,11 @@ jobs:
           node --check SCRIPTS/RunMonicaNetNewAcquisitionCensus.js
           node --check SCRIPTS/InstallMonicaStandalone.js
           node --check TESTS/Test_MonicaWorkforceIntegration.js
+          node --check TESTS/Test_MonicaCensusContract.js
       - name: MONICA unit and suppression tests
         run: node TESTS/Test_MonicaAcquisitionIntelligence.js
+      - name: MONICA census output contract
+        run: node TESTS/Test_MonicaCensusContract.js
       - name: Register MONICA in canonical workforce registry
         run: node SCRIPTS/RegisterMonicaTwin.js
       - name: WorkforceService capability resolution
