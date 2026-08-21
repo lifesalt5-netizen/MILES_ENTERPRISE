@@ -31,9 +31,13 @@ const connector = require('../CONNECTORS/INSTANTLY/connector');
     }
   });
 
-  assert.strictEqual(execution.ok, true);
+  // Eligibility to reply is distinct from proof that a write occurred.
+  // With all controlled-write gates disabled, the connector must fail closed
+  // as a dry run rather than reporting a completed external mutation.
+  assert.strictEqual(execution.ok, false);
   assert.strictEqual(execution.mutationExecuted, false);
   assert.strictEqual(execution.status, 'DRY_RUN');
+  assert.strictEqual(execution.executionTruth, 'NO_EXTERNAL_MUTATION');
   console.log('GUARDED_REPLY_SEND_END_TO_END_CONTRACT_TEST=PASS');
 })().catch(error => {
   console.error(error && error.stack ? error.stack : error);
