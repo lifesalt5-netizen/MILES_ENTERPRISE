@@ -3,7 +3,7 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/connector.js
-  Version: 2.5.0
+  Version: 2.5.1
 
   Purpose:
   - ConnectorRuntime-compatible Instantly adapter.
@@ -75,6 +75,7 @@ function mutationTruth(action, result = {}) {
       status: 'MUTATION_RESULT_INVALID',
       mutationExecuted: false,
       dryRun: false,
+      executionTruth: 'NO_EXTERNAL_MUTATION',
       error: 'Instantly mutation returned no execution evidence.'
     };
   }
@@ -87,7 +88,9 @@ function mutationTruth(action, result = {}) {
       connector: 'INSTANTLY',
       action: result.action || action,
       mutationExecuted: result.mutationExecuted === true,
-      dryRun: result.dryRun === true
+      dryRun: result.dryRun === true,
+      executionTruth: result.mutationExecuted === true ? 'EXTERNAL_MUTATION_CONFIRMED' : 'NO_EXTERNAL_MUTATION',
+      result
     };
   }
 
@@ -104,7 +107,8 @@ function mutationTruth(action, result = {}) {
       status: result.status || (dryRun ? 'DRY_RUN' : 'NO_MUTATION'),
       mutationExecuted: false,
       dryRun,
-      executionTruth: 'NO_EXTERNAL_MUTATION'
+      executionTruth: 'NO_EXTERNAL_MUTATION',
+      result
     };
   }
 
@@ -251,6 +255,7 @@ async function uploadLeads(payload = {}) {
         suppressed,
         dryRun,
         mutationExecuted: mutationExecuted > 0,
+        executionTruth: mutationExecuted > 0 ? 'EXTERNAL_MUTATION_CONFIRMED' : 'NO_EXTERNAL_MUTATION',
         results,
         error: result.error || result.message || 'Instantly lead creation failed.'
       };
@@ -285,7 +290,7 @@ async function uploadLeads(payload = {}) {
 module.exports = {
   id: 'INSTANTLY',
   name: 'Instantly Connector',
-  version: '2.5.0',
+  version: '2.5.1',
   supportedActions: [...INSTANTLY_ACTIONS],
   canExecuteAction(action) {
     return Boolean(normalizeInstantlyAction(action));
