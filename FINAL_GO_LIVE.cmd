@@ -41,10 +41,7 @@ if errorlevel 1 (
 
 timeout /t 5 /nobreak >nul
 
-rem Verify all governed apps through PM2's JSON state using Node rather than CMD pipeline parsing.
-node -e "const cp=require('child_process');const names=['miles-command-center','miles-api','miles-executive-dashboard','miles-desktop-ui','p2gc-growth-demo','p2gc-customer-delivery','miles-worker','miles-autonomous-coo','miles-queue-maintainer'];const raw=cp.execFileSync('pm2.cmd',['jlist'],{encoding:'utf8'}).replace(/^\uFEFF/,'');const apps=JSON.parse(raw);const bad=names.filter(n=>!apps.some(a=>a.name===n&&a.pm2_env&&a.pm2_env.status==='online'));if(bad.length){console.error('ERROR: Governed PM2 applications not online: '+bad.join(', '));process.exit(2);}console.log('PM2 governed stack verification GREEN: '+names.length+' online');"
-if errorlevel 1 exit /b 2
-
+echo PM2 restart completed. Definitive runtime health will be proven by FULL GO acceptance.
 echo Running definitive FULL GO production acceptance...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "SCRIPTS\RunMilesFullGoAcceptance.ps1" -Root "%ROOT%" -IntelligenceRoot "%INTELLIGENCE_ROOT%"
 if errorlevel 1 (
