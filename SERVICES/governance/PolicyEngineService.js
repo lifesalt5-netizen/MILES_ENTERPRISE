@@ -8,6 +8,12 @@ const demoProtection = require("./DemoProtectionService");
 const audit = require("./GovernanceAuditService");
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..", "..");
+const QUALIFIED_REPLY_CATEGORIES = new Set([
+  "INTERESTED",
+  "MEETING_INTENT",
+  "PRICING_QUESTION",
+  "REFERRAL"
+]);
 
 function readJson(name) {
   return JSON.parse(
@@ -22,36 +28,17 @@ function normalize(value) {
     .toUpperCase();
 }
 
-/*
- * Governance must evaluate what MILES is being asked to DO, not every verb
- * that happens to appear in a CEO sentence.  In particular:
- *
- *   "Do not send email, modify campaigns, or change external systems"
- *
- * is a prohibition and must not become SEND/MODIFY authority intent.
- * A contrast boundary ends the prohibition, so:
- *
- *   "Do not send email, but publish the report"
- *
- * still correctly requires approval for PUBLISH.
- */
 function affirmativeProse(value) {
   let text = normalize(value);
-
   const negatedClause =
     /\b(?:DO\s+NOT|DON['’]T|NEVER|NOT\s+TO|WITHOUT)\b[\s\S]*?(?=\b(?:BUT|HOWEVER|THEN|YET)\b|[.;!?]|$)/g;
-
   text = text.replace(negatedClause, " ");
-
-  return text
-    .replace(/\s+/g, " ")
-    .trim();
+  return text.replace(/\s+/g, " ").trim();
 }
 
 function structuredTextOf(task = {}) {
   const payload = task.payload || {};
   const plan = payload.plan || task.plan || {};
-
   return normalize([
     task.type,
     task.action,
@@ -74,7 +61,6 @@ function structuredTextOf(task = {}) {
 function proseTextOf(task = {}) {
   const payload = task.payload || {};
   const plan = payload.plan || task.plan || {};
-
   return normalize([
     task.title,
     task.objective,
@@ -88,9 +74,42 @@ function proseTextOf(task = {}) {
 }
 
 function matchPattern(text, patterns = []) {
-  return patterns.find(pattern =>
-    text.includes(normalize(pattern))
-  ) || null;
+  return patterns.find(pattern => text.includes(normalize(pattern))) || null;
+}
+
+function isGovernedQualifiedReply(task = {}) {
+  const payload = task.payload || {};
+  const action = normalize(payload.action || task.action || task.type);
+  const capability = normalize(payload.capability || task.capability);
+  const provider = normalize(payload.provider || task.provider || payload.connector || task.connector);
+  const category = normalize(payload.category || payload.replyCategory || payload.classification?.category);
+  const autonomy = payload.autonomy || {};
+  const confidence = Number(autonomy.confidence ?? payload.confidence ?? 0);
+  const replyId = String(payload.reply_to_uuid || payload.replyToUuid || "").trim();
+  const sender = String(payload.eaccount || payload.sender_account || payload.senderAccount || "").trim();
+  const bodyText = String(payload.body?.text || payload.body?.html || "").trim();
+  const suppressed = Boolean(
+    autonomy.suppressed ||
+    payload.suppressed ||
+    payload.globallySuppressed ||
+    payload.optOut ||
+    payload.unsubscribe
+  );
+  const source = normalize(payload.source || "");
+
+  return (
+    action === "REPLYTOEMAIL" &&
+    capability === "INSTANTLY_SEND_REPLY" &&
+    provider === "INSTANTLY" &&
+    QUALIFIED_REPLY_CATEGORIES.has(category) &&
+    autonomy.eligible === true &&
+    confidence >= 0.9 &&
+    Boolean(replyId) &&
+    Boolean(sender) &&
+    Boolean(bodyText) &&
+    !suppressed &&
+    source === "QUALIFIED_REPLIES"
+  );
 }
 
 class PolicyEngineService {
@@ -103,31 +122,26 @@ class PolicyEngineService {
     const affirmative = affirmativeProse(rawProse);
     const actionableText = normalize(`${structured} ${affirmative}`);
 
-    const neverAllowedPattern = matchPattern(
-      actionableText,
-      approvals.neverAllowedPatterns
-    );
-
-    const protectedDomain = Object.keys(
-      approvals.protectedAssets || {}
-    ).find(asset =>
+    const neverAllowedPattern = matchPattern(actionableText, approvals.neverAllowedPatterns);
+    const protectedDomain = Object.keys(approvals.protectedAssets || {}).find(asset =>
       actionableText.includes(normalize(asset))
     ) || null;
+    const outboundContext = /OUTBOUND|INSTANTLY|CAMPAIGN|SEND/.test(actionableText);
 
-    const outboundContext =
-      /OUTBOUND|INSTANTLY|CAMPAIGN|SEND/.test(actionableText);
-
-    /*
-     * Structured action/provider fields are authoritative.  Free-form prose
-     * is considered only after explicit negative clauses are removed.
-     */
-    const approvalPattern =
+    const rawApprovalPattern =
       matchPattern(structured, approvals.approvalPatterns) ||
       matchPattern(affirmative, approvals.approvalPatterns);
+    const governedQualifiedReply = isGovernedQualifiedReply(task);
+    const approvalPattern =
+      governedQualifiedReply && ["SEND", "REPLY"].includes(normalize(rawApprovalPattern))
+        ? null
+        : rawApprovalPattern;
 
     const autonomousPattern =
-      matchPattern(structured, approvals.autonomousPatterns) ||
-      matchPattern(affirmative, approvals.autonomousPatterns);
+      governedQualifiedReply
+        ? "GOVERNED_QUALIFIED_REPLY"
+        : matchPattern(structured, approvals.autonomousPatterns) ||
+          matchPattern(affirmative, approvals.autonomousPatterns);
 
     const data = dataAccess.evaluate({ task, ...context });
     const demo = demoProtection.evaluate({ task, ...context });
@@ -135,7 +149,9 @@ class PolicyEngineService {
     let decision = "ALLOW";
     let approvalRequired = false;
     let risk = "LOW";
-    let reason = "Read-only or low-risk action is authorized.";
+    let reason = governedQualifiedReply
+      ? "Evidence-gated qualified prospect reply is authorized for autonomous execution through controlled-write governance."
+      : "Read-only or low-risk action is authorized.";
 
     if (neverAllowedPattern) {
       decision = "DENY";
@@ -179,8 +195,10 @@ class PolicyEngineService {
       matches: {
         neverAllowedPattern,
         approvalPattern,
+        rawApprovalPattern,
         autonomousPattern,
-        protectedDomain
+        protectedDomain,
+        governedQualifiedReply
       },
       interpretation: {
         structuredIntent: structured,
@@ -200,3 +218,4 @@ class PolicyEngineService {
 }
 
 module.exports = new PolicyEngineService();
+module.exports.isGovernedQualifiedReply = isGovernedQualifiedReply;

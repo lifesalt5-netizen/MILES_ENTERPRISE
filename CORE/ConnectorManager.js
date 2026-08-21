@@ -1,6 +1,6 @@
 "use strict";
 
-const logger = require("./Logger");
+const logger = require("./logger");
 const eventBus = require("./EventBus");
 
 function normalizeName(name) {
