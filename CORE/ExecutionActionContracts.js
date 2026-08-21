@@ -45,6 +45,7 @@ const INSTANTLY_ACTIONS = Object.freeze([
   "listLeads",
   "listEmails",
   "getEmail",
+  "replyToEmail",
   "createLead",
   "uploadLeads",
   "createCampaign",
@@ -91,6 +92,7 @@ function normalizeMilesAction(value) {
 function normalizeInstantlyAction(value) {
   const compact = compactToken(value);
   if (compact === "HEALTH") return "healthCheck";
+  if (compact === "SENDREPLY" || compact === "REPLY") return "replyToEmail";
   return INSTANTLY_BY_COMPACT.get(compact) || null;
 }
 
