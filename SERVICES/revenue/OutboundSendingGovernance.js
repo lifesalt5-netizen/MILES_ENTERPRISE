@@ -26,10 +26,20 @@ function normalizeTime(value) {
   return /^\d{2}:\d{2}$/.test(text) ? text : '';
 }
 
+function minutes(value) {
+  const normalized = normalizeTime(value);
+  if (!normalized) return null;
+  const [hour, minute] = normalized.split(':').map(Number);
+  if (hour > 23 || minute > 59) return null;
+  return hour * 60 + minute;
+}
+
 function inspectCampaignSchedule(campaign = {}) {
   const envelope = campaign.campaign_schedule || campaign.campaignSchedule || {};
   const schedules = Array.isArray(envelope.schedules) ? envelope.schedules : [];
   const violations = [];
+  const allowedFrom = minutes(GOVERNANCE.from);
+  const allowedTo = minutes(GOVERNANCE.to);
 
   if (!schedules.length) violations.push('SCHEDULE_NOT_PRESENT');
 
@@ -37,23 +47,28 @@ function inspectCampaignSchedule(campaign = {}) {
     const timezone = String(schedule?.timezone || '').trim();
     const from = normalizeTime(schedule?.timing?.from);
     const to = normalizeTime(schedule?.timing?.to);
+    const fromMinutes = minutes(from);
+    const toMinutes = minutes(to);
     const days = schedule?.days || {};
 
     if (timezone !== GOVERNANCE.timezone) violations.push(`SCHEDULE_${index}_TIMEZONE_NOT_AMERICA_NEW_YORK`);
-    if (from !== GOVERNANCE.from) violations.push(`SCHEDULE_${index}_START_NOT_08_00`);
-    if (to !== GOVERNANCE.to) violations.push(`SCHEDULE_${index}_STOP_NOT_18_00`);
+    if (fromMinutes === null) violations.push(`SCHEDULE_${index}_START_INVALID`);
+    else if (fromMinutes < allowedFrom) violations.push(`SCHEDULE_${index}_START_BEFORE_08_00`);
+    if (toMinutes === null) violations.push(`SCHEDULE_${index}_STOP_INVALID`);
+    else if (toMinutes > allowedTo) violations.push(`SCHEDULE_${index}_STOP_AFTER_18_00`);
+    if (fromMinutes !== null && toMinutes !== null && fromMinutes >= toMinutes) violations.push(`SCHEDULE_${index}_INVALID_TIME_RANGE`);
 
-    for (const [day, expected] of Object.entries(GOVERNANCE.days)) {
-      if (Boolean(days?.[day]) !== expected) violations.push(`SCHEDULE_${index}_DAY_${day}_MISMATCH`);
-    }
+    if (Boolean(days?.['5'])) violations.push(`SCHEDULE_${index}_SATURDAY_ENABLED`);
+    if (Boolean(days?.['6'])) violations.push(`SCHEDULE_${index}_SUNDAY_ENABLED`);
+    if (!['0','1','2','3','4'].some(day => Boolean(days?.[day]))) violations.push(`SCHEDULE_${index}_NO_WEEKDAY_ENABLED`);
   });
 
   return {
     compliant: violations.length === 0,
     timezone: GOVERNANCE.timezone,
-    from: GOVERNANCE.from,
-    to: GOVERNANCE.to,
-    days: { ...GOVERNANCE.days },
+    allowedFrom: GOVERNANCE.from,
+    allowedTo: GOVERNANCE.to,
+    allowedDays: { ...GOVERNANCE.days },
     scheduleLayers: schedules.length,
     violations: [...new Set(violations)]
   };
