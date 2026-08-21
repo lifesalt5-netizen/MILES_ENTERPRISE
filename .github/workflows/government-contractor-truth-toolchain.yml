@@ -1,0 +1,49 @@
+name: Government Contractor Truth Toolchain
+
+on:
+  pull_request:
+    paths:
+      - 'CONFIG/government_contractor_truth_rules.json'
+      - 'SCRIPTS/*GovernmentContractorTruth*.py'
+      - 'SCRIPTS/*Truth*.py'
+      - 'SCRIPTS/*Vehicle*.py'
+      - 'SCRIPTS/RecoverNewVehicleContactsV2.py'
+      - '.github/workflows/government-contractor-truth-toolchain.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python syntax
+        run: |
+          python -m py_compile SCRIPTS/AuditGovernmentContractorTruthIntegrity.py
+          python -m py_compile SCRIPTS/AuditGovernmentContractorTruthSources.py
+          python -m py_compile SCRIPTS/BuildGovernmentContractorTruthMaster.py
+          python -m py_compile SCRIPTS/DiagnoseTruthRevenueAndIdentity.py
+          python -m py_compile SCRIPTS/InspectAwardFYAndVehicleSchemas.py
+          python -m py_compile SCRIPTS/MergeFreshNormalizedVehiclesV8.py
+          python -m py_compile SCRIPTS/MergeMissingVehicleMembershipsV7.py
+          python -m py_compile SCRIPTS/NormalizeFreshFederalVehicleSources.py
+          python -m py_compile SCRIPTS/PullMissingFederalVehicleSources.py
+          python -m py_compile SCRIPTS/RecoverGovernmentContractorContactsV1.py
+          python -m py_compile SCRIPTS/RecoverNewVehicleContactsV2.py
+          python -m py_compile SCRIPTS/RepairGovernmentContractorTruthMasterV2.py
+          python -m py_compile SCRIPTS/RepairGovernmentContractorTruthMasterV3.py
+          python -m py_compile SCRIPTS/RepairGovernmentContractorTruthMasterV4.py
+          python -m py_compile SCRIPTS/RepairTruthVehicleSegmentsV5.py
+          python -m py_compile SCRIPTS/RepairTruthVehicleSegmentsV6.py
+      - name: Recovery safety contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('SCRIPTS/RecoverNewVehicleContactsV2.py').read_text(encoding='utf-8').lower()
+          assert 'verification_required' in text
+          assert 'instantly' not in text
+          assert 'activatecampaign' not in text
+          assert 'sendemail' not in text
+          print('GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY_SAFETY=PASS')
+          PY
