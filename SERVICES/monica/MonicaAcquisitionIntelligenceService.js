@@ -47,6 +47,21 @@ function domainFromEmail(v) {
   const at = e.lastIndexOf("@");
   return at > 0 ? e.slice(at + 1) : "";
 }
+function emailVerificationStatus(r) {
+  if (!s(r.email, r.email_address, r.contact_email)) return "NO_EMAIL";
+  if (b(r.email_verified, r.verified_email, r.email_is_verified, r.is_email_verified)) return "VERIFIED";
+  const status = s(
+    r.email_verification_status,
+    r.verification_status,
+    r.email_status,
+    r.millionverifier_status,
+    r.million_verifier_status,
+    r.email_validation_status
+  ).toLowerCase();
+  if (/^(verified|valid|deliverable|ok|safe)$/.test(status)) return "VERIFIED";
+  if (/^(invalid|undeliverable|bounce|bounced|risky|unknown|catch-all|catchall)$/.test(status)) return status.toUpperCase();
+  return "UNVERIFIED";
+}
 function companyKey(r) {
   const uei = compact(r.uei || r.UEI || r.unique_entity_id || r["Unique Entity ID"]);
   if (uei) return `UEI:${uei}`;
@@ -217,7 +232,11 @@ class MonicaAcquisitionIntelligenceService {
       suppressionRoots: [path.join(this.root, "DATA", "OUTBOUND"), path.join(this.root, "DATA", "marketing_coo"), "D:\\P2GC_Intelligence\\MILES_ENTERPRISE\\DATA\\OUTBOUND"],
       candidatePatterns: ["award", "recompete", "revenue", "incumbent", "vehicle", "hiring", "capture", "subcontract", "agency", "orion"],
       suppressionPatterns: ["MASTER_DEDUPED_ALL_SEGMENTS", "instantly", "segment", "lead", "campaign"],
-      minNetNewForBuildTest: 250, maxSourceFileBytes: 134217728
+      minNetNewForBuildTest: 250,
+      minNetNewForNurture: 50,
+      minVerifiedContactCoverageForGo: 0.25,
+      estimatedInitialSaleValue: 0,
+      maxSourceFileBytes: 134217728
     };
     if (!fs.existsSync(this.configPath)) return defaults;
     return { ...defaults, ...JSON.parse(fs.readFileSync(this.configPath, "utf8")) };
@@ -268,6 +287,24 @@ class MonicaAcquisitionIntelligenceService {
       if (!ok) continue;
       const score = this.score(row, segment);
       if (score < def.minScore) continue;
+      const verification = emailVerificationStatus(row);
+      const explicitPrimeSub = s(row.prime_sub_status, row.contractor_role, row.prime_or_sub, row.role_type);
+      const primeSubStatus = explicitPrimeSub || (b(row.prime_contractor, row.is_prime) ? "PRIME" : b(row.subcontractor, row.federal_subcontractor, row.is_subcontractor) ? "SUBCONTRACTOR" : "");
+      const trigger = s(row.trigger, row.trigger_type, row.signal, row.signal_type, row.event_type) || segment;
+      const recompeteExpiration = s(row.recompete_date, row.expiration_date, row.contract_end_date, row.end_date) || (n(row.days_to_recompete, row.days_until_recompete, row.recompete_days) > 0 ? `${n(row.days_to_recompete, row.days_until_recompete, row.recompete_days)}_DAYS_TO_RECOMPETE` : "");
+      const vehicleInformation = s(row.vehicle_information, row.contract_vehicle, row.required_vehicle, row.current_vehicle, row.vehicle, row.schedule, row.gwac);
+      const economicExposureValue = n(
+        row.addressable_value,
+        row.opportunity_value,
+        row.estimated_value,
+        row.contract_value,
+        row.current_value,
+        row.award_amount,
+        row.obligated_amount,
+        row.total_federal_revenue,
+        row.federal_revenue,
+        row.current_ttm_federal_revenue
+      );
       qualified.push({
         segment, segment_label: def.label, company_key: key,
         company_name: s(row.company_name, row.legal_name, row.business_name, row.recipient_name, row["Company Name"], row.name),
@@ -275,16 +312,23 @@ class MonicaAcquisitionIntelligenceService {
         domain: norm(row.domain || row.website_domain || row.website || domainFromEmail(email)),
         decision_maker: s(row.contact_name, row.decision_maker, row.poc_name),
         title: s(row.title, row.contact_title, row.job_title), email,
+        email_verification_status: verification,
         phone: s(row.phone, row.phone_number),
         agency: s(row.agency, row.awarding_agency, row.top_agency, row.primary_agency),
         contract: s(row.contract_number, row.award_id, row.piid, row.contract_id),
         estimated_federal_revenue: n(row.total_federal_revenue, row.federal_revenue, row.current_ttm_federal_revenue),
+        economic_exposure_value: economicExposureValue,
+        trigger,
         trigger_date: s(row.trigger_date, row.loss_date, row.job_posted_date, row.award_date, row.recompete_date),
+        recompete_expiration: recompeteExpiration,
+        prime_sub_status: primeSubStatus,
+        vehicle_information: vehicleInformation,
         qualification_reason: this.reason(row, segment), evidence_source: sourceFile,
         overlap_26k_master: overlap.master ? "YES" : "NO",
         overlap_instantly: overlap.instantly ? "YES" : "NO",
         overlap_other_p2gc: overlap.other ? "YES" : "NO",
         overlap_existing: overlap.any ? "YES" : "NO",
+        suppression_status: overlap.any ? "SUPPRESSED_EXISTING_P2GC_OR_INSTANTLY" : "ELIGIBLE_NET_NEW",
         net_new: overlap.any ? "NO" : "YES", score
       });
     }
@@ -319,6 +363,24 @@ class MonicaAcquisitionIntelligenceService {
     }
   }
 
+  segmentDecision(net, authoritative, config) {
+    if (!authoritative) {
+      return { qualification: "PENDING_SUPPRESSION_VALIDATION", nextAction: "COMPLETE_SUPPRESSION_COVERAGE" };
+    }
+    if (!net.length) return { qualification: "DO_NOT_TARGET", nextAction: "HOLD_NO_ACTIVATION" };
+    const verified = net.filter(r => r.email_verification_status === "VERIFIED").length;
+    const verifiedCoverage = net.length ? verified / net.length : 0;
+    const minTest = Number(config.minNetNewForBuildTest || 250);
+    const minNurture = Number(config.minNetNewForNurture || 50);
+    const minGoCoverage = Number(config.minVerifiedContactCoverageForGo || 0.25);
+    if (net.length >= Math.max(minTest * 2, 500) && verifiedCoverage >= minGoCoverage) {
+      return { qualification: "GO", nextAction: "PREPARE_CONTROLLED_ACQUISITION_TEST_FOR_MILES_APPROVAL" };
+    }
+    if (net.length >= minTest) return { qualification: "TEST", nextAction: "DESIGN_SMALL_CONTROLLED_TEST_FOR_MILES_REVIEW" };
+    if (net.length >= minNurture) return { qualification: "NURTURE", nextAction: "ENRICH_CONTACTS_AND_RECHECK_TRIGGERS" };
+    return { qualification: "DO_NOT_TARGET", nextAction: "HOLD_NO_ACTIVATION" };
+  }
+
   run() {
     const config = this.loadConfig();
     if (config.mode !== "DISCOVERY_ONLY" || config.activationBlocked !== true) throw new Error("MONICA_SAFETY_GATE_REQUIRES_DISCOVERY_ONLY");
@@ -351,23 +413,35 @@ class MonicaAcquisitionIntelligenceService {
     const summary = Object.entries(SEGMENTS).map(([segment, def]) => {
       const all = allRows.filter(r => r.segment === segment);
       const net = all.filter(r => r.net_new === "YES");
-      const recommendation = !authoritative ? "HOLD_SUPPRESSION_COVERAGE" : net.length >= config.minNetNewForBuildTest ? "TEST" : net.length >= 50 ? "NURTURE" : "HOLD";
+      const verifiedContacts = net.filter(r => r.email && r.email_verification_status === "VERIFIED").length;
+      const decision = this.segmentDecision(net, authoritative, config);
+      const evidenceBackedMarketValue = net.reduce((sum, r) => sum + Number(r.economic_exposure_value || 0), 0);
+      const approvedInitialSaleValue = Number(config.estimatedInitialSaleValue || 0);
+      const estimatedCommercialValue = approvedInitialSaleValue > 0 ? net.length * approvedInitialSaleValue : null;
       return {
         segment, label: def.label,
         raw_qualified_companies: all.length,
         overlap_26k_master: all.filter(r => r.overlap_26k_master === "YES").length,
         overlap_instantly: all.filter(r => r.overlap_instantly === "YES").length,
         overlap_other_p2gc: all.filter(r => r.overlap_other_p2gc === "YES").length,
+        suppressed_companies: all.filter(r => r.overlap_existing === "YES").length,
         any_existing_overlap: all.filter(r => r.overlap_existing === "YES").length,
         true_net_new_companies: net.length,
         net_new_contacts_with_email: net.filter(r => r.email).length,
+        net_new_verified_contacts: verifiedContacts,
+        verified_contact_coverage: net.length ? Number((verifiedContacts / net.length).toFixed(4)) : 0,
+        evidence_backed_market_value: evidenceBackedMarketValue,
+        estimated_commercial_value: estimatedCommercialValue,
+        commercial_value_status: estimatedCommercialValue == null ? "CEO_PRICING_ASSUMPTION_NOT_CONFIGURED" : "ESTIMATED_FROM_APPROVED_INITIAL_SALE_VALUE",
+        segment_qualification: decision.qualification,
+        recommended_next_action: decision.nextAction,
         authoritative_net_new: authoritative ? "YES" : "NO",
-        recommendation
+        recommendation: decision.qualification
       };
     });
 
     fs.mkdirSync(this.outputDir, { recursive: true });
-    const leadHeaders = ["segment", "segment_label", "company_key", "company_name", "uei", "domain", "decision_maker", "title", "email", "phone", "agency", "contract", "estimated_federal_revenue", "trigger_date", "qualification_reason", "evidence_source", "overlap_26k_master", "overlap_instantly", "overlap_other_p2gc", "overlap_existing", "net_new", "score"];
+    const leadHeaders = ["segment", "segment_label", "company_key", "company_name", "uei", "domain", "decision_maker", "title", "email", "email_verification_status", "phone", "agency", "contract", "estimated_federal_revenue", "economic_exposure_value", "trigger", "trigger_date", "recompete_expiration", "prime_sub_status", "vehicle_information", "qualification_reason", "evidence_source", "overlap_26k_master", "overlap_instantly", "overlap_other_p2gc", "overlap_existing", "suppression_status", "net_new", "score"];
     writeCsv(path.join(this.outputDir, "MONICA_ALL_QUALIFIED.csv"), allRows, leadHeaders);
     writeCsv(path.join(this.outputDir, "MONICA_NET_NEW_LEADS.csv"), netRows, leadHeaders);
     writeCsv(path.join(this.outputDir, "MONICA_SEGMENT_CENSUS.csv"), summary, Object.keys(summary[0]));
@@ -383,6 +457,10 @@ class MonicaAcquisitionIntelligenceService {
         instantlyEmails: indexes.INSTANTLY.emails.size,
         otherP2GCEmails: indexes.P2GC_OTHER.emails.size
       },
+      commercialValuePolicy: {
+        estimatedInitialSaleValue: Number(config.estimatedInitialSaleValue || 0),
+        rule: "P2GC commercial value is only calculated from an explicitly configured approved initial-sale value; otherwise no P2GC revenue estimate is fabricated."
+      },
       skippedFiles: this.skippedFiles, summary
     };
     fs.writeFileSync(path.join(this.outputDir, "MONICA_SEGMENT_CENSUS.json"), JSON.stringify(manifest, null, 2), "utf8");
@@ -392,4 +470,4 @@ class MonicaAcquisitionIntelligenceService {
   }
 }
 
-module.exports = { MonicaAcquisitionIntelligenceService, SEGMENTS, companyKey, ratio, suppressionClass };
+module.exports = { MonicaAcquisitionIntelligenceService, SEGMENTS, companyKey, ratio, suppressionClass, emailVerificationStatus };
