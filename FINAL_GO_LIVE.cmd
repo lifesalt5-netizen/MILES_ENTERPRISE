@@ -24,10 +24,11 @@ if errorlevel 1 exit /b 2
 git pull --ff-only origin main
 if errorlevel 1 exit /b 2
 
-rem Production generates and preserves untracked runtime evidence in-place.
-rem Block only tracked-file drift here; never delete or reset runtime artifacts.
-for /f %%i in ('git status --porcelain=v1 --untracked-files=no') do (
-  echo ERROR: Production tracked worktree is not clean. No files were reset or deleted.
+rem Runtime DATA/DATABASE/CONFIG/state artifacts are expected to change in-place.
+rem Block only tracked source/control drift; never delete, reset, or hide runtime evidence.
+git diff --quiet --exit-code HEAD -- API CORE SERVICES SCRIPTS CONNECTORS WORKERS TESTS .github FINAL_GO_LIVE.cmd package.json package-lock.json
+if errorlevel 1 (
+  echo ERROR: Production source/control files have local tracked drift. No files were reset or deleted.
   exit /b 2
 )
 
