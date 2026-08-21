@@ -3,7 +3,7 @@
 /*
   MILES OS
   File: SERVICES/COOOrchestratorService.js
-  Version: 1.2.0
+  Version: 1.3.0
   Purpose:
     Production COO orchestrator.
 
@@ -26,6 +26,7 @@ const WorkflowService = require("./WorkflowService");
 const ExecutionService = require("./ExecutionService");
 const BusinessOperationsBridgeService = require("./BusinessOperationsBridgeService");
 const CalendlyRevenuePipelineService = require("./CalendlyRevenuePipelineService");
+const RevenueCrmProgressionService = require("./revenue/RevenueCrmProgressionService");
 const { attachMeetingPipelineToBrief } = require("./CalendlyExecutiveBriefAdapter");
 
 class COOOrchestratorService {
@@ -63,6 +64,12 @@ class COOOrchestratorService {
         rootDir: this.rootDir
       });
 
+    this.revenueCrmProgression =
+      options.revenueCrmProgression ||
+      new RevenueCrmProgressionService({
+        rootDir: this.rootDir
+      });
+
     this.executeRuntimeTasks =
       typeof options.executeRuntimeTasks === "boolean"
         ? options.executeRuntimeTasks
@@ -96,6 +103,11 @@ class COOOrchestratorService {
     const calendlyRevenuePipelineResult =
       await this.refreshCalendlyRevenuePipeline();
 
+    const revenueCrmProgressionResult =
+      this.refreshRevenueCrmProgression(
+        calendlyRevenuePipelineResult
+      );
+
     await this.intelligence.refresh();
 
     const refreshedExecutiveState =
@@ -121,11 +133,41 @@ class COOOrchestratorService {
       businessBridgeResults,
       executionResults,
       calendlyRevenuePipelineResult,
+      revenueCrmProgressionResult,
       openWorkCount: this.workQueue.getOpen().length,
       escalations: this.workQueue.getEscalations(),
       executiveState: refreshedExecutiveState,
       executiveBrief
     };
+  }
+
+  refreshRevenueCrmProgression(calendlyRevenuePipelineResult = {}) {
+    try {
+      if (
+        !this.revenueCrmProgression ||
+        typeof this.revenueCrmProgression.runOnce !== "function"
+      ) {
+        return {
+          ok: false,
+          status: "REVENUE_CRM_PROGRESSION_UNAVAILABLE",
+          error: "Revenue CRM progression service is unavailable."
+        };
+      }
+
+      return this.revenueCrmProgression.runOnce({
+        calendlyPipeline:
+          calendlyRevenuePipelineResult?.ok === false
+            ? {}
+            : calendlyRevenuePipelineResult
+      });
+    } catch (error) {
+      return {
+        ok: false,
+        status: "REVENUE_CRM_PROGRESSION_FAILED",
+        error: error.message,
+        generatedAt: new Date().toISOString()
+      };
+    }
   }
 
   async refreshCalendlyRevenuePipeline() {

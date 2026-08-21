@@ -1,0 +1,33 @@
+name: Revenue CRM Progression
+
+on:
+  pull_request:
+    paths:
+      - 'CONFIG/canonical_crm_rules.json'
+      - 'SERVICES/CanonicalCrmService.js'
+      - 'SERVICES/revenue/RevenueCrmProgressionService.js'
+      - 'SERVICES/COOOrchestratorService.js'
+      - 'TESTS/Test_RevenueCrmProgression.js'
+      - 'TESTS/Test_CooRevenueCrmProgressionWiring.js'
+      - '.github/workflows/revenue-crm-progression.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: |
+          node --check SERVICES/CanonicalCrmService.js
+          node --check SERVICES/revenue/RevenueCrmProgressionService.js
+          node --check SERVICES/COOOrchestratorService.js
+          node --check TESTS/Test_RevenueCrmProgression.js
+          node --check TESTS/Test_CooRevenueCrmProgressionWiring.js
+      - name: Revenue CRM progression
+        run: node TESTS/Test_RevenueCrmProgression.js
+      - name: COO CRM wiring
+        run: node TESTS/Test_CooRevenueCrmProgressionWiring.js
