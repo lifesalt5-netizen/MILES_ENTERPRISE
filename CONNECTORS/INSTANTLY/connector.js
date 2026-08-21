@@ -3,7 +3,7 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/connector.js
-  Version: 2.4.0
+  Version: 2.5.0
 
   Purpose:
   - ConnectorRuntime-compatible Instantly adapter.
@@ -13,6 +13,7 @@
   - Enforce the global P2GC suppression registry before any lead creation/upload.
   - Expose read-only Unibox email retrieval for reply intelligence.
   - Expose guarded reply sending without bypassing existing mutation safety defaults.
+  - Preserve execution truth: a dry-run or no-mutation result is never reported as a successful mutation.
 */
 
 const path = require('path');
@@ -64,6 +65,62 @@ function booleanEnv(name, fallback) {
   return fallback;
 }
 
+function mutationTruth(action, result = {}) {
+  if (!result || typeof result !== 'object') {
+    return {
+      ok: false,
+      provider: 'Instantly',
+      connector: 'INSTANTLY',
+      action,
+      status: 'MUTATION_RESULT_INVALID',
+      mutationExecuted: false,
+      dryRun: false,
+      error: 'Instantly mutation returned no execution evidence.'
+    };
+  }
+
+  if (result.ok === false) {
+    return {
+      ...result,
+      ok: false,
+      provider: result.provider || 'Instantly',
+      connector: 'INSTANTLY',
+      action: result.action || action,
+      mutationExecuted: result.mutationExecuted === true,
+      dryRun: result.dryRun === true
+    };
+  }
+
+  const dryRun = result.dryRun === true || String(result.status || '').toUpperCase() === 'DRY_RUN';
+  const explicitlyNoMutation = result.mutationExecuted === false;
+
+  if (dryRun || explicitlyNoMutation) {
+    return {
+      ...result,
+      ok: false,
+      provider: result.provider || 'Instantly',
+      connector: 'INSTANTLY',
+      action: result.action || action,
+      status: result.status || (dryRun ? 'DRY_RUN' : 'NO_MUTATION'),
+      mutationExecuted: false,
+      dryRun,
+      executionTruth: 'NO_EXTERNAL_MUTATION'
+    };
+  }
+
+  return {
+    ok: true,
+    provider: result.provider || 'Instantly',
+    connector: 'INSTANTLY',
+    action: result.action || action,
+    status: result.status || 'MUTATION_EXECUTED',
+    mutationExecuted: true,
+    dryRun: false,
+    executionTruth: 'EXTERNAL_MUTATION_CONFIRMED',
+    result
+  };
+}
+
 async function guardedCreateLead(payload = {}) {
   const email = leadEmail(payload);
   const suppression = email ? suppressionService().get(email) : null;
@@ -109,13 +166,14 @@ async function guardedReplyToEmail(payload = {}) {
 
   if (!mayExecute) {
     return {
-      ok: true,
+      ok: false,
       provider: 'Instantly',
       connector: 'INSTANTLY',
       action: 'replyToEmail',
       status: 'DRY_RUN',
       dryRun: true,
       mutationExecuted: false,
+      executionTruth: 'NO_EXTERNAL_MUTATION',
       reason: 'Guarded reply sending requires all Instantly and MILES controlled-write gates.',
       requiredGates: {
         MILES_DRY_RUN: false,
@@ -140,6 +198,7 @@ async function guardedReplyToEmail(payload = {}) {
     status: 'REPLY_SENT',
     dryRun: false,
     mutationExecuted: true,
+    executionTruth: 'EXTERNAL_MUTATION_CONFIRMED',
     result
   };
 }
@@ -191,27 +250,34 @@ async function uploadLeads(payload = {}) {
         uploaded: mutationExecuted,
         suppressed,
         dryRun,
+        mutationExecuted: mutationExecuted > 0,
         results,
         error: result.error || result.message || 'Instantly lead creation failed.'
       };
     }
   }
 
+  const noExternalMutation = mutationExecuted === 0;
+  const status =
+    suppressed === leads.length
+      ? 'ALL_LEADS_BLOCKED_GLOBAL_SUPPRESSION'
+      : dryRun === leads.length - suppressed
+        ? 'DRY_RUN'
+        : 'LEADS_UPLOADED';
+
   return {
-    ok: true,
+    ok: !noExternalMutation,
     provider: 'Instantly',
     connector: 'INSTANTLY',
-    status:
-      suppressed === leads.length
-        ? 'ALL_LEADS_BLOCKED_GLOBAL_SUPPRESSION'
-        : dryRun === leads.length - suppressed
-          ? 'DRY_RUN'
-          : 'LEADS_UPLOADED',
+    action: 'uploadLeads',
+    status,
     campaignId,
     attempted: leads.length,
     uploaded: mutationExecuted,
     suppressed,
     dryRun,
+    mutationExecuted: mutationExecuted > 0,
+    executionTruth: noExternalMutation ? 'NO_EXTERNAL_MUTATION' : 'EXTERNAL_MUTATION_CONFIRMED',
     results
   };
 }
@@ -219,7 +285,7 @@ async function uploadLeads(payload = {}) {
 module.exports = {
   id: 'INSTANTLY',
   name: 'Instantly Connector',
-  version: '2.4.0',
+  version: '2.5.0',
   supportedActions: [...INSTANTLY_ACTIONS],
   canExecuteAction(action) {
     return Boolean(normalizeInstantlyAction(action));
@@ -315,45 +381,45 @@ module.exports = {
         return guardedReplyToEmail(payload);
 
       case 'createLead':
-        return { ok: true, result: await guardedCreateLead(payload) };
+        return mutationTruth('createLead', await guardedCreateLead(payload));
 
       case 'uploadLeads':
         return await uploadLeads(payload);
 
       case 'createCampaign':
-        return { ok: true, result: await instantly.createCampaign(payload) };
+        return mutationTruth('createCampaign', await instantly.createCampaign(payload));
 
       case 'updateCampaign':
-        return {
-          ok: true,
-          result: await instantly.updateCampaign(
+        return mutationTruth(
+          'updateCampaign',
+          await instantly.updateCampaign(
             resolveCampaignId(payload),
             payload.updates || payload.patch || payload.body || {}
           )
-        };
+        );
 
       case 'pauseCampaign':
-        return {
-          ok: true,
-          result: await instantly.pauseCampaign(
+        return mutationTruth(
+          'pauseCampaign',
+          await instantly.pauseCampaign(
             resolveCampaignId(payload),
             payload.reason || context.reason || ''
           )
-        };
+        );
 
       case 'activateCampaign':
       case 'resumeCampaign':
       case 'startCampaign':
-        return { ok: true, result: await instantly.activateCampaign(resolveCampaignId(payload)) };
+        return mutationTruth('activateCampaign', await instantly.activateCampaign(resolveCampaignId(payload)));
 
       case 'deleteCampaign':
-        return {
-          ok: true,
-          result: await instantly.deleteCampaign(
+        return mutationTruth(
+          'deleteCampaign',
+          await instantly.deleteCampaign(
             resolveCampaignId(payload),
             payload.confirmation || ''
           )
-        };
+        );
 
       default:
         return {
