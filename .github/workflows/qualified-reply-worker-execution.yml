@@ -1,0 +1,31 @@
+name: Qualified Reply Worker Execution
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/governance/PolicyEngineService.js'
+      - 'SERVICES/governance/ApprovalGateService.js'
+      - 'SERVICES/ExecutionService.js'
+      - 'CONNECTORS/INSTANTLY/connector.js'
+      - 'TESTS/Test_GovernedQualifiedReplyApproval.js'
+      - 'TESTS/Test_QualifiedReplyWorkerExecution.js'
+      - '.github/workflows/qualified-reply-worker-execution.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: |
+          node --check SERVICES/governance/PolicyEngineService.js
+          node --check TESTS/Test_GovernedQualifiedReplyApproval.js
+          node --check TESTS/Test_QualifiedReplyWorkerExecution.js
+      - name: Qualified reply governance
+        run: node TESTS/Test_GovernedQualifiedReplyApproval.js
+      - name: Qualified reply worker execution
+        run: node TESTS/Test_QualifiedReplyWorkerExecution.js
