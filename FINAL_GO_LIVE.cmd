@@ -32,6 +32,23 @@ if errorlevel 1 (
   exit /b 2
 )
 
+echo Restarting governed MILES production PM2 stack...
+pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer
+if errorlevel 1 (
+  echo ERROR: One or more governed MILES PM2 applications failed to restart.
+  exit /b 2
+)
+
+timeout /t 5 /nobreak >nul
+
+for %%N in (miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer) do (
+  pm2 describe %%N | findstr /C:"status" | findstr /C:"online" >nul
+  if errorlevel 1 (
+    echo ERROR: PM2 application %%N is not online after restart.
+    exit /b 2
+  )
+)
+
 echo Running definitive FULL GO production acceptance...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "SCRIPTS\RunMilesFullGoAcceptance.ps1" -Root "%ROOT%" -IntelligenceRoot "%INTELLIGENCE_ROOT%"
 if errorlevel 1 (
