@@ -1,0 +1,46 @@
+name: FULL GO Production Acceptance Contract
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
+      - '.github/workflows/full-go-production-acceptance-contract.yml'
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell syntax and plan-only contract
+        shell: powershell
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS/RunMilesFullGoAcceptance.ps1'), [ref]$null, [ref]$errors)
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          $plan = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File SCRIPTS/RunMilesFullGoAcceptance.ps1 -PlanOnly -Root $PWD | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Plan-only execution failed.' }
+          if ($plan -notmatch 'PLAN_ONLY') { throw 'Plan-only marker missing.' }
+          if ($plan -notmatch 'noPaidVerificationWithoutExplicitSwitch') { throw 'Paid verification safety marker missing.' }
+      - name: Safety invariants
+        shell: powershell
+        run: |
+          $text = Get-Content -Raw SCRIPTS/RunMilesFullGoAcceptance.ps1
+          foreach ($required in @(
+            "MILES_DRY_RUN",
+            "MILES_ALLOW_INSTANTLY_MUTATIONS",
+            "MILES_CONTROLLED_WRITE_ENABLED",
+            "INSTANTLY_WRITE_ENABLED",
+            "AuthorizePaidVerification",
+            "AUTHORIZE_TRUTH_RECOVERED_MILLIONVERIFIER_CREDIT_BURN",
+            "AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1",
+            "AUDIT_MILES_REVENUE_OPERATIONS.js",
+            "Test_OutboundToMeetingEndToEnd.js"
+          )) {
+            if ($text -notmatch [regex]::Escape($required)) { throw "Missing safety/acceptance invariant: $required" }
+          }
+          if ($text -match "replyToEmail\s*\(" -or $text -match "createLead\s*\(" -or $text -match "activateCampaign\s*\(") {
+            throw 'Acceptance runner must not directly invoke Instantly mutation actions.'
+          }
+          Write-Host 'FULL_GO_ACCEPTANCE_CONTRACT=PASS'
