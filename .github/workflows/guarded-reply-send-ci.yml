@@ -5,7 +5,9 @@ on:
     paths:
       - 'CORE/ExecutionActionContracts.js'
       - 'CONNECTORS/INSTANTLY/connector.js'
+      - 'SERVICES/revenue/AutonomousQualifiedReplyPolicy.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/Test_AutonomousQualifiedReplyPolicy.js'
       - 'SCRIPTS/Audit_AutonomousReplySendReadiness.js'
       - '.github/workflows/guarded-reply-send-ci.yml'
 
@@ -22,9 +24,13 @@ jobs:
         run: |
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/INSTANTLY/connector.js
+          node --check SERVICES/revenue/AutonomousQualifiedReplyPolicy.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/Test_AutonomousQualifiedReplyPolicy.js
           node --check SCRIPTS/Audit_AutonomousReplySendReadiness.js
       - name: Guarded reply regression
         run: node TESTS/Test_InstantlyGuardedReplySend.js
+      - name: Qualified reply policy
+        run: node TESTS/Test_AutonomousQualifiedReplyPolicy.js
       - name: Readiness audit
         run: node SCRIPTS/Audit_AutonomousReplySendReadiness.js
