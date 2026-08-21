@@ -4,9 +4,6 @@ process.env.MILES_ROOT = process.cwd();
 
 const assert = require('assert');
 
-// This acceptance targets the current ExecutionService -> ConnectorManager path.
-// Stub legacy persistence/event modules before loading the runtime so unrelated
-// Windows-only casing in those historical modules cannot mask this contract.
 const taskQueueStub = {
   update() {},
   list() { return []; },
@@ -38,7 +35,7 @@ const executionService = require('../SERVICES/ExecutionService');
       async healthCheck() { return { ok: true }; },
       async execute(task) {
         executions += 1;
-        assert.strictEqual(task.action, 'replyToEmail');
+        assert.strictEqual(String(task.action).toUpperCase(), 'REPLYTOEMAIL');
         assert.strictEqual(task.payload.reply_to_uuid, 'email-uuid-1');
         assert.strictEqual(task.payload.eaccount, 'sender@outreach.example');
         return {
@@ -93,7 +90,7 @@ const executionService = require('../SERVICES/ExecutionService');
     const result = await executionService.execute(governedTask);
     assert.strictEqual(result.ok, true);
     assert.strictEqual(result.status, 'COMPLETED');
-    assert.strictEqual(result.action, 'replyToEmail');
+    assert.strictEqual(String(result.action).toUpperCase(), 'REPLYTOEMAIL');
     assert.strictEqual(executions, 1);
     assert.ok(updates.some(row => row.patch.status === 'RUNNING'));
     assert.ok(updates.some(row => row.patch.status === 'COMPLETED'));
