@@ -3,13 +3,32 @@
 process.env.MILES_ROOT = process.cwd();
 
 const assert = require('assert');
+
+// This acceptance targets the current ExecutionService -> ConnectorManager path.
+// Stub legacy persistence/event modules before loading the runtime so unrelated
+// Windows-only casing in those historical modules cannot mask this contract.
+const taskQueueStub = {
+  update() {},
+  list() { return []; },
+  claimNextExecutableTask() { return null; }
+};
+const eventBusStub = {
+  publish() { return null; },
+  emitEvent() { return null; },
+  emit() { return null; }
+};
+
+const taskQueuePath = require.resolve('../CORE/TaskQueue');
+const eventBusPath = require.resolve('../CORE/EventBus');
+require.cache[taskQueuePath] = { id: taskQueuePath, filename: taskQueuePath, loaded: true, exports: taskQueueStub };
+require.cache[eventBusPath] = { id: eventBusPath, filename: eventBusPath, loaded: true, exports: eventBusStub };
+
 const connectorManager = require('../CORE/ConnectorManager');
-const taskQueue = require('../CORE/TaskQueue');
 const executionService = require('../SERVICES/ExecutionService');
 
 (async () => {
   const previous = connectorManager.get('INSTANTLY');
-  const originalUpdate = taskQueue.update;
+  const originalUpdate = taskQueueStub.update;
   const updates = [];
   let executions = 0;
 
@@ -34,7 +53,7 @@ const executionService = require('../SERVICES/ExecutionService');
       }
     });
 
-    taskQueue.update = (id, patch) => {
+    taskQueueStub.update = (id, patch) => {
       updates.push({ id, patch });
       return { id, ...patch };
     };
@@ -103,7 +122,7 @@ const executionService = require('../SERVICES/ExecutionService');
 
     console.log('QUALIFIED_REPLY_WORKER_EXECUTION_TEST=PASS');
   } finally {
-    taskQueue.update = originalUpdate;
+    taskQueueStub.update = originalUpdate;
     connectorManager.unregister('INSTANTLY');
     if (previous) connectorManager.register('INSTANTLY', previous);
   }
