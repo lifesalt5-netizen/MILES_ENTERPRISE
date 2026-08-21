@@ -24,8 +24,10 @@ if errorlevel 1 exit /b 2
 git pull --ff-only origin main
 if errorlevel 1 exit /b 2
 
-for /f %%i in ('git status --porcelain=v1 --untracked-files=all') do (
-  echo ERROR: Production worktree is not clean. No files were reset or deleted.
+rem Production generates and preserves untracked runtime evidence in-place.
+rem Block only tracked-file drift here; never delete or reset runtime artifacts.
+for /f %%i in ('git status --porcelain=v1 --untracked-files=no') do (
+  echo ERROR: Production tracked worktree is not clean. No files were reset or deleted.
   exit /b 2
 )
 
