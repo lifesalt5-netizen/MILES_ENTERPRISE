@@ -1,0 +1,62 @@
+name: Autonomous Revenue Control Plane Acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'CORE/**'
+      - 'CONNECTORS/INSTANTLY/**'
+      - 'SERVICES/ExecutionService.js'
+      - 'SERVICES/BusinessOperationsBridgeService.js'
+      - 'SERVICES/RevenueMissionSourceService.js'
+      - 'SERVICES/revenue/**'
+      - 'TESTS/**'
+      - '.github/workflows/autonomous-revenue-control-plane-acceptance.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Runtime ownership regressions
+        run: |
+          node TESTS/single_taskqueue_executor_test.js
+          node TESTS/single_coo_planner_test.js
+          node TESTS/full_runtime_stability_test.js
+      - name: Full product functional acceptance
+        run: node TESTS/full_product_functional_acceptance_test.js
+      - name: Outbound governance and readiness
+        run: |
+          node TESTS/Test_OutboundSendingGovernance.js
+          node TESTS/Test_RevenueOutboundReadinessAudit.js
+          node TESTS/Test_RevenueSegmentConfigurationApply.js
+          node TESTS/Test_StateRevenueDeploymentRunner.js
+      - name: Reply intelligence and recovery
+        run: |
+          node TESTS/reply_intelligence_classification_test.js
+          node TESTS/reply_intelligence_production_loop_test.js
+          node TESTS/executive_reply_surface_policy_test.js
+          node TESTS/replacement_contact_recovery_test.js
+          node TESTS/replacement_contact_execution_test.js
+      - name: Governed reply execution
+        run: |
+          node TESTS/Test_InstantlyGuardedReplySend.js
+          node TESTS/Test_AutonomousQualifiedReplyPolicy.js
+          node TESTS/Test_QualifiedReplyRevenueBridge.js
+          node TESTS/Test_QualifiedReplyWorkerExecution.js
+          node TESTS/Test_InstantlyMutationExecutionTruth.js
+      - name: CRM and meeting progression
+        run: |
+          node TESTS/Test_RevenueCrmProgression.js
+          node TESTS/Test_CooRevenueCrmProgressionWiring.js
+      - name: End-to-end revenue chain
+        run: node TESTS/Test_OutboundToMeetingEndToEnd.js
+      - name: Acceptance boundary
+        run: |
+          echo 'CONTROL_PLANE_ACCEPTANCE=GREEN'
+          echo 'LIVE_PROVIDER_LOCAL_RUNTIME_ACCEPTANCE=SEPARATE_REQUIRED_GATE'
