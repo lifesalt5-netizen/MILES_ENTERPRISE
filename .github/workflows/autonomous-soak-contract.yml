@@ -1,0 +1,45 @@
+name: Autonomous Soak Contract
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
+      - 'SCRIPTS/RunMiles24hAutonomousSoak.ps1'
+      - 'TESTS/Test_InstantlySendWindowHistory.js'
+      - '.github/workflows/autonomous-soak-contract.yml'
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Send window history regression
+        shell: powershell
+        run: node TESTS/Test_InstantlySendWindowHistory.js
+      - name: Soak PowerShell syntax and plan-only contract
+        shell: powershell
+        run: |
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS/RunMiles24hAutonomousSoak.ps1'), [ref]$null, [ref]$errors)
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          $plan = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File SCRIPTS/RunMiles24hAutonomousSoak.ps1 -PlanOnly -Root $PWD | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Soak plan-only execution failed.' }
+          foreach ($marker in @('PLAN_ONLY','FRESH_FULL_GO_GREEN','NO_SEND_WINDOW_VIOLATIONS')) {
+            if ($plan -notmatch $marker) { throw "Missing soak plan marker: $marker" }
+          }
+      - name: Read-only soak invariants
+        shell: powershell
+        run: |
+          $soak = Get-Content -Raw SCRIPTS/RunMiles24hAutonomousSoak.ps1
+          $history = Get-Content -Raw SCRIPTS/AuditInstantlySendWindowHistory.js
+          foreach ($required in @('AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1','AUDIT_MILES_REVENUE_OPERATIONS.js','AuditInstantlySendWindowHistory.js','24H_AUTONOMOUS_SOAK_GREEN')) {
+            if ($soak -notmatch [regex]::Escape($required)) { throw "Missing soak invariant: $required" }
+          }
+          if ($soak -match 'replyToEmail\s*\(' -or $soak -match 'createLead\s*\(' -or $soak -match 'activateCampaign\s*\(') { throw 'Soak runner must be read-only.' }
+          if ($history -match 'replyToEmail\s*\(' -or $history -match 'createLead\s*\(' -or $history -match 'activateCampaign\s*\(') { throw 'Send-window audit must be read-only.' }
+          Write-Host 'AUTONOMOUS_SOAK_CONTRACT=PASS'
