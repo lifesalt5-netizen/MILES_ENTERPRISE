@@ -8,6 +8,7 @@ on:
       - 'SERVICES/revenue/AutonomousQualifiedReplyPolicy.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
       - 'TESTS/Test_AutonomousQualifiedReplyPolicy.js'
+      - 'TESTS/Test_GuardedReplySendEndToEndContract.js'
       - 'SCRIPTS/Audit_AutonomousReplySendReadiness.js'
       - '.github/workflows/guarded-reply-send-ci.yml'
 
@@ -27,10 +28,13 @@ jobs:
           node --check SERVICES/revenue/AutonomousQualifiedReplyPolicy.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
           node --check TESTS/Test_AutonomousQualifiedReplyPolicy.js
+          node --check TESTS/Test_GuardedReplySendEndToEndContract.js
           node --check SCRIPTS/Audit_AutonomousReplySendReadiness.js
       - name: Guarded reply regression
         run: node TESTS/Test_InstantlyGuardedReplySend.js
       - name: Qualified reply policy
         run: node TESTS/Test_AutonomousQualifiedReplyPolicy.js
+      - name: End-to-end guarded reply contract
+        run: node TESTS/Test_GuardedReplySendEndToEndContract.js
       - name: Readiness audit
         run: node SCRIPTS/Audit_AutonomousReplySendReadiness.js
