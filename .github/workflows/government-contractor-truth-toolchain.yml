@@ -11,6 +11,7 @@ on:
       - 'SCRIPTS/RecoverNewVehicleContactsV2.py'
       - 'SCRIPTS/PrepareGovernmentContractorTruthVerificationIntake.js'
       - 'SCRIPTS/RunTruthRecoveredVerification.js'
+      - 'SCRIPTS/RunTruthRecoveredProductionGate.js'
       - 'SERVICES/revenue/GovernmentContractorTruthVerificationIntakeService.js'
       - 'SERVICES/revenue/RevenueEmailVerificationBatchService.js'
       - 'SERVICES/revenue/RevenueVerificationReconciliationService.js'
@@ -19,6 +20,7 @@ on:
       - 'TESTS/Test_RevenueEmailVerificationBatch.js'
       - 'TESTS/Test_RevenueVerificationReconciliation.js'
       - 'TESTS/Test_TruthRecoveredVerificationRunner.js'
+      - 'TESTS/Test_TruthRecoveredProductionGate.js'
       - '.github/workflows/government-contractor-truth-toolchain.yml'
 
 jobs:
@@ -72,6 +74,7 @@ jobs:
           node --check SERVICES/revenue/RevenueVerificationReconciliationService.js
           node --check SERVICES/revenue/TruthRecoveredVerificationRunner.js
           node --check SCRIPTS/RunTruthRecoveredVerification.js
+          node --check SCRIPTS/RunTruthRecoveredProductionGate.js
       - name: Truth verification intake
         run: node TESTS/Test_GovernmentContractorTruthVerificationIntake.js
       - name: Verification batch merge and dedupe
@@ -80,3 +83,5 @@ jobs:
         run: node TESTS/Test_RevenueVerificationReconciliation.js
       - name: Governed verification credit runner
         run: node TESTS/Test_TruthRecoveredVerificationRunner.js
+      - name: Single-command production gate
+        run: node TESTS/Test_TruthRecoveredProductionGate.js
