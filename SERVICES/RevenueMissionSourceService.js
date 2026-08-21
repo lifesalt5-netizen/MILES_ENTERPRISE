@@ -35,6 +35,7 @@ class RevenueMissionSourceService {
       { source: "proposal_deadlines", file: path.join(this.rootDir, "DATA", "revenue", "proposal_deadlines.json") },
       { source: "client_deliverables", file: path.join(this.rootDir, "DATA", "revenue", "client_deliverables.json") },
       { source: "orion_recommendations", file: path.join(this.rootDir, "DATA", "revenue", "orion_recommendations.json") },
+      { source: "qualified_replies", file: path.join(this.rootDir, "DATA", "runtime", "revenue", "replies", "qualified_reply_queue.json") },
       { source: "replacement_contacts", file: path.join(this.rootDir, "DATA", "runtime", "revenue", "replies", "replacement_contact_queue.json") }
     ];
   }
@@ -94,6 +95,7 @@ class RevenueMissionSourceService {
   inferRevenueStage(item = {}, source = "") {
     const explicit = item.revenueStage || item.stage || item.pipelineStage;
     if (explicit) return String(explicit).toUpperCase();
+    if (source === "qualified_replies") return "INTERESTED_REPLY";
     if (source === "replacement_contacts") return "PIPELINE";
     const text = [source,item.title,item.objective,item.reason,item.description,item.action,item.type,item.status].filter(Boolean).join(" ").toLowerCase();
     if (/interested|positive reply|responded lead|hot lead/.test(text)) return "INTERESTED_REPLY";
@@ -110,7 +112,7 @@ class RevenueMissionSourceService {
     if (item.connector) return item.connector;
     if (item.system) return item.system;
     const text = [source,item.title,item.action,item.objective].filter(Boolean).join(" ").toLowerCase();
-    if (/instantly|campaign|outbound|replacement_contacts/.test(text)) return "INSTANTLY";
+    if (/instantly|campaign|outbound|replacement_contacts|qualified_replies/.test(text)) return "INSTANTLY";
     if (/orion|opportunity|recompete/.test(text)) return "ORION";
     if (/email|gmail|workspace/.test(text)) return "GOOGLE";
     return "MILES";
