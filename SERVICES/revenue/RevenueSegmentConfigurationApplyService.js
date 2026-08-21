@@ -3,6 +3,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { campaignSchedule } = require("./OutboundSendingGovernance");
 
 function sha256(value) { return crypto.createHash("sha256").update(value).digest("hex").toUpperCase(); }
 function email(value) { return String(value || "").trim().toLowerCase(); }
@@ -58,15 +59,7 @@ class RevenueSegmentConfigurationApplyService {
   createPayload(name, inboxes) {
     return {
       name,
-      campaign_schedule: {
-        schedules: [{
-          name: "Weekdays",
-          timing: { from: "09:00", to: "17:00" },
-          days: { "0": false, "1": true, "2": true, "3": true, "4": true, "5": true, "6": false },
-          timezone: "Etc/GMT+12"
-        }],
-        start_date: this.generatedAt().slice(0, 10)
-      },
+      campaign_schedule: campaignSchedule(this.generatedAt()),
       email_list: inboxes,
       daily_limit: 0,
       daily_max_leads: 0,
@@ -139,12 +132,15 @@ class RevenueSegmentConfigurationApplyService {
       if (state.inboxesConfigured !== true) {
         this.confirmed(await this.updateProvider(campaignId, {
           email_list: inboxes,
+          campaign_schedule: campaignSchedule(this.generatedAt()),
           daily_limit: 0,
           daily_max_leads: 0,
           allow_risky_contacts: false,
           disable_bounce_protect: false
-        }), "campaign inbox configuration");
+        }), "campaign inbox and send-window configuration");
+        state.paused = true;
         state.inboxesConfigured = true;
+        state.sendWindowConfigured = true;
         state.inboxes = inboxes;
         progress.routes[item.route] = state;
         this.persist(progress);
@@ -153,7 +149,7 @@ class RevenueSegmentConfigurationApplyService {
 
     const states = Object.entries(progress.routes).map(([routeName, state]) => ({ route: routeName, ...state }));
     const report = {
-      ok: states.length === 10 && states.every(state => state.paused && state.inboxesConfigured),
+      ok: states.length === 10 && states.every(state => state.paused && state.inboxesConfigured && state.sendWindowConfigured),
       service: this.service, mode: "APPLY_LIVE_AUTHORIZED", status: "SEGMENT_CONFIGURATION_COMPLETED",
       generatedAt: this.generatedAt(), authorization: this.authorization,
       sourceConfigurationFingerprint: plan.configurationFingerprint,
@@ -162,13 +158,14 @@ class RevenueSegmentConfigurationApplyService {
         campaignsCreated: states.filter(state => state.created).length,
         campaignsPaused: states.filter(state => state.paused).length,
         routesWithInboxes: states.filter(state => state.inboxesConfigured).length,
+        routesWithCanonicalSendWindow: states.filter(state => state.sendWindowConfigured).length,
         uniqueInboxesAssigned: new Set(states.flatMap(state => state.inboxes || [])).size,
         verifiedLeadsCovered: classified.reduce((sum, item) => sum + Number(item.verifiedLeads), 0),
         unclassifiedHeld: 2
       },
       routes: states,
       providerWritesAuthorized: true,
-      providerWriteScope: "CREATE_2_CAMPAIGNS_PAUSE_10_CAMPAIGNS_ASSIGN_9_INBOXES",
+      providerWriteScope: "CREATE_2_CAMPAIGNS_PAUSE_10_CAMPAIGNS_ASSIGN_9_INBOXES_AND_CANONICAL_SEND_WINDOW",
       leadsUploaded: 0, emailsSent: false, campaignsLaunched: false,
       globalDeduplicationPreserved: true
     };
