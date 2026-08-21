@@ -1,0 +1,27 @@
+name: Outbound To Meeting End To End
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/ReplyIntelligenceProductionLoopService.js'
+      - 'SERVICES/RevenueMissionSourceService.js'
+      - 'SERVICES/BusinessOperationsBridgeService.js'
+      - 'SERVICES/ExecutionService.js'
+      - 'SERVICES/revenue/RevenueCrmProgressionService.js'
+      - 'SERVICES/CanonicalCrmService.js'
+      - 'TESTS/Test_OutboundToMeetingEndToEnd.js'
+      - '.github/workflows/outbound-to-meeting-e2e.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: node --check TESTS/Test_OutboundToMeetingEndToEnd.js
+      - name: Outbound to meeting contract
+        run: node TESTS/Test_OutboundToMeetingEndToEnd.js
