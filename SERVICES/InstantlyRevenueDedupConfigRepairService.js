@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const master = require('./MasterInstantlyRevenueReconciliationService');
+const { campaignSchedule } = require('./revenue/OutboundSendingGovernance');
 
 const ROOT = process.cwd();
 const INPUT_C = path.join(ROOT, 'DATA', 'OUTBOUND', 'INSTANTLY_MASTER_RECONCILIATION', 'INSTANTLY_REVENUE_PRIORITY_DEDUP_SENDER_CAPACITY_GATE_LATEST.json');
@@ -18,16 +19,6 @@ function normalizeEmail(v) { return String(v || '').trim().toLowerCase(); }
 function loadJson(file) {
   if (!fs.existsSync(file)) throw new Error(`Required artifact not found: ${file}`);
   return JSON.parse(fs.readFileSync(file, 'utf8'));
-}
-function schedule() {
-  return {
-    schedules: [{
-      name: 'P2GC Weekdays Eastern',
-      timing: { from: '09:00', to: '17:00' },
-      days: { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false },
-      timezone: 'America/Detroit'
-    }]
-  };
 }
 function authHeaders() {
   const apiKey = process.env.INSTANTLY_API_KEY || '';
@@ -107,13 +98,6 @@ async function run(options = {}) {
   for (const group of dedupGroups.values()) {
     const contacts = [...new Set(group.contacts)];
     if (!contacts.length) continue;
-
-    // Critical P1.5E fix:
-    // These contacts are intentionally already members of the designated owner campaign.
-    // Enabling duplicate checks causes Instantly to classify every requested contact as a
-    // duplicate and report a successful background job with moved_leads=0. We therefore
-    // disable duplicate checks here and move the source membership to the already-selected
-    // owner campaign. copy_leads=false ensures the lower-priority source membership is removed.
     const payload = {
       campaign: group.sourceCampaignId,
       contacts,
@@ -147,8 +131,8 @@ async function run(options = {}) {
   for (const candidate of (d.candidates || [])) {
     const current = rowById.get(candidate.campaignId) || {};
     const updates = {};
-    if (!candidate.schedulePresent) updates.campaign_schedule = schedule();
-    if (Number(candidate.dailyLimit || current.dailyLimit || 0) <= 0) {
+    if (candidate?.scheduleAudit?.compliant !== true) updates.campaign_schedule = campaignSchedule();
+    if (candidate?.senderCapacityAudit?.compliant !== true || Number(candidate.dailyLimit || current.dailyLimit || 0) <= 0) {
       const senderCount = Math.max(1, Array.isArray(candidate.senderEmails) ? candidate.senderEmails.length : Number(current.senderCount || 1));
       updates.daily_limit = Math.min(125, senderCount * 25);
       updates.daily_max_leads = updates.daily_limit;
@@ -161,7 +145,7 @@ async function run(options = {}) {
   const result = {
     ok: true,
     gate: 'P1.5E_INSTANTLY_REVENUE_DEDUP_ENFORCEMENT_CONFIG_REPAIR',
-    version: '1.1-owner-preserving-cross-campaign-move',
+    version: '1.2-owner-preserving-dedup-and-send-governance-repair',
     generatedAt: new Date().toISOString(),
     duplicateMembershipsToRemove,
     dedupJobsSubmitted: dedupJobs.length,
@@ -169,6 +153,8 @@ async function run(options = {}) {
     dedupBusyGroups: busyGroups.length,
     dedupContactsDeferredBusy: busyGroups.reduce((n,x) => n + Number(x.contactsDeferred || 0), 0),
     configRepairsExecuted: repairs.length,
+    sendWindowRepairsExecuted: repairs.filter(x => x.updates.campaign_schedule).length,
+    capacityRepairsExecuted: repairs.filter(x => x.updates.daily_limit).length,
     dedupJobs,
     busyGroups,
     repairs,
@@ -178,6 +164,7 @@ async function run(options = {}) {
       duplicateSourceMembershipRemoved: true,
       ownerCampaignPreserved: true,
       duplicateChecksDisabledOnlyBecauseOwnerAlreadySelected: true,
+      canonicalSendWindowRepair: true,
       deleteLeads: false,
       deleteCampaigns: false,
       activateCampaigns: false,
