@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 import json, re
 import pandas as pd
 
