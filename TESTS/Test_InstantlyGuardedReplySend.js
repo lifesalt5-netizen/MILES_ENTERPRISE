@@ -26,11 +26,12 @@ const connector = require('../CONNECTORS/INSTANTLY/connector');
     }
   });
 
-  assert.strictEqual(result.ok, true);
+  assert.strictEqual(result.ok, false);
   assert.strictEqual(result.action, 'replyToEmail');
   assert.strictEqual(result.status, 'DRY_RUN');
   assert.strictEqual(result.mutationExecuted, false);
   assert.strictEqual(result.dryRun, true);
+  assert.strictEqual(result.executionTruth, 'NO_EXTERNAL_MUTATION');
   assert.strictEqual(result.wouldExecute.endpoint, '/emails/reply');
 
   const invalid = await connector.execute({ action: 'replyToEmail', payload: {} });
