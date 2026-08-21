@@ -72,6 +72,8 @@ $plan = [ordered]@{
         'LIVE_RUNTIME_AND_DASHBOARD',
         'LIVE_INSTANTLY_READ_CONNECTIVITY',
         'CONTROLLED_WRITE_GATES',
+        'GMAIL_EXECUTIVE_TRIAGE_GATES',
+        'GMAIL_LEGACY_FORWARDING_DISABLED_AND_READABLE',
         'AUTONOMOUS_REVENUE_CONTROL_PLANE',
         'OUTBOUND_GOVERNANCE',
         'REPLY_AND_REPLACEMENT_RECOVERY',
@@ -86,6 +88,7 @@ $plan = [ordered]@{
         noInstantlyMutationFromAcceptanceRunner = $true
         noCampaignActivationFromAcceptanceRunner = $true
         noEmailSendFromAcceptanceRunner = $true
+        gmailTriageAcceptanceIsPlanOnly = $true
         secretsPrinted = $false
     }
 }
@@ -147,7 +150,19 @@ $instantlyWrite = Env-Bool $envMap 'INSTANTLY_WRITE_ENABLED' $false
 $writeReady = (-not $dryRun) -and $allowMutations -and $controlledWrite -and $instantlyWrite
 Add-Check $checks 'AUTONOMOUS_INSTANTLY_WRITE_GATES' $writeReady "dryRun=$dryRun allowMutations=$allowMutations controlledWrite=$controlledWrite instantlyWrite=$instantlyWrite" $true
 
-# 5. Composite control-plane regression on the live checkout. Tests use mocks/fixtures and do not send email.
+# 5. Gmail executive triage must be autonomous and must not be bypassed by Gmail's legacy global forwarding.
+$gmailTriageEnabled = Env-Bool $envMap 'MILES_GMAIL_EXECUTIVE_TRIAGE_ENABLED' $false
+$gmailTriageExecute = Env-Bool $envMap 'MILES_GMAIL_EXECUTIVE_TRIAGE_EXECUTE' $false
+$gmailInboxMutations = Env-Bool $envMap 'MILES_GOOGLE_INBOX_MUTATIONS' $false
+$gmailExecutiveForward = Env-Bool $envMap 'MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED' $false
+$gmailTriageReady = $gmailTriageEnabled -and $gmailTriageExecute -and $gmailInboxMutations -and $gmailExecutiveForward
+Add-Check $checks 'GMAIL_EXECUTIVE_TRIAGE_GATES' $gmailTriageReady "enabled=$gmailTriageEnabled execute=$gmailTriageExecute inboxMutations=$gmailInboxMutations executiveForward=$gmailExecutiveForward" $true
+
+# Plan-only triage reads every registered Gmail account and its auto-forwarding state. It never sends, labels, archives, or changes settings.
+$gmailTriageAudit = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/RunGmailExecutiveTriage.js') -WorkingDirectory $Root
+Add-Check $checks 'GMAIL_LEGACY_FORWARDING_DISABLED_AND_READABLE' ($gmailTriageAudit.exitCode -eq 0) "planOnlyExit=$($gmailTriageAudit.exitCode); legacy global Gmail forwarding must be disabled on every registered source inbox" $true
+
+# 6. Composite control-plane regression on the live checkout. Tests use mocks/fixtures and do not send email.
 $controlTests = @(
  'TESTS/single_taskqueue_executor_test.js','TESTS/single_coo_planner_test.js','TESTS/full_runtime_stability_test.js',
  'TESTS/full_product_functional_acceptance_test.js','TESTS/Test_OutboundSendingGovernance.js','TESTS/Test_RevenueOutboundReadinessAudit.js',
@@ -156,7 +171,7 @@ $controlTests = @(
  'TESTS/replacement_contact_execution_test.js','TESTS/Test_InstantlyGuardedReplySend.js','TESTS/Test_AutonomousQualifiedReplyPolicy.js',
  'TESTS/Test_QualifiedReplyRevenueBridge.js','TESTS/Test_QualifiedReplyWorkerExecution.js','TESTS/Test_InstantlyMutationExecutionTruth.js',
  'TESTS/Test_RevenueCrmProgression.js','TESTS/Test_CooRevenueCrmProgressionWiring.js','TESTS/Test_OutboundToMeetingEndToEnd.js',
- 'TESTS/Test_LeadSupplyChainCloseoutV8.js'
+ 'TESTS/Test_LeadSupplyChainCloseoutV8.js','TESTS/Test_GmailExecutiveTriageService.js'
 )
 $testFailures = @()
 foreach($test in $controlTests) {
@@ -165,7 +180,7 @@ foreach($test in $controlTests) {
 }
 Add-Check $checks 'AUTONOMOUS_REVENUE_CONTROL_PLANE' ($testFailures.Count -eq 0) "failed=$($testFailures -join ',')" $true
 
-# 6. Truth-recovered contact intake and exact credit-capped batch.
+# 7. Truth-recovered contact intake and exact credit-capped batch.
 $oldIntelligence = $env:P2GC_INTELLIGENCE_ROOT
 $env:P2GC_INTELLIGENCE_ROOT = $IntelligenceRoot
 try {
@@ -193,7 +208,7 @@ try {
     }
     Add-Check $checks 'TRUTH_RECOVERED_EMAIL_VERIFICATION' $verificationReady $verificationDetail $true
 
-    # 7. Produce #83's final named closeout artifacts from authoritative V8 + SLED verified master.
+    # 8. Produce #83's final named closeout artifacts from authoritative V8 + SLED verified master.
     $closeoutArgs = @('SCRIPTS/FinalizeLeadSupplyChainAudit.js','--apply',"--root=$Root", "--intelligence-root=$IntelligenceRoot")
     $closeoutRun = Invoke-External -FilePath 'node' -Arguments $closeoutArgs -WorkingDirectory $Root
     $closeoutManifestPath = Join-Path $Root 'DATA\revenue\lead_supply_chain_closeout\LEAD_SUPPLY_CHAIN_CLOSEOUT_MANIFEST.json'
@@ -225,6 +240,7 @@ $report = [ordered]@{
         acceptanceRunnerSentEmail = $false
         acceptanceRunnerActivatedCampaign = $false
         acceptanceRunnerUploadedInstantlyLead = $false
+        gmailTriageAcceptanceIsPlanOnly = $true
         paidVerificationRequiresExplicitSwitch = $true
         secretsReported = $false
     }
