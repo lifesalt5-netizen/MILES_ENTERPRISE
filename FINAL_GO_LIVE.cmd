@@ -32,8 +32,8 @@ if errorlevel 1 (
   exit /b 2
 )
 
-echo Restarting governed MILES production PM2 stack...
-call pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer
+echo Restarting governed MILES production PM2 stack and reloading current .env...
+call pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer --update-env
 if errorlevel 1 (
   echo ERROR: One or more governed MILES PM2 applications failed to restart.
   exit /b 2
