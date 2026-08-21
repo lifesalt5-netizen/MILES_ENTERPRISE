@@ -1,0 +1,44 @@
+name: Outbound Sending Governance
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/OutboundSendingGovernance.js'
+      - 'SERVICES/revenue/RevenueOutboundReadinessAuditService.js'
+      - 'SERVICES/revenue/RevenueSegmentConfigurationApplyService.js'
+      - 'SERVICES/InstantlyRevenueMessageActivationGateService.js'
+      - 'SERVICES/InstantlyRevenueDedupConfigRepairService.js'
+      - 'SERVICES/StateRevenueDeploymentRunner.js'
+      - 'TESTS/Test_OutboundSendingGovernance.js'
+      - 'TESTS/Test_RevenueOutboundReadinessAudit.js'
+      - '.github/workflows/outbound-sending-governance.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: |
+          node --check SERVICES/revenue/OutboundSendingGovernance.js
+          node --check SERVICES/revenue/RevenueOutboundReadinessAuditService.js
+          node --check SERVICES/revenue/RevenueSegmentConfigurationApplyService.js
+          node --check SERVICES/InstantlyRevenueMessageActivationGateService.js
+          node --check SERVICES/InstantlyRevenueDedupConfigRepairService.js
+          node --check SERVICES/StateRevenueDeploymentRunner.js
+          node --check TESTS/Test_OutboundSendingGovernance.js
+          node --check TESTS/Test_RevenueOutboundReadinessAudit.js
+      - name: Send window and capacity policy
+        run: node TESTS/Test_OutboundSendingGovernance.js
+      - name: Dynamic outbound readiness
+        run: node TESTS/Test_RevenueOutboundReadinessAudit.js
+      - name: Existing segment configuration regression
+        run: node TESTS/Test_RevenueSegmentConfigurationApply.js
+      - name: Existing State deployment contract
+        run: |
+          if [ -f TESTS/state_revenue_deployment_test.js ]; then node TESTS/state_revenue_deployment_test.js; fi
+          if [ -f TESTS/Test_StateRevenueDeploymentRunner.js ]; then node TESTS/Test_StateRevenueDeploymentRunner.js; fi

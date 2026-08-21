@@ -11,6 +11,7 @@ const path = require('path');
 require('dotenv').config();
 
 const instantly = require('../CONNECTORS/INSTANTLY/instantly');
+const { inspectCampaignSchedule, inspectSenderCapacity } = require('./revenue/OutboundSendingGovernance');
 
 const INPUT = path.join(__dirname, '..', 'DATA', 'OUTBOUND', 'INSTANTLY_MASTER_RECONCILIATION', 'INSTANTLY_REVENUE_PRIORITY_DEDUP_SENDER_CAPACITY_GATE_LATEST.json');
 const OUTPUT = path.join(__dirname, '..', 'DATA', 'OUTBOUND', 'INSTANTLY_MASTER_RECONCILIATION', 'INSTANTLY_REVENUE_MESSAGE_ACTIVATION_GATE_LATEST.json');
@@ -64,8 +65,6 @@ async function run() {
   if (!fs.existsSync(INPUT)) throw new Error(`Required P1.5C output not found: ${INPUT}`);
   const prior = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
 
-  // P1.5C publishes candidatePlans. Keep candidates as a compatibility fallback
-  // for any older persisted output produced before this contract was corrected.
   const candidates = asArray(prior.candidatePlans).length
     ? asArray(prior.candidatePlans)
     : asArray(prior.candidates);
@@ -83,12 +82,14 @@ async function run() {
       missingSubject: 0, missingBody: 0, messageContentPresent: false, messages: []
     };
 
-    const senderAccountsPresent = asArray(candidate.currentSenderEmails).length > 0;
+    const senderEmails = asArray(candidate.currentSenderEmails);
+    const senderAccountsPresent = senderEmails.length > 0;
     const eligibleContactsPresent = Number(candidate.eligibleUniqueContacts || 0) > 0;
     const sequencePresent = Number(candidate.sequenceStepCount || messageAudit.stepCountObserved || 0) > 0;
-    const schedulePresent = candidate.schedulePresent === true;
     const senderVitalsUnknown = Number(candidate?.senderHealth?.unknown || 0) > 0;
     const senderVitalsUnhealthy = Number(candidate?.senderHealth?.unhealthy || 0) > 0;
+    const scheduleAudit = campaign ? inspectCampaignSchedule(campaign) : { compliant:false, violations:['CAMPAIGN_FETCH_REQUIRED_FOR_SCHEDULE_AUDIT'] };
+    const senderCapacityAudit = campaign ? inspectSenderCapacity(campaign, senderEmails.length) : { compliant:false, violations:['CAMPAIGN_FETCH_REQUIRED_FOR_CAPACITY_AUDIT'] };
 
     const blockers = [];
     if (fetchError) blockers.push('CAMPAIGN_FETCH_FAILED');
@@ -96,12 +97,12 @@ async function run() {
     if (!senderAccountsPresent) blockers.push('NO_SENDERS_ASSIGNED');
     if (!sequencePresent) blockers.push('NO_SEQUENCE');
     if (!messageAudit.messageContentPresent) blockers.push('MESSAGE_CONTENT_NOT_CONFIRMED');
-    if (!schedulePresent) blockers.push('SCHEDULE_NOT_PRESENT');
+    if (!scheduleAudit.compliant) blockers.push('SEND_WINDOW_POLICY_FAILED', ...scheduleAudit.violations);
+    if (!senderCapacityAudit.compliant) blockers.push('SENDER_CAPACITY_POLICY_FAILED', ...senderCapacityAudit.violations);
     if (senderVitalsUnhealthy) blockers.push('SENDER_VITALS_UNHEALTHY');
 
     const warnings = [];
     if (senderVitalsUnknown) warnings.push('SENDER_VITALS_UNKNOWN_API_RETURNED_NO_EMAILS_SENT');
-    if (Number(candidate.dailyLimit || 0) <= 0) warnings.push('CAMPAIGN_DAILY_LIMIT_ZERO_OR_UNSET');
 
     results.push({
       priority: candidate.priority,
@@ -112,13 +113,15 @@ async function run() {
       blockedSuppression: candidate.blockedSuppression,
       blockedActiveAcquisition: candidate.blockedActiveAcquisition,
       blockedHigherPriorityCandidate: candidate.blockedHigherPriorityCandidate,
-      senderEmails: candidate.currentSenderEmails,
+      senderEmails,
       senderHealth: candidate.senderHealth,
       sequenceStepCountPrior: candidate.sequenceStepCount,
-      schedulePresent,
-      dailyLimit: candidate.dailyLimit,
+      schedulePresent: Boolean(campaign?.campaign_schedule?.schedules?.length || campaign?.campaignSchedule?.schedules?.length),
+      dailyLimit: Number(campaign?.daily_limit ?? campaign?.dailyLimit ?? candidate.dailyLimit ?? 0),
       messageAudit,
-      blockers,
+      scheduleAudit,
+      senderCapacityAudit,
+      blockers: [...new Set(blockers)],
       warnings,
       readyForGovernedActivationAuthorization: blockers.length === 0,
       activationExecuted: false
@@ -137,7 +140,9 @@ async function run() {
       candidates: results.length,
       readyForGovernedActivationAuthorization: ready.length,
       blocked: blocked.length,
-      eligibleUniqueContacts: results.reduce((n, r) => n + Number(r.eligibleUniqueContacts || 0), 0)
+      eligibleUniqueContacts: results.reduce((n, r) => n + Number(r.eligibleUniqueContacts || 0), 0),
+      sendWindowCompliant: results.filter(r => r.scheduleAudit?.compliant).length,
+      senderCapacityCompliant: results.filter(r => r.senderCapacityAudit?.compliant).length
     },
     candidates: results,
     recommendedFirstBatch: ready
@@ -146,6 +151,8 @@ async function run() {
       .map(r => ({ campaignId:r.campaignId, campaignName:r.campaignName, family:r.family, eligibleUniqueContacts:r.eligibleUniqueContacts, senderEmails:r.senderEmails, warnings:r.warnings })),
     safety: {
       readOnly: true,
+      sendWindowComplianceRequired: true,
+      senderCapacityComplianceRequired: true,
       activateCampaigns: false,
       pauseCampaigns: false,
       updateCampaigns: false,
@@ -164,4 +171,4 @@ async function run() {
   return output;
 }
 
-module.exports = { run };
+module.exports = { run, inspectMessages };
