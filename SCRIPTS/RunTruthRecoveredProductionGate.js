@@ -131,6 +131,7 @@ async function run(input = {}, options = {}) {
   });
   const completed = {
     ...prepared,
+    ok: verification.ok === true,
     status: verification.status,
     creditsUsed: Number(verification.creditsUsed || 0),
     creditsRemaining: Number(verification.creditsRemaining || 0),
