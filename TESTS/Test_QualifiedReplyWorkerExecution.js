@@ -1,5 +1,7 @@
 'use strict';
 
+process.env.MILES_ROOT = process.cwd();
+
 const assert = require('assert');
 const connectorManager = require('../CORE/ConnectorManager');
 const taskQueue = require('../CORE/TaskQueue');
