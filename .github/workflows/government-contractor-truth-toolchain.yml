@@ -4,17 +4,21 @@ on:
   pull_request:
     paths:
       - 'CONFIG/government_contractor_truth_rules.json'
+      - 'CONFIG/truth_recovered_verification_rules.json'
       - 'SCRIPTS/*GovernmentContractorTruth*.py'
       - 'SCRIPTS/*Truth*.py'
       - 'SCRIPTS/*Vehicle*.py'
       - 'SCRIPTS/RecoverNewVehicleContactsV2.py'
       - 'SCRIPTS/PrepareGovernmentContractorTruthVerificationIntake.js'
+      - 'SCRIPTS/RunTruthRecoveredVerification.js'
       - 'SERVICES/revenue/GovernmentContractorTruthVerificationIntakeService.js'
       - 'SERVICES/revenue/RevenueEmailVerificationBatchService.js'
       - 'SERVICES/revenue/RevenueVerificationReconciliationService.js'
+      - 'SERVICES/revenue/TruthRecoveredVerificationRunner.js'
       - 'TESTS/Test_GovernmentContractorTruthVerificationIntake.js'
       - 'TESTS/Test_RevenueEmailVerificationBatch.js'
       - 'TESTS/Test_RevenueVerificationReconciliation.js'
+      - 'TESTS/Test_TruthRecoveredVerificationRunner.js'
       - '.github/workflows/government-contractor-truth-toolchain.yml'
 
 jobs:
@@ -66,9 +70,13 @@ jobs:
           node --check SCRIPTS/PrepareGovernmentContractorTruthVerificationIntake.js
           node --check SERVICES/revenue/RevenueEmailVerificationBatchService.js
           node --check SERVICES/revenue/RevenueVerificationReconciliationService.js
+          node --check SERVICES/revenue/TruthRecoveredVerificationRunner.js
+          node --check SCRIPTS/RunTruthRecoveredVerification.js
       - name: Truth verification intake
         run: node TESTS/Test_GovernmentContractorTruthVerificationIntake.js
       - name: Verification batch merge and dedupe
         run: node TESTS/Test_RevenueEmailVerificationBatch.js
       - name: Verification reconciliation provenance
         run: node TESTS/Test_RevenueVerificationReconciliation.js
+      - name: Governed verification credit runner
+        run: node TESTS/Test_TruthRecoveredVerificationRunner.js
