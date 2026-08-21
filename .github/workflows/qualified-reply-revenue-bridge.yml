@@ -1,0 +1,28 @@
+name: Qualified Reply Revenue Bridge
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/ReplyIntelligenceProductionLoopService.js'
+      - 'SERVICES/RevenueMissionSourceService.js'
+      - 'SERVICES/BusinessOperationsBridgeService.js'
+      - 'SERVICES/revenue/AutonomousQualifiedReplyPolicy.js'
+      - 'TESTS/Test_QualifiedReplyRevenueBridge.js'
+      - '.github/workflows/qualified-reply-revenue-bridge.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Syntax
+        run: |
+          node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
+          node --check SERVICES/RevenueMissionSourceService.js
+          node --check TESTS/Test_QualifiedReplyRevenueBridge.js
+      - name: Qualified reply revenue bridge
+        run: node TESTS/Test_QualifiedReplyRevenueBridge.js
