@@ -3,7 +3,7 @@
 /*
   MILES Enterprise
   File: CONNECTORS/INSTANTLY/connector.js
-  Version: 2.2.0
+  Version: 2.4.0
 
   Purpose:
   - ConnectorRuntime-compatible Instantly adapter.
@@ -12,6 +12,7 @@
   - Preserve lead custom variables for trigger-personalized campaigns.
   - Enforce the global P2GC suppression registry before any lead creation/upload.
   - Expose read-only Unibox email retrieval for reply intelligence.
+  - Expose guarded reply sending without bypassing existing mutation safety defaults.
 */
 
 const path = require('path');
@@ -54,6 +55,15 @@ function leadEmail(payload = {}) {
   return String(payload.email || payload.contact || '').trim().toLowerCase();
 }
 
+function booleanEnv(name, fallback) {
+  const raw = process.env[name];
+  if (raw === undefined || raw === null || raw === '') return fallback;
+  const value = String(raw).trim().toLowerCase();
+  if (['1', 'true', 'yes', 'y', 'on'].includes(value)) return true;
+  if (['0', 'false', 'no', 'n', 'off'].includes(value)) return false;
+  return fallback;
+}
+
 async function guardedCreateLead(payload = {}) {
   const email = leadEmail(payload);
   const suppression = email ? suppressionService().get(email) : null;
@@ -70,6 +80,68 @@ async function guardedCreateLead(payload = {}) {
     };
   }
   return instantly.createLead(payload);
+}
+
+async function guardedReplyToEmail(payload = {}) {
+  if (!payload || typeof payload !== 'object') {
+    return { ok: false, provider: 'Instantly', connector: 'INSTANTLY', mutationExecuted: false, error: 'Reply payload is required.' };
+  }
+  if (!payload.eaccount) {
+    return { ok: false, provider: 'Instantly', connector: 'INSTANTLY', mutationExecuted: false, error: 'eaccount is required to send an Instantly reply.' };
+  }
+  if (!payload.reply_to_uuid) {
+    return { ok: false, provider: 'Instantly', connector: 'INSTANTLY', mutationExecuted: false, error: 'reply_to_uuid is required to send an Instantly reply.' };
+  }
+  if (!payload.subject) {
+    return { ok: false, provider: 'Instantly', connector: 'INSTANTLY', mutationExecuted: false, error: 'subject is required to send an Instantly reply.' };
+  }
+  const hasText = Boolean(payload.body && typeof payload.body.text === 'string' && payload.body.text.trim());
+  const hasHtml = Boolean(payload.body && typeof payload.body.html === 'string' && payload.body.html.trim());
+  if (!hasText && !hasHtml) {
+    return { ok: false, provider: 'Instantly', connector: 'INSTANTLY', mutationExecuted: false, error: 'body.text or body.html is required to send an Instantly reply.' };
+  }
+
+  const dryRun = booleanEnv('MILES_DRY_RUN', true);
+  const mutationsAllowed = booleanEnv('MILES_ALLOW_INSTANTLY_MUTATIONS', false);
+  const controlledWrite = booleanEnv('MILES_CONTROLLED_WRITE_ENABLED', false);
+  const instantlyWrite = booleanEnv('INSTANTLY_WRITE_ENABLED', false);
+  const mayExecute = dryRun === false && mutationsAllowed && controlledWrite && instantlyWrite;
+
+  if (!mayExecute) {
+    return {
+      ok: true,
+      provider: 'Instantly',
+      connector: 'INSTANTLY',
+      action: 'replyToEmail',
+      status: 'DRY_RUN',
+      dryRun: true,
+      mutationExecuted: false,
+      reason: 'Guarded reply sending requires all Instantly and MILES controlled-write gates.',
+      requiredGates: {
+        MILES_DRY_RUN: false,
+        MILES_ALLOW_INSTANTLY_MUTATIONS: true,
+        MILES_CONTROLLED_WRITE_ENABLED: true,
+        INSTANTLY_WRITE_ENABLED: true
+      },
+      wouldExecute: {
+        method: 'POST',
+        endpoint: '/emails/reply',
+        body: payload
+      }
+    };
+  }
+
+  const result = await instantly.request('/emails/reply', { method: 'POST', body: payload });
+  return {
+    ok: true,
+    provider: 'Instantly',
+    connector: 'INSTANTLY',
+    action: 'replyToEmail',
+    status: 'REPLY_SENT',
+    dryRun: false,
+    mutationExecuted: true,
+    result
+  };
 }
 
 async function uploadLeads(payload = {}) {
@@ -147,7 +219,7 @@ async function uploadLeads(payload = {}) {
 module.exports = {
   id: 'INSTANTLY',
   name: 'Instantly Connector',
-  version: '2.3.0',
+  version: '2.4.0',
   supportedActions: [...INSTANTLY_ACTIONS],
   canExecuteAction(action) {
     return Boolean(normalizeInstantlyAction(action));
@@ -167,6 +239,7 @@ module.exports = {
     'INSTANTLY_UPLOAD_LEADS',
     'INSTANTLY_LIST_EMAILS',
     'INSTANTLY_GET_EMAIL',
+    'INSTANTLY_SEND_REPLY',
     'INSTANTLY_CREATE_CAMPAIGN',
     'INSTANTLY_UPDATE_CAMPAIGN',
     'INSTANTLY_PAUSE_CAMPAIGN',
@@ -237,6 +310,9 @@ module.exports = {
           email: await instantly.request(`/emails/${encodeURIComponent(emailId)}`, { method: 'GET' })
         };
       }
+
+      case 'replyToEmail':
+        return guardedReplyToEmail(payload);
 
       case 'createLead':
         return { ok: true, result: await guardedCreateLead(payload) };
