@@ -12,6 +12,15 @@ fs.copyFileSync(
   path.join(repoRoot, 'CONFIG', 'canonical_crm_rules.json'),
   path.join(root, 'CONFIG', 'canonical_crm_rules.json')
 );
+fs.mkdirSync(path.join(root, 'GOVERNANCE'), { recursive: true });
+for (const name of [
+  'constitution.json',
+  'approval_matrix.json',
+  'data_access_policy.json',
+  'demo_access_policy.json'
+]) {
+  fs.copyFileSync(path.join(repoRoot, 'GOVERNANCE', name), path.join(root, 'GOVERNANCE', name));
+}
 process.env.MILES_ROOT = root;
 
 const queueUpdates = [];
@@ -65,7 +74,6 @@ const executionService = require('../SERVICES/ExecutionService');
   };
   const replacementRecovery = { detect() { return null; } };
 
-  // 1) Human reply -> canonical qualified reply operation.
   const replyLoop = new ReplyIntelligenceProductionLoopService({
     rootDir: root,
     emailSource,
@@ -86,7 +94,6 @@ const executionService = require('../SERVICES/ExecutionService');
   assert.strictEqual(qualified[0].autonomy.eligible, true);
   assert.ok(qualified[0].body.text.includes('calendly.com/kevin-pathways2gc/30min'));
 
-  // 2) Revenue source -> BusinessOperationsBridge -> TaskQueue shape.
   const source = new RevenueMissionSourceService({ rootDir: root });
   const queued = [];
   const bridgeQueue = {
@@ -111,8 +118,6 @@ const executionService = require('../SERVICES/ExecutionService');
   assert.strictEqual(queued[0].payload.source, 'qualified_replies');
   assert.strictEqual(queued[0].payload.reply_to_uuid, 'email-uuid-e2e-1');
 
-  // 3) Existing governance + ExecutionService -> registered INSTANTLY connector.
-  // The external mutation is mocked; everything before/after it is production code.
   const previousInstantly = connectorManager.get('INSTANTLY');
   if (previousInstantly) connectorManager.unregister('INSTANTLY');
   let externalMutations = 0;
@@ -144,13 +149,11 @@ const executionService = require('../SERVICES/ExecutionService');
   assert.ok(queueUpdates.some(row => row.patch.status === 'RUNNING'));
   assert.ok(queueUpdates.some(row => row.patch.status === 'COMPLETED'));
 
-  // 4) Same qualified reply evidence -> canonical CRM minimum stage Qualified.
   const progression = new RevenueCrmProgressionService({ rootDir: root, crm });
   const qualifiedProgression = progression.runOnce({ calendlyPipeline: {} });
   assert.strictEqual(qualifiedProgression.qualifiedReplyProgression.progressed, 1);
   assert.strictEqual(crm.getByIdentity({ email: prospectEmail }).stage, 'Qualified');
 
-  // 5) Authoritative active Calendly booking -> Meeting Set.
   const startTime = new Date(Date.now() + 86400000).toISOString();
   const calendlyPipeline = {
     upcomingMeetings: [{
@@ -170,7 +173,6 @@ const executionService = require('../SERVICES/ExecutionService');
   assert.strictEqual(meetingProgression.calendlyProgression.meetingSetProgressed, 1);
   assert.strictEqual(crm.getByIdentity({ email: prospectEmail }).stage, 'Meeting Set');
 
-  // 6) A past calendar entry by itself is not proof the person attended.
   const pastOnly = {
     upcomingMeetings: [],
     recentMeetings: [{
