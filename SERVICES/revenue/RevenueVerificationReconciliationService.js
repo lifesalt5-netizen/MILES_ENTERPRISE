@@ -87,11 +87,15 @@ class RevenueVerificationReconciliationService {
       throw new Error("MillionVerifier report does not exactly match the authorized batch.");
     }
 
+    const batchByEmail = new Map(batch.map(row => [normalize(row.email), row]));
     const good = [], risky = [], bad = [];
     for (const row of report) {
+      const email = normalize(row.email);
       const quality = normalize(row.quality);
       const result = normalize(row.result);
-      const output = { ...row, email: normalize(row.email), quality, result };
+      const authorized = batchByEmail.get(email);
+      if (!authorized) throw new Error("Verification result lacks authorized batch provenance: " + email);
+      const output = { ...authorized, ...row, email, quality, result };
       if (quality === "good" && result === "ok") good.push({ ...output, disposition: "SEND_READY" });
       else if (quality === "risky" && (result === "catch_all" || result === "unknown")) risky.push({ ...output, disposition: "BLOCKED_RISKY" });
       else if (quality === "bad" && result === "invalid") bad.push({ ...output, disposition: "DO_NOT_MAIL" });
@@ -110,11 +114,13 @@ class RevenueVerificationReconciliationService {
       ok: true, service: this.service, mode: "APPLY", status: "RECONCILED",
       generatedAt: this.generatedAt(),
       sourceBatchFingerprint: batchManifest.batchFingerprint,
+      sourceTruthIntakeFingerprint: batchManifest.sourceTruthIntakeFingerprint || null,
       reportPath: path.resolve(input.reportPath),
       reportSha256: sha256(fs.readFileSync(path.resolve(input.reportPath))),
       summary: {
         authorizedBatch: batch.length, reportRows: report.length,
         sendReady: good.length, riskyBlocked: risky.length, doNotMail: bad.length,
+        truthRecoveredRows: good.filter(row => normalize(row.source_family) === "government_contractor_truth_recovery").length + risky.filter(row => normalize(row.source_family) === "government_contractor_truth_recovery").length + bad.filter(row => normalize(row.source_family) === "government_contractor_truth_recovery").length,
         resultCounts,
         freeAddresses: report.filter(row => normalize(row.free) === "yes").length,
         roleAddresses: report.filter(row => normalize(row.role) === "yes").length
