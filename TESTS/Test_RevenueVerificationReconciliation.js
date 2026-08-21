@@ -15,21 +15,21 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   const batchRoot = path.join(root, "batch");
   fs.mkdirSync(batchRoot);
   fs.writeFileSync(path.join(batchRoot, "millionverifier_batch.csv"),
-    "email,verification_priority,priority_segment,segments\n" +
-    "good@example.com,3,Expiring 12 Months,GSA\n" +
-    "catch@example.com,4,GSA,GSA\n" +
-    "unknown@example.com,5,VA,VA\n" +
-    "bad@example.com,7,Certifications,WOSB\n", "utf8");
+    "email,verification_priority,priority_segment,segments,source_family,truth_uei\n" +
+    "good@example.com,3,Expiring 12 Months,GSA,GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY,U1\n" +
+    "catch@example.com,4,GSA,GSA,,\n" +
+    "unknown@example.com,5,VA,VA,,\n" +
+    "bad@example.com,7,Certifications,WOSB,,\n", "utf8");
   fs.writeFileSync(path.join(batchRoot, "manifest.json"), JSON.stringify({
-    ok: true, status: "BATCH_PREPARED", batchFingerprint: "B".repeat(64), conservation: { ok: true }
+    ok: true, status: "BATCH_PREPARED", batchFingerprint: "B".repeat(64), sourceTruthIntakeFingerprint: "T".repeat(64), conservation: { ok: true }
   }), "utf8");
   const reportPath = path.join(root, "report.csv");
   fs.writeFileSync(reportPath,
-    "email,quality,result,free,role,verification_priority,priority_segment,segments\n" +
-    "good@example.com,good,ok,no,no,3,Expiring 12 Months,GSA\n" +
-    "catch@example.com,risky,catch_all,no,yes,4,GSA,GSA\n" +
-    "unknown@example.com,risky,unknown,yes,no,5,VA,VA\n" +
-    "bad@example.com,bad,invalid,no,no,7,Certifications,WOSB\n", "utf8");
+    "email,quality,result,free,role\n" +
+    "good@example.com,good,ok,no,no\n" +
+    "catch@example.com,risky,catch_all,no,yes\n" +
+    "unknown@example.com,risky,unknown,yes,no\n" +
+    "bad@example.com,bad,invalid,no,no\n", "utf8");
   const service = new Service({ rootDir: root, batchRoot, outputRoot: path.join(root, "output"), generatedAt: () => "2026-08-07T00:00:00.000Z" });
 
   await test("service is constructable", async () => assert.ok(service));
@@ -44,6 +44,12 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("good becomes send-ready", async () => assert.strictEqual(result.summary.sendReady, 1));
   await test("catch-all and unknown stay blocked", async () => assert.strictEqual(result.summary.riskyBlocked, 2));
   await test("invalid becomes do-not-mail", async () => assert.strictEqual(result.summary.doNotMail, 1));
+  await test("truth recovered rows are counted", async () => assert.strictEqual(result.summary.truthRecoveredRows, 1));
+  await test("truth intake fingerprint is chained", async () => assert.strictEqual(result.sourceTruthIntakeFingerprint, "T".repeat(64)));
+  const sendReady = fs.readFileSync(result.artifacts.sendReady.filePath, "utf8").trim().split(/\r?\n/).map(JSON.parse);
+  await test("authorized segment metadata survives provider report", async () => assert.strictEqual(sendReady[0].segments, "GSA"));
+  await test("truth UEI survives provider report", async () => assert.strictEqual(sendReady[0].truth_uei, "U1"));
+  await test("truth source family survives provider report", async () => assert.strictEqual(sendReady[0].source_family, "GOVERNMENT_CONTRACTOR_TRUTH_RECOVERY"));
   await test("result counts are preserved", async () => assert.deepStrictEqual(result.summary.resultCounts, { ok: 1, catch_all: 1, unknown: 1, invalid: 1 }));
   await test("free address count is recorded", async () => assert.strictEqual(result.summary.freeAddresses, 1));
   await test("role address count is recorded", async () => assert.strictEqual(result.summary.roleAddresses, 1));
@@ -65,6 +71,6 @@ async function test(name, action) { await action(); passed += 1; console.log("[P
   await test("CLI defaults safely", async () => assert.deepStrictEqual(parseArguments([]), { apply: false, reportPath: null }));
   await test("CLI parses explicit report", async () => assert.deepStrictEqual(parseArguments(["--apply", "--report=C:\\\\report.csv"]), { apply: true, reportPath: "C:\\\\report.csv" }));
 
-  console.log("REVENUE_VERIFICATION_RECONCILIATION_TEST_PASS " + passed + "/27");
+  console.log("REVENUE_VERIFICATION_RECONCILIATION_TEST_PASS " + passed + "/32");
   fs.rmSync(root, { recursive: true, force: true });
 })().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
