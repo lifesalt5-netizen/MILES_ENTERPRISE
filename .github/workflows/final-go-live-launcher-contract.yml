@@ -1,0 +1,33 @@
+name: Final Go-Live Launcher Contract
+
+on:
+  pull_request:
+    paths:
+      - 'FINAL_GO_LIVE.cmd'
+      - '.github/workflows/final-go-live-launcher-contract.yml'
+  workflow_dispatch:
+
+jobs:
+  contract:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Launcher safety contract
+        shell: powershell
+        run: |
+          $text = Get-Content -Raw FINAL_GO_LIVE.cmd
+          foreach ($required in @(
+            'git pull --ff-only origin main',
+            'RunMilesFullGoAcceptance.ps1',
+            'RunMiles24hAutonomousSoak.ps1',
+            '-DurationHours 24',
+            '-SampleMinutes 60',
+            'Paid verification was NOT authorized'
+          )) {
+            if ($text -notmatch [regex]::Escape($required)) { throw "Missing launcher invariant: $required" }
+          }
+          foreach ($forbidden in @('git reset --hard','git clean -f','AuthorizePaidVerification','MILES_TRUTH_VERIFICATION_AUTHORIZATION')) {
+            if ($text -match [regex]::Escape($forbidden)) { throw "Forbidden launcher behavior present: $forbidden" }
+          }
+          Write-Host 'FINAL_GO_LIVE_LAUNCHER_CONTRACT=PASS'
