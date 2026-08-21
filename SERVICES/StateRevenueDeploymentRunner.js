@@ -5,6 +5,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
+const { campaignSchedule } = require('./revenue/OutboundSendingGovernance');
 
 const ROOT = process.cwd();
 const STATES = ['FL', 'TX', 'CA', 'VA', 'MD'];
@@ -91,16 +92,9 @@ function campaignPayload(state, senderEmails) {
     name: `STATE SLED - ${state}`,
     sequences: [{ steps: sequenceForState(state) }],
     email_list: senderEmails,
-    campaign_schedule: {
-      schedules: [{
-        name: 'P2GC Weekdays Eastern',
-        timing: { from: '09:00', to: '17:00' },
-        days: { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false },
-        timezone: 'America/Detroit'
-      }]
-    },
-    daily_limit: 25,
-    daily_max_leads: 25,
+    campaign_schedule: campaignSchedule(),
+    daily_limit: Math.min(25, Math.max(1, senderEmails.length) * 25),
+    daily_max_leads: Math.min(25, Math.max(1, senderEmails.length) * 25),
     email_gap: 10,
     random_wait_max: 5,
     text_only: true,
@@ -128,7 +122,8 @@ function leadPayload(row, campaignId, state) {
     website: domain ? (/^https?:\/\//i.test(domain) ? domain : `https://${domain}`) : undefined,
     custom_variables: uei ? { uei, source_segment: `STATE_SLED_${state}` } : { source_segment: `STATE_SLED_${state}` },
     skip_if_in_workspace: true,
-    skip_if_in_campaign: true
+    skip_if_in_campaign: true,
+    verify_leads_on_import: true
   };
 }
 
@@ -157,8 +152,7 @@ function loadLiveInstantlyConnector() {
   delete require.cache[connectorPath];
   delete require.cache[instantlyPath];
 
-  const connector = require('../CONNECTORS/INSTANTLY/connector');
-  return connector;
+  return require('../CONNECTORS/INSTANTLY/connector');
 }
 
 async function run(options = {}) {
@@ -231,8 +225,9 @@ async function run(options = {}) {
     for (const row of leads) {
       try {
         const result = await connector.execute({ action: 'createLead', payload: leadPayload(row, campaignId, state) });
-        const dryRun = result?.result?.dryRun === true;
-        const mutationExecuted = result?.result?.mutationExecuted;
+        const mutation = result?.result || result;
+        const dryRun = mutation?.dryRun === true;
+        const mutationExecuted = mutation?.mutationExecuted;
         if (result?.ok === false || dryRun || mutationExecuted === false) failed += 1;
         else uploaded += 1;
       } catch {
@@ -246,7 +241,8 @@ async function run(options = {}) {
       const status = Number(live?.campaign?.status ?? live?.result?.status ?? campaign?.status);
       if (status !== 1) {
         const activated = await connector.execute({ action: 'activateCampaign', payload: { campaign_id: campaignId } });
-        if (activated?.result?.dryRun === true || activated?.result?.mutationExecuted === false) {
+        const mutation = activated?.result || activated;
+        if (mutation?.dryRun === true || mutation?.mutationExecuted === false) {
           throw new Error(`Activation did not execute for ${state}: ${JSON.stringify(activated)}`);
         }
         activatedNow = true;
@@ -284,7 +280,7 @@ async function run(options = {}) {
   };
 
   const outDir = path.join(ROOT, 'DATA', 'OUTBOUND', 'STATE_SLED', 'DEPLOYMENT');
-  fs.mkdirSync(outDir, { recursive: true });
+  fs.mkdirSync(outDir, { recursive:true });
   summary.outputFile = path.join(outDir, 'STATE_REVENUE_DEPLOYMENT_LATEST.json');
   fs.writeFileSync(summary.outputFile, JSON.stringify(summary, null, 2));
   return summary;
