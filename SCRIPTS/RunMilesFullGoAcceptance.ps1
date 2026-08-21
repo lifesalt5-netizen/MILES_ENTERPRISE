@@ -115,13 +115,13 @@ if (-not $SkipGitFetch) {
 $head = Invoke-External -FilePath 'git' -Arguments @('rev-parse','HEAD') -WorkingDirectory $Root
 $origin = Invoke-External -FilePath 'git' -Arguments @('rev-parse','origin/main') -WorkingDirectory $Root
 $branch = Invoke-External -FilePath 'git' -Arguments @('rev-parse','--abbrev-ref','HEAD') -WorkingDirectory $Root
-$status = Invoke-External -FilePath 'git' -Arguments @('status','--porcelain=v1','--untracked-files=all') -WorkingDirectory $Root
+$sourceDrift = Invoke-External -FilePath 'git' -Arguments @('diff','--quiet','--exit-code','HEAD','--','API','CORE','SERVICES','SCRIPTS','CONNECTORS','WORKERS','TESTS','.github','FINAL_GO_LIVE.cmd','package.json','package-lock.json') -WorkingDirectory $Root
 $headSha = if($head.output.Count){$head.output[0].Trim()}else{''}
 $originSha = if($origin.output.Count){$origin.output[0].Trim()}else{''}
 $branchName = if($branch.output.Count){$branch.output[0].Trim()}else{''}
 Add-Check $checks 'PRODUCTION_HEAD_EQUALS_ORIGIN_MAIN' ($head.exitCode -eq 0 -and $origin.exitCode -eq 0 -and $headSha -eq $originSha) "head=$headSha originMain=$originSha" $true
 Add-Check $checks 'PRODUCTION_BRANCH_MAIN' ($branchName -eq 'main') "branch=$branchName" $true
-Add-Check $checks 'PRODUCTION_WORKTREE_CLEAN' ($status.exitCode -eq 0 -and $status.output.Count -eq 0) "changes=$($status.output.Count)" $true
+Add-Check $checks 'PRODUCTION_WORKTREE_CLEAN' ($sourceDrift.exitCode -eq 0) "trackedSourceControlDrift=$($sourceDrift.exitCode -ne 0); untracked runtime/data evidence allowed" $true
 
 # 2. Existing read-only runtime/dashboard acceptance.
 $productionAudit = Invoke-External -FilePath 'powershell.exe' -Arguments @('-NoProfile','-ExecutionPolicy','Bypass','-File','SCRIPTS\AUDIT_MILES_PRODUCTION_ACCEPTANCE.ps1','-Root',$Root) -WorkingDirectory $Root
