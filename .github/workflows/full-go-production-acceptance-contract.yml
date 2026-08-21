@@ -19,7 +19,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm ci
+      - name: Install closeout parser dependency only
+        shell: powershell
+        run: npm install csv-parser@3.2.0 --no-save --ignore-scripts
       - name: PowerShell syntax and plan-only contract
         shell: powershell
         run: |
