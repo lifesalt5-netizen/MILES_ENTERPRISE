@@ -1,10 +1,7 @@
 "use strict";
 
-require("dotenv").config();
-
 const fs = require("fs");
 const path = require("path");
-const { verifyEmail } = require("../StateSledEmailDiscoveryService");
 const ReconciliationService = require("./RevenueVerificationReconciliationService");
 const { parseCsv } = require("./RevenueVerificationReconciliationService");
 
@@ -23,7 +20,7 @@ class TruthRecoveredVerificationRunner {
     this.batchPath = options.batchPath || path.join(this.batchRoot, "millionverifier_batch.csv");
     this.batchManifestPath = options.batchManifestPath || path.join(this.batchRoot, "manifest.json");
     this.outputRoot = options.outputRoot || path.join(this.rootDir, "DATA", "runtime", "revenue", "truth_recovered_verification_run");
-    this.verifyProvider = options.verifyProvider || verifyEmail;
+    this.verifyProvider = options.verifyProvider || null;
     this.reconciliationFactory = options.reconciliationFactory || (args => new ReconciliationService(args));
     this.generatedAt = options.generatedAt || (() => new Date().toISOString());
     this.env = options.env || process.env;
@@ -71,6 +68,11 @@ class TruthRecoveredVerificationRunner {
         rejectedResults: rules.rejectedResults || ["invalid"]
       }
     };
+  }
+
+  provider() {
+    if (this.verifyProvider) return this.verifyProvider;
+    return require("../StateSledEmailDiscoveryService").verifyEmail;
   }
 
   loadBatch() {
@@ -130,9 +132,10 @@ class TruthRecoveredVerificationRunner {
     const apiKey = this.apiKey(rules);
     if (!apiKey) throw new Error("MillionVerifier API key is not configured.");
     const providerRules = this.providerRules(rules);
+    const verifyProvider = this.provider();
 
     const verified = await this.mapLimit(batch, Number(rules.concurrency || 4), async row => {
-      const result = await this.verifyProvider(row.email, providerRules, apiKey);
+      const result = await verifyProvider(row.email, providerRules, apiKey);
       if (result.status !== "COMPLETE") throw new Error(`MillionVerifier did not complete for ${row.email}: ${result.reason || result.error || result.status}`);
       return {
         email: row.email,
