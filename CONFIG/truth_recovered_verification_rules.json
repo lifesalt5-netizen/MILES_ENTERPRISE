@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "gate": "TRUTH_RECOVERED_MILLIONVERIFIER_VERIFICATION",
+  "authorizationEnv": "MILES_TRUTH_VERIFICATION_AUTHORIZATION",
+  "authorizationToken": "AUTHORIZE_TRUTH_RECOVERED_MILLIONVERIFIER_CREDIT_BURN",
+  "apiBaseUrlEnv": "MILLIONVERIFIER_API_BASE_URL",
+  "apiKeyEnvNames": ["MILLIONVERIFIER_API_KEY", "MILLION_VERIFIER_API_KEY"],
+  "timeoutSeconds": 10,
+  "acceptedResults": ["ok"],
+  "rejectedResults": ["invalid"],
+  "defaultCreditBudget": 0,
+  "maxCreditBudget": 500,
+  "concurrency": 4,
+  "safety": {
+    "explicitAuthorizationRequired": true,
+    "positiveCreditBudgetRequired": true,
+    "neverExceedAuthorizedBatch": true,
+    "neverExceedCreditBudget": true,
+    "reconcileExactBatchOnly": true,
+    "instantlyUploadAllowed": false,
+    "campaignActivationAllowed": false,
+    "emailSendAllowed": false
+  }
+}
