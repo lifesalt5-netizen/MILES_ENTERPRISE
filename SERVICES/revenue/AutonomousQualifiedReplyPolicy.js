@@ -1,18 +1,26 @@
 'use strict';
 
-const AUTO_SEND_CATEGORIES = Object.freeze(['INTERESTED', 'MEETING', 'PRICING', 'REFERRAL']);
+const AUTO_SEND_CATEGORIES = Object.freeze([
+  'INTERESTED',
+  'MEETING_INTENT',
+  'PRICING_QUESTION',
+  'REFERRAL'
+]);
 
 function normalize(value) {
-  return String(value || '').trim().toUpperCase();
+  const category = String(value || '').trim().toUpperCase();
+  if (category === 'MEETING') return 'MEETING_INTENT';
+  if (category === 'PRICING') return 'PRICING_QUESTION';
+  return category;
 }
 
 function evaluateQualifiedReplyForAutonomy(reply = {}) {
   const category = normalize(reply.category || reply.classification || reply.replyCategory);
   const confidence = Number(reply.confidence ?? reply.score ?? 0);
-  const hasReplyIdentity = Boolean(reply.reply_to_uuid || reply.replyToUuid || reply.email_uuid);
+  const hasReplyIdentity = Boolean(reply.reply_to_uuid || reply.replyToUuid || reply.email_uuid || reply.emailId);
   const hasSenderAccount = Boolean(reply.eaccount || reply.sender_account || reply.senderAccount);
-  const suppressed = Boolean(reply.suppressed || reply.globallySuppressed || reply.optOut || reply.unsubscribe);
-  const humanQualified = AUTO_SEND_CATEGORIES.includes(category);
+  const suppressed = Boolean(reply.suppressed || reply.globallySuppressed || reply.optOut || reply.unsubscribe || reply.hardSuppression);
+  const humanQualified = AUTO_SEND_CATEGORIES.includes(category) && reply.qualifiedPositive !== false && reply.humanReply !== false;
 
   const eligible = humanQualified && confidence >= 0.9 && hasReplyIdentity && hasSenderAccount && !suppressed;
 
@@ -33,7 +41,7 @@ function evaluateQualifiedReplyForAutonomy(reply = {}) {
           : suppressed
             ? 'Reply/contact is suppressed or opted out.'
             : !hasReplyIdentity
-              ? 'Missing Instantly reply UUID.'
+              ? 'Missing Instantly reply UUID/email identity.'
               : 'Missing Instantly sender account.'
   };
 }
