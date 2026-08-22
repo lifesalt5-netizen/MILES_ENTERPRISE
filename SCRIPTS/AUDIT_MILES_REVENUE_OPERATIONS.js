@@ -9,6 +9,7 @@ const dotenv = require(path.join(root, 'node_modules', 'dotenv'));
 dotenv.config({ path: path.join(root, '.env'), override: false, quiet: true });
 
 const instantly = require(path.join(root, 'CONNECTORS', 'INSTANTLY', 'connector.js'));
+const CalendlyRevenuePipelineService = require(path.join(root, 'SERVICES', 'CalendlyRevenuePipelineService.js'));
 const outDir = path.join(root, 'DATA', 'operational_acceptance');
 const outJson = path.join(outDir, 'latest_revenue_operations_acceptance.json');
 const outMd = path.join(outDir, 'latest_revenue_operations_acceptance.md');
@@ -105,6 +106,19 @@ function recentEvidence(base, regex) {
     catch (error) { calls[name] = { ok: false, error: error.message }; }
   }
 
+  let calendlySync = null;
+  try {
+    const calendlyPipeline = new CalendlyRevenuePipelineService({ rootDir: root });
+    calendlySync = await calendlyPipeline.runOnce();
+  } catch (error) {
+    calendlySync = {
+      ok: false,
+      status: 'CALENDLY_REVENUE_PIPELINE_REFRESH_FAILED',
+      error: error.message,
+      generatedAt: new Date().toISOString()
+    };
+  }
+
   const marketingPath = path.join(root, 'DATA', 'marketing_coo', 'latest_marketing_operation.json');
   const briefPath = path.join(root, 'DATA', 'executive', 'latest_executive_brief.json');
   const marketingAge = ageHours(marketingPath);
@@ -115,6 +129,12 @@ function recentEvidence(base, regex) {
 
   const summaries = Object.fromEntries(Object.entries(calls).map(([k,v]) => [k, safeSummary(v)]));
   const instantlyGreen = Object.values(summaries).every(v => v && v.ok);
+  const meetingPipelineGreen = Boolean(
+    calendlySync &&
+    calendlySync.ok === true &&
+    meetingEvidence.length &&
+    meetingEvidence[0].ageHours <= 24
+  );
   const checks = {
     instantly_read_connectivity: instantlyGreen ? 'GREEN' : 'RED',
     campaign_inventory: summaries.campaigns?.ok && summaries.campaigns.returned > 0 ? 'GREEN' : 'RED',
@@ -124,7 +144,7 @@ function recentEvidence(base, regex) {
     currently_looking_for_help: currentHelpHits.length ? 'GREEN' : 'RED',
     marketing_operation_freshness: statusByAge(marketingAge),
     morning_brief_freshness: statusByAge(briefAge, 36, 72),
-    meeting_pipeline_evidence: meetingEvidence.length ? statusByAge(meetingEvidence[0].ageHours, 24, 72) : 'RED'
+    meeting_pipeline_evidence: meetingPipelineGreen ? 'GREEN' : 'RED'
   };
 
   const report = {
@@ -141,6 +161,15 @@ function recentEvidence(base, regex) {
     evidence: {
       marketingOperation: { path: path.relative(root, marketingPath), exists: fs.existsSync(marketingPath), ageHours: marketingAge, data: readJson(marketingPath) },
       executiveBrief: { path: path.relative(root, briefPath), exists: fs.existsSync(briefPath), ageHours: briefAge, data: readJson(briefPath) },
+      calendlyPipelineSync: {
+        ok: calendlySync?.ok === true,
+        status: calendlySync?.status || null,
+        generatedAt: calendlySync?.generatedAt || null,
+        account: calendlySync?.account || null,
+        metrics: calendlySync?.metrics || null,
+        error: calendlySync?.error || null,
+        externalWritesPerformed: false
+      },
       meeting: meetingEvidence,
       reply: replyEvidence
     },
@@ -166,6 +195,12 @@ function recentEvidence(base, regex) {
     '## Instantly read-only inventory',
     ...Object.entries(summaries).map(([k,v]) => `- ${k}: ok=${Boolean(v?.ok)} returned=${v?.returned ?? 0}`),
     '',
+    '## Calendly revenue pipeline refresh',
+    `- ok: ${Boolean(calendlySync?.ok)}`,
+    `- status: ${calendlySync?.status || 'UNKNOWN'}`,
+    `- generated: ${calendlySync?.generatedAt || 'UNKNOWN'}`,
+    `- error: ${calendlySync?.error || 'NONE'}`,
+    '',
     `## CURRENTLY_LOOKING_FOR_HELP`,
     `- found: ${currentHelpHits.length > 0}`,
     `- evidence files: ${currentHelpHits.length}`,
@@ -182,6 +217,8 @@ function recentEvidence(base, regex) {
   for (const [k,v] of Object.entries(checks)) console.log(`${k}: ${v}`);
   console.log('');
   for (const [k,v] of Object.entries(summaries)) console.log(`Instantly ${k}: ok=${Boolean(v?.ok)} returned=${v?.returned ?? 0}`);
+  console.log(`Calendly pipeline refresh: ok=${Boolean(calendlySync?.ok)} status=${calendlySync?.status || 'UNKNOWN'}`);
+  if (calendlySync?.error) console.log(`Calendly pipeline error: ${calendlySync.error}`);
   console.log(`CURRENTLY_LOOKING_FOR_HELP evidence files: ${currentHelpHits.length}`);
   console.log(`Next priority: ${report.nextPriority}`);
   console.log(`Report: ${outJson}`);
