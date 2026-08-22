@@ -149,6 +149,8 @@ function parseFetchedMessages(lines = [], accountEmail = '') {
       subject: headers.subject || '',
       timestamp: headers.date ? new Date(headers.date).toISOString() : new Date().toISOString(),
       messageId: headers['message-id'] || '',
+      inReplyTo: headers['in-reply-to'] || '',
+      references: headers.references || '',
       milesExecutiveTriage: /^(true|1|yes)$/i.test(headers['x-miles-executive-triage'] || ''),
       text: bodyText.slice(0, 12000),
       rawHeader: headerText.slice(0, 12000)
