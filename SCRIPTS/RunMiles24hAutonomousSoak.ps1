@@ -47,7 +47,7 @@ if ($PlanOnly) {
         mode='PLAN_ONLY'
         durationHours=$DurationHours
         sampleMinutes=$SampleMinutes
-        prerequisites=@('FRESH_FULL_GO_GREEN','SAME_PRODUCTION_COMMIT','LIVE_RUNTIME_GREEN','LIVE_REVENUE_GREEN','ACTIVE_CAMPAIGN_SCHEDULES_GOVERNED','NO_SEND_WINDOW_VIOLATIONS')
+        prerequisites=@('FRESH_FULL_GO_GREEN','SAME_PRODUCTION_COMMIT','LIVE_RUNTIME_GREEN','LIVE_REVENUE_GREEN','PRIMARY_INBOX_REPLY_COVERAGE','ACTIVE_CAMPAIGN_SCHEDULES_GOVERNED','NO_SEND_WINDOW_VIOLATIONS')
         externalMutations=$false
     } | ConvertTo-Json -Depth 6
     exit 0
@@ -96,6 +96,10 @@ while ((Get-Date) -lt $deadline) {
         if(-not $revenue -or [string]$revenue.checks.$name -ne 'GREEN') { $revenueGreen = $false }
     }
 
+    $primaryRun = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/AuditPrimaryInboxCoverage.js') -WorkingDirectory $Root
+    $primaryReport = Read-JsonSafe (Join-Path $Root 'DATA\operational_acceptance\primary_inbox_coverage\PRIMARY_INBOX_COVERAGE_LATEST.json')
+    $primaryInboxGreen = ($primaryRun.exitCode -eq 0 -and $primaryReport -and $primaryReport.ok -eq $true)
+
     $scheduleRun = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js') -WorkingDirectory $Root
     $scheduleReport = Read-JsonSafe (Join-Path $Root 'DATA\operational_acceptance\campaign_schedule_governance\INSTANTLY_CAMPAIGN_SCHEDULE_GOVERNANCE_LATEST.json')
     $scheduleGreen = ($scheduleRun.exitCode -eq 0 -and $scheduleReport -and $scheduleReport.ok -eq $true)
@@ -110,6 +114,8 @@ while ((Get-Date) -lt $deadline) {
         sameCommit=($head -eq $acceptedSha)
         runtimeGreen=$runtimeGreen
         revenueGreen=$revenueGreen
+        primaryInboxGreen=$primaryInboxGreen
+        primaryInboxConclusion=if($primaryReport){[string]$primaryReport.conclusion}else{'UNREADABLE'}
         campaignScheduleGreen=$scheduleGreen
         noncompliantActiveCampaigns=if($scheduleReport){[int]$scheduleReport.noncompliantActiveCampaigns}else{-1}
         sendWindowGreen=$sendWindowGreen
@@ -120,8 +126,8 @@ while ((Get-Date) -lt $deadline) {
     [void]$samples.Add([pscustomobject]$sample)
     $sample | ConvertTo-Json -Depth 6 | Add-Content -LiteralPath (Join-Path $outDir 'SOAK_SAMPLES.jsonl') -Encoding UTF8
 
-    $green = $sample.sameCommit -and $sample.runtimeGreen -and $sample.revenueGreen -and $sample.campaignScheduleGreen -and $sample.sendWindowGreen
-    Write-Host ("{0}  {1}  commit={2} runtime={3} revenue={4} schedules={5} scheduleViolations={6} sendWindow={7} sendViolations={8}" -f ($(if($green){'GREEN'}else{'RED'}),$at,$sample.sameCommit,$runtimeGreen,$revenueGreen,$scheduleGreen,$sample.noncompliantActiveCampaigns,$sendWindowGreen,$sample.sendWindowViolations))
+    $green = $sample.sameCommit -and $sample.runtimeGreen -and $sample.revenueGreen -and $sample.primaryInboxGreen -and $sample.campaignScheduleGreen -and $sample.sendWindowGreen
+    Write-Host ("{0}  {1}  commit={2} runtime={3} revenue={4} primaryInbox={5} schedules={6} scheduleViolations={7} sendWindow={8} sendViolations={9}" -f ($(if($green){'GREEN'}else{'RED'}),$at,$sample.sameCommit,$runtimeGreen,$revenueGreen,$primaryInboxGreen,$scheduleGreen,$sample.noncompliantActiveCampaigns,$sendWindowGreen,$sample.sendWindowViolations))
     if(-not $green) {
         $failure = [ordered]@{
             ok=$false
@@ -142,13 +148,15 @@ while ((Get-Date) -lt $deadline) {
     Start-Sleep -Seconds ([int][Math]::Min($SampleMinutes * 60, $remainingSeconds))
 }
 
+$finalPrimaryRun = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/AuditPrimaryInboxCoverage.js') -WorkingDirectory $Root
+$finalPrimary = Read-JsonSafe (Join-Path $Root 'DATA\operational_acceptance\primary_inbox_coverage\PRIMARY_INBOX_COVERAGE_LATEST.json')
 $finalScheduleRun = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js') -WorkingDirectory $Root
 $finalSchedule = Read-JsonSafe (Join-Path $Root 'DATA\operational_acceptance\campaign_schedule_governance\INSTANTLY_CAMPAIGN_SCHEDULE_GOVERNANCE_LATEST.json')
 $finalSendRun = Invoke-External -FilePath 'node' -Arguments @('SCRIPTS/AuditInstantlySendWindowHistory.js',"--root=$Root", "--since=$startIso") -WorkingDirectory $Root
 $finalSend = Read-JsonSafe (Join-Path $Root 'DATA\operational_acceptance\send_window_history\INSTANTLY_SEND_WINDOW_HISTORY_LATEST.json')
-$allGreen = @($samples | Where-Object { -not ($_.sameCommit -and $_.runtimeGreen -and $_.revenueGreen -and $_.campaignScheduleGreen -and $_.sendWindowGreen) }).Count -eq 0
+$allGreen = @($samples | Where-Object { -not ($_.sameCommit -and $_.runtimeGreen -and $_.revenueGreen -and $_.primaryInboxGreen -and $_.campaignScheduleGreen -and $_.sendWindowGreen) }).Count -eq 0
 $durationObserved = ((Get-Date) - $start).TotalHours
-$completed = $allGreen -and $durationObserved -ge ($DurationHours - 0.01) -and $finalScheduleRun.exitCode -eq 0 -and $finalSchedule -and $finalSchedule.ok -eq $true -and $finalSendRun.exitCode -eq 0 -and $finalSend -and $finalSend.ok -eq $true
+$completed = $allGreen -and $durationObserved -ge ($DurationHours - 0.01) -and $finalPrimaryRun.exitCode -eq 0 -and $finalPrimary -and $finalPrimary.ok -eq $true -and $finalScheduleRun.exitCode -eq 0 -and $finalSchedule -and $finalSchedule.ok -eq $true -and $finalSendRun.exitCode -eq 0 -and $finalSend -and $finalSend.ok -eq $true
 
 $result = [ordered]@{
     ok=$completed
@@ -163,6 +171,8 @@ $result = [ordered]@{
     sameCommitAllSamples=(@($samples | Where-Object { -not $_.sameCommit }).Count -eq 0)
     runtimeGreenAllSamples=(@($samples | Where-Object { -not $_.runtimeGreen }).Count -eq 0)
     revenueGreenAllSamples=(@($samples | Where-Object { -not $_.revenueGreen }).Count -eq 0)
+    primaryInboxGreenAllSamples=(@($samples | Where-Object { -not $_.primaryInboxGreen }).Count -eq 0)
+    finalPrimaryInboxConclusion=if($finalPrimary){[string]$finalPrimary.conclusion}else{'UNREADABLE'}
     campaignScheduleGreenAllSamples=(@($samples | Where-Object { -not $_.campaignScheduleGreen }).Count -eq 0)
     finalNoncompliantActiveCampaigns=if($finalSchedule){[int]$finalSchedule.noncompliantActiveCampaigns}else{-1}
     sendWindowGreenAllSamples=(@($samples | Where-Object { -not $_.sendWindowGreen }).Count -eq 0)

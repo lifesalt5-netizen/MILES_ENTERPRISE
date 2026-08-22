@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const GmailExecutiveTriageService = require("./GmailExecutiveTriageService");
+const IonosExecutiveTriageService = require("./IonosExecutiveTriageService");
 
 function truthy(value, fallback = false) {
   if (value === undefined || value === null || value === "") return fallback;
@@ -16,6 +17,7 @@ class GmailExecutiveTriageProductionLoopService {
     this.enabled = options.enabled !== undefined ? options.enabled : truthy(process.env.MILES_GMAIL_EXECUTIVE_TRIAGE_ENABLED, false);
     this.execute = options.execute !== undefined ? options.execute : truthy(process.env.MILES_GMAIL_EXECUTIVE_TRIAGE_EXECUTE, false);
     this.service = options.service || new GmailExecutiveTriageService(options);
+    this.ionosService = options.ionosService || new IonosExecutiveTriageService({ root: this.root });
     this.timer = null;
     this.running = false;
     this.lastResult = null;
@@ -39,16 +41,28 @@ class GmailExecutiveTriageProductionLoopService {
     if (this.running) return this.lastResult || { ok: false, status: "ALREADY_RUNNING" };
     this.running = true;
     try {
-      const triage = await this.service.run({ execute: this.execute });
+      const [gmail, ionos] = await Promise.all([
+        this.service.run({ execute: this.execute }),
+        this.ionosService.run({ execute: this.execute })
+      ]);
+      const ok = gmail.ok === true && ionos.ok === true;
       const result = {
-        ok: triage.ok,
-        status: triage.ok ? (this.execute ? "ACTIVE" : "PLAN_ONLY") : "BLOCKED",
+        ok,
+        status: ok ? (this.execute ? "ACTIVE" : "PLAN_ONLY") : "BLOCKED",
         enabled: true,
         execute: this.execute,
-        destination: triage.destination,
-        blockers: triage.blockers,
-        accounts: triage.accounts,
-        safety: triage.safety
+        destination: gmail.destination,
+        blockers: [
+          ...(gmail.blockers || []),
+          ...(ionos.errors || []).map(item => ({ account: item.account, blocker: "IONOS_PRIMARY_INBOX_UNREADABLE", error: item.error }))
+        ],
+        accounts: gmail.accounts,
+        ionos,
+        safety: {
+          gmail: gmail.safety,
+          ionos: ionos.safety,
+          primaryInboxCoverageIncludesIonos: true
+        }
       };
       result.artifact = this.persist(result);
       this.lastResult = result;
