@@ -1,6 +1,6 @@
 # Outbound Sender Reuse-First Activation Plan
 
-Status: PARALLEL / DO NOT MERGE OR APPLY TO PRODUCTION DURING 24H AUTONOMOUS SOAK
+Status: ACTIVE CLEAN-SOAK PREP
 
 Governing rule: stay on Google Workspace, minimize recurring cost, and do not add paid Workspace seats unless explicitly approved and proven necessary for healthy outbound capacity.
 
@@ -18,7 +18,7 @@ Outreach distribution:
 
 Protected primary domain pathways2gc.com remains excluded from outbound.
 
-## Workspace inventory evidenced from Google Admin screenshots during soak
+## Workspace inventory evidenced from Google Admin screenshots
 
 Active users visible:
 - pathwaysgovcon.com: cora, evan, maya, silvia, victoria (5)
@@ -36,50 +36,50 @@ No alternate emails were present on kevin@pathwaysgsa.com or aden@pathwaysgov.co
 - pathwaysfederal.com: Google MX, Google SPF, DMARC present, Google DKIM present => DNS GREEN
 - pathwaysgov.com: Google MX, Google SPF, DMARC present, Google DKIM present => DNS GREEN
 - pathwaysgsa.com: Google MX, Google SPF, DMARC present, Google DKIM present => DNS GREEN
-- pathwaysgovcon.com: Google MX, Google SPF, Google DKIM present, DMARC absent => DNS YELLOW; existing senders remain untouched during soak
-- pathways2gc.co: only one Google MX observed, Google SPF and DMARC present, no DKIM found => DNS YELLOW; defer
-- pathwaystogc.com: Namecheap registrar-forwarding MX, registrar SPF, no DMARC/DKIM => DNS RED for Google Workspace sender use; defer
+- pathwaysgovcon.com: Google MX, Google SPF, Google DKIM present, DMARC absent => DNS YELLOW
+- pathways2gc.co: only one Google MX observed, Google SPF and DMARC present, no DKIM found => DNS YELLOW
+- pathwaystogc.com: Namecheap registrar-forwarding MX, registrar SPF, no DMARC/DKIM => DNS RED for Google Workspace sender use
 
-## Reuse-first post-soak activation order
+## Clean-soak readiness order
 
-1. pathwaysgsa.com
+1. pathwaysgovcon.com
+   - Keep the five existing Instantly senders unchanged for the clean soak.
+   - DMARC remains a deliverability hardening item, but do not alter DNS unless the change can be completed and verified before restarting acceptance.
+
+2. pathwaysgsa.com
    - Do not create paid users.
-   - Reconcile existing Instantly addresses contacts@pathwaysgsa.com and info@pathwaysgsa.com against Workspace configuration.
-   - Prefer connecting currently unconnected existing licensed users among chris, evan, jake, kevin, ryan until all five paid users are usable healthy senders.
-   - Do not exceed five independent senders on this domain without explicit approval.
+   - Reconcile contacts@pathwaysgsa.com and info@pathwaysgsa.com against Workspace configuration.
+   - Existing paid users chris, evan, jake, kevin, and ryan are the only expansion pool unless additional spend is explicitly approved.
+   - Do not add new senders immediately before the clean soak unless authentication, warmup, reply routing, and health are proven first.
 
-2. pathwaysgov.com
+3. pathwaysgov.com
    - Do not create paid users.
-   - Reconcile kevin@pathwaysgov.com because it exists in Instantly but is not visible in the supplied Workspace user inventory.
-   - Prefer connecting aden, alexis, and jeff if appropriate and healthy.
-   - Stop when all already-paid independent users that are safe for outbound are connected; do not buy additional seats to force the domain to five.
-
-3. pathwaysgovcon.com
-   - Already has five Instantly senders; no mailbox expansion required.
-   - Add/repair DMARC only after soak and only through governed change control.
+   - Reconcile kevin@pathwaysgov.com because it exists in Instantly but was not visible as a primary Workspace user in the supplied inventory.
+   - Existing paid users aden, alexis, and jeff are the only expansion pool unless additional spend is explicitly approved.
+   - Do not add new senders immediately before the clean soak unless authentication, warmup, reply routing, and health are proven first.
 
 4. pathwaysfederal.com
    - DNS is ready but no paid Workspace users were visible.
-   - DEFER. Do not provision new paid seats absent explicit approval and demonstrated capacity need.
+   - Do not provision new paid seats absent explicit approval and demonstrated capacity need.
 
 5. pathways2gc.co
-   - DEFER. Repair/verify MX and DKIM before any sender activation. No paid seat creation without explicit approval.
+   - Repair/verify MX and DKIM before any future sender activation.
+   - No paid seat creation without explicit approval.
 
 6. pathwaystogc.com
-   - DEFER. Current MX is registrar forwarding, not Google Workspace. Do not migrate routing or purchase users absent explicit approval and demonstrated capacity need.
+   - Current MX is registrar forwarding, not Google Workspace.
+   - Do not migrate routing or purchase users absent explicit approval and demonstrated capacity need.
 
 ## Acceptance rule
 
-The next sender-capacity milestone is not a fixed 30-mailbox count. It is:
+REUSE_FIRST_SENDER_CAPACITY_GREEN = actual healthy, independently authenticated outreach accounts are measured truthfully; protected pathways2gc.com is excluded from outbound; existing paid Workspace capacity is reused before any new recurring seat cost; no arbitrary sender-count target is imposed.
 
-REUSE_FIRST_SENDER_CAPACITY_GREEN = all already-paid, independently usable Google Workspace outreach accounts that pass DNS/authentication/Instantly health have been connected and governed, with no unnecessary new recurring seat cost.
-
-After this milestone, additional paid seats require explicit CEO approval based on measured capacity need, deliverability, meetings, and revenue performance.
+Sender expansion is not required merely to start a clean autonomous soak. New or newly connected senders must not be introduced immediately before the soak unless they have already passed authentication, warmup, reply-ingestion, and sending-governance checks.
 
 ## Safety
 
-- No production changes during the running 24-hour autonomous soak.
 - No new paid Google Workspace users without explicit approval.
 - No primary-domain outbound from pathways2gc.com.
-- No aliases treated as independent senders unless Instantly supports them with truly separate mailbox authentication and sender reputation; do not assume aliases equal independent capacity.
+- No aliases treated as independent senders unless Instantly supports them with truly separate mailbox authentication and sender reputation.
 - Preserve SPF/DKIM/DMARC correctness and reply ingestion before increasing volume.
+- Prefer a stable known-good sender set for the clean 24-hour soak over capacity expansion that introduces new variables.
