@@ -15,15 +15,72 @@ const SURFACE = new Set([
   CATEGORIES.UNKNOWN
 ]);
 
+function extractEmail(value = '') {
+  const text = String(value || '').trim().toLowerCase();
+  const angle = text.match(/<([^<>\s]+@[^<>\s]+)>/);
+  if (angle) return angle[1];
+  const plain = text.match(/[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
+  return plain ? plain[0].toLowerCase() : '';
+}
+
+function sentRecipient(item = {}) {
+  const candidates = [
+    item.to_address_email,
+    item.to_email,
+    item.to,
+    item.lead,
+    item.lead_email,
+    item.contact,
+    item.contact_email
+  ];
+  for (const value of candidates) {
+    const email = extractEmail(value);
+    if (email) return email;
+  }
+  return '';
+}
+
 class IonosExecutiveTriageService {
   constructor(options = {}) {
     this.root = options.root || process.env.MILES_ROOT || process.cwd();
     this.connector = options.connector || ionos;
     this.replyIntelligence = options.replyIntelligence || new ReplyIntelligenceService();
+    this.instantlySource = options.instantlySource || null;
     this.lookbackDays = Math.min(Math.max(Number(options.lookbackDays || process.env.MILES_IONOS_LOOKBACK_DAYS || 7), 1), 30);
     this.maxMessages = Math.min(Math.max(Number(options.maxMessages || process.env.MILES_IONOS_MAX_MESSAGES || 100), 1), 250);
+    this.instantlyMaxPages = Math.min(Math.max(Number(options.instantlyMaxPages || process.env.MILES_IONOS_INSTANTLY_MAX_PAGES || 5), 1), 20);
     this.statePath = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_triage', 'processed_uids.json');
     this.latestPath = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_triage', 'ionos_executive_triage_latest.json');
+  }
+
+  getInstantlySource() {
+    if (this.instantlySource) return this.instantlySource;
+    const instantly = require(path.join(this.root, 'CONNECTORS', 'INSTANTLY', 'instantly.js'));
+    return { async listEmails(params) { return instantly.request('/emails', { method: 'GET', params }); } };
+  }
+
+  async loadKnownOutboundRecipients() {
+    const source = this.getInstantlySource();
+    const minTimestamp = new Date(Date.now() - this.lookbackDays * 86400000).toISOString();
+    const recipients = new Set();
+    let startingAfter = null;
+    let pages = 0;
+    let inspected = 0;
+    do {
+      const params = { limit: 100, email_type: 'sent', min_timestamp_created: minTimestamp };
+      if (startingAfter) params.starting_after = startingAfter;
+      const response = await source.listEmails(params);
+      const items = Array.isArray(response?.items) ? response.items : Array.isArray(response) ? response : [];
+      inspected += items.length;
+      for (const item of items) {
+        const email = sentRecipient(item);
+        if (email) recipients.add(email);
+      }
+      pages += 1;
+      startingAfter = response?.next_starting_after || null;
+      if (!startingAfter || items.length === 0) break;
+    } while (pages < this.instantlyMaxPages);
+    return { ok: true, recipients, inspected, pages, minTimestamp, truncated: Boolean(startingAfter) };
   }
 
   loadState() {
@@ -62,10 +119,18 @@ class IonosExecutiveTriageService {
     };
   }
 
-  applyReplyCorrelationGate(classification = {}, message = {}) {
-    const evidence = this.replyEvidence(message);
-    if (!classification.qualifiedPositive || evidence.correlated) {
-      return { classification, evidence, gated: false };
+  applyQualificationGate(classification = {}, message = {}, outboundRecipients = new Set()) {
+    const threadEvidence = this.replyEvidence(message);
+    const sender = extractEmail(classification.from || message.from || '');
+    const knownOutboundRecipient = Boolean(sender && outboundRecipients.has(sender));
+    const qualificationEvidence = {
+      ...threadEvidence,
+      sender,
+      knownOutboundRecipient,
+      qualifiedCorrelation: knownOutboundRecipient
+    };
+    if (!classification.qualifiedPositive || knownOutboundRecipient) {
+      return { classification, evidence: qualificationEvidence, gated: false };
     }
     return {
       classification: {
@@ -74,12 +139,12 @@ class IonosExecutiveTriageService {
         priority: 'HIGH',
         action: 'REVIEW_UNCORRELATED_INBOUND'
       },
-      evidence,
+      evidence: qualificationEvidence,
       gated: true
     };
   }
 
-  async triageMailbox(mailbox, state, options = {}) {
+  async triageMailbox(mailbox, state, outboundRecipients, options = {}) {
     const execute = options.execute === true;
     const fetched = await this.connector.fetchRecentMessages(mailbox, {
       lookbackDays: this.lookbackDays,
@@ -97,7 +162,7 @@ class IonosExecutiveTriageService {
       }
       if (prior.has(message.uid)) continue;
       const initial = this.replyIntelligence.classify(message);
-      const gated = this.applyReplyCorrelationGate(initial, message);
+      const gated = this.applyQualificationGate(initial, message, outboundRecipients);
       const classification = gated.classification;
       if (gated.gated) uncorrelatedPositiveGated += 1;
       decisions.push({
@@ -146,10 +211,17 @@ class IonosExecutiveTriageService {
     const state = this.loadState();
     const accounts = [];
     const errors = [];
+    let outbound;
+    try {
+      outbound = await this.loadKnownOutboundRecipients();
+    } catch (error) {
+      outbound = { ok: false, recipients: new Set(), inspected: 0, pages: 0, error: error.message };
+      errors.push({ account: 'INSTANTLY_OUTBOUND_CORRELATION', error: error.message });
+    }
 
     for (const mailbox of this.connector.mailboxConfigs()) {
       try {
-        accounts.push(await this.triageMailbox(mailbox, state, { execute }));
+        accounts.push(await this.triageMailbox(mailbox, state, outbound.recipients || new Set(), { execute }));
       } catch (error) {
         errors.push({ account: mailbox.email, error: error.message });
       }
@@ -158,8 +230,17 @@ class IonosExecutiveTriageService {
     if (execute && errors.length === 0) this.saveState(state);
 
     const result = {
-      ok: accounts.length > 0 && errors.length === 0 && accounts.every(a => a.ok),
+      ok: outbound.ok === true && accounts.length > 0 && errors.length === 0 && accounts.every(a => a.ok),
       mode: execute ? 'ACTIVE_READ_ONLY_MAILBOX' : 'PLAN_ONLY',
+      outboundCorrelation: {
+        ok: outbound.ok === true,
+        source: 'INSTANTLY_SENT_EMAIL_HISTORY',
+        sentMessagesInspected: outbound.inspected || 0,
+        uniqueRecipients: outbound.recipients ? outbound.recipients.size : 0,
+        pages: outbound.pages || 0,
+        truncated: outbound.truncated === true,
+        error: outbound.error || null
+      },
       accounts,
       errors,
       totals: {
@@ -177,7 +258,8 @@ class IonosExecutiveTriageService {
         noMailboxMutation: true,
         localUidDedupeOnly: true,
         milesForwardLoopSuppression: true,
-        qualifiedPositiveRequiresReplyCorrelation: true
+        qualifiedPositiveRequiresKnownInstantlyOutboundRecipient: true,
+        instantlyReadOnly: true
       }
     };
     result.artifact = this.persist(result);
@@ -187,3 +269,5 @@ class IonosExecutiveTriageService {
 
 module.exports = IonosExecutiveTriageService;
 module.exports.IonosExecutiveTriageService = IonosExecutiveTriageService;
+module.exports.extractEmail = extractEmail;
+module.exports.sentRecipient = sentRecipient;
