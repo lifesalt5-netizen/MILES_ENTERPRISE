@@ -50,6 +50,35 @@ class IonosExecutiveTriageService {
     return SURFACE.has(classification.category) ? 'SURFACE_EXECUTIVE' : 'AUTONOMOUS_RESOLVE';
   }
 
+  replyEvidence(message = {}) {
+    const subject = String(message.subject || '').trim();
+    const inReplyTo = String(message.inReplyTo || '').trim();
+    const references = String(message.references || '').trim();
+    return {
+      correlated: Boolean(inReplyTo || references || /^(re|fw|fwd)\s*:/i.test(subject)),
+      inReplyTo: Boolean(inReplyTo),
+      references: Boolean(references),
+      replySubject: /^(re|fw|fwd)\s*:/i.test(subject)
+    };
+  }
+
+  applyReplyCorrelationGate(classification = {}, message = {}) {
+    const evidence = this.replyEvidence(message);
+    if (!classification.qualifiedPositive || evidence.correlated) {
+      return { classification, evidence, gated: false };
+    }
+    return {
+      classification: {
+        ...classification,
+        qualifiedPositive: false,
+        priority: 'HIGH',
+        action: 'REVIEW_UNCORRELATED_INBOUND'
+      },
+      evidence,
+      gated: true
+    };
+  }
+
   async triageMailbox(mailbox, state, options = {}) {
     const execute = options.execute === true;
     const fetched = await this.connector.fetchRecentMessages(mailbox, {
@@ -59,6 +88,7 @@ class IonosExecutiveTriageService {
     const prior = new Set((state[mailbox.email] || []).map(Number).filter(Number.isFinite));
     const decisions = [];
     let skippedMilesForward = 0;
+    let uncorrelatedPositiveGated = 0;
 
     for (const message of fetched.messages || []) {
       if (message.milesExecutiveTriage) {
@@ -66,7 +96,10 @@ class IonosExecutiveTriageService {
         continue;
       }
       if (prior.has(message.uid)) continue;
-      const classification = this.replyIntelligence.classify(message);
+      const initial = this.replyIntelligence.classify(message);
+      const gated = this.applyReplyCorrelationGate(initial, message);
+      const classification = gated.classification;
+      if (gated.gated) uncorrelatedPositiveGated += 1;
       decisions.push({
         uid: message.uid,
         id: message.id,
@@ -81,7 +114,10 @@ class IonosExecutiveTriageService {
         priority: classification.priority,
         route: this.route(classification),
         timestamp: classification.timestamp,
-        preview: classification.preview
+        preview: classification.preview,
+        replyCorrelated: gated.evidence.correlated,
+        replyEvidence: gated.evidence,
+        uncorrelatedPositiveGated: gated.gated
       });
     }
 
@@ -100,6 +136,7 @@ class IonosExecutiveTriageService {
       surfaced: decisions.filter(d => d.route === 'SURFACE_EXECUTIVE').length,
       autonomousResolved: decisions.filter(d => d.route === 'AUTONOMOUS_RESOLVE').length,
       skippedMilesForward,
+      uncorrelatedPositiveGated,
       decisions
     };
   }
@@ -129,7 +166,8 @@ class IonosExecutiveTriageService {
         messagesFetched: accounts.reduce((n,a) => n + a.messagesFetched, 0),
         newMessagesClassified: accounts.reduce((n,a) => n + a.newMessagesClassified, 0),
         qualifiedPositive: accounts.reduce((n,a) => n + a.qualifiedPositive, 0),
-        surfaced: accounts.reduce((n,a) => n + a.surfaced, 0)
+        surfaced: accounts.reduce((n,a) => n + a.surfaced, 0),
+        uncorrelatedPositiveGated: accounts.reduce((n,a) => n + a.uncorrelatedPositiveGated, 0)
       },
       safety: {
         mailboxReadOnly: true,
@@ -138,7 +176,8 @@ class IonosExecutiveTriageService {
         noSmtp: true,
         noMailboxMutation: true,
         localUidDedupeOnly: true,
-        milesForwardLoopSuppression: true
+        milesForwardLoopSuppression: true,
+        qualifiedPositiveRequiresReplyCorrelation: true
       }
     };
     result.artifact = this.persist(result);
