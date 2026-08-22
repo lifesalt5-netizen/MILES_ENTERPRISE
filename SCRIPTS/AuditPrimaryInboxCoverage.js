@@ -9,6 +9,7 @@ const ROOT = path.resolve(process.env.MILES_ROOT || process.cwd());
 const PRIMARY_DOMAIN = 'pathways2gc.com';
 const REQUIRED_INBOXES = ['info@pathways2gc.com', 'kevin@pathways2gc.com'];
 const accountManager = require('../CONNECTORS/GOOGLE/account_manager');
+const ionos = require('../CONNECTORS/IONOS/imap_readonly');
 
 function emailOf(account = {}) {
   return String(account.email || account.accountKey || account.address || '').trim().toLowerCase();
@@ -27,15 +28,36 @@ async function main() {
 
   const accounts = accountManager.listAccounts().filter(account => account.valid);
   const readableEmails = [...new Set(accounts.map(emailOf).filter(Boolean))];
-  const coverage = REQUIRED_INBOXES.map(email => ({ email, registeredGmailAccount: readableEmails.includes(email) }));
+  const gmailCoverage = REQUIRED_INBOXES.map(email => ({ email, registeredGmailAccount: readableEmails.includes(email) }));
+
+  let ionosCheck = null;
+  if (ionosLikeMx) ionosCheck = await ionos.healthCheckAll();
+  const ionosByEmail = new Map((ionosCheck?.mailboxes || []).map(row => [String(row.email || '').toLowerCase(), row]));
+
+  const coverage = REQUIRED_INBOXES.map(email => {
+    const gmail = gmailCoverage.find(item => item.email === email);
+    const i = ionosByEmail.get(email);
+    const route = googleMx && gmail?.registeredGmailAccount
+      ? 'GOOGLE'
+      : ionosLikeMx && i?.ok === true
+        ? 'IONOS_IMAP_READ_ONLY'
+        : 'UNPROVEN';
+    return {
+      email,
+      route,
+      registeredGmailAccount: gmail?.registeredGmailAccount === true,
+      ionosReadable: i?.ok === true,
+      ionosInboxExists: i?.inboxExists ?? null
+    };
+  });
 
   const blockers = [];
   if (!mx.ok || mxHosts.length === 0) blockers.push('PRIMARY_DOMAIN_MX_UNREADABLE');
-  if (!googleMx) blockers.push('PRIMARY_DOMAIN_NOT_EXCLUSIVELY_GOOGLE_MX');
+  if (!googleMx && !ionosLikeMx) blockers.push('PRIMARY_DOMAIN_MX_ROUTE_UNSUPPORTED');
   for (const item of coverage) {
-    if (!item.registeredGmailAccount) blockers.push(`PRIMARY_INBOX_NOT_REGISTERED_IN_MILES_GMAIL:${item.email}`);
+    if (item.route === 'UNPROVEN') blockers.push(`PRIMARY_INBOX_ROUTE_NOT_PROVEN:${item.email}`);
   }
-  if (ionosLikeMx) blockers.push('IONOS_OR_FORWARDING_MX_ROUTE_DETECTED');
+  if (ionosLikeMx && ionosCheck?.ok !== true) blockers.push('IONOS_PRIMARY_INBOX_READABILITY_FAILED');
 
   const result = {
     ok: blockers.length === 0,
@@ -45,11 +67,23 @@ async function main() {
     mx: { readable: mx.ok, hosts: mxHosts, exclusivelyGoogle: googleMx, ionosLikeDetected: ionosLikeMx },
     requiredInboxes: coverage,
     registeredReadableGmailAccounts: readableEmails,
+    ionos: ionosCheck ? {
+      ok: ionosCheck.ok === true,
+      readOnly: true,
+      mailboxes: ionosCheck.mailboxes
+    } : null,
     conclusion: blockers.length === 0
-      ? 'PRIMARY_DOMAIN_MAIL_ROUTES_TO_GOOGLE_AND_REQUIRED_INBOXES_ARE_REGISTERED_WITH_MILES'
+      ? 'PRIMARY_DOMAIN_INBOUND_ROUTES_ARE_PROVEN_READABLE_BY_MILES'
       : 'INBOUND_REPLY_COVERAGE_NOT_PROVEN',
     blockers,
-    safety: { readOnly: true, dnsMutated: false, gmailMutated: false, forwardingMutated: false, instantlyMutated: false }
+    safety: {
+      readOnly: true,
+      dnsMutated: false,
+      gmailMutated: false,
+      ionosMailboxMutated: false,
+      forwardingMutated: false,
+      instantlyMutated: false
+    }
   };
 
   const outDir = path.join(ROOT, 'DATA', 'operational_acceptance', 'primary_inbox_coverage');
