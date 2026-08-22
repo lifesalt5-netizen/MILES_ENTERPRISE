@@ -98,4 +98,88 @@ async function healthCheckAll() {
   return { ok: results.length > 0 && results.every(r => r.ok), mailboxes: results, readOnly: true };
 }
 
-module.exports = { HOST, PORT, mailboxConfigs, connectAndRun, healthCheck, healthCheckAll };
+function imapDate(date) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${date.getUTCDate()}-${months[date.getUTCMonth()]}-${date.getUTCFullYear()}`;
+}
+
+function searchUids(lines = []) {
+  const row = lines.find(line => /^\* SEARCH(?:\s|$)/i.test(line));
+  if (!row) return [];
+  return row.replace(/^\* SEARCH\s*/i, '').trim().split(/\s+/).filter(Boolean).map(Number).filter(Number.isFinite);
+}
+
+function parseHeaderBlock(raw) {
+  const normalized = String(raw || '').replace(/\r\n[ \t]+/g, ' ');
+  const headers = {};
+  for (const line of normalized.split(/\r\n|\n/)) {
+    const m = line.match(/^([^:]+):\s*(.*)$/);
+    if (m) headers[m[1].trim().toLowerCase()] = m[2].trim();
+  }
+  return headers;
+}
+
+function parseFetchedMessages(lines = [], accountEmail = '') {
+  const messages = [];
+  let current = null;
+  for (const line of lines) {
+    const start = line.match(/^\* \d+ FETCH \(UID (\d+)/i);
+    if (start) {
+      if (current) messages.push(current);
+      current = { uid: Number(start[1]), parts: [line] };
+      continue;
+    }
+    if (current) current.parts.push(line);
+  }
+  if (current) messages.push(current);
+
+  return messages.map(item => {
+    const raw = item.parts.join('\r\n');
+    const literalStart = raw.indexOf('\r\n');
+    const payload = literalStart >= 0 ? raw.slice(literalStart + 2).replace(/\r\n\)\s*$/, '') : raw;
+    const split = payload.search(/\r\n\r\n|\n\n/);
+    const headerText = split >= 0 ? payload.slice(0, split) : payload;
+    const bodyText = split >= 0 ? payload.slice(split).replace(/^(\r\n\r\n|\n\n)/, '') : '';
+    const headers = parseHeaderBlock(headerText);
+    return {
+      id: `ionos:${accountEmail}:${item.uid}`,
+      uid: item.uid,
+      from: headers.from || '',
+      to: headers.to || accountEmail,
+      subject: headers.subject || '',
+      timestamp: headers.date ? new Date(headers.date).toISOString() : new Date().toISOString(),
+      messageId: headers['message-id'] || '',
+      milesExecutiveTriage: /^(true|1|yes)$/i.test(headers['x-miles-executive-triage'] || ''),
+      text: bodyText.slice(0, 12000),
+      rawHeader: headerText.slice(0, 12000)
+    };
+  }).filter(message => Number.isFinite(message.uid));
+}
+
+async function fetchRecentMessages(mailbox, options = {}) {
+  const lookbackDays = Math.min(Math.max(Number(options.lookbackDays || 7), 1), 30);
+  const maxMessages = Math.min(Math.max(Number(options.maxMessages || 100), 1), 250);
+  const since = new Date(Date.now() - lookbackDays * 86400000);
+  const searched = await connectAndRun({ ...mailbox, commands: [`UID SEARCH SINCE ${imapDate(since)}`] });
+  const uids = searchUids(searched.extra?.[0]?.lines || []).slice(-maxMessages);
+  if (!uids.length) return { ok: true, email: mailbox.email, messages: [], uids: [], readOnly: true };
+  const sequence = uids.join(',');
+  const fetched = await connectAndRun({
+    ...mailbox,
+    commands: [`UID FETCH ${sequence} (UID BODY.PEEK[]<0.16384>)`]
+  });
+  const messages = parseFetchedMessages(fetched.extra?.[0]?.lines || [], mailbox.email);
+  return { ok: true, email: mailbox.email, messages, uids, readOnly: true };
+}
+
+module.exports = {
+  HOST,
+  PORT,
+  mailboxConfigs,
+  connectAndRun,
+  healthCheck,
+  healthCheckAll,
+  fetchRecentMessages,
+  parseFetchedMessages,
+  searchUids
+};
