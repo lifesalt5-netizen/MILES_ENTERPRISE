@@ -21,7 +21,7 @@ function unwrap(value) {
 
 function sentTimestamp(item) {
   return first(item, [
-    "timestamp_created", "timestamp_sent", "sent_at", "sentAt", "created_at", "createdAt", "timestamp", "date"
+    "timestamp_sent", "sent_at", "sentAt", "timestamp_created", "created_at", "createdAt", "timestamp", "date"
   ]);
 }
 
