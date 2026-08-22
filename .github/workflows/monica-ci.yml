@@ -15,6 +15,7 @@ on:
       - 'TESTS/Test_MonicaSourceRegistry.js'
       - 'TESTS/Test_MonicaDiscoveryAssessment.js'
       - 'TESTS/Test_MonicaDiscoveryCandidateService.js'
+      - 'TESTS/Test_MonicaSourceAccessManifest.js'
       - 'MONICA.md'
       - '.github/workflows/monica-ci.yml'
   push:
@@ -33,6 +34,7 @@ on:
       - 'TESTS/Test_MonicaSourceRegistry.js'
       - 'TESTS/Test_MonicaDiscoveryAssessment.js'
       - 'TESTS/Test_MonicaDiscoveryCandidateService.js'
+      - 'TESTS/Test_MonicaSourceAccessManifest.js'
       - '.github/workflows/monica-ci.yml'
 
 jobs:
@@ -55,6 +57,7 @@ jobs:
           node --check TESTS/Test_MonicaSourceRegistry.js
           node --check TESTS/Test_MonicaDiscoveryAssessment.js
           node --check TESTS/Test_MonicaDiscoveryCandidateService.js
+          node --check TESTS/Test_MonicaSourceAccessManifest.js
       - name: MONICA unit and suppression tests
         run: node TESTS/Test_MonicaAcquisitionIntelligence.js
       - name: MONICA census output contract
@@ -65,6 +68,8 @@ jobs:
         run: node TESTS/Test_MonicaDiscoveryAssessment.js
       - name: MONICA discovery candidate normalization contract
         run: node TESTS/Test_MonicaDiscoveryCandidateService.js
+      - name: MONICA source access manifest contract
+        run: node TESTS/Test_MonicaSourceAccessManifest.js
       - name: Register MONICA in canonical workforce registry
         run: node SCRIPTS/RegisterMonicaTwin.js
       - name: WorkforceService capability resolution
