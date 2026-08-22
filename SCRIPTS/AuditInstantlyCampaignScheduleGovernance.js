@@ -8,13 +8,10 @@ const instantly = require('../CONNECTORS/INSTANTLY/instantly');
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const OUT = path.join(ROOT, 'DATA', 'operational_acceptance', 'campaign_schedule_governance', 'INSTANTLY_CAMPAIGN_SCHEDULE_GOVERNANCE_LATEST.json');
-
-// Instantly API uses America/Detroit for Eastern Time in the campaign schedule enum.
 const REQUIRED_TZ = 'America/Detroit';
-const EARLIEST_ALLOWED = '08:00';
-const LATEST_ALLOWED = '18:00';
-// Instantly's documented schedule example uses 0-4 enabled and 5-6 disabled.
-const WEEKDAYS = { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false };
+const EARLIEST_FROM_MINUTES = 8 * 60;
+const LATEST_TO_MINUTES = 18 * 60;
+const REQUIRED_DAYS = { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false };
 
 function unwrap(value) {
   if (Array.isArray(value)) return value;
@@ -33,25 +30,23 @@ function scheduleRows(campaign) {
   return Array.isArray(raw) ? raw : [];
 }
 
-function hhmmMinutes(value) {
-  const match = /^(\d{2}):(\d{2})$/.exec(String(value || ''));
+function minutes(value) {
+  const match = String(value || '').match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return null;
-  const h = Number(match[1]);
-  const m = Number(match[2]);
-  if (!Number.isInteger(h) || !Number.isInteger(m) || h < 0 || h > 23 || m < 0 || m > 59) return null;
-  return h * 60 + m;
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (!Number.isInteger(hour) || !Number.isInteger(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+  return hour * 60 + minute;
 }
 
 function daysMatch(days = {}) {
-  return Object.keys(WEEKDAYS).every(k => Boolean(days?.[k]) === WEEKDAYS[k]);
+  return Object.keys(REQUIRED_DAYS).every(k => Boolean(days?.[k]) === REQUIRED_DAYS[k]);
 }
 
 function timingInsideGovernedWindow(timing = {}) {
-  const from = hhmmMinutes(timing?.from);
-  const to = hhmmMinutes(timing?.to);
-  const min = hhmmMinutes(EARLIEST_ALLOWED);
-  const max = hhmmMinutes(LATEST_ALLOWED);
-  return from !== null && to !== null && from < to && from >= min && to <= max;
+  const from = minutes(timing.from);
+  const to = minutes(timing.to);
+  return from !== null && to !== null && from >= EARLIEST_FROM_MINUTES && to <= LATEST_TO_MINUTES && from < to;
 }
 
 function evaluate(campaign) {
@@ -62,9 +57,9 @@ function evaluate(campaign) {
   for (const s of schedules) {
     if (String(s?.timezone || '') !== REQUIRED_TZ) violations.push(`TIMEZONE:${s?.timezone || 'MISSING'}`);
     if (!timingInsideGovernedWindow(s?.timing || {})) {
-      violations.push(`TIME_OUTSIDE_0800_1800:${s?.timing?.from || 'MISSING'}-${s?.timing?.to || 'MISSING'}`);
+      violations.push(`TIMING_OUTSIDE_0800_1800:${s?.timing?.from || 'MISSING'}-${s?.timing?.to || 'MISSING'}`);
     }
-    if (!daysMatch(s?.days || {})) violations.push('DAYS_NOT_WEEKDAYS_ONLY');
+    if (!daysMatch(s?.days || {})) violations.push('DAYS_NOT_STANDARD_WEEKDAYS');
   }
 
   return {
@@ -96,13 +91,7 @@ async function listAllCampaigns() {
 async function run() {
   const campaigns = await listAllCampaigns();
   const active = campaigns.filter(statusActive);
-  const evaluated = [];
-
-  for (const summary of active) {
-    const campaign = await instantly.getCampaign(summary.id);
-    evaluated.push(evaluate(campaign));
-  }
-
+  const evaluated = active.map(evaluate);
   const noncompliant = evaluated.filter(x => !x.compliant);
 
   const result = {
@@ -111,9 +100,9 @@ async function run() {
     generatedAt: new Date().toISOString(),
     policy: {
       timezone: REQUIRED_TZ,
-      allowedTiming: { earliest: EARLIEST_ALLOWED, latest: LATEST_ALLOWED },
-      weekdayPattern: WEEKDAYS,
-      note: 'A narrower schedule such as 09:00-17:00 is compliant because it remains fully inside the governed 08:00-18:00 Eastern window.'
+      allowedTimingWindow: { earliestFrom: '08:00', latestTo: '18:00' },
+      standardWeekdayMap: REQUIRED_DAYS,
+      note: 'Campaign hours may be narrower than the governed 08:00-18:00 window; they must not extend outside it.'
     },
     campaignsObserved: campaigns.length,
     activeCampaigns: active.length,
