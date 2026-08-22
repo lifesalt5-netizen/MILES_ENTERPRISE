@@ -32,6 +32,20 @@ if errorlevel 1 (
   exit /b 2
 )
 
+echo Running clean-soak preflight gates before restarting production...
+node SCRIPTS\AuditInstantlyCampaignScheduleGovernance.js
+if errorlevel 1 (
+  echo ERROR: One or more active Instantly campaigns can send outside the governed weekday/Eastern window.
+  exit /b 2
+)
+
+node SCRIPTS\AuditPrimaryInboxCoverage.js
+if errorlevel 1 (
+  echo ERROR: Primary inbound mailbox coverage is not proven. Resolve the reported routing/account blocker before FULL GO.
+  exit /b 2
+)
+
+echo Clean-soak preflight gates GREEN.
 echo Restarting governed MILES production PM2 stack and reloading current .env...
 call pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer --update-env
 if errorlevel 1 (
