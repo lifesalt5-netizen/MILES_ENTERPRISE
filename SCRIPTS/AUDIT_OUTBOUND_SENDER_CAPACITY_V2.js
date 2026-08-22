@@ -10,7 +10,7 @@ dotenv.config({ path: path.join(root, '.env'), override: false, quiet: true });
 
 const instantly = require(path.join(root, 'CONNECTORS', 'INSTANTLY', 'connector.js'));
 
-const TARGET_DOMAINS = [
+const OUTREACH_DOMAINS = [
   'pathways2gc.co',
   'pathwaysfederal.com',
   'pathwaysgov.com',
@@ -19,7 +19,7 @@ const TARGET_DOMAINS = [
   'pathwaystogc.com'
 ];
 const PROTECTED_PRIMARY_DOMAIN = 'pathways2gc.com';
-const TARGET_PER_DOMAIN = 5;
+const GOVERNED_DAILY_LIMIT_PER_ACCOUNT = 25;
 
 function deepArray(v) {
   if (Array.isArray(v)) return v;
@@ -56,7 +56,7 @@ async function main() {
   const accounts = deepArray(response);
   if (!accounts.length) throw new Error('INSTANTLY_ACCOUNT_INVENTORY_EMPTY_OR_UNPARSEABLE');
 
-  const target = Object.fromEntries(TARGET_DOMAINS.map(domain => [domain, []]));
+  const byDomain = Object.fromEntries(OUTREACH_DOMAINS.map(domain => [domain, []]));
   const protectedAccounts = [];
   const otherDomains = {};
 
@@ -66,31 +66,32 @@ async function main() {
     const domain = email.split('@').pop();
     const row = { email, status: statusOf(account), usable: usable(account) };
     if (domain === PROTECTED_PRIMARY_DOMAIN) protectedAccounts.push(row);
-    else if (target[domain]) target[domain].push(row);
+    else if (byDomain[domain]) byDomain[domain].push(row);
     else (otherDomains[domain] ||= []).push(row);
   }
 
-  const domains = TARGET_DOMAINS.map(domain => {
-    const observed = target[domain];
+  const domains = OUTREACH_DOMAINS.map(domain => {
+    const observed = byDomain[domain];
     const usableEmails = [...new Set(observed.filter(x => x.usable).map(x => x.email))];
     return {
       domain,
-      targetMailboxes: TARGET_PER_DOMAIN,
       observedAccounts: observed.length,
       usableMailboxes: usableEmails.length,
-      missingToTarget: Math.max(0, TARGET_PER_DOMAIN - usableEmails.length),
       usableEmails,
-      nonUsableObserved: observed.filter(x => !x.usable)
+      nonUsableObserved: observed.filter(x => !x.usable),
+      governedCapacityAt25PerUsableMailbox: usableEmails.length * GOVERNED_DAILY_LIMIT_PER_ACCOUNT
     };
   });
 
   const usableTotal = domains.reduce((n, d) => n + d.usableMailboxes, 0);
-  const missingTotal = domains.reduce((n, d) => n + d.missingToTarget, 0);
   const report = {
     ok: true,
     gate: 'OUTBOUND_SENDER_CAPACITY_AUDIT_V2',
     mode: 'READ_ONLY',
     generatedAt: new Date().toISOString(),
+    policy: 'REUSE_EXISTING_PAID_WORKSPACE_SEATS_FIRST',
+    fixedSenderTarget: null,
+    newPaidWorkspaceSeatsAuthorized: false,
     instantlyAction: 'listAccounts',
     accountsObserved: accounts.length,
     protectedPrimaryDomain: PROTECTED_PRIMARY_DOMAIN,
@@ -98,12 +99,13 @@ async function main() {
     domains,
     otherDomains,
     totals: {
-      targetDomains: TARGET_DOMAINS.length,
-      targetMailboxes: TARGET_DOMAINS.length * TARGET_PER_DOMAIN,
-      usableTargetDomainMailboxes: usableTotal,
-      missingMailboxes: missingTotal,
-      currentCapacityAt25PerUsableMailbox: usableTotal * 25,
-      capacityAt25PerMailboxIfTargetMet: TARGET_DOMAINS.length * TARGET_PER_DOMAIN * 25
+      outreachDomainsObserved: OUTREACH_DOMAINS.length,
+      usableOutreachMailboxes: usableTotal,
+      governedDailyCapacity: usableTotal * GOVERNED_DAILY_LIMIT_PER_ACCOUNT
+    },
+    acceptance: {
+      name: 'REUSE_FIRST_SENDER_CAPACITY',
+      rule: 'Measure actual healthy independent outreach accounts. Do not require an arbitrary mailbox count and do not create paid Workspace seats without explicit approval.'
     },
     safety: {
       externalWritesPerformed: false,
@@ -124,12 +126,12 @@ async function main() {
   console.log('MILES OUTBOUND SENDER CAPACITY AUDIT V2 - READ ONLY');
   console.log('============================================================');
   console.log(`Instantly accounts observed: ${accounts.length}`);
-  for (const d of domains) console.log(`${d.domain}: usable=${d.usableMailboxes} target=${d.targetMailboxes} missing=${d.missingToTarget}`);
+  for (const d of domains) console.log(`${d.domain}: usable=${d.usableMailboxes} capacity=${d.governedCapacityAt25PerUsableMailbox}/day`);
   console.log(`Protected primary-domain accounts observed: ${protectedAccounts.length}`);
   console.log(`Usable outreach senders: ${usableTotal}`);
-  console.log(`Missing to 30-sender target: ${missingTotal}`);
-  console.log(`Current governed capacity at 25/day: ${usableTotal * 25}/day`);
-  console.log(`Target governed capacity at 25/day: ${TARGET_DOMAINS.length * TARGET_PER_DOMAIN * 25}/day`);
+  console.log(`Current governed capacity at 25/day: ${usableTotal * GOVERNED_DAILY_LIMIT_PER_ACCOUNT}/day`);
+  console.log('Fixed sender target: NONE (reuse-first policy)');
+  console.log('New paid Workspace seats authorized: False');
   console.log('External writes performed: False');
   console.log(`Report: ${out}`);
 }
