@@ -1,12 +1,12 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T12:35:00-04:00",
+  "updated_at": "2026-08-23T12:40:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE_POST_SOAK_DEPLOYMENT_PREP",
   "production_hold": {
-    "reason": "MILES production is in a 24-hour soak; user reported approximately 8 hours elapsed on 2026-08-23.",
+    "reason": "MILES production is in a 24-hour soak; user reported approximately 8 hours remaining on 2026-08-23.",
     "rule": "Do not restart production services, activate new Instantly pilots, mutate B12, publish LinkedIn through MILES browser automation, or otherwise contaminate the soak until the soak is complete and accepted.",
     "allowed_during_soak": ["branch-only development", "GitHub CI", "static/regression testing", "documentation", "non-production content research", "post-soak execution preparation"],
     "post_soak_entrypoint": "RUN_P2GC_ACQUISITION_V2_E2E.ps1"
