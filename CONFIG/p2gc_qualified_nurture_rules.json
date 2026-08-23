@@ -1,0 +1,69 @@
+{
+  "system": "P2GC Qualified Prospect Nurture Engine",
+  "version": "1.0.0",
+  "effective_date": "2026-08-23",
+  "owner": "MILES",
+  "governance_owner": "Kevin",
+  "objective": "Convert engaged but not-yet-ready prospects without recycling them into generic cold outreach.",
+  "principles": [
+    "Nurture only prospects with documented engagement or an explicit future-follow-up signal.",
+    "Honor the prospect's requested timing before any default cadence.",
+    "Never contact an address in the global suppression registry.",
+    "Stop nurture automatically when the CRM reaches Meeting Set or a later stage.",
+    "Use the original conversation whenever a governed reply path is available.",
+    "Lead with useful intelligence or a relevant proof asset, not a generic meeting request.",
+    "Do not publish quantified claims unless source evidence is retained."
+  ],
+  "eligible_sources": [
+    "NOT_NOW",
+    "OOO",
+    "QUALIFIED_NO_MEETING"
+  ],
+  "excluded_categories": [
+    "UNSUBSCRIBE",
+    "NEGATIVE",
+    "BOUNCE_TECHNICAL",
+    "AUTO_REPLY",
+    "INBOUND_SOLICITATION_SPAM"
+  ],
+  "stop_stages": [
+    "Meeting Set",
+    "Meeting Held",
+    "Proposal",
+    "Negotiation",
+    "Won",
+    "Lost",
+    "Client"
+  ],
+  "cadence": {
+    "NOT_NOW": {
+      "first_touch": "USE_PROSPECT_FOLLOWUP_AT",
+      "additional_days": [30, 60],
+      "max_touches": 3
+    },
+    "OOO": {
+      "first_touch": "USE_RETURN_FOLLOWUP_AT",
+      "additional_days": [7],
+      "max_touches": 2
+    },
+    "QUALIFIED_NO_MEETING": {
+      "first_touch_after_days": 2,
+      "additional_days": [7, 21],
+      "max_touches": 3
+    }
+  },
+  "content_routes": {
+    "NOT_NOW": "REFRESHED_INTELLIGENCE_OR_RELEVANT_CASE_STUDY",
+    "OOO": "SHORT_CONTEXT_RESTART",
+    "QUALIFIED_NO_MEETING": "SPECIFIC_ORIGINAL_FINDING_PLUS_LOW_FRICTION_NEXT_STEP"
+  },
+  "execution": {
+    "preferred_channel": "ORIGINAL_EMAIL_THREAD",
+    "provider": "INSTANTLY",
+    "require_controlled_write_gates": true,
+    "default_execute": false,
+    "queue_file": "DATA/runtime/revenue/nurture/nurture_execution_queue.json",
+    "state_file": "DATA/runtime/revenue/nurture/nurture_state.json",
+    "latest_report": "DATA/runtime/revenue/nurture/nurture_latest.json"
+  }
+}
