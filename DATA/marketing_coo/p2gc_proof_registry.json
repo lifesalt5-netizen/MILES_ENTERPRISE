@@ -1,0 +1,73 @@
+{
+  "system": "P2GC Proof Registry",
+  "version": "1.0.0",
+  "updated_at": "2026-08-23T11:48:00-04:00",
+  "owner": "MILES",
+  "governance_owner": "Kevin",
+  "rule": "No client outcome, quantified result, timeframe, award, opportunity value, pricing outcome, or testimonial is approved for public marketing until the underlying evidence and permission status are both documented.",
+  "candidates": [
+    {
+      "id": "PROOF-GSA-ACTIVATION-001",
+      "working_claim": "GSA holder with zero/low activity received a first task order roughly 60 days after activation work.",
+      "status": "EVIDENCE_REQUIRED",
+      "public_use": "BLOCKED",
+      "permission_status": "UNKNOWN",
+      "required_evidence": [
+        "client engagement/start record",
+        "client identity match",
+        "authoritative task-order/award evidence",
+        "task-order/award date",
+        "evidence connecting the engagement timeline to the claimed timeframe",
+        "written permission or approved anonymized-use basis"
+      ],
+      "library_search_status": "Historical success-story/GSA files are referenced in the Library, but the indexed results reviewed on 2026-08-23 did not substantiate the specific 60-day claim.",
+      "notes": "Do not use the 60-day figure publicly until all required evidence is retained. A non-quantified anonymized methodology example may be used only if it does not imply an outcome."
+    },
+    {
+      "id": "PROOF-IT-OPPORTUNITY-001",
+      "working_claim": "Pre-GSA IT services client identified more than $500K in relevant targetable opportunities and an entry strategy in roughly 90 days.",
+      "status": "EVIDENCE_REQUIRED",
+      "public_use": "BLOCKED",
+      "permission_status": "UNKNOWN",
+      "required_evidence": [
+        "client engagement/start record",
+        "source opportunity list",
+        "source values for each opportunity included in the total",
+        "documented relevance/qualification criteria",
+        "timeframe evidence",
+        "written permission or approved anonymized-use basis"
+      ],
+      "library_search_status": "The reviewed Library index did not surface the source opportunity package needed to validate the >$500K and 90-day claim.",
+      "notes": "Do not aggregate opportunity values into a public result until source records and relevance decisions are retained."
+    },
+    {
+      "id": "PROOF-GSA-RECOVERY-001",
+      "working_claim": "Healthcare staffing client with prior GSA/FSS attempts progressed into pricing negotiations during a recovery effort.",
+      "status": "PARTIAL_EVIDENCE_LOCATED_PERMISSION_PENDING",
+      "public_use": "BLOCKED",
+      "permission_status": "UNKNOWN",
+      "required_evidence": [
+        "client engagement record",
+        "prior denial/request/resubmission history",
+        "recovery submission timeline",
+        "contracting-officer/FPR/pricing-negotiation evidence",
+        "clear statement of actual outcome reached",
+        "written permission or approved anonymized-use basis"
+      ],
+      "library_search_status": "The Library index references multiple Kebros FSS/FPR/pricing-negotiation artifacts, including final submission, FPR letter, and pricing-negotiation package filenames, but the underlying documents have not yet been verified as a complete substantiation chain and public permission is unknown.",
+      "notes": "Internal evidence appears more promising here, but no public case study should be released until the evidence chain and permission are completed."
+    }
+  ],
+  "approved": [],
+  "aggregate_claims": {
+    "status": "BLOCKED_UNTIL_COHORT_VALIDATION",
+    "requirements": [
+      "defined cohort",
+      "defined denominator",
+      "source system",
+      "measurement window",
+      "calculation method",
+      "retained underlying records"
+    ]
+  }
+}
