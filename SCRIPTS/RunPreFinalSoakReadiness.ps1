@@ -16,31 +16,58 @@ $startedAt = (Get-Date).ToUniversalTime().ToString('o')
 $head = (& git rev-parse HEAD).Trim()
 $branch = (& git rev-parse --abbrev-ref HEAD).Trim()
 $originMain = ''
+$script:LocalOperationalConfigBaseline = $null
 
 function Add-Result { param([string]$Name,[string]$Status,[string]$Category,[int]$ExitCode,[string]$Detail,[bool]$Mutation=$false); $results.Add([pscustomobject]@{name=$Name;status=$Status;category=$Category;exitCode=$ExitCode;detail=$Detail;externalMutation=$Mutation}) | Out-Null }
+function Read-JsonSafe { param([string]$Path); if(-not(Test-Path -LiteralPath $Path -PathType Leaf)){return $null}; try{Get-Content -Raw -LiteralPath $Path | ConvertFrom-Json}catch{return $null} }
 function Invoke-NodeCheck {
     param([string]$Name,[string]$Path,[string]$Category='STATIC')
     $full=Join-Path $Root $Path; if(-not(Test-Path $full)){Add-Result $Name 'YELLOW' $Category 0 "MISSING:$Path";return}
     & node --check $full *> $null; $ec=$LASTEXITCODE; Add-Result $Name ($(if($ec -eq 0){'GREEN'}else{'RED'})) $Category $ec $Path
 }
 function Invoke-NodeRun {
-    param([string]$Name,[string]$Path,[string[]]$Args=@(),[string]$Category='TEST',[bool]$Mutation=$false,[switch]$Advisory)
+    param([string]$Name,[string]$Path,[string[]]$Arguments=@(),[string]$Category='TEST',[bool]$Mutation=$false,[switch]$Advisory)
     $full=Join-Path $Root $Path; if(-not(Test-Path $full)){Add-Result $Name 'YELLOW' $Category 0 "MISSING:$Path" $Mutation;return}
-    $output=& node $full @Args 2>&1 | Out-String; $ec=$LASTEXITCODE; $tail=if($output.Length -gt 3000){$output.Substring($output.Length-3000)}else{$output}
+    $output=& node $full @Arguments 2>&1 | Out-String; $ec=$LASTEXITCODE; $tail=if($output.Length -gt 3000){$output.Substring($output.Length-3000)}else{$output}
     $status=if($ec -eq 0){'GREEN'}elseif($Advisory){'YELLOW'}else{'RED'}; Add-Result $Name $status $Category $ec $tail.Trim() $Mutation
 }
 function Invoke-PowerShellRun {
-    param([string]$Name,[string]$Path,[string[]]$Args=@(),[string]$Category='LIVE_READONLY',[switch]$Advisory)
+    param([string]$Name,[string]$Path,[string[]]$Arguments=@(),[string]$Category='LIVE_READONLY',[switch]$Advisory)
     $full=Join-Path $Root $Path; if(-not(Test-Path $full)){Add-Result $Name 'YELLOW' $Category 0 "MISSING:$Path";return}
-    $output=& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $full @Args 2>&1 | Out-String; $ec=$LASTEXITCODE; $tail=if($output.Length -gt 3000){$output.Substring($output.Length-3000)}else{$output}
+    $output=& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $full @Arguments 2>&1 | Out-String; $ec=$LASTEXITCODE; $tail=if($output.Length -gt 3000){$output.Substring($output.Length-3000)}else{$output}
     $status=if($ec -eq 0){'GREEN'}elseif($Advisory){'YELLOW'}else{'RED'}; Add-Result $Name $status $Category $ec $tail.Trim()
 }
 function Test-SourceDrift {
     param([string]$Name)
     $sourcePaths=@('API','CORE','SERVICES','SCRIPTS','CONNECTORS','WORKERS','TESTS','.github','CONFIG','FINAL_GO_LIVE.cmd','PRE_FINAL_SOAK_RELEASE_CANDIDATE.cmd','package.json','package-lock.json')
-    $statusOutput=(& git status --porcelain --untracked-files=all -- $sourcePaths 2>&1 | Out-String).Trim(); $ec=$LASTEXITCODE
-    $clean=($ec -eq 0 -and [string]::IsNullOrWhiteSpace($statusOutput))
-    Add-Result $Name ($(if($clean){'GREEN'}else{'RED'})) 'SOURCE_CONTROL' $ec ($(if($clean){'No tracked or untracked source/control drift.'}else{$statusOutput}))
+    $trackedOutput=(& git status --porcelain --untracked-files=no -- $sourcePaths 2>&1 | Out-String).Trim(); $trackedEc=$LASTEXITCODE
+    $untrackedOutput=(& git ls-files --others --exclude-standard -- $sourcePaths 2>&1 | Out-String).Trim(); $untrackedEc=$LASTEXITCODE
+    $untracked=@(); if(-not [string]::IsNullOrWhiteSpace($untrackedOutput)){$untracked=@($untrackedOutput -split "`r?`n" | Where-Object {-not [string]::IsNullOrWhiteSpace($_)})}
+    $localOperationalConfig=@($untracked | Where-Object { $_ -like 'CONFIG/*' })
+    $backupArtifacts=@($untracked | Where-Object { $_ -match '\.backup_\d' -or $_ -match '\.(bak|old|orig)$' })
+    $blockingUntracked=@($untracked | Where-Object { $_ -notlike 'CONFIG/*' -and $_ -notmatch '\.backup_\d' -and $_ -notmatch '\.(bak|old|orig)$' })
+
+    $snapshotRows=@()
+    foreach($relative in ($localOperationalConfig | Sort-Object)){
+        $full=Join-Path $Root ($relative -replace '/','\')
+        if(Test-Path -LiteralPath $full -PathType Leaf){$snapshotRows += "$relative=$((Get-FileHash -Algorithm SHA256 -LiteralPath $full).Hash)"}else{$snapshotRows += "$relative=MISSING"}
+    }
+    $snapshot=($snapshotRows -join ';')
+    $configStable=$true
+    if($Name -match 'before_validation'){$script:LocalOperationalConfigBaseline=$snapshot}
+    elseif($Name -match 'after_validation'){$configStable=($snapshot -eq $script:LocalOperationalConfigBaseline)}
+
+    $clean=($trackedEc -eq 0 -and $untrackedEc -eq 0 -and [string]::IsNullOrWhiteSpace($trackedOutput) -and $blockingUntracked.Count -eq 0 -and $configStable)
+    $detail=[ordered]@{
+        trackedDrift=if([string]::IsNullOrWhiteSpace($trackedOutput)){@()}else{@($trackedOutput -split "`r?`n")}
+        blockingUntracked=$blockingUntracked
+        localOperationalConfigCount=$localOperationalConfig.Count
+        localOperationalConfigStable=$configStable
+        localOperationalConfigSnapshot=$snapshotRows
+        ignoredBackupArtifactCount=$backupArtifacts.Count
+        ignoredBackupArtifacts=$backupArtifacts
+    } | ConvertTo-Json -Depth 6 -Compress
+    Add-Result $Name ($(if($clean){'GREEN'}else{'RED'})) 'SOURCE_CONTROL' ($(if($clean){0}else{2})) $detail
 }
 
 # Release-candidate identity must be exact before any live validation or mutation.
@@ -67,12 +94,27 @@ $tests=@(
 foreach($t in $tests){Invoke-NodeRun "test:$t" $t @() 'TEST' $false}
 
 # Known live schedule defect. Plan is read-only; execute is the one explicitly supported external mutation in this gate.
+$repairReportPath=Join-Path $Root 'DATA\operational_acceptance\campaign_schedule_governance\INSTANTLY_WEEKDAY_REPAIR_LATEST.json'
 Invoke-NodeRun 'instantly_weekday_repair_plan' 'SCRIPTS/RepairInstantlyWeekdaySchedules.js' @("--root=$Root") 'LIVE_READONLY' $false
 if($ExecuteInstantlyWeekdayRepair){
     $oldDry=$env:MILES_DRY_RUN; $oldAllow=$env:MILES_ALLOW_INSTANTLY_MUTATIONS
-    try{$env:MILES_DRY_RUN='false';$env:MILES_ALLOW_INSTANTLY_MUTATIONS='true';Invoke-NodeRun 'instantly_weekday_repair_execute' 'SCRIPTS/RepairInstantlyWeekdaySchedules.js' @("--root=$Root",'--execute') 'CONTROLLED_MUTATION' $true}
-    finally{$env:MILES_DRY_RUN=$oldDry;$env:MILES_ALLOW_INSTANTLY_MUTATIONS=$oldAllow}
+    try{
+        $env:MILES_DRY_RUN='false'
+        $env:MILES_ALLOW_INSTANTLY_MUTATIONS='true'
+        Invoke-NodeRun 'instantly_weekday_repair_execute' 'SCRIPTS/RepairInstantlyWeekdaySchedules.js' @("--root=$Root",'--execute') 'CONTROLLED_MUTATION' $true
+    } finally {
+        $env:MILES_DRY_RUN=$oldDry
+        $env:MILES_ALLOW_INSTANTLY_MUTATIONS=$oldAllow
+    }
+    $executeEvidence=Read-JsonSafe $repairReportPath
+    $unverified=if($executeEvidence){@($executeEvidence.changes | Where-Object {$_.verified -ne $true})}else{@('NO_EXECUTE_REPORT')}
+    $executeVerified=($executeEvidence -and [string]$executeEvidence.mode -eq 'EXECUTE' -and $executeEvidence.ok -eq $true -and $unverified.Count -eq 0)
+    Add-Result 'instantly_weekday_repair_execute_verification' ($(if($executeVerified){'GREEN'}else{'RED'})) 'CONTROLLED_MUTATION' ($(if($executeVerified){0}else{2})) ($(if($executeEvidence){$executeEvidence | ConvertTo-Json -Depth 8 -Compress}else{'NO_EXECUTE_REPORT'})) $true
+
     Invoke-NodeRun 'instantly_weekday_repair_readback_plan' 'SCRIPTS/RepairInstantlyWeekdaySchedules.js' @("--root=$Root") 'LIVE_READONLY' $false
+    $readbackEvidence=Read-JsonSafe $repairReportPath
+    $readbackVerified=($readbackEvidence -and [string]$readbackEvidence.mode -eq 'PLAN_ONLY' -and [int]$readbackEvidence.campaignsNeedingRepair -eq 0 -and @($readbackEvidence.blockers).Count -eq 0)
+    Add-Result 'instantly_weekday_repair_postcheck' ($(if($readbackVerified){'GREEN'}else{'RED'})) 'LIVE_READONLY' ($(if($readbackVerified){0}else{2})) ($(if($readbackEvidence){$readbackEvidence | ConvertTo-Json -Depth 8 -Compress}else{'NO_READBACK_REPORT'}))
 }
 
 # Live production truth gates. No customer-facing mutations beyond the explicitly authorized weekday repair above.
@@ -82,7 +124,9 @@ Invoke-NodeRun 'primary_inbox_coverage' 'SCRIPTS/AuditPrimaryInboxCoverage.js' @
 Invoke-NodeRun 'ionos_executive_inbox_readonly' 'SCRIPTS/AuditIonosExecutiveInboxReadOnly.js' @("--root=$Root") 'LIVE_READONLY' $false
 Invoke-NodeRun 'outbound_sender_capacity_v2' 'SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js' @($Root) 'LIVE_READONLY' $false
 Invoke-NodeRun 'instantly_campaign_schedule_governance' 'SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js' @() 'LIVE_READONLY' $false
-Invoke-NodeRun 'instantly_send_window_last24h' 'SCRIPTS/AuditInstantlySendWindowHistory.js' @("--root=$Root") 'LIVE_READONLY' $false
+# Pre-final readiness starts a fresh compliance boundary. Historical pre-repair Sunday sends remain evidence,
+# but they do not force a 24-hour wait before the formal soak. The soak validates its own full start-to-finish window.
+Invoke-NodeRun 'instantly_send_window_since_gate_start' 'SCRIPTS/AuditInstantlySendWindowHistory.js' @("--root=$Root","--since=$startedAt") 'LIVE_READONLY' $false
 
 # Acquisition readiness. Explicitly disable campaign creation/activation and LinkedIn publishing.
 $oldExec=$env:P2GC_ACQ_V2_EXECUTE; $oldActivate=$env:P2GC_ACQ_V2_ACTIVATE; $oldLi=$env:LINKEDIN_PUBLISH_ENABLED
@@ -111,11 +155,13 @@ $green = @($resultItems | Where-Object { $_.status -eq 'GREEN' }).Count
 $mutations = @($resultItems | Where-Object { $_.externalMutation -eq $true }).Count
 $statusText = if($red -eq 0){'PRE_FINAL_SOAK_READINESS_GREEN'}else{'PRE_FINAL_SOAK_READINESS_BLOCKED'}
 $rules = @(
-    'Release-candidate identity must be main == origin/main with no source/control drift.',
+    'Release-candidate identity must be main == origin/main with no tracked source/control drift.',
+    'Untracked CONFIG operational files are inventoried by SHA256 and must remain unchanged during the readiness run; backup artifacts do not block.',
     'No acquisition campaign creation/activation during readiness.',
     'No B12 public publish during readiness.',
     'No LinkedIn public publish during readiness.',
-    'Instantly weekday repair is the only allowed external mutation and only with the explicit switch.',
+    'Instantly weekday repair is the only allowed external mutation and requires provider read-back plus a zero-remaining-repair postcheck.',
+    'Pre-final send-window validation begins at this gate start; historical pre-repair violations remain evidence but are not a readiness wait timer.',
     'IONOS and sender-capacity checks are read-only.',
     'MONICA remains DISCOVERY_ONLY with outreach and campaign enrollment blocked.',
     'YELLOW is allowed only for explicit external-evidence/activation work that remains gated; RED blocks the final soak.',
