@@ -1,0 +1,60 @@
+name: Pre Final Soak Readiness Validation
+
+on:
+  pull_request:
+    paths:
+      - "SCRIPTS/RunPreFinalSoakReadiness.ps1"
+      - "SCRIPTS/AuditProposalCommandReadiness.js"
+      - "SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js"
+      - "SCRIPTS/AuditInstantlySendWindowHistory.js"
+      - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
+      - "TESTS/**"
+      - ".github/workflows/pre-final-soak-readiness-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: |
+          node --check SCRIPTS/AuditProposalCommandReadiness.js
+          node --check SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js
+          node --check SCRIPTS/AuditInstantlySendWindowHistory.js
+          node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
+      - name: Weekday governance regression
+        run: node TESTS/Test_InstantlyCampaignScheduleGovernance.js
+      - name: Send-window timestamp regression
+        run: node TESTS/Test_InstantlySendWindowHistory.js
+      - name: Acquisition V2 unit suite
+        run: |
+          node TESTS/Test_FederalPathwayScoreService.js
+          node TESTS/Test_FederalPathwayScoreIntegratedService.js
+          node TESTS/Test_RevenueWeightedCampaignScorecardService.js
+          node TESTS/Test_QualifiedProspectNurtureService.js
+          node TESTS/Test_P2GCAcquisitionV2CampaignService.js
+          node TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js
+          node TESTS/Test_P2GCB12ConversionManifest.js
+          node TESTS/Test_P2GCWebsiteConversionAuditService.js
+      - name: Core/dashboard safety suite
+        run: |
+          node TESTS/E0030RevenueTruthGate.test.js
+          node TESTS/meeting_pipeline_readonly_safety_test.js
+          node TESTS/production_go_live_acceptance_audit_safety_test.js
+          node TESTS/TestExecutiveDashboardData.js
+          node TESTS/TestExecutiveMissionRouter.js
+          node TESTS/TestExecutiveToEngineering.js
+          node TESTS/TestExecutiveToEngineeringFlow.js
+      - name: Proposal Command static inventory
+        continue-on-error: true
+        run: node SCRIPTS/AuditProposalCommandReadiness.js --root=$GITHUB_WORKSPACE
