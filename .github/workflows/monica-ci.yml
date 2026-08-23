@@ -13,11 +13,15 @@ on:
       - 'TESTS/Test_MonicaWorkforceIntegration.js'
       - 'TESTS/Test_MonicaCensusContract.js'
       - 'TESTS/Test_MonicaSourceRegistry.js'
+      - 'TESTS/Test_MonicaDiscoveryAssessment.js'
+      - 'TESTS/Test_MonicaDiscoveryCandidateService.js'
+      - 'TESTS/Test_MonicaSourceAccessManifest.js'
       - 'MONICA.md'
       - '.github/workflows/monica-ci.yml'
   push:
     branches:
       - feature/monica-acquisition-intelligence
+      - agent/research-discovery-pre-soak-20260823
     paths:
       - 'SERVICES/monica/**'
       - 'CONFIG/MONICA/**'
@@ -28,6 +32,9 @@ on:
       - 'TESTS/Test_MonicaWorkforceIntegration.js'
       - 'TESTS/Test_MonicaCensusContract.js'
       - 'TESTS/Test_MonicaSourceRegistry.js'
+      - 'TESTS/Test_MonicaDiscoveryAssessment.js'
+      - 'TESTS/Test_MonicaDiscoveryCandidateService.js'
+      - 'TESTS/Test_MonicaSourceAccessManifest.js'
       - '.github/workflows/monica-ci.yml'
 
 jobs:
@@ -41,18 +48,28 @@ jobs:
       - name: Syntax validation
         run: |
           node --check SERVICES/monica/MonicaAcquisitionIntelligenceService.js
+          node --check SERVICES/monica/MonicaDiscoveryCandidateService.js
           node --check SCRIPTS/RegisterMonicaTwin.js
           node --check SCRIPTS/RunMonicaNetNewAcquisitionCensus.js
           node --check SCRIPTS/InstallMonicaStandalone.js
           node --check TESTS/Test_MonicaWorkforceIntegration.js
           node --check TESTS/Test_MonicaCensusContract.js
           node --check TESTS/Test_MonicaSourceRegistry.js
+          node --check TESTS/Test_MonicaDiscoveryAssessment.js
+          node --check TESTS/Test_MonicaDiscoveryCandidateService.js
+          node --check TESTS/Test_MonicaSourceAccessManifest.js
       - name: MONICA unit and suppression tests
         run: node TESTS/Test_MonicaAcquisitionIntelligence.js
       - name: MONICA census output contract
         run: node TESTS/Test_MonicaCensusContract.js
       - name: MONICA source registry safety contract
         run: node TESTS/Test_MonicaSourceRegistry.js
+      - name: MONICA discovery assessment safety contract
+        run: node TESTS/Test_MonicaDiscoveryAssessment.js
+      - name: MONICA discovery candidate normalization contract
+        run: node TESTS/Test_MonicaDiscoveryCandidateService.js
+      - name: MONICA source access manifest contract
+        run: node TESTS/Test_MonicaSourceAccessManifest.js
       - name: Register MONICA in canonical workforce registry
         run: node SCRIPTS/RegisterMonicaTwin.js
       - name: WorkforceService capability resolution
