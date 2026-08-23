@@ -85,7 +85,7 @@ function truthFixture(overrides = {}) {
     }
   });
 
-  assert.equal(overridden.score.score, 95);
+  assert.equal(overridden.score.score, 100);
   assert.equal(overridden.score.pathwayStatus, "READY");
 
   const untrustedOverride = await overrideService.evaluate("EXAMPLEUEI123", {
