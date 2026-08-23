@@ -1,7 +1,7 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T11:27:00-04:00",
+  "updated_at": "2026-08-23T11:39:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE",
@@ -70,8 +70,15 @@
       "id": "ACQ-V2-006",
       "title": "Create offer landing pages",
       "owner": "Aria",
-      "status": "COPY_COMPLETE_ACCESS_CONFIRMED_PUBLISH_EXECUTION_PENDING",
-      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md", "CONNECTORS/WEBSITE_B12/controller.js"],
+      "status": "CONTROLLED_B12_PUBLISHER_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "evidence": [
+        "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
+        "CONFIG/p2gc_b12_conversion_publish_v2.json",
+        "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js",
+        "CONNECTORS/WEBSITE_B12/RUN_CONTROLLED_PUBLISH_V2.ps1",
+        "TESTS/Test_P2GCB12ConversionManifest.js",
+        "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
+      ],
       "success_criteria": "One landing page per front-door offer with outcome-led hero, proof, deliverables, CTA, and FAQ."
     },
     {
@@ -79,8 +86,13 @@
       "id": "ACQ-V2-007",
       "title": "Update homepage hero and conversion path",
       "owner": "Aria",
-      "status": "COPY_COMPLETE_ACCESS_CONFIRMED_PUBLISH_EXECUTION_PENDING",
-      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md", "CONNECTORS/WEBSITE_B12/controller.js"],
+      "status": "CONTROLLED_B12_PUBLISHER_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "evidence": [
+        "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
+        "CONFIG/p2gc_b12_conversion_publish_v2.json",
+        "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js",
+        "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
+      ],
       "success_criteria": "Homepage leads with economic outcome and routes visitors into a diagnostic or relevant offer rather than a broad service menu."
     },
     {
@@ -88,8 +100,14 @@
       "id": "ACQ-V2-008",
       "title": "Clean legacy website positioning",
       "owner": "MILES",
-      "status": "AUDIT_COMPLETE_ACCESS_CONFIRMED_CHANGE_EXECUTION_PENDING",
-      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md", "CONNECTORS/WEBSITE_B12/controller.js"],
+      "status": "CONTROLLED_B12_CLEANUP_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "evidence": [
+        "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
+        "CONFIG/p2gc_b12_conversion_publish_v2.json",
+        "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js",
+        "SERVICES/revenue/P2GCWebsiteConversionAuditService.js",
+        "TESTS/Test_P2GCWebsiteConversionAuditService.js"
+      ],
       "success_criteria": "Conflicting legacy business-plan, grant, loan, website, and other non-core positioning is removed, redirected, consolidated, or noindexed."
     },
     {
