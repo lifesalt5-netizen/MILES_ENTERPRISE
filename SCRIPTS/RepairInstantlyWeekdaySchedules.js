@@ -23,6 +23,7 @@ function active(campaign) {
   return Number(campaign?.status) === 1 || String(campaign?.status || '').toLowerCase() === 'active';
 }
 
+// Instantly campaign schedule day indexes: 0=Sunday ... 6=Saturday.
 const REQUIRED_DAYS = { '0': false, '1': true, '2': true, '3': true, '4': true, '5': true, '6': false };
 
 function daysMatch(days = {}) {
@@ -124,8 +125,8 @@ async function main() {
   const outDir = path.join(options.rootDir, 'DATA', 'operational_acceptance', 'campaign_schedule_governance');
   fs.mkdirSync(outDir, { recursive: true });
   const out = path.join(outDir, 'INSTANTLY_WEEKDAY_REPAIR_LATEST.json');
-  fs.writeFileSync(out, JSON.stringify(result, null, 2), 'utf8');
   result.outputFile = out;
+  fs.writeFileSync(out, JSON.stringify(result, null, 2), 'utf8');
   console.log(JSON.stringify(result, null, 2));
   if (!result.ok) process.exitCode = 2;
 }
