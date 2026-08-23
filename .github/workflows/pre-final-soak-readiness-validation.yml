@@ -105,3 +105,6 @@ jobs:
       - name: Windows PowerShell 5.1 result serialization regression
         shell: powershell
         run: .\TESTS\Test_PreFinalSoakResultSerialization.ps1
+      - name: Windows PowerShell 5.1 execution-contract regression
+        shell: powershell
+        run: .\TESTS\Test_PreFinalSoakExecutionContract.ps1
