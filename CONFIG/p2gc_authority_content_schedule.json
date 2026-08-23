@@ -1,0 +1,205 @@
+{
+  "system": "P2GC Founder Authority Content Engine",
+  "version": "1.0.0",
+  "effective_date": "2026-08-23",
+  "timezone": "America/New_York",
+  "owner": "Aria",
+  "orchestrator": "MILES",
+  "governance_owner": "Kevin",
+  "objective": "Build compounding inbound trust around P2GC's evidence-backed government-market intelligence and convert qualified attention into diagnostic demand and revenue.",
+  "rules": [
+    "Every externally stated fact must be verifiable.",
+    "No invented contract values, buyer behavior, opportunity counts, client outcomes, win probabilities, or guarantees.",
+    "Methodology and educational posts may publish without client proof when they make no client-outcome claim.",
+    "Case-study content requires an APPROVED proof-registry item with public_use APPROVED and documented permission basis.",
+    "Modeled ORION recompete signals must never be described as confirmed procurements.",
+    "Every content item carries one primary CTA and attribution key.",
+    "Revenue and qualified pipeline are the governing performance measures, not vanity engagement."
+  ],
+  "weekly_target": {
+    "linkedin_posts": 3,
+    "short_videos": 3,
+    "intelligence_emails": 1
+  },
+  "monthly_target": {
+    "webinars": 1,
+    "deep_assets": 1
+  },
+  "items": [
+    {
+      "id": "AUTH-20260824-GSA-SHELFWARE",
+      "date": "2026-08-24",
+      "theme": "GSA shelfware",
+      "linkedin_title": "Why a GSA Schedule can become shelfware even when the contractor is capable",
+      "video_title": "Five reasons a GSA Schedule can have little or no sales",
+      "cta": "GSA Zero-Sales Diagnostic",
+      "cta_path": "/gsa-zero-sales-diagnostic",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260826-VEHICLE-ACTIVATION",
+      "date": "2026-08-26",
+      "theme": "Vehicle activation",
+      "linkedin_title": "Holding a vehicle is not the same as having an activation strategy",
+      "video_title": "Stop treating GSA award as the finish line",
+      "cta": "Review My GSA Revenue Gap",
+      "cta_path": "/gsa-zero-sales-diagnostic",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260828-GSA-CASE",
+      "date": "2026-08-28",
+      "theme": "GSA activation proof",
+      "linkedin_title": "Anonymized GSA activation case study",
+      "video_title": "What P2GC checks before telling a GSA holder to bid more",
+      "email_title": "P2GC Intelligence Brief #1 — Is your GSA contract actually positioned to sell?",
+      "cta": "GSA Zero-Sales Diagnostic",
+      "cta_path": "/gsa-zero-sales-diagnostic",
+      "evidence_mode": "CASE_STUDY",
+      "proof_id": "PROOF-GSA-ACTIVATION-001",
+      "fallback_mode": "METHODOLOGY_ONLY"
+    },
+    {
+      "id": "AUTH-20260831-REGISTRATION-NOT-STRATEGY",
+      "date": "2026-08-31",
+      "theme": "Federal revenue gap",
+      "linkedin_title": "Registration is not a market strategy",
+      "video_title": "Three questions every SAM-registered company should answer before bidding",
+      "cta": "Federal Revenue Gap Analysis",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260902-PATHWAY-CHOICE",
+      "date": "2026-09-02",
+      "theme": "Pathway selection",
+      "linkedin_title": "Why more opportunities can produce worse results when targeting is wrong",
+      "video_title": "Prime, subcontract, vehicle, SLED, or hybrid — how to choose the first path",
+      "cta": "Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260904-AGENCY-ALIGNMENT",
+      "date": "2026-09-04",
+      "theme": "Agency alignment",
+      "linkedin_title": "What a real agency-alignment analysis should show",
+      "video_title": "The difference between an opportunity list and a revenue pathway",
+      "email_title": "P2GC Intelligence Brief #2 — Where is the government actually buying what you sell?",
+      "cta": "Show Me My Revenue Gaps",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260907-EARLY-CAPTURE",
+      "date": "2026-09-07",
+      "theme": "Recompete timing",
+      "linkedin_title": "The solicitation is often too late to begin capture",
+      "video_title": "What to know before an incumbent contract recompetes",
+      "cta": "Recompete & Vehicle Growth Scan",
+      "cta_path": "/recompete-vehicle-growth-scan",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260909-FIVE-DECISIONS",
+      "date": "2026-09-09",
+      "theme": "Prime vs teaming",
+      "linkedin_title": "Prime, team, position, monitor, or pass — five decisions better than 'bid everything'",
+      "video_title": "When subcontracting is the smarter growth strategy",
+      "cta": "Run My Growth Scan",
+      "cta_path": "/recompete-vehicle-growth-scan",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260911-RECOMPETE-EXAMPLE",
+      "date": "2026-09-11",
+      "theme": "Timing/vehicle/incumbent intelligence",
+      "linkedin_title": "How timing, vehicle, and incumbent intelligence changes capture strategy",
+      "video_title": "Why vehicle access changes who can realistically compete",
+      "email_title": "P2GC Intelligence Brief #3 — Get positioned before the RFP",
+      "cta": "Recompete & Vehicle Growth Scan",
+      "cta_path": "/recompete-vehicle-growth-scan",
+      "evidence_mode": "METHODOLOGY_WITH_NONCONFIDENTIAL_EXAMPLE",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260914-PATHWAY-VALIDATION",
+      "date": "2026-09-14",
+      "theme": "Federal Pathway Validation",
+      "linkedin_title": "What P2GC means by Federal Pathway Validation",
+      "video_title": "We do not start with opportunities; we start with market truth",
+      "cta": "Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260916-ORION-QUESTIONS",
+      "date": "2026-09-16",
+      "theme": "Market intelligence",
+      "linkedin_title": "What ORION-style intelligence should answer before a company spends money on capture",
+      "video_title": "Three signals that a contractor is positioned but blocked",
+      "cta": "Show Me My Revenue Gaps",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260918-PROOF-PROCESS",
+      "date": "2026-09-18",
+      "theme": "Proof and prioritization",
+      "linkedin_title": "Case study: how P2GC prioritizes the first revenue-path action",
+      "video_title": "How P2GC decides what a contractor should work first",
+      "email_title": "P2GC Intelligence Brief #4 — From eligibility to an executable revenue path",
+      "cta": "Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "CASE_STUDY",
+      "proof_id": "PROOF-GSA-RECOVERY-001",
+      "fallback_mode": "METHODOLOGY_ONLY"
+    },
+    {
+      "id": "AUTH-20260910-WEBINAR",
+      "date": "2026-09-10",
+      "theme": "Live education",
+      "asset_type": "WEBINAR",
+      "title": "Why Qualified Government Contractors Still Fail to Generate Revenue",
+      "cta": "Request a Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "METHODOLOGY",
+      "proof_id": null
+    },
+    {
+      "id": "AUTH-20260918-DEEP-ASSET",
+      "date": "2026-09-18",
+      "theme": "Federal Revenue Gap Report",
+      "asset_type": "DEEP_ASSET",
+      "title": "The P2GC Federal Revenue Gap Report — 2026 Edition",
+      "cta": "Request a Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis",
+      "evidence_mode": "INTERNAL_DATA_REQUIRED",
+      "proof_id": null
+    }
+  ],
+  "attribution_fields": [
+    "publication_date",
+    "content_id",
+    "topic_pain_family",
+    "channel",
+    "offer_cta",
+    "impressions_or_views",
+    "profile_or_site_visits",
+    "diagnostic_starts",
+    "diagnostic_completions",
+    "booked_meetings",
+    "proposals",
+    "closes",
+    "attributed_revenue"
+  ]
+}
