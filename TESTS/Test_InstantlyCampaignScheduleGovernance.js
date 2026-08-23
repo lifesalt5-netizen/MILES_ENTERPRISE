@@ -1,6 +1,9 @@
 'use strict';
 
-const { REQUIRED_DAYS, daysMatch, repairedSchedule } = require('../SCRIPTS/RepairInstantlyWeekdaySchedules');
+const repair = require('../SCRIPTS/RepairInstantlyWeekdaySchedules');
+const governance = require('../SCRIPTS/AuditInstantlyCampaignScheduleGovernance');
+
+const { REQUIRED_DAYS, daysMatch, repairedSchedule } = repair;
 
 let passed = 0;
 function check(condition, label) {
@@ -13,6 +16,7 @@ check(REQUIRED_DAYS['0'] === false, 'Sunday index 0 is disabled');
 check(REQUIRED_DAYS['1'] === true, 'Monday index 1 is enabled');
 check(REQUIRED_DAYS['5'] === true, 'Friday index 5 is enabled');
 check(REQUIRED_DAYS['6'] === false, 'Saturday index 6 is disabled');
+check(JSON.stringify(governance.REQUIRED_DAYS) === JSON.stringify(REQUIRED_DAYS), 'governance and repair use the same weekday map');
 check(daysMatch({ '0': false, '1': true, '2': true, '3': true, '4': true, '5': true, '6': false }) === true, 'Mon-Fri map passes');
 check(daysMatch({ '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false }) === false, 'legacy Sun-Thu map fails');
 
