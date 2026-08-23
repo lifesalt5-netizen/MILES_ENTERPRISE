@@ -1,0 +1,105 @@
+{
+  "system": "P2GC Customer Acquisition System V2",
+  "created_at": "2026-08-23T10:49:00-04:00",
+  "owner": "MILES",
+  "goal": "$10,000/week in new P2GC sales",
+  "status": "ACTIVE",
+  "tasks": [
+    {
+      "order": 1,
+      "id": "ACQ-V2-001",
+      "title": "Lock front-door offers and positioning",
+      "owner": "MILES",
+      "status": "COMPLETED",
+      "evidence": ["CONFIG/p2gc_customer_acquisition_v2.json", "GOVERNANCE/P2GC_CUSTOMER_ACQUISITION_SYSTEM_V2.md"]
+    },
+    {
+      "order": 2,
+      "id": "ACQ-V2-002",
+      "title": "Establish weekly competitor intelligence review",
+      "owner": "MILES",
+      "status": "COMPLETED",
+      "success_criteria": "Weekly review reports actionable changes in competitor offers, funnels, pricing, proof, content, and positioning."
+    },
+    {
+      "order": 3,
+      "id": "ACQ-V2-003",
+      "title": "Build proof library",
+      "owner": "Aria",
+      "status": "READY",
+      "success_criteria": "At least 3 problem-based case studies with source evidence for every quantified claim."
+    },
+    {
+      "order": 4,
+      "id": "ACQ-V2-004",
+      "title": "Build Federal Pathway Score specification and MVP",
+      "owner": "MILES",
+      "status": "READY",
+      "success_criteria": "Diagnostic accepts company identity/capability data and returns evidence-backed pathway status, three highest-priority actions, and one offer CTA."
+    },
+    {
+      "order": 5,
+      "id": "ACQ-V2-005",
+      "title": "Rewrite priority outbound using intelligence-first hooks",
+      "owner": "Aria",
+      "status": "READY",
+      "success_criteria": "Priority segments map to one of three offers and every first touch contains verified condition, implication, next step, and single CTA."
+    },
+    {
+      "order": 6,
+      "id": "ACQ-V2-006",
+      "title": "Create offer landing pages",
+      "owner": "Aria",
+      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "success_criteria": "One landing page per front-door offer with outcome-led hero, proof, deliverables, CTA, and FAQ."
+    },
+    {
+      "order": 7,
+      "id": "ACQ-V2-007",
+      "title": "Update homepage hero and conversion path",
+      "owner": "Aria",
+      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "success_criteria": "Homepage leads with economic outcome and routes visitors into a diagnostic or relevant offer rather than a broad service menu."
+    },
+    {
+      "order": 8,
+      "id": "ACQ-V2-008",
+      "title": "Clean legacy website positioning",
+      "owner": "MILES",
+      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "success_criteria": "Conflicting legacy business-plan, grant, loan, website, and other non-core positioning is removed, redirected, consolidated, or noindexed."
+    },
+    {
+      "order": 9,
+      "id": "ACQ-V2-009",
+      "title": "Launch founder-led authority cadence",
+      "owner": "Aria",
+      "status": "READY",
+      "success_criteria": "Each week produces 3 short videos, 3 LinkedIn data posts, and 1 intelligence email; each month produces 1 webinar and 1 deep asset."
+    },
+    {
+      "order": 10,
+      "id": "ACQ-V2-010",
+      "title": "Add revenue-weighted campaign scorecard",
+      "owner": "MILES",
+      "status": "READY",
+      "success_criteria": "Campaign decisions use qualified replies, booked meetings, shows, proposals, closes, and revenue per 1000 delivered rather than opens alone."
+    },
+    {
+      "order": 11,
+      "id": "ACQ-V2-011",
+      "title": "Build qualified-prospect nurture system",
+      "owner": "Aria",
+      "status": "READY",
+      "success_criteria": "Interested but not-ready prospects receive useful intelligence/case-study follow-up without being recycled into generic cold sequences."
+    },
+    {
+      "order": 12,
+      "id": "ACQ-V2-012",
+      "title": "Feed competitor findings into experiments",
+      "owner": "MILES",
+      "status": "ACTIVE_RECURRING",
+      "success_criteria": "Meaningful competitor changes create a documented copy/test/adopt/avoid decision and, when warranted, a measurable experiment."
+    }
+  ]
+}

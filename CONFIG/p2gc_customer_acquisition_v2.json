@@ -1,0 +1,126 @@
+{
+  "system": "P2GC Customer Acquisition System V2",
+  "version": "2.0.0",
+  "effective_date": "2026-08-23",
+  "owner": "MILES",
+  "governance_owner": "Kevin",
+  "revenue_target": {
+    "weekly_new_sales_usd": 10000,
+    "monthly_new_clients_target": {"min": 8, "max": 10},
+    "preferred_initial_engagement_usd": {"min": 2500, "max": 5000}
+  },
+  "primary_marketing_principle": "Lead with verified prospect-specific intelligence, not generic GovCon consulting claims.",
+  "front_door_offers": [
+    {
+      "id": "GSA_ZERO_SALES_DIAGNOSTIC",
+      "name": "GSA Zero-Sales Diagnostic",
+      "audience": ["GSA_NO_SALES", "GSA_LOW_SALES"],
+      "promise": "Identify why the Schedule is not converting into measurable federal revenue and define the highest-priority corrective pathway.",
+      "proof_required": true,
+      "cta": "Review My GSA Revenue Gap"
+    },
+    {
+      "id": "FEDERAL_REVENUE_GAP_ANALYSIS",
+      "name": "Federal Revenue Gap Analysis",
+      "audience": ["SAM_NO_SALES", "SAM_LOW_SALES", "GSA_GROWTH", "CERTIFICATION_SEGMENTS"],
+      "promise": "Show where the company is currently positioned to win, where access is blocked, and which agencies, buyers, vehicles, or teaming paths deserve attention first.",
+      "proof_required": true,
+      "cta": "Show Me My Revenue Gaps"
+    },
+    {
+      "id": "RECOMPETE_VEHICLE_GROWTH_SCAN",
+      "name": "Recompete & Vehicle Growth Scan",
+      "audience": ["EXPIRING_GSA_6M", "EXPIRING_GSA_12M", "EXPIRING_VA_6M", "EXPIRING_VA_12M", "GROWTH_HIGH_VALUE"],
+      "promise": "Surface verified recompetes, incumbent exposure, vehicle gaps, and likely capture paths before the opportunity becomes a last-minute bid.",
+      "proof_required": true,
+      "cta": "Run My Growth Scan"
+    }
+  ],
+  "funnel": [
+    "Verified company/segment intelligence",
+    "One high-value insight in outbound message",
+    "Low-friction diagnostic or scan",
+    "Proof/case study relevant to the pain",
+    "Strategy meeting",
+    "Productized paid engagement",
+    "Recurring growth/capture support"
+  ],
+  "message_rules": {
+    "max_customer_facing_pain_families": 5,
+    "avoid": [
+      "generic we-help-you-win-government-contracts messaging",
+      "long service menus in first-touch outreach",
+      "unverified opportunity or revenue claims",
+      "asking for a meeting before giving a reason to care",
+      "mixing unrelated business-plan, grant, loan, website, or generic consulting positioning into core GovCon messaging"
+    ],
+    "required_first_touch_elements": [
+      "specific observed condition or verified data point",
+      "business implication",
+      "one clear next step",
+      "no more than one primary CTA"
+    ]
+  },
+  "proof_system": {
+    "required_assets": [
+      "3 concise case studies organized by problem solved",
+      "outcome cards with verifiable before/after metrics",
+      "client quotes or references where permission exists",
+      "methodology explanation for ORION/P2GC intelligence without exposing proprietary internals"
+    ],
+    "rule": "No quantified claim may be published unless source evidence is retained."
+  },
+  "content_engine": {
+    "weekly": {"short_videos": 3, "linkedin_data_posts": 3, "email_intelligence_brief": 1},
+    "monthly": {"live_webinar": 1, "deep_case_study_or_market_report": 1},
+    "content_themes": [
+      "GSA zero-sales diagnosis",
+      "recompete intelligence",
+      "vehicle gaps",
+      "agency buying patterns",
+      "prime/sub teaming intelligence",
+      "what ORION finds in real market data",
+      "common reasons qualified contractors fail to convert registrations into revenue"
+    ]
+  },
+  "outbound_experimentation": {
+    "unit_of_test": "pain_family_x_offer_x_segment",
+    "minimum_variables_per_test": 1,
+    "primary_kpis": ["positive_reply_rate", "qualified_reply_rate", "meeting_booked_rate", "meeting_show_rate", "proposal_rate", "close_rate", "revenue_per_1000_delivered"],
+    "secondary_kpis": ["delivery_rate", "bounce_rate", "unsubscribe_or_negative_rate"],
+    "winner_rule": "Promote messages based on downstream qualified meetings and revenue, not opens."
+  },
+  "website_requirements": [
+    "Homepage must state one clear economic outcome before explaining methodology.",
+    "Each front-door offer gets a dedicated landing page with one CTA.",
+    "Add a free Federal Pathway Score or equivalent diagnostic.",
+    "Move proof and outcomes above or adjacent to primary CTAs.",
+    "Remove or noindex legacy pages that dilute GovCon positioning.",
+    "Create a visible Insights/Intelligence section for recurring data-backed content."
+  ],
+  "sales_process": {
+    "meeting_objective": "Convert a verified diagnostic finding into a paid next-step engagement.",
+    "required_pre_call": ["segment classification", "verified observed problem", "recommended front-door offer", "relevant proof asset", "likely expansion path"],
+    "follow_up_sla_hours": 24
+  },
+  "guardrails": {
+    "protect_primary_domain": true,
+    "primary_domain": "pathways2gc.com",
+    "no_bulk_outreach_from_primary_domain": true,
+    "no_fabricated_data": true,
+    "no_guarantee_without_legal_and_operational_support": true,
+    "ceo_approval_required_for": ["new guarantee or refund policy", "price reductions below approved floor", "new paid-media budget", "publishing client-identifiable results without permission"]
+  },
+  "execution_order": [
+    "Lock positioning and three front-door offers",
+    "Create proof library",
+    "Create diagnostic/lead-magnet specification",
+    "Rewrite top-priority outbound around intelligence-first hooks",
+    "Create landing-page copy for each offer",
+    "Clean legacy website positioning",
+    "Launch founder-led content cadence",
+    "Implement revenue-weighted experiment scorecard",
+    "Build nurture for non-ready prospects",
+    "Review competitor changes weekly and feed meaningful findings into experiments"
+  ]
+}
