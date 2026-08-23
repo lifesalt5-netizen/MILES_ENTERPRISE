@@ -1,0 +1,87 @@
+name: P2GC Acquisition V2 Validation
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "CONFIG/p2gc_customer_acquisition_v2.json"
+      - "CONFIG/p2gc_revenue_scorecard_rules.json"
+      - "CONFIG/p2gc_qualified_nurture_rules.json"
+      - "SERVICES/FederalPathwayScoreService.js"
+      - "SERVICES/FederalPathwayScoreIntegratedService.js"
+      - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
+      - "SERVICES/revenue/QualifiedProspectNurtureService.js"
+      - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
+      - "RUN_P2GC_REVENUE_SCORECARD.js"
+      - "RUN_P2GC_QUALIFIED_NURTURE.js"
+      - "StartP2GCGrowthBlueprintDemo.js"
+      - "TESTS/Test_FederalPathwayScoreService.js"
+      - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
+      - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
+      - "TESTS/Test_QualifiedProspectNurtureService.js"
+      - ".github/workflows/p2gc-acquisition-v2-validation.yml"
+  pull_request:
+    paths:
+      - "CONFIG/p2gc_customer_acquisition_v2.json"
+      - "CONFIG/p2gc_revenue_scorecard_rules.json"
+      - "CONFIG/p2gc_qualified_nurture_rules.json"
+      - "SERVICES/FederalPathwayScoreService.js"
+      - "SERVICES/FederalPathwayScoreIntegratedService.js"
+      - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
+      - "SERVICES/revenue/QualifiedProspectNurtureService.js"
+      - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
+      - "RUN_P2GC_REVENUE_SCORECARD.js"
+      - "RUN_P2GC_QUALIFIED_NURTURE.js"
+      - "StartP2GCGrowthBlueprintDemo.js"
+      - "TESTS/Test_FederalPathwayScoreService.js"
+      - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
+      - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
+      - "TESTS/Test_QualifiedProspectNurtureService.js"
+      - ".github/workflows/p2gc-acquisition-v2-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install runtime dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+
+      - name: Syntax validation
+        run: |
+          node --check SERVICES/FederalPathwayScoreService.js
+          node --check SERVICES/FederalPathwayScoreIntegratedService.js
+          node --check SERVICES/revenue/RevenueWeightedCampaignScorecardService.js
+          node --check SERVICES/revenue/QualifiedProspectNurtureService.js
+          node --check RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js
+          node --check RUN_P2GC_REVENUE_SCORECARD.js
+          node --check RUN_P2GC_QUALIFIED_NURTURE.js
+          node --check StartP2GCGrowthBlueprintDemo.js
+          node --check TESTS/Test_FederalPathwayScoreService.js
+          node --check TESTS/Test_FederalPathwayScoreIntegratedService.js
+          node --check TESTS/Test_RevenueWeightedCampaignScorecardService.js
+          node --check TESTS/Test_QualifiedProspectNurtureService.js
+
+      - name: Federal Pathway Score MVP test
+        run: node TESTS/Test_FederalPathwayScoreService.js
+
+      - name: Integrated Federal Pathway Score test
+        run: node TESTS/Test_FederalPathwayScoreIntegratedService.js
+
+      - name: Revenue-weighted campaign scorecard test
+        run: node TESTS/Test_RevenueWeightedCampaignScorecardService.js
+
+      - name: Qualified prospect nurture test
+        run: node TESTS/Test_QualifiedProspectNurtureService.js
