@@ -7,36 +7,44 @@ on:
       - "CONFIG/p2gc_customer_acquisition_v2.json"
       - "CONFIG/p2gc_revenue_scorecard_rules.json"
       - "CONFIG/p2gc_qualified_nurture_rules.json"
+      - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
       - "SERVICES/FederalPathwayScoreService.js"
       - "SERVICES/FederalPathwayScoreIntegratedService.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
+      - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
       - "RUN_P2GC_REVENUE_SCORECARD.js"
       - "RUN_P2GC_QUALIFIED_NURTURE.js"
+      - "RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js"
       - "StartP2GCGrowthBlueprintDemo.js"
       - "TESTS/Test_FederalPathwayScoreService.js"
       - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
       - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
       - "TESTS/Test_QualifiedProspectNurtureService.js"
+      - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   pull_request:
     paths:
       - "CONFIG/p2gc_customer_acquisition_v2.json"
       - "CONFIG/p2gc_revenue_scorecard_rules.json"
       - "CONFIG/p2gc_qualified_nurture_rules.json"
+      - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
       - "SERVICES/FederalPathwayScoreService.js"
       - "SERVICES/FederalPathwayScoreIntegratedService.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
+      - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
       - "RUN_P2GC_REVENUE_SCORECARD.js"
       - "RUN_P2GC_QUALIFIED_NURTURE.js"
+      - "RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js"
       - "StartP2GCGrowthBlueprintDemo.js"
       - "TESTS/Test_FederalPathwayScoreService.js"
       - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
       - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
       - "TESTS/Test_QualifiedProspectNurtureService.js"
+      - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   workflow_dispatch:
 
@@ -65,14 +73,17 @@ jobs:
           node --check SERVICES/FederalPathwayScoreIntegratedService.js
           node --check SERVICES/revenue/RevenueWeightedCampaignScorecardService.js
           node --check SERVICES/revenue/QualifiedProspectNurtureService.js
+          node --check SERVICES/revenue/P2GCAcquisitionV2CampaignService.js
           node --check RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js
           node --check RUN_P2GC_REVENUE_SCORECARD.js
           node --check RUN_P2GC_QUALIFIED_NURTURE.js
+          node --check RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check TESTS/Test_FederalPathwayScoreService.js
           node --check TESTS/Test_FederalPathwayScoreIntegratedService.js
           node --check TESTS/Test_RevenueWeightedCampaignScorecardService.js
           node --check TESTS/Test_QualifiedProspectNurtureService.js
+          node --check TESTS/Test_P2GCAcquisitionV2CampaignService.js
 
       - name: Federal Pathway Score MVP test
         run: node TESTS/Test_FederalPathwayScoreService.js
@@ -85,3 +96,6 @@ jobs:
 
       - name: Qualified prospect nurture test
         run: node TESTS/Test_QualifiedProspectNurtureService.js
+
+      - name: P2GC V2 campaign deployment test
+        run: node TESTS/Test_P2GCAcquisitionV2CampaignService.js
