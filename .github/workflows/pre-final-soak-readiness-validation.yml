@@ -96,3 +96,12 @@ jobs:
           node TESTS/TestExecutiveToEngineeringFlow.js
       - name: Proposal Command canonical readiness
         run: node SCRIPTS/AuditProposalCommandReadiness.js --root=$GITHUB_WORKSPACE
+
+  windows-powershell51-serialization:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows PowerShell 5.1 result serialization regression
+        shell: powershell
+        run: .\TESTS\Test_PreFinalSoakResultSerialization.ps1
