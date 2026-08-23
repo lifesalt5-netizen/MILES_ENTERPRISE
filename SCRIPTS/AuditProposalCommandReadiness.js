@@ -14,6 +14,7 @@ function main(){
   const {rootDir}=parse(process.argv.slice(2));
   const paths={
     service:path.join(rootDir,'SERVICES','proposal','P2GCProposalCommandService.js'),
+    postSubmission:path.join(rootDir,'SERVICES','proposal','P2GCPostSubmissionLearningService.js'),
     qualification:path.join(rootDir,'SERVICES','sales','P2GCSalesQualificationService.js'),
     runner:path.join(rootDir,'RUN_P2GC_PROPOSAL_COMMAND.js'),
     ui:path.join(rootDir,'SERVICES','demo','public','proposal-command.html'),
@@ -21,9 +22,10 @@ function main(){
     demoServer:path.join(rootDir,'StartP2GCGrowthBlueprintDemo.js'),
     dashboard:path.join(rootDir,'SERVICES','ceo_dashboard','public','index.html'),
     test:path.join(rootDir,'TESTS','Test_P2GCProposalCommandService.js'),
+    postTest:path.join(rootDir,'TESTS','Test_P2GCPostSubmissionLearningService.js'),
     decisionTest:path.join(rootDir,'TESTS','Test_P2GCSalesQualificationDecisionLabels.js')
   };
-  const src=read(paths.service); const qsrc=read(paths.qualification); const server=read(paths.demoServer); const dash=read(paths.dashboard);
+  const src=read(paths.service); const qsrc=read(paths.qualification); const postSrc=read(paths.postSubmission); const server=read(paths.demoServer); const dash=read(paths.dashboard);
   const canonicalExists=exists(paths.service);
   const controlledTestExists=exists(paths.test);
   const exactTruthStates=hasAll(src,['UNKNOWN','CLIENT INPUT REQUIRED','EVIDENCE NEEDED','PARTIALLY VERIFIED','NOT APPLICABLE','FAILED','NEEDS INTERPRETATION']);
@@ -31,8 +33,9 @@ function main(){
   const protectedSubmission=hasAll(src,['externalSubmissionEnabled:false','submitted:false','Never mark SUBMITTED']);
   const apiWired=server.includes('/api/proposal-command/run')&&server.includes('P2GCProposalCommandService');
   const uiWired=exists(paths.ui)&&exists(paths.uiJs)&&server.includes('/proposal-command')&&dash.includes('P2GC Proposal Command');
+  const postSubmissionVerified=exists(paths.postSubmission)&&exists(paths.postTest)&&hasAll(postSrc,['CLARIFICATION','DISCUSSION','FPR','BAFO','DEBRIEF','AWARD_RESULT','LESSON_LEARNED','requiresActualSubmissionProof']);
 
-  const e={service:[rel(rootDir,paths.service),rel(rootDir,paths.test)],qual:[rel(rootDir,paths.qualification),rel(rootDir,paths.decisionTest)],ui:[rel(rootDir,paths.demoServer),rel(rootDir,paths.ui),rel(rootDir,paths.dashboard)]};
+  const e={service:[rel(rootDir,paths.service),rel(rootDir,paths.test)],qual:[rel(rootDir,paths.qualification),rel(rootDir,paths.decisionTest)],post:[rel(rootDir,paths.postSubmission),rel(rootDir,paths.postTest)],ui:[rel(rootDir,paths.demoServer),rel(rootDir,paths.ui),rel(rootDir,paths.dashboard)]};
   const rows=[
     row('canonical_orchestrator',canonicalExists&&controlledTestExists?'EXISTS_AND_VERIFIED':'MISSING',e.service,'Canonical callable service plus controlled E2E regression.'),
     row('solicitation_intake',src.includes('solicitationIntelligence')?'EXISTS_AND_VERIFIED':'MISSING',e.service,'Structured source-aware intake exists; native document ingestion is not yet claimed.'),
@@ -55,18 +58,17 @@ function main(){
     row('submission_packaging',src.includes('submissionPackage')&&src.includes('sha256')?'EXISTS_AND_VERIFIED':'MISSING',e.service,'Frozen-file hash evidence is required for readiness.'),
     row('kevin_approval_gate',src.includes('READY FOR KEVIN APPROVAL')?'EXISTS_AND_VERIFIED':'MISSING',e.service,'Protected final CEO approval is explicit.'),
     row('submission_protection',protectedSubmission?'EXISTS_AND_VERIFIED':'MISSING',e.service,'No automatic submission; SUBMITTED is impossible without future external proof path.'),
-    row('post_submission_learning','MISSING',e.service,'Clarifications/discussions/FPR/BAFO/debrief/lessons-learned workflow is not yet canonical.'),
-    row('dashboard_surface',uiWired&&apiWired?'EXISTS_AND_VERIFIED':'MISSING',e.ui,'CEO Launchpad card + 8791 workspace/API are wired; badge remains BETA until real-client/real-solicitation acceptance.'),
+    row('post_submission_learning',postSubmissionVerified?'EXISTS_AND_VERIFIED':'MISSING',e.post,'Clarifications, discussions, FPR, BAFO, debrief, award result and lessons-learned events require submission proof and event evidence.'),
+    row('dashboard_surface',uiWired&&apiWired?'EXISTS_AND_VERIFIED':'MISSING',e.ui,'CEO Launchpad card + 8791 workspace/API are wired; badge remains BETA until real-client/real-solicitation acceptance.')
   ];
 
-  const hard=['canonical_orchestrator','solicitation_intake','amendment_control','stage0_qualification','evidence_vault','compliance_matrix','evaluator_review','final_compliance_qa','submission_packaging','kevin_approval_gate','submission_protection','dashboard_surface'];
+  const hard=['canonical_orchestrator','solicitation_intake','amendment_control','stage0_qualification','evidence_vault','compliance_matrix','evaluator_review','final_compliance_qa','submission_packaging','kevin_approval_gate','submission_protection','post_submission_learning','dashboard_surface'];
   const hardBlockers=rows.filter(r=>hard.includes(r.capability)&&r.status==='MISSING');
   const result={
     ok:hardBlockers.length===0&&exactTruthStates,
     service:'P2GC_PROPOSAL_COMMAND_READINESS_AUDIT',generatedAt:new Date().toISOString(),rootDir,
-    buildReadiness:hardBlockers.length===0&&exactTruthStates?'GREEN':'RED',
-    productionAcceptance:'NOT_YET_PRODUCTION_ACCEPTED',
-    exactTruthStatesPresent:exactTruthStates,exactDecisionLabelsPresent:exactDecisions,apiWired,uiWired,protectedSubmission,
+    buildReadiness:hardBlockers.length===0&&exactTruthStates?'GREEN':'RED',productionAcceptance:'NOT_YET_PRODUCTION_ACCEPTED',
+    exactTruthStatesPresent:exactTruthStates,exactDecisionLabelsPresent:exactDecisions,apiWired,uiWired,protectedSubmission,postSubmissionVerified,
     hardRequirements:hard,hardBlockers:hardBlockers.map(x=>x.capability),
     counts:{verified:rows.filter(r=>r.status==='EXISTS_AND_VERIFIED').length,partial:rows.filter(r=>r.status==='PARTIAL').length,needsWiring:rows.filter(r=>r.status==='EXISTS_BUT_NEEDS_WIRING').length,missing:rows.filter(r=>r.status==='MISSING').length},
     capabilities:rows,
