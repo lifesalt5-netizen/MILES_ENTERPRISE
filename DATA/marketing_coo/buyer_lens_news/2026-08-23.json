@@ -1,0 +1,98 @@
+{
+  "snapshot_date": "2026-08-23",
+  "items": [
+    {
+      "id": "BL-20260823-SBA-SIZE-STANDARDS",
+      "headline": "SBA proposes a major small-business size-standard overhaul",
+      "official_status": "PROPOSED_RULE_OR_PROPOSAL",
+      "source_name": "U.S. Small Business Administration",
+      "source_url": "https://legacy.sba.gov/article/2026/08/20/sba-proposes-overhaul-simplify-small-business-classification-expand-access-federal-programs",
+      "source_date": "2026-08-20",
+      "official_fact": "SBA announced a proposed overhaul of small-business size standards that would simplify industry categorization, raise applicable size thresholds, and, according to SBA, add more than 110,000 firms to the small-business population if finalized.",
+      "affected_segments": ["SAM_GROWTH", "GSA_GROWTH", "CERTIFICATION_SEGMENTS", "SMALL_BUSINESS_PRIMES"],
+      "buyer_lens": "If a final rule expands the pool of firms that qualify as small, acquisition teams could have a broader competitive field available for small-business strategies. Contracting officers will still need accurate NAICS selection and current size representations, so eligibility documentation becomes more important, not less.",
+      "scrutiny": [
+        "current size representation and the applicable NAICS code",
+        "whether the contractor is relying on a proposed threshold before it is effective",
+        "whether teaming or affiliation facts affect size status",
+        "how a larger eligible pool changes competitive positioning"
+      ],
+      "benefit_or_risk": "Growing firms that are close to existing size ceilings could benefit if higher thresholds are finalized. At the same time, more eligible small businesses can mean more competition for some set-asides.",
+      "common_mistake": "Treating the proposal as if the thresholds already changed or assuming small-business status alone creates a stronger win position.",
+      "action_now": "Model your current size status and your potential status under the proposal, verify the NAICS codes that matter to your target procurements, and identify where a larger small-business pool would change your prime-versus-team strategy.",
+      "p2gc_take": "The opportunity is not just staying small longer. It is understanding how a changed competitive pool affects which agencies, vehicles, and pursuits remain attractive.",
+      "cta": "Federal Revenue Gap Analysis",
+      "cta_path": "/federal-revenue-gap-analysis"
+    },
+    {
+      "id": "BL-20260823-OASISPLUS-ROLLING-AWARDS",
+      "headline": "OASIS+ continues adding apparent awardees under the continuously open model",
+      "official_status": "CURRENT_PROGRAM_UPDATE",
+      "source_name": "U.S. General Services Administration",
+      "source_url": "https://www.gsa.gov/buy-through-us/products-and-services/professional-services/buy-services/oasis-plus/sellers-guide/solicitations-continuously-open",
+      "source_date": "2026-08-19",
+      "official_fact": "GSA's OASIS+ continuously open solicitation page states that Phase II apparent award announcements are being updated on a rolling basis; the award-announcement file was updated August 19, 2026.",
+      "affected_segments": ["OASIS_PLUS_HOLDERS", "PROFESSIONAL_SERVICES", "GROWTH_HIGH_VALUE"],
+      "buyer_lens": "A larger qualified vehicle pool gives ordering agencies more sourcing options. For a contractor, simply getting onto OASIS+ is therefore not the same as being positioned for task-order demand; buyers can compare more credible alternatives inside the vehicle.",
+      "scrutiny": [
+        "domain and scope alignment to the actual task order",
+        "relevant past performance and delivery credibility",
+        "price and staffing realism",
+        "whether the contractor is already positioned with the agency before the task order drops",
+        "teaming strategy when a stronger incumbent or domain player has the customer position"
+      ],
+      "benefit_or_risk": "New awardees gain access to an important acquisition path, while existing holders face a potentially broader competitive bench as additional contractors enter.",
+      "common_mistake": "Marketing the vehicle award as the growth strategy instead of immediately building agency, task-order, teaming, and capture priorities around it.",
+      "action_now": "Map your awarded domains to agencies that actually buy those services, identify likely task-order competitors and partners, and create a 90-day vehicle-activation plan before relying on task-order alerts alone.",
+      "p2gc_take": "Vehicle access is infrastructure. The advantage comes from activating that access around verified buyers and qualified task-order paths faster than the rest of the vehicle pool.",
+      "cta": "Recompete & Vehicle Growth Scan",
+      "cta_path": "/recompete-vehicle-growth-scan"
+    },
+    {
+      "id": "BL-20260823-RFO-BUYER-AI",
+      "headline": "GSA and OMB are training acquisition professionals on a new AI acquisition tool tied to the FAR overhaul",
+      "official_status": "OFFICIAL_TRAINING_AND_TOOL_UPDATE",
+      "source_name": "U.S. General Services Administration",
+      "source_url": "https://www.gsa.gov/events/atrw-rfo-solution-new-ai-acquisition-tool-for-the-federal-workforce-082526",
+      "source_date": "2026-08-20",
+      "official_fact": "GSA describes SAG as a government-wide AI platform built by OMB and GSA to help federal contracting professionals plan and execute procurements using tools grounded in current regulations, policies, and acquisition data. A federal-workforce training session is scheduled for August 25, 2026.",
+      "affected_segments": ["ALL_FEDERAL_CONTRACTORS", "PROPOSAL_TEAMS", "CAPTURE_TEAMS"],
+      "buyer_lens": "This does not mean AI will decide awards. It does signal that acquisition teams are being equipped to work faster with current policy and acquisition data. Contractors should assume less tolerance for generic boilerplate and make their market-research, capability, pricing, and compliance evidence easier for a buyer to validate.",
+      "scrutiny": [
+        "clear linkage between the requirement and the contractor's actual evidence",
+        "current registrations, representations, and contract data",
+        "concise and internally consistent proposal claims",
+        "pricing and acquisition-path logic that can be checked quickly"
+      ],
+      "benefit_or_risk": "Contractors with clean, current, evidence-backed positioning may benefit from faster buyer analysis. Firms that depend on vague capability language, outdated registrations, or unsupported claims may create more friction for themselves.",
+      "common_mistake": "Responding to government AI adoption with AI hype instead of improving the quality, consistency, and verifiability of the information the buyer receives.",
+      "action_now": "Audit the facts a buyer sees first: SAM profile, vehicle records, capability statement, past performance references, pricing logic, and proposal claims. Remove contradictions and unsupported language.",
+      "p2gc_take": "The contractor advantage is not 'using more AI.' It is becoming easier for an increasingly data-assisted acquisition workforce to validate, understand, and justify buying from you.",
+      "cta": "Federal Pathway Score",
+      "cta_path": "/federal-revenue-gap-analysis"
+    },
+    {
+      "id": "BL-20260823-RFO-PLAIN-LANGUAGE",
+      "headline": "The FAR overhaul is restructuring acquisition guidance around a simpler lifecycle model",
+      "official_status": "CURRENT_POLICY_OVERHAUL",
+      "source_name": "Acquisition.gov / FAR Council",
+      "source_url": "https://www.acquisition.gov/far-overhaul",
+      "source_date": "2026-08-23",
+      "official_fact": "The Revolutionary FAR Overhaul is rewriting and restructuring federal acquisition rules, with the stated goals of faster acquisitions, greater competition, and better results. GSA is also training acquisition personnel on the restructuring of the FAR into plain-language, lifecycle-based chapters.",
+      "affected_segments": ["ALL_FEDERAL_CONTRACTORS", "GSA_HOLDERS", "PROPOSAL_TEAMS"],
+      "buyer_lens": "Simpler rules do not remove the buyer's need to document a sound acquisition decision. As agencies adopt deviations and new guidance, contractors need to understand the specific rules and procedures actually being used by the buying activity instead of relying on old proposal boilerplate.",
+      "scrutiny": [
+        "which agency deviation or current acquisition guidance applies",
+        "whether proposal language cites obsolete requirements",
+        "whether the contractor's solution supports a faster and more defensible acquisition decision",
+        "whether unnecessary complexity is being added by the offeror"
+      ],
+      "benefit_or_risk": "Contractors that update their capture and proposal playbooks quickly can reduce compliance noise and communicate more clearly. Firms reusing stale templates risk creating confusion or avoidable exceptions.",
+      "common_mistake": "Assuming a FAR overhaul means compliance matters less, or continuing to paste old FAR language without checking the buying agency's current deviation and solicitation instructions.",
+      "action_now": "Add a current-rule check to every pursuit: solicitation instructions, applicable FAR text, agency deviations, and required clauses should be validated before compliance matrices and proposal boilerplate are finalized.",
+      "p2gc_take": "The winning response to acquisition simplification is not less discipline. It is cleaner discipline: current rules, fewer irrelevant assumptions, and a proposal that helps the buyer reach a defensible decision faster.",
+      "cta": "Federal Revenue Gap Analysis",
+      "cta_path": "/federal-revenue-gap-analysis"
+    }
+  ]
+}
