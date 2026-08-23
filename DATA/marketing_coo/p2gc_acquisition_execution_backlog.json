@@ -1,7 +1,7 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T11:01:00-04:00",
+  "updated_at": "2026-08-23T11:06:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE",
@@ -104,7 +104,13 @@
       "id": "ACQ-V2-011",
       "title": "Build qualified-prospect nurture system",
       "owner": "Aria",
-      "status": "NEXT",
+      "status": "IMPLEMENTED_RUNTIME_VALIDATION_PENDING",
+      "evidence": [
+        "CONFIG/p2gc_qualified_nurture_rules.json",
+        "SERVICES/revenue/QualifiedProspectNurtureService.js",
+        "TESTS/Test_QualifiedProspectNurtureService.js",
+        "RUN_P2GC_QUALIFIED_NURTURE.js"
+      ],
       "success_criteria": "Interested but not-ready prospects receive useful intelligence/case-study follow-up without being recycled into generic cold sequences."
     },
     {
