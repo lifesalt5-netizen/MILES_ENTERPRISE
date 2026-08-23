@@ -1,10 +1,16 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T11:39:00-04:00",
+  "updated_at": "2026-08-23T12:35:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
-  "status": "ACTIVE",
+  "status": "ACTIVE_POST_SOAK_DEPLOYMENT_PREP",
+  "production_hold": {
+    "reason": "MILES production is in a 24-hour soak; user reported approximately 8 hours elapsed on 2026-08-23.",
+    "rule": "Do not restart production services, activate new Instantly pilots, mutate B12, publish LinkedIn through MILES browser automation, or otherwise contaminate the soak until the soak is complete and accepted.",
+    "allowed_during_soak": ["branch-only development", "GitHub CI", "static/regression testing", "documentation", "non-production content research", "post-soak execution preparation"],
+    "post_soak_entrypoint": "RUN_P2GC_ACQUISITION_V2_E2E.ps1"
+  },
   "tasks": [
     {
       "order": 1,
@@ -20,6 +26,7 @@
       "title": "Establish weekly competitor intelligence review",
       "owner": "MILES",
       "status": "ACTIVE_RECURRING",
+      "evidence": ["CONFIG/p2gc_competitor_intelligence_rules.json", "SERVICES/revenue/P2GCCompetitorExperimentService.js", "RUN_P2GC_COMPETITOR_EXPERIMENTS.js"],
       "success_criteria": "Weekly review reports actionable changes in competitor offers, funnels, pricing, proof, content, and positioning."
     },
     {
@@ -27,16 +34,16 @@
       "id": "ACQ-V2-003",
       "title": "Build proof library",
       "owner": "Aria",
-      "status": "AUDIT_COMPLETE_EVIDENCE_VALIDATION_PENDING",
-      "evidence": ["MARKETING/P2GC_PROOF_LIBRARY_AUDIT.md"],
-      "success_criteria": "At least 3 problem-based case studies with source evidence for every quantified claim."
+      "status": "AUDIT_COMPLETE_EVIDENCE_AND_PERMISSION_VALIDATION_PENDING",
+      "evidence": ["MARKETING/P2GC_PROOF_LIBRARY_AUDIT.md", "DATA/marketing_coo/p2gc_proof_registry.json"],
+      "success_criteria": "At least 3 problem-based case studies with source evidence for every quantified claim and a documented public-use permission basis."
     },
     {
       "order": 4,
       "id": "ACQ-V2-004",
       "title": "Build Federal Pathway Score specification and MVP",
       "owner": "MILES",
-      "status": "INTEGRATED_RUNTIME_VALIDATION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_LIVE_VALIDATION_PENDING",
       "evidence": [
         "SERVICES/FederalPathwayScoreService.js",
         "TESTS/Test_FederalPathwayScoreService.js",
@@ -52,7 +59,7 @@
       "id": "ACQ-V2-005",
       "title": "Rewrite priority outbound using intelligence-first hooks",
       "owner": "Aria",
-      "status": "DEPLOYMENT_ENGINE_IMPLEMENTED_RUNTIME_EXECUTION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_LIVE_EXECUTION_PENDING",
       "evidence": [
         "MARKETING/P2GC_OUTBOUND_MESSAGE_KIT_V2.md",
         "CONFIG/p2gc_acquisition_v2_campaign_rules.json",
@@ -70,7 +77,7 @@
       "id": "ACQ-V2-006",
       "title": "Create offer landing pages",
       "owner": "Aria",
-      "status": "CONTROLLED_B12_PUBLISHER_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_B12_STAGING_PENDING",
       "evidence": [
         "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
         "CONFIG/p2gc_b12_conversion_publish_v2.json",
@@ -86,7 +93,7 @@
       "id": "ACQ-V2-007",
       "title": "Update homepage hero and conversion path",
       "owner": "Aria",
-      "status": "CONTROLLED_B12_PUBLISHER_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_B12_STAGING_PENDING",
       "evidence": [
         "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
         "CONFIG/p2gc_b12_conversion_publish_v2.json",
@@ -100,7 +107,7 @@
       "id": "ACQ-V2-008",
       "title": "Clean legacy website positioning",
       "owner": "MILES",
-      "status": "CONTROLLED_B12_CLEANUP_IMPLEMENTED_STAGING_EXECUTION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_B12_STAGING_PENDING",
       "evidence": [
         "MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md",
         "CONFIG/p2gc_b12_conversion_publish_v2.json",
@@ -115,8 +122,16 @@
       "id": "ACQ-V2-009",
       "title": "Launch founder-led authority cadence",
       "owner": "Aria",
-      "status": "30_DAY_CALENDAR_COMPLETE_PUBLISHING_PENDING",
-      "evidence": ["MARKETING/P2GC_30_DAY_AUTHORITY_CALENDAR_2026-08-24.md"],
+      "status": "CONTENT_ENGINE_AND_LINKEDIN_PUBLISHER_IMPLEMENTED_POST_SOAK_CHANNEL_EXECUTION_PENDING",
+      "evidence": [
+        "MARKETING/P2GC_30_DAY_AUTHORITY_CALENDAR_2026-08-24.md",
+        "CONFIG/p2gc_authority_content_schedule.json",
+        "SERVICES/revenue/P2GCAuthorityContentProductionService.js",
+        "RUN_P2GC_AUTHORITY_CONTENT.js",
+        "CONNECTORS/LINKEDIN/LinkedInControlledPublisher.js",
+        "SERVICES/revenue/P2GCLinkedInPublishingService.js",
+        "RUN_P2GC_LINKEDIN_PUBLISH.js"
+      ],
       "success_criteria": "Each week produces 3 short videos, 3 LinkedIn data posts, and 1 intelligence email; each month produces 1 webinar and 1 deep asset."
     },
     {
@@ -124,7 +139,7 @@
       "id": "ACQ-V2-010",
       "title": "Add revenue-weighted campaign scorecard",
       "owner": "MILES",
-      "status": "IMPLEMENTED_RUNTIME_VALIDATION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_RUNTIME_VALIDATION_PENDING",
       "evidence": [
         "CONFIG/p2gc_revenue_scorecard_rules.json",
         "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js",
@@ -138,7 +153,7 @@
       "id": "ACQ-V2-011",
       "title": "Build qualified-prospect nurture system",
       "owner": "Aria",
-      "status": "IMPLEMENTED_RUNTIME_VALIDATION_PENDING",
+      "status": "IMPLEMENTED_POST_SOAK_RUNTIME_VALIDATION_PENDING",
       "evidence": [
         "CONFIG/p2gc_qualified_nurture_rules.json",
         "SERVICES/revenue/QualifiedProspectNurtureService.js",
@@ -152,8 +167,44 @@
       "id": "ACQ-V2-012",
       "title": "Feed competitor findings into experiments",
       "owner": "MILES",
-      "status": "ACTIVE_RECURRING",
+      "status": "IMPLEMENTED_ACTIVE_RECURRING",
+      "evidence": [
+        "CONFIG/p2gc_competitor_intelligence_rules.json",
+        "DATA/marketing_coo/competitor_intelligence/2026-08-23.json",
+        "SERVICES/revenue/P2GCCompetitorExperimentService.js",
+        "RUN_P2GC_COMPETITOR_EXPERIMENTS.js"
+      ],
       "success_criteria": "Meaningful competitor changes create a documented copy/test/adopt/avoid decision and, when warranted, a measurable experiment."
+    },
+    {
+      "order": 13,
+      "id": "ACQ-V2-013",
+      "title": "Launch P2GC Buyer Lens GovCon news lane",
+      "owner": "Aria",
+      "status": "IMPLEMENTED_ACTIVE_RECURRING_RESEARCH_POST_SOAK_PUBLISHING_PENDING",
+      "evidence": [
+        "CONFIG/p2gc_buyer_lens_content_rules.json",
+        "DATA/marketing_coo/buyer_lens_news/2026-08-23.json",
+        "SERVICES/revenue/P2GCBuyerLensContentService.js",
+        "TESTS/Test_P2GCBuyerLensContentService.js",
+        "RUN_P2GC_BUYER_LENS_CONTENT.js"
+      ],
+      "success_criteria": "Material GovCon news is translated into official fact, buyer perspective, likely scrutiny, contractor impact, mistakes to avoid, action now, and an original P2GC take."
+    },
+    {
+      "order": 14,
+      "id": "ACQ-V2-014",
+      "title": "Establish end-to-end production acceptance",
+      "owner": "MILES",
+      "status": "IMPLEMENTED_POST_SOAK_EXECUTION_PENDING",
+      "evidence": [
+        "RUN_P2GC_ACQUISITION_V2_E2E.ps1",
+        "SERVICES/revenue/P2GCAcquisitionV2AcceptanceService.js",
+        "RUN_P2GC_ACQUISITION_V2_ACCEPTANCE.js",
+        "TESTS/Test_P2GCAcquisitionV2AcceptanceService.js",
+        ".github/workflows/p2gc-acquisition-v2-validation.yml"
+      ],
+      "success_criteria": "Final status is END_TO_END_ACCEPTED only when live runtime, external mutation evidence, public website verification, channel publication, and proof requirements all pass."
     }
   ]
 }
