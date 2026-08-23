@@ -24,11 +24,11 @@ if errorlevel 1 exit /b 2
 git pull --ff-only origin main
 if errorlevel 1 exit /b 2
 
-rem Runtime DATA/DATABASE/CONFIG/state artifacts are expected to change in-place.
-rem Block only tracked source/control drift; never delete, reset, or hide runtime evidence.
-git diff --quiet --exit-code HEAD -- API CORE SERVICES SCRIPTS CONNECTORS WORKERS TESTS .github FINAL_GO_LIVE.cmd package.json package-lock.json
+rem Runtime DATA/DATABASE/state artifacts are expected to change in-place.
+rem Block tracked source/control/config drift; never delete, reset, or hide runtime evidence.
+git diff --quiet --exit-code HEAD -- API CORE SERVICES SCRIPTS CONNECTORS WORKERS TESTS CONFIG .github FINAL_GO_LIVE.cmd PRE_FINAL_SOAK_RELEASE_CANDIDATE.cmd package.json package-lock.json
 if errorlevel 1 (
-  echo ERROR: Production source/control files have local tracked drift. No files were reset or deleted.
+  echo ERROR: Production source/control/config files have local tracked drift. No files were reset or deleted.
   exit /b 2
 )
 
