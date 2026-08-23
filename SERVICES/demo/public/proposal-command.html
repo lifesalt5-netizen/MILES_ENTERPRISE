@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>P2GC Proposal Command™</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .pc-shell{max-width:1280px;margin:0 auto;padding:28px}.pc-grid{display:grid;grid-template-columns:minmax(320px,44%) 1fr;gap:20px}.pc-panel{border:1px solid #2d3748;border-radius:14px;padding:18px;background:#0f172a}.pc-panel textarea{width:100%;min-height:520px;font-family:ui-monospace,monospace}.pc-actions{display:flex;gap:10px;margin-top:12px}.pc-status{padding:10px;border-radius:10px;background:#111827;margin-bottom:12px}.pc-stage{border-bottom:1px solid #263244;padding:9px 0}.pc-score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pc-score div{padding:10px;background:#111827;border-radius:9px}.pc-result{white-space:pre-wrap;overflow:auto;max-height:540px;font-size:12px}.muted{opacity:.75}@media(max-width:900px){.pc-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="pc-shell">
+  <div class="eyebrow">P2GC · GOVERNMENT PROPOSAL INTELLIGENCE &amp; SUBMISSION PLATFORM</div>
+  <h1>P2GC Proposal Command™</h1>
+  <p class="muted">From Solicitation to Submission. This workspace fails closed on missing facts, never fabricates client evidence, and never marks a proposal submitted without actual submission proof.</p>
+  <div class="pc-grid">
+    <section class="pc-panel">
+      <h2>Structured Intake</h2>
+      <p class="muted">Paste a controlled solicitation/client intake JSON. Missing facts remain UNKNOWN, CLIENT INPUT REQUIRED, or EVIDENCE NEEDED.</p>
+      <textarea id="payload" spellcheck="false">{
+  "solicitation": {
+    "id": "",
+    "title": "",
+    "sourceUrl": "",
+    "currentVersion": "",
+    "status": "",
+    "dueDate": "",
+    "amendments": [],
+    "mandatoryRequirements": [],
+    "sectionL": [],
+    "sectionM": [],
+    "submissionInstructions": [],
+    "governmentTemplates": []
+  },
+  "client": {
+    "name": "",
+    "uei": "",
+    "cage": ""
+  },
+  "companyDNA": { "claims": [] },
+  "attestation": { "clientAttested": false },
+  "submissionFiles": [],
+  "kevinApproval": { "approved": false }
+}</textarea>
+      <div class="pc-actions"><button id="run">RUN PROPOSAL COMMAND</button><button id="health" class="secondary">HEALTH</button></div>
+    </section>
+    <section class="pc-panel">
+      <div id="status" class="pc-status">Ready. No proposal run yet.</div>
+      <div id="scores" class="pc-score"></div>
+      <h2>Pipeline</h2><div id="stages"></div>
+      <h2>Evidence / Result</h2><pre id="result" class="pc-result">No result.</pre>
+    </section>
+  </div>
+</main>
+<script src="/proposal-command.js"></script>
+</body>
+</html>
