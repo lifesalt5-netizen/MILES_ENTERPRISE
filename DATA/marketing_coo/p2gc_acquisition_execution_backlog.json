@@ -1,6 +1,7 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
+  "updated_at": "2026-08-23T10:58:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE",
@@ -18,7 +19,7 @@
       "id": "ACQ-V2-002",
       "title": "Establish weekly competitor intelligence review",
       "owner": "MILES",
-      "status": "COMPLETED",
+      "status": "ACTIVE_RECURRING",
       "success_criteria": "Weekly review reports actionable changes in competitor offers, funnels, pricing, proof, content, and positioning."
     },
     {
@@ -26,7 +27,8 @@
       "id": "ACQ-V2-003",
       "title": "Build proof library",
       "owner": "Aria",
-      "status": "READY",
+      "status": "AUDIT_COMPLETE_EVIDENCE_VALIDATION_PENDING",
+      "evidence": ["MARKETING/P2GC_PROOF_LIBRARY_AUDIT.md"],
       "success_criteria": "At least 3 problem-based case studies with source evidence for every quantified claim."
     },
     {
@@ -34,15 +36,17 @@
       "id": "ACQ-V2-004",
       "title": "Build Federal Pathway Score specification and MVP",
       "owner": "MILES",
-      "status": "READY",
-      "success_criteria": "Diagnostic accepts company identity/capability data and returns evidence-backed pathway status, three highest-priority actions, and one offer CTA."
+      "status": "MVP_COMPLETE_INTEGRATION_PENDING",
+      "evidence": ["SERVICES/FederalPathwayScoreService.js", "TESTS/Test_FederalPathwayScoreService.js"],
+      "success_criteria": "Diagnostic accepts evidence-backed positioning signals and returns pathway status plus three highest-priority actions without treating unverified claims as fact."
     },
     {
       "order": 5,
       "id": "ACQ-V2-005",
       "title": "Rewrite priority outbound using intelligence-first hooks",
       "owner": "Aria",
-      "status": "READY",
+      "status": "MESSAGE_KIT_COMPLETE_LIVE_DEPLOYMENT_PENDING",
+      "evidence": ["MARKETING/P2GC_OUTBOUND_MESSAGE_KIT_V2.md"],
       "success_criteria": "Priority segments map to one of three offers and every first touch contains verified condition, implication, next step, and single CTA."
     },
     {
@@ -50,7 +54,8 @@
       "id": "ACQ-V2-006",
       "title": "Create offer landing pages",
       "owner": "Aria",
-      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "status": "COPY_COMPLETE_PUBLISH_BLOCKED_BY_WEBSITE_ACCESS",
+      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md"],
       "success_criteria": "One landing page per front-door offer with outcome-led hero, proof, deliverables, CTA, and FAQ."
     },
     {
@@ -58,7 +63,8 @@
       "id": "ACQ-V2-007",
       "title": "Update homepage hero and conversion path",
       "owner": "Aria",
-      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "status": "COPY_COMPLETE_PUBLISH_BLOCKED_BY_WEBSITE_ACCESS",
+      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md"],
       "success_criteria": "Homepage leads with economic outcome and routes visitors into a diagnostic or relevant offer rather than a broad service menu."
     },
     {
@@ -66,7 +72,8 @@
       "id": "ACQ-V2-008",
       "title": "Clean legacy website positioning",
       "owner": "MILES",
-      "status": "READY_BLOCKED_BY_WEBSITE_ACCESS",
+      "status": "AUDIT_COMPLETE_CHANGE_BLOCKED_BY_WEBSITE_ACCESS",
+      "evidence": ["MARKETING/P2GC_WEB_CONVERSION_COPY_V2.md"],
       "success_criteria": "Conflicting legacy business-plan, grant, loan, website, and other non-core positioning is removed, redirected, consolidated, or noindexed."
     },
     {
@@ -74,7 +81,8 @@
       "id": "ACQ-V2-009",
       "title": "Launch founder-led authority cadence",
       "owner": "Aria",
-      "status": "READY",
+      "status": "30_DAY_CALENDAR_COMPLETE_PUBLISHING_PENDING",
+      "evidence": ["MARKETING/P2GC_30_DAY_AUTHORITY_CALENDAR_2026-08-24.md"],
       "success_criteria": "Each week produces 3 short videos, 3 LinkedIn data posts, and 1 intelligence email; each month produces 1 webinar and 1 deep asset."
     },
     {
@@ -82,7 +90,7 @@
       "id": "ACQ-V2-010",
       "title": "Add revenue-weighted campaign scorecard",
       "owner": "MILES",
-      "status": "READY",
+      "status": "NEXT",
       "success_criteria": "Campaign decisions use qualified replies, booked meetings, shows, proposals, closes, and revenue per 1000 delivered rather than opens alone."
     },
     {
@@ -90,7 +98,7 @@
       "id": "ACQ-V2-011",
       "title": "Build qualified-prospect nurture system",
       "owner": "Aria",
-      "status": "READY",
+      "status": "NEXT",
       "success_criteria": "Interested but not-ready prospects receive useful intelligence/case-study follow-up without being recycled into generic cold sequences."
     },
     {
