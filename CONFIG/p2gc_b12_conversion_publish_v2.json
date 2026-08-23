@@ -1,0 +1,88 @@
+{
+  "system": "P2GC B12 Conversion Publish V2",
+  "version": "1.0.0",
+  "effective_date": "2026-08-23",
+  "owner": "MILES",
+  "governance_owner": "Kevin",
+  "site": "pathways2gc.com",
+  "editor": "B12",
+  "mode": "CONTROLLED_STAGING_FIRST",
+  "rules": [
+    "Do not publish quantified claims unless retained evidence exists.",
+    "Preserve P2GC brand identity, contact information, scheduling links, and functional forms unless explicitly changed below.",
+    "Do not reintroduce business-plan, loan, grant, website-design, or other non-core positioning as a peer offering.",
+    "One primary CTA per landing page.",
+    "Keep the business outcome before methodology names.",
+    "Create a restore/audit point before and after every B12 AI Agent change.",
+    "Draft changes and public publishing are separate controlled operations."
+  ],
+  "required_gates": {
+    "MILES_DRY_RUN": false,
+    "MILES_CONTROLLED_WRITE_ENABLED": true,
+    "B12_WRITE_ENABLED": true,
+    "B12_PUBLISH_ENABLED": true
+  },
+  "operations": [
+    {
+      "id": "HOMEPAGE_CONVERSION_V2",
+      "type": "AI_AGENT_EDIT",
+      "target": "/",
+      "required_markers": [
+        "Turn Your Government Contracting Position Into a Real Revenue Path.",
+        "Find My Revenue Gaps",
+        "Run a GSA Zero-Sales Diagnostic",
+        "Run a Recompete & Vehicle Growth Scan"
+      ],
+      "prompt": "Update the P2GC homepage for conversion while preserving the existing brand style, logo, contact information, scheduling functionality, and any accurate core Federal/SLED positioning. Make the hero headline exactly: 'Turn Your Government Contracting Position Into a Real Revenue Path.' Use this subhead: 'P2GC uses verified Federal and SLED intelligence to show qualified contractors where revenue is realistically available, what is blocking access, and the highest-priority pathway from eligibility to awards.' Make the primary CTA 'Find My Revenue Gaps' and route it to /federal-revenue-gap-analysis. Keep a secondary CTA 'See How the Pathway Works' pointing to the existing pathway/process explanation if one exists. Near the first CTA, show proof only where the existing site has retained/verifiable evidence; do not invent metrics. Add a concise three-choice problem section: (1) GSA Schedule but little/no sales, CTA 'Run a GSA Zero-Sales Diagnostic' linking to /gsa-zero-sales-diagnostic; (2) registered/capable but not seeing federal revenue, CTA 'Find My Federal Revenue Gaps' linking to /federal-revenue-gap-analysis; (3) need the next growth path before an opportunity hits the street, CTA 'Run a Recompete & Vehicle Growth Scan' linking to /recompete-vehicle-growth-scan. Do not add a broad service catalog to the hero or this section."
+    },
+    {
+      "id": "GSA_ZERO_SALES_PAGE",
+      "type": "AI_AGENT_PAGE",
+      "target": "/gsa-zero-sales-diagnostic",
+      "required_markers": [
+        "Your GSA Schedule Should Not Be Shelfware.",
+        "Review My GSA Revenue Gap",
+        "Will you guarantee sales?"
+      ],
+      "prompt": "Create or update a page named 'GSA Zero-Sales Diagnostic' at /gsa-zero-sales-diagnostic. Keep it out of the main navigation unless it is already deliberately linked there. Match the P2GC homepage brand style. Hero headline exactly: 'Your GSA Schedule Should Not Be Shelfware.' Subhead: 'If your company holds a GSA Schedule but is generating little or no measurable revenue through it, P2GC identifies what is actually blocking traction and gives you a prioritized activation path.' Primary CTA: 'Review My GSA Revenue Gap'. Explain who it is for: GSA holders with zero/low sales, firms waiting for opportunities, firms unsure whether pricing/offerings/agency targeting/visibility/capture is the problem, and firms testing whether the contract can realistically become revenue-producing. Explain that P2GC examines contract/offering position, verifiable sales/activity signals, agency/buyer alignment, category/acquisition-path fit, relevant opportunity/eBuy signals, competitive/incumbent context where verified, pricing/positioning where appropriate, and immediate activation priorities. State that the deliverable identifies the strongest likely cause of underperformance, highest-priority corrective actions, realistic near-term revenue pathway, and whether deeper activation work is warranted. Add FAQ: 'Is this another GSA compliance review?' Answer that compliance can matter but this focuses on conversion into market activity. Add FAQ: 'Will you guarantee sales?' Answer exactly in substance: no; government awards cannot be guaranteed, and P2GC provides evidence-based positioning, prioritization, activation, and execution support. Do not invent quantified proof."
+    },
+    {
+      "id": "FEDERAL_REVENUE_GAP_PAGE",
+      "type": "AI_AGENT_PAGE",
+      "target": "/federal-revenue-gap-analysis",
+      "required_markers": [
+        "Find the Gap Between Being Government-Ready and Actually Generating Revenue.",
+        "Show Me My Revenue Gaps",
+        "This is not a generic opportunity dump."
+      ],
+      "prompt": "Create or update a page named 'Federal Revenue Gap Analysis' at /federal-revenue-gap-analysis. Keep it out of the main navigation unless already deliberately linked there. Match the P2GC homepage brand style. Hero headline exactly: 'Find the Gap Between Being Government-Ready and Actually Generating Revenue.' Subhead: 'P2GC maps where your company can realistically compete, what is blocking access, and which agencies, buyers, vehicles, teaming paths, or opportunities deserve attention first.' Primary CTA: 'Show Me My Revenue Gaps'. Explain this is for registered/capable firms asking which agencies buy what they sell, whether to prime/subcontract/pursue a vehicle/focus on SLED/use a hybrid path, whether they target the wrong opportunities, which certifications or vehicles matter, and what to do first. Explain that P2GC examines capabilities/NAICS alignment, agency buying patterns, relevant awards/incumbent activity, vehicle/access position, certification leverage, prime/sub teaming paths, live/forecast/recompete signals where appropriate, and positioning blockers. Deliverable: pathway-status assessment, strongest buyer/agency alignment signals, key access/positioning gaps, three highest-priority next actions, and the most realistic route to revenue. Include the sentence: 'This is not a generic opportunity dump.' Explain that P2GC first determines where the company can realistically compete, then uses opportunity intelligence inside that pathway. Do not invent quantified proof."
+    },
+    {
+      "id": "RECOMPETE_VEHICLE_PAGE",
+      "type": "AI_AGENT_PAGE",
+      "target": "/recompete-vehicle-growth-scan",
+      "required_markers": [
+        "Get Positioned Before the Opportunity Becomes a Last-Minute Bid.",
+        "Run My Growth Scan",
+        "POSITION EARLY"
+      ],
+      "prompt": "Create or update a page named 'Recompete & Vehicle Growth Scan' at /recompete-vehicle-growth-scan. Keep it out of the main navigation unless already deliberately linked there. Match the P2GC homepage brand style. Hero headline exactly: 'Get Positioned Before the Opportunity Becomes a Last-Minute Bid.' Subhead: 'P2GC identifies relevant recompetes, incumbent exposure, vehicle gaps, and prime/sub paths early enough to decide whether your company should prime, team, position, or pass.' Primary CTA: 'Run My Growth Scan'. Explain who it is for: established/growth-oriented contractors needing to know which upcoming recompetes may fit, incumbent context, vehicle access, teaming paths, and what to position before solicitation. Explain that P2GC examines relevant expiring contracts/recompete timing, incumbent context, contract vehicles/access requirements, set-aside/certification context, agency alignment, probable prime-vs-team path, strategic fit and capture priority. State the possible recommendation labels: PRIME, TEAM, POSITION EARLY, MONITOR, PASS. State that each recommendation must be based on verifiable evidence rather than generic keyword matching. Do not claim a modeled recompete is a confirmed procurement event, and do not invent quantified proof."
+    },
+    {
+      "id": "LEGACY_POSITIONING_CLEANUP",
+      "type": "AI_AGENT_EDIT",
+      "target": "/business-plans",
+      "required_markers": [],
+      "prompt": "Clean up legacy P2GC positioning. The old /business-plans page should no longer be discoverable as a peer offering beside the core Federal & SLED government-contracting advisory business. Remove it from main navigation and internal service menus. If B12 supports hiding or deleting the page safely, hide or remove it; if it supports page-level search indexing controls, set it to noindex. Do not replace it with new business-plan, grant, loan, business-credit, or generic website-service positioning. Preserve any unrelated current GovCon pages. Report what action you actually performed so it can be audited before public publishing."
+    }
+  ],
+  "public_validation": {
+    "home_url": "https://www.pathways2gc.com/",
+    "required_paths": [
+      "/gsa-zero-sales-diagnostic",
+      "/federal-revenue-gap-analysis",
+      "/recompete-vehicle-growth-scan"
+    ],
+    "legacy_paths_to_check": ["/business-plans"]
+  }
+}
