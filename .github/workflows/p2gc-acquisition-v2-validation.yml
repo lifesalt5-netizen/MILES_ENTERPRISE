@@ -4,63 +4,41 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "CONFIG/p2gc_customer_acquisition_v2.json"
-      - "CONFIG/p2gc_revenue_scorecard_rules.json"
-      - "CONFIG/p2gc_qualified_nurture_rules.json"
-      - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
-      - "CONFIG/p2gc_b12_conversion_publish_v2.json"
-      - "SERVICES/FederalPathwayScoreService.js"
-      - "SERVICES/FederalPathwayScoreIntegratedService.js"
+      - "CONFIG/p2gc_*"
+      - "DATA/marketing_coo/competitor_intelligence/**"
+      - "DATA/marketing_coo/buyer_lens_news/**"
+      - "SERVICES/FederalPathwayScore*.js"
+      - "SERVICES/revenue/P2GC*.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
-      - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
-      - "SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js"
-      - "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
-      - "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js"
+      - "CONNECTORS/WEBSITE_B12/**"
+      - "CONNECTORS/LINKEDIN/**"
+      - "RUN_P2GC_*"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
-      - "RUN_P2GC_REVENUE_SCORECARD.js"
-      - "RUN_P2GC_QUALIFIED_NURTURE.js"
-      - "RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js"
-      - "RUN_P2GC_ACQUISITION_V2_PILOT.js"
       - "StartP2GCGrowthBlueprintDemo.js"
-      - "TESTS/Test_FederalPathwayScoreService.js"
-      - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
+      - "TESTS/Test_P2GC*.js"
+      - "TESTS/Test_FederalPathwayScore*.js"
       - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
       - "TESTS/Test_QualifiedProspectNurtureService.js"
-      - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
-      - "TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js"
-      - "TESTS/Test_P2GCB12ConversionManifest.js"
-      - "TESTS/Test_P2GCWebsiteConversionAuditService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   pull_request:
     paths:
-      - "CONFIG/p2gc_customer_acquisition_v2.json"
-      - "CONFIG/p2gc_revenue_scorecard_rules.json"
-      - "CONFIG/p2gc_qualified_nurture_rules.json"
-      - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
-      - "CONFIG/p2gc_b12_conversion_publish_v2.json"
-      - "SERVICES/FederalPathwayScoreService.js"
-      - "SERVICES/FederalPathwayScoreIntegratedService.js"
+      - "CONFIG/p2gc_*"
+      - "DATA/marketing_coo/competitor_intelligence/**"
+      - "DATA/marketing_coo/buyer_lens_news/**"
+      - "SERVICES/FederalPathwayScore*.js"
+      - "SERVICES/revenue/P2GC*.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
-      - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
-      - "SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js"
-      - "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
-      - "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js"
+      - "CONNECTORS/WEBSITE_B12/**"
+      - "CONNECTORS/LINKEDIN/**"
+      - "RUN_P2GC_*"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
-      - "RUN_P2GC_REVENUE_SCORECARD.js"
-      - "RUN_P2GC_QUALIFIED_NURTURE.js"
-      - "RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js"
-      - "RUN_P2GC_ACQUISITION_V2_PILOT.js"
       - "StartP2GCGrowthBlueprintDemo.js"
-      - "TESTS/Test_FederalPathwayScoreService.js"
-      - "TESTS/Test_FederalPathwayScoreIntegratedService.js"
+      - "TESTS/Test_P2GC*.js"
+      - "TESTS/Test_FederalPathwayScore*.js"
       - "TESTS/Test_RevenueWeightedCampaignScorecardService.js"
       - "TESTS/Test_QualifiedProspectNurtureService.js"
-      - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
-      - "TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js"
-      - "TESTS/Test_P2GCB12ConversionManifest.js"
-      - "TESTS/Test_P2GCWebsiteConversionAuditService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   workflow_dispatch:
 
@@ -70,7 +48,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,21 +70,32 @@ jobs:
           node --check SERVICES/revenue/P2GCAcquisitionV2CampaignService.js
           node --check SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js
           node --check SERVICES/revenue/P2GCWebsiteConversionAuditService.js
+          node --check SERVICES/revenue/P2GCAuthorityContentProductionService.js
+          node --check SERVICES/revenue/P2GCCompetitorExperimentService.js
+          node --check SERVICES/revenue/P2GCBuyerLensContentService.js
+          node --check SERVICES/revenue/P2GCLinkedInPublishingService.js
+          node --check SERVICES/revenue/P2GCAcquisitionV2AcceptanceService.js
           node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js
+          node --check CONNECTORS/LINKEDIN/LinkedInControlledPublisher.js
           node --check RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js
           node --check RUN_P2GC_REVENUE_SCORECARD.js
           node --check RUN_P2GC_QUALIFIED_NURTURE.js
           node --check RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js
           node --check RUN_P2GC_ACQUISITION_V2_PILOT.js
+          node --check RUN_P2GC_AUTHORITY_CONTENT.js
+          node --check RUN_P2GC_COMPETITOR_EXPERIMENTS.js
+          node --check RUN_P2GC_BUYER_LENS_CONTENT.js
+          node --check RUN_P2GC_LINKEDIN_PUBLISH.js
+          node --check RUN_P2GC_ACQUISITION_V2_ACCEPTANCE.js
           node --check StartP2GCGrowthBlueprintDemo.js
-          node --check TESTS/Test_FederalPathwayScoreService.js
-          node --check TESTS/Test_FederalPathwayScoreIntegratedService.js
-          node --check TESTS/Test_RevenueWeightedCampaignScorecardService.js
-          node --check TESTS/Test_QualifiedProspectNurtureService.js
-          node --check TESTS/Test_P2GCAcquisitionV2CampaignService.js
-          node --check TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js
-          node --check TESTS/Test_P2GCB12ConversionManifest.js
-          node --check TESTS/Test_P2GCWebsiteConversionAuditService.js
+
+      - name: PowerShell runner parse validation
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path './RUN_P2GC_ACQUISITION_V2_E2E.ps1'), [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List | Out-String | Write-Error; exit 1 }
 
       - name: Federal Pathway Score MVP test
         run: node TESTS/Test_FederalPathwayScoreService.js
@@ -131,3 +120,18 @@ jobs:
 
       - name: Public website conversion audit test
         run: node TESTS/Test_P2GCWebsiteConversionAuditService.js
+
+      - name: Authority content production test
+        run: node TESTS/Test_P2GCAuthorityContentProductionService.js
+
+      - name: Competitor experiment engine test
+        run: node TESTS/Test_P2GCCompetitorExperimentService.js
+
+      - name: Buyer Lens content test
+        run: node TESTS/Test_P2GCBuyerLensContentService.js
+
+      - name: LinkedIn publication routing test
+        run: node TESTS/Test_P2GCLinkedInPublishingService.js
+
+      - name: Final acceptance truth service test
+        run: node TESTS/Test_P2GCAcquisitionV2AcceptanceService.js

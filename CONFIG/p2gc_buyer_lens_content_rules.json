@@ -1,0 +1,73 @@
+{
+  "system": "P2GC Buyer Lens Content Engine",
+  "version": "1.0.0",
+  "effective_date": "2026-08-23",
+  "owner": "Aria",
+  "orchestrator": "MILES",
+  "objective": "Turn timely authoritative GovCon changes into original, useful contractor guidance from the federal buyer/procurement perspective.",
+  "cadence": {
+    "minimum_posts_per_week_when_material_news_exists": 2,
+    "maximum_posts_per_week": 4,
+    "publish_speed_target_hours_after_verified_source": 24
+  },
+  "source_priority": [
+    "Acquisition.gov / FAR Council / OFPP",
+    "GSA",
+    "SBA",
+    "SAM.gov",
+    "agency procurement policy pages",
+    "Federal Register",
+    "official agency acquisition forecasts and notices"
+  ],
+  "required_post_sections": [
+    "WHAT_CHANGED",
+    "BUYER_LENS",
+    "WHAT_BUYERS_MAY_SCRUTINIZE",
+    "WHO_BENEFITS_OR_FACES_MORE_COMPETITION",
+    "COMMON_CONTRACTOR_MISTAKE",
+    "ACTION_TO_TAKE_NOW",
+    "P2GC_TAKE"
+  ],
+  "truth_rules": [
+    "Use the authoritative source as the factual base whenever available.",
+    "Clearly label proposed rules, guidance, deviations, apparent awards, forecasts, and final rules correctly.",
+    "Do not claim buyer intent that the source does not establish; use bounded language such as likely, may, or signals when interpreting.",
+    "Never copy a competitor's post language, structure, examples, or unsupported conclusion.",
+    "Separate the official fact from P2GC analysis.",
+    "Do not publish legal conclusions or guarantee procurement outcomes.",
+    "Every post must state a practical contractor action or mistake to avoid.",
+    "Every post must use one primary CTA tied to the affected contractor type."
+  ],
+  "differentiation": {
+    "primary_angle": "buyer/procurement-office perspective",
+    "secondary_angles": [
+      "evaluation and documentation risk",
+      "market-research and acquisition-access implications",
+      "competition-pool changes",
+      "vehicle and teaming implications",
+      "what a contractor should change this week"
+    ],
+    "avoid": [
+      "generic news recap",
+      "fear-based urgency",
+      "copying another consultant's hot take",
+      "unsupported predictions",
+      "political commentary unrelated to contractor execution"
+    ]
+  },
+  "attribution_fields": [
+    "publication_date",
+    "content_id",
+    "source_url",
+    "news_topic",
+    "affected_segment",
+    "cta",
+    "impressions_or_views",
+    "site_visits",
+    "diagnostic_starts",
+    "booked_meetings",
+    "proposals",
+    "closes",
+    "attributed_revenue"
+  ]
+}
