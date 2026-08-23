@@ -9,6 +9,11 @@ on:
       - "SCRIPTS/AuditInstantlySendWindowHistory.js"
       - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
       - "SERVICES/sales/P2GCSalesQualificationService.js"
+      - "SERVICES/proposal/**"
+      - "SERVICES/demo/public/proposal-command*"
+      - "SERVICES/ceo_dashboard/public/index.html"
+      - "StartP2GCGrowthBlueprintDemo.js"
+      - "RUN_P2GC_PROPOSAL_COMMAND.js"
       - "TESTS/**"
       - ".github/workflows/pre-final-soak-readiness-validation.yml"
   workflow_dispatch:
@@ -34,12 +39,18 @@ jobs:
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
           node --check SERVICES/sales/P2GCSalesQualificationService.js
+          node --check SERVICES/proposal/P2GCProposalCommandService.js
+          node --check RUN_P2GC_PROPOSAL_COMMAND.js
+          node --check StartP2GCGrowthBlueprintDemo.js
+          node --check SERVICES/demo/public/proposal-command.js
       - name: Weekday governance regression
         run: node TESTS/Test_InstantlyCampaignScheduleGovernance.js
       - name: Send-window timestamp regression
         run: node TESTS/Test_InstantlySendWindowHistory.js
       - name: Proposal Stage 0 decision labels
         run: node TESTS/Test_P2GCSalesQualificationDecisionLabels.js
+      - name: Proposal Command controlled E2E
+        run: node TESTS/Test_P2GCProposalCommandService.js
       - name: Acquisition V2 unit suite
         run: |
           node TESTS/Test_FederalPathwayScoreService.js
@@ -59,6 +70,5 @@ jobs:
           node TESTS/TestExecutiveMissionRouter.js
           node TESTS/TestExecutiveToEngineering.js
           node TESTS/TestExecutiveToEngineeringFlow.js
-      - name: Proposal Command static inventory
-        continue-on-error: true
+      - name: Proposal Command canonical readiness
         run: node SCRIPTS/AuditProposalCommandReadiness.js --root=$GITHUB_WORKSPACE
