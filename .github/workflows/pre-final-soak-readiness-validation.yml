@@ -5,6 +5,7 @@ on:
     paths:
       - "SCRIPTS/RunPreFinalSoakReadiness.ps1"
       - "SCRIPTS/AuditProposalCommandReadiness.js"
+      - "SCRIPTS/AuditIonosExecutiveInboxReadOnly.js"
       - "SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js"
       - "SCRIPTS/AuditInstantlySendWindowHistory.js"
       - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
@@ -35,6 +36,7 @@ jobs:
       - name: Syntax
         run: |
           node --check SCRIPTS/AuditProposalCommandReadiness.js
+          node --check SCRIPTS/AuditIonosExecutiveInboxReadOnly.js
           node --check SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
