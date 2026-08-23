@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "system": "P2GC Revenue-Weighted Campaign Scorecard",
+  "owner": "MILES",
+  "effective_date": "2026-08-23",
+  "minimum_delivered_sample": 250,
+  "stage_order": [
+    "Target",
+    "Contacted",
+    "Engaged",
+    "Qualified",
+    "Meeting Set",
+    "Meeting Held",
+    "Proposal",
+    "Negotiation",
+    "Won",
+    "Lost",
+    "Client"
+  ],
+  "primary_decision_metrics": [
+    "verifiedRevenueUsd",
+    "wonCount",
+    "proposalCount",
+    "meetingHeldCount",
+    "meetingBookedCount",
+    "qualifiedReplyCount",
+    "revenuePer1000Delivered"
+  ],
+  "secondary_health_metrics": [
+    "delivered",
+    "replyRate",
+    "bounceRate"
+  ],
+  "excluded_primary_metric": "open_rate",
+  "revenue_verification_rule": "Count revenue only when a record contains verifiedRevenueUsd, or revenueVerified=true plus a numeric revenue value.",
+  "ranking_rule": "Rank campaigns by verified revenue first, then wins, proposals, held meetings, booked meetings, qualified replies, and revenue per 1000 delivered. Do not promote winners based on opens.",
+  "decision_classes": [
+    "PROVEN_REVENUE",
+    "WON_REVENUE_UNVERIFIED",
+    "PROPOSAL_TRACTION",
+    "MEETING_TRACTION",
+    "QUALIFIED_TRACTION",
+    "NO_DOWNSTREAM_TRACTION",
+    "INSUFFICIENT_SAMPLE"
+  ]
+}
