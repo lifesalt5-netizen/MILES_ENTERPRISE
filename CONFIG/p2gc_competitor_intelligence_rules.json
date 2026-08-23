@@ -1,0 +1,39 @@
+{
+  "system": "P2GC Competitor Intelligence to Experiment Engine",
+  "version": "1.0.0",
+  "owner": "MILES",
+  "review_cadence": "WEEKLY",
+  "review_day": "MONDAY",
+  "governance": {
+    "source_url_required": true,
+    "observation_date_required": true,
+    "no_copying_competitor_language": true,
+    "no_unverified_competitor_claims_as_fact": true,
+    "one_variable_per_experiment": true,
+    "primary_decision_metric": "downstream_revenue_and_qualified_pipeline",
+    "blocked_test_types": [
+      "unsubstantiated guarantees",
+      "fabricated scarcity",
+      "client-identifiable proof without permission",
+      "price reduction below approved floor",
+      "bulk outreach from primary domain"
+    ]
+  },
+  "finding_categories": ["OFFER", "FUNNEL", "PRICING", "PROOF", "CONTENT", "POSITIONING", "LEAD_MAGNET"],
+  "decisions": ["ADOPT_PRINCIPLE", "TEST", "MONITOR", "AVOID"],
+  "experiment_priority": {
+    "min_confidence": 0.7,
+    "min_impact_score": 3,
+    "max_open_experiments": 6
+  },
+  "experiment_kpis": [
+    "qualified_reply_rate",
+    "meeting_booked_rate",
+    "meeting_show_rate",
+    "proposal_rate",
+    "close_rate",
+    "revenue_per_1000_delivered",
+    "diagnostic_completion_rate",
+    "diagnostic_to_meeting_rate"
+  ]
+}
