@@ -57,7 +57,8 @@ class B12ControlledPublisher {
     if (cdp) {
       this.browser = await chromium.connectOverCDP(cdp);
       const contexts = this.browser.contexts();
-      this.context = contexts[0] || await this.browser.newContext();
+      if (!contexts.length) throw new Error('B12_CDP_URL connected but no browser context is available.');
+      this.context = contexts[0];
       this.page = this.context.pages()[0] || await this.context.newPage();
       this.ownsBrowser = false;
     } else if (userDataDir) {
@@ -112,8 +113,11 @@ class B12ControlledPublisher {
     ];
     for (const locator of candidates) {
       try {
-        const visible = locator.filter({ visible: true }).first();
-        if (await visible.isVisible({ timeout: 1500 })) return visible;
+        const count = await locator.count();
+        for (let i = 0; i < count; i += 1) {
+          const item = locator.nth(i);
+          if (await item.isVisible({ timeout: 1000 }).catch(() => false)) return item;
+        }
       } catch {}
     }
     return null;
@@ -213,7 +217,7 @@ class B12ControlledPublisher {
       const response = await previewPage.goto(`${origin}${targetPath}`, { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => null);
       const text = await previewPage.locator('body').innerText({ timeout: 10000 }).catch(() => '');
       const markers = (op.required_markers || []).map(marker => ({ marker, present: text.includes(marker) }));
-      checks.push({ id: op.id, target: targetPath, status: response?.status?.() || null, markers, ok: markers.every(x => x.present) });
+      checks.push({ id: op.id, target: targetPath, status: response?.status?.() || null, markers, ok: Boolean(response) && Number(response.status()) < 400 && markers.every(x => x.present) });
     }
 
     const homeResponse = await previewPage.goto(`${origin}/`, { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => null);
