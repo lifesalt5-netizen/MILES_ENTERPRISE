@@ -24,11 +24,12 @@ for (const expected of ['HOMEPAGE_CONVERSION_V2','GSA_ZERO_SALES_PAGE','FEDERAL_
   assert.ok(ids.has(expected), `Missing operation ${expected}`);
 }
 
+const positiveGuarantee = /\b(?:(?:we|p2gc|our\s+(?:service|team))\s+(?:will\s+)?guarantee(?:d)?|guaranteed)\s+(?:award|sales|revenue|win)s?\b/i;
 const pages = operations.filter(x => x.id !== 'LEGACY_POSITIONING_CLEANUP');
 for (const op of pages) {
   assert.ok(String(op.prompt || '').length > 100, `${op.id} prompt is unexpectedly short`);
   assert.ok(Array.isArray(op.required_markers) && op.required_markers.length >= 3, `${op.id} needs staging markers`);
-  assert.ok(!/guarantee(?:d)?\s+(?:award|sales|revenue|win)/i.test(op.prompt), `${op.id} contains prohibited guarantee language`);
+  assert.ok(!positiveGuarantee.test(op.prompt), `${op.id} contains prohibited positive guarantee language`);
 }
 
 const targets = new Set(pages.map(x => x.target));
