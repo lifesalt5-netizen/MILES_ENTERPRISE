@@ -1,0 +1,72 @@
+{
+  "system": "P2GC Acquisition V2 Campaign Deployment",
+  "version": "1.0.0",
+  "effective_date": "2026-08-23",
+  "owner": "MILES",
+  "governance_owner": "Kevin",
+  "mode": "PILOT_FIRST",
+  "campaign_prefix": "P2GC V2",
+  "principles": [
+    "Never fabricate a prospect-specific fact.",
+    "Every required personalization fact must retain a source.",
+    "Never upload a globally suppressed contact.",
+    "Do not alter or replace an existing campaign merely because a V2 campaign exists.",
+    "Create, upload, and activate are separate governed mutations.",
+    "Open rate is not a campaign winner metric.",
+    "Use Instantly outreach domains only; protect the primary domain.",
+    "Keep open and link tracking off unless deliverability governance changes."
+  ],
+  "defaults": {
+    "daily_limit": 20,
+    "email_gap": 22,
+    "timezone": "America/New_York",
+    "send_window": { "from": "09:00", "to": "16:30" },
+    "weekdays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "stop_on_reply": true,
+    "stop_for_company": true,
+    "allow_risky_contacts": false,
+    "open_tracking": false,
+    "link_tracking": false,
+    "text_only": true,
+    "first_email_text_only": true,
+    "pilot_lead_cap": 150
+  },
+  "offers": {
+    "GSA_ZERO_SALES_DIAGNOSTIC": {
+      "campaign_name": "P2GC V2 - GSA Zero Sales Diagnostic - Pilot",
+      "segments": ["GSA_NO_SALES", "GSA_LOW_SALES", "GSA_0_500K", "GSA_500K_3M"],
+      "required_fact_fields": ["verified_condition"],
+      "required_source_fields": ["verified_condition_source"],
+      "optional_fact_fields": ["supporting_verified_fact"],
+      "optional_source_fields": ["supporting_verified_fact_source"],
+      "cta": "Would it be useful if I sent you the diagnostic outline?"
+    },
+    "FEDERAL_REVENUE_GAP_ANALYSIS": {
+      "campaign_name": "P2GC V2 - Federal Revenue Gap Analysis - Pilot",
+      "segments": ["SAM_NO_SALES", "SAM_LOW_SALES", "GSA_GROWTH", "CERTIFICATION_SEGMENTS", "SBS_NO_VEHICLE", "SBS_LOW_SALES"],
+      "required_fact_fields": ["verified_condition"],
+      "required_source_fields": ["verified_condition_source"],
+      "optional_fact_fields": ["verified_agency_or_market_fact"],
+      "optional_source_fields": ["verified_agency_or_market_fact_source"],
+      "cta": "Would it be useful if I sent you the short Revenue Gap Analysis framework?"
+    },
+    "RECOMPETE_VEHICLE_GROWTH_SCAN": {
+      "campaign_name": "P2GC V2 - Recompete Vehicle Growth Scan - Pilot",
+      "segments": ["EXPIRING_GSA_6M", "EXPIRING_GSA_12M", "EXPIRING_GSA_24M", "EXPIRING_VA_6M", "EXPIRING_VA_12M", "EXPIRING_VA_24M", "GROWTH_HIGH_VALUE"],
+      "required_fact_fields": ["verified_recompete_or_vehicle_signal"],
+      "required_source_fields": ["verified_recompete_or_vehicle_signal_source"],
+      "optional_fact_fields": [],
+      "optional_source_fields": [],
+      "cta": "Would it be useful if I sent you the scan outline?"
+    }
+  },
+  "execution": {
+    "create_requires_explicit_execute": true,
+    "upload_requires_explicit_execute": true,
+    "activation_requires_explicit_activate": true,
+    "dedupe_existing_campaign_name": true,
+    "never_delete_existing_campaign": true,
+    "never_auto_pause_existing_campaign": true,
+    "controlled_write_gates_remain_authoritative": true
+  }
+}
