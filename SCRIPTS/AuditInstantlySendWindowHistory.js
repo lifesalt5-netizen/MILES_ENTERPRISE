@@ -19,10 +19,27 @@ function unwrap(value) {
   return [];
 }
 
+// Instantly API v2 documents timestamp_email as the timestamp of the email.
+// timestamp_created is only the time the email record was added to Instantly's database
+// and must never be used as send-window compliance evidence.
 function sentTimestamp(item) {
   return first(item, [
-    "timestamp_sent", "sent_at", "sentAt", "timestamp_created", "created_at", "createdAt", "timestamp", "date"
+    "timestamp_email", "timestamp_sent", "sent_at", "sentAt", "timestamp", "date"
   ]);
+}
+
+function createdTimestamp(item) {
+  return first(item, ["timestamp_created", "created_at", "createdAt"]);
+}
+
+function campaignId(item) {
+  return first(item, ["campaign_id", "campaignId", "campaign"]);
+}
+
+function isCampaignSentEmail(item) {
+  const id = campaignId(item);
+  const ueType = Number(first(item, ["ue_type", "ueType"]));
+  return Boolean(id) || ueType === 1;
 }
 
 function easternParts(value) {
@@ -55,10 +72,19 @@ function isInsideP2gcSendWindow(value) {
   };
 }
 
+function isOnOrAfter(value, sinceIso) {
+  const when = new Date(value).getTime();
+  const since = new Date(sinceIso).getTime();
+  return Number.isFinite(when) && Number.isFinite(since) && when >= since;
+}
+
 async function fetchSentEmails(connector, sinceIso, maxPages = 20) {
   const rows = [];
   let cursor = null;
   for (let page = 0; page < maxPages; page += 1) {
+    // Instantly only exposes created-time filters on the list endpoint. We use that
+    // as a coarse retrieval bound, then enforce the actual observation window below
+    // with timestamp_email.
     const payload = { limit: 100, email_type: "sent", min_timestamp_created: sinceIso };
     if (cursor) payload.starting_after = cursor;
     const result = await connector.execute({ action: "listEmails", payload });
@@ -75,18 +101,38 @@ async function fetchSentEmails(connector, sinceIso, maxPages = 20) {
 async function run(options = {}) {
   const rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, ".."));
   const sinceIso = options.sinceIso || new Date(Date.now() - 24 * 3600000).toISOString();
+  if (!Number.isFinite(new Date(sinceIso).getTime())) throw new Error(`Invalid --since timestamp: ${sinceIso}`);
+
   const connector = options.connector || require(path.join(rootDir, "CONNECTORS", "INSTANTLY", "connector"));
   const sent = await fetchSentEmails(connector, sinceIso, Number(options.maxPages || 20));
-  const evaluated = sent.map(item => {
+
+  const fetched = sent.map(item => {
     const timestamp = sentTimestamp(item);
+    const createdAt = createdTimestamp(item);
     const check = isInsideP2gcSendWindow(timestamp);
+    const cId = campaignId(item);
     return {
       id: String(first(item, ["id","email_uuid","uuid","message_id"]) || ""),
-      campaignId: String(first(item, ["campaign_id","campaignId","campaign"]) || ""),
+      campaignId: cId ? String(cId) : "",
+      ueType: first(item, ["ue_type", "ueType"]),
+      isCampaignEmail: isCampaignSentEmail(item),
       timestamp: timestamp || null,
+      timestampSource: timestamp ? (item?.timestamp_email ? "timestamp_email" : "legacy_send_alias") : "MISSING",
+      createdAt: createdAt || null,
       ...check
     };
   });
+
+  // This gate validates campaign-scheduled outbound. Manual/reply email activity is
+  // reported separately and cannot create a false campaign-schedule failure.
+  const campaignRows = fetched.filter(row => row.isCampaignEmail);
+  const nonCampaignRows = fetched.filter(row => !row.isCampaignEmail);
+
+  // Late database ingestion can surface an older email after the soak begins.
+  // Only actual email timestamps inside the observation window are compliance evidence.
+  const preObservationRows = campaignRows.filter(row => row.validTimestamp && !isOnOrAfter(row.timestamp, sinceIso));
+  const evaluated = campaignRows.filter(row => !row.validTimestamp || isOnOrAfter(row.timestamp, sinceIso));
+
   const invalidTimestamps = evaluated.filter(row => !row.validTimestamp);
   const violations = evaluated.filter(row => row.validTimestamp && !row.inside);
   const result = {
@@ -96,11 +142,19 @@ async function run(options = {}) {
     sinceIso,
     timeZone: "America/New_York",
     allowedWindow: "Mon-Fri 08:00-18:00",
+    timestampPolicy: "timestamp_email (actual email timestamp); timestamp_created is retrieval/ingestion metadata only",
+    scopePolicy: "campaign-sent email only; non-campaign/manual email is reported but not judged by campaign schedule",
+    sentMessagesFetched: fetched.length,
     sentMessagesInspected: evaluated.length,
+    campaignMessagesFetched: campaignRows.length,
+    nonCampaignMessagesIgnored: nonCampaignRows.length,
+    preObservationMessagesIgnored: preObservationRows.length,
     violations: violations.length,
     invalidTimestamps: invalidTimestamps.length,
     violationEvidence: violations.slice(0, 100),
     invalidTimestampEvidence: invalidTimestamps.slice(0, 100),
+    ignoredPreObservationEvidence: preObservationRows.slice(0, 25),
+    ignoredNonCampaignEvidence: nonCampaignRows.slice(0, 25),
     readOnly: true,
     instantlyMutated: false
   };
@@ -124,4 +178,15 @@ async function main() {
 }
 
 if (require.main === module) main().catch(error => { console.error(error.stack || error.message); process.exitCode = 1; });
-module.exports = { run, fetchSentEmails, sentTimestamp, easternParts, isInsideP2gcSendWindow, unwrap };
+module.exports = {
+  run,
+  fetchSentEmails,
+  sentTimestamp,
+  createdTimestamp,
+  campaignId,
+  isCampaignSentEmail,
+  easternParts,
+  isInsideP2gcSendWindow,
+  isOnOrAfter,
+  unwrap
+};

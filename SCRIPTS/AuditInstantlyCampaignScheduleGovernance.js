@@ -11,7 +11,8 @@ const OUT = path.join(ROOT, 'DATA', 'operational_acceptance', 'campaign_schedule
 const REQUIRED_TZ = 'America/Detroit';
 const EARLIEST_FROM_MINUTES = 8 * 60;
 const LATEST_TO_MINUTES = 18 * 60;
-const REQUIRED_DAYS = { '0': true, '1': true, '2': true, '3': true, '4': true, '5': false, '6': false };
+// Instantly day indexes follow JavaScript-style weekday numbering: 0=Sunday ... 6=Saturday.
+const REQUIRED_DAYS = { '0': false, '1': true, '2': true, '3': true, '4': true, '5': true, '6': false };
 
 function unwrap(value) {
   if (Array.isArray(value)) return value;
@@ -102,7 +103,8 @@ async function run() {
       timezone: REQUIRED_TZ,
       allowedTimingWindow: { earliestFrom: '08:00', latestTo: '18:00' },
       standardWeekdayMap: REQUIRED_DAYS,
-      note: 'Campaign hours may be narrower than the governed 08:00-18:00 window; they must not extend outside it.'
+      weekdayIndexMeaning: { '0': 'Sunday', '1': 'Monday', '2': 'Tuesday', '3': 'Wednesday', '4': 'Thursday', '5': 'Friday', '6': 'Saturday' },
+      note: 'Campaign hours may be narrower than the governed 08:00-18:00 window; Sunday and Saturday must be disabled.'
     },
     campaignsObserved: campaigns.length,
     activeCampaigns: active.length,
@@ -125,4 +127,4 @@ if (require.main === module) {
   run().then(r => { if (!r.ok) process.exitCode = 2; }).catch(e => { console.error(e.stack || e.message); process.exitCode = 1; });
 }
 
-module.exports = { run, evaluate, daysMatch, timingInsideGovernedWindow, statusActive, unwrap };
+module.exports = { run, evaluate, daysMatch, timingInsideGovernedWindow, statusActive, unwrap, REQUIRED_DAYS };
