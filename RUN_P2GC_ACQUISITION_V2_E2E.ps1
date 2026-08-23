@@ -3,6 +3,8 @@ param(
     [switch]$ActivateInstantly,
     [switch]$StageWebsite,
     [switch]$PublishWebsite,
+    [switch]$PublishLinkedIn,
+    [string]$LinkedInContentId = "",
     [string]$PathwayScoreTerm = ""
 )
 
@@ -53,7 +55,9 @@ try {
         'TESTS/Test_P2GCWebsiteConversionAuditService.js',
         'TESTS/Test_P2GCAuthorityContentProductionService.js',
         'TESTS/Test_P2GCCompetitorExperimentService.js',
-        'TESTS/Test_P2GCBuyerLensContentService.js'
+        'TESTS/Test_P2GCBuyerLensContentService.js',
+        'TESTS/Test_P2GCLinkedInPublishingService.js',
+        'TESTS/Test_P2GCAcquisitionV2AcceptanceService.js'
     )
     foreach ($test in $tests) { Invoke-NodeStep "Regression: $test" $test -Required }
 
@@ -125,6 +129,29 @@ try {
     }
 
     Invoke-NodeStep 'Public website conversion audit' 'SERVICES/revenue/P2GCWebsiteConversionAuditService.js'
+
+    $oldDryRun3 = $env:MILES_DRY_RUN
+    $oldControlled3 = $env:MILES_CONTROLLED_WRITE_ENABLED
+    $oldLinkedInWrite = $env:LINKEDIN_WRITE_ENABLED
+    $oldLinkedInPublish = $env:P2GC_LINKEDIN_PUBLISH
+    $oldLinkedInContent = $env:P2GC_LINKEDIN_CONTENT_ID
+    if ($PublishLinkedIn) {
+        $env:MILES_DRY_RUN = 'false'
+        $env:MILES_CONTROLLED_WRITE_ENABLED = 'true'
+        $env:LINKEDIN_WRITE_ENABLED = 'true'
+        $env:P2GC_LINKEDIN_PUBLISH = 'true'
+    } else {
+        $env:MILES_DRY_RUN = 'true'
+        $env:P2GC_LINKEDIN_PUBLISH = 'false'
+    }
+    if ($LinkedInContentId) { $env:P2GC_LINKEDIN_CONTENT_ID = $LinkedInContentId }
+    Invoke-NodeStep 'Governed LinkedIn publication' 'RUN_P2GC_LINKEDIN_PUBLISH.js'
+    $env:MILES_DRY_RUN = $oldDryRun3
+    $env:MILES_CONTROLLED_WRITE_ENABLED = $oldControlled3
+    $env:LINKEDIN_WRITE_ENABLED = $oldLinkedInWrite
+    $env:P2GC_LINKEDIN_PUBLISH = $oldLinkedInPublish
+    $env:P2GC_LINKEDIN_CONTENT_ID = $oldLinkedInContent
+
     Invoke-NodeStep 'Final acquisition acceptance truth report' 'RUN_P2GC_ACQUISITION_V2_ACCEPTANCE.js'
 }
 catch {
@@ -142,6 +169,8 @@ finally {
         activate_instantly_requested = [bool]$ActivateInstantly
         stage_website_requested = [bool]$StageWebsite
         publish_website_requested = [bool]$PublishWebsite
+        publish_linkedin_requested = [bool]$PublishLinkedIn
+        linkedin_content_id = $LinkedInContentId
         pathway_score_term_supplied = [bool]$PathwayScoreTerm
         failure = $failure
         results = $Results
