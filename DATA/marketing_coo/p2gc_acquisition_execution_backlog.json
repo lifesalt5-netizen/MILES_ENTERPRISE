@@ -1,7 +1,7 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T11:06:00-04:00",
+  "updated_at": "2026-08-23T11:12:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE",
@@ -36,8 +36,15 @@
       "id": "ACQ-V2-004",
       "title": "Build Federal Pathway Score specification and MVP",
       "owner": "MILES",
-      "status": "MVP_COMPLETE_INTEGRATION_PENDING",
-      "evidence": ["SERVICES/FederalPathwayScoreService.js", "TESTS/Test_FederalPathwayScoreService.js"],
+      "status": "INTEGRATED_RUNTIME_VALIDATION_PENDING",
+      "evidence": [
+        "SERVICES/FederalPathwayScoreService.js",
+        "TESTS/Test_FederalPathwayScoreService.js",
+        "SERVICES/FederalPathwayScoreIntegratedService.js",
+        "TESTS/Test_FederalPathwayScoreIntegratedService.js",
+        "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js",
+        "StartP2GCGrowthBlueprintDemo.js#/api/pathway-score"
+      ],
       "success_criteria": "Diagnostic accepts evidence-backed positioning signals and returns pathway status plus three highest-priority actions without treating unverified claims as fact."
     },
     {
