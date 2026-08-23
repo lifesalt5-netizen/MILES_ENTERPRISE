@@ -3,14 +3,19 @@ name: Pre Final Soak Readiness Validation
 on:
   pull_request:
     paths:
+      - "PRE_FINAL_SOAK_RELEASE_CANDIDATE.cmd"
+      - "FINAL_GO_LIVE.cmd"
       - "SCRIPTS/RunPreFinalSoakReadiness.ps1"
       - "SCRIPTS/AuditProposalCommandReadiness.js"
       - "SCRIPTS/AuditIonosExecutiveInboxReadOnly.js"
+      - "SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js"
       - "SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js"
       - "SCRIPTS/AuditInstantlySendWindowHistory.js"
       - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
       - "SERVICES/sales/P2GCSalesQualificationService.js"
       - "SERVICES/proposal/**"
+      - "SERVICES/monica/**"
+      - "CONFIG/MONICA/**"
       - "SERVICES/demo/public/proposal-command*"
       - "SERVICES/ceo_dashboard/public/index.html"
       - "StartP2GCGrowthBlueprintDemo.js"
@@ -33,15 +38,25 @@ jobs:
           node-version: "20"
       - name: Install dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
-      - name: Syntax
+      - name: PowerShell syntax
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("SCRIPTS/RunPreFinalSoakReadiness.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List | Out-String | Write-Error; exit 1 }
+      - name: Node syntax
         run: |
           node --check SCRIPTS/AuditProposalCommandReadiness.js
           node --check SCRIPTS/AuditIonosExecutiveInboxReadOnly.js
+          node --check SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js
           node --check SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
           node --check SERVICES/sales/P2GCSalesQualificationService.js
           node --check SERVICES/proposal/P2GCProposalCommandService.js
+          node --check SERVICES/proposal/P2GCPostSubmissionLearningService.js
+          node --check SERVICES/monica/MonicaDiscoveryCandidateService.js
           node --check RUN_P2GC_PROPOSAL_COMMAND.js
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check SERVICES/demo/public/proposal-command.js
@@ -52,7 +67,14 @@ jobs:
       - name: Proposal Stage 0 decision labels
         run: node TESTS/Test_P2GCSalesQualificationDecisionLabels.js
       - name: Proposal Command controlled E2E
-        run: node TESTS/Test_P2GCProposalCommandService.js
+        run: |
+          node TESTS/Test_P2GCProposalCommandService.js
+          node TESTS/Test_P2GCPostSubmissionLearningService.js
+      - name: MONICA research-only safety suite
+        run: |
+          node TESTS/Test_MonicaDiscoveryAssessment.js
+          node TESTS/Test_MonicaDiscoveryCandidateService.js
+          node TESTS/Test_MonicaSourceAccessManifest.js
       - name: Acquisition V2 unit suite
         run: |
           node TESTS/Test_FederalPathwayScoreService.js
