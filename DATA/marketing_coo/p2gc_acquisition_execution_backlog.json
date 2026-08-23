@@ -1,7 +1,7 @@
 {
   "system": "P2GC Customer Acquisition System V2",
   "created_at": "2026-08-23T10:49:00-04:00",
-  "updated_at": "2026-08-23T11:12:00-04:00",
+  "updated_at": "2026-08-23T11:27:00-04:00",
   "owner": "MILES",
   "goal": "$10,000/week in new P2GC sales",
   "status": "ACTIVE",
@@ -52,8 +52,17 @@
       "id": "ACQ-V2-005",
       "title": "Rewrite priority outbound using intelligence-first hooks",
       "owner": "Aria",
-      "status": "MESSAGE_KIT_COMPLETE_LIVE_DEPLOYMENT_PENDING",
-      "evidence": ["MARKETING/P2GC_OUTBOUND_MESSAGE_KIT_V2.md"],
+      "status": "DEPLOYMENT_ENGINE_IMPLEMENTED_RUNTIME_EXECUTION_PENDING",
+      "evidence": [
+        "MARKETING/P2GC_OUTBOUND_MESSAGE_KIT_V2.md",
+        "CONFIG/p2gc_acquisition_v2_campaign_rules.json",
+        "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js",
+        "SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js",
+        "TESTS/Test_P2GCAcquisitionV2CampaignService.js",
+        "TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js",
+        "RUN_P2GC_ACQUISITION_V2_DEPLOYMENT.js",
+        "RUN_P2GC_ACQUISITION_V2_PILOT.js"
+      ],
       "success_criteria": "Priority segments map to one of three offers and every first touch contains verified condition, implication, next step, and single CTA."
     },
     {
