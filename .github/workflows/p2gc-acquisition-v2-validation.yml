@@ -8,12 +8,15 @@ on:
       - "CONFIG/p2gc_revenue_scorecard_rules.json"
       - "CONFIG/p2gc_qualified_nurture_rules.json"
       - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
+      - "CONFIG/p2gc_b12_conversion_publish_v2.json"
       - "SERVICES/FederalPathwayScoreService.js"
       - "SERVICES/FederalPathwayScoreIntegratedService.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
       - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
       - "SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js"
+      - "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
+      - "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
       - "RUN_P2GC_REVENUE_SCORECARD.js"
       - "RUN_P2GC_QUALIFIED_NURTURE.js"
@@ -26,6 +29,8 @@ on:
       - "TESTS/Test_QualifiedProspectNurtureService.js"
       - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
       - "TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js"
+      - "TESTS/Test_P2GCB12ConversionManifest.js"
+      - "TESTS/Test_P2GCWebsiteConversionAuditService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   pull_request:
     paths:
@@ -33,12 +38,15 @@ on:
       - "CONFIG/p2gc_revenue_scorecard_rules.json"
       - "CONFIG/p2gc_qualified_nurture_rules.json"
       - "CONFIG/p2gc_acquisition_v2_campaign_rules.json"
+      - "CONFIG/p2gc_b12_conversion_publish_v2.json"
       - "SERVICES/FederalPathwayScoreService.js"
       - "SERVICES/FederalPathwayScoreIntegratedService.js"
       - "SERVICES/revenue/RevenueWeightedCampaignScorecardService.js"
       - "SERVICES/revenue/QualifiedProspectNurtureService.js"
       - "SERVICES/revenue/P2GCAcquisitionV2CampaignService.js"
       - "SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js"
+      - "SERVICES/revenue/P2GCWebsiteConversionAuditService.js"
+      - "CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js"
       - "RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js"
       - "RUN_P2GC_REVENUE_SCORECARD.js"
       - "RUN_P2GC_QUALIFIED_NURTURE.js"
@@ -51,6 +59,8 @@ on:
       - "TESTS/Test_QualifiedProspectNurtureService.js"
       - "TESTS/Test_P2GCAcquisitionV2CampaignService.js"
       - "TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js"
+      - "TESTS/Test_P2GCB12ConversionManifest.js"
+      - "TESTS/Test_P2GCWebsiteConversionAuditService.js"
       - ".github/workflows/p2gc-acquisition-v2-validation.yml"
   workflow_dispatch:
 
@@ -81,6 +91,8 @@ jobs:
           node --check SERVICES/revenue/QualifiedProspectNurtureService.js
           node --check SERVICES/revenue/P2GCAcquisitionV2CampaignService.js
           node --check SERVICES/revenue/P2GCAcquisitionV2ProspectEnrichmentService.js
+          node --check SERVICES/revenue/P2GCWebsiteConversionAuditService.js
+          node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER.js
           node --check RUN_FEDERAL_PATHWAY_SCORE_INTEGRATED.js
           node --check RUN_P2GC_REVENUE_SCORECARD.js
           node --check RUN_P2GC_QUALIFIED_NURTURE.js
@@ -93,6 +105,8 @@ jobs:
           node --check TESTS/Test_QualifiedProspectNurtureService.js
           node --check TESTS/Test_P2GCAcquisitionV2CampaignService.js
           node --check TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js
+          node --check TESTS/Test_P2GCB12ConversionManifest.js
+          node --check TESTS/Test_P2GCWebsiteConversionAuditService.js
 
       - name: Federal Pathway Score MVP test
         run: node TESTS/Test_FederalPathwayScoreService.js
@@ -111,3 +125,9 @@ jobs:
 
       - name: P2GC V2 prospect enrichment test
         run: node TESTS/Test_P2GCAcquisitionV2ProspectEnrichmentService.js
+
+      - name: B12 conversion manifest test
+        run: node TESTS/Test_P2GCB12ConversionManifest.js
+
+      - name: Public website conversion audit test
+        run: node TESTS/Test_P2GCWebsiteConversionAuditService.js
