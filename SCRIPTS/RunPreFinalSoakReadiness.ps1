@@ -101,8 +101,51 @@ try{
 Invoke-NodeRun 'proposal_command_readiness_inventory' 'SCRIPTS/AuditProposalCommandReadiness.js' @("--root=$Root") 'READINESS' $false
 Test-SourceDrift 'release_candidate_source_drift_after_validation'
 
-$red=@($results|Where-Object{$_.status -eq 'RED'}).Count;$yellow=@($results|Where-Object{$_.status -eq 'YELLOW'}).Count;$green=@($results|Where-Object{$_.status -eq 'GREEN'}).Count;$mutations=@($results|Where-Object{$_.externalMutation -eq $true}).Count
-$result=[ordered]@{ok=($red -eq 0);status=if($red -eq 0){'PRE_FINAL_SOAK_READINESS_GREEN'}else{'PRE_FINAL_SOAK_READINESS_BLOCKED'};generatedAt=(Get-Date).ToUniversalTime().ToString('o');startedAt=$startedAt;gitHead=$head;gitOriginMain=$originMain;gitBranch=$branch;executeInstantlyWeekdayRepairRequested=[bool]$ExecuteInstantlyWeekdayRepair;counts=@{green=$green;yellow=$yellow;red=$red;controlledMutations=$mutations;total=$results.Count};rules=@('Release-candidate identity must be main == origin/main with no source/control drift.','No acquisition campaign creation/activation during readiness.','No B12 public publish during readiness.','No LinkedIn public publish during readiness.','Instantly weekday repair is the only allowed external mutation and only with the explicit switch.','IONOS and sender-capacity checks are read-only.','MONICA remains DISCOVERY_ONLY with outreach and campaign enrollment blocked.','YELLOW is allowed only for explicit external-evidence/activation work that remains gated; RED blocks the final soak.','Final 24-hour soak begins only after all RED blockers are resolved and one release-candidate commit is frozen.');results=@($results)}
-$result|ConvertTo-Json -Depth 10|Set-Content -LiteralPath $outFile -Encoding UTF8
-Write-Host "";Write-Host "PRE-FINAL-SOAK READINESS: $($result.status)";Write-Host "HEAD=$head";Write-Host "ORIGIN_MAIN=$originMain";Write-Host "BRANCH=$branch";Write-Host "GREEN=$green YELLOW=$yellow RED=$red CONTROLLED_MUTATIONS=$mutations";Write-Host "REPORT=$outFile"
+# Windows PowerShell 5.1 can throw "Argument types do not match" when a generic List[object]
+# is embedded directly through @($results) inside an ordered hashtable. Snapshot it to a
+# real object[] first, then build the report with explicit intermediate values.
+$resultItems = $results.ToArray()
+$red = @($resultItems | Where-Object { $_.status -eq 'RED' }).Count
+$yellow = @($resultItems | Where-Object { $_.status -eq 'YELLOW' }).Count
+$green = @($resultItems | Where-Object { $_.status -eq 'GREEN' }).Count
+$mutations = @($resultItems | Where-Object { $_.externalMutation -eq $true }).Count
+$statusText = if($red -eq 0){'PRE_FINAL_SOAK_READINESS_GREEN'}else{'PRE_FINAL_SOAK_READINESS_BLOCKED'}
+$rules = @(
+    'Release-candidate identity must be main == origin/main with no source/control drift.',
+    'No acquisition campaign creation/activation during readiness.',
+    'No B12 public publish during readiness.',
+    'No LinkedIn public publish during readiness.',
+    'Instantly weekday repair is the only allowed external mutation and only with the explicit switch.',
+    'IONOS and sender-capacity checks are read-only.',
+    'MONICA remains DISCOVERY_ONLY with outreach and campaign enrollment blocked.',
+    'YELLOW is allowed only for explicit external-evidence/activation work that remains gated; RED blocks the final soak.',
+    'Final 24-hour soak begins only after all RED blockers are resolved and one release-candidate commit is frozen.'
+)
+$result = [ordered]@{
+    ok = ($red -eq 0)
+    status = $statusText
+    generatedAt = (Get-Date).ToUniversalTime().ToString('o')
+    startedAt = $startedAt
+    gitHead = $head
+    gitOriginMain = $originMain
+    gitBranch = $branch
+    executeInstantlyWeekdayRepairRequested = [bool]$ExecuteInstantlyWeekdayRepair
+    counts = [ordered]@{
+        green = $green
+        yellow = $yellow
+        red = $red
+        controlledMutations = $mutations
+        total = $resultItems.Count
+    }
+    rules = $rules
+    results = $resultItems
+}
+$result | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $outFile -Encoding UTF8
+Write-Host ""
+Write-Host "PRE-FINAL-SOAK READINESS: $($result.status)"
+Write-Host "HEAD=$head"
+Write-Host "ORIGIN_MAIN=$originMain"
+Write-Host "BRANCH=$branch"
+Write-Host "GREEN=$green YELLOW=$yellow RED=$red CONTROLLED_MUTATIONS=$mutations"
+Write-Host "REPORT=$outFile"
 if($red -gt 0){exit 2}
