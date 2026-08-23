@@ -7,6 +7,7 @@ const { URL } = require("url");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
+const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
 
 const ROOT = __dirname;
 const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
@@ -14,6 +15,7 @@ const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
 const service = new ExecutiveGrowthBlueprintDemoService();
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
+const pathwayScore = new FederalPathwayScoreIntegratedService();
 const cache = new Map();
 const TTL = Math.max(1000, Number(process.env.P2GC_GROWTH_DEMO_CACHE_MS || 300000));
 
@@ -57,7 +59,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/assessment") {
@@ -69,6 +71,15 @@ const server = http.createServer((req, res) => {
     } catch (error) {
       return json(res, 500, { ok:false, status:"ASSESSMENT_FAILED", error:error.message });
     }
+  }
+
+  if (req.method === "GET" && pathname === "/api/pathway-score") {
+    const term = String(url.searchParams.get("term") || "").trim();
+    if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name or UEI." });
+    pathwayScore.evaluate(term)
+      .then(result => json(res, result?.ok ? 200 : 404, result))
+      .catch(error => json(res, 500, { ok:false, status:"PATHWAY_SCORE_FAILED", error:error.message }));
+    return;
   }
 
   if (req.method === "GET" && pathname === "/api/intelligence") {
@@ -120,6 +131,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`P2GC Executive Government Growth Blueprint Demo: http://127.0.0.1:${PORT}`);
+  console.log(`P2GC Federal Pathway Score API: http://127.0.0.1:${PORT}/api/pathway-score?term=<company-or-uei>`);
   console.log(`P2GC Sub2Prime Teaming Intelligence: http://127.0.0.1:${PORT}/teaming`);
   console.log(`P2GC Opportunity Intelligence: http://127.0.0.1:${PORT}/opportunities`);
   console.log(`P2GC Vehicle Intelligence: http://127.0.0.1:${PORT}/vehicles`);
