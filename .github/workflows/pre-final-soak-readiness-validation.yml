@@ -8,6 +8,7 @@ on:
       - "SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js"
       - "SCRIPTS/AuditInstantlySendWindowHistory.js"
       - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
+      - "SERVICES/sales/P2GCSalesQualificationService.js"
       - "TESTS/**"
       - ".github/workflows/pre-final-soak-readiness-validation.yml"
   workflow_dispatch:
@@ -32,10 +33,13 @@ jobs:
           node --check SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
+          node --check SERVICES/sales/P2GCSalesQualificationService.js
       - name: Weekday governance regression
         run: node TESTS/Test_InstantlyCampaignScheduleGovernance.js
       - name: Send-window timestamp regression
         run: node TESTS/Test_InstantlySendWindowHistory.js
+      - name: Proposal Stage 0 decision labels
+        run: node TESTS/Test_P2GCSalesQualificationDecisionLabels.js
       - name: Acquisition V2 unit suite
         run: |
           node TESTS/Test_FederalPathwayScoreService.js
