@@ -1,0 +1,44 @@
+name: LinkedIn Prospect Assist Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/LinkedInProspectAssistService.js'
+      - 'RUN_P2GC_LINKEDIN_PROSPECT_ASSIST.js'
+      - 'SCRIPTS/RunPostSoakRemediationRetry.ps1'
+      - 'POST_SOAK_REMEDIATION_RETRY.cmd'
+      - 'TESTS/Test_LinkedInProspectAssistService.js'
+      - 'TESTS/Test_PostSoakRemediationRetryContract.js'
+      - '.github/workflows/linkedin-prospect-assist-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  node-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax
+        run: |
+          node --check SERVICES/revenue/LinkedInProspectAssistService.js
+          node --check RUN_P2GC_LINKEDIN_PROSPECT_ASSIST.js
+          node --check TESTS/Test_LinkedInProspectAssistService.js
+          node --check TESTS/Test_PostSoakRemediationRetryContract.js
+      - name: LinkedIn assist regression
+        run: node TESTS/Test_LinkedInProspectAssistService.js
+      - name: Safety contract
+        run: node TESTS/Test_PostSoakRemediationRetryContract.js
+
+  windows-powershell51:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows PowerShell 5.1 syntax
+        shell: powershell
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\RunPostSoakRemediationRetry.ps1'), [ref]$null, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
+          Write-Host 'POST_SOAK_REMEDIATION_RETRY_POWERSHELL51_SYNTAX=GREEN'
