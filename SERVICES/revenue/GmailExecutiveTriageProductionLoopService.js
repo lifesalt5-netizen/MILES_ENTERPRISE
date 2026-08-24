@@ -10,6 +10,19 @@ function truthy(value, fallback = false) {
   return /^(1|true|yes|on)$/i.test(String(value).trim());
 }
 
+function gmailSkipSafe(gmail = {}) {
+  const accounts = Array.isArray(gmail.accounts) ? gmail.accounts : [];
+  if (!accounts.length) return false;
+  const skipped = accounts.filter(item => item?.scope === "OUT_OF_BUSINESS_SCOPE");
+  return skipped.length === accounts.length && skipped.every(item =>
+    item?.skipped === true &&
+    item?.ok === true &&
+    Number(item?.messagesInspected || 0) === 0 &&
+    Number(item?.forwarded || 0) === 0 &&
+    Number(item?.archived || 0) === 0
+  ) && (gmail.blockers || []).length === 0;
+}
+
 class GmailExecutiveTriageProductionLoopService {
   constructor(options = {}) {
     this.root = options.root || process.env.MILES_ROOT || process.cwd();
@@ -26,7 +39,17 @@ class GmailExecutiveTriageProductionLoopService {
   persist(result) {
     const dir = path.join(this.root, "DATA", "runtime", "revenue", "gmail_triage");
     fs.mkdirSync(dir, { recursive: true });
-    const payload = { ...result, generatedAt: new Date().toISOString() };
+    const payload = {
+      ...result,
+      generatedAt: new Date().toISOString(),
+      producer: {
+        pid: process.pid,
+        runtimeName: process.env.MILES_RUNTIME_NAME || null,
+        runtimeGeneration: process.env.MILES_RUNTIME_GENERATION || null,
+        runtimeGuardPid: process.env.MILES_RUNTIME_GUARD_PID || null,
+        cwd: process.cwd()
+      }
+    };
     fs.writeFileSync(path.join(dir, "gmail_executive_triage_latest.json"), JSON.stringify(payload, null, 2), "utf8");
     return path.join(dir, "gmail_executive_triage_latest.json");
   }
@@ -45,23 +68,58 @@ class GmailExecutiveTriageProductionLoopService {
         this.service.run({ execute: this.execute }),
         this.ionosService.run({ execute: this.execute })
       ]);
-      const ok = gmail.ok === true && ionos.ok === true;
+
+      const intentionallySkippedOutOfScope = gmailSkipSafe(gmail);
+      const gmailHealthy = gmail.ok === true || intentionallySkippedOutOfScope;
+      const ionosHealthy = ionos.ok === true;
+      const ok = gmailHealthy && ionosHealthy;
+
+      const blockers = [
+        ...(gmail.blockers || []),
+        ...(ionos.errors || []).map(item => ({ account: item.account, blocker: "IONOS_PRIMARY_INBOX_UNREADABLE", error: item.error }))
+      ];
+
+      if (!gmailHealthy && blockers.length === 0) {
+        blockers.push({
+          account: "GMAIL_BUSINESS_TRIAGE",
+          blocker: "GMAIL_COMPONENT_NOT_HEALTHY",
+          serviceOk: gmail.ok === true,
+          eligibleBusinessAccounts: gmail.eligibleBusinessAccounts ?? null,
+          skippedOutOfBusinessScope: gmail.skippedOutOfBusinessScope ?? null
+        });
+      }
+      if (!ionosHealthy && !(ionos.errors || []).length) {
+        blockers.push({ account: "IONOS_PRIMARY_INBOXES", blocker: "IONOS_COMPONENT_NOT_HEALTHY" });
+      }
+
       const result = {
         ok,
         status: ok ? (this.execute ? "ACTIVE" : "PLAN_ONLY") : "BLOCKED",
         enabled: true,
         execute: this.execute,
         destination: gmail.destination,
-        blockers: [
-          ...(gmail.blockers || []),
-          ...(ionos.errors || []).map(item => ({ account: item.account, blocker: "IONOS_PRIMARY_INBOX_UNREADABLE", error: item.error }))
-        ],
+        components: {
+          gmail: {
+            ok: gmailHealthy,
+            serviceOk: gmail.ok === true,
+            intentionallySkippedAllOutOfScope: intentionallySkippedOutOfScope,
+            eligibleBusinessAccounts: gmail.eligibleBusinessAccounts ?? null,
+            skippedOutOfBusinessScope: gmail.skippedOutOfBusinessScope ?? null
+          },
+          ionos: {
+            ok: ionosHealthy,
+            serviceOk: ionos.ok === true,
+            mode: ionos.mode || null
+          }
+        },
+        blockers,
         accounts: gmail.accounts,
         ionos,
         safety: {
           gmail: gmail.safety,
           ionos: ionos.safety,
-          primaryInboxCoverageIncludesIonos: true
+          primaryInboxCoverageIncludesIonos: true,
+          outOfScopeGmailSkipCountsAsHealthyOnlyWhenZeroReadsAndZeroMutations: true
         }
       };
       result.artifact = this.persist(result);
@@ -93,3 +151,4 @@ class GmailExecutiveTriageProductionLoopService {
 }
 
 module.exports = GmailExecutiveTriageProductionLoopService;
+module.exports.gmailSkipSafe = gmailSkipSafe;
