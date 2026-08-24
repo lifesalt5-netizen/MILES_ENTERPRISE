@@ -35,6 +35,7 @@ function fakeDependencies({ legacyForwarding = false, sendFailure = false } = {}
   const sends = [];
   const modifies = [];
   const labels = [];
+  const authCalls = [];
   const gmail = {
     users: {
       settings: {
@@ -64,11 +65,25 @@ function fakeDependencies({ legacyForwarding = false, sendFailure = false } = {}
     }
   };
   const accountManager = {
-    listAccounts: () => [{ accountKey: "sender_at_example.com", email: "sender@example.com", valid: true }],
-    getAuthClientForAccount: async () => ({ fake: true })
+    listAccounts: () => [
+      { accountKey: "sender_at_example.com", email: "sender@example.com", valid: true },
+      { accountKey: "personal_at_gmail.com", email: "personal@gmail.com", valid: true }
+    ],
+    getAuthClientForAccount: async accountKey => {
+      authCalls.push(accountKey);
+      return { fake: true, accountKey };
+    }
   };
   const google = { gmail: () => gmail };
-  return { accountManager, google, sends, modifies };
+  return { accountManager, google, sends, modifies, authCalls, businessDomains: ["example.com"] };
+}
+
+function serviceFor(deps) {
+  return new GmailExecutiveTriageService({
+    accountManager: deps.accountManager,
+    google: deps.google,
+    businessDomains: deps.businessDomains
+  });
 }
 
 async function run() {
@@ -79,51 +94,60 @@ async function run() {
     delete process.env.MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED;
 
     const legacy = fakeDependencies({ legacyForwarding: true });
-    const legacyService = new GmailExecutiveTriageService(legacy);
-    const legacyResult = await legacyService.run({ execute: false });
+    const legacyResult = await serviceFor(legacy).run({ execute: false });
     assert.strictEqual(legacyResult.ok, false);
     assert.strictEqual(legacyResult.blockers[0].blocker, "LEGACY_GMAIL_AUTO_FORWARDING_ENABLED");
     assert.strictEqual(legacy.sends.length, 0);
     assert.strictEqual(legacy.modifies.length, 0);
+    assert.deepStrictEqual(legacy.authCalls, ["sender_at_example.com"], "personal account must not even be authenticated/read by business triage");
 
     const plan = fakeDependencies({ legacyForwarding: false });
-    const planService = new GmailExecutiveTriageService(plan);
-    const planResult = await planService.run({ execute: false });
+    const planResult = await serviceFor(plan).run({ execute: false });
     assert.strictEqual(planResult.ok, true);
+    assert.strictEqual(planResult.eligibleBusinessAccounts, 1);
+    assert.strictEqual(planResult.skippedOutOfBusinessScope, 1);
+    assert.strictEqual(planResult.accounts[0].scope, "BUSINESS_TRIAGE");
     assert.strictEqual(planResult.accounts[0].messagesInspected, 4);
     assert.strictEqual(planResult.accounts[0].surfaced, 2);
     assert.strictEqual(planResult.accounts[0].autonomousResolved, 2);
+    assert.strictEqual(planResult.accounts[1].scope, "OUT_OF_BUSINESS_SCOPE");
+    assert.strictEqual(planResult.accounts[1].skipped, true);
+    assert.strictEqual(planResult.accounts[1].messagesInspected, 0);
+    assert.deepStrictEqual(plan.authCalls, ["sender_at_example.com"]);
     assert.strictEqual(plan.sends.length, 0);
     assert.strictEqual(plan.modifies.length, 0);
 
     const gated = fakeDependencies({ legacyForwarding: false });
-    const gatedService = new GmailExecutiveTriageService(gated);
-    const gatedResult = await gatedService.run({ execute: true });
+    const gatedResult = await serviceFor(gated).run({ execute: true });
     assert.strictEqual(gatedResult.ok, false);
     assert.strictEqual(gatedResult.blockers[0].blocker, "GMAIL_EXECUTIVE_TRIAGE_WRITE_GATES_DISABLED");
+    assert.deepStrictEqual(gated.authCalls, ["sender_at_example.com"]);
     assert.strictEqual(gated.sends.length, 0);
     assert.strictEqual(gated.modifies.length, 0);
 
     process.env.MILES_GOOGLE_INBOX_MUTATIONS = "true";
     process.env.MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED = "true";
     const live = fakeDependencies({ legacyForwarding: false });
-    const liveService = new GmailExecutiveTriageService(live);
-    const liveResult = await liveService.run({ execute: true });
+    const liveResult = await serviceFor(live).run({ execute: true });
     assert.strictEqual(liveResult.ok, true);
     assert.strictEqual(liveResult.accounts[0].forwarded, 2);
     assert.strictEqual(liveResult.accounts[0].archived, 4);
+    assert.strictEqual(liveResult.accounts[1].forwarded, 0);
+    assert.strictEqual(liveResult.accounts[1].archived, 0);
+    assert.deepStrictEqual(live.authCalls, ["sender_at_example.com"]);
     assert.strictEqual(live.sends.length, 2);
     assert.strictEqual(live.modifies.length, 4);
     assert(live.modifies.every(item => item.requestBody.removeLabelIds.includes("INBOX")));
 
     const failed = fakeDependencies({ legacyForwarding: false, sendFailure: true });
-    const failedService = new GmailExecutiveTriageService(failed);
-    const failedResult = await failedService.run({ execute: true });
+    const failedResult = await serviceFor(failed).run({ execute: true });
     assert.strictEqual(failedResult.ok, false);
+    assert.deepStrictEqual(failed.authCalls, ["sender_at_example.com"]);
     assert.strictEqual(failed.modifies.some(item => item.id === "positive"), false, "must not archive a surfaced message when executive forwarding fails");
     assert.strictEqual(failed.modifies.some(item => item.id === "question"), false, "must not archive a surfaced message when executive forwarding fails");
 
     console.log("GMAIL_EXECUTIVE_TRIAGE_TEST=GREEN");
+    console.log("PERSONAL_GMAIL_BUSINESS_SCOPE_ISOLATION=GREEN");
   } finally {
     if (oldMutations === undefined) delete process.env.MILES_GOOGLE_INBOX_MUTATIONS;
     else process.env.MILES_GOOGLE_INBOX_MUTATIONS = oldMutations;

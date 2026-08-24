@@ -6,6 +6,12 @@ const ReplyIntelligenceService = require("./ReplyIntelligenceService");
 const { CATEGORIES } = ReplyIntelligenceService;
 
 const DEFAULT_EXECUTIVE_INBOX = "kevin@pathways2gc.com";
+const DEFAULT_BUSINESS_DOMAINS = [
+  "pathways2gc.com",
+  "pathwaysgovcon.com",
+  "pathwaysgsa.com",
+  "pathwaysgov.com"
+];
 const SURFACE = new Set([
   CATEGORIES.PRICING_QUESTION,
   CATEGORIES.MEETING_INTENT,
@@ -17,6 +23,24 @@ const SURFACE = new Set([
 
 function truthy(value) {
   return /^(1|true|yes|on)$/i.test(String(value || "").trim());
+}
+
+function parseCsv(value) {
+  return String(value || "")
+    .split(",")
+    .map(item => item.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function normalizeEmail(value) {
+  const match = String(value || "").trim().toLowerCase().match(/<?([^<>\s]+@[^<>\s]+)>?$/);
+  return match ? match[1] : String(value || "").trim().toLowerCase();
+}
+
+function emailDomain(value) {
+  const email = normalizeEmail(value);
+  const at = email.lastIndexOf("@");
+  return at >= 0 ? email.slice(at + 1) : "";
 }
 
 function decodeBase64Url(value) {
@@ -84,11 +108,39 @@ class GmailExecutiveTriageService {
     this.replyIntelligence = options.replyIntelligence || new ReplyIntelligenceService();
     this.destination = options.destination || process.env.MILES_EXECUTIVE_INBOX || DEFAULT_EXECUTIVE_INBOX;
     this.maxResults = Math.min(Math.max(Number(options.maxResults || 100), 1), 500);
+    const configuredDomains = options.businessDomains || parseCsv(process.env.MILES_GMAIL_BUSINESS_DOMAINS);
+    const configuredAccounts = options.accountAllowlist || parseCsv(process.env.MILES_GMAIL_TRIAGE_ACCOUNT_ALLOWLIST);
+    this.businessDomains = new Set((configuredDomains.length ? configuredDomains : DEFAULT_BUSINESS_DOMAINS).map(item => String(item).toLowerCase()));
+    this.accountAllowlist = new Set(configuredAccounts.map(item => String(item).toLowerCase()));
   }
 
   route(classification = {}) {
     if (SURFACE.has(classification.category)) return "SURFACE_EXECUTIVE";
     return "AUTONOMOUS_RESOLVE";
+  }
+
+  accountScope(account = {}) {
+    const email = normalizeEmail(account.email || "");
+    const accountKey = String(account.accountKey || "").trim().toLowerCase();
+    const domain = emailDomain(email);
+    const explicitlyAllowed = this.accountAllowlist.has(email) || this.accountAllowlist.has(accountKey);
+    const approvedDomain = Boolean(domain && this.businessDomains.has(domain));
+    if (explicitlyAllowed || approvedDomain) {
+      return {
+        eligible: true,
+        scope: "BUSINESS_TRIAGE",
+        reason: explicitlyAllowed ? "EXPLICIT_ACCOUNT_ALLOWLIST" : "APPROVED_BUSINESS_DOMAIN",
+        email,
+        domain
+      };
+    }
+    return {
+      eligible: false,
+      scope: "OUT_OF_BUSINESS_SCOPE",
+      reason: "BUSINESS_TRIAGE_ACCOUNT_NOT_APPROVED",
+      email,
+      domain
+    };
   }
 
   async gmailForAccount(accountKey) {
@@ -143,17 +195,16 @@ class GmailExecutiveTriageService {
 
   async triageAccount(account, options = {}) {
     const execute = options.execute === true;
-    const gmail = await this.gmailForAccount(account.accountKey);
-    const autoForwarding = await this.autoForwardingStatus(gmail);
-    const mutationsEnabled = truthy(process.env.MILES_GOOGLE_INBOX_MUTATIONS);
-    const forwardingEnabled = truthy(process.env.MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED);
-
+    const scope = this.accountScope(account);
     const result = {
       account: account.email || account.accountKey,
       accountKey: account.accountKey,
       execute,
       destination: this.destination,
-      autoForwarding,
+      scope: scope.scope,
+      scopeReason: scope.reason,
+      skipped: !scope.eligible,
+      autoForwarding: null,
       messagesInspected: 0,
       surfaced: 0,
       autonomousResolved: 0,
@@ -163,6 +214,19 @@ class GmailExecutiveTriageService {
       decisions: [],
       blocker: null
     };
+
+    // Safety boundary: this business/revenue triage service must not read, label,
+    // archive, forward, or otherwise touch a personal/unapproved Gmail mailbox.
+    if (!scope.eligible) {
+      result.ok = true;
+      return result;
+    }
+
+    const gmail = await this.gmailForAccount(account.accountKey);
+    const autoForwarding = await this.autoForwardingStatus(gmail);
+    result.autoForwarding = autoForwarding;
+    const mutationsEnabled = truthy(process.env.MILES_GOOGLE_INBOX_MUTATIONS);
+    const forwardingEnabled = truthy(process.env.MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED);
 
     if (!autoForwarding.readable) {
       result.blocker = "GMAIL_AUTO_FORWARDING_STATUS_UNREADABLE";
@@ -245,17 +309,25 @@ class GmailExecutiveTriageService {
     const accounts = this.accountManager.listAccounts().filter(account => account.valid);
     const results = [];
     for (const account of accounts) results.push(await this.triageAccount(account, options));
+    const eligible = results.filter(item => item.scope === "BUSINESS_TRIAGE");
+    const skipped = results.filter(item => item.scope === "OUT_OF_BUSINESS_SCOPE");
     return {
       ok: results.length > 0 && results.every(item => item.ok === true),
       mode: options.execute === true ? "EXECUTE" : "PLAN_ONLY",
       destination: this.destination,
       accounts: results,
+      eligibleBusinessAccounts: eligible.length,
+      skippedOutOfBusinessScope: skipped.length,
       blockers: results.filter(item => item.blocker).map(item => ({ account: item.account, blocker: item.blocker, autoForwarding: item.autoForwarding })),
       safety: {
         requiresLegacyAutoForwardingDisabled: true,
         mutationsGate: "MILES_GOOGLE_INBOX_MUTATIONS",
         executiveForwardGate: "MILES_GOOGLE_EXECUTIVE_FORWARD_ENABLED",
-        neverArchiveBeforeRequiredForwardSucceeds: true
+        neverArchiveBeforeRequiredForwardSucceeds: true,
+        businessScopeOnly: true,
+        outOfScopeAccountsAreNotReadOrMutated: true,
+        businessDomains: Array.from(this.businessDomains),
+        explicitAllowlistConfigured: this.accountAllowlist.size > 0
       }
     };
   }
@@ -266,3 +338,6 @@ module.exports.GmailExecutiveTriageService = GmailExecutiveTriageService;
 module.exports.normalizeMessage = normalizeMessage;
 module.exports.payloadBody = payloadBody;
 module.exports.encodeRawEmail = encodeRawEmail;
+module.exports.normalizeEmail = normalizeEmail;
+module.exports.emailDomain = emailDomain;
+module.exports.DEFAULT_BUSINESS_DOMAINS = DEFAULT_BUSINESS_DOMAINS;
