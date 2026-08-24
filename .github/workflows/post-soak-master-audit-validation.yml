@@ -1,0 +1,33 @@
+name: Post Soak Master Audit Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RunPostSoakMasterAudit.ps1'
+      - 'POST_SOAK_MASTER_AUDIT.cmd'
+      - 'TESTS/Test_PostSoakMasterAuditContract.ps1'
+      - '.github/workflows/post-soak-master-audit-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'SCRIPTS/RunPostSoakMasterAudit.ps1'
+      - 'POST_SOAK_MASTER_AUDIT.cmd'
+      - 'TESTS/Test_PostSoakMasterAuditContract.ps1'
+      - '.github/workflows/post-soak-master-audit-validation.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell syntax
+        shell: pwsh
+        run: |
+          $text = Get-Content -Raw SCRIPTS/RunPostSoakMasterAudit.ps1
+          [void][scriptblock]::Create($text)
+          $test = Get-Content -Raw TESTS/Test_PostSoakMasterAuditContract.ps1
+          [void][scriptblock]::Create($test)
+      - name: Safety and coverage contract
+        shell: pwsh
+        run: ./TESTS/Test_PostSoakMasterAuditContract.ps1
