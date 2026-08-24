@@ -1,0 +1,36 @@
+name: Post Soak Yellow Remediation Validation
+
+on:
+  pull_request:
+    paths:
+      - 'POST_SOAK_YELLOW_REMEDIATION.cmd'
+      - 'SCRIPTS/RunPostSoakYellowRemediation.ps1'
+      - 'SCRIPTS/RunMonicaPhase1HarvestMeasurement.js'
+      - 'TESTS/Test_PostSoakYellowRemediationContract.js'
+      - '.github/workflows/post-soak-yellow-remediation-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  static-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Node syntax
+        run: node --check SCRIPTS/RunMonicaPhase1HarvestMeasurement.js
+      - name: Safety contract
+        run: node TESTS/Test_PostSoakYellowRemediationContract.js
+
+  windows-powershell51:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows PowerShell 5.1 syntax
+        shell: powershell
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\RunPostSoakYellowRemediation.ps1'), [ref]$null, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
+          Write-Host 'POST_SOAK_YELLOW_REMEDIATION_POWERSHELL51_SYNTAX=GREEN'
