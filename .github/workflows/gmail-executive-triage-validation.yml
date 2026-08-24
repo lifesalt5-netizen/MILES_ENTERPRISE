@@ -7,6 +7,7 @@ on:
       - "SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js"
       - "SCRIPTS/RunGmailExecutiveTriage.js"
       - "TESTS/Test_GmailExecutiveTriageService.js"
+      - "TESTS/Test_GmailExecutiveTriageProductionLoopStatus.js"
       - "StartAutonomousCOO.js"
       - ".github/workflows/gmail-executive-triage-validation.yml"
   push:
@@ -16,6 +17,7 @@ on:
       - "SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js"
       - "SCRIPTS/RunGmailExecutiveTriage.js"
       - "TESTS/Test_GmailExecutiveTriageService.js"
+      - "TESTS/Test_GmailExecutiveTriageProductionLoopStatus.js"
       - "StartAutonomousCOO.js"
       - ".github/workflows/gmail-executive-triage-validation.yml"
 
@@ -36,6 +38,9 @@ jobs:
           node --check SERVICES/revenue/GmailExecutiveTriageProductionLoopService.js
           node --check SCRIPTS/RunGmailExecutiveTriage.js
           node --check TESTS/Test_GmailExecutiveTriageService.js
+          node --check TESTS/Test_GmailExecutiveTriageProductionLoopStatus.js
           node --check StartAutonomousCOO.js
       - name: Governed triage regression
-        run: node TESTS/Test_GmailExecutiveTriageService.js
+        run: |
+          node TESTS/Test_GmailExecutiveTriageService.js
+          node TESTS/Test_GmailExecutiveTriageProductionLoopStatus.js
