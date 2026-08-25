@@ -18,6 +18,7 @@ const b12V7 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V8 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V8.js'), 'utf8');
 const b12V9 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V9.js'), 'utf8');
 const b12V10 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V10.js'), 'utf8');
+const b12V11 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V11.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -43,11 +44,11 @@ assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readines
 assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
 assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V10')"), 'single-session closeout must use atomic-provider V10 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V11')"), 'single-session closeout must use completion-aware V11 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
-assert(b12Ps.includes('B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'PowerShell closeout must use the single-session runner');
+assert(b12Ps.includes('B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'B12 closeout must use the single-session runner');
 assert(b12Ps.includes("B12_RESUME_SUCCESSFUL_OPERATIONS = 'true'"), 'B12 closeout must resume prior confirmed successful draft operations instead of blindly repeating them');
 assert(b12Ps.includes("B12_CONFIRMED_SUCCESSFUL_OPERATION_SEED = 'HOMEPAGE_CONVERSION_V2'"), 'B12 closeout must migrate the already-proven homepage success instead of re-running it');
 assert(!b12Ps.includes('-Publish'), 'B12 closeout must not request public publish');
@@ -113,6 +114,15 @@ assert(b12V10.includes('providerDiagnostics'), 'B12 V10 must retain provider-sid
 assert(b12V10.includes('V10_DURABLE_RESUME_ATOMIC_PAGE_CREATE'), 'B12 V10 must identify atomic provider mode');
 assert(b12V10.includes('OFFICIAL_STYLE_ATOMIC_PAGE_CREATE_THEN_CONTENT_THEN_NAV_CLEANUP'), 'B12 V10 must identify the page-create/content/navigation strategy');
 
+assert(b12V11.includes('extends V10Publisher'), 'B12 V11 must preserve V10 atomic page creation and V9 durable state');
+assert(b12V11.includes("ids.add('GSA_ZERO_SALES_PAGE_SCAFFOLD')"), 'B12 V11 must migrate the GSA scaffold proven complete by live V10 evidence');
+assert(b12V11.includes('recent = tail.slice(-3000)'), 'B12 V11 must scope active-working detection to recent provider output');
+assert(b12V11.includes('workingHistorical'), 'B12 V11 must retain historical Thinking only as diagnostics, not as a completion blocker');
+assert(b12V11.includes('AGENT_EXPLICIT_PROVIDER_COMPLETION'), 'B12 V11 must accept explicit provider completion statements');
+assert(b12V11.includes('AGENT_SETTLED_RECENT_ACTIVITY_AWARE'), 'B12 V11 must settle after recent activity stops even if old chat contains Thinking');
+assert(b12V11.includes('V11_DURABLE_RESUME_COMPLETION_AWARE'), 'B12 V11 must identify completion-aware durable mode');
+assert(b12V11.includes('historicalWorkingTextDoesNotBlockCompletion: true'), 'B12 V11 must document the false-positive Thinking fix');
+
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
   title: 'B12 Editor',
@@ -143,4 +153,5 @@ console.log('B12_STALE_THINKING_DETECTION=GREEN');
 console.log('B12_TWO_PHASE_PAGE_BUILD=GREEN');
 console.log('B12_DURABLE_SUCCESS_LEDGER=GREEN');
 console.log('B12_ATOMIC_PROVIDER_PAGE_CREATE=GREEN');
+console.log('B12_COMPLETION_AWARE_PROVIDER_DETECTION=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
