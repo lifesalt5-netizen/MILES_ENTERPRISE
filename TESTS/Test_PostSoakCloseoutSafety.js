@@ -14,6 +14,7 @@ const b12V3 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V4 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V4.js'), 'utf8');
 const b12V5 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V5.js'), 'utf8');
 const b12V6 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V6.js'), 'utf8');
+const b12V7 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V7.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -36,7 +37,7 @@ assert(b12Single.includes('publisher.close = async () => {}'), 'publisher must l
 assert(b12Single.includes('B12_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION'), 'blank authenticated B12 UI must fail closed with explicit diagnostics');
 assert(b12Single.includes('click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V6')"), 'single-session closeout must use progress-aware V6 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V7')"), 'single-session closeout must use phased-prompt V7 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
@@ -62,10 +63,17 @@ assert(b12V5.includes('publicPublishExecuted: false'), 'B12 V5 must initialize p
 assert(b12V5.includes('mutationAttempted: false'), 'B12 V5 must separately track attempted draft mutation');
 assert(b12V5.includes('mutationExecuted = true'), 'B12 V5 must report a completed draft mutation as soon as one operation settles successfully');
 
-assert(b12V6.includes('20 * 60 * 1000'), 'B12 V6 page creation must tolerate provider-side page builds up to twenty minutes');
+assert(b12V6.includes('20 * 60 * 1000'), 'B12 V6 must preserve prior progress-aware long-wait evidence');
 assert(b12V6.includes('[B12_AGENT_PROGRESS]'), 'B12 V6 must emit visible progress heartbeats while B12 is working');
 assert(b12V6.includes('AGENT_STILL_WORKING_AT_MAX_WAIT'), 'B12 V6 must distinguish a provider still working from an ambiguous timeout');
-assert(b12V6.includes('V6_RESUMABLE_PROGRESS_AWARE_AGENT'), 'B12 V6 must identify the progress-aware publisher in evidence');
+
+assert(b12V7.includes('COMPACT_B12_RECOMMENDED_PAGE_SCAFFOLD'), 'B12 V7 must identify the compact phased prompt strategy');
+assert(b12V7.includes('GSA_ZERO_SALES_PAGE'), 'B12 V7 must carry a compact GSA page prompt');
+assert(b12V7.includes('FEDERAL_REVENUE_GAP_PAGE'), 'B12 V7 must carry a compact federal revenue-gap prompt');
+assert(b12V7.includes('RECOMPETE_VEHICLE_PAGE'), 'B12 V7 must carry a compact recompete/vehicle prompt');
+assert(b12V7.includes('AGENT_STALLED_NO_VISIBLE_PROGRESS'), 'B12 V7 must stop on stale Thinking instead of waiting indefinitely');
+assert(b12V7.includes('6 * 60 * 1000'), 'B12 V7 must use a bounded no-visible-progress threshold');
+assert(b12V7.includes('extends V6Publisher'), 'B12 V7 must inherit V6 resumability and publication gates');
 
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
@@ -91,4 +99,6 @@ console.log('B12_CURRENT_AGENT_CHAT_DISCOVERY=GREEN');
 console.log('B12_SINGLE_SESSION_AUTH_STAGE=GREEN');
 console.log('B12_RESUMABLE_LONG_AGENT_SETTLE=GREEN');
 console.log('B12_PROGRESS_AWARE_LONG_PROVIDER_WAIT=GREEN');
+console.log('B12_PHASED_COMPACT_PROMPTS=GREEN');
+console.log('B12_STALE_THINKING_DETECTION=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
