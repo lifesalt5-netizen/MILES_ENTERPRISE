@@ -73,7 +73,7 @@ assert(b12V7.includes('FEDERAL_REVENUE_GAP_PAGE'), 'B12 V7 must carry a compact 
 assert(b12V7.includes('RECOMPETE_VEHICLE_PAGE'), 'B12 V7 must carry a compact recompete/vehicle prompt');
 assert(b12V7.includes('AGENT_STALLED_NO_VISIBLE_PROGRESS'), 'B12 V7 must stop on stale Thinking instead of waiting indefinitely');
 assert(b12V7.includes('6 * 60 * 1000'), 'B12 V7 must use a bounded no-visible-progress threshold');
-assert(b12V7.includes('publicPublish'), 'B12 V7 must inherit governed publication truth');
+assert(b12V7.includes('extends V6Publisher'), 'B12 V7 must inherit V6 resumability and publication gates');
 
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
