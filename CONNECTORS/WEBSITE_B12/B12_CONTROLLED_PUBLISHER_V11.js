@@ -16,6 +16,16 @@ function hasExplicitCompletion(text) {
 }
 
 class B12ControlledPublisherV11 extends V10Publisher {
+  seedIds() {
+    const ids = new Set(super.seedIds());
+    if (this.manifest?.site === 'pathways2gc.com') {
+      // Live V10 evidence showed B12 explicitly said it created this page and rendered its page content,
+      // even though the older settle detector falsely kept a historical Thinking signal alive.
+      ids.add('GSA_ZERO_SALES_PAGE_SCAFFOLD');
+    }
+    return [...ids];
+  }
+
   async waitForAgentSettled(timeoutMs = 15 * 60 * 1000) {
     const started = Date.now();
     let firstTail = null;
@@ -126,7 +136,8 @@ class B12ControlledPublisherV11 extends V10Publisher {
         recentWorkingWindowChars: 3000,
         historicalWorkingTextDoesNotBlockCompletion: true,
         explicitProviderCompletionAccepted: true,
-        durableSuccessLedgerRetained: true
+        durableSuccessLedgerRetained: true,
+        migratedLiveSuccessIds: this.manifest?.site === 'pathways2gc.com' ? ['GSA_ZERO_SALES_PAGE_SCAFFOLD'] : []
       };
       try {
         const file = result.outputFile || this.latestReportFile();
