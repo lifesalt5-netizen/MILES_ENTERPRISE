@@ -7,6 +7,8 @@ on:
       - 'SCRIPTS/ExecuteDueNurtureCloseout.ps1'
       - 'EXECUTE_DUE_NURTURE_CLOSEOUT.cmd'
       - 'CONNECTORS/WEBSITE_B12/B12_AUTH_BOOTSTRAP.js'
+      - 'CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V3.js'
+      - 'CONNECTORS/WEBSITE_B12/RUN_CONTROLLED_PUBLISH_V2.ps1'
       - 'CONNECTORS/WEBSITE_B12/modules/session.js'
       - 'SCRIPTS/B12AuthenticateAndStage.ps1'
       - 'B12_AUTHENTICATE_AND_STAGE.cmd'
@@ -26,6 +28,7 @@ jobs:
         run: |
           node --check RUN_P2GC_DUE_NURTURE_CLOSEOUT.js
           node --check CONNECTORS/WEBSITE_B12/B12_AUTH_BOOTSTRAP.js
+          node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V3.js
           node --check CONNECTORS/WEBSITE_B12/modules/session.js
       - name: Static safety contract
         run: node TESTS/Test_PostSoakCloseoutSafety.js
@@ -42,5 +45,8 @@ jobs:
           if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
           $errors = $null
           [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\B12AuthenticateAndStage.ps1'), [ref]$null, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'CONNECTORS\WEBSITE_B12\RUN_CONTROLLED_PUBLISH_V2.ps1'), [ref]$null, [ref]$errors) | Out-Null
           if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
           Write-Host 'POST_SOAK_CLOSEOUT_POWERSHELL51_SYNTAX=GREEN'
