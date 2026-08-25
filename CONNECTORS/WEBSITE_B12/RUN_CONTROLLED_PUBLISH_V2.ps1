@@ -6,7 +6,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $ConnectorRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $MilesRoot = Resolve-Path (Join-Path $ConnectorRoot '..\..')
-$Publisher = Join-Path $ConnectorRoot 'B12_CONTROLLED_PUBLISHER_V3.js'
+$Publisher = Join-Path $ConnectorRoot 'B12_CONTROLLED_PUBLISHER_V4.js'
 $Profile = Join-Path $MilesRoot 'DATA\browser_profiles\b12_miles'
 
 if (-not $env:MILES_ROOT) { $env:MILES_ROOT = $MilesRoot.Path }
@@ -14,7 +14,7 @@ if (-not $env:B12_USER_DATA_DIR -and -not $env:B12_CDP_URL) { $env:B12_USER_DATA
 $env:P2GC_B12_APPLY = if ($Apply) { 'true' } else { 'false' }
 $env:P2GC_B12_PUBLISH = if ($Publish) { 'true' } else { 'false' }
 
-Write-Host 'P2GC B12 Controlled Publisher V3 (frame-aware B12 3.0 editor)'
+Write-Host 'P2GC B12 Controlled Publisher V4 (frame-aware current B12 Agent/Chat UI)'
 Write-Host "MILES_ROOT: $($env:MILES_ROOT)"
 Write-Host "Apply requested: $Apply"
 Write-Host "Publish requested: $Publish"
