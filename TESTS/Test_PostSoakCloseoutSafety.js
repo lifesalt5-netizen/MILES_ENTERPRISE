@@ -16,6 +16,7 @@ const b12V5 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V6 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V6.js'), 'utf8');
 const b12V7 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V7.js'), 'utf8');
 const b12V8 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V8.js'), 'utf8');
+const b12V9 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V9.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -41,12 +42,13 @@ assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readines
 assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
 assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V8')"), 'single-session closeout must use two-phase V8 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V9')"), 'single-session closeout must use durable-resume V9 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
 assert(b12Ps.includes('B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'PowerShell closeout must use the single-session runner');
 assert(b12Ps.includes("B12_RESUME_SUCCESSFUL_OPERATIONS = 'true'"), 'B12 closeout must resume prior confirmed successful draft operations instead of blindly repeating them');
+assert(b12Ps.includes("B12_CONFIRMED_SUCCESSFUL_OPERATION_SEED = 'HOMEPAGE_CONVERSION_V2'"), 'B12 closeout must migrate the already-proven homepage success instead of re-running it');
 assert(!b12Ps.includes('-Publish'), 'B12 closeout must not request public publish');
 
 assert(b12Runner.includes('B12_CONTROLLED_PUBLISHER_V4.js'), 'standalone B12 staging runner must retain current-ui V4 compatibility path');
@@ -92,6 +94,14 @@ assert(b12V8.includes('Will you guarantee sales?'), 'B12 V8 GSA content phase mu
 assert(b12V8.includes("Create a page called 'Federal Revenue Gap Analysis'"), 'B12 V8 must use a minimal federal-gap scaffold');
 assert(b12V8.includes("Create a page called 'Recompete & Vehicle Growth Scan'"), 'B12 V8 must use a minimal recompete scaffold');
 
+assert(b12V9.includes('extends V8Publisher'), 'B12 V9 must preserve the V8 two-phase page build');
+assert(b12V9.includes('successful_operations.json'), 'B12 V9 must persist successful operation state outside latest.json');
+assert(b12V9.includes('promptHash'), 'B12 V9 durable resume must bind success to the exact current operation prompt');
+assert(b12V9.includes('RESUMED_FROM_DURABLE_SUCCESS_LEDGER'), 'B12 V9 must explicitly report durable resumes');
+assert(b12V9.includes('CONFIRMED_SUCCESS_MIGRATION_FROM_PRIOR_LIVE_EVIDENCE'), 'B12 V9 must support explicit migration of already-proven live successes');
+assert(b12V9.includes('LIVE_B12_OPERATION_SUCCESS'), 'B12 V9 must persist newly completed B12 operations');
+assert(b12V9.includes('V9_DURABLE_RESUME_TWO_PHASE_PAGE_BUILD'), 'B12 V9 must identify durable two-phase operation mode');
+
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
   title: 'B12 Editor',
@@ -120,4 +130,5 @@ console.log('B12_PROGRESS_AWARE_LONG_PROVIDER_WAIT=GREEN');
 console.log('B12_PHASED_COMPACT_PROMPTS=GREEN');
 console.log('B12_STALE_THINKING_DETECTION=GREEN');
 console.log('B12_TWO_PHASE_PAGE_BUILD=GREEN');
+console.log('B12_DURABLE_SUCCESS_LEDGER=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
