@@ -1,0 +1,48 @@
+name: Combined Operational Remediation Safety
+
+on:
+  pull_request:
+    paths:
+      - 'CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V12.js'
+      - 'CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js'
+      - 'CONNECTORS/IONOS/imap_governed.js'
+      - 'SERVICES/revenue/IonosInboxCleanupService.js'
+      - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
+      - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
+      - 'SCRIPTS/RunOperationalRemediationAll.ps1'
+      - 'FIX_ALL_OPERATIONAL_PROBLEMS.cmd'
+      - 'TESTS/Test_OperationalRemediationPack.js'
+      - '.github/workflows/combined-operational-remediation.yml'
+  workflow_dispatch:
+
+jobs:
+  node-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax
+        run: |
+          node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V12.js
+          node --check CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js
+          node --check CONNECTORS/IONOS/imap_governed.js
+          node --check SERVICES/revenue/IonosInboxCleanupService.js
+          node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
+          node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
+          node --check TESTS/Test_OperationalRemediationPack.js
+      - name: Static safety contract
+        run: node TESTS/Test_OperationalRemediationPack.js
+
+  windows-powershell51:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows PowerShell 5.1 syntax
+        shell: powershell
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\RunOperationalRemediationAll.ps1'), [ref]$null, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
+          Write-Host 'COMBINED_OPERATIONAL_REMEDIATION_POWERSHELL51=GREEN'
