@@ -34,12 +34,28 @@ function bodyText(email = {}) { return stripQuotedHistory(rawBodyText(email)); }
 function senderEmail(email = {}) { return clean(email?.from_address_email || email?.from || email?.sender_email || email?.lead || email?.lead_email).toLowerCase(); }
 function matches(text, patterns) { return patterns.some(pattern => pattern.test(text)); }
 function automatedSender(from) { const local = String(from || "").split("@")[0].toLowerCase(); return /(?:^|[._-])(no-?reply|noreply|do-?not-?reply|automated|automation|auto-?reply|notifications?|mailer-daemon|postmaster)(?:$|[._-])/i.test(local) || /automated[-_.]?emails?/i.test(local); }
+function nextDayFromNow(now = new Date()) { return new Date(now.getTime() + 86400000).toISOString(); }
+function safeReturnFollowUp(parsed, now = new Date()) {
+  if (!parsed || Number.isNaN(parsed.getTime())) return null;
+  const follow = new Date(parsed.getTime() + 86400000);
+  // Historical OOO mail must never be rolled into the next calendar year. If the stated
+  // return has already passed, surface it promptly on the next day instead.
+  if (follow.getTime() <= now.getTime()) return nextDayFromNow(now);
+  return follow.toISOString();
+}
 function parseReturnDate(text, now = new Date()) {
   const source = clean(text);
   const monthDay = source.match(/\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})(?:st|nd|rd|th)?\b/i);
-  if (monthDay) { const parsed = new Date(`${monthDay[1]} ${monthDay[2]}, ${now.getUTCFullYear()} 12:00:00 UTC`); if (!Number.isNaN(parsed.getTime())) { if (parsed.getTime() < now.getTime() - 7 * 86400000) parsed.setUTCFullYear(parsed.getUTCFullYear() + 1); return new Date(parsed.getTime() + 86400000).toISOString(); } }
+  if (monthDay) {
+    const parsed = new Date(`${monthDay[1]} ${monthDay[2]}, ${now.getUTCFullYear()} 12:00:00 UTC`);
+    return safeReturnFollowUp(parsed, now);
+  }
   const numeric = source.match(/\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/);
-  if (numeric) { const year = numeric[3] ? Number(numeric[3].length === 2 ? `20${numeric[3]}` : numeric[3]) : now.getUTCFullYear(); const parsed = new Date(Date.UTC(year, Number(numeric[1]) - 1, Number(numeric[2]), 12)); if (!Number.isNaN(parsed.getTime())) return new Date(parsed.getTime() + 86400000).toISOString(); }
+  if (numeric) {
+    const year = numeric[3] ? Number(numeric[3].length === 2 ? `20${numeric[3]}` : numeric[3]) : now.getUTCFullYear();
+    const parsed = new Date(Date.UTC(year, Number(numeric[1]) - 1, Number(numeric[2]), 12));
+    return safeReturnFollowUp(parsed, now);
+  }
   return null;
 }
 function addDaysIso(days, now = new Date()) { return new Date(now.getTime() + days * 86400000).toISOString(); }
@@ -117,4 +133,4 @@ module.exports.ReplyIntelligenceService = ReplyIntelligenceService;
 module.exports.CATEGORIES = CATEGORIES;
 module.exports.SALES_POSITIVE = SALES_POSITIVE;
 module.exports.HARD_SUPPRESSION = HARD_SUPPRESSION;
-module.exports.helpers = { clean, stripHtml, rawBodyText, stripQuotedHistory, bodyText, senderEmail, automatedSender, matches, parseReturnDate, addDaysIso, notNowDays };
+module.exports.helpers = { clean, stripHtml, rawBodyText, stripQuotedHistory, bodyText, senderEmail, automatedSender, matches, parseReturnDate, safeReturnFollowUp, nextDayFromNow, addDaysIso, notNowDays };
