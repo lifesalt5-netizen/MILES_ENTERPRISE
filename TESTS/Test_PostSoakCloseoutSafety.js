@@ -12,6 +12,7 @@ const b12 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_AU
 const b12Single = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'utf8');
 const b12V3 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V3.js'), 'utf8');
 const b12V4 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V4.js'), 'utf8');
+const b12V5 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V5.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -34,13 +35,15 @@ assert(b12Single.includes('publisher.close = async () => {}'), 'publisher must l
 assert(b12Single.includes('B12_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION'), 'blank authenticated B12 UI must fail closed with explicit diagnostics');
 assert(b12Single.includes('click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V5')"), 'single-session closeout must use resumable long-wait V5 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
 assert(b12Ps.includes('B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'PowerShell closeout must use the single-session runner');
+assert(b12Ps.includes("B12_RESUME_SUCCESSFUL_OPERATIONS = 'true'"), 'B12 closeout must resume prior confirmed successful draft operations instead of blindly repeating them');
 assert(!b12Ps.includes('-Publish'), 'B12 closeout must not request public publish');
 
-assert(b12Runner.includes('B12_CONTROLLED_PUBLISHER_V4.js'), 'standalone B12 staging runner must use current-ui V4 publisher');
+assert(b12Runner.includes('B12_CONTROLLED_PUBLISHER_V4.js'), 'standalone B12 staging runner must retain current-ui V4 compatibility path');
 assert(b12V3.includes('this.page.frames()'), 'B12 3.0 publisher must enumerate editor frames');
 assert(b12V3.includes('combinedEditorText'), 'B12 3.0 publisher must aggregate editor text across frames');
 assert(b12V3.includes('B12_AI_AGENT_INPUT_ALREADY_VISIBLE'), 'B12 3.0 publisher must use an already-visible AI Agent input before requiring a trigger');
@@ -51,6 +54,13 @@ assert(b12V4.includes("getByText('Chat', { exact: true })"), 'current B12 top Ch
 assert(b12V4.includes("getByText('Agent', { exact: true })"), 'current B12 left Agent control must be discoverable');
 assert(b12V4.includes("scope.getByRole('button', { name: exactNavText('Chat') })"), 'current B12 Chat button must be preferred');
 assert(b12V4.includes("scope.getByRole('button', { name: exactNavText('Agent') })"), 'current B12 Agent button must be supported');
+
+assert(b12V5.includes('8 * 60 * 1000'), 'B12 page creation must allow a longer AI settle window than the old three-minute limit');
+assert(b12V5.includes('RESUMED_FROM_PRIOR_SUCCESSFUL_OPERATION'), 'B12 V5 must explicitly report resumed successful operations');
+assert(b12V5.includes('B12_RESUME_SUCCESSFUL_OPERATIONS'), 'B12 V5 resume must remain opt-in via the governed closeout wrapper');
+assert(b12V5.includes('publicPublishExecuted: false'), 'B12 V5 must initialize public publish truth to false');
+assert(b12V5.includes('mutationAttempted: false'), 'B12 V5 must separately track attempted draft mutation');
+assert(b12V5.includes('mutationExecuted = true'), 'B12 V5 must report a completed draft mutation as soon as one operation settles successfully');
 
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
@@ -74,4 +84,5 @@ console.log('B12_AUTH_EDITOR_SESSION_DETECTION=GREEN');
 console.log('B12_FRAME_AWARE_EDITOR_DISCOVERY=GREEN');
 console.log('B12_CURRENT_AGENT_CHAT_DISCOVERY=GREEN');
 console.log('B12_SINGLE_SESSION_AUTH_STAGE=GREEN');
+console.log('B12_RESUMABLE_LONG_AGENT_SETTLE=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');

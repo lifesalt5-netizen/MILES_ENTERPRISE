@@ -14,9 +14,10 @@ $latest = Join-Path $Root 'DATA\website_ops\b12_conversion_v2\latest.json'
 $authLatest = Join-Path $Root 'DATA\website_ops\b12_auth\latest.json'
 
 Write-Host '============================================================'
-Write-Host 'P2GC B12 AUTHENTICATE + STAGE — SINGLE SESSION'
+Write-Host 'P2GC B12 AUTHENTICATE + STAGE — SINGLE SESSION / RESUMABLE'
 Write-Host '============================================================'
 Write-Host 'This keeps authentication and staging inside the SAME B12 browser session.'
+Write-Host 'Previously completed successful B12 draft operations may be resumed instead of repeated.'
 Write-Host 'MILES does not capture or store your password.'
 Write-Host 'This may edit B12 STAGING after login.'
 Write-Host 'PUBLIC PUBLISH REMAINS DISABLED.'
@@ -39,6 +40,7 @@ $oldWrite = $env:B12_WRITE_ENABLED
 $oldPublish = $env:B12_PUBLISH_ENABLED
 $oldApply = $env:P2GC_B12_APPLY
 $oldRequestedPublish = $env:P2GC_B12_PUBLISH
+$oldResume = $env:B12_RESUME_SUCCESSFUL_OPERATIONS
 $oldProfile = $env:B12_USER_DATA_DIR
 
 try {
@@ -49,6 +51,7 @@ try {
     $env:B12_PUBLISH_ENABLED = 'false'
     $env:P2GC_B12_APPLY = 'true'
     $env:P2GC_B12_PUBLISH = 'false'
+    $env:B12_RESUME_SUCCESSFUL_OPERATIONS = 'true'
 
     & node $singleSession
     $stageCode = $LASTEXITCODE
@@ -60,6 +63,7 @@ try {
         @('B12_PUBLISH_ENABLED',$oldPublish),
         @('P2GC_B12_APPLY',$oldApply),
         @('P2GC_B12_PUBLISH',$oldRequestedPublish),
+        @('B12_RESUME_SUCCESSFUL_OPERATIONS',$oldResume),
         @('B12_USER_DATA_DIR',$oldProfile)
     )) {
         $name = $pair[0]; $value = $pair[1]
@@ -84,7 +88,10 @@ if ($stageCode -ne 0) {
         Write-Host ''
         Write-Host '=== B12 STAGING RESULT ==='
         $failedReport = Get-Content -Raw $latest | ConvertFrom-Json
-        $failedReport | Select-Object status,ok,mutationExecuted,publicPublishExecuted | Format-List
+        $failedReport | Select-Object status,ok,publisherVersion,mutationAttempted,mutationExecuted,publicPublishExecuted | Format-List
+        if ($null -ne $failedReport.resume) {
+            $failedReport.resume | Format-List *
+        }
     }
     Write-Host 'B12_STAGING_NOT_GREEN'
     exit $stageCode
@@ -98,7 +105,10 @@ if (-not (Test-Path $latest)) {
 $report = Get-Content -Raw $latest | ConvertFrom-Json
 Write-Host ''
 Write-Host '=== B12 STAGING RESULT ==='
-$report | Select-Object status,ok,mutationExecuted,publicPublishExecuted | Format-List
+$report | Select-Object status,ok,publisherVersion,mutationAttempted,mutationExecuted,publicPublishExecuted | Format-List
+if ($null -ne $report.resume) {
+    $report.resume | Format-List *
+}
 
 if ($report.ok -ne $true -or $report.staging.ok -ne $true -or $report.publicPublishExecuted -eq $true) {
     Write-Host 'B12_STAGING_NOT_GREEN'
