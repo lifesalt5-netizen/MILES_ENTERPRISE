@@ -7,6 +7,7 @@ on:
       - 'SCRIPTS/ExecuteDueNurtureCloseout.ps1'
       - 'EXECUTE_DUE_NURTURE_CLOSEOUT.cmd'
       - 'CONNECTORS/WEBSITE_B12/B12_AUTH_BOOTSTRAP.js'
+      - 'CONNECTORS/WEBSITE_B12/modules/session.js'
       - 'SCRIPTS/B12AuthenticateAndStage.ps1'
       - 'B12_AUTHENTICATE_AND_STAGE.cmd'
       - 'TESTS/Test_PostSoakCloseoutSafety.js'
@@ -25,6 +26,7 @@ jobs:
         run: |
           node --check RUN_P2GC_DUE_NURTURE_CLOSEOUT.js
           node --check CONNECTORS/WEBSITE_B12/B12_AUTH_BOOTSTRAP.js
+          node --check CONNECTORS/WEBSITE_B12/modules/session.js
       - name: Static safety contract
         run: node TESTS/Test_PostSoakCloseoutSafety.js
 

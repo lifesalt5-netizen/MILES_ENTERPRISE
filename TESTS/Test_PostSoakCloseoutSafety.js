@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
+const { classifySessionSnapshot } = require('../CONNECTORS/WEBSITE_B12/modules/session');
 
 const root = path.resolve(__dirname, '..');
 const nurture = fs.readFileSync(path.join(root, 'RUN_P2GC_DUE_NURTURE_CLOSEOUT.js'), 'utf8');
@@ -25,4 +26,23 @@ assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing m
 assert(b12Ps.includes('-File $publisher -Apply'), 'B12 closeout should stage changes');
 assert(!b12Ps.includes('-File $publisher -Apply -Publish'), 'B12 closeout must not request public publish');
 
+const authenticatedEditor = classifySessionSnapshot({
+  url: 'https://b12.io/client/k3pMXaMy/site_builder/',
+  title: 'B12 Editor',
+  body: 'Website editor. Contact email settings are available here.',
+  hasPasswordInput: true
+});
+assert.equal(authenticatedEditor.loggedIn, true, 'authenticated B12 site_builder/editor must win over generic email/password DOM words');
+assert.equal(authenticatedEditor.loggedOut, false, 'authenticated B12 editor must not be classified logged out');
+
+const loginPage = classifySessionSnapshot({
+  url: 'https://b12.io/login/',
+  title: 'Log in to B12',
+  body: 'Welcome back. Email Password Log in',
+  hasPasswordInput: true
+});
+assert.equal(loginPage.loggedIn, false, 'B12 login page must not be classified authenticated');
+assert.equal(loginPage.loggedOut, true, 'B12 login page must remain logged out');
+
+console.log('B12_AUTH_EDITOR_SESSION_DETECTION=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
