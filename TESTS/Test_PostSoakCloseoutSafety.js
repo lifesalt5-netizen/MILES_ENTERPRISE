@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, '..');
 const nurture = fs.readFileSync(path.join(root, 'RUN_P2GC_DUE_NURTURE_CLOSEOUT.js'), 'utf8');
 const nurturePs = fs.readFileSync(path.join(root, 'SCRIPTS', 'ExecuteDueNurtureCloseout.ps1'), 'utf8');
 const b12 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_AUTH_BOOTSTRAP.js'), 'utf8');
+const b12Single = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'utf8');
 const b12V3 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V3.js'), 'utf8');
 const b12V4 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V4.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
@@ -22,14 +23,24 @@ assert(nurturePs.includes('Read-Host "Type SEND'), 'PowerShell closeout must req
 assert(nurturePs.includes("MILES_DRY_RUN = 'false'"), 'execution must explicitly open dry-run gate only after approval');
 assert(nurturePs.includes("INSTANTLY_WRITE_ENABLED = 'true'"), 'execution must explicitly open Instantly write gate only after approval');
 
-assert(b12.includes('launchPersistentContext'), 'B12 auth must use persistent browser profile');
-assert(b12.includes('credentialsCaptured: false'), 'B12 auth must explicitly record that MILES does not capture credentials');
-assert(b12.includes('Press ENTER after you are logged into B12'), 'B12 auth must require user-performed login');
-assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
-assert(b12Ps.includes('-File $publisher -Apply'), 'B12 closeout should stage changes');
-assert(!b12Ps.includes('-File $publisher -Apply -Publish'), 'B12 closeout must not request public publish');
+assert(b12.includes('launchPersistentContext'), 'legacy B12 auth must use persistent browser profile');
+assert(b12.includes('credentialsCaptured: false'), 'legacy B12 auth must explicitly record that MILES does not capture credentials');
+assert(b12Single.includes('launchPersistentContext'), 'single-session B12 closeout must use persistent browser profile');
+assert(b12Single.includes('singleBrowserSession: true'), 'single-session B12 closeout must explicitly preserve one browser session');
+assert(b12Single.includes('publisher.context = context'), 'publisher must reuse the authenticated browser context');
+assert(b12Single.includes('publisher.page = page'), 'publisher must reuse the authenticated B12 page');
+assert(b12Single.includes('publisher.open = async () => page'), 'publisher must not reopen B12 between auth and staging');
+assert(b12Single.includes('publisher.close = async () => {}'), 'publisher must leave the shared context open until outer closeout completes');
+assert(b12Single.includes('B12_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION'), 'blank authenticated B12 UI must fail closed with explicit diagnostics');
+assert(b12Single.includes('click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
+assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
 
-assert(b12Runner.includes('B12_CONTROLLED_PUBLISHER_V4.js'), 'B12 staging runner must use current-ui V4 publisher');
+assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
+assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
+assert(b12Ps.includes('B12_AUTH_AND_STAGE_SINGLE_SESSION.js'), 'PowerShell closeout must use the single-session runner');
+assert(!b12Ps.includes('-Publish'), 'B12 closeout must not request public publish');
+
+assert(b12Runner.includes('B12_CONTROLLED_PUBLISHER_V4.js'), 'standalone B12 staging runner must use current-ui V4 publisher');
 assert(b12V3.includes('this.page.frames()'), 'B12 3.0 publisher must enumerate editor frames');
 assert(b12V3.includes('combinedEditorText'), 'B12 3.0 publisher must aggregate editor text across frames');
 assert(b12V3.includes('B12_AI_AGENT_INPUT_ALREADY_VISIBLE'), 'B12 3.0 publisher must use an already-visible AI Agent input before requiring a trigger');
@@ -62,4 +73,5 @@ assert.equal(loginPage.loggedOut, true, 'B12 login page must remain logged out')
 console.log('B12_AUTH_EDITOR_SESSION_DETECTION=GREEN');
 console.log('B12_FRAME_AWARE_EDITOR_DISCOVERY=GREEN');
 console.log('B12_CURRENT_AGENT_CHAT_DISCOVERY=GREEN');
+console.log('B12_SINGLE_SESSION_AUTH_STAGE=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
