@@ -34,8 +34,11 @@ assert(b12Single.includes('publisher.context = context'), 'publisher must reuse 
 assert(b12Single.includes('publisher.page = page'), 'publisher must reuse the authenticated B12 page');
 assert(b12Single.includes('publisher.open = async () => page'), 'publisher must not reopen B12 between auth and staging');
 assert(b12Single.includes('publisher.close = async () => {}'), 'publisher must leave the shared context open until outer closeout completes');
-assert(b12Single.includes('B12_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION'), 'blank authenticated B12 UI must fail closed with explicit diagnostics');
-assert(b12Single.includes('click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
+assert(b12Single.includes('B12_FIRST_PARTY_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION'), 'blank authenticated B12 UI must fail closed with first-party diagnostics');
+assert(b12Single.includes('A support/chat widget or other third-party frame does NOT count as editor readiness.'), 'third-party widget controls must not falsely satisfy B12 editor readiness');
+assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readiness must measure first-party B12 controls separately');
+assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
+assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
 assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V7')"), 'single-session closeout must use phased-prompt V7 publisher');
 
@@ -97,6 +100,7 @@ console.log('B12_AUTH_EDITOR_SESSION_DETECTION=GREEN');
 console.log('B12_FRAME_AWARE_EDITOR_DISCOVERY=GREEN');
 console.log('B12_CURRENT_AGENT_CHAT_DISCOVERY=GREEN');
 console.log('B12_SINGLE_SESSION_AUTH_STAGE=GREEN');
+console.log('B12_FIRST_PARTY_EDITOR_READINESS=GREEN');
 console.log('B12_RESUMABLE_LONG_AGENT_SETTLE=GREEN');
 console.log('B12_PROGRESS_AWARE_LONG_PROVIDER_WAIT=GREEN');
 console.log('B12_PHASED_COMPACT_PROMPTS=GREEN');

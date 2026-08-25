@@ -34,16 +34,30 @@ async function chooseAuthenticatedPage(context, fallbackPage) {
 
 async function editorObservation(publisher) {
   const ui = await publisher.uiInventory().catch(() => null);
-  const body = clean(ui?.bodyPreview);
+  const frames = Array.isArray(ui?.frames) ? ui.frames : [];
+  const firstPartyFrames = frames.filter(frame => /^https:\/\/b12\.io\/client\//i.test(clean(frame?.url)));
+  const firstPartyBody = firstPartyFrames.map(frame => clean(frame?.bodyPreview)).filter(Boolean).join('\n');
+  const currentUiEvidence = /\b(Dashboard|Website|Agent|Chat|Scheduling|Domains|Preview|Publish)\b/i.test(firstPartyBody);
+  const firstPartyVisibleControls = firstPartyFrames.reduce((total, frame) => {
+    const buttons = (frame?.buttons || []).filter(x => clean(x)).length;
+    const links = (frame?.links || []).filter(x => clean(x)).length;
+    return total + buttons + links;
+  }, 0);
+  const firstPartyVisibleInputs = firstPartyFrames.reduce((total, frame) => total + (frame?.placeholders || []).filter(x => {
+    const type = clean(x?.type).toLowerCase();
+    return type !== 'hidden' && (clean(x?.placeholder) || clean(x?.aria) || clean(x?.role) || clean(x?.contenteditable));
+  }).length, 0);
   const visibleControls = Number(ui?.buttons?.length || 0) + Number(ui?.links?.length || 0);
   const visibleInputs = (ui?.placeholders || []).filter(x => String(x.type || '').toLowerCase() !== 'hidden').length;
-  const currentUiEvidence = /\b(Dashboard|Website|Agent|Chat|Scheduling|Domains|Preview|Publish)\b/i.test(body);
   return {
-    ok: Boolean(ui) && (currentUiEvidence || visibleControls > 0 || visibleInputs > 0),
+    ok: Boolean(ui) && (currentUiEvidence || firstPartyVisibleControls > 0 || firstPartyVisibleInputs > 0),
     ui,
     currentUiEvidence,
     visibleControls,
-    visibleInputs
+    visibleInputs,
+    firstPartyFrameCount: firstPartyFrames.length,
+    firstPartyVisibleControls,
+    firstPartyVisibleInputs
   };
 }
 
@@ -117,12 +131,13 @@ async function main() {
     let observed = await editorObservation(publisher);
     if (!observed.ok) {
       console.log('');
-      console.log('B12 EDITOR UI IS AUTHENTICATED BUT NOT YET OBSERVABLE TO MILES.');
+      console.log('B12 EDITOR UI IS AUTHENTICATED BUT REAL FIRST-PARTY EDITOR CONTROLS ARE NOT YET OBSERVABLE TO MILES.');
+      console.log('A support/chat widget or other third-party frame does NOT count as editor readiness.');
       console.log('In the browser window opened by this command, make sure the B12 site builder is visibly loaded.');
-      console.log('If you see the current B12 interface, click the Chat tab at the top once.');
+      console.log('Click the Chat tab at the top once so the B12 Agent input is visibly open.');
       console.log('Do not publish anything manually.');
-      await waitForEnter('Press ENTER after the B12 editor/chat is visibly open: ');
-      await sleep(1000);
+      await waitForEnter('Press ENTER after the B12 Chat/Agent input is visibly open: ');
+      await sleep(1500);
       observed = await editorObservation(publisher);
     }
 
@@ -131,6 +146,9 @@ async function main() {
       currentUiEvidence: observed.currentUiEvidence,
       visibleControls: observed.visibleControls,
       visibleInputs: observed.visibleInputs,
+      firstPartyFrameCount: observed.firstPartyFrameCount,
+      firstPartyVisibleControls: observed.firstPartyVisibleControls,
+      firstPartyVisibleInputs: observed.firstPartyVisibleInputs,
       frameCount: observed.ui?.frameCount || 0,
       url: observed.ui?.url || page.url(),
       title: observed.ui?.title || await page.title().catch(() => '')
@@ -140,7 +158,7 @@ async function main() {
     await page.screenshot({ path: authReport.screenshot, fullPage: true }).catch(() => null);
 
     if (!observed.ok) {
-      authReport.status = 'B12_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION';
+      authReport.status = 'B12_FIRST_PARTY_EDITOR_UI_NOT_OBSERVABLE_IN_AUTOMATION_SESSION';
       fs.writeFileSync(authOutputFile, JSON.stringify(authReport, null, 2), 'utf8');
       console.log(JSON.stringify(authReport, null, 2));
       return 3;
