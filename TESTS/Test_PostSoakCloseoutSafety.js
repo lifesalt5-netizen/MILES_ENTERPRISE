@@ -17,6 +17,7 @@ const b12V6 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V7 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V7.js'), 'utf8');
 const b12V8 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V8.js'), 'utf8');
 const b12V9 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V9.js'), 'utf8');
+const b12V10 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V10.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -42,7 +43,7 @@ assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readines
 assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
 assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V9')"), 'single-session closeout must use durable-resume V9 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V10')"), 'single-session closeout must use atomic-provider V10 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
@@ -102,6 +103,16 @@ assert(b12V9.includes('CONFIRMED_SUCCESS_MIGRATION_FROM_PRIOR_LIVE_EVIDENCE'), '
 assert(b12V9.includes('LIVE_B12_OPERATION_SUCCESS'), 'B12 V9 must persist newly completed B12 operations');
 assert(b12V9.includes('V9_DURABLE_RESUME_TWO_PHASE_PAGE_BUILD'), 'B12 V9 must identify durable two-phase operation mode');
 
+assert(b12V10.includes('extends V9Publisher'), 'B12 V10 must retain V9 durable success state');
+assert(b12V10.includes("Add a new page called '${atomicPageNames[op.id]}' to my site."), 'B12 V10 must use the current B12 3.0 minimal page-create prompt shape');
+assert(b12V10.includes('AI_AGENT_ATOMIC_PAGE_CREATE'), 'B12 V10 must identify atomic page creation separately from content work');
+assert(b12V10.includes('AI_AGENT_ATOMIC_NAV_CLEANUP'), 'B12 V10 must defer navigation cleanup to a separate atomic operation');
+assert(b12V10.includes('15 * 60 * 1000'), 'B12 V10 page creation may wait up to the provider troubleshooting boundary');
+assert(b12V10.includes('10 * 60 * 1000'), 'B12 V10 must still fail closed after prolonged no-visible-progress');
+assert(b12V10.includes('providerDiagnostics'), 'B12 V10 must retain provider-side diagnostics when an atomic task stalls');
+assert(b12V10.includes('V10_DURABLE_RESUME_ATOMIC_PAGE_CREATE'), 'B12 V10 must identify atomic provider mode');
+assert(b12V10.includes('OFFICIAL_STYLE_ATOMIC_PAGE_CREATE_THEN_CONTENT_THEN_NAV_CLEANUP'), 'B12 V10 must identify the page-create/content/navigation strategy');
+
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
   title: 'B12 Editor',
@@ -131,4 +142,5 @@ console.log('B12_PHASED_COMPACT_PROMPTS=GREEN');
 console.log('B12_STALE_THINKING_DETECTION=GREEN');
 console.log('B12_TWO_PHASE_PAGE_BUILD=GREEN');
 console.log('B12_DURABLE_SUCCESS_LEDGER=GREEN');
+console.log('B12_ATOMIC_PROVIDER_PAGE_CREATE=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
