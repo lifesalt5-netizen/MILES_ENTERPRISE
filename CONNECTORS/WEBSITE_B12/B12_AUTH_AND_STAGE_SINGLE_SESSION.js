@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const { chromium } = require('playwright');
-const B12Publisher = require('./B12_CONTROLLED_PUBLISHER_V6');
+const B12Publisher = require('./B12_CONTROLLED_PUBLISHER_V7');
 const { detectSession } = require('./modules/session');
 
 function clean(v) { return String(v || '').trim(); }
