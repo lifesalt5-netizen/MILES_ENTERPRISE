@@ -19,6 +19,7 @@ const b12V8 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V9 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V9.js'), 'utf8');
 const b12V10 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V10.js'), 'utf8');
 const b12V11 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V11.js'), 'utf8');
+const b12V12 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V12.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -44,7 +45,7 @@ assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readines
 assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
 assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V11')"), 'single-session closeout must use completion-aware V11 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V12')"), 'single-session closeout must use outcome-aware V12 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
@@ -123,6 +124,14 @@ assert(b12V11.includes('AGENT_SETTLED_RECENT_ACTIVITY_AWARE'), 'B12 V11 must set
 assert(b12V11.includes('V11_DURABLE_RESUME_COMPLETION_AWARE'), 'B12 V11 must identify completion-aware durable mode');
 assert(b12V11.includes('historicalWorkingTextDoesNotBlockCompletion: true'), 'B12 V11 must document the false-positive Thinking fix');
 
+assert(b12V12.includes('extends V11Publisher'), 'B12 V12 must preserve prior durable B12 behavior');
+assert(b12V12.includes('AGENT_CONTINUATION_REQUIRED'), 'B12 V12 must treat provider continuation requests as incomplete work');
+assert(b12V12.includes('AGENT_CONFIRMATION_REQUIRED'), 'B12 V12 must handle bounded provider confirmation steps');
+assert(b12V12.includes('AGENT_OPERATION_FULLY_COMPLETED_V12'), 'B12 V12 must only durable-resume a fully completed operation');
+assert(b12V12.includes('legacyFalseGreenLedgerEntriesPruned: true'), 'B12 V12 must prune prior false-green GSA content/navigation ledger entries');
+assert(b12V12.includes('marketingCopyCannotTriggerWorkingState: true'), 'B12 V12 must not interpret marketing copy as provider working state');
+assert(b12V12.includes('publicPublishStillGated: true'), 'B12 V12 must preserve public publish gating');
+
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
   title: 'B12 Editor',
@@ -154,4 +163,5 @@ console.log('B12_TWO_PHASE_PAGE_BUILD=GREEN');
 console.log('B12_DURABLE_SUCCESS_LEDGER=GREEN');
 console.log('B12_ATOMIC_PROVIDER_PAGE_CREATE=GREEN');
 console.log('B12_COMPLETION_AWARE_PROVIDER_DETECTION=GREEN');
+console.log('B12_FULL_OUTCOME_CONTINUATION_CONFIRMATION=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
