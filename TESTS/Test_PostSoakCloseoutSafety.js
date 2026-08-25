@@ -15,6 +15,7 @@ const b12V4 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_
 const b12V5 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V5.js'), 'utf8');
 const b12V6 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V6.js'), 'utf8');
 const b12V7 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V7.js'), 'utf8');
+const b12V8 = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'B12_CONTROLLED_PUBLISHER_V8.js'), 'utf8');
 const b12Runner = fs.readFileSync(path.join(root, 'CONNECTORS', 'WEBSITE_B12', 'RUN_CONTROLLED_PUBLISH_V2.ps1'), 'utf8');
 const b12Ps = fs.readFileSync(path.join(root, 'SCRIPTS', 'B12AuthenticateAndStage.ps1'), 'utf8');
 
@@ -40,7 +41,7 @@ assert(b12Single.includes('firstPartyVisibleControls'), 'single-session readines
 assert(b12Single.includes("/^https:\\/\\/b12\\.io\\/client\\//i"), 'single-session readiness must scope editor evidence to the B12 client frame');
 assert(b12Single.includes('click the Chat tab at the top once') || b12Single.includes('Click the Chat tab at the top once'), 'single-session closeout may request a one-time manual Chat reveal without publishing');
 assert(b12Single.includes('credentialsCaptured: false'), 'single-session B12 flow must not capture credentials');
-assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V7')"), 'single-session closeout must use phased-prompt V7 publisher');
+assert(b12Single.includes("require('./B12_CONTROLLED_PUBLISHER_V8')"), 'single-session closeout must use two-phase V8 publisher');
 
 assert(b12Ps.includes("B12_PUBLISH_ENABLED = 'false'"), 'B12 public publishing must remain disabled');
 assert(b12Ps.includes("P2GC_B12_PUBLISH = 'false'"), 'B12 requested publish flag must remain false');
@@ -78,6 +79,19 @@ assert(b12V7.includes('AGENT_STALLED_NO_VISIBLE_PROGRESS'), 'B12 V7 must stop on
 assert(b12V7.includes('6 * 60 * 1000'), 'B12 V7 must use a bounded no-visible-progress threshold');
 assert(b12V7.includes('extends V6Publisher'), 'B12 V7 must inherit V6 resumability and publication gates');
 
+assert(b12V8.includes('extends V7Publisher'), 'B12 V8 must inherit V7 stale-task detection and V5 resumability');
+assert(b12V8.includes('AI_AGENT_PAGE_SCAFFOLD'), 'B12 V8 must split structural page creation into a scaffold phase');
+assert(b12V8.includes("id: `${op.id}_SCAFFOLD`"), 'B12 V8 scaffold must have its own resumable operation id');
+assert(b12V8.includes('required_markers: []'), 'B12 scaffold phase must not pretend content markers already exist');
+assert(b12V8.includes('TWO_PHASE_SCAFFOLD_THEN_CONTENT'), 'B12 V8 must identify the two-phase prompt strategy');
+assert(b12V8.includes("Create a page called 'GSA Zero-Sales Diagnostic'"), 'B12 V8 must create or reuse the GSA page with a minimal scaffold request');
+assert(b12V8.includes("On the existing 'GSA Zero-Sales Diagnostic' page only"), 'B12 V8 must separate GSA content from structural creation');
+assert(b12V8.includes('Your GSA Schedule Should Not Be Shelfware.'), 'B12 V8 GSA content phase must preserve the required headline');
+assert(b12V8.includes('Review My GSA Revenue Gap'), 'B12 V8 GSA content phase must preserve the required CTA');
+assert(b12V8.includes('Will you guarantee sales?'), 'B12 V8 GSA content phase must preserve the required FAQ marker');
+assert(b12V8.includes("Create a page called 'Federal Revenue Gap Analysis'"), 'B12 V8 must use a minimal federal-gap scaffold');
+assert(b12V8.includes("Create a page called 'Recompete & Vehicle Growth Scan'"), 'B12 V8 must use a minimal recompete scaffold');
+
 const authenticatedEditor = classifySessionSnapshot({
   url: 'https://b12.io/client/k3pMXaMy/site_builder/',
   title: 'B12 Editor',
@@ -105,4 +119,5 @@ console.log('B12_RESUMABLE_LONG_AGENT_SETTLE=GREEN');
 console.log('B12_PROGRESS_AWARE_LONG_PROVIDER_WAIT=GREEN');
 console.log('B12_PHASED_COMPACT_PROMPTS=GREEN');
 console.log('B12_STALE_THINKING_DETECTION=GREEN');
+console.log('B12_TWO_PHASE_PAGE_BUILD=GREEN');
 console.log('POST_SOAK_CLOSEOUT_SAFETY=GREEN');
