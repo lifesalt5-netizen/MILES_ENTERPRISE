@@ -7,8 +7,10 @@ on:
       - 'CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js'
       - 'CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js'
       - 'CONNECTORS/IONOS/imap_governed.js'
+      - 'CONNECTORS/INSTANTLY/connector.js'
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
+      - 'SERVICES/revenue/InstantlySenderFailoverService.js'
       - 'SERVICES/revenue/ReplyIntelligenceService.js'
       - 'SERVICES/ExecutiveResponseService.js'
       - 'SERVICES/ProductionTruthReconciliationService.js'
@@ -23,6 +25,7 @@ on:
       - 'SERVICES/proposal/P2GCProposalCommandService.js'
       - 'SERVICES/customer/P2GCCustomerDeliveryService.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
+      - 'SCRIPTS/AuditInstantlyInboxPlacement.js'
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'SCRIPTS/AuditOrionRefreshSources.js'
       - 'SCRIPTS/AuditOrionRebuildReadiness.js'
@@ -33,6 +36,8 @@ on:
       - 'FIX_ALL_OPERATIONAL_PROBLEMS.cmd'
       - 'TESTS/Test_OperationalRemediationPack.js'
       - 'TESTS/Test_GroupedRemediationV2.js'
+      - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/instantly_sender_failover.test.js'
       - 'TESTS/executive_response_service.test.js'
       - 'TESTS/unified_miles_gateway.test.js'
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
@@ -50,14 +55,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
       - name: Syntax
         run: |
           node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V12.js
           node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js
           node --check CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js
           node --check CONNECTORS/IONOS/imap_governed.js
+          node --check CONNECTORS/INSTANTLY/connector.js
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
+          node --check SERVICES/revenue/InstantlySenderFailoverService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/ExecutiveResponseService.js
           node --check SERVICES/ProductionTruthReconciliationService.js
@@ -66,6 +76,7 @@ jobs:
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
+          node --check SCRIPTS/AuditInstantlyInboxPlacement.js
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check SCRIPTS/AuditOrionRefreshSources.js
           node --check SCRIPTS/AuditOrionRebuildReadiness.js
@@ -74,6 +85,8 @@ jobs:
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
+          node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/instantly_sender_failover.test.js
           node --check TESTS/executive_response_service.test.js
           node --check TESTS/unified_miles_gateway.test.js
           node --check TESTS/ceo_surface_screen_acceptance.test.js
@@ -84,6 +97,8 @@ jobs:
         run: |
           node TESTS/Test_OperationalRemediationPack.js
           node TESTS/Test_GroupedRemediationV2.js
+          node TESTS/Test_InstantlyGuardedReplySend.js
+          node TESTS/instantly_sender_failover.test.js
           node --test TESTS/executive_response_service.test.js
           node TESTS/unified_miles_gateway.test.js
           node TESTS/ceo_surface_screen_acceptance.test.js
