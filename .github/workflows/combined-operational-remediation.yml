@@ -12,6 +12,7 @@ on:
       - 'SERVICES/revenue/ReplyIntelligenceService.js'
       - 'SERVICES/ExecutiveResponseService.js'
       - 'SERVICES/ProductionTruthReconciliationService.js'
+      - 'SERVICES/RepositoryRiskQualificationService.js'
       - 'SERVICES/digital_coo/public/app.js'
       - 'SERVICES/digital_coo/UnifiedMilesGateway.js'
       - 'SERVICES/ceo_dashboard/public/**'
@@ -22,6 +23,8 @@ on:
       - 'SERVICES/customer/P2GCCustomerDeliveryService.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
+      - 'SCRIPTS/AuditOrionRefreshSources.js'
+      - 'SCRIPTS/QualifyRepositoryRisks.js'
       - 'SCRIPTS/ReconcileProductionTruth.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
       - 'SCRIPTS/RunOperationalRemediationAll.ps1'
@@ -32,6 +35,7 @@ on:
       - 'TESTS/unified_miles_gateway.test.js'
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
       - 'TESTS/production_truth_reconciliation.test.js'
+      - 'TESTS/repository_risk_qualification.test.js'
       - '.github/workflows/combined-operational-remediation.yml'
   workflow_dispatch:
 
@@ -54,10 +58,13 @@ jobs:
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/ExecutiveResponseService.js
           node --check SERVICES/ProductionTruthReconciliationService.js
+          node --check SERVICES/RepositoryRiskQualificationService.js
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
+          node --check SCRIPTS/AuditOrionRefreshSources.js
+          node --check SCRIPTS/QualifyRepositoryRisks.js
           node --check SCRIPTS/ReconcileProductionTruth.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
           node --check TESTS/Test_OperationalRemediationPack.js
@@ -66,6 +73,7 @@ jobs:
           node --check TESTS/unified_miles_gateway.test.js
           node --check TESTS/ceo_surface_screen_acceptance.test.js
           node --check TESTS/production_truth_reconciliation.test.js
+          node --check TESTS/repository_risk_qualification.test.js
       - name: Static safety contract
         run: |
           node TESTS/Test_OperationalRemediationPack.js
@@ -74,6 +82,7 @@ jobs:
           node TESTS/unified_miles_gateway.test.js
           node TESTS/ceo_surface_screen_acceptance.test.js
           node TESTS/production_truth_reconciliation.test.js
+          node TESTS/repository_risk_qualification.test.js
 
   windows-powershell51:
     runs-on: windows-latest
