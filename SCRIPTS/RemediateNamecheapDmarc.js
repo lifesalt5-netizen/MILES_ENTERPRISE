@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const https = require('https');
 const { URLSearchParams } = require('url');
 const { promises: dns } = require('dns');
