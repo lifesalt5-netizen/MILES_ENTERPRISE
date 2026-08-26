@@ -4,14 +4,18 @@ on:
   pull_request:
     paths:
       - 'CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V12.js'
+      - 'CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js'
       - 'CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js'
       - 'CONNECTORS/IONOS/imap_governed.js'
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
+      - 'SERVICES/revenue/ReplyIntelligenceService.js'
+      - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
       - 'SCRIPTS/RunOperationalRemediationAll.ps1'
       - 'FIX_ALL_OPERATIONAL_PROBLEMS.cmd'
       - 'TESTS/Test_OperationalRemediationPack.js'
+      - 'TESTS/Test_GroupedRemediationV2.js'
       - '.github/workflows/combined-operational-remediation.yml'
   workflow_dispatch:
 
@@ -26,14 +30,20 @@ jobs:
       - name: Syntax
         run: |
           node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V12.js
+          node --check CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js
           node --check CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js
           node --check CONNECTORS/IONOS/imap_governed.js
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
+          node --check SERVICES/revenue/ReplyIntelligenceService.js
+          node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
           node --check TESTS/Test_OperationalRemediationPack.js
+          node --check TESTS/Test_GroupedRemediationV2.js
       - name: Static safety contract
-        run: node TESTS/Test_OperationalRemediationPack.js
+        run: |
+          node TESTS/Test_OperationalRemediationPack.js
+          node TESTS/Test_GroupedRemediationV2.js
 
   windows-powershell51:
     runs-on: windows-latest
