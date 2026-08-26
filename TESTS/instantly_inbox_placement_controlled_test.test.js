@@ -70,5 +70,19 @@ function clientFor({ accounts = [], options = [], tests = [], created = null } =
   assert.strictEqual(reused.reused, true);
   assert.strictEqual(existingClient.calls.some(c => c.req.method === 'POST'), false);
 
+  const forceClient = clientFor({
+    accounts: [{ email: 'good@example.com', status: 1, inbox_placement_test_limit: 1 }],
+    options: providers,
+    tests: [{ id: 'existing-1', name: 'P2GC Baseline Inbox Placement 2026-08-26', status: 1 }]
+  });
+  const forceSvc = new InstantlyInboxPlacementTestService({ client: forceClient, now: () => new Date('2026-08-26T12:34:56.789Z') });
+  const forced = await forceSvc.createControlledBaseline({ forceNew: true });
+  assert.strictEqual(forced.ok, true);
+  assert.strictEqual(forced.created, true);
+  assert.strictEqual(forced.reused, false);
+  assert.strictEqual(forced.plan.existingTest, null);
+  assert(forced.plan.name.includes('POST-DMARC'));
+  assert(forceClient.calls.some(c => c.endpoint === '/inbox-placement-tests' && c.req.method === 'POST'));
+
   console.log('INSTANTLY_CONTROLLED_INBOX_PLACEMENT_TEST=PASS');
 })().catch(err => { console.error(err.stack || err); process.exitCode = 1; });
