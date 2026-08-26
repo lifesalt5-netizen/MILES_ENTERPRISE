@@ -11,6 +11,7 @@ on:
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
       - 'SERVICES/revenue/InstantlySenderFailoverService.js'
+      - 'SERVICES/revenue/InstantlyInboxPlacementTestService.js'
       - 'SERVICES/revenue/ReplyIntelligenceService.js'
       - 'SERVICES/ExecutiveResponseService.js'
       - 'SERVICES/ProductionTruthReconciliationService.js'
@@ -26,6 +27,7 @@ on:
       - 'SERVICES/customer/P2GCCustomerDeliveryService.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'SCRIPTS/AuditInstantlyInboxPlacement.js'
+      - 'SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js'
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'SCRIPTS/AuditOrionRefreshSources.js'
       - 'SCRIPTS/AuditOrionRebuildReadiness.js'
@@ -38,6 +40,7 @@ on:
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
       - 'TESTS/instantly_sender_failover.test.js'
+      - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
       - 'TESTS/executive_response_service.test.js'
       - 'TESTS/unified_miles_gateway.test.js'
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
@@ -68,6 +71,7 @@ jobs:
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
           node --check SERVICES/revenue/InstantlySenderFailoverService.js
+          node --check SERVICES/revenue/InstantlyInboxPlacementTestService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
           node --check SERVICES/ExecutiveResponseService.js
           node --check SERVICES/ProductionTruthReconciliationService.js
@@ -77,6 +81,7 @@ jobs:
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/AuditInstantlyInboxPlacement.js
+          node --check SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check SCRIPTS/AuditOrionRefreshSources.js
           node --check SCRIPTS/AuditOrionRebuildReadiness.js
@@ -87,6 +92,7 @@ jobs:
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
           node --check TESTS/instantly_sender_failover.test.js
+          node --check TESTS/instantly_inbox_placement_controlled_test.test.js
           node --check TESTS/executive_response_service.test.js
           node --check TESTS/unified_miles_gateway.test.js
           node --check TESTS/ceo_surface_screen_acceptance.test.js
@@ -99,6 +105,7 @@ jobs:
           node TESTS/Test_GroupedRemediationV2.js
           node TESTS/Test_InstantlyGuardedReplySend.js
           node TESTS/instantly_sender_failover.test.js
+          node TESTS/instantly_inbox_placement_controlled_test.test.js
           node --test TESTS/executive_response_service.test.js
           node TESTS/unified_miles_gateway.test.js
           node TESTS/ceo_surface_screen_acceptance.test.js
@@ -114,6 +121,6 @@ jobs:
         shell: powershell
         run: |
           $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\RunOperationalRemediationAll.ps1'), [ref]$null, [ref]$errors) | Out-Null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'SCRIPTS\\RunOperationalRemediationAll.ps1'), [ref]$null, [ref]$errors) | Out-Null
           if ($errors.Count -gt 0) { $errors | Format-List *; exit 1 }
           Write-Host 'COMBINED_OPERATIONAL_REMEDIATION_POWERSHELL51=GREEN'
