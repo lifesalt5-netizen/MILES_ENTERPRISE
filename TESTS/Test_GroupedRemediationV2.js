@@ -8,6 +8,8 @@ const sendWindow = require('../SCRIPTS/AuditInstantlySendWindowHistory');
 const v13Source = fs.readFileSync('CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js', 'utf8');
 const ionosSource = fs.readFileSync('SERVICES/revenue/IonosInboxCleanupService.js', 'utf8');
 const lifecycleSource = fs.readFileSync('SERVICES/revenue/InstantlyLifecycleReconciler.js', 'utf8');
+const commandCenterUiSource = fs.readFileSync('SERVICES/digital_coo/public/app.js', 'utf8');
+const executiveResponseSource = fs.readFileSync('SERVICES/ExecutiveResponseService.js', 'utf8');
 
 assert(v13Source.includes('currentInteractionDelta'), 'V13 must isolate current B12 interaction');
 assert(v13Source.includes('text.lastIndexOf(markerPrompt)'), 'V13 must anchor provider evidence after the exact current prompt');
@@ -38,5 +40,11 @@ assert(lifecycleSource.includes('copy_leads: false'), 'reply lifecycle move must
 assert(lifecycleSource.includes('reset_interest_status: false'), 'reply lifecycle move must preserve classified interest state');
 assert(lifecycleSource.includes('CANONICAL_CRM_LIFECYCLE'), 'canonical CRM must receive reply lifecycle segment');
 assert(!/method:\s*['"]DELETE['"]/i.test(lifecycleSource), 'lifecycle reconciliation must not delete leads or emails');
+
+assert(commandCenterUiSource.includes('Miles answered your question'), 'conversation responses must show a completed answer state to the CEO');
+assert(commandCenterUiSource.includes('normalized === "EXECUTIVE_RESPONSE"'), 'direct executive responses must not be displayed as tracked operations');
+assert(executiveResponseSource.includes('emailPerformanceAdvisory'), 'executive email questions must use evidence-backed advisory logic');
+assert(executiveResponseSource.includes('Best plan to get more meetings:'), 'executive email advisory must include an actionable meeting-conversion plan');
+assert(!/Executive response received/.test(executiveResponseSource), 'placeholder executive response text must not return');
 
 console.log('GROUPED_REMEDIATION_V2_REGRESSIONS=GREEN');

@@ -10,12 +10,15 @@ on:
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
       - 'SERVICES/revenue/ReplyIntelligenceService.js'
+      - 'SERVICES/ExecutiveResponseService.js'
+      - 'SERVICES/digital_coo/public/app.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
       - 'SCRIPTS/RunOperationalRemediationAll.ps1'
       - 'FIX_ALL_OPERATIONAL_PROBLEMS.cmd'
       - 'TESTS/Test_OperationalRemediationPack.js'
       - 'TESTS/Test_GroupedRemediationV2.js'
+      - 'TESTS/executive_response_service.test.js'
       - '.github/workflows/combined-operational-remediation.yml'
   workflow_dispatch:
 
@@ -36,14 +39,18 @@ jobs:
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
+          node --check SERVICES/ExecutiveResponseService.js
+          node --check SERVICES/digital_coo/public/app.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
+          node --check TESTS/executive_response_service.test.js
       - name: Static safety contract
         run: |
           node TESTS/Test_OperationalRemediationPack.js
           node TESTS/Test_GroupedRemediationV2.js
+          node --test TESTS/executive_response_service.test.js
 
   windows-powershell51:
     runs-on: windows-latest

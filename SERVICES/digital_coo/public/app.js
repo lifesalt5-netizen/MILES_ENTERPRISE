@@ -85,6 +85,19 @@ function updateApprovalControls(data) {
   elements.approvalActions.classList.toggle("hidden", !requiresApproval);
 }
 
+function systemStatusMessage(status, data = {}) {
+  const normalized = normalizeStatus(status);
+  const mode = normalizeStatus(data.mode || (data.conversation ? "CONVERSATION" : ""));
+  if (normalized === "CONVERSATION" || normalized === "ANSWERED" || normalized === "EXECUTIVE_RESPONSE" || mode === "CONVERSATION") {
+    return "Miles answered your question";
+  }
+  if (normalized === "COMPLETED") return "Operation completed";
+  if (normalized === "FAILED" || normalized === "ERROR") return "Operation failed";
+  if (normalized === "REJECTED") return "Operation rejected";
+  if (normalized === "AWAITING_APPROVAL" || normalized === "WAITING_FOR_CEO_APPROVAL") return "Miles is waiting for your approval";
+  return "Miles is tracking the operation";
+}
+
 function renderResponse(data) {
   const status = normalizeStatus(data.status);
   const response = data.response || {};
@@ -94,7 +107,7 @@ function renderResponse(data) {
   updateOperationSummary(data);
   updateApprovalControls(data);
   showTechnicalDetails(data);
-  elements.systemStatus.textContent = status === "COMPLETED" ? "Operation completed" : "Miles is tracking the operation";
+  elements.systemStatus.textContent = systemStatusMessage(status, data);
 }
 
 function clearPolling() {
