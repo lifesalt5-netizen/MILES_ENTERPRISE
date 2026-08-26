@@ -6,12 +6,6 @@ const path = require('path');
 const ROOT = path.resolve(process.env.MILES_ROOT || process.cwd());
 process.env.MILES_ROOT = ROOT;
 
-const WorkQueueService = require('./WorkQueueService');
-const WorkQueueReconciliationService = require('./WorkQueueReconciliationService');
-const CapabilityRegistryService = require('./CapabilityRegistryService');
-const CompanyStateService = require('./CompanyStateService');
-const OrionProvider = require('../PROVIDERS/providers/OrionProvider');
-
 const REPOSITORY_FILE = path.join(ROOT, 'DATA', 'repository', 'repository_registry.json');
 const CAPABILITY_DIR = path.join(ROOT, 'DATA', 'capability');
 const CAPABILITY_FILE = path.join(CAPABILITY_DIR, 'capability_registry.json');
@@ -270,6 +264,11 @@ class ProductionTruthReconciliationService {
   }
 
   reconcileWorkQueue() {
+    // Runtime-only dependencies are deliberately lazy-loaded. This keeps the
+    // pure production-truth classifiers testable on CI while preserving the
+    // existing Windows production TaskQueue implementation for live runs.
+    const WorkQueueService = require('./WorkQueueService');
+    const WorkQueueReconciliationService = require('./WorkQueueReconciliationService');
     const reconciliation = new WorkQueueReconciliationService().reconcile();
     const queue = new WorkQueueService();
     const before = queue.getStats();
@@ -286,6 +285,7 @@ class ProductionTruthReconciliationService {
     const filtered = filterRepositoryRegistry(repository);
     atomicWrite(REPOSITORY_FILE, filtered);
 
+    const CapabilityRegistryService = require('./CapabilityRegistryService');
     let capabilityBuild = null;
     try { capabilityBuild = CapabilityRegistryService.run(); }
     catch (error) { capabilityBuild = { ok: false, error: error.message }; }
@@ -316,6 +316,7 @@ class ProductionTruthReconciliationService {
   }
 
   async auditOrion() {
+    const OrionProvider = require('../PROVIDERS/providers/OrionProvider');
     const provider = new OrionProvider();
     const result = await provider.auditIntelligence();
     return {
@@ -334,6 +335,7 @@ class ProductionTruthReconciliationService {
     const workQueue = this.reconcileWorkQueue();
     const registry = this.reconcileRepositoryAndCapability();
 
+    const CompanyStateService = require('./CompanyStateService');
     let companyState = null;
     try { companyState = CompanyStateService.run({ source: 'ProductionTruthReconciliationService' }); }
     catch (error) { companyState = { ok: false, error: error.message }; }
