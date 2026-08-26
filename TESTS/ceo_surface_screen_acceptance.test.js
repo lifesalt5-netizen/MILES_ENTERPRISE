@@ -157,7 +157,9 @@ async function main() {
     assert(html.includes('/api/proposal-command/health') || read('SERVICES/demo/public/proposal-command.js').includes('/api/proposal-command/health'));
     assert(html.includes('/api/proposal-command/run') || read('SERVICES/demo/public/proposal-command.js').includes('/api/proposal-command/run'));
 
-    const proposal = require('../SERVICES/proposal/P2GCProposalCommandService');
+    const P2GCProposalCommandService = require('../SERVICES/proposal/P2GCProposalCommandService');
+    const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'p2gc-proposal-acceptance-'));
+    const proposal = new P2GCProposalCommandService({ rootDir: temp, outputDir: path.join(temp, 'proposal_command') });
     const result = proposal.run({
       solicitation: {
         id: 'RFP-ACCEPT-1',
@@ -170,9 +172,9 @@ async function main() {
     });
     assert.equal(result.ok, true);
     assert(result.stages.length >= 10, 'proposal pipeline should expose complete controlled stages');
-    assert.equal(result.packaging.submitted, false);
-    assert.equal(result.packaging.submissionProof, null);
-    assert.notEqual(result.packaging.submissionReadiness, 'SUBMITTED');
+    assert.equal(result.submissionPackage.submitted, false);
+    assert.equal(result.submissionPackage.submissionProof, null);
+    assert.notEqual(result.submissionPackage.submissionReadiness, 'SUBMITTED');
     assert(JSON.stringify(result).includes('Never mark SUBMITTED without actual external submission proof'));
   });
 
