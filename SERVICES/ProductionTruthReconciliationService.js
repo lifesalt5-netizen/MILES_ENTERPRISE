@@ -13,7 +13,8 @@ const CompanyStateService = require('./CompanyStateService');
 const OrionProvider = require('../PROVIDERS/providers/OrionProvider');
 
 const REPOSITORY_FILE = path.join(ROOT, 'DATA', 'repository', 'repository_registry.json');
-const CAPABILITY_FILE = path.join(ROOT, 'DATA', 'capability', 'capability_registry.json');
+const CAPABILITY_DIR = path.join(ROOT, 'DATA', 'capability');
+const CAPABILITY_FILE = path.join(CAPABILITY_DIR, 'capability_registry.json');
 const OUT_DIR = path.join(ROOT, 'DATA', 'production_truth');
 const OUT_FILE = path.join(OUT_DIR, 'latest_reconciliation.json');
 
@@ -187,7 +188,7 @@ function patchRepositoryAwareness(input, repository) {
         status: component.status
       })),
       executable: true,
-      governance: { requiresApproval: false, level: 'AUTONOMOUS_READ_ONLY' },
+      governance: { requiresApproval: false, approvalLevel: 'AUTONOMOUS_ALLOWED' },
       autonomyImpact: 'HIGH',
       reducesKevinWorkload: true,
       status: 'EXECUTABLE_CANDIDATE',
@@ -241,6 +242,27 @@ function patchRepositoryAwareness(input, repository) {
   return registry;
 }
 
+function persistCapabilityTruth(registry) {
+  atomicWrite(CAPABILITY_FILE, registry);
+  atomicWrite(path.join(CAPABILITY_DIR, 'capability_summary.json'), {
+    generatedAt: registry.generatedAt,
+    statistics: registry.statistics,
+    autonomy: registry.autonomy,
+    gaps: registry.gaps,
+    productionTruth: registry.productionTruth || null
+  });
+  atomicWrite(path.join(CAPABILITY_DIR, 'capability_owner_map.json'), {
+    generatedAt: registry.generatedAt,
+    ownerMap: registry.ownerMap,
+    productionTruth: registry.productionTruth || null
+  });
+  atomicWrite(path.join(CAPABILITY_DIR, 'capability_execution_map.json'), {
+    generatedAt: registry.generatedAt,
+    executionMap: registry.executionMap,
+    productionTruth: registry.productionTruth || null
+  });
+}
+
 class ProductionTruthReconciliationService {
   constructor(options = {}) {
     this.rootDir = path.resolve(options.rootDir || ROOT);
@@ -265,7 +287,7 @@ class ProductionTruthReconciliationService {
     atomicWrite(REPOSITORY_FILE, filtered);
 
     let capabilityBuild = null;
-    try { capabilityBuild = new CapabilityRegistryService().run(); }
+    try { capabilityBuild = CapabilityRegistryService.run(); }
     catch (error) { capabilityBuild = { ok: false, error: error.message }; }
 
     const capability = readJson(CAPABILITY_FILE, null);
@@ -274,7 +296,7 @@ class ProductionTruthReconciliationService {
     }
 
     const patchedCapability = patchRepositoryAwareness(capability, filtered);
-    atomicWrite(CAPABILITY_FILE, patchedCapability);
+    persistCapabilityTruth(patchedCapability);
 
     return {
       ok: true,
@@ -286,7 +308,8 @@ class ProductionTruthReconciliationService {
       capability: {
         autonomy: patchedCapability.autonomy,
         statistics: patchedCapability.statistics,
-        gaps: patchedCapability.gaps
+        gaps: patchedCapability.gaps,
+        productionTruth: patchedCapability.productionTruth || null
       },
       capabilityBuild
     };
