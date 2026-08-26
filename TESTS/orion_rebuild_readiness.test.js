@@ -13,6 +13,7 @@ assert.strictEqual(classifySourceFile('C:/Downloads/USASPENDING_PRIME_AWARDS_202
 assert.strictEqual(classifySourceFile('C:/Downloads/usaspending_subaward_contracts.csv'), 'SOURCE_CSV');
 assert.strictEqual(classifySourceFile('C:/x/random.sqlite'), 'SQLITE_DB');
 assert.strictEqual(classifySourceFile('C:/x/readme.txt'), null);
+assert.strictEqual(classifySourceFile('C:/Downloads/unrelated_budget.csv'), null, 'unrelated CSVs must not be treated as ORION refresh inputs');
 
 const current = Date.now() - 100000;
 const freshArchive = scoreSourceCandidate({
