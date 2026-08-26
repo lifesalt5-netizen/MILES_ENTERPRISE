@@ -13,7 +13,14 @@ on:
       - 'SERVICES/ExecutiveResponseService.js'
       - 'SERVICES/digital_coo/public/app.js'
       - 'SERVICES/digital_coo/UnifiedMilesGateway.js'
+      - 'SERVICES/ceo_dashboard/public/**'
+      - 'SERVICES/demo/public/**'
+      - 'SERVICES/demo/P2GCFocusedIntelligenceService.js'
+      - 'SERVICES/teaming/P2GCPrimeSubTeamingService.js'
+      - 'SERVICES/proposal/P2GCProposalCommandService.js'
+      - 'SERVICES/customer/P2GCCustomerDeliveryService.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
+      - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
       - 'SCRIPTS/RunOperationalRemediationAll.ps1'
       - 'FIX_ALL_OPERATIONAL_PROBLEMS.cmd'
@@ -21,6 +28,7 @@ on:
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/executive_response_service.test.js'
       - 'TESTS/unified_miles_gateway.test.js'
+      - 'TESTS/ceo_surface_screen_acceptance.test.js'
       - '.github/workflows/combined-operational-remediation.yml'
   workflow_dispatch:
 
@@ -45,17 +53,20 @@ jobs:
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
+          node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/executive_response_service.test.js
           node --check TESTS/unified_miles_gateway.test.js
+          node --check TESTS/ceo_surface_screen_acceptance.test.js
       - name: Static safety contract
         run: |
           node TESTS/Test_OperationalRemediationPack.js
           node TESTS/Test_GroupedRemediationV2.js
           node --test TESTS/executive_response_service.test.js
           node TESTS/unified_miles_gateway.test.js
+          node TESTS/ceo_surface_screen_acceptance.test.js
 
   windows-powershell51:
     runs-on: windows-latest
