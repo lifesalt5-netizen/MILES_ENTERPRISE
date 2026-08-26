@@ -68,6 +68,12 @@ async function listPaged(endpoint, params = {}) {
       status: s.total === 0 ? 'UNVERIFIED' : s.spam > 0 || pct(s.inbox, s.total) < 80 ? 'WATCH' : 'ACTIVE'
     })).sort((a,b) => a.sender.localeCompare(b.sender));
 
+    const placementVerified = analyticsCount > 0;
+    const blocker = placementVerified ? null : (tests.length === 0 ? 'NO_INBOX_PLACEMENT_TESTS_EXIST' : 'INBOX_PLACEMENT_TESTS_HAVE_NO_ANALYTICS');
+    const nextAction = placementVerified
+      ? 'USE_LIVE_PLACEMENT_EVIDENCE_TO_GOVERN_SENDERS'
+      : (tests.length === 0 ? 'CREATE_OR_RUN_CONTROLLED_INBOX_PLACEMENT_TESTS' : 'WAIT_FOR_OR_RETRIEVE_TEST_ANALYTICS');
+
     const result = {
       generatedAt: new Date().toISOString(),
       source: 'INSTANTLY_API_V2_INBOX_PLACEMENT',
@@ -75,8 +81,11 @@ async function listPaged(endpoint, params = {}) {
       testsFound: tests.length,
       analyticsRows: analyticsCount,
       senders,
-      placementVerified: analyticsCount > 0,
-      truth: analyticsCount > 0 ? 'LIVE_PLACEMENT_EVIDENCE_PRESENT' : 'INBOX_PLACEMENT_UNVERIFIED_NO_ANALYTICS',
+      placementVerified,
+      verificationStatus: placementVerified ? 'VERIFIED' : 'UNVERIFIED',
+      truth: placementVerified ? 'LIVE_PLACEMENT_EVIDENCE_PRESENT' : 'INBOX_PLACEMENT_UNVERIFIED_NO_ANALYTICS',
+      blocker,
+      nextAction,
       note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement.'
     };
     fs.mkdirSync(outputDir, { recursive: true });
@@ -86,8 +95,15 @@ async function listPaged(endpoint, params = {}) {
     console.log(`Senders with evidence: ${senders.length}`);
     for (const s of senders) console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% | ${s.status}`);
     console.log(`Truth: ${result.truth}`);
+    if (blocker) console.log(`BLOCKER: ${blocker}`);
+    console.log(`Next action: ${nextAction}`);
     console.log(`Report: ${output}`);
-    console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_AUDIT_GREEN');
+    if (placementVerified) {
+      console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_VERIFIED');
+    } else {
+      console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_UNVERIFIED');
+      process.exitCode = 2;
+    }
   } catch (error) {
     const msg = String(error?.message || error);
     console.error(msg);
