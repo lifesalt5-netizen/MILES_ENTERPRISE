@@ -7,6 +7,12 @@ const instantly = require('../CONNECTORS/INSTANTLY/instantly');
 function pct(n, d) { return d ? Number(((n / d) * 100).toFixed(2)) : 0; }
 function clean(v) { return String(v || '').trim().toLowerCase(); }
 function unwrap(v) { return Array.isArray(v) ? v : Array.isArray(v?.items) ? v.items : Array.isArray(v?.data) ? v.data : []; }
+function senderStatus({ samples = 0, inboxPct = 0, spamPct = 0, spfPassPct = 0, dkimPassPct = 0, dmarcPassPct = 0 }) {
+  if (samples === 0) return 'UNVERIFIED';
+  if (spamPct > 0 || inboxPct < 80) return 'WATCH';
+  if (spfPassPct < 100 || dkimPassPct < 100 || dmarcPassPct < 100) return 'WATCH';
+  return 'ACTIVE';
+}
 
 async function listPaged(endpoint, params = {}) {
   const rows = [];
@@ -23,7 +29,7 @@ async function listPaged(endpoint, params = {}) {
   return rows;
 }
 
-(async () => {
+async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const outputDir = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability');
   const output = path.join(outputDir, 'instantly_inbox_placement_latest.json');
@@ -54,24 +60,33 @@ async function listPaged(endpoint, params = {}) {
         if (!s.latestAt || Date.parse(row.timestamp_created || 0) > Date.parse(s.latestAt || 0)) s.latestAt = row.timestamp_created || null;
       }
     }
-    const senders = [...bySender.values()].map(s => ({
-      sender: s.sender,
-      samples: s.total,
-      inboxPct: pct(s.inbox, s.total),
-      categorizedPct: pct(s.categorized, s.total),
-      spamPct: pct(s.spam, s.total),
-      spfPassPct: pct(s.spfPass, s.total),
-      dkimPassPct: pct(s.dkimPass, s.total),
-      dmarcPassPct: pct(s.dmarcPass, s.total),
-      testCount: s.tests.size,
-      latestAt: s.latestAt,
-      status: s.total === 0 ? 'UNVERIFIED' : s.spam > 0 || pct(s.inbox, s.total) < 80 ? 'WATCH' : 'ACTIVE'
-    })).sort((a,b) => a.sender.localeCompare(b.sender));
+    const senders = [...bySender.values()].map(s => {
+      const inboxPct = pct(s.inbox, s.total);
+      const categorizedPct = pct(s.categorized, s.total);
+      const spamPct = pct(s.spam, s.total);
+      const spfPassPct = pct(s.spfPass, s.total);
+      const dkimPassPct = pct(s.dkimPass, s.total);
+      const dmarcPassPct = pct(s.dmarcPass, s.total);
+      return {
+        sender: s.sender,
+        samples: s.total,
+        inboxPct,
+        categorizedPct,
+        spamPct,
+        spfPassPct,
+        dkimPassPct,
+        dmarcPassPct,
+        testCount: s.tests.size,
+        latestAt: s.latestAt,
+        status: senderStatus({ samples: s.total, inboxPct, spamPct, spfPassPct, dkimPassPct, dmarcPassPct })
+      };
+    }).sort((a,b) => a.sender.localeCompare(b.sender));
 
     const placementVerified = analyticsCount > 0;
     const blocker = placementVerified ? null : (tests.length === 0 ? 'NO_INBOX_PLACEMENT_TESTS_EXIST' : 'INBOX_PLACEMENT_TESTS_HAVE_NO_ANALYTICS');
+    const authWatchSenders = senders.filter(s => s.status === 'WATCH' && s.spamPct === 0 && s.inboxPct >= 80 && (s.spfPassPct < 100 || s.dkimPassPct < 100 || s.dmarcPassPct < 100));
     const nextAction = placementVerified
-      ? 'USE_LIVE_PLACEMENT_EVIDENCE_TO_GOVERN_SENDERS'
+      ? (authWatchSenders.length ? 'REMEDIATE_AUTHENTICATION_BEFORE_ACTIVE_SENDER_USE' : 'USE_LIVE_PLACEMENT_EVIDENCE_TO_GOVERN_SENDERS')
       : (tests.length === 0 ? 'CREATE_OR_RUN_CONTROLLED_INBOX_PLACEMENT_TESTS' : 'WAIT_FOR_OR_RETRIEVE_TEST_ANALYTICS');
 
     const result = {
@@ -83,23 +98,25 @@ async function listPaged(endpoint, params = {}) {
       senders,
       placementVerified,
       verificationStatus: placementVerified ? 'VERIFIED' : 'UNVERIFIED',
-      truth: placementVerified ? 'LIVE_PLACEMENT_EVIDENCE_PRESENT' : 'INBOX_PLACEMENT_UNVERIFIED_NO_ANALYTICS',
+      truth: placementVerified ? (authWatchSenders.length ? 'LIVE_PLACEMENT_EVIDENCE_PRESENT_WITH_AUTHENTICATION_GAPS' : 'LIVE_PLACEMENT_EVIDENCE_PRESENT') : 'INBOX_PLACEMENT_UNVERIFIED_NO_ANALYTICS',
       blocker,
+      authenticationWatchSenders: authWatchSenders.map(s => s.sender),
       nextAction,
-      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement.'
+      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement. ACTIVE requires 100% observed SPF, DKIM, and DMARC pass rates in the current placement evidence.'
     };
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(output, JSON.stringify(result, null, 2));
     console.log(`Tests found: ${tests.length}`);
     console.log(`Analytics rows: ${analyticsCount}`);
     console.log(`Senders with evidence: ${senders.length}`);
-    for (const s of senders) console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% | ${s.status}`);
+    for (const s of senders) console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% spf=${s.spfPassPct}% dkim=${s.dkimPassPct}% dmarc=${s.dmarcPassPct}% | ${s.status}`);
     console.log(`Truth: ${result.truth}`);
+    if (authWatchSenders.length) console.log(`AUTH WATCH: ${authWatchSenders.map(s => s.sender).join(', ')}`);
     if (blocker) console.log(`BLOCKER: ${blocker}`);
     console.log(`Next action: ${nextAction}`);
     console.log(`Report: ${output}`);
     if (placementVerified) {
-      console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_VERIFIED');
+      console.log(authWatchSenders.length ? 'RESULT: INSTANTLY_INBOX_PLACEMENT_VERIFIED_WITH_AUTH_WATCH' : 'RESULT: INSTANTLY_INBOX_PLACEMENT_VERIFIED');
     } else {
       console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_UNVERIFIED');
       process.exitCode = 2;
@@ -112,4 +129,8 @@ async function listPaged(endpoint, params = {}) {
     console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_AUDIT_RED');
     process.exitCode = 1;
   }
-})();
+}
+
+if (require.main === module) main();
+
+module.exports = { senderStatus };
