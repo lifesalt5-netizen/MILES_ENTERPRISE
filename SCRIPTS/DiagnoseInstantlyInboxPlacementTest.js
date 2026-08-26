@@ -33,7 +33,7 @@ function classify({ analyticsCount, notSendingStatus, senderCount, recipientCoun
   return 'TEST_CREATED_WITHOUT_RECIPIENT_EXECUTION_EVIDENCE';
 }
 
-(async () => {
+async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const outputDir = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability');
   const output = path.join(outputDir, 'instantly_inbox_placement_diagnostic_latest.json');
@@ -116,6 +116,8 @@ function classify({ analyticsCount, notSendingStatus, senderCount, recipientCoun
     console.log('RESULT: INBOX_PLACEMENT_DIAGNOSTIC_RED');
     process.exitCode = 1;
   }
-})();
+}
 
-module.exports = { classify };
+if (require.main === module) main();
+
+module.exports = { classify, main };
