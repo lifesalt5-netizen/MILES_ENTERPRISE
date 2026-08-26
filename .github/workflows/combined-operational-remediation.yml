@@ -13,6 +13,7 @@ on:
       - 'SERVICES/ExecutiveResponseService.js'
       - 'SERVICES/ProductionTruthReconciliationService.js'
       - 'SERVICES/RepositoryRiskQualificationService.js'
+      - 'SERVICES/orion/OrionRebuildReadinessService.js'
       - 'SERVICES/digital_coo/public/app.js'
       - 'SERVICES/digital_coo/UnifiedMilesGateway.js'
       - 'SERVICES/ceo_dashboard/public/**'
@@ -24,6 +25,7 @@ on:
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'SCRIPTS/AuditOrionRefreshSources.js'
+      - 'SCRIPTS/AuditOrionRebuildReadiness.js'
       - 'SCRIPTS/QualifyRepositoryRisks.js'
       - 'SCRIPTS/ReconcileProductionTruth.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
@@ -36,6 +38,7 @@ on:
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
       - 'TESTS/production_truth_reconciliation.test.js'
       - 'TESTS/repository_risk_qualification.test.js'
+      - 'TESTS/orion_rebuild_readiness.test.js'
       - '.github/workflows/combined-operational-remediation.yml'
   workflow_dispatch:
 
@@ -59,11 +62,13 @@ jobs:
           node --check SERVICES/ExecutiveResponseService.js
           node --check SERVICES/ProductionTruthReconciliationService.js
           node --check SERVICES/RepositoryRiskQualificationService.js
+          node --check SERVICES/orion/OrionRebuildReadinessService.js
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check SCRIPTS/AuditOrionRefreshSources.js
+          node --check SCRIPTS/AuditOrionRebuildReadiness.js
           node --check SCRIPTS/QualifyRepositoryRisks.js
           node --check SCRIPTS/ReconcileProductionTruth.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
@@ -74,6 +79,7 @@ jobs:
           node --check TESTS/ceo_surface_screen_acceptance.test.js
           node --check TESTS/production_truth_reconciliation.test.js
           node --check TESTS/repository_risk_qualification.test.js
+          node --check TESTS/orion_rebuild_readiness.test.js
       - name: Static safety contract
         run: |
           node TESTS/Test_OperationalRemediationPack.js
@@ -83,6 +89,7 @@ jobs:
           node TESTS/ceo_surface_screen_acceptance.test.js
           node TESTS/production_truth_reconciliation.test.js
           node TESTS/repository_risk_qualification.test.js
+          node TESTS/orion_rebuild_readiness.test.js
 
   windows-powershell51:
     runs-on: windows-latest
