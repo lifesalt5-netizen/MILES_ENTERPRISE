@@ -29,6 +29,7 @@ on:
       - 'SCRIPTS/AuditInstantlyInboxPlacement.js'
       - 'SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js'
       - 'SCRIPTS/DiagnoseInstantlyInboxPlacementTest.js'
+      - 'SCRIPTS/RemediateNamecheapDmarc.js'
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'SCRIPTS/AuditOrionRefreshSources.js'
       - 'SCRIPTS/AuditOrionRebuildReadiness.js'
@@ -44,6 +45,7 @@ on:
       - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
       - 'TESTS/instantly_inbox_placement_diagnostic_truth.test.js'
       - 'TESTS/instantly_inbox_placement_auth_governance.test.js'
+      - 'TESTS/namecheap_dmarc_remediation.test.js'
       - 'TESTS/executive_response_service.test.js'
       - 'TESTS/unified_miles_gateway.test.js'
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
@@ -86,6 +88,7 @@ jobs:
           node --check SCRIPTS/AuditInstantlyInboxPlacement.js
           node --check SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js
           node --check SCRIPTS/DiagnoseInstantlyInboxPlacementTest.js
+          node --check SCRIPTS/RemediateNamecheapDmarc.js
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check SCRIPTS/AuditOrionRefreshSources.js
           node --check SCRIPTS/AuditOrionRebuildReadiness.js
@@ -99,6 +102,7 @@ jobs:
           node --check TESTS/instantly_inbox_placement_controlled_test.test.js
           node --check TESTS/instantly_inbox_placement_diagnostic_truth.test.js
           node --check TESTS/instantly_inbox_placement_auth_governance.test.js
+          node --check TESTS/namecheap_dmarc_remediation.test.js
           node --check TESTS/executive_response_service.test.js
           node --check TESTS/unified_miles_gateway.test.js
           node --check TESTS/ceo_surface_screen_acceptance.test.js
@@ -114,6 +118,7 @@ jobs:
           node TESTS/instantly_inbox_placement_controlled_test.test.js
           node TESTS/instantly_inbox_placement_diagnostic_truth.test.js
           node TESTS/instantly_inbox_placement_auth_governance.test.js
+          node TESTS/namecheap_dmarc_remediation.test.js
           node --test TESTS/executive_response_service.test.js
           node TESTS/unified_miles_gateway.test.js
           node TESTS/ceo_surface_screen_acceptance.test.js
