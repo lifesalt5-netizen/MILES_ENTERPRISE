@@ -16,6 +16,7 @@ function testLimit(a = {}) {
   return Number.isFinite(n) ? n : null;
 }
 function labelKey(x = {}) { return [x.region, x.sub_region, x.type, x.esp].map(clean).join('|'); }
+function timestampToken(date) { return date.toISOString().replace(/[:.]/g, '-'); }
 
 class InstantlyInboxPlacementTestService {
   constructor(options = {}) {
@@ -39,7 +40,8 @@ class InstantlyInboxPlacementTestService {
     return rows;
   }
 
-  async buildPlan() {
+  async buildPlan(options = {}) {
+    const forceNew = options.forceNew === true;
     const [accounts, providerOptions, tests] = await Promise.all([
       this.listPaged('/accounts'),
       this.listPaged('/inbox-placement-tests/email-service-provider-options'),
@@ -63,9 +65,11 @@ class InstantlyInboxPlacementTestService {
       esp: x.esp
     }])).values()];
 
-    const date = this.now().toISOString().slice(0, 10);
-    const name = `P2GC Baseline Inbox Placement ${date}`;
-    const existing = tests.find(t => clean(t.name) === name) || null;
+    const now = this.now();
+    const date = now.toISOString().slice(0, 10);
+    const baseName = `P2GC Baseline Inbox Placement ${date}`;
+    const name = forceNew ? `${baseName} POST-DMARC ${timestampToken(now)}` : baseName;
+    const existing = forceNew ? null : (tests.find(t => clean(t.name) === name) || null);
 
     const blockers = [];
     if (eligible.length === 0) blockers.push('NO_ACTIVE_SENDER_WITH_INBOX_PLACEMENT_CAPACITY');
@@ -73,6 +77,7 @@ class InstantlyInboxPlacementTestService {
 
     return {
       name,
+      forceNew,
       activeAccounts: active.map(a => ({ email: accountEmail(a), status: a.status, inboxPlacementTestLimit: testLimit(a) })),
       eligibleSenders: eligible.map(accountEmail),
       zeroLimitSenders: zeroLimit.map(accountEmail),
@@ -83,14 +88,16 @@ class InstantlyInboxPlacementTestService {
     };
   }
 
-  async createControlledBaseline() {
-    const plan = await this.buildPlan();
+  async createControlledBaseline(options = {}) {
+    const plan = await this.buildPlan(options);
     if (plan.existingTest) return { ok: true, created: false, reused: true, plan, test: plan.existingTest };
     if (!plan.ready) return { ok: false, created: false, plan, status: 'BLOCKED' };
 
     const payload = {
       name: plan.name,
-      description: 'P2GC controlled one-time baseline: sender infrastructure and plain-text content. No prospects or campaign leads are used.',
+      description: plan.forceNew
+        ? 'P2GC controlled post-DMARC verification: sender infrastructure and plain-text content. No prospects or campaign leads are used.'
+        : 'P2GC controlled one-time baseline: sender infrastructure and plain-text content. No prospects or campaign leads are used.',
       type: 1,
       sending_method: 1,
       delivery_mode: 1,
@@ -119,4 +126,4 @@ class InstantlyInboxPlacementTestService {
   }
 }
 
-module.exports = { InstantlyInboxPlacementTestService, isActiveAccount, testLimit };
+module.exports = { InstantlyInboxPlacementTestService, isActiveAccount, testLimit, timestampToken };
