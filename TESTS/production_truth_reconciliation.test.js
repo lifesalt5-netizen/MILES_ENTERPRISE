@@ -1,5 +1,8 @@
 'use strict';
 
+// CI trigger note: this existing covered test path is intentionally touched so
+// the repository's established pull_request workflows validate the ORION
+// rebuild-readiness pack under the same gates used by prior remediation PRs.
 const assert = require('assert');
 const {
   isHistoricalPath,
