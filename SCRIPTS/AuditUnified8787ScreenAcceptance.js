@@ -103,9 +103,10 @@ async function main() {
   });
 
   const health = await request('/api/health');
-  result(results, 'miles_execution_health_api', health.ok && health.json?.service === 'MILES_COMMAND_CENTER', {
+  result(results, 'unified_gateway_health_api', health.ok && health.json?.service === 'MILES_UNIFIED_CEO_GATEWAY' && health.json?.status === 'HEALTHY', {
     statusCode: health.statusCode,
-    backendStatus: health.json?.status || null
+    backendStatus: health.json?.status || null,
+    upstreams: health.json?.upstreams || null
   });
 
   const conversation = await request('/api/command', {
@@ -146,7 +147,7 @@ async function main() {
 
   if (company) {
     const encoded = encodeURIComponent(company);
-    const assessment = await request(`/api/assessment?term=${encoded}` , { timeoutMs: 120000 });
+    const assessment = await request(`/api/assessment?term=${encoded}`, { timeoutMs: 120000 });
     result(results, 'growth_blueprint_semantic_result', assessment.ok && assessment.json?.ok === true && Boolean(assessment.json?.profile?.companyName) && Boolean(assessment.json?.readiness), {
       statusCode: assessment.statusCode,
       company: assessment.json?.profile?.companyName || company,
