@@ -43,6 +43,7 @@ on:
       - 'TESTS/instantly_sender_failover.test.js'
       - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
       - 'TESTS/instantly_inbox_placement_diagnostic_truth.test.js'
+      - 'TESTS/instantly_inbox_placement_auth_governance.test.js'
       - 'TESTS/executive_response_service.test.js'
       - 'TESTS/unified_miles_gateway.test.js'
       - 'TESTS/ceo_surface_screen_acceptance.test.js'
@@ -97,6 +98,7 @@ jobs:
           node --check TESTS/instantly_sender_failover.test.js
           node --check TESTS/instantly_inbox_placement_controlled_test.test.js
           node --check TESTS/instantly_inbox_placement_diagnostic_truth.test.js
+          node --check TESTS/instantly_inbox_placement_auth_governance.test.js
           node --check TESTS/executive_response_service.test.js
           node --check TESTS/unified_miles_gateway.test.js
           node --check TESTS/ceo_surface_screen_acceptance.test.js
@@ -111,6 +113,7 @@ jobs:
           node TESTS/instantly_sender_failover.test.js
           node TESTS/instantly_inbox_placement_controlled_test.test.js
           node TESTS/instantly_inbox_placement_diagnostic_truth.test.js
+          node TESTS/instantly_inbox_placement_auth_governance.test.js
           node --test TESTS/executive_response_service.test.js
           node TESTS/unified_miles_gateway.test.js
           node TESTS/ceo_surface_screen_acceptance.test.js
