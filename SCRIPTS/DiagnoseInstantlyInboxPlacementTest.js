@@ -26,6 +26,13 @@ async function listPaged(endpoint, params = {}) {
   return rows;
 }
 
+function classify({ analyticsCount, notSendingStatus, senderCount, recipientCount }) {
+  if (analyticsCount > 0) return 'ANALYTICS_AVAILABLE';
+  if (notSendingStatus) return 'PROVIDER_NOT_SENDING_BLOCKER';
+  if (senderCount > 0 && recipientCount > 0) return 'TEST_IN_PROGRESS_OR_AWAITING_ANALYTICS';
+  return 'TEST_CREATED_WITHOUT_RECIPIENT_EXECUTION_EVIDENCE';
+}
+
 (async () => {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const outputDir = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability');
@@ -53,22 +60,29 @@ async function listPaged(endpoint, params = {}) {
 
     const createdAt = readback.timestamp_created || null;
     const ageMinutes = createdAt ? Math.max(0, Math.round((Date.now() - Date.parse(createdAt)) / 60000)) : null;
+    const senderCount = Array.isArray(readback.emails) ? readback.emails.length : 0;
+    const recipientCount = Array.isArray(readback.recipients) ? readback.recipients.length : 0;
+    const notSendingStatus = readback.not_sending_status || null;
     const result = {
       generatedAt: new Date().toISOString(),
       testId: readback.id || test.id,
       name: readback.name || test.name || null,
       status: readback.status ?? null,
-      notSendingStatus: readback.not_sending_status || null,
+      deliveryMode: readback.delivery_mode ?? null,
+      sendingMethod: readback.sending_method ?? null,
+      notSendingStatus,
       timestampCreated: createdAt,
       timestampNextRun: readback.timestamp_next_run || null,
       ageMinutes,
-      senderCount: Array.isArray(readback.emails) ? readback.emails.length : 0,
-      recipientCount: Array.isArray(readback.recipients) ? readback.recipients.length : 0,
+      senderCount,
+      recipientCount,
+      potentialSeedDeliveries: senderCount * recipientCount,
       providerLabels: Array.isArray(readback.recipients_labels) ? readback.recipients_labels : [],
       analyticsRows: analytics.length,
       reportRows: reports.filter(r => !r.error).length,
       reportErrors: reports.filter(r => r.error).map(r => r.error),
-      truth: analytics.length > 0 ? 'ANALYTICS_AVAILABLE' : (readback.not_sending_status ? 'PROVIDER_NOT_SENDING_BLOCKER' : ageMinutes !== null && ageMinutes >= 15 ? 'ANALYTICS_DELAYED_OR_STALLED' : 'TEST_CREATED_AWAITING_ANALYTICS')
+      truth: classify({ analyticsCount: analytics.length, notSendingStatus, senderCount, recipientCount }),
+      note: 'Do not classify a one-by-one Inbox Placement test as stalled solely from elapsed minutes. Instantly documents that one-by-one delivery uses campaign-like delays; generated recipients prove execution material exists even before analytics are published.'
     };
 
     fs.mkdirSync(outputDir, { recursive: true });
@@ -76,12 +90,15 @@ async function listPaged(endpoint, params = {}) {
 
     console.log(`Test ID: ${result.testId}`);
     console.log(`Status: ${result.status}`);
+    console.log(`Delivery mode: ${result.deliveryMode}`);
+    console.log(`Sending method: ${result.sendingMethod}`);
     console.log(`Not-sending status: ${result.notSendingStatus || 'NONE'}`);
     console.log(`Created: ${result.timestampCreated}`);
     console.log(`Next run: ${result.timestampNextRun || 'NONE'}`);
     console.log(`Age minutes: ${result.ageMinutes}`);
     console.log(`Senders: ${result.senderCount}`);
     console.log(`Recipients: ${result.recipientCount}`);
+    console.log(`Potential seed deliveries: ${result.potentialSeedDeliveries}`);
     console.log(`Analytics rows: ${result.analyticsRows}`);
     console.log(`Report rows: ${result.reportRows}`);
     if (result.reportErrors.length) console.log(`Report read warning: ${result.reportErrors.join(' | ')}`);
@@ -89,7 +106,7 @@ async function listPaged(endpoint, params = {}) {
     console.log(`Report: ${output}`);
 
     if (result.truth === 'ANALYTICS_AVAILABLE') console.log('RESULT: INBOX_PLACEMENT_DIAGNOSTIC_GREEN');
-    else if (result.truth === 'TEST_CREATED_AWAITING_ANALYTICS') console.log('RESULT: INBOX_PLACEMENT_DIAGNOSTIC_WAIT');
+    else if (result.truth === 'TEST_IN_PROGRESS_OR_AWAITING_ANALYTICS') console.log('RESULT: INBOX_PLACEMENT_DIAGNOSTIC_WAIT');
     else {
       console.log('RESULT: INBOX_PLACEMENT_DIAGNOSTIC_WATCH');
       process.exitCode = 3;
@@ -100,3 +117,5 @@ async function listPaged(endpoint, params = {}) {
     process.exitCode = 1;
   }
 })();
+
+module.exports = { classify };
