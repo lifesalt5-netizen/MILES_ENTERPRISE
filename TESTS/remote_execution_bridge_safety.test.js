@@ -6,6 +6,8 @@ const bridge = require('../StartMilesRemoteExecutionBridge');
 
 assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'INBOX_PLACEMENT_AUDIT',
+  'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
+  'INSTANTLY_LIFECYCLE_PROOF_PLAN',
   'IONOS_INBOX_CLEANUP_EXECUTE',
   'IONOS_INBOX_CLEANUP_PLAN',
   'IONOS_SPAM_RESCUE_EXECUTE',
@@ -17,6 +19,8 @@ assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_PLAN, ['node', ['SCRIPTS/
 assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_EXECUTE, ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_PLAN, ['node', ['SCRIPTS/RunIonosSpamRescue.js']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_EXECUTE, ['node', ['SCRIPTS/RunIonosSpamRescue.js', '--execute']]);
+assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_PLAN, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js']]);
+assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_EXECUTE, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js', '--execute']]);
 assert.strictEqual(bridge.CONTROL_BRANCH, 'miles-control');
 assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_execution_directive.json'));
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
@@ -32,6 +36,8 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBO
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_EXECUTE'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_PLAN'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:false,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, false);
 assert.strictEqual(typeof bridge.publishEvidenceSerialized, 'function');
