@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-008",
+  "id": "revenue-acceptance-20260827-009",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Fresh safe revenue-path acceptance after production-truth archive remediation verified. Re-read sender placement/auth, Calendly/meeting-pipeline truth, and remaining RED/YELLOW items. No real prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Post-PR272 bounded revenue truth verification. Re-run safe read-only revenue acceptance using the aligned 180-day lookback / 90-day lookahead Calendly scope, re-read placement/auth and meeting-pipeline truth, and preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
 }
