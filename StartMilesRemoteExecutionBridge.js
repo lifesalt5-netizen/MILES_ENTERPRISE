@@ -8,6 +8,7 @@ const { spawn } = require('child_process');
 
 const ROOT = __dirname;
 const POLL_MS = Math.max(5000, Number(process.env.MILES_REMOTE_BRIDGE_POLL_MS || 15000));
+const PROGRESS_MS = Math.max(30000, Number(process.env.MILES_REMOTE_BRIDGE_PROGRESS_MS || 60000));
 const CONTROL_BRANCH = 'miles-control';
 const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || `https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/${CONTROL_BRANCH}/DATA/control/miles_remote_execution_directive.json`;
 const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_state.json');
@@ -108,7 +109,7 @@ async function publishEvidence(evidence) {
     requireSuccess(await run('git', ['update-index', '--add', '--cacheinfo', `100644,${blob},${EVIDENCE_REPO_PATH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_UPDATE_INDEX_FAILED');
     const tree = requireSuccess(await run('git', ['write-tree'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_WRITE_TREE_FAILED');
     const commit = requireSuccess(
-      await run('git', ['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
+      await run('git', ['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId} ${evidence.phase || 'FINAL'}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
       'EVIDENCE_COMMIT_TREE_FAILED'
     );
     requireSuccess(
@@ -121,6 +122,22 @@ async function publishEvidence(evidence) {
   }
 }
 
+function baseEvidence(directive, startedAt, phase) {
+  return {
+    ok: phase === 'COMPLETED',
+    phase,
+    directiveId: directive.id,
+    job: directive.job,
+    startedAt,
+    observedAt: new Date().toISOString(),
+    safety: {
+      arbitraryShell: false,
+      destructiveGitRecovery: false,
+      evidenceBranchOnly: EVIDENCE_BRANCH
+    }
+  };
+}
+
 async function executeDirective(directive, state) {
   const validation = validateDirective(directive);
   if (!validation.ok) return { skipped: true, reason: validation.reason };
@@ -129,7 +146,31 @@ async function executeDirective(directive, state) {
   await safeFastForward();
   const [command, args] = JOBS[directive.job];
   const startedAt = new Date().toISOString();
+
+  try {
+    await publishEvidence(baseEvidence(directive, startedAt, 'STARTED'));
+  } catch (error) {
+    console.error('[MILES REMOTE BRIDGE] STARTED evidence publish failed:', error.message);
+  }
+
+  let progressPublishing = false;
+  const progressTimer = setInterval(async () => {
+    if (progressPublishing) return;
+    progressPublishing = true;
+    try {
+      await publishEvidence({
+        ...baseEvidence(directive, startedAt, 'RUNNING'),
+        elapsedSeconds: Math.max(0, Math.round((Date.now() - Date.parse(startedAt)) / 1000))
+      });
+    } catch (error) {
+      console.error('[MILES REMOTE BRIDGE] RUNNING evidence publish failed:', error.message);
+    } finally {
+      progressPublishing = false;
+    }
+  }, PROGRESS_MS);
+
   const result = await run(command, args, directive.job);
+  clearInterval(progressTimer);
   const finishedAt = new Date().toISOString();
   const record = { id: directive.id, job: directive.job, startedAt, finishedAt, code: result.code };
   state.lastDirectiveId = directive.id;
@@ -138,19 +179,12 @@ async function executeDirective(directive, state) {
   writeState(state);
 
   const evidence = {
+    ...baseEvidence(directive, startedAt, 'COMPLETED'),
     ok: result.code === 0,
-    directiveId: directive.id,
-    job: directive.job,
-    startedAt,
     finishedAt,
     exitCode: result.code,
     stdoutTail: String(result.stdout || '').slice(-16000),
-    stderrTail: String(result.stderr || '').slice(-8000),
-    safety: {
-      arbitraryShell: false,
-      destructiveGitRecovery: false,
-      evidenceBranchOnly: EVIDENCE_BRANCH
-    }
+    stderrTail: String(result.stderr || '').slice(-8000)
   };
 
   try {
@@ -172,6 +206,7 @@ async function tick() {
 async function main() {
   console.log('[MILES REMOTE BRIDGE] STARTED');
   console.log(`[MILES REMOTE BRIDGE] Poll ${Math.round(POLL_MS/1000)}s`);
+  console.log(`[MILES REMOTE BRIDGE] Progress publish ${Math.round(PROGRESS_MS/1000)}s`);
   console.log(`[MILES REMOTE BRIDGE] Control branch: ${CONTROL_BRANCH}`);
   console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
   console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
@@ -193,8 +228,10 @@ module.exports = {
   DIRECTIVE_URL,
   EVIDENCE_BRANCH,
   EVIDENCE_REPO_PATH,
+  PROGRESS_MS,
   validateDirective,
   executeDirective,
   safeFastForward,
-  publishEvidence
+  publishEvidence,
+  baseEvidence
 };
