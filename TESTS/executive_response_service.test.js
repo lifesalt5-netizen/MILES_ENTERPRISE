@@ -126,3 +126,5 @@ test('email/outbound executive questions return evidence-backed meeting analysis
   assert.match(result.message, /Best plan to get more meetings/);
   assert.doesNotMatch(result.message, /Executive response received/i);
 });
+
+require('./meeting_pipeline_calendly_bridge.test.js');
