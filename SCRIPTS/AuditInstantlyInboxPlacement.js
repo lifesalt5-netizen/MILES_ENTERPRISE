@@ -13,6 +13,16 @@ function senderStatus({ samples = 0, inboxPct = 0, spamPct = 0, spfPassPct = 0, 
   if (spfPassPct < 100 || dkimPassPct < 100 || dmarcPassPct < 100) return 'WATCH';
   return 'ACTIVE';
 }
+function testIdArg(argv = process.argv.slice(2)) {
+  const inline = argv.find(a => String(a).startsWith('--test-id='));
+  if (inline) return String(inline).slice('--test-id='.length).trim();
+  const i = argv.indexOf('--test-id');
+  return i >= 0 && argv[i + 1] ? String(argv[i + 1]).trim() : '';
+}
+function selectTests(tests, targetTestId) {
+  if (!targetTestId) return tests;
+  return tests.filter(t => String(t?.id || '') === targetTestId);
+}
 
 async function listPaged(endpoint, params = {}) {
   const rows = [];
@@ -33,11 +43,14 @@ async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const outputDir = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability');
   const output = path.join(outputDir, 'instantly_inbox_placement_latest.json');
+  const targetTestId = testIdArg();
   console.log('============================================================');
   console.log('P2GC INSTANTLY INBOX PLACEMENT - LIVE READ ONLY');
   console.log('============================================================');
   try {
-    const tests = await listPaged('/inbox-placement-tests');
+    const allTests = await listPaged('/inbox-placement-tests');
+    const tests = selectTests(allTests, targetTestId);
+    if (targetTestId && tests.length === 0) throw new Error(`REQUESTED_TEST_ID_NOT_FOUND:${targetTestId}`);
     const bySender = new Map();
     let analyticsCount = 0;
     for (const test of tests) {
@@ -93,7 +106,10 @@ async function main() {
       generatedAt: new Date().toISOString(),
       source: 'INSTANTLY_API_V2_INBOX_PLACEMENT',
       readOnly: true,
+      requestedTestId: targetTestId || null,
+      testScope: targetTestId ? 'SINGLE_TEST' : 'ALL_TESTS_AGGREGATED',
       testsFound: tests.length,
+      allTestsFound: allTests.length,
       analyticsRows: analyticsCount,
       senders,
       placementVerified,
@@ -102,11 +118,12 @@ async function main() {
       blocker,
       authenticationWatchSenders: authWatchSenders.map(s => s.sender),
       nextAction,
-      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement. ACTIVE requires 100% observed SPF, DKIM, and DMARC pass rates in the current placement evidence.'
+      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement. ACTIVE requires 100% observed SPF, DKIM, and DMARC pass rates in the selected placement evidence.'
     };
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(output, JSON.stringify(result, null, 2));
-    console.log(`Tests found: ${tests.length}`);
+    console.log(`Test scope: ${result.testScope}${targetTestId ? ` (${targetTestId})` : ''}`);
+    console.log(`Tests found in scope: ${tests.length} (all available: ${allTests.length})`);
     console.log(`Analytics rows: ${analyticsCount}`);
     console.log(`Senders with evidence: ${senders.length}`);
     for (const s of senders) console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% spf=${s.spfPassPct}% dkim=${s.dkimPassPct}% dmarc=${s.dmarcPassPct}% | ${s.status}`);
@@ -126,6 +143,7 @@ async function main() {
     console.error(msg);
     if (/402|payment required|active paid plan/i.test(msg)) console.log('BLOCKER: INSTANTLY_INBOX_PLACEMENT_PLAN_REQUIRED');
     else if (/401|unauthorized|scope/i.test(msg)) console.log('BLOCKER: INSTANTLY_API_KEY_REQUIRES_INBOX_PLACEMENT_READ_SCOPE');
+    else if (/REQUESTED_TEST_ID_NOT_FOUND/i.test(msg)) console.log('BLOCKER: REQUESTED_INBOX_PLACEMENT_TEST_NOT_FOUND');
     console.log('RESULT: INSTANTLY_INBOX_PLACEMENT_AUDIT_RED');
     process.exitCode = 1;
   }
@@ -133,4 +151,4 @@ async function main() {
 
 if (require.main === module) main();
 
-module.exports = { senderStatus };
+module.exports = { senderStatus, testIdArg, selectTests };
