@@ -14,6 +14,8 @@ const calendly = require(path.join(root, 'CONNECTORS', 'CALENDLY', 'connector.js
 const outDir = path.join(root, 'DATA', 'operational_acceptance');
 const outJson = path.join(outDir, 'latest_calendly_pipeline_acceptance.json');
 const outMd = path.join(outDir, 'latest_calendly_pipeline_acceptance.md');
+const LOOKBACK_DAYS = Math.max(1, Number(process.env.MILES_CALENDLY_ACCEPTANCE_LOOKBACK_DAYS || 180));
+const LOOKAHEAD_DAYS = Math.max(1, Number(process.env.MILES_CALENDLY_ACCEPTANCE_LOOKAHEAD_DAYS || 90));
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function isP2GCEvent(event) {
@@ -44,6 +46,9 @@ function summarizeInvitee(invitee) {
 
 (async () => {
   const generatedAt = new Date().toISOString();
+  const now = Date.now();
+  const minStartTime = new Date(now - LOOKBACK_DAYS * 86400000).toISOString();
+  const maxStartTime = new Date(now + LOOKAHEAD_DAYS * 86400000).toISOString();
   const health = await calendly.healthCheck();
   const checks = {
     calendly_authentication: health.ok ? 'GREEN' : 'RED',
@@ -65,6 +70,8 @@ function summarizeInvitee(invitee) {
         organization: user.current_organization,
         count: 100,
         maxPages: 10,
+        minStartTime,
+        maxStartTime,
         sort: 'start_time:desc'
       });
       checks.scheduled_event_visibility = 'GREEN';
@@ -110,7 +117,7 @@ function summarizeInvitee(invitee) {
   let nextPriority = 'WIRE_CALENDLY_TO_EXECUTIVE_BRIEF_AND_REVENUE_PIPELINE';
   if (!health.ok) nextPriority = 'FIX_CALENDLY_AUTHENTICATION';
   else if (checks.scheduled_event_visibility !== 'GREEN') nextPriority = 'FIX_CALENDLY_SCHEDULED_EVENT_READ';
-  else if (!p2gcEvents.length) nextPriority = 'VERIFY_P2GC_EVENT_TYPE_MATCH_OR_NO_BOOKINGS';
+  else if (!p2gcEvents.length) nextPriority = 'NO_P2GC_BOOKINGS_IN_BOUNDED_REVENUE_WINDOW';
   else if (!inviteeCount) nextPriority = 'FIX_CALENDLY_INVITEE_READ';
 
   const report = {
@@ -118,6 +125,13 @@ function summarizeInvitee(invitee) {
     root,
     mode: 'READ_ONLY_EXTERNAL_AUDIT',
     externalWritesPerformed: false,
+    window: {
+      lookbackDays: LOOKBACK_DAYS,
+      lookaheadDays: LOOKAHEAD_DAYS,
+      minStartTime,
+      maxStartTime,
+      purpose: 'BOUNDED_REVENUE_PIPELINE_TRUTH'
+    },
     checks,
     health,
     account: user ? {
@@ -136,7 +150,8 @@ function summarizeInvitee(invitee) {
     },
     meetings: meetingRows,
     error,
-    nextPriority
+    nextPriority,
+    truthNote: 'This acceptance audit is bounded to the same default 180-day lookback / 90-day lookahead revenue window as CalendlyRevenuePipelineService so historical bookings outside the revenue window cannot be mislabeled as current pipeline evidence.'
   };
 
   ensureDir(outDir);
@@ -147,6 +162,7 @@ function summarizeInvitee(invitee) {
     `Generated: ${generatedAt}`,
     'Mode: READ_ONLY_EXTERNAL_AUDIT',
     'External writes performed: false',
+    `Revenue window: ${minStartTime} through ${maxStartTime}`,
     '',
     '## Status',
     ...Object.entries(checks).map(([k,v]) => `- ${k}: ${v}`),
@@ -172,6 +188,7 @@ function summarizeInvitee(invitee) {
   console.log('============================================================');
   for (const [k,v] of Object.entries(checks)) console.log(`${k}: ${v}`);
   console.log('');
+  console.log(`Revenue window: ${minStartTime} through ${maxStartTime}`);
   console.log(`Calendly account: ${user?.email || health.email || 'unknown'}`);
   console.log(`Scheduled events read: ${events.length}`);
   console.log(`P2GC/Federal Strategy events: ${p2gcEvents.length}`);
