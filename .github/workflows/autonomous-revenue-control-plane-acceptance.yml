@@ -9,8 +9,10 @@ on:
       - 'SERVICES/BusinessOperationsBridgeService.js'
       - 'SERVICES/RevenueMissionSourceService.js'
       - 'SERVICES/revenue/**'
+      - 'SERVICES/runtime/RemoteExecutionBridgeSupervisor.js'
       - 'SCRIPTS/FinalizeLeadSupplyChainAudit.js'
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
+      - 'StartMiles.js'
       - 'StartMilesRemoteExecutionBridge.js'
       - 'TESTS/**'
       - '.github/workflows/autonomous-revenue-control-plane-acceptance.yml'
@@ -26,8 +28,13 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - name: Remote bridge syntax
-        run: node --check StartMilesRemoteExecutionBridge.js
+      - name: Remote bridge and supervisor syntax
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check StartMiles.js
+          node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
+      - name: Remote bridge self-heal regression
+        run: node TESTS/remote_execution_bridge_supervisor.test.js
       - name: Runtime ownership regressions
         run: |
           node TESTS/single_taskqueue_executor_test.js
