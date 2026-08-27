@@ -7,6 +7,7 @@ const { InstantlyInboxPlacementTestService } = require('../SERVICES/revenue/Inst
 
 (async () => {
   const execute = process.argv.includes('--execute');
+  const forceNew = process.argv.includes('--force-new');
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const outputDir = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability');
   const output = path.join(outputDir, 'instantly_inbox_placement_test_creation_latest.json');
@@ -18,10 +19,11 @@ const { InstantlyInboxPlacementTestService } = require('../SERVICES/revenue/Inst
 
   try {
     if (!execute) {
-      const plan = await service.buildPlan();
+      const plan = await service.buildPlan({ forceNew });
       fs.mkdirSync(outputDir, { recursive: true });
       fs.writeFileSync(output, JSON.stringify({ mode: 'PLAN_ONLY', generatedAt: new Date().toISOString(), ...plan }, null, 2));
       console.log(`Mode: PLAN ONLY`);
+      console.log(`Force new post-DMARC evidence: ${forceNew ? 'YES' : 'NO'}`);
       console.log(`Active accounts: ${plan.activeAccounts.length}`);
       console.log(`Eligible senders: ${plan.eligibleSenders.length}`);
       console.log(`Zero-limit senders: ${plan.zeroLimitSenders.length}`);
@@ -34,7 +36,7 @@ const { InstantlyInboxPlacementTestService } = require('../SERVICES/revenue/Inst
       return;
     }
 
-    const result = await service.createControlledBaseline();
+    const result = await service.createControlledBaseline({ forceNew });
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(output, JSON.stringify({ mode: 'EXECUTE', generatedAt: new Date().toISOString(), ...result }, null, 2));
 
@@ -48,6 +50,7 @@ const { InstantlyInboxPlacementTestService } = require('../SERVICES/revenue/Inst
 
     console.log(`Test: ${result.plan.name}`);
     console.log(`Created: ${result.created ? 'YES' : 'NO - EXISTING TEST REUSED'}`);
+    console.log(`Force new post-DMARC evidence: ${forceNew ? 'YES' : 'NO'}`);
     console.log(`Test ID: ${result.testId || result.test?.id || 'UNKNOWN'}`);
     console.log(`Senders: ${result.plan.eligibleSenders.length}`);
     console.log(`Provider options: ${result.plan.providerLabels.length}`);
