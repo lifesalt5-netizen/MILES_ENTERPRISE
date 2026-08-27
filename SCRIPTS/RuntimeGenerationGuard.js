@@ -3,12 +3,15 @@
 const fs = require("fs");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
+const RemoteExecutionBridgeSupervisor = require("../SERVICES/runtime/RemoteExecutionBridgeSupervisor");
+const InfrastructureHealthScheduler = require("../SERVICES/runtime/InfrastructureHealthScheduler");
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, "..");
 const RUNTIME_DIR = path.join(ROOT, "DATA", "runtime", "runtime_generations");
 const OPTIMIZER = path.join(ROOT, "SCRIPTS", "TaskQueueRuntimeOptimizer.js");
 const POLL_MS = Math.max(250, Number(process.env.MILES_RUNTIME_GENERATION_POLL_MS || 1000));
 const GRACE_MS = Math.max(1000, Number(process.env.MILES_RUNTIME_SHUTDOWN_GRACE_MS || 8000));
+const CONTROL_OWNER_RUNTIME = "miles-autonomous-coo";
 const QUEUE_OPTIMIZED_RUNTIMES = new Set([
   "miles-worker",
   "miles-autonomous-coo"
@@ -62,6 +65,17 @@ function withOptimizerNodeOptions(existing = "") {
   return value ? `${value} ${option}` : option;
 }
 
+function startControlOwnership(runtime) {
+  if (runtime !== CONTROL_OWNER_RUNTIME) return null;
+  const bridgeSupervisor = new RemoteExecutionBridgeSupervisor({ root: ROOT });
+  const bridge = bridgeSupervisor.start();
+  const infrastructureScheduler = new InfrastructureHealthScheduler({ root: ROOT, intervalHours: 72 });
+  const infrastructure = infrastructureScheduler.start();
+  console.log(`[MILES RUNTIME GUARD] ${runtime} GitHub bridge supervision=${bridge.status}`);
+  console.log(`[MILES RUNTIME GUARD] ${runtime} infrastructure scheduler=${infrastructure.status} intervalHours=${infrastructure.intervalHours}`);
+  return { bridgeSupervisor, infrastructureScheduler, bridge, infrastructure };
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const entry = path.isAbsolute(options.entry) ? options.entry : path.join(ROOT, options.entry);
@@ -86,6 +100,8 @@ async function main() {
     queueOptimizer: optimizeQueue ? OPTIMIZER : null,
     heartbeatAt: startedAt
   });
+
+  const controlOwnership = startControlOwnership(options.runtime);
 
   const childEnv = {
     ...process.env,
@@ -112,11 +128,17 @@ async function main() {
 
   const ownsLease = () => readJson(leaseFile)?.generation === generation;
 
+  const stopControlOwnership = () => {
+    try { controlOwnership?.infrastructureScheduler?.stop(); } catch {}
+    try { controlOwnership?.bridgeSupervisor?.stop(); } catch {}
+  };
+
   const stop = (reason, code = 0) => {
     if (stopping) return;
     stopping = true;
     if (poll) clearInterval(poll);
     console.log(`[MILES RUNTIME GUARD] ${options.runtime} stopping: ${reason}`);
+    stopControlOwnership();
 
     try { child.kill("SIGTERM"); } catch {}
     if (process.platform === "win32") killTree(child.pid, false);
@@ -141,6 +163,12 @@ async function main() {
       entry,
       startedAt,
       queueOptimizer: optimizeQueue ? OPTIMIZER : null,
+      githubControlOwner: options.runtime === CONTROL_OWNER_RUNTIME,
+      bridgeSupervisor: controlOwnership?.bridgeSupervisor?.status?.() || null,
+      infrastructureHealth: controlOwnership ? {
+        due: controlOwnership.infrastructureScheduler.audit.due(),
+        lastAudit: controlOwnership.infrastructureScheduler.audit.lastRun()?.observedAt || null
+      } : null,
       heartbeatAt: new Date().toISOString()
     });
   }, POLL_MS);
@@ -156,6 +184,7 @@ async function main() {
   child.once("exit", (code, signal) => {
     if (poll) clearInterval(poll);
     if (hardStop) clearTimeout(hardStop);
+    stopControlOwnership();
     if (ownsLease()) {
       try { fs.rmSync(leaseFile, { force: true }); } catch {}
     }
@@ -164,7 +193,7 @@ async function main() {
   });
 
   console.log(
-    `[MILES RUNTIME GUARD] ${options.runtime} generation=${generation} guardPid=${process.pid} childPid=${child.pid} queueOptimizer=${optimizeQueue ? "enabled" : "disabled"}`
+    `[MILES RUNTIME GUARD] ${options.runtime} generation=${generation} guardPid=${process.pid} childPid=${child.pid} queueOptimizer=${optimizeQueue ? "enabled" : "disabled"} githubControlOwner=${options.runtime === CONTROL_OWNER_RUNTIME ? "yes" : "no"}`
   );
 }
 
@@ -176,10 +205,12 @@ if (require.main === module) {
 }
 
 module.exports = {
+  CONTROL_OWNER_RUNTIME,
   parseArgs,
   writeJsonAtomic,
   readJson,
   killTree,
   withOptimizerNodeOptions,
+  startControlOwnership,
   main
 };
