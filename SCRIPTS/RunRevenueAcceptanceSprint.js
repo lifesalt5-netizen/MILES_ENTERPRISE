@@ -9,6 +9,7 @@ const { spawn } = require('child_process');
 const DEFAULT_TEST_ID = '01a040ce-dbf7-7872-8938-f1501647af92';
 const POLL_MS = Number(process.env.MILES_PLACEMENT_POLL_MS || 90000);
 const MAX_WAIT_MS = Number(process.env.MILES_PLACEMENT_MAX_WAIT_MS || 30 * 60 * 1000);
+const AUDIT_TIMEOUT_MS = Number(process.env.MILES_REVENUE_AUDIT_TIMEOUT_MS || 10 * 60 * 1000);
 const MIN_ANALYTICS_ROWS = Number(process.env.MILES_PLACEMENT_MIN_ANALYTICS_ROWS || 27);
 const MIN_SENDER_EVIDENCE = Number(process.env.MILES_PLACEMENT_MIN_SENDER_EVIDENCE || 9);
 const REQUIRED_STABLE_POLLS = Number(process.env.MILES_PLACEMENT_REQUIRED_STABLE_POLLS || 2);
@@ -33,16 +34,43 @@ function argValue(flag, fallback) {
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
 }
 
-function runNode(args, label) {
+function runNode(args, label, timeoutMs = AUDIT_TIMEOUT_MS) {
   return new Promise(resolve => {
     const startedAt = new Date().toISOString();
     const child = spawn(process.execPath, args, { cwd: process.cwd(), env: process.env, windowsHide: true });
     let stdout = '';
     let stderr = '';
+    let settled = false;
+    let timedOut = false;
+
+    const finish = (code, extra = {}) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve({ label, args, startedAt, finishedAt: new Date().toISOString(), code, stdout, stderr, timedOut, ...extra });
+    };
+
+    const timer = setTimeout(() => {
+      timedOut = true;
+      const timeoutMessage = `AUDIT_TIMEOUT_AFTER_${timeoutMs}MS`;
+      stderr = `${stderr}${stderr ? '\n' : ''}${timeoutMessage}`;
+      process.stderr.write(`[${label}] ${timeoutMessage}\n`);
+      try { child.kill('SIGTERM'); } catch {}
+      setTimeout(() => {
+        if (!settled) {
+          try { child.kill('SIGKILL'); } catch {}
+          finish(124, { timeoutMs });
+        }
+      }, 5000).unref?.();
+    }, timeoutMs);
+
     child.stdout.on('data', d => { const s = d.toString(); stdout += s; process.stdout.write(`[${label}] ${s}`); });
     child.stderr.on('data', d => { const s = d.toString(); stderr += s; process.stderr.write(`[${label}] ${s}`); });
-    child.on('close', code => resolve({ label, args, startedAt, finishedAt: new Date().toISOString(), code, stdout, stderr }));
-    child.on('error', err => resolve({ label, args, startedAt, finishedAt: new Date().toISOString(), code: -1, stdout, stderr: `${stderr}\n${err.message}` }));
+    child.on('close', code => finish(timedOut ? 124 : code, timedOut ? { timeoutMs } : {}));
+    child.on('error', err => {
+      stderr = `${stderr}${stderr ? '\n' : ''}${err.message}`;
+      finish(-1);
+    });
   });
 }
 
@@ -78,9 +106,14 @@ async function pollPlacement(testId) {
   let latest = { rows: 0, senders: 0, authWatchSenders: [] };
 
   while (Date.now() - started <= MAX_WAIT_MS) {
-    const result = await runNode(['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', testId], 'PLACEMENT');
+    const result = await runNode(['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', testId], 'PLACEMENT', Math.min(AUDIT_TIMEOUT_MS, MAX_WAIT_MS));
     latest = parsePlacement(result.stdout);
     attempts.push({ ...result, parsed: latest });
+
+    if (result.timedOut) {
+      console.log('[PLACEMENT] placement audit child timed out; preserving fail-closed evidence state.');
+      break;
+    }
 
     const materiallyPopulated = latest.rows >= MIN_ANALYTICS_ROWS && latest.senders >= MIN_SENDER_EVIDENCE;
     if (materiallyPopulated) {
@@ -159,6 +192,7 @@ async function main() {
   console.log('============================================================');
   console.log(`Placement test: ${testId}`);
   console.log(`Parallel audits: ${SAFE_AUDITS.length}`);
+  console.log(`Audit child timeout: ${Math.round(AUDIT_TIMEOUT_MS / 60000)}m`);
   console.log(`Placement poll: ${Math.round(POLL_MS / 1000)}s, max wait ${Math.round(MAX_WAIT_MS / 60000)}m`);
   console.log(`Placement completeness gate: >=${MIN_ANALYTICS_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_STABLE_POLLS} stable polls`);
   console.log(`Placement plateau gate: >=${MIN_PLATEAU_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_PLATEAU_POLLS} unchanged polls; plateau never overrides AUTH WATCH`);
@@ -168,6 +202,7 @@ async function main() {
   const [audits, placement] = await Promise.all([auditPromise, placementPromise]);
 
   const failedAudits = audits.filter(x => x.code !== 0);
+  const timedOutAudits = audits.filter(x => x.timedOut);
   const authWatchOpen = placement.authWatchSenders.length > 0;
   const report = {
     generatedAt: new Date().toISOString(),
@@ -175,6 +210,7 @@ async function main() {
     testId,
     audits,
     failedAuditCount: failedAudits.length,
+    timedOutAuditCount: timedOutAudits.length,
     placement,
     placementCompletenessGate: {
       minAnalyticsRows: MIN_ANALYTICS_ROWS,
@@ -203,6 +239,7 @@ async function main() {
   console.log('============================================================');
   console.log(`Safe audits complete: ${audits.length}`);
   console.log(`Audit nonzero exits: ${failedAudits.length}`);
+  console.log(`Audit timeouts: ${timedOutAudits.length}`);
   console.log(`Placement evidence stable: ${placement.ready ? 'YES' : 'NO'}`);
   console.log(`Placement evidence basis: ${placement.evidenceBasis}`);
   console.log(`Placement rows: ${placement.rows}`);
@@ -222,11 +259,13 @@ if (require.main === module) main().catch(err => {
 module.exports = {
   SAFE_AUDITS,
   DEFAULT_TEST_ID,
+  AUDIT_TIMEOUT_MS,
   MIN_ANALYTICS_ROWS,
   MIN_SENDER_EVIDENCE,
   REQUIRED_STABLE_POLLS,
   MIN_PLATEAU_ROWS,
   REQUIRED_PLATEAU_POLLS,
+  runNode,
   parsePlacement,
   placementFingerprint
 };
