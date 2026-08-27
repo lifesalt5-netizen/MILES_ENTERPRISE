@@ -29,7 +29,9 @@ const JOBS = Object.freeze({
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
   PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
   IONOS_INBOX_CLEANUP_PLAN: ['node', ['SCRIPTS/RunIonosInboxCleanup.js']],
-  IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]
+  IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']],
+  IONOS_SPAM_RESCUE_PLAN: ['node', ['SCRIPTS/RunIonosSpamRescue.js']],
+  IONOS_SPAM_RESCUE_EXECUTE: ['node', ['SCRIPTS/RunIonosSpamRescue.js', '--execute']]
 });
 
 function readState() {
@@ -50,7 +52,7 @@ function getJson(url) {
       res.on('end', () => {
         if (res.statusCode !== 200) return reject(new Error(`DIRECTIVE_HTTP_${res.statusCode}`));
         try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
-        catch (e) { reject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`)); }
+        catch (e) { reject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`));
       });
     }).on('error', reject);
   });
