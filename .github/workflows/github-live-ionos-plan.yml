@@ -1,0 +1,53 @@
+name: GitHub Live IONOS All-Folder Plan
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/github-live-ionos-plan.yml'
+      - 'SCRIPTS/RunIonosInboxCleanup.js'
+      - 'SERVICES/revenue/IonosAllFolderReconciliationService.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      IONOS_INFO_EMAIL: ${{ secrets.IONOS_INFO_EMAIL }}
+      IONOS_INFO_PASSWORD: ${{ secrets.IONOS_INFO_PASSWORD }}
+      IONOS_KEVIN_EMAIL: ${{ secrets.IONOS_KEVIN_EMAIL }}
+      IONOS_KEVIN_PASSWORD: ${{ secrets.IONOS_KEVIN_PASSWORD }}
+      MILES_IONOS_ALL_FOLDER_MAX: '2000'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Verify credential availability without exposing values
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const required = ['IONOS_INFO_PASSWORD','IONOS_KEVIN_PASSWORD'];
+          const missing = required.filter(name => !String(process.env[name] || '').trim());
+          if (missing.length) {
+            console.error(`IONOS_GITHUB_CREDENTIALS_MISSING=${missing.join(',')}`);
+            process.exit(2);
+          }
+          console.log('IONOS_GITHUB_CREDENTIALS_PRESENT=YES');
+          NODE
+      - name: Run read-only all-folder plan
+        run: node SCRIPTS/RunIonosInboxCleanup.js
+      - name: Upload live plan evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-live-ionos-all-folder-plan
+          path: DATA/runtime/revenue/ionos_all_folder_reconciliation/latest.json
+          if-no-files-found: ignore
+          retention-days: 3
