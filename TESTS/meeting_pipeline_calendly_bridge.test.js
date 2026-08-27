@@ -8,7 +8,10 @@ const src = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AUDIT_MILES_M
 
 assert(src.includes('CalendlyRevenuePipelineService'));
 assert(src.includes('READ_ONLY_MEETING_SOURCE_RECONCILIATION'));
-assert(src.includes('P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_PRIMARY_SYNC_NOT_OBSERVED'));
+assert(src.includes('calendar.listCalendars'));
+assert(src.includes('ALL_VISIBLE_CALENDARS_BOUNDED'));
+assert(src.includes('P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_VISIBLE_CALENDAR_SYNC_NOT_OBSERVED'));
+assert(src.includes('google_calendar_inventory_scan'));
 assert(src.includes('google_calendar_p2gc_sync'));
 assert(src.includes('externalWritesPerformed: false'));
 assert(!src.includes('createEvent('), 'Meeting audit must remain read-only');
