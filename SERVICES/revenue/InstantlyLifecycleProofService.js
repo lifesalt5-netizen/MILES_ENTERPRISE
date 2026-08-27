@@ -76,7 +76,7 @@ class InstantlyLifecycleProofService {
       delete ledger.entries[key];
       this.reconciler.writeSegmentLedger(ledger);
     }
-    return this.reconciler.mutateOne(emailRecord, classification, bucket, destination, ledger);
+    return this.reconciler.mutateOne(emailRecord, classification, destination, ledger);
   }
 
   async run(options = {}) {
