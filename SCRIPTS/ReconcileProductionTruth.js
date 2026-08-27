@@ -8,6 +8,8 @@ process.env.MILES_ROOT = ROOT;
 
 const ProductionTruthReconciliationService = require('../SERVICES/ProductionTruthReconciliationService');
 
+const DEFAULT_ARCHIVE_ROTATE_MIB = 384;
+
 function isWorkQueueArchiveSerializationFailure(error) {
   const message = String(error?.message || error || '');
   const stack = String(error?.stack || '');
@@ -32,6 +34,92 @@ function archiveStat(queue) {
       error: error.message
     };
   }
+}
+
+function archivePathForRoot(root = ROOT) {
+  return path.join(root, 'DATA', 'runtime', 'work_queue_archive.json');
+}
+
+function archiveRotateThresholdMiB(env = process.env) {
+  const parsed = Number(env.MILES_WORK_QUEUE_ARCHIVE_ROTATE_MIB);
+  return Number.isFinite(parsed) && parsed >= 64
+    ? parsed
+    : DEFAULT_ARCHIVE_ROTATE_MIB;
+}
+
+function rotateOversizedWorkQueueArchive(root = ROOT, options = {}) {
+  const archivePath = options.archivePath || archivePathForRoot(root);
+  const thresholdMiB = Number(options.thresholdMiB || archiveRotateThresholdMiB(options.env || process.env));
+  const thresholdBytes = thresholdMiB * 1024 * 1024;
+
+  let stat;
+  try {
+    stat = fs.statSync(archivePath);
+  } catch (error) {
+    if (error?.code === 'ENOENT') {
+      return {
+        ok: true,
+        rotated: false,
+        reason: 'ARCHIVE_NOT_PRESENT',
+        archivePath,
+        thresholdMiB
+      };
+    }
+    throw error;
+  }
+
+  const sizeMiB = Number((stat.size / 1024 / 1024).toFixed(2));
+  if (stat.size <= thresholdBytes) {
+    return {
+      ok: true,
+      rotated: false,
+      reason: 'ARCHIVE_WITHIN_BOUND',
+      archivePath,
+      sizeBytes: stat.size,
+      sizeMiB,
+      thresholdMiB
+    };
+  }
+
+  const stamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
+  const ext = path.extname(archivePath) || '.json';
+  const base = archivePath.slice(0, archivePath.length - ext.length);
+  let segmentPath = `${base}.segment_${stamp}${ext}`;
+  let suffix = 1;
+  while (fs.existsSync(segmentPath)) {
+    segmentPath = `${base}.segment_${stamp}_${suffix}${ext}`;
+    suffix += 1;
+  }
+
+  fs.mkdirSync(path.dirname(archivePath), { recursive: true });
+  let method = 'rename';
+  try {
+    fs.renameSync(archivePath, segmentPath);
+  } catch (error) {
+    if (!['EPERM', 'EACCES', 'EXDEV'].includes(error?.code)) throw error;
+    method = 'copy-unlink';
+    fs.copyFileSync(archivePath, segmentPath);
+    const copied = fs.statSync(segmentPath);
+    if (copied.size !== stat.size) {
+      throw new Error(`WORK_QUEUE_ARCHIVE_ROTATION_COPY_SIZE_MISMATCH:${copied.size}:${stat.size}`);
+    }
+    fs.unlinkSync(archivePath);
+  }
+
+  fs.writeFileSync(archivePath, '[]\n', 'utf8');
+
+  return {
+    ok: true,
+    rotated: true,
+    reason: 'ARCHIVE_ROTATED_BEFORE_NODE_STRING_LIMIT',
+    archivePath,
+    segmentPath,
+    method,
+    preservedBytes: stat.size,
+    preservedMiB: sizeMiB,
+    thresholdMiB,
+    historicalEvidencePreserved: true
+  };
 }
 
 async function buildFailClosedFallback(service, error) {
@@ -107,14 +195,31 @@ async function runReconciliation(service) {
   }
 }
 
+function persistAugmentedResult(result) {
+  const outFile = ProductionTruthReconciliationService.OUT_FILE ||
+    path.join(ROOT, 'DATA', 'production_truth', 'latest_reconciliation.json');
+  fs.mkdirSync(path.dirname(outFile), { recursive: true });
+  fs.writeFileSync(outFile, JSON.stringify(result, null, 2), 'utf8');
+}
+
 async function main() {
   console.log('============================================================');
   console.log('MILES PRODUCTION TRUTH RECONCILIATION');
   console.log('============================================================');
   console.log(`Root: ${ROOT}`);
 
+  const archiveRotation = rotateOversizedWorkQueueArchive(ROOT);
+  if (archiveRotation.rotated) {
+    console.log(`Work queue archive rotated safely: ${archiveRotation.preservedMiB} MiB -> ${archiveRotation.segmentPath}`);
+  }
+
   const service = new ProductionTruthReconciliationService({ rootDir: ROOT });
   const result = await runReconciliation(service);
+  result.workQueue = {
+    ...(result.workQueue || {}),
+    archiveRotation
+  };
+  persistAugmentedResult(result);
 
   const queue = result.workQueue || {};
   const repo = result.registry?.repository || {};
@@ -125,6 +230,8 @@ async function main() {
   console.log(`Work queue archive status: ${queue.archival?.ok === false ? 'RED' : 'OK'}`);
   if (queue.archival?.blocker) console.log(`WORK_QUEUE_ARCHIVE_BLOCKER=${queue.archival.blocker}`);
   if (queue.archiveFile?.exists) console.log(`Work queue archive size MiB: ${queue.archiveFile.sizeMiB}`);
+  console.log(`Work queue archive rotated: ${archiveRotation.rotated}`);
+  if (archiveRotation.rotated) console.log(`Work queue archive segment preserved MiB: ${archiveRotation.preservedMiB}`);
   console.log(`Work queue open after: ${queue.after?.open ?? 'UNKNOWN'}`);
   console.log(`Work queue failed after: ${queue.after?.failed ?? 'UNKNOWN'}`);
   console.log(`Work queue approval escalations after: ${queue.after?.escalations ?? 'UNKNOWN'}`);
@@ -158,9 +265,14 @@ if (require.main === module) {
 }
 
 module.exports = {
+  DEFAULT_ARCHIVE_ROTATE_MIB,
   isWorkQueueArchiveSerializationFailure,
   archiveStat,
+  archivePathForRoot,
+  archiveRotateThresholdMiB,
+  rotateOversizedWorkQueueArchive,
   buildFailClosedFallback,
   runReconciliation,
+  persistAugmentedResult,
   main
 };
