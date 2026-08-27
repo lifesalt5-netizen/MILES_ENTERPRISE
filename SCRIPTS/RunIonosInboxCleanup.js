@@ -2,17 +2,17 @@
 
 require('dotenv').config();
 const path = require('path');
-const IonosInboxCleanupService = require('../SERVICES/revenue/IonosInboxCleanupService');
+const IonosAllFolderReconciliationService = require('../SERVICES/revenue/IonosAllFolderReconciliationService');
 
 async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const execute = process.argv.includes('--execute');
-  const service = new IonosInboxCleanupService({ root });
+  const service = new IonosAllFolderReconciliationService({ root });
   const result = await service.run({ execute });
   console.log(JSON.stringify(result, null, 2));
   console.log(result.ok
-    ? (execute ? 'IONOS_INBOX_CLEANUP_EXECUTE_GREEN' : 'IONOS_INBOX_CLEANUP_PLAN_GREEN')
-    : (execute ? 'IONOS_INBOX_CLEANUP_EXECUTE_RED' : 'IONOS_INBOX_CLEANUP_PLAN_RED'));
+    ? (execute ? 'IONOS_ALL_FOLDER_RECONCILIATION_EXECUTE_GREEN' : 'IONOS_ALL_FOLDER_RECONCILIATION_PLAN_GREEN')
+    : (execute ? 'IONOS_ALL_FOLDER_RECONCILIATION_EXECUTE_RED' : 'IONOS_ALL_FOLDER_RECONCILIATION_PLAN_RED'));
   process.exitCode = result.ok ? 0 : 2;
 }
 
