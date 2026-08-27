@@ -9,6 +9,8 @@ const v13 = read('CONNECTORS/WEBSITE_B12/B12_CONTROLLED_PUBLISHER_V13.js');
 const auth = read('CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js');
 const ionos = read('CONNECTORS/IONOS/imap_governed.js');
 const ionosCleanup = read('SERVICES/revenue/IonosInboxCleanupService.js');
+const ionosAllFolder = read('SERVICES/revenue/IonosAllFolderReconciliationService.js');
+const ionosRemoteRunner = read('SCRIPTS/RunIonosInboxCleanup.js');
 const instantly = read('SERVICES/revenue/InstantlyLifecycleReconciler.js');
 const reply = read('SERVICES/revenue/ReplyIntelligenceService.js');
 const sendWindow = read('SCRIPTS/AuditInstantlySendWindowHistory.js');
@@ -31,6 +33,10 @@ assert(ionosCleanup.includes('MILES-JUNK'), 'obvious vendor junk must leave work
 assert(ionosCleanup.includes('remainingRoutableNoise'), 'IONOS cleanup must verify user-visible inbox result after moves');
 assert(ionosCleanup.includes('inboxReservedForActiveClientsAndRealSentThreadReplies: true'), 'IONOS inbox must be reserved for active clients and real sent-thread replies');
 assert(ionosCleanup.includes('genericPositiveLanguageDoesNotKeepInbox: true'), 'generic positive wording must not be sufficient to keep IONOS inbox mail');
+assert(ionosAllFolder.includes('remainingExecutableMisroutes'), 'all-folder IONOS reconciliation must post-verify executable misroutes');
+assert(ionosAllFolder.includes('usesUidMoveOnly: true'), 'all-folder IONOS reconciliation must use UID MOVE only');
+assert(ionosRemoteRunner.includes('IonosAllFolderReconciliationService'), 'governed IONOS remote lane must use all-folder reconciliation');
+assert(ionosRemoteRunner.includes("process.argv.includes('--execute')"), 'governed IONOS remote lane must preserve plan/execute separation');
 
 assert(instantly.includes('/leads/update-interest-status'), 'Instantly lifecycle must reconcile CRM interest status');
 assert(instantly.includes('/mark-as-read'), 'Instantly lifecycle must clear non-actionable unread threads');
