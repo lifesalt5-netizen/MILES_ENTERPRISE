@@ -1,0 +1,7 @@
+{
+  "id": "revenue-acceptance-20260826-001",
+  "enabled": true,
+  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "requestedBy": "MILES_CONTROL_PLANE",
+  "note": "Safe read-only revenue acceptance rinse. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
+}
