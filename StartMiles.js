@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { OutboundService } = require('./SERVICES/OutboundService');
+const RemoteExecutionBridgeSupervisor = require('./SERVICES/runtime/RemoteExecutionBridgeSupervisor');
 
 const ROOT = process.cwd();
 const app = express();
@@ -13,6 +14,10 @@ app.use(express.static(path.join(ROOT,'WEB')));
 const startedAt = new Date();
 const outbound = new OutboundService(ROOT);
 outbound.init();
+const remoteBridgeSupervisor = new RemoteExecutionBridgeSupervisor({ root: ROOT });
+const bridgeSupervision = remoteBridgeSupervisor.start();
+if (!bridgeSupervision.ok) console.error('[MILES DESKTOP] Remote bridge supervision failed:', bridgeSupervision);
+else console.log('[MILES DESKTOP] Remote bridge supervision:', bridgeSupervision.status);
 
 const workforce = [
   ['MILES','Digital COO','Executive Brief / Operations Management','Running'],
@@ -38,6 +43,7 @@ function runtimeStatus(){
     app:'MILES Desktop', build:'0.1.0-build006', root:ROOT,
     startedAt:startedAt.toISOString(), uptimeSeconds:Math.floor((Date.now()-startedAt.getTime())/1000),
     runtime:'running', scheduler:'running', supervisor:'running',
+    remoteBridge: remoteBridgeSupervisor.status(),
     businessHealth: out.health === 'Healthy' ? 96 : 88,
     connectors:connectorDiscovery(), workforce,
     departments:[
@@ -64,4 +70,12 @@ app.get('/api/outbound/actions',(req,res)=>res.json(outbound.nextActions()));
 app.get('/api/outbound/report',(req,res)=>res.type('text/markdown').send(outbound.reportMarkdown()));
 app.post('/api/approvals/:id/:decision',(req,res)=>res.json({ok:true,id:req.params.id,decision:req.params.decision,comment:req.body?.comment||'',recordedAt:new Date().toISOString()}));
 app.get('/',(req,res)=>res.sendFile(path.join(ROOT,'WEB','index.html')));
-app.listen(PORT,()=>console.log(`MILES Desktop Build 006 running: http://localhost:${PORT}`));
+const server = app.listen(PORT,()=>console.log(`MILES Desktop Build 006 running: http://localhost:${PORT}`));
+
+function shutdown(signal) {
+  console.log(`[MILES DESKTOP] ${signal} shutdown`);
+  remoteBridgeSupervisor.stop();
+  server.close(() => process.exit(0));
+}
+process.once('SIGINT', () => shutdown('SIGINT'));
+process.once('SIGTERM', () => shutdown('SIGTERM'));

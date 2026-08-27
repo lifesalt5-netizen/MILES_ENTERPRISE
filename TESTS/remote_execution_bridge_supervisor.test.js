@@ -1,0 +1,61 @@
+'use strict';
+
+const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { EventEmitter } = require('events');
+const RemoteExecutionBridgeSupervisor = require('../SERVICES/runtime/RemoteExecutionBridgeSupervisor');
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+(async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miles-bridge-supervisor-'));
+  fs.mkdirSync(path.join(root, 'DATA', 'runtime'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'StartMilesRemoteExecutionBridge.js'), "console.log('test bridge');\n", 'utf8');
+
+  const children = [];
+  const spawnFn = (command, args, options) => {
+    assert.strictEqual(command, process.execPath);
+    assert.deepStrictEqual(args, [path.join(root, 'StartMilesRemoteExecutionBridge.js')]);
+    assert.strictEqual(options.shell, false);
+    const child = new EventEmitter();
+    child.pid = 41000 + children.length;
+    child.exitCode = null;
+    child.kill = () => { child.exitCode = 0; child.emit('exit', 0, null); return true; };
+    children.push(child);
+    setImmediate(() => child.emit('spawn'));
+    return child;
+  };
+
+  const supervisor = new RemoteExecutionBridgeSupervisor({ root, spawnFn, restartDelayMs: 500 });
+  const started = supervisor.start();
+  assert.strictEqual(started.ok, true);
+  assert.strictEqual(started.status, 'SUPERVISION_STARTED');
+  await sleep(20);
+  assert.strictEqual(children.length, 1);
+
+  children[0].exitCode = 7;
+  children[0].emit('exit', 7, null);
+  await sleep(650);
+  assert.strictEqual(children.length, 2, 'bridge must restart automatically after unexpected exit');
+  assert.strictEqual(supervisor.restartCount, 1);
+
+  const state = supervisor.status();
+  assert.strictEqual(state.running, true);
+  assert.strictEqual(state.status, 'BRIDGE_RUNNING');
+  assert.strictEqual(state.restartCount, 1);
+
+  supervisor.stop();
+  assert.strictEqual(fs.existsSync(supervisor.lockFile), false, 'supervisor lock must be released on shutdown');
+  const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'runtime', 'RemoteExecutionBridgeSupervisor.js'), 'utf8');
+  assert(!source.includes('shell: true'));
+  assert(!source.includes('powershell'));
+  assert(!source.includes('cmd.exe'));
+
+  fs.rmSync(root, { recursive: true, force: true });
+  console.log('REMOTE_EXECUTION_BRIDGE_SUPERVISOR=PASS');
+})().catch(error => {
+  console.error(error.stack || error);
+  process.exitCode = 1;
+});
