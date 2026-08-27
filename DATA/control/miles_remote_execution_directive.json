@@ -1,7 +1,7 @@
 {
-  "id": "production-truth-reconciliation-20260827-006",
+  "id": "production-truth-reconciliation-20260827-007",
   "enabled": true,
   "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Re-run safe read-only production truth reconciliation after PR #270 merged and all required CI passed. Verify fail-closed archive handling and continue repository/capability/company/ORION truth without prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Re-run safe production truth reconciliation after PR #271 merged and all required CI passed. Verify oversized work-queue archive rotation/preservation, fresh canonical archive creation, and continued fail-closed company/ORION truth. No prospect sends, DNS mutation, email deletion, or B12 publish."
 }
