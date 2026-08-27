@@ -23,6 +23,33 @@ function selectTests(tests, targetTestId) {
   if (!targetTestId) return tests;
   return tests.filter(t => String(t?.id || '') === targetTestId);
 }
+function firstPresent(row, keys) {
+  for (const key of keys) {
+    const value = row?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+  }
+  return null;
+}
+function authFailureDetail(row, testId) {
+  const failures = [];
+  if (row?.spf_pass !== true) failures.push('SPF');
+  if (row?.dkim_pass !== true) failures.push('DKIM');
+  if (row?.dmarc_pass !== true) failures.push('DMARC');
+  if (!failures.length) return null;
+  return {
+    testId,
+    timestamp: row?.timestamp_created || null,
+    provider: firstPresent(row, ['provider_name','provider','mailbox_provider','email_provider','recipient_provider','esp']),
+    recipientDomain: firstPresent(row, ['recipient_domain','domain','mailbox_domain']),
+    recipientType: firstPresent(row, ['provider_type','mailbox_type','recipient_type']),
+    failures,
+    spfPass: row?.spf_pass === true,
+    dkimPass: row?.dkim_pass === true,
+    dmarcPass: row?.dmarc_pass === true,
+    spam: row?.is_spam === true,
+    categorized: row?.has_category === true
+  };
+}
 
 async function listPaged(endpoint, params = {}) {
   const rows = [];
@@ -60,7 +87,19 @@ async function main() {
       for (const row of analytics) {
         const sender = clean(row.sender_email);
         if (!sender) continue;
-        if (!bySender.has(sender)) bySender.set(sender, { sender, total: 0, spam: 0, categorized: 0, inbox: 0, spfPass: 0, dkimPass: 0, dmarcPass: 0, tests: new Set(), latestAt: null });
+        if (!bySender.has(sender)) bySender.set(sender, {
+          sender,
+          total: 0,
+          spam: 0,
+          categorized: 0,
+          inbox: 0,
+          spfPass: 0,
+          dkimPass: 0,
+          dmarcPass: 0,
+          tests: new Set(),
+          latestAt: null,
+          authFailureSamples: []
+        });
         const s = bySender.get(sender);
         s.total += 1;
         if (row.is_spam === true) s.spam += 1;
@@ -69,6 +108,8 @@ async function main() {
         if (row.spf_pass === true) s.spfPass += 1;
         if (row.dkim_pass === true) s.dkimPass += 1;
         if (row.dmarc_pass === true) s.dmarcPass += 1;
+        const failure = authFailureDetail(row, test.id);
+        if (failure && s.authFailureSamples.length < 20) s.authFailureSamples.push(failure);
         s.tests.add(test.id);
         if (!s.latestAt || Date.parse(row.timestamp_created || 0) > Date.parse(s.latestAt || 0)) s.latestAt = row.timestamp_created || null;
       }
@@ -91,6 +132,7 @@ async function main() {
         dmarcPassPct,
         testCount: s.tests.size,
         latestAt: s.latestAt,
+        authFailureSamples: s.authFailureSamples,
         status: senderStatus({ samples: s.total, inboxPct, spamPct, spfPassPct, dkimPassPct, dmarcPassPct })
       };
     }).sort((a,b) => a.sender.localeCompare(b.sender));
@@ -117,8 +159,9 @@ async function main() {
       truth: placementVerified ? (authWatchSenders.length ? 'LIVE_PLACEMENT_EVIDENCE_PRESENT_WITH_AUTHENTICATION_GAPS' : 'LIVE_PLACEMENT_EVIDENCE_PRESENT') : 'INBOX_PLACEMENT_UNVERIFIED_NO_ANALYTICS',
       blocker,
       authenticationWatchSenders: authWatchSenders.map(s => s.sender),
+      authenticationFailureSamples: authWatchSenders.flatMap(s => s.authFailureSamples.map(sample => ({ sender: s.sender, ...sample }))),
       nextAction,
-      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement. ACTIVE requires 100% observed SPF, DKIM, and DMARC pass rates in the selected placement evidence.'
+      note: 'categorizedPct reflects Instantly has_category evidence and must not be mislabeled as Primary/Inbox. Provider acceptance alone is not inbox placement. ACTIVE requires 100% observed SPF, DKIM, and DMARC pass rates in the selected placement evidence. authenticationFailureSamples includes only provider metadata exposed by Instantly and does not infer missing provider labels.'
     };
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(output, JSON.stringify(result, null, 2));
@@ -126,7 +169,12 @@ async function main() {
     console.log(`Tests found in scope: ${tests.length} (all available: ${allTests.length})`);
     console.log(`Analytics rows: ${analyticsCount}`);
     console.log(`Senders with evidence: ${senders.length}`);
-    for (const s of senders) console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% spf=${s.spfPassPct}% dkim=${s.dkimPassPct}% dmarc=${s.dmarcPassPct}% | ${s.status}`);
+    for (const s of senders) {
+      console.log(`${s.sender} | inbox=${s.inboxPct}% categorized=${s.categorizedPct}% spam=${s.spamPct}% spf=${s.spfPassPct}% dkim=${s.dkimPassPct}% dmarc=${s.dmarcPassPct}% | ${s.status}`);
+      for (const failure of s.authFailureSamples) {
+        console.log(`  AUTH FAILURE | provider=${failure.provider || 'UNLABELED'} recipientDomain=${failure.recipientDomain || 'UNLABELED'} failures=${failure.failures.join('+')} timestamp=${failure.timestamp || 'UNKNOWN'}`);
+      }
+    }
     console.log(`Truth: ${result.truth}`);
     if (authWatchSenders.length) console.log(`AUTH WATCH: ${authWatchSenders.map(s => s.sender).join(', ')}`);
     if (blocker) console.log(`BLOCKER: ${blocker}`);
@@ -151,4 +199,4 @@ async function main() {
 
 if (require.main === module) main();
 
-module.exports = { senderStatus, testIdArg, selectTests };
+module.exports = { senderStatus, testIdArg, selectTests, authFailureDetail };
