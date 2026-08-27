@@ -69,13 +69,13 @@ function actionableHumanMail(classification = {}, message = {}, clients = new Se
   return { keep: true, reason: 'DIRECT_RESPONSE_TO_SENT_THREAD' };
 }
 function folderFor(classification = {}, message = {}, clients = new Set()) {
+  const actionable = actionableHumanMail(classification, message, clients);
+  if (actionable.keep) return null;
   if (ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (billingNotice(message)) return 'MILES-BILLING';
   if (systemNoise(message)) return 'MILES-SYSTEM';
   if (obviousVendorJunk(message)) return 'MILES-JUNK';
-  const actionable = actionableHumanMail(classification, message, clients);
-  if (actionable.keep) return null;
   switch (classification.category) {
     case CATEGORIES.OOO: return 'MILES-OOO';
     case CATEGORIES.AUTO_REPLY: return 'MILES-AUTO';
@@ -106,10 +106,7 @@ class IonosInboxCleanupService {
     const messages = [];
     for (const ids of chunk(uids, 100)) {
       if (!ids.length) continue;
-      const fetched = await readonly.connectAndRun({
-        ...mailbox,
-        commands: [`UID FETCH ${ids.join(',')} (UID BODY.PEEK[]<0.16384>)`]
-      });
+      const fetched = await readonly.connectAndRun({ ...mailbox, commands: [`UID FETCH ${ids.join(',')} (UID BODY.PEEK[]<0.16384>)`] });
       messages.push(...readonly.parseFetchedMessages(fetched.extra?.[0]?.lines || [], mailbox.email));
     }
     return messages;
@@ -139,7 +136,6 @@ class IonosInboxCleanupService {
     const messages = await this.fetchByUids(mailbox, uids);
     const before = this.classifyMessages(messages);
     const moves = [];
-
     for (const [folder, ids] of before.routed.entries()) {
       if (!execute) {
         moves.push({ ok: true, planned: true, folder, moved: 0, wouldMove: ids.length, destructiveDeleteUsed: false });
@@ -201,6 +197,7 @@ class IonosInboxCleanupService {
         deletesMessages: false,
         usesUidMoveOnly: true,
         inboxReservedForActiveClientsAndRealSentThreadReplies: true,
+        actionableHumanMailPrecedesNoisePatternRouting: true,
         genericPositiveLanguageDoesNotKeepInbox: true,
         preservesOfficialEbuyInDedicatedFolder: true,
         preservesForwardedMailInDedicatedFolder: true,
