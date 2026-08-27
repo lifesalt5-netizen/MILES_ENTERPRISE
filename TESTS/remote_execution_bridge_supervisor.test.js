@@ -19,6 +19,7 @@ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
     assert.strictEqual(command, process.execPath);
     assert.deepStrictEqual(args, [path.join(root, 'StartMilesRemoteExecutionBridge.js')]);
     assert.strictEqual(options.shell, false);
+    assert.strictEqual(options.env.MILES_BRIDGE_SUPERVISED, 'true');
     const child = new EventEmitter();
     child.pid = 41000 + children.length;
     child.exitCode = null;
@@ -35,10 +36,10 @@ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
   await sleep(20);
   assert.strictEqual(children.length, 1);
 
-  children[0].exitCode = 7;
-  children[0].emit('exit', 7, null);
+  children[0].exitCode = 75;
+  children[0].emit('exit', 75, null);
   await sleep(650);
-  assert.strictEqual(children.length, 2, 'bridge must restart automatically after unexpected exit');
+  assert.strictEqual(children.length, 2, 'bridge must restart automatically after supervised code-update exit');
   assert.strictEqual(supervisor.restartCount, 1);
 
   const state = supervisor.status();
@@ -49,6 +50,10 @@ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
   supervisor.stop();
   assert.strictEqual(fs.existsSync(supervisor.lockFile), false, 'supervisor lock must be released on shutdown');
   const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'runtime', 'RemoteExecutionBridgeSupervisor.js'), 'utf8');
+  const bridgeSource = fs.readFileSync(path.join(__dirname, '..', 'StartMilesRemoteExecutionBridge.js'), 'utf8');
+  assert(source.includes("MILES_BRIDGE_SUPERVISED: 'true'"));
+  assert(bridgeSource.includes('SUPERVISOR_RESTART_AFTER_CODE_UPDATE'));
+  assert(bridgeSource.includes('process.exit(SUPERVISED_RESTART_EXIT_CODE)'));
   assert(!source.includes('shell: true'));
   assert(!source.includes('powershell'));
   assert(!source.includes('cmd.exe'));
