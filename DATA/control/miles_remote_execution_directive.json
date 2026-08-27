@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-002",
+  "id": "revenue-acceptance-20260827-003",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Fresh safe read-only revenue acceptance rinse after bridge progress/self-reload upgrades. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
+  "note": "Bounded safe read-only revenue acceptance rinse after child-audit timeout containment merged in PR #269. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
 }
