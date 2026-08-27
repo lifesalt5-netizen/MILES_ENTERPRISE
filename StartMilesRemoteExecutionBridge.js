@@ -26,7 +26,9 @@ const STARTUP_SOURCE_DIGEST = sourceDigest();
 const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
-  PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']]
+  PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
+  IONOS_INBOX_CLEANUP_PLAN: ['node', ['SCRIPTS/RunIonosInboxCleanup.js']],
+  IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]
 });
 
 function readState() {
