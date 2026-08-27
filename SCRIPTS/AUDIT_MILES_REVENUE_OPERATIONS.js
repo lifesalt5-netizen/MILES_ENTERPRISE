@@ -13,6 +13,7 @@ const CalendlyRevenuePipelineService = require(path.join(root, 'SERVICES', 'Cale
 const outDir = path.join(root, 'DATA', 'operational_acceptance');
 const outJson = path.join(outDir, 'latest_revenue_operations_acceptance.json');
 const outMd = path.join(outDir, 'latest_revenue_operations_acceptance.md');
+const calendlyAcceptancePath = path.join(outDir, 'latest_calendly_pipeline_acceptance.json');
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
@@ -92,6 +93,19 @@ function recentEvidence(base, regex) {
   }
   return rows.sort((a,b) => a.ageHours - b.ageHours).slice(0, 10);
 }
+function freshCalendlyAcceptance(report, maxAgeHours = 24) {
+  if (!report || !report.generatedAt || !report.checks || !report.inventory) return false;
+  const generatedMs = Date.parse(report.generatedAt);
+  if (!Number.isFinite(generatedMs)) return false;
+  const age = (Date.now() - generatedMs) / 3600000;
+  if (age < 0 || age > maxAgeHours) return false;
+  return report.checks.calendly_authentication === 'GREEN' &&
+    report.checks.scheduled_event_visibility === 'GREEN' &&
+    report.checks.p2gc_booking_visibility === 'GREEN' &&
+    report.checks.invitee_visibility === 'GREEN' &&
+    Number(report.inventory.p2gcEvents || 0) > 0 &&
+    Number(report.inventory.invitees || 0) > 0;
+}
 
 (async () => {
   const startedAt = new Date().toISOString();
@@ -107,16 +121,36 @@ function recentEvidence(base, regex) {
   }
 
   let calendlySync = null;
+  let calendlyRefreshError = null;
+  let calendlyEvidenceSource = 'LIVE_REFRESH';
   try {
     const calendlyPipeline = new CalendlyRevenuePipelineService({ rootDir: root });
     calendlySync = await calendlyPipeline.runOnce();
   } catch (error) {
+    calendlyRefreshError = error.message;
     calendlySync = {
       ok: false,
       status: 'CALENDLY_REVENUE_PIPELINE_REFRESH_FAILED',
       error: error.message,
       generatedAt: new Date().toISOString()
     };
+  }
+
+  if (!calendlySync || calendlySync.ok !== true) {
+    const fallback = readJson(calendlyAcceptancePath);
+    if (freshCalendlyAcceptance(fallback, 24)) {
+      calendlyEvidenceSource = 'LAST_KNOWN_GOOD_ACCEPTANCE';
+      calendlySync = {
+        ok: true,
+        status: 'CALENDLY_ACCEPTANCE_LAST_KNOWN_GOOD',
+        generatedAt: fallback.generatedAt,
+        account: fallback.account || null,
+        metrics: fallback.inventory || null,
+        fallbackEvidencePath: path.relative(root, calendlyAcceptancePath),
+        liveRefreshError: calendlyRefreshError || null,
+        externalWritesPerformed: false
+      };
+    }
   }
 
   const marketingPath = path.join(root, 'DATA', 'marketing_coo', 'latest_marketing_operation.json');
@@ -144,6 +178,7 @@ function recentEvidence(base, regex) {
     currently_looking_for_help: currentHelpHits.length ? 'GREEN' : 'RED',
     marketing_operation_freshness: statusByAge(marketingAge),
     morning_brief_freshness: statusByAge(briefAge, 36, 72),
+    calendly_refresh_status: calendlyEvidenceSource === 'LIVE_REFRESH' && calendlySync?.ok === true ? 'GREEN' : (calendlySync?.ok === true ? 'YELLOW' : 'RED'),
     meeting_pipeline_evidence: meetingPipelineGreen ? 'GREEN' : 'RED'
   };
 
@@ -167,6 +202,9 @@ function recentEvidence(base, regex) {
         generatedAt: calendlySync?.generatedAt || null,
         account: calendlySync?.account || null,
         metrics: calendlySync?.metrics || null,
+        evidenceSource: calendlyEvidenceSource,
+        liveRefreshError: calendlyRefreshError || calendlySync?.liveRefreshError || null,
+        fallbackEvidencePath: calendlySync?.fallbackEvidencePath || null,
         error: calendlySync?.error || null,
         externalWritesPerformed: false
       },
@@ -177,6 +215,7 @@ function recentEvidence(base, regex) {
       !currentHelpHits.length ? 'BUILD_CURRENTLY_LOOKING_FOR_HELP' :
       checks.marketing_operation_freshness !== 'GREEN' ? 'RESTORE_MARKETING_OPERATION_LOOP' :
       checks.meeting_pipeline_evidence !== 'GREEN' ? 'RESTORE_MEETING_PIPELINE' :
+      checks.calendly_refresh_status === 'YELLOW' ? 'RETRY_CALENDLY_LIVE_REFRESH_WITHOUT_INVALIDATING_MEETING_EVIDENCE' :
       'PROVE_END_TO_END_OUTBOUND_TO_MEETING'
   };
 
@@ -198,8 +237,9 @@ function recentEvidence(base, regex) {
     '## Calendly revenue pipeline refresh',
     `- ok: ${Boolean(calendlySync?.ok)}`,
     `- status: ${calendlySync?.status || 'UNKNOWN'}`,
+    `- source: ${calendlyEvidenceSource}`,
     `- generated: ${calendlySync?.generatedAt || 'UNKNOWN'}`,
-    `- error: ${calendlySync?.error || 'NONE'}`,
+    `- live refresh error: ${calendlyRefreshError || 'NONE'}`,
     '',
     `## CURRENTLY_LOOKING_FOR_HELP`,
     `- found: ${currentHelpHits.length > 0}`,
@@ -217,8 +257,8 @@ function recentEvidence(base, regex) {
   for (const [k,v] of Object.entries(checks)) console.log(`${k}: ${v}`);
   console.log('');
   for (const [k,v] of Object.entries(summaries)) console.log(`Instantly ${k}: ok=${Boolean(v?.ok)} returned=${v?.returned ?? 0}`);
-  console.log(`Calendly pipeline refresh: ok=${Boolean(calendlySync?.ok)} status=${calendlySync?.status || 'UNKNOWN'}`);
-  if (calendlySync?.error) console.log(`Calendly pipeline error: ${calendlySync.error}`);
+  console.log(`Calendly pipeline refresh: ok=${Boolean(calendlySync?.ok)} status=${calendlySync?.status || 'UNKNOWN'} source=${calendlyEvidenceSource}`);
+  if (calendlyRefreshError) console.log(`Calendly live refresh error: ${calendlyRefreshError}`);
   console.log(`CURRENTLY_LOOKING_FOR_HELP evidence files: ${currentHelpHits.length}`);
   console.log(`Next priority: ${report.nextPriority}`);
   console.log(`Report: ${outJson}`);
@@ -228,3 +268,5 @@ function recentEvidence(base, regex) {
   console.error(error && error.stack ? error.stack : error);
   process.exitCode = 1;
 });
+
+module.exports = { freshCalendlyAcceptance };
