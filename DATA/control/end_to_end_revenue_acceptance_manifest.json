@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "status": "NOT_COMPLETE",
+  "governingRule": "GOVERNANCE/CONSTITUTION.md#End-to-End-Revenue-Acceptance-Standard",
+  "ceoOperatingModel": "ZERO_SHELL_FOR_NORMAL_OPERATION",
+  "closeoutRule": "Do not mark complete until every required gate is GREEN with live post-fix evidence. Code merge, CI success, or planned routing alone is insufficient.",
+  "requiredGates": [
+    {
+      "id": "AUTONOMOUS_LOCAL_RUNTIME",
+      "status": "RED",
+      "proofRequired": [
+        "MILES runtime/bridge starts without CEO CLI",
+        "bridge/process is supervised and automatically restarts after controlled termination",
+        "queued directive is consumed after recovery without CEO action",
+        "runtime evidence publishes STARTED/RUNNING/COMPLETED reliably"
+      ]
+    },
+    {
+      "id": "IONOS_ALL_FOLDER_HYGIENE",
+      "status": "RED",
+      "proofRequired": [
+        "Inbox scanned and routed using strict actionable-mail rule",
+        "Spam/Junk scanned for false positives and legitimate replies rescued",
+        "all relevant folders audited bidirectionally",
+        "OOO routed to MILES-OOO",
+        "auto replies routed to MILES-AUTO",
+        "vendor/inbound solicitation routed to MILES-JUNK",
+        "bounce/technical routed to MILES-BOUNCE",
+        "negative/not interested/unsubscribe routed to MILES-CLOSED with applicable suppression",
+        "not-now routed to MILES-NURTURE",
+        "GSA eBuy routed to MILES-GSA-EBUY",
+        "DMARC/system notices routed to MILES-SYSTEM",
+        "forwarded MILES mail routed to MILES-FORWARDED",
+        "billing notices routed to MILES-BILLING",
+        "current-client and genuine sent-thread/Instantly replies remain or are restored to actionable location",
+        "post-mutation IMAP verification proves no routable noise remains in working Inbox and no evidence-backed actionable false positives remain trapped in Spam/Junk",
+        "no email deletion/EXPUNGE used"
+      ]
+    },
+    {
+      "id": "INSTANTLY_REPLY_AND_CRM_LIFECYCLE",
+      "status": "RED",
+      "proofRequired": [
+        "OOO reply moves to OOO/follow-up-after-return lifecycle",
+        "negative/not interested moves to closed/not-interested lifecycle",
+        "unsubscribe enters hard suppression and closed lifecycle",
+        "bounce/technical enters technical suppression/recovery lifecycle",
+        "not-now enters nurture/future follow-up lifecycle",
+        "interested/pricing/meeting-intent enters qualified-positive/actionable lifecycle",
+        "referral enters referral/replacement-contact lifecycle",
+        "auto reply enters non-actionable automated lifecycle",
+        "provider API post-read proves each mutation landed in correct CRM/list state",
+        "message preview-before-send rule enforced for new/materially new outbound messages and prospect replies"
+      ]
+    },
+    {
+      "id": "OUTBOUND_INBOX_PLACEMENT_AND_AUTH",
+      "status": "WATCH",
+      "currentEvidence": "Observed controlled sample has 100% inbox/0% spam but Evan and Maya retain DMARC WATCH; two domains retain authentication/readiness gaps.",
+      "proofRequired": [
+        "fresh controlled placement evidence",
+        "all production senders have acceptable SPF/DKIM/DMARC evidence",
+        "no production sender/domain remains WATCH for unresolved authentication failure",
+        "non-production-ready domains are excluded from sending until authenticated"
+      ]
+    },
+    {
+      "id": "CALENDLY_AND_MEETING_PIPELINE",
+      "status": "WATCH",
+      "currentEvidence": "Calendly direct read previously verified 15 P2GC meetings; Google Calendar P2GC sync remained YELLOW/0 visible events.",
+      "proofRequired": [
+        "Calendly booking visibility verified",
+        "meeting pipeline sees same authoritative booking evidence",
+        "Google Calendar mapping/sync either verified GREEN or explicitly removed as a required source if Calendly is authoritative",
+        "appointment counts reconcile across executive/revenue surfaces"
+      ]
+    },
+    {
+      "id": "ORION_FRESHNESS",
+      "status": "RED",
+      "currentEvidence": "ORION dataset is stale and requires a genuine source refresh.",
+      "proofRequired": [
+        "real source refresh executes",
+        "freshness timestamp reflects actual refreshed data",
+        "ORION_DATASET_REFRESH_REQUIRED clears only from evidence",
+        "representative ORION queries succeed against refreshed data"
+      ]
+    },
+    {
+      "id": "COMPANY_AND_CLIENT_HEALTH",
+      "status": "WATCH",
+      "currentEvidence": "Company health previously measured 88/WATCH.",
+      "proofRequired": [
+        "company health blockers identified and remediated",
+        "open/failed/escalated work reconciled",
+        "customer/client delivery state verified",
+        "company health reaches evidence-backed GREEN or every remaining WATCH is explicitly accepted by CEO as non-blocking"
+      ]
+    },
+    {
+      "id": "INFRASTRUCTURE_72_HOUR_AUDIT",
+      "status": "RED",
+      "proofRequired": [
+        "automatic <=72-hour audit is implemented and scheduled within MILES runtime",
+        "PC RAM, CPU/load, disk/storage, process/runtime, network, service latency, dependency availability, repository/runtime integrity, and evidence pipeline are checked",
+        "recommendations are produced before any delete/consolidate/remove/uninstall/disable action",
+        "audit execution is proven without CEO shell intervention"
+      ]
+    },
+    {
+      "id": "LAST_WEEK_FINE_TOOTH_COMB_REGRESSION",
+      "status": "RED",
+      "proofRequired": [
+        "all defects/fixes logged in control issue #245 and related PRs during the preceding operating week are re-tested against live current production state",
+        "no regression is hidden behind historical GREEN evidence",
+        "user-visible state agrees with machine evidence",
+        "final report lists each gate, before/after evidence, test timestamp, and source"
+      ]
+    }
+  ],
+  "finalDeclaration": "END_TO_END_VERIFIED may be emitted only when every required gate is GREEN and no CEO normal-operation shell dependency remains."
+}
