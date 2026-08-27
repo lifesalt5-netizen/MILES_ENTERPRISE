@@ -35,6 +35,7 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:false,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, false);
 assert.strictEqual(typeof bridge.publishEvidenceSerialized, 'function');
+assert.strictEqual(typeof bridge.relaunchCurrentBridge, 'function');
 
 const src = fs.readFileSync(path.join(__dirname, '..', 'StartMilesRemoteExecutionBridge.js'), 'utf8');
 assert(src.includes("['merge', '--ff-only', 'origin/main']"));
@@ -49,8 +50,16 @@ assert(src.includes('crypto.randomBytes(6)'));
 assert(src.includes('remote-evidence-${process.pid}-${indexNonce}.index'));
 assert(!src.includes('remote-evidence-${process.pid}.index'));
 assert(src.includes('SELF-RELOAD'));
+assert(src.includes('SELF_RELOAD_SPAWN_TIMEOUT'));
+assert(src.includes('SELF_RELOAD_CHILD_EXITED_EARLY'));
+assert(src.includes("child.once('spawn'"));
+assert(src.includes('await new Promise(resolve => setTimeout(resolve, 750))'));
 assert(src.includes('detached: true'));
 assert(src.includes("stdio: 'ignore'"));
+const executeStart = src.indexOf('async function executeDirective');
+const refreshPos = src.indexOf('await safeFastForward();', executeStart);
+const validatePos = src.indexOf('const validation = validateDirective(directive);', executeStart);
+assert(refreshPos > executeStart && validatePos > refreshPos, 'trusted main refresh must happen before allowlist validation so new jobs can self-update safely');
 assert(!src.includes('refs/heads/main'));
 assert(!src.includes('reset --hard'));
 assert(!src.includes('git clean'));

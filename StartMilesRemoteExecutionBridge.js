@@ -90,7 +90,7 @@ function bridgeSourceChanged(startupDigest = STARTUP_SOURCE_DIGEST) {
   return sourceDigest() !== startupDigest;
 }
 
-function relaunchCurrentBridge() {
+async function relaunchCurrentBridge() {
   const child = spawn(process.execPath, [SOURCE_FILE], {
     cwd: ROOT,
     env: process.env,
@@ -99,9 +99,32 @@ function relaunchCurrentBridge() {
     detached: true,
     stdio: 'ignore'
   });
+
+  await new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('SELF_RELOAD_SPAWN_TIMEOUT'));
+    }, 3000);
+    child.once('spawn', () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve();
+    });
+    child.once('error', error => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(error);
+    });
+  });
+
   child.unref();
   console.log(`[MILES REMOTE BRIDGE] SELF-RELOAD pid=${child.pid}`);
-  setTimeout(() => process.exit(0), 50).unref();
+  await new Promise(resolve => setTimeout(resolve, 750));
+  if (child.exitCode !== null) throw new Error(`SELF_RELOAD_CHILD_EXITED_EARLY:${child.exitCode}`);
   return child.pid;
 }
 
@@ -179,15 +202,19 @@ function baseEvidence(directive, startedAt, phase) {
 }
 
 async function executeDirective(directive, state) {
-  const validation = validateDirective(directive);
-  if (!validation.ok) return { skipped: true, reason: validation.reason };
+  if (!directive || directive.enabled !== true) return { skipped: true, reason: 'DISABLED' };
+  if (!directive.id || typeof directive.id !== 'string') return { skipped: true, reason: 'MISSING_ID' };
   if (directive.id === state.lastDirectiveId) return { skipped: true, reason: 'ALREADY_EXECUTED' };
 
   await safeFastForward();
   if (bridgeSourceChanged()) {
-    relaunchCurrentBridge();
+    await relaunchCurrentBridge();
+    setTimeout(() => process.exit(0), 0);
     return { skipped: true, reason: 'SELF_RELOAD_AFTER_CODE_UPDATE' };
   }
+
+  const validation = validateDirective(directive);
+  if (!validation.ok) return { skipped: true, reason: validation.reason };
 
   const [command, args] = JOBS[directive.job];
   const startedAt = new Date().toISOString();
@@ -282,5 +309,6 @@ module.exports = {
   publishEvidenceSerialized,
   baseEvidence,
   sourceDigest,
-  bridgeSourceChanged
+  bridgeSourceChanged,
+  relaunchCurrentBridge
 };
