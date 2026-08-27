@@ -10,6 +10,9 @@ const ROOT = __dirname;
 const POLL_MS = Math.max(5000, Number(process.env.MILES_REMOTE_BRIDGE_POLL_MS || 15000));
 const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || 'https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/main/DATA/control/miles_remote_execution_directive.json';
 const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_state.json');
+const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
+const EVIDENCE_BRANCH = 'miles-runtime-evidence';
+const EVIDENCE_REPO_PATH = 'DATA/control/miles_remote_execution_result.json';
 
 const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
@@ -41,22 +44,32 @@ function getJson(url) {
   });
 }
 
-function run(command, args, label) {
+function run(command, args, label, options = {}) {
   return new Promise(resolve => {
-    const child = spawn(command, args, { cwd: ROOT, env: process.env, shell: false, windowsHide: true });
+    const child = spawn(command, args, {
+      cwd: ROOT,
+      env: options.env || process.env,
+      shell: false,
+      windowsHide: true
+    });
     let stdout = '', stderr = '';
-    child.stdout.on('data', d => { const s=d.toString(); stdout += s; process.stdout.write(`[${label}] ${s}`); });
-    child.stderr.on('data', d => { const s=d.toString(); stderr += s; process.stderr.write(`[${label}] ${s}`); });
+    child.stdout.on('data', d => { const s=d.toString(); stdout += s; if (!options.quiet) process.stdout.write(`[${label}] ${s}`); });
+    child.stderr.on('data', d => { const s=d.toString(); stderr += s; if (!options.quiet) process.stderr.write(`[${label}] ${s}`); });
     child.on('close', code => resolve({ code, stdout, stderr }));
     child.on('error', e => resolve({ code: -1, stdout, stderr: `${stderr}\n${e.message}` }));
   });
 }
 
+function requireSuccess(result, code) {
+  if (!result || result.code !== 0) throw new Error(code);
+  return String(result.stdout || '').trim();
+}
+
 async function safeFastForward() {
   const fetchResult = await run('git', ['fetch', 'origin', 'main'], 'GIT');
-  if (fetchResult.code !== 0) throw new Error('GIT_FETCH_FAILED');
+  requireSuccess(fetchResult, 'GIT_FETCH_FAILED');
   const mergeResult = await run('git', ['merge', '--ff-only', 'origin/main'], 'GIT');
-  if (mergeResult.code !== 0) throw new Error('GIT_FAST_FORWARD_FAILED_NO_DESTRUCTIVE_RECOVERY_ATTEMPTED');
+  requireSuccess(mergeResult, 'GIT_FAST_FORWARD_FAILED_NO_DESTRUCTIVE_RECOVERY_ATTEMPTED');
 }
 
 function validateDirective(d) {
@@ -64,6 +77,47 @@ function validateDirective(d) {
   if (!d.id || typeof d.id !== 'string') return { ok: false, reason: 'MISSING_ID' };
   if (!Object.prototype.hasOwnProperty.call(JOBS, d.job)) return { ok: false, reason: 'JOB_NOT_ALLOWLISTED' };
   return { ok: true };
+}
+
+async function publishEvidence(evidence) {
+  fs.mkdirSync(path.dirname(EVIDENCE_FILE), { recursive: true });
+  fs.writeFileSync(EVIDENCE_FILE, JSON.stringify(evidence, null, 2), 'utf8');
+
+  const fetchResult = await run('git', ['fetch', 'origin', 'main'], 'EVIDENCE-GIT', { quiet: true });
+  requireSuccess(fetchResult, 'EVIDENCE_GIT_FETCH_FAILED');
+
+  const blob = requireSuccess(
+    await run('git', ['hash-object', '-w', EVIDENCE_FILE], 'EVIDENCE-GIT', { quiet: true }),
+    'EVIDENCE_BLOB_CREATE_FAILED'
+  );
+
+  const indexPath = path.join(ROOT, 'DATA', 'runtime', `remote-evidence-${process.pid}.index`);
+  try { fs.unlinkSync(indexPath); } catch {}
+  const gitEnv = {
+    ...process.env,
+    GIT_INDEX_FILE: indexPath,
+    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME || 'MILES Runtime',
+    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL || 'miles-runtime@local.invalid',
+    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME || 'MILES Runtime',
+    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || 'miles-runtime@local.invalid'
+  };
+
+  try {
+    requireSuccess(await run('git', ['read-tree', 'origin/main'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_READ_TREE_FAILED');
+    requireSuccess(await run('git', ['update-index', '--add', '--cacheinfo', `100644,${blob},${EVIDENCE_REPO_PATH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_UPDATE_INDEX_FAILED');
+    const tree = requireSuccess(await run('git', ['write-tree'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_WRITE_TREE_FAILED');
+    const commit = requireSuccess(
+      await run('git', ['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
+      'EVIDENCE_COMMIT_TREE_FAILED'
+    );
+    requireSuccess(
+      await run('git', ['push', 'origin', `+${commit}:refs/heads/${EVIDENCE_BRANCH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
+      'EVIDENCE_PUSH_FAILED'
+    );
+    return { ok: true, branch: EVIDENCE_BRANCH, repoPath: EVIDENCE_REPO_PATH, commit };
+  } finally {
+    try { fs.unlinkSync(indexPath); } catch {}
+  }
 }
 
 async function executeDirective(directive, state) {
@@ -75,11 +129,36 @@ async function executeDirective(directive, state) {
   const [command, args] = JOBS[directive.job];
   const startedAt = new Date().toISOString();
   const result = await run(command, args, directive.job);
-  const record = { id: directive.id, job: directive.job, startedAt, finishedAt: new Date().toISOString(), code: result.code };
+  const finishedAt = new Date().toISOString();
+  const record = { id: directive.id, job: directive.job, startedAt, finishedAt, code: result.code };
   state.lastDirectiveId = directive.id;
   state.runs = [...(state.runs || []).slice(-49), record];
   state.lastResult = record;
   writeState(state);
+
+  const evidence = {
+    ok: result.code === 0,
+    directiveId: directive.id,
+    job: directive.job,
+    startedAt,
+    finishedAt,
+    exitCode: result.code,
+    stdoutTail: String(result.stdout || '').slice(-16000),
+    stderrTail: String(result.stderr || '').slice(-8000),
+    safety: {
+      arbitraryShell: false,
+      destructiveGitRecovery: false,
+      evidenceBranchOnly: EVIDENCE_BRANCH
+    }
+  };
+
+  try {
+    record.evidence = await publishEvidence(evidence);
+  } catch (error) {
+    record.evidence = { ok: false, error: error.message };
+    state.lastResult = record;
+    writeState(state);
+  }
   return record;
 }
 
@@ -93,6 +172,7 @@ async function main() {
   console.log('[MILES REMOTE BRIDGE] STARTED');
   console.log(`[MILES REMOTE BRIDGE] Poll ${Math.round(POLL_MS/1000)}s`);
   console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
+  console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
   for (;;) {
     try {
       const result = await tick();
@@ -105,4 +185,12 @@ async function main() {
 }
 
 if (require.main === module) main().catch(e => { console.error(e.stack || e); process.exitCode = 1; });
-module.exports = { JOBS, validateDirective, executeDirective, safeFastForward };
+module.exports = {
+  JOBS,
+  EVIDENCE_BRANCH,
+  EVIDENCE_REPO_PATH,
+  validateDirective,
+  executeDirective,
+  safeFastForward,
+  publishEvidence
+};
