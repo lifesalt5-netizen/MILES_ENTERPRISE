@@ -1,7 +1,7 @@
 {
-  "id": "ionos-inbox-cleanup-plan-20260827-015",
+  "id": "ionos-all-folder-plan-20260827-016",
   "enabled": true,
   "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR277 strict plan-only IONOS Inbox hygiene. Do not move or delete email. Inbox should be reserved for active-client human mail or real sent-thread human replies; generic positive/meeting/question wording alone must not keep Inbox mail. Route system, eBuy, auto, bounce, closed/nurture, vendor junk and uncorrelated inbound mail to preserved folders in plan only. Produce per-account decisions and counts. No prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Fresh post-PR288 live all-folder IONOS reconciliation PLAN. Existing governed IONOS cleanup lane now invokes IonosAllFolderReconciliationService. Scan every discovered folder; protected Sent/Drafts/Trash/Archive remain audit-only. Determine canonical routing for active-client/direct-reply Inbox, OOO, AUTO, JUNK, BOUNCE, CLOSED, NURTURE, GSA-EBUY, SYSTEM, FORWARDED and BILLING. Report executable misroutes and protected historical mismatches. PLAN ONLY: do not move or delete email. No prospect sends, DNS mutation, B12 publish, or destructive actions."
 }
