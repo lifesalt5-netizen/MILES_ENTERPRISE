@@ -1,11 +1,29 @@
 'use strict';
 
 const BASE_URL = 'https://api.calendly.com';
+const MAX_RATE_LIMIT_RETRIES = Math.max(0, Number(process.env.MILES_CALENDLY_429_RETRIES || 5));
+const DEFAULT_RATE_LIMIT_DELAY_MS = Math.max(250, Number(process.env.MILES_CALENDLY_429_DELAY_MS || 1500));
+const MAX_RATE_LIMIT_DELAY_MS = Math.max(DEFAULT_RATE_LIMIT_DELAY_MS, Number(process.env.MILES_CALENDLY_429_MAX_DELAY_MS || 15000));
 
 function getToken() {
   const token = String(process.env.CALENDLY_PERSONAL_ACCESS_TOKEN || '').trim();
   if (!token) throw new Error('CALENDLY_PERSONAL_ACCESS_TOKEN is not configured.');
   return token;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function retryDelayMs(response, attempt) {
+  const raw = response?.headers?.get?.('retry-after');
+  if (raw) {
+    const seconds = Number(raw);
+    if (Number.isFinite(seconds) && seconds >= 0) return Math.min(MAX_RATE_LIMIT_DELAY_MS, Math.max(250, seconds * 1000));
+    const when = Date.parse(raw);
+    if (Number.isFinite(when)) return Math.min(MAX_RATE_LIMIT_DELAY_MS, Math.max(250, when - Date.now()));
+  }
+  return Math.min(MAX_RATE_LIMIT_DELAY_MS, DEFAULT_RATE_LIMIT_DELAY_MS * Math.pow(2, Math.max(0, attempt)));
 }
 
 async function request(pathname, params = {}) {
@@ -15,24 +33,35 @@ async function request(pathname, params = {}) {
     if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, String(value));
   }
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  for (let attempt = 0; attempt <= MAX_RATE_LIMIT_RETRIES; attempt++) {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const text = await response.text();
+    let body = null;
+    try { body = text ? JSON.parse(text) : null; } catch { body = text; }
+
+    if (response.ok) return body;
+
+    if (response.status === 429 && attempt < MAX_RATE_LIMIT_RETRIES) {
+      const delayMs = retryDelayMs(response, attempt);
+      console.warn(`[CALENDLY] API 429 rate limit; retry ${attempt + 1}/${MAX_RATE_LIMIT_RETRIES} in ${delayMs}ms for ${pathname}`);
+      await sleep(delayMs);
+      continue;
     }
-  });
 
-  const text = await response.text();
-  let body = null;
-  try { body = text ? JSON.parse(text) : null; } catch { body = text; }
-
-  if (!response.ok) {
     const error = new Error(`Calendly API ${response.status}: ${typeof body === 'string' ? body : JSON.stringify(body)}`);
     error.statusCode = response.status;
+    error.retryAttempts = attempt;
     throw error;
   }
-  return body;
+
+  throw new Error('Calendly request retry loop exhausted unexpectedly.');
 }
 
 async function getCurrentUser() {
@@ -123,5 +152,9 @@ module.exports = {
   listScheduledEvents,
   listEventInvitees,
   healthCheck,
-  eventUuidFromUri
+  eventUuidFromUri,
+  retryDelayMs,
+  MAX_RATE_LIMIT_RETRIES,
+  DEFAULT_RATE_LIMIT_DELAY_MS,
+  MAX_RATE_LIMIT_DELAY_MS
 };
