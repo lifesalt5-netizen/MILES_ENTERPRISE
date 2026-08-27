@@ -5,6 +5,7 @@ const path = require('path');
 const readonly = require('../../CONNECTORS/IONOS/imap_readonly');
 const governed = require('../../CONNECTORS/IONOS/imap_governed');
 const ReplyIntelligenceService = require('./ReplyIntelligenceService');
+const P2GCCustomerDeliveryService = require('../customer/P2GCCustomerDeliveryService');
 const { CATEGORIES } = ReplyIntelligenceService;
 
 function chunk(items, size) {
@@ -14,6 +15,12 @@ function chunk(items, size) {
 }
 function textOf(message = {}) {
   return `${message.from || ''}\n${message.subject || ''}\n${message.text || ''}`.toLowerCase();
+}
+function senderEmail(message = {}) {
+  const raw = String(message.from || '').trim();
+  const bracket = raw.match(/<([^>]+@[^>]+)>/);
+  const plain = raw.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
+  return String(bracket?.[1] || plain?.[0] || '').trim().toLowerCase();
 }
 function officialEbuy(message = {}) {
   const text = textOf(message);
@@ -30,18 +37,31 @@ function obviousVendorJunk(message = {}) {
   return /business funding|funding application|business loan|working capital|merchant cash advance|seo services?|link building|lead generation|ai voice|website redesign|appointment setting|cold email services?|grow your business|new customers/i.test(text);
 }
 function replyThreadEvidence(message = {}) {
-  return Boolean(String(message.inReplyTo || '').trim() || String(message.references || '').trim() || /^\s*re:/i.test(String(message.subject || '')));
+  return Boolean(String(message.inReplyTo || '').trim() || String(message.references || '').trim());
 }
-function rescueDecision(message, classification) {
+function activeClientEmails(customerService = new P2GCCustomerDeliveryService()) {
+  try {
+    return new Set((customerService.load().clients || [])
+      .filter(client => String(client.status || 'ACTIVE').toUpperCase() === 'ACTIVE')
+      .map(client => String(client.email || '').trim().toLowerCase())
+      .filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+function rescueDecision(message, classification, context = {}) {
+  const clients = context.activeClientEmails || new Set();
+  const from = senderEmail(message);
   if (officialEbuy(message)) return { rescue: true, target: 'MILES-GSA-EBUY', reason: 'OFFICIAL_GSA_EBUY' };
+  if (clients.has(from)) return { rescue: true, target: 'INBOX', reason: 'ACTIVE_CLIENT' };
   if (systemNoise(message) || obviousVendorJunk(message)) return { rescue: false, target: null, reason: 'KNOWN_NON_ACTIONABLE_OR_JUNK' };
   if ([CATEGORIES.AUTO_REPLY, CATEGORIES.BOUNCE_TECHNICAL, CATEGORIES.INBOUND_SOLICITATION_SPAM].includes(classification.category)) {
     return { rescue: false, target: null, reason: `NON_ACTIONABLE_CATEGORY:${classification.category}` };
   }
   if (replyThreadEvidence(message) && classification.humanReply === true) {
-    return { rescue: true, target: 'INBOX', reason: 'HUMAN_REPLY_WITH_THREAD_EVIDENCE' };
+    return { rescue: true, target: 'INBOX', reason: 'DIRECT_RESPONSE_TO_SENT_THREAD' };
   }
-  return { rescue: false, target: null, reason: 'INSUFFICIENT_FALSE_POSITIVE_EVIDENCE' };
+  return { rescue: false, target: null, reason: 'INSUFFICIENT_ACTIONABLE_EVIDENCE' };
 }
 function chooseSpamFolder(names = []) {
   const exactOrder = ['Spam', 'Junk', 'Junk E-mail', 'Junk Email'];
@@ -56,6 +76,7 @@ class IonosSpamRescueService {
   constructor(options = {}) {
     this.root = path.resolve(options.root || process.env.MILES_ROOT || process.cwd());
     this.classifier = options.classifier || new ReplyIntelligenceService();
+    this.customerService = options.customerService || new P2GCCustomerDeliveryService();
     this.maxMessages = Math.min(Math.max(Number(options.maxMessages || 1000), 1), 5000);
     this.output = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_spam_rescue', 'latest.json');
   }
@@ -82,10 +103,11 @@ class IonosSpamRescueService {
     const spamFolder = chooseSpamFolder(names);
     if (!spamFolder) return { ok: false, account: mailbox.email, blocker: 'IONOS_SPAM_FOLDER_NOT_DISCOVERED', availableMailboxes: names };
 
+    const clients = activeClientEmails(this.customerService);
     const { messages } = await this.fetchSpam(mailbox, spamFolder);
     const decisions = messages.map(message => {
       const classification = this.classifier.classify(message);
-      return { message, classification, decision: rescueDecision(message, classification) };
+      return { message, classification, decision: rescueDecision(message, classification, { activeClientEmails: clients }) };
     });
     const rescueInbox = decisions.filter(x => x.decision.rescue && x.decision.target === 'INBOX').map(x => x.message.uid);
     const rescueEbuy = decisions.filter(x => x.decision.rescue && x.decision.target === 'MILES-GSA-EBUY').map(x => x.message.uid);
@@ -142,7 +164,8 @@ class IonosSpamRescueService {
       safety: {
         deletesMessages: false,
         usesUidMoveOnly: true,
-        rescueRequiresReplyThreadEvidenceOrOfficialEbuy: true,
+        rescueToInboxRequiresActiveClientOrDirectReplyThread: true,
+        officialEbuyRoutesToDedicatedFolder: true,
         genericPositiveLanguageAloneCannotRescueSpam: true
       }
     };
@@ -154,4 +177,4 @@ class IonosSpamRescueService {
 }
 
 module.exports = IonosSpamRescueService;
-module.exports.helpers = { officialEbuy, systemNoise, obviousVendorJunk, replyThreadEvidence, rescueDecision, chooseSpamFolder };
+module.exports.helpers = { senderEmail, officialEbuy, systemNoise, obviousVendorJunk, replyThreadEvidence, activeClientEmails, rescueDecision, chooseSpamFolder };
