@@ -4,9 +4,11 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const crypto = require('crypto');
 const { spawn } = require('child_process');
 
 const ROOT = __dirname;
+const SOURCE_FILE = __filename;
 const POLL_MS = Math.max(5000, Number(process.env.MILES_REMOTE_BRIDGE_POLL_MS || 15000));
 const PROGRESS_MS = Math.max(30000, Number(process.env.MILES_REMOTE_BRIDGE_PROGRESS_MS || 60000));
 const CONTROL_BRANCH = 'miles-control';
@@ -15,6 +17,11 @@ const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_s
 const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
 const EVIDENCE_BRANCH = 'miles-runtime-evidence';
 const EVIDENCE_REPO_PATH = 'DATA/control/miles_remote_execution_result.json';
+
+function sourceDigest(file = SOURCE_FILE) {
+  return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+}
+const STARTUP_SOURCE_DIGEST = sourceDigest();
 
 const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
@@ -72,6 +79,25 @@ async function safeFastForward() {
   requireSuccess(fetchResult, 'GIT_FETCH_FAILED');
   const mergeResult = await run('git', ['merge', '--ff-only', 'origin/main'], 'GIT');
   requireSuccess(mergeResult, 'GIT_FAST_FORWARD_FAILED_NO_DESTRUCTIVE_RECOVERY_ATTEMPTED');
+}
+
+function bridgeSourceChanged(startupDigest = STARTUP_SOURCE_DIGEST) {
+  return sourceDigest() !== startupDigest;
+}
+
+function relaunchCurrentBridge() {
+  const child = spawn(process.execPath, [SOURCE_FILE], {
+    cwd: ROOT,
+    env: process.env,
+    shell: false,
+    windowsHide: true,
+    detached: true,
+    stdio: 'ignore'
+  });
+  child.unref();
+  console.log(`[MILES REMOTE BRIDGE] SELF-RELOAD pid=${child.pid}`);
+  setTimeout(() => process.exit(0), 50).unref();
+  return child.pid;
 }
 
 function validateDirective(d) {
@@ -144,6 +170,11 @@ async function executeDirective(directive, state) {
   if (directive.id === state.lastDirectiveId) return { skipped: true, reason: 'ALREADY_EXECUTED' };
 
   await safeFastForward();
+  if (bridgeSourceChanged()) {
+    relaunchCurrentBridge();
+    return { skipped: true, reason: 'SELF_RELOAD_AFTER_CODE_UPDATE' };
+  }
+
   const [command, args] = JOBS[directive.job];
   const startedAt = new Date().toISOString();
 
@@ -229,9 +260,12 @@ module.exports = {
   EVIDENCE_BRANCH,
   EVIDENCE_REPO_PATH,
   PROGRESS_MS,
+  STARTUP_SOURCE_DIGEST,
   validateDirective,
   executeDirective,
   safeFastForward,
   publishEvidence,
-  baseEvidence
+  baseEvidence,
+  sourceDigest,
+  bridgeSourceChanged
 };
