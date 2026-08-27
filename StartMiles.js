@@ -3,8 +3,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { OutboundService } = require('./SERVICES/OutboundService');
-const RemoteExecutionBridgeSupervisor = require('./SERVICES/runtime/RemoteExecutionBridgeSupervisor');
-const InfrastructureHealthScheduler = require('./SERVICES/runtime/InfrastructureHealthScheduler');
+const InfrastructureHealthAuditService = require('./SERVICES/runtime/InfrastructureHealthAuditService');
 
 const ROOT = process.cwd();
 const app = express();
@@ -15,13 +14,15 @@ app.use(express.static(path.join(ROOT,'WEB')));
 const startedAt = new Date();
 const outbound = new OutboundService(ROOT);
 outbound.init();
-const remoteBridgeSupervisor = new RemoteExecutionBridgeSupervisor({ root: ROOT });
-const bridgeSupervision = remoteBridgeSupervisor.start();
-if (!bridgeSupervision.ok) console.error('[MILES DESKTOP] Remote bridge supervision failed:', bridgeSupervision);
-else console.log('[MILES DESKTOP] Remote bridge supervision:', bridgeSupervision.status);
-const infrastructureHealthScheduler = new InfrastructureHealthScheduler({ root: ROOT, intervalHours: 72 });
-const infrastructureScheduling = infrastructureHealthScheduler.start();
-console.log('[MILES DESKTOP] Infrastructure health scheduler:', infrastructureScheduling.status, `${infrastructureScheduling.intervalHours}h`);
+const infrastructureHealthAudit = new InfrastructureHealthAuditService({ root: ROOT, intervalHours: 72 });
+const bridgeSupervisorStateFile = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_supervisor.json');
+
+function readJsonSafe(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+  catch { return null; }
+}
+
+console.log('[MILES DESKTOP] Runtime-control ownership delegated to persistent miles-autonomous-coo');
 
 const workforce = [
   ['MILES','Digital COO','Executive Brief / Operations Management','Running'],
@@ -43,13 +44,15 @@ function connectorDiscovery(){
 }
 function runtimeStatus(){
   const out = outbound.status();
-  const infraLast = infrastructureHealthScheduler.audit.lastRun();
+  const infraLast = infrastructureHealthAudit.lastRun();
+  const remoteBridge = readJsonSafe(bridgeSupervisorStateFile);
   return {
     app:'MILES Desktop', build:'0.1.0-build006', root:ROOT,
     startedAt:startedAt.toISOString(), uptimeSeconds:Math.floor((Date.now()-startedAt.getTime())/1000),
-    runtime:'running', scheduler:'running', supervisor:'running',
-    remoteBridge: remoteBridgeSupervisor.status(),
-    infrastructureHealth:{ due:infrastructureHealthScheduler.audit.due(), lastAudit:infraLast ? { ok:infraLast.ok, observedAt:infraLast.observedAt, recommendations:(infraLast.recommendations||[]).length } : null },
+    runtime:'running', scheduler:'delegated-to-miles-autonomous-coo', supervisor:'delegated-to-miles-autonomous-coo',
+    runtimeControlOwner:'miles-autonomous-coo',
+    remoteBridge,
+    infrastructureHealth:{ due:infrastructureHealthAudit.due(), lastAudit:infraLast ? { ok:infraLast.ok, observedAt:infraLast.observedAt, recommendations:(infraLast.recommendations||[]).length } : null },
     businessHealth: out.health === 'Healthy' ? 96 : 88,
     connectors:connectorDiscovery(), workforce,
     departments:[
@@ -80,8 +83,6 @@ const server = app.listen(PORT,()=>console.log(`MILES Desktop Build 006 running:
 
 function shutdown(signal) {
   console.log(`[MILES DESKTOP] ${signal} shutdown`);
-  infrastructureHealthScheduler.stop();
-  remoteBridgeSupervisor.stop();
   server.close(() => process.exit(0));
 }
 process.once('SIGINT', () => shutdown('SIGINT'));
