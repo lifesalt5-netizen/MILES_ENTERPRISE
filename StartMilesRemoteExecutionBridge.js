@@ -33,7 +33,9 @@ const JOBS = Object.freeze({
   IONOS_INBOX_CLEANUP_PLAN: ['node', ['SCRIPTS/RunIonosInboxCleanup.js']],
   IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']],
   IONOS_SPAM_RESCUE_PLAN: ['node', ['SCRIPTS/RunIonosSpamRescue.js']],
-  IONOS_SPAM_RESCUE_EXECUTE: ['node', ['SCRIPTS/RunIonosSpamRescue.js', '--execute']]
+  IONOS_SPAM_RESCUE_EXECUTE: ['node', ['SCRIPTS/RunIonosSpamRescue.js', '--execute']],
+  INSTANTLY_LIFECYCLE_PROOF_PLAN: ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js']],
+  INSTANTLY_LIFECYCLE_PROOF_EXECUTE: ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js', '--execute']]
 });
 
 function readState() {
