@@ -13,6 +13,7 @@ const CalendlyRevenuePipelineService = require(path.join(root, 'SERVICES', 'Cale
 const outDir = path.join(root, 'DATA', 'operational_acceptance');
 const outJson = path.join(outDir, 'latest_meeting_pipeline_acceptance.json');
 const outMd = path.join(outDir, 'latest_meeting_pipeline_acceptance.md');
+const MAX_CALENDARS_PER_ACCOUNT = Number(process.env.MILES_MEETING_MAX_CALENDARS || 25);
 
 function ensureDir(p) { fs.mkdirSync(p, { recursive: true }); }
 function textOf(event = {}) {
@@ -45,9 +46,12 @@ function classify(event = {}) {
   const calendly = text.includes('calendly.com') || text.includes('calendly');
   return { p2gc, calendly };
 }
-function slimEvent(account, event, classification) {
+function slimEvent(account, event, classification, calendarMeta = {}) {
   return {
     account,
+    calendarId: calendarMeta.id || null,
+    calendarSummary: calendarMeta.summary || null,
+    calendarPrimary: Boolean(calendarMeta.primary),
     id: event.id || null,
     summary: event.summary || '(untitled)',
     start: eventStart(event),
@@ -70,10 +74,20 @@ function slimEvent(account, event, classification) {
   const p2gcEvents = [];
   const calendlyEvents = [];
   let totalEvents = 0;
+  let totalCalendarsScanned = 0;
 
   for (const account of accounts) {
     const accountId = account.email || account.accountKey;
-    const row = { account: accountId, tokenPresent: Boolean(account.valid), calendarReachable: false, eventsReturned: 0, error: null };
+    const row = {
+      account: accountId,
+      tokenPresent: Boolean(account.valid),
+      calendarReachable: false,
+      calendarsVisible: 0,
+      calendarsScanned: 0,
+      eventsReturned: 0,
+      calendarErrors: [],
+      error: null
+    };
     if (!account.valid) {
       row.error = 'TOKEN_INVALID_OR_MISSING';
       accountResults.push(row);
@@ -87,14 +101,28 @@ function slimEvent(account, event, classification) {
         accountResults.push(row);
         continue;
       }
-      const events = await calendar.listEvents(accountId, { calendarId: 'primary', timeMin, timeMax, maxResults: 250 });
-      row.eventsReturned = events.length;
-      totalEvents += events.length;
-      for (const event of events) {
-        const classification = classify(event);
-        const slim = slimEvent(accountId, event, classification);
-        if (classification.p2gc) p2gcEvents.push(slim);
-        if (classification.calendly) calendlyEvents.push(slim);
+
+      let visibleCalendars = await calendar.listCalendars(accountId, { maxResults: MAX_CALENDARS_PER_ACCOUNT });
+      visibleCalendars = Array.isArray(visibleCalendars) ? visibleCalendars.filter(c => c?.id).slice(0, MAX_CALENDARS_PER_ACCOUNT) : [];
+      if (!visibleCalendars.length) visibleCalendars = [{ id: 'primary', summary: 'Primary', primary: true }];
+      row.calendarsVisible = visibleCalendars.length;
+
+      for (const cal of visibleCalendars) {
+        try {
+          const events = await calendar.listEvents(accountId, { calendarId: cal.id, timeMin, timeMax, maxResults: 250 });
+          row.calendarsScanned += 1;
+          totalCalendarsScanned += 1;
+          row.eventsReturned += events.length;
+          totalEvents += events.length;
+          for (const event of events) {
+            const classification = classify(event);
+            const slim = slimEvent(accountId, event, classification, cal);
+            if (classification.p2gc) p2gcEvents.push(slim);
+            if (classification.calendly) calendlyEvents.push(slim);
+          }
+        } catch (error) {
+          row.calendarErrors.push({ calendarId: cal.id, summary: cal.summary || null, error: error.message });
+        }
       }
     } catch (error) {
       row.error = error.message;
@@ -123,6 +151,7 @@ function slimEvent(account, event, classification) {
   const checks = {
     google_calendar_accounts: accounts.length > 0 ? (healthyAccounts > 0 ? 'GREEN' : 'RED') : 'RED',
     calendar_read_connectivity: healthyAccounts > 0 ? 'GREEN' : 'RED',
+    google_calendar_inventory_scan: totalCalendarsScanned > 0 ? 'GREEN' : 'RED',
     p2gc_meeting_evidence: combinedMeetingEvidence ? 'GREEN' : 'RED',
     calendly_event_visibility: directCalendlyEvidence || calendlyEvents.length > 0 ? 'GREEN' : 'YELLOW',
     google_calendar_p2gc_sync: googleCalendarSyncStatus
@@ -138,6 +167,7 @@ function slimEvent(account, event, classification) {
     totals: {
       configuredAccounts: accounts.length,
       healthyAccounts,
+      calendarsScanned: totalCalendarsScanned,
       eventsReturned: totalEvents,
       googleCalendarP2gcMeetings: p2gcEvents.length,
       googleCalendarCalendlyEvents: calendlyEvents.length,
@@ -146,7 +176,9 @@ function slimEvent(account, event, classification) {
     },
     evidenceSources: {
       googleCalendar: {
-        ok: healthyAccounts > 0,
+        ok: healthyAccounts > 0 && totalCalendarsScanned > 0,
+        scanScope: 'ALL_VISIBLE_CALENDARS_BOUNDED',
+        maxCalendarsPerAccount: MAX_CALENDARS_PER_ACCOUNT,
         p2gcMeetingEvidence: googleP2gcEvidence,
         p2gcEvents
       },
@@ -160,7 +192,7 @@ function slimEvent(account, event, classification) {
       }
     },
     sourceTruth: combinedMeetingEvidence
-      ? (googleP2gcEvidence ? 'P2GC_MEETING_EVIDENCE_CONFIRMED_GOOGLE_CALENDAR_AND_OR_CALENDLY' : 'P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_PRIMARY_SYNC_NOT_OBSERVED')
+      ? (googleP2gcEvidence ? 'P2GC_MEETING_EVIDENCE_CONFIRMED_GOOGLE_CALENDAR_AND_OR_CALENDLY' : 'P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_VISIBLE_CALENDAR_SYNC_NOT_OBSERVED')
       : 'P2GC_MEETING_EVIDENCE_NOT_OBSERVED',
     nextPriority: healthyAccounts === 0
       ? 'RESTORE_GOOGLE_CALENDAR_ACCOUNT_AUTH'
@@ -186,6 +218,7 @@ function slimEvent(account, event, classification) {
     '## Totals',
     `- configured Google accounts: ${report.totals.configuredAccounts}`,
     `- healthy calendar accounts: ${report.totals.healthyAccounts}`,
+    `- Google calendars scanned: ${report.totals.calendarsScanned}`,
     `- Google Calendar events read: ${report.totals.eventsReturned}`,
     `- Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`,
     `- Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`,
@@ -207,18 +240,19 @@ function slimEvent(account, event, classification) {
   console.log('');
   console.log(`Configured Google accounts: ${report.totals.configuredAccounts}`);
   console.log(`Healthy calendar accounts: ${report.totals.healthyAccounts}`);
+  console.log(`Google calendars scanned: ${report.totals.calendarsScanned}`);
   console.log(`Google Calendar events read: ${report.totals.eventsReturned}`);
   console.log(`Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`);
   console.log(`Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`);
   console.log(`Calendly meetings: ${report.totals.calendlyMeetings}`);
   console.log(`Source truth: ${report.sourceTruth}`);
   for (const row of accountResults) {
-    console.log(`Account ${row.account}: calendarReachable=${row.calendarReachable} events=${row.eventsReturned}${row.error ? ` error=${row.error}` : ''}`);
+    console.log(`Account ${row.account}: calendarReachable=${row.calendarReachable} calendars=${row.calendarsScanned}/${row.calendarsVisible} events=${row.eventsReturned}${row.error ? ` error=${row.error}` : ''}`);
   }
   console.log(`Next priority: ${report.nextPriority}`);
   console.log(`Report: ${outJson}`);
   console.log(`Summary: ${outMd}`);
-  process.exitCode = healthyAccounts > 0 && combinedMeetingEvidence ? 0 : 2;
+  process.exitCode = healthyAccounts > 0 && totalCalendarsScanned > 0 && combinedMeetingEvidence ? 0 : 2;
 })().catch(error => {
   console.error(error && error.stack ? error.stack : error);
   process.exitCode = 1;
