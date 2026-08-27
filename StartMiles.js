@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { OutboundService } = require('./SERVICES/OutboundService');
 const RemoteExecutionBridgeSupervisor = require('./SERVICES/runtime/RemoteExecutionBridgeSupervisor');
+const InfrastructureHealthScheduler = require('./SERVICES/runtime/InfrastructureHealthScheduler');
 
 const ROOT = process.cwd();
 const app = express();
@@ -18,6 +19,9 @@ const remoteBridgeSupervisor = new RemoteExecutionBridgeSupervisor({ root: ROOT 
 const bridgeSupervision = remoteBridgeSupervisor.start();
 if (!bridgeSupervision.ok) console.error('[MILES DESKTOP] Remote bridge supervision failed:', bridgeSupervision);
 else console.log('[MILES DESKTOP] Remote bridge supervision:', bridgeSupervision.status);
+const infrastructureHealthScheduler = new InfrastructureHealthScheduler({ root: ROOT, intervalHours: 72 });
+const infrastructureScheduling = infrastructureHealthScheduler.start();
+console.log('[MILES DESKTOP] Infrastructure health scheduler:', infrastructureScheduling.status, `${infrastructureScheduling.intervalHours}h`);
 
 const workforce = [
   ['MILES','Digital COO','Executive Brief / Operations Management','Running'],
@@ -39,11 +43,13 @@ function connectorDiscovery(){
 }
 function runtimeStatus(){
   const out = outbound.status();
+  const infraLast = infrastructureHealthScheduler.audit.lastRun();
   return {
     app:'MILES Desktop', build:'0.1.0-build006', root:ROOT,
     startedAt:startedAt.toISOString(), uptimeSeconds:Math.floor((Date.now()-startedAt.getTime())/1000),
     runtime:'running', scheduler:'running', supervisor:'running',
     remoteBridge: remoteBridgeSupervisor.status(),
+    infrastructureHealth:{ due:infrastructureHealthScheduler.audit.due(), lastAudit:infraLast ? { ok:infraLast.ok, observedAt:infraLast.observedAt, recommendations:(infraLast.recommendations||[]).length } : null },
     businessHealth: out.health === 'Healthy' ? 96 : 88,
     connectors:connectorDiscovery(), workforce,
     departments:[
@@ -74,6 +80,7 @@ const server = app.listen(PORT,()=>console.log(`MILES Desktop Build 006 running:
 
 function shutdown(signal) {
   console.log(`[MILES DESKTOP] ${signal} shutdown`);
+  infrastructureHealthScheduler.stop();
   remoteBridgeSupervisor.stop();
   server.close(() => process.exit(0));
 }
