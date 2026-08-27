@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-003",
+  "id": "inbox-placement-auth-20260827-004",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "INBOX_PLACEMENT_AUDIT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Bounded safe read-only revenue acceptance rinse after child-audit timeout containment merged in PR #269. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
+  "note": "Targeted read-only placement/authentication follow-up after bounded revenue acceptance sprint completed with Evan and Maya on pathwaysgovcon.com at DMARC 50% WATCH. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
 }
