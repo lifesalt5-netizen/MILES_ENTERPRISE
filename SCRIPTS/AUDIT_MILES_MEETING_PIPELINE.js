@@ -8,6 +8,7 @@ process.env.MILES_ROOT = root;
 
 const calendar = require(path.join(root, 'CONNECTORS', 'GOOGLE', 'calendar.js'));
 const accountManager = require(path.join(root, 'CONNECTORS', 'GOOGLE', 'account_manager.js'));
+const CalendlyRevenuePipelineService = require(path.join(root, 'SERVICES', 'CalendlyRevenuePipelineService.js'));
 
 const outDir = path.join(root, 'DATA', 'operational_acceptance');
 const outJson = path.join(outDir, 'latest_meeting_pipeline_acceptance.json');
@@ -101,17 +102,35 @@ function slimEvent(account, event, classification) {
     accountResults.push(row);
   }
 
+  let calendlyPipeline = null;
+  let calendlyPipelineError = null;
+  try {
+    calendlyPipeline = await new CalendlyRevenuePipelineService({ rootDir: root }).runOnce({ lookbackDays: 180, lookaheadDays: 90 });
+  } catch (error) {
+    calendlyPipelineError = error.message;
+  }
+
   const healthyAccounts = accountResults.filter(r => r.calendarReachable).length;
+  const directCalendlyP2gcEvents = Number(calendlyPipeline?.metrics?.p2gcEvents || 0);
+  const directCalendlyMeetings = Number(calendlyPipeline?.metrics?.meetings || 0);
+  const directCalendlyEvidence = Boolean(calendlyPipeline?.ok && (directCalendlyP2gcEvents > 0 || directCalendlyMeetings > 0));
+  const googleP2gcEvidence = p2gcEvents.length > 0;
+  const combinedMeetingEvidence = googleP2gcEvidence || directCalendlyEvidence;
+  const googleCalendarSyncStatus = directCalendlyEvidence
+    ? (googleP2gcEvidence ? 'GREEN' : 'YELLOW')
+    : (googleP2gcEvidence ? 'GREEN' : 'YELLOW');
+
   const checks = {
     google_calendar_accounts: accounts.length > 0 ? (healthyAccounts > 0 ? 'GREEN' : 'RED') : 'RED',
     calendar_read_connectivity: healthyAccounts > 0 ? 'GREEN' : 'RED',
-    p2gc_meeting_evidence: p2gcEvents.length > 0 ? 'GREEN' : 'RED',
-    calendly_event_visibility: calendlyEvents.length > 0 ? 'GREEN' : 'YELLOW'
+    p2gc_meeting_evidence: combinedMeetingEvidence ? 'GREEN' : 'RED',
+    calendly_event_visibility: directCalendlyEvidence || calendlyEvents.length > 0 ? 'GREEN' : 'YELLOW',
+    google_calendar_p2gc_sync: googleCalendarSyncStatus
   };
 
   const report = {
     generatedAt: new Date().toISOString(),
-    mode: 'READ_ONLY_CALENDAR_AUDIT',
+    mode: 'READ_ONLY_MEETING_SOURCE_RECONCILIATION',
     externalWritesPerformed: false,
     window: { timeMin, timeMax },
     checks,
@@ -120,16 +139,36 @@ function slimEvent(account, event, classification) {
       configuredAccounts: accounts.length,
       healthyAccounts,
       eventsReturned: totalEvents,
-      p2gcMeetings: p2gcEvents.length,
-      calendlyEvents: calendlyEvents.length
+      googleCalendarP2gcMeetings: p2gcEvents.length,
+      googleCalendarCalendlyEvents: calendlyEvents.length,
+      calendlyP2gcEvents: directCalendlyP2gcEvents,
+      calendlyMeetings: directCalendlyMeetings
     },
-    p2gcEvents,
-    calendlyEvents,
+    evidenceSources: {
+      googleCalendar: {
+        ok: healthyAccounts > 0,
+        p2gcMeetingEvidence: googleP2gcEvidence,
+        p2gcEvents
+      },
+      calendly: {
+        ok: calendlyPipeline?.ok === true,
+        p2gcMeetingEvidence: directCalendlyEvidence,
+        metrics: calendlyPipeline?.metrics || null,
+        upcomingMeetings: calendlyPipeline?.upcomingMeetings || [],
+        recentMeetings: calendlyPipeline?.recentMeetings || [],
+        error: calendlyPipelineError
+      }
+    },
+    sourceTruth: combinedMeetingEvidence
+      ? (googleP2gcEvidence ? 'P2GC_MEETING_EVIDENCE_CONFIRMED_GOOGLE_CALENDAR_AND_OR_CALENDLY' : 'P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_PRIMARY_SYNC_NOT_OBSERVED')
+      : 'P2GC_MEETING_EVIDENCE_NOT_OBSERVED',
     nextPriority: healthyAccounts === 0
       ? 'RESTORE_GOOGLE_CALENDAR_ACCOUNT_AUTH'
-      : p2gcEvents.length === 0
+      : !combinedMeetingEvidence
         ? 'VERIFY_P2GC_CALENDLY_TARGET_CALENDAR_OR_NO_RECENT_BOOKINGS'
-        : 'WIRE_MEETING_EVIDENCE_INTO_EXECUTIVE_BRIEF'
+        : directCalendlyEvidence && !googleP2gcEvidence
+          ? 'VERIFY_CALENDLY_TARGET_CALENDAR_SYNC_WHILE_USING_CALENDLY_AS_BOOKING_SOURCE'
+          : 'WIRE_MEETING_EVIDENCE_INTO_EXECUTIVE_BRIEF_AND_REVENUE_PIPELINE'
   };
 
   ensureDir(outDir);
@@ -147,9 +186,13 @@ function slimEvent(account, event, classification) {
     '## Totals',
     `- configured Google accounts: ${report.totals.configuredAccounts}`,
     `- healthy calendar accounts: ${report.totals.healthyAccounts}`,
-    `- calendar events read: ${report.totals.eventsReturned}`,
-    `- P2GC meeting evidence: ${report.totals.p2gcMeetings}`,
-    `- Calendly events visible: ${report.totals.calendlyEvents}`,
+    `- Google Calendar events read: ${report.totals.eventsReturned}`,
+    `- Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`,
+    `- Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`,
+    `- Calendly meetings: ${report.totals.calendlyMeetings}`,
+    '',
+    '## Source truth',
+    `- ${report.sourceTruth}`,
     '',
     '## Next priority',
     `- ${report.nextPriority}`,
@@ -164,16 +207,18 @@ function slimEvent(account, event, classification) {
   console.log('');
   console.log(`Configured Google accounts: ${report.totals.configuredAccounts}`);
   console.log(`Healthy calendar accounts: ${report.totals.healthyAccounts}`);
-  console.log(`Calendar events read: ${report.totals.eventsReturned}`);
-  console.log(`P2GC meeting evidence: ${report.totals.p2gcMeetings}`);
-  console.log(`Calendly events visible: ${report.totals.calendlyEvents}`);
+  console.log(`Google Calendar events read: ${report.totals.eventsReturned}`);
+  console.log(`Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`);
+  console.log(`Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`);
+  console.log(`Calendly meetings: ${report.totals.calendlyMeetings}`);
+  console.log(`Source truth: ${report.sourceTruth}`);
   for (const row of accountResults) {
     console.log(`Account ${row.account}: calendarReachable=${row.calendarReachable} events=${row.eventsReturned}${row.error ? ` error=${row.error}` : ''}`);
   }
   console.log(`Next priority: ${report.nextPriority}`);
   console.log(`Report: ${outJson}`);
   console.log(`Summary: ${outMd}`);
-  process.exitCode = healthyAccounts > 0 ? 0 : 2;
+  process.exitCode = healthyAccounts > 0 && combinedMeetingEvidence ? 0 : 2;
 })().catch(error => {
   console.error(error && error.stack ? error.stack : error);
   process.exitCode = 1;
