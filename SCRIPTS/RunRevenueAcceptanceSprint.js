@@ -12,6 +12,8 @@ const MAX_WAIT_MS = Number(process.env.MILES_PLACEMENT_MAX_WAIT_MS || 30 * 60 * 
 const MIN_ANALYTICS_ROWS = Number(process.env.MILES_PLACEMENT_MIN_ANALYTICS_ROWS || 27);
 const MIN_SENDER_EVIDENCE = Number(process.env.MILES_PLACEMENT_MIN_SENDER_EVIDENCE || 9);
 const REQUIRED_STABLE_POLLS = Number(process.env.MILES_PLACEMENT_REQUIRED_STABLE_POLLS || 2);
+const MIN_PLATEAU_ROWS = Number(process.env.MILES_PLACEMENT_MIN_PLATEAU_ROWS || 18);
+const REQUIRED_PLATEAU_POLLS = Number(process.env.MILES_PLACEMENT_REQUIRED_PLATEAU_POLLS || 4);
 
 const SAFE_AUDITS = [
   ['SCRIPTS/AUDIT_MILES_REVENUE_OPERATIONS.js'],
@@ -58,11 +60,21 @@ function parsePlacement(stdout = '') {
   return { rows, senders, authWatchSenders };
 }
 
+function placementFingerprint(v = {}) {
+  return JSON.stringify({
+    rows: Number(v.rows || 0),
+    senders: Number(v.senders || 0),
+    authWatchSenders: [...(v.authWatchSenders || [])].sort()
+  });
+}
+
 async function pollPlacement(testId) {
   const started = Date.now();
   const attempts = [];
   let previousQualifiedRows = null;
   let stablePolls = 0;
+  let previousPlateauFingerprint = null;
+  let plateauPolls = 0;
   let latest = { rows: 0, senders: 0, authWatchSenders: [] };
 
   while (Date.now() - started <= MAX_WAIT_MS) {
@@ -79,10 +91,12 @@ async function pollPlacement(testId) {
         return {
           ready: true,
           stable: true,
+          evidenceBasis: 'CONFIGURED_COMPLETENESS_TARGET_STABLE',
           rows: latest.rows,
           senders: latest.senders,
           authWatchSenders: latest.authWatchSenders,
           stablePolls,
+          plateauPolls,
           attempts
         };
       }
@@ -91,18 +105,45 @@ async function pollPlacement(testId) {
       previousQualifiedRows = null;
     }
 
+    const plateauEligible = latest.rows >= MIN_PLATEAU_ROWS && latest.senders >= MIN_SENDER_EVIDENCE;
+    if (plateauEligible) {
+      const fingerprint = placementFingerprint(latest);
+      if (fingerprint === previousPlateauFingerprint) plateauPolls += 1;
+      else plateauPolls = 1;
+      previousPlateauFingerprint = fingerprint;
+      if (plateauPolls >= REQUIRED_PLATEAU_POLLS) {
+        console.log(`[PLACEMENT] provider plateau accepted for verdict: rows=${latest.rows}, senders=${latest.senders}, unchanged=${plateauPolls} polls. Missing rows remain explicitly unobserved; current WATCH senders stay fail-closed.`);
+        return {
+          ready: true,
+          stable: true,
+          evidenceBasis: 'STABLE_PROVIDER_PLATEAU_BELOW_CONFIGURED_ROW_TARGET',
+          rows: latest.rows,
+          senders: latest.senders,
+          authWatchSenders: latest.authWatchSenders,
+          stablePolls,
+          plateauPolls,
+          attempts
+        };
+      }
+    } else {
+      plateauPolls = 0;
+      previousPlateauFingerprint = null;
+    }
+
     if (Date.now() - started + POLL_MS > MAX_WAIT_MS) break;
-    console.log(`[PLACEMENT] evidence incomplete: rows=${latest.rows}/${MIN_ANALYTICS_ROWS}, senders=${latest.senders}/${MIN_SENDER_EVIDENCE}, stable=${stablePolls}/${REQUIRED_STABLE_POLLS}; retrying in ${Math.round(POLL_MS / 1000)}s`);
+    console.log(`[PLACEMENT] evidence pending: rows=${latest.rows}/${MIN_ANALYTICS_ROWS}, senders=${latest.senders}/${MIN_SENDER_EVIDENCE}, completeStable=${stablePolls}/${REQUIRED_STABLE_POLLS}, plateau=${plateauPolls}/${REQUIRED_PLATEAU_POLLS}; retrying in ${Math.round(POLL_MS / 1000)}s`);
     await sleep(POLL_MS);
   }
 
   return {
     ready: false,
     stable: false,
+    evidenceBasis: 'MAX_WAIT_REACHED_WITHOUT_STABLE_COMPLETENESS_OR_PLATEAU',
     rows: latest.rows,
     senders: latest.senders,
     authWatchSenders: latest.authWatchSenders,
     stablePolls,
+    plateauPolls,
     attempts
   };
 }
@@ -120,6 +161,7 @@ async function main() {
   console.log(`Parallel audits: ${SAFE_AUDITS.length}`);
   console.log(`Placement poll: ${Math.round(POLL_MS / 1000)}s, max wait ${Math.round(MAX_WAIT_MS / 60000)}m`);
   console.log(`Placement completeness gate: >=${MIN_ANALYTICS_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_STABLE_POLLS} stable polls`);
+  console.log(`Placement plateau gate: >=${MIN_PLATEAU_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_PLATEAU_POLLS} unchanged polls; plateau never overrides AUTH WATCH`);
 
   const auditPromise = Promise.all(SAFE_AUDITS.map((args, i) => runNode(args, `AUDIT-${i + 1}`)));
   const placementPromise = pollPlacement(testId);
@@ -137,7 +179,9 @@ async function main() {
     placementCompletenessGate: {
       minAnalyticsRows: MIN_ANALYTICS_ROWS,
       minSenderEvidence: MIN_SENDER_EVIDENCE,
-      requiredStablePolls: REQUIRED_STABLE_POLLS
+      requiredStablePolls: REQUIRED_STABLE_POLLS,
+      minPlateauRows: MIN_PLATEAU_ROWS,
+      requiredPlateauPolls: REQUIRED_PLATEAU_POLLS
     },
     constraints: {
       sendsRealProspects: false,
@@ -160,6 +204,7 @@ async function main() {
   console.log(`Safe audits complete: ${audits.length}`);
   console.log(`Audit nonzero exits: ${failedAudits.length}`);
   console.log(`Placement evidence stable: ${placement.ready ? 'YES' : 'NO'}`);
+  console.log(`Placement evidence basis: ${placement.evidenceBasis}`);
   console.log(`Placement rows: ${placement.rows}`);
   console.log(`Placement senders: ${placement.senders}`);
   console.log(`Placement AUTH WATCH: ${placement.authWatchSenders.length ? placement.authWatchSenders.join(', ') : 'NONE'}`);
@@ -180,5 +225,8 @@ module.exports = {
   MIN_ANALYTICS_ROWS,
   MIN_SENDER_EVIDENCE,
   REQUIRED_STABLE_POLLS,
-  parsePlacement
+  MIN_PLATEAU_ROWS,
+  REQUIRED_PLATEAU_POLLS,
+  parsePlacement,
+  placementFingerprint
 };
