@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-009",
+  "id": "revenue-acceptance-20260827-010",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR272 bounded revenue truth verification. Re-run safe read-only revenue acceptance using the aligned 180-day lookback / 90-day lookahead Calendly scope, re-read placement/auth and meeting-pipeline truth, and preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Post-PR273 live verification. Re-run safe read-only revenue acceptance to confirm CalendlyRevenuePipelineService now classifies the same bounded P2GC/Federal Strategy events as the dedicated acceptance audit, then re-read placement/auth, meeting pipeline, domain DNS, company health, and ORION truth. Preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
 }
