@@ -9,7 +9,8 @@ function ensureDir(dir) {
 }
 
 function isP2GCEvent(event) {
-  return /Federal Strategy|Pathways|Gov.?t Contract|Government Contract/i.test(String(event?.name || ''));
+  const text = [event?.name, event?.event_type, event?.location?.location].filter(Boolean).join(' ');
+  return /(Federal Strategy|Pathways\s*2|P2GC|Gov.?t Contract|Government Contract)/i.test(text);
 }
 
 function answerMap(invitee) {
@@ -130,3 +131,4 @@ class CalendlyRevenuePipelineService {
 }
 
 module.exports = CalendlyRevenuePipelineService;
+module.exports.isP2GCEvent = isP2GCEvent;
