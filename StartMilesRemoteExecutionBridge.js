@@ -17,6 +17,7 @@ const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_s
 const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
 const EVIDENCE_BRANCH = 'miles-runtime-evidence';
 const EVIDENCE_REPO_PATH = 'DATA/control/miles_remote_execution_result.json';
+let evidencePublishTail = Promise.resolve();
 
 function sourceDigest(file = SOURCE_FILE) {
   return crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
@@ -26,7 +27,9 @@ const STARTUP_SOURCE_DIGEST = sourceDigest();
 const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
-  PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']]
+  PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
+  IONOS_INBOX_CLEANUP_PLAN: ['node', ['SCRIPTS/RunIonosInboxCleanup.js']],
+  IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]
 });
 
 function readState() {
@@ -119,8 +122,8 @@ async function publishEvidence(evidence) {
     'EVIDENCE_BLOB_CREATE_FAILED'
   );
 
-  const indexPath = path.join(ROOT, 'DATA', 'runtime', `remote-evidence-${process.pid}.index`);
-  try { fs.unlinkSync(indexPath); } catch {}
+  const indexNonce = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
+  const indexPath = path.join(ROOT, 'DATA', 'runtime', `remote-evidence-${process.pid}-${indexNonce}.index`);
   const gitEnv = {
     ...process.env,
     GIT_INDEX_FILE: indexPath,
@@ -146,6 +149,15 @@ async function publishEvidence(evidence) {
   } finally {
     try { fs.unlinkSync(indexPath); } catch {}
   }
+}
+
+function publishEvidenceSerialized(evidence) {
+  const task = evidencePublishTail.then(
+    () => publishEvidence(evidence),
+    () => publishEvidence(evidence)
+  );
+  evidencePublishTail = task.catch(() => undefined);
+  return task;
 }
 
 function baseEvidence(directive, startedAt, phase) {
@@ -179,7 +191,7 @@ async function executeDirective(directive, state) {
   const startedAt = new Date().toISOString();
 
   try {
-    await publishEvidence(baseEvidence(directive, startedAt, 'STARTED'));
+    await publishEvidenceSerialized(baseEvidence(directive, startedAt, 'STARTED'));
   } catch (error) {
     console.error('[MILES REMOTE BRIDGE] STARTED evidence publish failed:', error.message);
   }
@@ -189,7 +201,7 @@ async function executeDirective(directive, state) {
     if (progressPublishing) return;
     progressPublishing = true;
     try {
-      await publishEvidence({
+      await publishEvidenceSerialized({
         ...baseEvidence(directive, startedAt, 'RUNNING'),
         elapsedSeconds: Math.max(0, Math.round((Date.now() - Date.parse(startedAt)) / 1000))
       });
@@ -219,7 +231,7 @@ async function executeDirective(directive, state) {
   };
 
   try {
-    record.evidence = await publishEvidence(evidence);
+    record.evidence = await publishEvidenceSerialized(evidence);
   } catch (error) {
     record.evidence = { ok: false, error: error.message };
     state.lastResult = record;
@@ -265,6 +277,7 @@ module.exports = {
   executeDirective,
   safeFastForward,
   publishEvidence,
+  publishEvidenceSerialized,
   baseEvidence,
   sourceDigest,
   bridgeSourceChanged
