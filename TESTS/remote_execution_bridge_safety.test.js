@@ -9,6 +9,8 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'PRODUCTION_TRUTH_RECONCILIATION',
   'REVENUE_ACCEPTANCE_SPRINT'
 ]);
+assert.strictEqual(bridge.CONTROL_BRANCH, 'miles-control');
+assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_execution_directive.json'));
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
 assert.strictEqual(bridge.EVIDENCE_REPO_PATH, 'DATA/control/miles_remote_execution_result.json');
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, true);

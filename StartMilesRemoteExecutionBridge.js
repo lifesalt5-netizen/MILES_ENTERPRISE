@@ -8,7 +8,8 @@ const { spawn } = require('child_process');
 
 const ROOT = __dirname;
 const POLL_MS = Math.max(5000, Number(process.env.MILES_REMOTE_BRIDGE_POLL_MS || 15000));
-const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || 'https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/main/DATA/control/miles_remote_execution_directive.json';
+const CONTROL_BRANCH = 'miles-control';
+const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || `https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/${CONTROL_BRANCH}/DATA/control/miles_remote_execution_directive.json`;
 const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_state.json');
 const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
 const EVIDENCE_BRANCH = 'miles-runtime-evidence';
@@ -171,6 +172,7 @@ async function tick() {
 async function main() {
   console.log('[MILES REMOTE BRIDGE] STARTED');
   console.log(`[MILES REMOTE BRIDGE] Poll ${Math.round(POLL_MS/1000)}s`);
+  console.log(`[MILES REMOTE BRIDGE] Control branch: ${CONTROL_BRANCH}`);
   console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
   console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
   for (;;) {
@@ -187,6 +189,8 @@ async function main() {
 if (require.main === module) main().catch(e => { console.error(e.stack || e); process.exitCode = 1; });
 module.exports = {
   JOBS,
+  CONTROL_BRANCH,
+  DIRECTIVE_URL,
   EVIDENCE_BRANCH,
   EVIDENCE_REPO_PATH,
   validateDirective,
