@@ -1,7 +1,7 @@
 {
-  "id": "inbox-placement-auth-20260827-004",
+  "id": "production-truth-reconciliation-20260827-005",
   "enabled": true,
-  "job": "INBOX_PLACEMENT_AUDIT",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Targeted read-only placement/authentication follow-up after bounded revenue acceptance sprint completed with Evan and Maya on pathwaysgovcon.com at DMARC 50% WATCH. No prospect sends, no DNS mutation, no email deletion, no B12 publish."
+  "note": "Safe read-only reconciliation after targeted inbox-placement auth audit confirmed Evan and Maya remain DMARC WATCH while all observed placement rows remain inbox=100% and spam=0%. Reconcile remaining revenue/meeting truth without prospect sends, DNS mutation, email deletion, or B12 publish."
 }
