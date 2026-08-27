@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-011",
+  "id": "revenue-acceptance-20260827-012",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR274 live verification. Re-run safe read-only revenue acceptance to confirm the meeting-pipeline audit loads repository env, direct Calendly read is explicit/fail-closed, and bounded Calendly P2GC/Federal Strategy evidence reconciles correctly. Re-read placement/auth, domain DNS, company health, and ORION truth. Preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Post-PR275 live verification. Re-run safe read-only revenue acceptance to confirm transient Calendly 429 throttles are retried with bounded backoff and the meeting pipeline can read the same bounded P2GC/Federal Strategy evidence without false zeroes. Re-read placement/auth, domain DNS, company health, and ORION truth. Preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
 }
