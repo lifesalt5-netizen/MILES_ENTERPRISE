@@ -17,6 +17,8 @@ const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_s
 const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
 const EVIDENCE_BRANCH = 'miles-runtime-evidence';
 const EVIDENCE_REPO_PATH = 'DATA/control/miles_remote_execution_result.json';
+const BRIDGE_SUPERVISED = ['1','true','yes','y','on'].includes(String(process.env.MILES_BRIDGE_SUPERVISED || '').trim().toLowerCase());
+const SUPERVISED_RESTART_EXIT_CODE = 75;
 let evidencePublishTail = Promise.resolve();
 
 function sourceDigest(file = SOURCE_FILE) {
@@ -208,6 +210,11 @@ async function executeDirective(directive, state) {
 
   await safeFastForward();
   if (bridgeSourceChanged()) {
+    if (BRIDGE_SUPERVISED) {
+      console.log(`[MILES REMOTE BRIDGE] SUPERVISOR_RESTART_REQUESTED exit=${SUPERVISED_RESTART_EXIT_CODE}`);
+      setTimeout(() => process.exit(SUPERVISED_RESTART_EXIT_CODE), 0);
+      return { skipped: true, reason: 'SUPERVISOR_RESTART_AFTER_CODE_UPDATE' };
+    }
     await relaunchCurrentBridge();
     setTimeout(() => process.exit(0), 0);
     return { skipped: true, reason: 'SELF_RELOAD_AFTER_CODE_UPDATE' };
@@ -282,6 +289,7 @@ async function main() {
   console.log(`[MILES REMOTE BRIDGE] Control branch: ${CONTROL_BRANCH}`);
   console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
   console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
+  console.log(`[MILES REMOTE BRIDGE] Supervised: ${BRIDGE_SUPERVISED}`);
   for (;;) {
     try {
       const result = await tick();
@@ -302,6 +310,8 @@ module.exports = {
   EVIDENCE_REPO_PATH,
   PROGRESS_MS,
   STARTUP_SOURCE_DIGEST,
+  BRIDGE_SUPERVISED,
+  SUPERVISED_RESTART_EXIT_CODE,
   validateDirective,
   executeDirective,
   safeFastForward,

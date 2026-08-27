@@ -83,7 +83,7 @@ class RemoteExecutionBridgeSupervisor {
     if (!fs.existsSync(this.bridgeFile)) throw new Error(`REMOTE_BRIDGE_FILE_MISSING:${this.bridgeFile}`);
     const child = this.spawnFn(process.execPath, [this.bridgeFile], {
       cwd: this.root,
-      env: process.env,
+      env: { ...process.env, MILES_BRIDGE_SUPERVISED: 'true' },
       shell: false,
       windowsHide: true,
       stdio: 'inherit'
@@ -91,9 +91,7 @@ class RemoteExecutionBridgeSupervisor {
     this.child = child;
     this.writeState({ status: 'BRIDGE_STARTING' });
     child.once('spawn', () => this.writeState({ status: 'BRIDGE_RUNNING' }));
-    child.once('error', error => {
-      this.writeState({ status: 'BRIDGE_SPAWN_ERROR', error: error.message });
-    });
+    child.once('error', error => this.writeState({ status: 'BRIDGE_SPAWN_ERROR', error: error.message }));
     child.once('exit', (code, signal) => {
       this.child = null;
       this.writeState({ status: 'BRIDGE_EXITED', exitCode: code, signal: signal || null });
