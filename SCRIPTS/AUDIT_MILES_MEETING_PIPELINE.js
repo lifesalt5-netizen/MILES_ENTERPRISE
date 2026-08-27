@@ -165,7 +165,7 @@ function slimEvent(account, event, classification) {
     nextPriority: healthyAccounts === 0
       ? 'RESTORE_GOOGLE_CALENDAR_ACCOUNT_AUTH'
       : !combinedMeetingEvidence
-        ? 'VERIFY_P2GC_BOOKING_SOURCE_OR_NO_RECENT_BOOKINGS'
+        ? 'VERIFY_P2GC_CALENDLY_TARGET_CALENDAR_OR_NO_RECENT_BOOKINGS'
         : directCalendlyEvidence && !googleP2gcEvidence
           ? 'VERIFY_CALENDLY_TARGET_CALENDAR_SYNC_WHILE_USING_CALENDLY_AS_BOOKING_SOURCE'
           : 'WIRE_MEETING_EVIDENCE_INTO_EXECUTIVE_BRIEF_AND_REVENUE_PIPELINE'
