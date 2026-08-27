@@ -5,6 +5,10 @@ const path = require('path');
 
 const root = path.resolve(process.argv[2] || process.env.MILES_ROOT || process.cwd());
 process.env.MILES_ROOT = root;
+try {
+  const dotenv = require(path.join(root, 'node_modules', 'dotenv'));
+  dotenv.config({ path: path.join(root, '.env'), override: false, quiet: true });
+} catch {}
 
 const calendar = require(path.join(root, 'CONNECTORS', 'GOOGLE', 'calendar.js'));
 const accountManager = require(path.join(root, 'CONNECTORS', 'GOOGLE', 'account_manager.js'));
@@ -152,8 +156,9 @@ function slimEvent(account, event, classification, calendarMeta = {}) {
     google_calendar_accounts: accounts.length > 0 ? (healthyAccounts > 0 ? 'GREEN' : 'RED') : 'RED',
     calendar_read_connectivity: healthyAccounts > 0 ? 'GREEN' : 'RED',
     google_calendar_inventory_scan: totalCalendarsScanned > 0 ? 'GREEN' : 'RED',
+    calendly_direct_read: calendlyPipelineError ? 'RED' : 'GREEN',
     p2gc_meeting_evidence: combinedMeetingEvidence ? 'GREEN' : 'RED',
-    calendly_event_visibility: directCalendlyEvidence || calendlyEvents.length > 0 ? 'GREEN' : 'YELLOW',
+    calendly_event_visibility: calendlyPipelineError ? 'RED' : (directCalendlyEvidence || calendlyEvents.length > 0 ? 'GREEN' : 'YELLOW'),
     google_calendar_p2gc_sync: googleCalendarSyncStatus
   };
 
@@ -191,16 +196,20 @@ function slimEvent(account, event, classification, calendarMeta = {}) {
         error: calendlyPipelineError
       }
     },
-    sourceTruth: combinedMeetingEvidence
-      ? (googleP2gcEvidence ? 'P2GC_MEETING_EVIDENCE_CONFIRMED_GOOGLE_CALENDAR_AND_OR_CALENDLY' : 'P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_VISIBLE_CALENDAR_SYNC_NOT_OBSERVED')
-      : 'P2GC_MEETING_EVIDENCE_NOT_OBSERVED',
+    sourceTruth: calendlyPipelineError
+      ? 'CALENDLY_DIRECT_PIPELINE_READ_FAILED'
+      : combinedMeetingEvidence
+        ? (googleP2gcEvidence ? 'P2GC_MEETING_EVIDENCE_CONFIRMED_GOOGLE_CALENDAR_AND_OR_CALENDLY' : 'P2GC_MEETING_EVIDENCE_CONFIRMED_BY_CALENDLY_GOOGLE_VISIBLE_CALENDAR_SYNC_NOT_OBSERVED')
+        : 'P2GC_MEETING_EVIDENCE_NOT_OBSERVED',
     nextPriority: healthyAccounts === 0
       ? 'RESTORE_GOOGLE_CALENDAR_ACCOUNT_AUTH'
-      : !combinedMeetingEvidence
-        ? 'VERIFY_P2GC_CALENDLY_TARGET_CALENDAR_OR_NO_RECENT_BOOKINGS'
-        : directCalendlyEvidence && !googleP2gcEvidence
-          ? 'VERIFY_CALENDLY_TARGET_CALENDAR_SYNC_WHILE_USING_CALENDLY_AS_BOOKING_SOURCE'
-          : 'WIRE_MEETING_EVIDENCE_INTO_EXECUTIVE_BRIEF_AND_REVENUE_PIPELINE'
+      : calendlyPipelineError
+        ? 'RESTORE_CALENDLY_DIRECT_PIPELINE_READ'
+        : !combinedMeetingEvidence
+          ? 'VERIFY_P2GC_CALENDLY_TARGET_CALENDAR_OR_NO_RECENT_BOOKINGS'
+          : directCalendlyEvidence && !googleP2gcEvidence
+            ? 'VERIFY_CALENDLY_TARGET_CALENDAR_SYNC_WHILE_USING_CALENDLY_AS_BOOKING_SOURCE'
+            : 'WIRE_MEETING_EVIDENCE_INTO_EXECUTIVE_BRIEF_AND_REVENUE_PIPELINE'
   };
 
   ensureDir(outDir);
@@ -223,6 +232,7 @@ function slimEvent(account, event, classification, calendarMeta = {}) {
     `- Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`,
     `- Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`,
     `- Calendly meetings: ${report.totals.calendlyMeetings}`,
+    `- Calendly direct pipeline error: ${calendlyPipelineError || 'none'}`,
     '',
     '## Source truth',
     `- ${report.sourceTruth}`,
@@ -245,6 +255,7 @@ function slimEvent(account, event, classification, calendarMeta = {}) {
   console.log(`Google Calendar P2GC meeting evidence: ${report.totals.googleCalendarP2gcMeetings}`);
   console.log(`Calendly P2GC events: ${report.totals.calendlyP2gcEvents}`);
   console.log(`Calendly meetings: ${report.totals.calendlyMeetings}`);
+  console.log(`Calendly direct pipeline error: ${calendlyPipelineError || 'none'}`);
   console.log(`Source truth: ${report.sourceTruth}`);
   for (const row of accountResults) {
     console.log(`Account ${row.account}: calendarReachable=${row.calendarReachable} calendars=${row.calendarsScanned}/${row.calendarsVisible} events=${row.eventsReturned}${row.error ? ` error=${row.error}` : ''}`);
@@ -252,7 +263,7 @@ function slimEvent(account, event, classification, calendarMeta = {}) {
   console.log(`Next priority: ${report.nextPriority}`);
   console.log(`Report: ${outJson}`);
   console.log(`Summary: ${outMd}`);
-  process.exitCode = healthyAccounts > 0 && totalCalendarsScanned > 0 && combinedMeetingEvidence ? 0 : 2;
+  process.exitCode = healthyAccounts > 0 && totalCalendarsScanned > 0 && !calendlyPipelineError && combinedMeetingEvidence ? 0 : 2;
 })().catch(error => {
   console.error(error && error.stack ? error.stack : error);
   process.exitCode = 1;
