@@ -28,6 +28,7 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBO
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:false,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, false);
+assert.strictEqual(typeof bridge.publishEvidenceSerialized, 'function');
 
 const src = fs.readFileSync(path.join(__dirname, '..', 'StartMilesRemoteExecutionBridge.js'), 'utf8');
 assert(src.includes("['merge', '--ff-only', 'origin/main']"));
@@ -36,6 +37,11 @@ assert(src.includes('GIT_INDEX_FILE'));
 assert(src.includes("'commit-tree'"));
 assert(src.includes("baseEvidence(directive, startedAt, 'STARTED')"));
 assert(src.includes("baseEvidence(directive, startedAt, 'RUNNING')"));
+assert(src.includes('publishEvidenceSerialized'));
+assert(src.includes('evidencePublishTail'));
+assert(src.includes('crypto.randomBytes(6)'));
+assert(src.includes('remote-evidence-${process.pid}-${indexNonce}.index'));
+assert(!src.includes('remote-evidence-${process.pid}.index'));
 assert(src.includes('SELF-RELOAD'));
 assert(src.includes('detached: true'));
 assert(src.includes("stdio: 'ignore'"));
