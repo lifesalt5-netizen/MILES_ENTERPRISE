@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-20260827-013",
+  "id": "ionos-inbox-cleanup-plan-20260827-014",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR276 live verification. Re-run safe read-only revenue acceptance to prove serialized/isolated runtime evidence publication and confirm the post-PR275 Calendly 429 retry path allows bounded meeting-pipeline truth to complete without false zeroes. Re-read placement/auth, domain DNS, company health, and ORION truth. Preserve all RED/YELLOW items fail-closed. No real prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Run plan-only IONOS inbox hygiene classification using governed cleanup service. Do not move or delete any email. Produce per-account scanned counts, planned folders/routes, and preserve actionable human replies in Inbox. This is the next safe step after revenue-acceptance-013 verified Calendly direct read and runtime evidence publication. No prospect sends, DNS mutation, email deletion, or B12 publish."
 }
