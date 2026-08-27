@@ -29,7 +29,8 @@ assert(ionosCleanup.includes('MILES-GSA-EBUY'), 'eBuy notices must leave working
 assert(ionosCleanup.includes('MILES-FORWARDED'), 'forwarded MILES noise must leave working inbox for preserved folder');
 assert(ionosCleanup.includes('MILES-JUNK'), 'obvious vendor junk must leave working inbox for preserved folder');
 assert(ionosCleanup.includes('remainingRoutableNoise'), 'IONOS cleanup must verify user-visible inbox result after moves');
-assert(ionosCleanup.includes('preservesActionableHumanRepliesInInbox: true'), 'actionable replies must remain in IONOS inbox');
+assert(ionosCleanup.includes('inboxReservedForActiveClientsAndRealSentThreadReplies: true'), 'IONOS inbox must be reserved for active clients and real sent-thread replies');
+assert(ionosCleanup.includes('genericPositiveLanguageDoesNotKeepInbox: true'), 'generic positive wording must not be sufficient to keep IONOS inbox mail');
 
 assert(instantly.includes('/leads/update-interest-status'), 'Instantly lifecycle must reconcile CRM interest status');
 assert(instantly.includes('/mark-as-read'), 'Instantly lifecycle must clear non-actionable unread threads');

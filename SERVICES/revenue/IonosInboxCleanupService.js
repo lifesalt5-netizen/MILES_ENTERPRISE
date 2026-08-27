@@ -5,6 +5,7 @@ const path = require('path');
 const readonly = require('../../CONNECTORS/IONOS/imap_readonly');
 const governed = require('../../CONNECTORS/IONOS/imap_governed');
 const ReplyIntelligenceService = require('./ReplyIntelligenceService');
+const P2GCCustomerDeliveryService = require('../customer/P2GCCustomerDeliveryService');
 const { CATEGORIES } = ReplyIntelligenceService;
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -15,6 +16,15 @@ function chunk(items, size) {
 }
 function textOf(message = {}) {
   return `${message.from || ''}\n${message.subject || ''}\n${message.text || ''}`.toLowerCase();
+}
+function senderEmail(message = {}) {
+  const raw = String(message.from || '').trim();
+  const bracket = raw.match(/<([^>]+@[^>]+)>/);
+  const plain = raw.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
+  return String(bracket?.[1] || plain?.[0] || '').trim().toLowerCase();
+}
+function replyThreadEvidence(message = {}) {
+  return Boolean(String(message.inReplyTo || '').trim() || String(message.references || '').trim());
 }
 function systemNoise(message = {}) {
   const text = textOf(message);
@@ -39,12 +49,33 @@ function obviousVendorJunk(message = {}) {
   if (/\bq913twe\b/i.test(subject)) return true;
   return /business funding|funding application|business loan|working capital|merchant cash advance|seo services?|link building|lead generation|ai voice|website redesign|can i interest you|would love to work with you|pick your brain|grow your business|new customers|appointment setting|cold email services?/i.test(text);
 }
-function folderFor(classification = {}, message = {}) {
+function activeClientEmails(customerService = new P2GCCustomerDeliveryService()) {
+  try {
+    return new Set((customerService.load().clients || [])
+      .filter(client => String(client.status || 'ACTIVE').toUpperCase() === 'ACTIVE')
+      .map(client => String(client.email || '').trim().toLowerCase())
+      .filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+function actionableHumanMail(classification = {}, message = {}, clients = new Set()) {
+  if (classification.humanReply !== true) return { keep: false, reason: 'NOT_HUMAN_REPLY' };
+  const from = senderEmail(message);
+  if (clients.has(from)) return { keep: true, reason: 'ACTIVE_CLIENT' };
+  if (!replyThreadEvidence(message)) return { keep: false, reason: 'NO_SENT_THREAD_EVIDENCE' };
+  if ([CATEGORIES.NEGATIVE, CATEGORIES.UNSUBSCRIBE, CATEGORIES.NOT_NOW].includes(classification.category)) return { keep: false, reason: `NON_ACTIVE_RESPONSE:${classification.category}` };
+  if ([CATEGORIES.AUTO_REPLY, CATEGORIES.BOUNCE_TECHNICAL, CATEGORIES.OOO, CATEGORIES.INBOUND_SOLICITATION_SPAM].includes(classification.category)) return { keep: false, reason: `NON_ACTIONABLE:${classification.category}` };
+  return { keep: true, reason: 'DIRECT_RESPONSE_TO_SENT_THREAD' };
+}
+function folderFor(classification = {}, message = {}, clients = new Set()) {
   if (ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (billingNotice(message)) return 'MILES-BILLING';
   if (systemNoise(message)) return 'MILES-SYSTEM';
   if (obviousVendorJunk(message)) return 'MILES-JUNK';
+  const actionable = actionableHumanMail(classification, message, clients);
+  if (actionable.keep) return null;
   switch (classification.category) {
     case CATEGORIES.OOO: return 'MILES-OOO';
     case CATEGORIES.AUTO_REPLY: return 'MILES-AUTO';
@@ -53,7 +84,7 @@ function folderFor(classification = {}, message = {}) {
     case CATEGORIES.NEGATIVE:
     case CATEGORIES.UNSUBSCRIBE: return 'MILES-CLOSED';
     case CATEGORIES.NOT_NOW: return 'MILES-NURTURE';
-    default: return null;
+    default: return 'MILES-JUNK';
   }
 }
 
@@ -61,6 +92,7 @@ class IonosInboxCleanupService {
   constructor(options = {}) {
     this.root = path.resolve(options.root || process.env.MILES_ROOT || process.cwd());
     this.classifier = options.classifier || new ReplyIntelligenceService();
+    this.customerService = options.customerService || new P2GCCustomerDeliveryService();
     this.maxMessages = Math.min(Math.max(Number(options.maxMessages || process.env.MILES_IONOS_CLEANUP_MAX || 5000), 1), 20000);
     this.output = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_cleanup', 'latest.json');
   }
@@ -84,13 +116,15 @@ class IonosInboxCleanupService {
   }
 
   classifyMessages(messages) {
+    const clients = activeClientEmails(this.customerService);
     const routed = new Map();
     const kept = [];
     const decisions = [];
     for (const message of messages) {
       const classification = this.classifier.classify(message);
-      const folder = folderFor(classification, message);
-      decisions.push({ uid: message.uid, subject: message.subject, from: message.from, category: classification.category, route: folder || 'KEEP_INBOX' });
+      const actionable = actionableHumanMail(classification, message, clients);
+      const folder = folderFor(classification, message, clients);
+      decisions.push({ uid: message.uid, subject: message.subject, from: message.from, category: classification.category, actionableReason: actionable.reason, route: folder || 'KEEP_INBOX' });
       if (!folder) kept.push(message.uid);
       else {
         if (!routed.has(folder)) routed.set(folder, []);
@@ -166,7 +200,8 @@ class IonosInboxCleanupService {
       safety: {
         deletesMessages: false,
         usesUidMoveOnly: true,
-        preservesActionableHumanRepliesInInbox: true,
+        inboxReservedForActiveClientsAndRealSentThreadReplies: true,
+        genericPositiveLanguageDoesNotKeepInbox: true,
         preservesOfficialEbuyInDedicatedFolder: true,
         preservesForwardedMailInDedicatedFolder: true,
         credentialsPersistedByMiles: false
@@ -180,4 +215,4 @@ class IonosInboxCleanupService {
 }
 
 module.exports = IonosInboxCleanupService;
-module.exports.helpers = { systemNoise, ebuyNotice, forwardedMilesNoise, billingNotice, obviousVendorJunk, folderFor };
+module.exports.helpers = { senderEmail, replyThreadEvidence, activeClientEmails, actionableHumanMail, systemNoise, ebuyNotice, forwardedMilesNoise, billingNotice, obviousVendorJunk, folderFor };

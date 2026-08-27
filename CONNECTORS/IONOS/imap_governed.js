@@ -101,15 +101,15 @@ async function ensureMailbox(mailbox, folder) {
   return { ok: true, folder, created: true };
 }
 
-async function moveUids(mailbox, uids = [], folder) {
+async function moveUids(mailbox, uids = [], folder, sourceMailbox = 'INBOX') {
   const ids = [...new Set((uids || []).map(Number).filter(Number.isFinite))];
-  if (!ids.length) return { ok: true, mutationExecuted: false, moved: 0, folder };
-  if (!mutationAllowed()) return { ok: false, status: 'IONOS_MUTATION_GATES_CLOSED', mutationExecuted: false, moved: 0, folder };
+  if (!ids.length) return { ok: true, mutationExecuted: false, moved: 0, folder, sourceMailbox };
+  if (!mutationAllowed()) return { ok: false, status: 'IONOS_MUTATION_GATES_CLOSED', mutationExecuted: false, moved: 0, folder, sourceMailbox };
   const ensured = await ensureMailbox(mailbox, folder);
   if (!ensured.ok) return ensured;
   const result = await connectAndRun({
     ...mailbox,
-    selectMailbox: 'INBOX',
+    selectMailbox: sourceMailbox,
     readOnly: false,
     commands: [`UID MOVE ${ids.join(',')} ${quote(ensured.folder)}`]
   });
@@ -117,6 +117,7 @@ async function moveUids(mailbox, uids = [], folder) {
     ok: result.ok === true,
     mutationExecuted: result.ok === true,
     moved: result.ok === true ? ids.length : 0,
+    sourceMailbox,
     folder: ensured.folder,
     operation: 'UID_MOVE',
     destructiveDeleteUsed: false
