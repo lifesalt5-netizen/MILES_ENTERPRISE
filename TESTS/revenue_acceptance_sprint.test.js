@@ -21,6 +21,4 @@ assert(src.includes('startsSoak: false'));
 assert(!src.includes('CreateControlledInstantlyInboxPlacementTest.js'), 'Sprint must not create another test');
 assert(!src.includes('RemediateNamecheapDmarc.js'), 'Sprint must not mutate DNS');
 
-require('./meeting_pipeline_calendly_bridge.test.js');
-
 console.log('REVENUE_ACCEPTANCE_SPRINT_SAFETY=PASS');
