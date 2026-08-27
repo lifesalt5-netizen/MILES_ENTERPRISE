@@ -52,7 +52,7 @@ function getJson(url) {
       res.on('end', () => {
         if (res.statusCode !== 200) return reject(new Error(`DIRECTIVE_HTTP_${res.statusCode}`));
         try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
-        catch (e) { reject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`));
+        catch (e) { reject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`)); }
       });
     }).on('error', reject);
   });
