@@ -1,11 +1,111 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(process.argv[2] || process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 process.env.MILES_ROOT = ROOT;
 
 const ProductionTruthReconciliationService = require('../SERVICES/ProductionTruthReconciliationService');
+
+function isWorkQueueArchiveSerializationFailure(error) {
+  const message = String(error?.message || error || '');
+  const stack = String(error?.stack || '');
+  return /Invalid string length/i.test(message) &&
+    /WorkQueueService\.(?:writeJsonAtomic|saveArchive|archiveClosed)/i.test(stack);
+}
+
+function archiveStat(queue) {
+  try {
+    const stat = fs.statSync(queue.archivePath);
+    return {
+      path: queue.archivePath,
+      exists: true,
+      sizeBytes: stat.size,
+      sizeMiB: Number((stat.size / 1024 / 1024).toFixed(2)),
+      modifiedAt: stat.mtime.toISOString()
+    };
+  } catch (error) {
+    return {
+      path: queue.archivePath,
+      exists: false,
+      error: error.message
+    };
+  }
+}
+
+async function buildFailClosedFallback(service, error) {
+  const WorkQueueService = require('../SERVICES/WorkQueueService');
+  const CompanyStateService = require('../SERVICES/CompanyStateService');
+  const queue = new WorkQueueService();
+  const stats = queue.getStats();
+
+  let registry = null;
+  try {
+    registry = service.reconcileRepositoryAndCapability();
+  } catch (registryError) {
+    registry = { ok: false, error: registryError.message };
+  }
+
+  let companyState = null;
+  try {
+    companyState = CompanyStateService.run({ source: 'ProductionTruthReconciliationServiceFallback' });
+  } catch (companyError) {
+    companyState = { ok: false, error: companyError.message };
+  }
+
+  let orion = null;
+  try {
+    orion = await service.auditOrion();
+  } catch (orionError) {
+    orion = { ok: false, status: 'AUDIT_FAILED', error: orionError.message };
+  }
+
+  const result = {
+    ok: false,
+    service: 'MILES_PRODUCTION_TRUTH_RECONCILIATION',
+    generatedAt: new Date().toISOString(),
+    degradedMode: 'WORK_QUEUE_ARCHIVE_FAIL_CLOSED',
+    blocker: 'WORK_QUEUE_ARCHIVE_SERIALIZATION_FAILED',
+    workQueue: {
+      archival: {
+        ok: false,
+        archived: 0,
+        blocker: 'WORK_QUEUE_ARCHIVE_SERIALIZATION_FAILED',
+        errorName: error?.name || null,
+        error: String(error?.message || error)
+      },
+      before: stats,
+      after: stats,
+      archiveFile: archiveStat(queue)
+    },
+    registry,
+    companyState,
+    orion,
+    rules: {
+      historicalFailuresPreservedInArchive: false,
+      archiveFailureVisible: true,
+      noFabricatedFreshness: true,
+      noFalseGreenOnArchiveFailure: true
+    }
+  };
+
+  const outFile = ProductionTruthReconciliationService.OUT_FILE ||
+    path.join(ROOT, 'DATA', 'production_truth', 'latest_reconciliation.json');
+  fs.mkdirSync(path.dirname(outFile), { recursive: true });
+  fs.writeFileSync(outFile, JSON.stringify(result, null, 2), 'utf8');
+  return result;
+}
+
+async function runReconciliation(service) {
+  try {
+    return await service.run({ auditOrion: true });
+  } catch (error) {
+    if (!isWorkQueueArchiveSerializationFailure(error)) throw error;
+    console.error('[MILES] Work queue archive serialization failed; continuing in fail-closed truth mode.');
+    return buildFailClosedFallback(service, error);
+  }
+}
 
 async function main() {
   console.log('============================================================');
@@ -14,7 +114,7 @@ async function main() {
   console.log(`Root: ${ROOT}`);
 
   const service = new ProductionTruthReconciliationService({ rootDir: ROOT });
-  const result = await service.run({ auditOrion: true });
+  const result = await runReconciliation(service);
 
   const queue = result.workQueue || {};
   const repo = result.registry?.repository || {};
@@ -22,6 +122,9 @@ async function main() {
   const freshness = result.orion?.databaseFreshness || {};
 
   console.log(`Work queue closed archived: ${queue.archival?.archived ?? 0}`);
+  console.log(`Work queue archive status: ${queue.archival?.ok === false ? 'RED' : 'OK'}`);
+  if (queue.archival?.blocker) console.log(`WORK_QUEUE_ARCHIVE_BLOCKER=${queue.archival.blocker}`);
+  if (queue.archiveFile?.exists) console.log(`Work queue archive size MiB: ${queue.archiveFile.sizeMiB}`);
   console.log(`Work queue open after: ${queue.after?.open ?? 'UNKNOWN'}`);
   console.log(`Work queue failed after: ${queue.after?.failed ?? 'UNKNOWN'}`);
   console.log(`Work queue approval escalations after: ${queue.after?.escalations ?? 'UNKNOWN'}`);
@@ -44,9 +147,20 @@ async function main() {
 
   console.log(`RESULT: ${result.ok ? 'PRODUCTION_TRUTH_RECONCILIATION_GREEN' : 'PRODUCTION_TRUTH_RECONCILIATION_RED'}`);
   process.exitCode = result.ok ? 0 : 1;
+  return result;
 }
 
-main().catch(error => {
-  console.error(error.stack || error.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error.stack || error.message);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  isWorkQueueArchiveSerializationFailure,
+  archiveStat,
+  buildFailClosedFallback,
+  runReconciliation,
+  main
+};
