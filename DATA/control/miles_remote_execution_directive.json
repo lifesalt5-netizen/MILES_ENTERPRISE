@@ -1,7 +1,7 @@
 {
-  "id": "ionos-inbox-cleanup-plan-20260827-014",
+  "id": "ionos-inbox-cleanup-plan-20260827-015",
   "enabled": true,
   "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Run plan-only IONOS inbox hygiene classification using governed cleanup service. Do not move or delete any email. Produce per-account scanned counts, planned folders/routes, and preserve actionable human replies in Inbox. This is the next safe step after revenue-acceptance-013 verified Calendly direct read and runtime evidence publication. No prospect sends, DNS mutation, email deletion, or B12 publish."
+  "note": "Post-PR277 strict plan-only IONOS Inbox hygiene. Do not move or delete email. Inbox should be reserved for active-client human mail or real sent-thread human replies; generic positive/meeting/question wording alone must not keep Inbox mail. Route system, eBuy, auto, bounce, closed/nurture, vendor junk and uncorrelated inbound mail to preserved folders in plan only. Produce per-account decisions and counts. No prospect sends, DNS mutation, email deletion, or B12 publish."
 }
