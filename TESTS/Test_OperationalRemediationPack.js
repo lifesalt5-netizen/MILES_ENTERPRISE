@@ -33,7 +33,7 @@ assert(ionosCleanup.includes('MILES-JUNK'), 'obvious vendor junk must leave work
 assert(ionosCleanup.includes('remainingRoutableNoise'), 'IONOS cleanup must verify user-visible inbox result after moves');
 assert(ionosCleanup.includes('inboxReservedForActiveClientsAndRealSentThreadReplies: true'), 'IONOS inbox must be reserved for active clients and real sent-thread replies');
 assert(ionosCleanup.includes('genericPositiveLanguageDoesNotKeepInbox: true'), 'generic positive wording must not be sufficient to keep IONOS inbox mail');
-assert(ionosAllFolder.includes('remainingExecutableMisroutes'), 'all-folder IONOS reconciliation must post-verify executable misroutes');
+assert(ionosAllFolder.includes('executableMisroutesAfter'), 'all-folder IONOS reconciliation must post-verify executable misroutes');
 assert(ionosAllFolder.includes('usesUidMoveOnly: true'), 'all-folder IONOS reconciliation must use UID MOVE only');
 assert(ionosRemoteRunner.includes('IonosAllFolderReconciliationService'), 'governed IONOS remote lane must use all-folder reconciliation');
 assert(ionosRemoteRunner.includes("process.argv.includes('--execute')"), 'governed IONOS remote lane must preserve plan/execute separation');
