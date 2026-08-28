@@ -46,10 +46,59 @@ function Write-WatchdogEvidence {
 
 function Get-Pm2Process {
     param([string]$Name)
+
+    # PM2 jlist can contain environment keys that differ only by case
+    # (for example username and USERNAME). Windows PowerShell's
+    # ConvertFrom-Json treats those as duplicate dictionary keys and fails.
+    # Parse the raw PM2 JSON with Node instead, and return only the two fields
+    # this watchdog needs. The command and parser are fixed; no directive or
+    # user-controlled shell text is evaluated.
     $json = (& pm2.cmd jlist 2>$null) -join "`n"
     if ([string]::IsNullOrWhiteSpace($json)) { return $null }
-    $rows = $json | ConvertFrom-Json
-    return @($rows | Where-Object { [string]$_.name -eq $Name } | Select-Object -First 1)[0]
+
+    $nodeProbe = @'
+const fs = require('fs');
+const name = String(process.argv[1] || '');
+let rows;
+try {
+  rows = JSON.parse(fs.readFileSync(0, 'utf8'));
+} catch (error) {
+  process.stderr.write('PM2_JLIST_JSON_PARSE_FAILED:' + error.message);
+  process.exit(2);
+}
+const row = Array.isArray(rows) ? rows.find(item => String(item && item.name) === name) : null;
+if (!row) {
+  process.stdout.write('NOT_FOUND');
+  process.exit(0);
+}
+const status = String(row.pm2_env && row.pm2_env.status || '');
+process.stdout.write('FOUND\t' + status);
+'@
+
+    $probe = ($json | & node.exe -e $nodeProbe $Name 2>$null) -join "`n"
+    if ($LASTEXITCODE -ne 0) {
+        throw "PM2_JLIST_PARSE_FAILED"
+    }
+
+    $probe = [string]$probe
+    $probe = $probe.Trim()
+
+    if ($probe -eq "NOT_FOUND") {
+        return $null
+    }
+
+    $prefix = "FOUND`t"
+    if (-not $probe.StartsWith($prefix, [System.StringComparison]::Ordinal)) {
+        throw "PM2_JLIST_PROBE_INVALID"
+    }
+
+    $status = $probe.Substring($prefix.Length)
+    return [pscustomobject]@{
+        name = $Name
+        pm2_env = [pscustomobject]@{
+            status = $status
+        }
+    }
 }
 
 try {
