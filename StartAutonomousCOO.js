@@ -8,6 +8,7 @@ const CaptureCapacityProductionLoopService = require("./SERVICES/revenue/Capture
 const WinBackProductionLoopService = require("./SERVICES/revenue/WinBackProductionLoopService");
 const ReplyIntelligenceProductionLoopService = require("./SERVICES/revenue/ReplyIntelligenceProductionLoopService");
 const GmailExecutiveTriageProductionLoopService = require("./SERVICES/revenue/GmailExecutiveTriageProductionLoopService");
+const IonosInboxHygieneProductionLoopService = require("./SERVICES/revenue/IonosInboxHygieneProductionLoopService");
 
 function boolFromEnv(name, fallback) {
     const value = process.env[name];
@@ -37,6 +38,7 @@ async function main() {
     const winBackIntervalMs = intFromEnv("P2GC_WINBACK_DISCOVERY_INTERVAL_MS", 6 * 60 * 60 * 1000);
     const replyIntervalMs = intFromEnv("P2GC_REPLY_INTELLIGENCE_INTERVAL_MS", 5 * 60 * 1000);
     const gmailTriageIntervalMs = intFromEnv("P2GC_GMAIL_TRIAGE_INTERVAL_MS", 5 * 60 * 1000);
+    const ionosHygieneIntervalMs = intFromEnv("P2GC_IONOS_HYGIENE_INTERVAL_MS", 5 * 60 * 1000);
     const shutdownGraceMs = intFromEnv("MILES_COO_SHUTDOWN_GRACE_MS", 8000);
 
     // TaskQueue execution belongs exclusively to miles-worker / StartProductionSystem.js.
@@ -67,6 +69,10 @@ async function main() {
         intervalMs: gmailTriageIntervalMs
     });
 
+    const ionosInboxHygiene = new IonosInboxHygieneProductionLoopService({
+        intervalMs: ionosHygieneIntervalMs
+    });
+
     let shutdownStarted = false;
 
     const stopRevenueSidecars = () => {
@@ -74,6 +80,7 @@ async function main() {
         try { winBack.stop(); } catch {}
         try { replyIntelligence.stop(); } catch {}
         try { gmailExecutiveTriage.stop(); } catch {}
+        try { ionosInboxHygiene.stop(); } catch {}
     };
 
     const shutdown = signal => {
@@ -136,6 +143,14 @@ async function main() {
             `execution=${gmailTriageStart.executionEnabled ? "enabled" : "disabled"}`
         );
 
+        const ionosHygieneStart = ionosInboxHygiene.start();
+        console.log(
+            `[MILES] IONOS continuous inbox hygiene lane: ${ionosHygieneStart.status}; ` +
+            `interval=${ionosHygieneIntervalMs}ms; ` +
+            `execution=${ionosHygieneStart.executionEnabled ? "enabled" : "disabled"}; ` +
+            "UID-MOVE-only; uncertain-human-mail=kept"
+        );
+
         try {
             const result = await loop.start();
             console.log(JSON.stringify(result, null, 2));
@@ -151,6 +166,7 @@ async function main() {
     const winBackResult = await winBack.runOnce();
     const replyResult = await replyIntelligence.runOnce();
     const gmailTriageResult = await gmailExecutiveTriage.runOnce();
+    const ionosHygieneResult = await ionosInboxHygiene.runOnce();
     const result = await loop.runOnce();
 
     console.log(JSON.stringify({
@@ -208,6 +224,16 @@ async function main() {
             blockers: gmailTriageResult.blockers || (gmailTriageResult.blocker ? [{ blocker: gmailTriageResult.blocker }] : []),
             artifact: gmailTriageResult.artifact || null
         },
+        ionosInboxHygiene: {
+            ok: ionosHygieneResult.ok,
+            status: ionosHygieneResult.status,
+            enabled: ionosHygieneResult.enabled,
+            execute: ionosHygieneResult.execute,
+            routedHighConfidenceNoise: ionosHygieneResult.totals?.routedHighConfidenceNoise || 0,
+            remainingHighConfidenceRoutableNoise: ionosHygieneResult.totals?.remainingHighConfidenceRoutableNoise || 0,
+            errors: ionosHygieneResult.errors || [],
+            artifact: ionosHygieneResult.artifact || null
+        },
         outputs: {
             executive: "DATA/executive/latest_coo_cycle.md",
             mission: "DATA/executive/latest_mission_plan.json",
@@ -221,7 +247,8 @@ async function main() {
             replyKpis: "DATA/runtime/revenue/replies/reply_kpis_latest.json",
             qualifiedReplyQueue: "DATA/runtime/revenue/replies/qualified_reply_queue.json",
             suppressionMaster: "DATA/runtime/revenue/replies/global_suppression_master.json",
-            gmailExecutiveTriage: "DATA/runtime/revenue/gmail_triage/gmail_executive_triage_latest.json"
+            gmailExecutiveTriage: "DATA/runtime/revenue/gmail_triage/gmail_executive_triage_latest.json",
+            ionosInboxHygiene: "DATA/runtime/revenue/ionos_hygiene/ionos_inbox_hygiene_latest.json"
         }
     }, null, 2));
 }
