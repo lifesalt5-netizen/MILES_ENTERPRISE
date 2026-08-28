@@ -28,7 +28,7 @@ class IonosAllFolderReconciliationService {
   constructor(options = {}) {
     this.root = path.resolve(options.root || process.env.MILES_ROOT || process.cwd());
     this.classifier = options.classifier || new ReplyIntelligenceService();
-    this.customerService = options.customerService || new P2GCCustomerDeliveryService();
+    this.customerService = options.customerService || P2GCCustomerDeliveryService;
     this.maxPerFolder = Math.min(Math.max(Number(options.maxPerFolder || process.env.MILES_IONOS_ALL_FOLDER_MAX || 2000), 1), 10000);
     this.output = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_all_folder_reconciliation', 'latest.json');
   }
