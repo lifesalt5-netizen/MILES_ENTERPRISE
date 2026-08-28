@@ -1,8 +1,23 @@
 {
   "standard": "P2GC_MILES_ALL_SYSTEMS_GO",
-  "version": 2,
+  "version": 3,
   "status": "GOVERNING",
   "purpose": "Define the mandatory production-evidence standard for testing, fixing, validating, recovering, and declaring P2GC/MILES systems complete.",
+  "executionOptimizationPolicy": {
+    "rule": "FASTEST_SAFE_PATH_TO_COMPLETION",
+    "priority": "GOVERNING",
+    "requirements": [
+      "PARALLELIZE_INDEPENDENT_WORK_WHEN_SAFE",
+      "REUSE_EXISTING_PROVEN_COMPONENTS_BEFORE_BUILDING_NEW_ONES",
+      "CHOOSE_THE_FEWEST_DEPENDENCIES_AND_SHORTEST_EXECUTION_PATH",
+      "SKIP_REDUNDANT_STEPS_WHEN_EXISTING_CURRENT_EVIDENCE_ALREADY_PROVES_THE_SAME_GATE",
+      "DO_NOT_REQUIRE_CEO_MANUAL_OPERATOR_WORK_WHEN_MILES_GITHUB_OR_CONNECTED_AUTOMATION_CAN_EXECUTE_IT",
+      "PREFER_FIXED_ALLOWLISTED_AUTOMATION_OVER_AD_HOC_SHELL_WORK",
+      "FAIL_FAST_ON_REAL_BLOCKERS_AND_MOVE_IMMEDIATELY_TO_THE_NEXT_ACTIONABLE_PATH",
+      "NEVER_TRADE_AWAY_SAFETY_TRUTH_REVERSIBILITY_OR_REQUIRED_ACCEPTANCE_EVIDENCE_FOR_SPEED"
+    ],
+    "decisionRule": "When multiple valid implementation paths exist, select the one with the shortest credible time-to-green while preserving production safety, truthfulness, reversibility, and required evidence."
+  },
   "systemGoCriteria": [
     "FUNCTIONAL",
     "ACCURATE",
