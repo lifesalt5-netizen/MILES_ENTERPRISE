@@ -54,7 +54,9 @@ jobs:
       - name: Remote bridge self-heal regression
         run: node TESTS/remote_execution_bridge_supervisor.test.js
       - name: Independent control-owner watchdog contract
-        run: node TESTS/control_owner_watchdog_contract.test.js
+        run: |
+          node TESTS/control_owner_watchdog_contract.test.js
+          node TESTS/control_owner_watchdog_request_launch.test.js
       - name: Runtime ownership regressions
         run: |
           node TESTS/single_taskqueue_executor_test.js
