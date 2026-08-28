@@ -38,6 +38,7 @@ assert(ensure.includes("$json | & node.exe -e $nodeProbe $Name"), 'PM2 jlist mus
 assert(ensure.includes('PM2_JLIST_JSON_PARSE_FAILED'));
 assert(ensure.includes('PM2_JLIST_PARSE_FAILED'));
 assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(ensure), 'Raw PM2 jlist must not use Windows PowerShell ConvertFrom-Json because environment keys may collide by case.');
+assert(!/\$pid\s*=/i.test(ensure), 'Bridge health must not assign to PowerShell reserved $PID.');
 assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(ensure), 'Ensure script must not perform Git mutation/destructive recovery.');
 assert(!/Invoke-Expression|\biex\b/i.test(ensure), 'Ensure script must not evaluate arbitrary commands.');
 
@@ -76,17 +77,21 @@ assert(proofScheduler.includes('LaunchMilesControlOwnerRecoveryProof.js'));
 assert(proofScheduler.includes('& node.exe $DetachedLauncher'));
 assert(!proofScheduler.includes('Start-Process -FilePath $powershell'));
 assert(proofScheduler.includes('DETACHED_FIXED_PROCESS'));
-assert(proofScheduler.includes('$DelaySeconds = 45'));
+assert(proofScheduler.includes('$DelaySeconds = 120'));
+assert(proofScheduler.includes('publish COMPLETED first'));
 assert(proofScheduler.includes('CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED'));
 assert(!proofScheduler.includes('Register-ScheduledTask'));
 assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
 
 assert(proofLauncher.includes("spawn('powershell.exe'"));
 assert(proofLauncher.includes('detached: true'));
-assert(proofLauncher.includes("stdio: 'ignore'"));
+assert(proofLauncher.includes("stdio: ['ignore', logFd, logFd]"));
 assert(proofLauncher.includes('shell: false'));
 assert(proofLauncher.includes('child.unref()'));
 assert(proofLauncher.includes('DETACHED_RECOVERY_PROOF_SPAWN_TIMEOUT'));
+assert(proofLauncher.includes('isPidAlive(child.pid)'));
+assert(proofLauncher.includes('DETACHED_RECOVERY_PROOF_NOT_ALIVE'));
+assert(proofLauncher.includes('control_owner_recovery_proof_launch_'));
 assert(!proofLauncher.includes('shell: true'));
 assert(!/exec\s*\(|execSync\s*\(/.test(proofLauncher), 'Detached proof launcher must not evaluate shell strings.');
 
@@ -94,6 +99,7 @@ assert(proofRunner.includes('miles-autonomous-coo'));
 assert(proofRunner.includes('GetMilesPm2ProcessStatus.js'));
 assert(proofRunner.includes('$json | & node.exe $Pm2ProbeScript $Name'));
 assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(proofRunner), 'Recovery runner must not parse raw PM2 jlist with PowerShell ConvertFrom-Json.');
+assert(!/\$pid\s*=/i.test(proofRunner), 'Recovery runner bridge health must not assign to PowerShell reserved $PID.');
 assert(proofRunner.includes('remote_execution_bridge_supervisor.json'));
 assert(proofRunner.includes('Get-ControlBridgeHealth'));
 assert(proofRunner.includes('CONTROL_BRIDGE_NOT_HEALTHY_BEFORE_PROOF'));
@@ -124,6 +130,7 @@ assert(!proofFailsafe.includes('Register-ScheduledTask'));
 assert(proofVerifier.includes('GetMilesPm2ProcessStatus.js'));
 assert(proofVerifier.includes('$json | & node.exe $Pm2ProbeScript $Name'));
 assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(proofVerifier), 'Recovery verifier must not parse raw PM2 jlist with PowerShell ConvertFrom-Json.');
+assert(!/\$pid\s*=/i.test(proofVerifier), 'Recovery verifier bridge health must not assign to PowerShell reserved $PID.');
 assert(proofVerifier.includes('remote_execution_bridge_supervisor.json'));
 assert(proofVerifier.includes('Get-ControlBridgeHealth'));
 assert(proofVerifier.includes('RECOVERY_PROOF_BRIDGE_HEALTH_MISSING'));

@@ -8,7 +8,9 @@ $DetachedLauncher = Join-Path $Root "SCRIPTS\LaunchMilesControlOwnerRecoveryProo
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
 $HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
-$DelaySeconds = 45
+# Keep the controlled stop comfortably beyond the bridge's bounded evidence
+# publication window so the schedule directive can publish COMPLETED first.
+$DelaySeconds = 120
 
 function Read-JsonSafe {
     param([string]$Path)
