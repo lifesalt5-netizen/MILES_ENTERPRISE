@@ -7,7 +7,10 @@ $ProofScript = Join-Path $Root "SCRIPTS\RunMilesControlOwnerRecoveryProofWindows
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
 $HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
-$DelaySeconds = 45
+# The remote bridge must publish COMPLETED evidence before the detached proof
+# is permitted to stop the owner. Bridge evidence publication has bounded Git
+# fetch/push timeouts, so keep this delay above that network budget.
+$DelaySeconds = 120
 
 function Read-JsonSafe {
     param([string]$Path)
