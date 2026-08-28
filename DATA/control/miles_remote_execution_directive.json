@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-verify-20260828-055",
+  "id": "control-owner-watchdog-recovery-verify-20260828-056",
   "enabled": true,
   "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Verify final autonomous recovery proof b2d4607b575d4bf8b43c766429922f63 after controlled stop window. Require matching proofId, CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN, miles-autonomous-coo online, bridge supervisor fresh, bridge child alive, and recovery evidence newer than the controlled stop. No new stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
+  "note": "Re-run read-only verification only against saved autonomous recovery proof b2d4607b575d4bf8b43c766429922f63 after verifier launch-mode fix merged to main 07909595fad9555ac30cde09c7d6109c5a154363. Require matching proofId, CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN, miles-autonomous-coo online, bridge supervisor fresh, bridge child alive, and post-stop recovery evidence. No new controlled stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
 }
