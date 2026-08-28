@@ -1,7 +1,7 @@
 {
-  "id": "ionos-all-folder-plan-20260827-022",
+  "id": "ionos-all-folder-execute-20260827-023",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Read-only all-folder IONOS PLAN after PR296 tightened executive inbox routing. Specifically verify kevin@ Inbox against strong bulk/automation header routing so newsletters, account/security notifications and promotions cannot remain Inbox solely because of References/In-Reply-To. No moves, no deletes, no EXPUNGE, no sends, no DNS/B12 mutation. Report exact executable misroutes by account/folder and preserve real active-client/direct-human replies."
+  "note": "Execute governed all-folder IONOS reconciliation after GREEN -022 plan and PR296 routing hardening. Move only the 23 current executable misroutes using UID MOVE; preserve protected Sent/Drafts/Trash/Archive as audit-only; no deletes, no EXPUNGE, no sends, no DNS/B12 mutation. Require post-read executableMisroutesAfter=0 with zero account/folder errors before GREEN."
 }
