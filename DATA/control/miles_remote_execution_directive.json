@@ -1,7 +1,7 @@
 {
-  "id": "instantly-lifecycle-execute-20260827-024",
+  "id": "ionos-dual-mailbox-plan-20260827-025",
   "enabled": true,
-  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
+  "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Execute provider-backed Instantly lifecycle reconciliation after GREEN provider-proof CI and PR297 hard execute preflight. Open only governed Instantly lifecycle write gates; create missing P2GC Replies lifecycle lists as required; repair exact destination membership, interest status, read/reminder state, suppression and canonical CRM lifecycle; no email sends, no lead deletion, no IONOS mailbox mutation, no B12/DNS mutation. Require INSTANTLY_EXECUTION_PREFLIGHT mutationAllowed=true and post-provider verification providerMismatches=0 with zero errors before GREEN."
+  "note": "Read-only dual-mailbox IONOS PLAN after PR299. Reconcile BOTH info@pathways2gc.com and kevin@pathways2gc.com independently. A DIRECT_RESPONSE_TO_SENT_THREAD may stay Inbox only if its In-Reply-To/References matches an actual Message-ID found in the SAME mailbox's Sent/Sent Items history; active clients remain protected. Report per-mailbox inboxBefore, verifiedSentMessageIds, executableMisroutesBefore, folder errors, and kept reasons. No moves, no deletes, no EXPUNGE, no sends, no Instantly mutation, no DNS/B12 mutation."
 }
