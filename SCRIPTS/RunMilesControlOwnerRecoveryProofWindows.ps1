@@ -29,10 +29,7 @@ function Get-Pm2Process {
     if ($probe -eq "NOT_FOUND") { return $null }
     $prefix = "FOUND`t"
     if (-not $probe.StartsWith($prefix, [System.StringComparison]::Ordinal)) { throw "PM2_JLIST_PROBE_INVALID" }
-    return [pscustomobject]@{
-        name = $Name
-        pm2_env = [pscustomobject]@{ status = $probe.Substring($prefix.Length) }
-    }
+    return [pscustomobject]@{ name = $Name; pm2_env = [pscustomobject]@{ status = $probe.Substring($prefix.Length) } }
 }
 
 function Read-JsonSafe {
@@ -51,13 +48,13 @@ function Get-ControlBridgeHealth {
     try { $observed = [datetime]::Parse([string]$state.observedAt).ToUniversalTime() }
     catch { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_OBSERVED_AT_INVALID"; status = [string]$state.status; childPid = $state.childPid; observedAt = $state.observedAt; ageSeconds = $null } }
     $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
-    $pid = 0
-    try { $pid = [int]$state.childPid } catch { $pid = 0 }
+    $bridgeChildPid = 0
+    try { $bridgeChildPid = [int]$state.childPid } catch { $bridgeChildPid = 0 }
     $alive = $false
-    if ($pid -gt 0) { $alive = [bool](Get-Process -Id $pid -ErrorAction SilentlyContinue) }
+    if ($bridgeChildPid -gt 0) { $alive = [bool](Get-Process -Id $bridgeChildPid -ErrorAction SilentlyContinue) }
     $healthy = $age -ge 0 -and $age -le $MaxAgeSeconds -and $observed -ge $MinObservedAt.ToUniversalTime() -and [string]$state.status -eq "BRIDGE_RUNNING" -and $alive
     $reason = if ($healthy) { "BRIDGE_RUNNING_FRESH_CHILD_ALIVE" } elseif ($age -lt 0 -or $age -gt $MaxAgeSeconds) { "BRIDGE_SUPERVISOR_STATE_STALE" } elseif ($observed -lt $MinObservedAt.ToUniversalTime()) { "BRIDGE_SUPERVISOR_STATE_PREDATES_RECOVERY" } elseif ([string]$state.status -ne "BRIDGE_RUNNING") { "BRIDGE_SUPERVISOR_NOT_RUNNING" } elseif (-not $alive) { "BRIDGE_CHILD_NOT_ALIVE" } else { "BRIDGE_HEALTH_UNKNOWN" }
-    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($pid -gt 0) { $pid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
+    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($bridgeChildPid -gt 0) { $bridgeChildPid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
 }
 
 function Test-WatchdogLive {
@@ -77,14 +74,7 @@ function Test-WatchdogLive {
 }
 
 function Write-ProofEvidence {
-    param(
-        [bool]$Ok,
-        [string]$Status,
-        [string]$ErrorMessage = $null,
-        $WatchdogEvidence = $null,
-        $BridgeHealth = $null,
-        [string]$RecoveryObservedAt = $null
-    )
+    param([bool]$Ok,[string]$Status,[string]$ErrorMessage = $null,$WatchdogEvidence = $null,$BridgeHealth = $null,[string]$RecoveryObservedAt = $null)
     $parent = Split-Path -Parent $EvidencePath
     if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
     $payload = [ordered]@{
@@ -123,13 +113,7 @@ function Write-ProofEvidence {
 function Arm-Failsafe {
     if (-not (Test-Path -LiteralPath $FailsafeScript)) { throw "RECOVERY_FAILSAFE_SCRIPT_NOT_FOUND:$FailsafeScript" }
     $powershell = (Get-Command powershell.exe -ErrorAction Stop).Source
-    $arguments = @(
-        '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
-        '-File', ('"' + $FailsafeScript + '"'),
-        '-Root', ('"' + $Root + '"'),
-        '-ProofId', $ProofId,
-        '-DelaySeconds', '300'
-    )
+    $arguments = @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"' + $FailsafeScript + '"'),'-Root',('"' + $Root + '"'),'-ProofId',$ProofId,'-DelaySeconds','300')
     $process = Start-Process -FilePath $powershell -ArgumentList $arguments -WorkingDirectory $Root -WindowStyle Hidden -PassThru
     Start-Sleep -Seconds 1
     if (-not $process -or $process.HasExited) { throw "DETACHED_RECOVERY_FAILSAFE_LAUNCH_FAILED" }
@@ -140,12 +124,7 @@ function Arm-Failsafe {
 function Disarm-Failsafe {
     $parent = Split-Path -Parent $CancelMarker
     if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
-    [ordered]@{
-        ok = $true
-        proofId = $ProofId
-        status = "PRIMARY_WATCHDOG_RECOVERED_CANCEL_FAILSAFE"
-        observedAt = (Get-Date).ToUniversalTime().ToString("o")
-    } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $CancelMarker -Encoding UTF8
+    [ordered]@{ ok = $true; proofId = $ProofId; status = "PRIMARY_WATCHDOG_RECOVERED_CANCEL_FAILSAFE"; observedAt = (Get-Date).ToUniversalTime().ToString("o") } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $CancelMarker -Encoding UTF8
     $script:failsafeArmed = $false
 }
 
@@ -158,26 +137,18 @@ try {
     if (-not (Get-Command pm2.cmd -ErrorAction SilentlyContinue)) { throw "PM2_NOT_FOUND" }
 
     if ($DelaySeconds -gt 0) { Start-Sleep -Seconds $DelaySeconds }
-
     $install = Read-JsonSafe -Path $InstallEvidencePath
     $heartbeat = Read-JsonSafe -Path $HeartbeatPath
-    if (-not (Test-WatchdogLive -InstallEvidence $install -Heartbeat $heartbeat)) {
-        throw "CONTROL_OWNER_WATCHDOG_PROCESS_NOT_LIVE_BEFORE_PROOF"
-    }
+    if (-not (Test-WatchdogLive -InstallEvidence $install -Heartbeat $heartbeat)) { throw "CONTROL_OWNER_WATCHDOG_PROCESS_NOT_LIVE_BEFORE_PROOF" }
 
     $before = Get-Pm2Process -Name $ProcessName
-    if (-not $before -or [string]$before.pm2_env.status -ne "online") {
-        throw "CONTROL_OWNER_NOT_ONLINE_BEFORE_PROOF"
-    }
+    if (-not $before -or [string]$before.pm2_env.status -ne "online") { throw "CONTROL_OWNER_NOT_ONLINE_BEFORE_PROOF" }
     $bridgeBefore = Get-ControlBridgeHealth
-    if (-not [bool]$bridgeBefore.healthy) {
-        throw "CONTROL_BRIDGE_NOT_HEALTHY_BEFORE_PROOF:$([string]$bridgeBefore.reason)"
-    }
+    if (-not [bool]$bridgeBefore.healthy) { throw "CONTROL_BRIDGE_NOT_HEALTHY_BEFORE_PROOF:$([string]$bridgeBefore.reason)" }
 
     Arm-Failsafe
     $stoppedAt = (Get-Date).ToUniversalTime()
     Write-ProofEvidence -Ok $false -Status "CONTROL_OWNER_RECOVERY_PROOF_STOPPING" -BridgeHealth $bridgeBefore | Out-Null
-
     & pm2.cmd stop $ProcessName | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "PM2_CONTROLLED_STOP_FAILED" }
 
@@ -187,23 +158,13 @@ try {
     $matchedWatchdogEvidence = $null
     $matchedBridgeHealth = $null
     $recoveryObservedAt = $null
-
     while ((Get-Date) -lt $deadline) {
         $owner = Get-Pm2Process -Name $ProcessName
         $watchdogEvidence = Read-JsonSafe -Path $WatchdogEvidencePath
         $bridgeHealth = Get-ControlBridgeHealth -MinObservedAt $stoppedAt
         $watchdogObserved = $null
-        if ($watchdogEvidence -and $watchdogEvidence.observedAt) {
-            try { $watchdogObserved = [datetime]::Parse([string]$watchdogEvidence.observedAt).ToUniversalTime() } catch {}
-        }
-
-        $freshRecoveryEvidence = $watchdogEvidence -and
-            [bool]$watchdogEvidence.ok -and
-            [string]$watchdogEvidence.status -eq "CONTROL_OWNER_RECOVERED" -and
-            @("PM2_RESTART", "PM2_GUARDED_START") -contains [string]$watchdogEvidence.action -and
-            $watchdogObserved -and
-            $watchdogObserved -gt $stoppedAt
-
+        if ($watchdogEvidence -and $watchdogEvidence.observedAt) { try { $watchdogObserved = [datetime]::Parse([string]$watchdogEvidence.observedAt).ToUniversalTime() } catch {} }
+        $freshRecoveryEvidence = $watchdogEvidence -and [bool]$watchdogEvidence.ok -and [string]$watchdogEvidence.status -eq "CONTROL_OWNER_RECOVERED" -and @("PM2_RESTART", "PM2_GUARDED_START") -contains [string]$watchdogEvidence.action -and $watchdogObserved -and $watchdogObserved -gt $stoppedAt
         if ($owner -and [string]$owner.pm2_env.status -eq "online" -and $freshRecoveryEvidence -and [bool]$bridgeHealth.healthy) {
             $recovered = $true
             $matchedWatchdogEvidence = $watchdogEvidence
@@ -213,10 +174,7 @@ try {
         }
         Start-Sleep -Seconds 5
     }
-
-    if (-not $recovered) {
-        throw "INDEPENDENT_WATCHDOG_DID_NOT_PROVE_OWNER_AND_BRIDGE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED"
-    }
+    if (-not $recovered) { throw "INDEPENDENT_WATCHDOG_DID_NOT_PROVE_OWNER_AND_BRIDGE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED" }
 
     Disarm-Failsafe
     $evidence = Write-ProofEvidence -Ok $true -Status "CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN" -WatchdogEvidence $matchedWatchdogEvidence -BridgeHealth $matchedBridgeHealth -RecoveryObservedAt $recoveryObservedAt
