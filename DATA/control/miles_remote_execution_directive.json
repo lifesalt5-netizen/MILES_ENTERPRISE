@@ -1,7 +1,7 @@
 {
-  "id": "ionos-all-folder-execute-20260827-023",
+  "id": "instantly-lifecycle-execute-20260827-024",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
+  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Execute governed all-folder IONOS reconciliation after GREEN -022 plan and PR296 routing hardening. Move only the 23 current executable misroutes using UID MOVE; preserve protected Sent/Drafts/Trash/Archive as audit-only; no deletes, no EXPUNGE, no sends, no DNS/B12 mutation. Require post-read executableMisroutesAfter=0 with zero account/folder errors before GREEN."
+  "note": "Execute provider-backed Instantly lifecycle reconciliation after GREEN provider-proof CI and PR297 hard execute preflight. Open only governed Instantly lifecycle write gates; create missing P2GC Replies lifecycle lists as required; repair exact destination membership, interest status, read/reminder state, suppression and canonical CRM lifecycle; no email sends, no lead deletion, no IONOS mailbox mutation, no B12/DNS mutation. Require INSTANTLY_EXECUTION_PREFLIGHT mutationAllowed=true and post-provider verification providerMismatches=0 with zero errors before GREEN."
 }
