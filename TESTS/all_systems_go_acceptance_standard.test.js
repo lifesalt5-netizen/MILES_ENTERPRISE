@@ -23,6 +23,18 @@ for (const requirement of [
   assert(rules.executionOptimizationPolicy.requirements.includes(requirement), `Missing fastest-safe-path rule ${requirement}`);
 }
 
+assert.strictEqual(rules.workflowSequencingPolicy?.rule, 'APPEND_NEW_WORK_TO_END_OF_ACTIVE_QUEUE');
+assert.strictEqual(rules.workflowSequencingPolicy?.priority, 'GOVERNING');
+for (const requirement of [
+  'FINISH_CURRENT_WORK_ITEM_TO_ITS_DEFINED_ACCEPTANCE_POINT_BEFORE_STARTING_NEWLY_REPORTED_NON_EMERGENCY_WORK',
+  'APPEND_NEW_FIXES_FEATURES_PROBLEMS_AND_AUDIT_FINDINGS_TO_THE_END_OF_THE_CURRENT_ACTIVE_QUEUE',
+  'DO_NOT_REORDER_ACTIVE_WORK_MERELY_BECAUSE_NEW_INFORMATION_WAS_REPORTED',
+  'PRESERVE_CURRENT_CONTEXT_AND_COMPLETE_IN_ORDER',
+  'SAFETY_EMERGENCY_MAY_PREEMPT_ONLY_WHEN_CONTINUING_CURRENT_WORK_WOULD_CREATE_IMMEDIATE_PRODUCTION_RISK'
+]) {
+  assert(rules.workflowSequencingPolicy.requirements.includes(requirement), `Missing workflow sequencing rule ${requirement}`);
+}
+
 const requiredIds = rules.requiredGates.map(g => g.id);
 for (const id of [
   'MILES_CORE_RUNTIME',
