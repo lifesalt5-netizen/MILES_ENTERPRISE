@@ -10,6 +10,7 @@ on:
       - 'CONNECTORS/INSTANTLY/connector.js'
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
+      - 'SERVICES/revenue/InstantlyLifecycleProofService.js'
       - 'SERVICES/revenue/InstantlySenderFailoverService.js'
       - 'SERVICES/revenue/InstantlyInboxPlacementTestService.js'
       - 'SERVICES/revenue/ReplyIntelligenceService.js'
@@ -41,6 +42,7 @@ on:
       - 'TESTS/Test_OperationalRemediationPack.js'
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/instantly_lifecycle_provider_proof.test.js'
       - 'TESTS/instantly_sender_failover.test.js'
       - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
       - 'TESTS/instantly_inbox_placement_diagnostic_truth.test.js'
@@ -75,6 +77,7 @@ jobs:
           node --check CONNECTORS/INSTANTLY/connector.js
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
+          node --check SERVICES/revenue/InstantlyLifecycleProofService.js
           node --check SERVICES/revenue/InstantlySenderFailoverService.js
           node --check SERVICES/revenue/InstantlyInboxPlacementTestService.js
           node --check SERVICES/revenue/ReplyIntelligenceService.js
@@ -98,6 +101,7 @@ jobs:
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/instantly_lifecycle_provider_proof.test.js
           node --check TESTS/instantly_sender_failover.test.js
           node --check TESTS/instantly_inbox_placement_controlled_test.test.js
           node --check TESTS/instantly_inbox_placement_diagnostic_truth.test.js
