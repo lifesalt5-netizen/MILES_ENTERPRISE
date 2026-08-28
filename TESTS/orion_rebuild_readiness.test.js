@@ -40,4 +40,8 @@ assert(targetedScript.includes("'D:\\\\P2GC_Intelligence\\\\Orion Demo 6126'"), 
 assert(!targetedScript.includes("'C:\\\\P2GC_Intelligence'\n"), 'targeted scan must not crawl the full C: P2GC tree');
 assert(!targetedScript.includes("'D:\\\\P2GC_Intelligence'\n"), 'targeted scan must not crawl the full D: P2GC tree');
 
+const canonicalScript = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AuditOrionRebuildReadiness.js'), 'utf8');
+assert(canonicalScript.includes("require('./AuditOrionRebuildReadinessFast')"), 'canonical ORION readiness must delegate to targeted scanner');
+assert(!canonicalScript.includes('new OrionRebuildReadinessService({ rootDir }).run()'), 'canonical audit must not re-enable broad default-root crawling');
+
 console.log('ORION_REBUILD_READINESS_TEST=GREEN');
