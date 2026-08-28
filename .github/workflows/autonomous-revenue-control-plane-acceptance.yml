@@ -57,6 +57,7 @@ jobs:
         run: |
           node TESTS/control_owner_watchdog_contract.test.js
           node TESTS/control_owner_watchdog_request_launch.test.js
+          node TESTS/control_owner_bridge_consumption_health.test.js
       - name: Runtime ownership regressions
         run: |
           node TESTS/single_taskqueue_executor_test.js
