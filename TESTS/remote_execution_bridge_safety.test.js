@@ -5,7 +5,10 @@ const path = require('path');
 const bridge = require('../StartMilesRemoteExecutionBridge');
 
 assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
+  'CONTROL_OWNER_WATCHDOG_ENSURE',
+  'CONTROL_OWNER_WATCHDOG_INSTALL',
   'INBOX_PLACEMENT_AUDIT',
+  'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
   'INSTANTLY_LIFECYCLE_PROOF_PLAN',
   'IONOS_INBOX_CLEANUP_EXECUTE',
@@ -15,6 +18,11 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'PRODUCTION_TRUTH_RECONCILIATION',
   'REVENUE_ACCEPTANCE_SPRINT'
 ]);
+assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']]);
+assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[0], 'powershell.exe');
+assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[1].includes('SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'));
+assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_ENSURE[0], 'powershell.exe');
+assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_ENSURE[1].includes('SCRIPTS/EnsureMilesControlOwnerWindows.ps1'));
 assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_PLAN, ['node', ['SCRIPTS/RunIonosInboxCleanup.js']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_EXECUTE, ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_PLAN, ['node', ['SCRIPTS/RunIonosSpamRescue.js']]);
@@ -36,6 +44,9 @@ assert.strictEqual(bridge.sourceDigest(), bridge.STARTUP_SOURCE_DIGEST);
 assert.strictEqual(bridge.bridgeSourceChanged(bridge.STARTUP_SOURCE_DIGEST), false);
 assert.deepStrictEqual(bridge.baseEvidence({ id: 'x', job: 'REVENUE_ACCEPTANCE_SPRINT' }, '2026-01-01T00:00:00.000Z', 'STARTED').phase, 'STARTED');
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INFRASTRUCTURE_HEALTH_AUDIT'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_INSTALL'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_ENSURE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_PLAN'}).ok, true);
@@ -82,4 +93,12 @@ assert(!src.includes('shell: true'));
 assert(!src.includes('CreateControlledInstantlyInboxPlacementTest'));
 assert(!src.includes('RemediateNamecheapDmarc'));
 assert(!src.includes('sendReply'));
+
+const infraRunner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunInfrastructureHealthAudit.js'), 'utf8');
+assert(infraRunner.includes("mode: 'FORCED_READ_ONLY_PROOF'"));
+assert(infraRunner.includes('destructiveActionsPerformed: false'));
+assert(infraRunner.includes('providerMutation: false'));
+assert(!infraRunner.includes('exec('));
+assert(!infraRunner.includes('shell: true'));
+
 console.log('REMOTE_EXECUTION_BRIDGE_SAFETY=PASS');
