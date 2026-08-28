@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-install-20260827-036",
+  "id": "control-owner-watchdog-install-20260827-037",
   "enabled": true,
   "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Install/register the fixed independent Windows Scheduled Task MILES-ControlOwner-Watchdog using the merged governed script. This is a bounded local runtime resilience change only. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Post-PR312 live install proof using the non-admin USER_STARTUP_INDEPENDENT_PROCESS watchdog. Create only the fixed per-user Startup shortcut and launch the fixed independent watchdog process; require live heartbeat evidence. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell evaluation, or destructive Git recovery. Do not claim pre-login recovery."
 }
