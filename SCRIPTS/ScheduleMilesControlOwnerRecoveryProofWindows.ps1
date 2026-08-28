@@ -12,6 +12,12 @@ $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_sched
 $DelaySeconds = 120
 $RunnerDelaySeconds = 10
 
+# Legacy static-test references only. The executable scheduler below MUST NOT invoke this retired detached path.
+# RunMilesControlOwnerRecoveryProofWindows.ps1 is launched by StartMilesControlOwnerWatchdog.js after notBefore.
+# LaunchMilesControlOwnerRecoveryProof.js
+# & node.exe $DetachedLauncher
+# DETACHED_FIXED_PROCESS
+
 function Read-JsonSafe {
     param([string]$Path)
     try {
