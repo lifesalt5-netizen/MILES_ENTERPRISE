@@ -25,13 +25,13 @@ function Get-ControlBridgeHealth {
     try { $observed = [datetime]::Parse([string]$state.observedAt).ToUniversalTime() }
     catch { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_OBSERVED_AT_INVALID"; status = [string]$state.status; childPid = $state.childPid; observedAt = $state.observedAt; ageSeconds = $null } }
     $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
-    $pid = 0
-    try { $pid = [int]$state.childPid } catch { $pid = 0 }
+    $bridgeChildPid = 0
+    try { $bridgeChildPid = [int]$state.childPid } catch { $bridgeChildPid = 0 }
     $alive = $false
-    if ($pid -gt 0) { $alive = [bool](Get-Process -Id $pid -ErrorAction SilentlyContinue) }
+    if ($bridgeChildPid -gt 0) { $alive = [bool](Get-Process -Id $bridgeChildPid -ErrorAction SilentlyContinue) }
     $healthy = $age -ge 0 -and $age -le $MaxAgeSeconds -and $observed -ge $MinObservedAt.ToUniversalTime() -and [string]$state.status -eq "BRIDGE_RUNNING" -and $alive
     $reason = if ($healthy) { "BRIDGE_RUNNING_FRESH_CHILD_ALIVE" } elseif ($age -lt 0 -or $age -gt $MaxAgeSeconds) { "BRIDGE_SUPERVISOR_STATE_STALE" } elseif ($observed -lt $MinObservedAt.ToUniversalTime()) { "BRIDGE_SUPERVISOR_STATE_PREDATES_RECOVERY" } elseif ([string]$state.status -ne "BRIDGE_RUNNING") { "BRIDGE_SUPERVISOR_NOT_RUNNING" } elseif (-not $alive) { "BRIDGE_CHILD_NOT_ALIVE" } else { "BRIDGE_HEALTH_UNKNOWN" }
-    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($pid -gt 0) { $pid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
+    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($bridgeChildPid -gt 0) { $bridgeChildPid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
 }
 
 function Write-WatchdogEvidence {
@@ -79,12 +79,6 @@ function Write-WatchdogEvidence {
 function Get-Pm2Process {
     param([string]$Name)
 
-    # PM2 jlist can contain environment keys that differ only by case
-    # (for example username and USERNAME). Windows PowerShell's
-    # ConvertFrom-Json treats those as duplicate dictionary keys and fails.
-    # Parse the raw PM2 JSON with Node instead, and return only the two fields
-    # this watchdog needs. The command and parser are fixed; no directive or
-    # user-controlled shell text is evaluated.
     $json = (& pm2.cmd jlist 2>$null) -join "`n"
     if ([string]::IsNullOrWhiteSpace($json)) { return $null }
 
@@ -108,44 +102,21 @@ process.stdout.write('FOUND\t' + status);
 '@
 
     $probe = ($json | & node.exe -e $nodeProbe $Name 2>$null) -join "`n"
-    if ($LASTEXITCODE -ne 0) {
-        throw "PM2_JLIST_PARSE_FAILED"
-    }
-
+    if ($LASTEXITCODE -ne 0) { throw "PM2_JLIST_PARSE_FAILED" }
     $probe = [string]$probe
     $probe = $probe.Trim()
-
-    if ($probe -eq "NOT_FOUND") {
-        return $null
-    }
-
+    if ($probe -eq "NOT_FOUND") { return $null }
     $prefix = "FOUND`t"
-    if (-not $probe.StartsWith($prefix, [System.StringComparison]::Ordinal)) {
-        throw "PM2_JLIST_PROBE_INVALID"
-    }
-
+    if (-not $probe.StartsWith($prefix, [System.StringComparison]::Ordinal)) { throw "PM2_JLIST_PROBE_INVALID" }
     $status = $probe.Substring($prefix.Length)
-    return [pscustomobject]@{
-        name = $Name
-        pm2_env = [pscustomobject]@{
-            status = $status
-        }
-    }
+    return [pscustomobject]@{ name = $Name; pm2_env = [pscustomobject]@{ status = $status } }
 }
 
 try {
-    if (-not (Test-Path -LiteralPath (Join-Path $Root ".git"))) {
-        throw "MILES_ROOT_NOT_FOUND:$Root"
-    }
-
+    if (-not (Test-Path -LiteralPath (Join-Path $Root ".git"))) { throw "MILES_ROOT_NOT_FOUND:$Root" }
     Set-Location -LiteralPath $Root
-
-    if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) {
-        throw "NODE_NOT_FOUND"
-    }
-    if (-not (Get-Command pm2.cmd -ErrorAction SilentlyContinue)) {
-        throw "PM2_NOT_FOUND"
-    }
+    if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) { throw "NODE_NOT_FOUND" }
+    if (-not (Get-Command pm2.cmd -ErrorAction SilentlyContinue)) { throw "PM2_NOT_FOUND" }
 
     $existing = Get-Pm2Process -Name $ProcessName
     $bridgeBefore = Get-ControlBridgeHealth
@@ -156,11 +127,7 @@ try {
         exit 0
     }
 
-    $required = @(
-        "SCRIPTS\RuntimeGenerationGuard.js",
-        "StartAutonomousCOO.js",
-        "StartMilesRemoteExecutionBridge.js"
-    )
+    $required = @("SCRIPTS\RuntimeGenerationGuard.js", "StartAutonomousCOO.js", "StartMilesRemoteExecutionBridge.js")
     foreach ($file in $required) {
         $full = Join-Path $Root $file
         if (-not (Test-Path -LiteralPath $full)) { throw "REQUIRED_FILE_MISSING:$file" }
@@ -182,7 +149,6 @@ try {
     }
 
     & pm2.cmd save | Out-Null
-
     $verified = $null
     $bridgeAfter = $null
     $deadline = (Get-Date).AddSeconds(30)
@@ -192,13 +158,8 @@ try {
         $bridgeAfter = Get-ControlBridgeHealth -MinObservedAt $recoveryStartedAt
         if ($verified -and [string]$verified.pm2_env.status -eq "online" -and [bool]$bridgeAfter.healthy) { break }
     }
-
-    if (-not $verified -or [string]$verified.pm2_env.status -ne "online") {
-        throw "CONTROL_OWNER_NOT_ONLINE_AFTER_RECOVERY"
-    }
-    if (-not $bridgeAfter -or -not [bool]$bridgeAfter.healthy) {
-        throw "CONTROL_BRIDGE_NOT_HEALTHY_AFTER_RECOVERY:$([string]$bridgeAfter.reason)"
-    }
+    if (-not $verified -or [string]$verified.pm2_env.status -ne "online") { throw "CONTROL_OWNER_NOT_ONLINE_AFTER_RECOVERY" }
+    if (-not $bridgeAfter -or -not [bool]$bridgeAfter.healthy) { throw "CONTROL_BRIDGE_NOT_HEALTHY_AFTER_RECOVERY:$([string]$bridgeAfter.reason)" }
 
     $evidence = Write-WatchdogEvidence -Ok $true -Status "CONTROL_OWNER_RECOVERED" -Action $action -RecoveryReason $recoveryReason -BridgeHealth $bridgeAfter
     Write-Host "MILES_CONTROL_OWNER_WATCHDOG_GREEN"
