@@ -70,7 +70,7 @@ try {
     $heartbeat = Read-JsonRequired -Path $HeartbeatPath -Code "WATCHDOG_PROCESS_HEARTBEAT"
 
     if (-not [bool]$schedule.ok -or [string]$schedule.status -ne "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED") { throw "RECOVERY_PROOF_SCHEDULE_NOT_GREEN" }
-    if ([string]$schedule.launchMode -ne "DETACHED_FIXED_PROCESS") { throw "RECOVERY_PROOF_SCHEDULE_MODE_INVALID" }
+    if ([string]$schedule.launchMode -ne "INDEPENDENT_WATCHDOG_REQUEST") { throw "RECOVERY_PROOF_SCHEDULE_MODE_INVALID" }
     if (-not [bool]$proof.ok -or [string]$proof.status -ne "CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN") { throw "RECOVERY_PROOF_NOT_GREEN" }
     if ([string]$proof.watchdogMode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { throw "RECOVERY_PROOF_WATCHDOG_MODE_INVALID" }
     if ([string]::IsNullOrWhiteSpace([string]$schedule.proofId) -or [string]$schedule.proofId -ne [string]$proof.proofId) { throw "RECOVERY_PROOF_ID_MISMATCH" }
