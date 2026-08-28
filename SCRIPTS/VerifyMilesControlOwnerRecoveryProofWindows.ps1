@@ -5,9 +5,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ProcessName = "miles-autonomous-coo"
-$WatchdogTaskName = "MILES-ControlOwner-Watchdog"
 $ScheduleEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
 $ProofEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_latest.json"
+$InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
+$HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 
 function Read-JsonRequired {
     param([string]$Path, [string]$Code)
@@ -30,22 +31,28 @@ try {
 
     $schedule = Read-JsonRequired -Path $ScheduleEvidencePath -Code "RECOVERY_PROOF_SCHEDULE_EVIDENCE"
     $proof = Read-JsonRequired -Path $ProofEvidencePath -Code "RECOVERY_PROOF_EVIDENCE"
+    $install = Read-JsonRequired -Path $InstallEvidencePath -Code "WATCHDOG_INSTALL_EVIDENCE"
+    $heartbeat = Read-JsonRequired -Path $HeartbeatPath -Code "WATCHDOG_PROCESS_HEARTBEAT"
 
-    if (-not [bool]$schedule.ok -or [string]$schedule.status -ne "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED") {
-        throw "RECOVERY_PROOF_SCHEDULE_NOT_GREEN"
-    }
-    if (-not [bool]$proof.ok -or [string]$proof.status -ne "CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN") {
-        throw "RECOVERY_PROOF_NOT_GREEN"
-    }
-    if ([string]::IsNullOrWhiteSpace([string]$schedule.proofId) -or [string]$schedule.proofId -ne [string]$proof.proofId) {
-        throw "RECOVERY_PROOF_ID_MISMATCH"
-    }
+    if (-not [bool]$schedule.ok -or [string]$schedule.status -ne "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED") { throw "RECOVERY_PROOF_SCHEDULE_NOT_GREEN" }
+    if ([string]$schedule.launchMode -ne "DETACHED_FIXED_PROCESS") { throw "RECOVERY_PROOF_SCHEDULE_MODE_INVALID" }
+    if (-not [bool]$proof.ok -or [string]$proof.status -ne "CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN") { throw "RECOVERY_PROOF_NOT_GREEN" }
+    if ([string]$proof.watchdogMode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { throw "RECOVERY_PROOF_WATCHDOG_MODE_INVALID" }
+    if ([string]::IsNullOrWhiteSpace([string]$schedule.proofId) -or [string]$schedule.proofId -ne [string]$proof.proofId) { throw "RECOVERY_PROOF_ID_MISMATCH" }
+
+    if (-not [bool]$install.ok -or [string]$install.status -ne "CONTROL_OWNER_WATCHDOG_INSTALLED") { throw "CONTROL_OWNER_WATCHDOG_INSTALL_NOT_GREEN" }
+    if ([string]$install.mode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { throw "CONTROL_OWNER_WATCHDOG_INSTALL_MODE_INVALID" }
+    if (-not $install.startupShortcut -or -not (Test-Path -LiteralPath ([string]$install.startupShortcut))) { throw "CONTROL_OWNER_WATCHDOG_STARTUP_SHORTCUT_MISSING" }
+
+    $heartbeatObserved = [datetime]::Parse([string]$heartbeat.observedAt).ToUniversalTime()
+    $heartbeatAgeSeconds = ((Get-Date).ToUniversalTime() - $heartbeatObserved).TotalSeconds
+    if ($heartbeatAgeSeconds -lt 0 -or $heartbeatAgeSeconds -gt 180) { throw "CONTROL_OWNER_WATCHDOG_HEARTBEAT_STALE" }
+    $watchdogProcess = Get-Process -Id ([int]$heartbeat.pid) -ErrorAction SilentlyContinue
+    if (-not $watchdogProcess) { throw "CONTROL_OWNER_WATCHDOG_PROCESS_NOT_RUNNING" }
 
     $proofObserved = [datetime]::Parse([string]$proof.observedAt).ToUniversalTime()
     $ageMinutes = ((Get-Date).ToUniversalTime() - $proofObserved).TotalMinutes
-    if ($ageMinutes -lt 0 -or $ageMinutes -gt $MaxAgeMinutes) {
-        throw "RECOVERY_PROOF_STALE:$([math]::Round($ageMinutes,2))MIN"
-    }
+    if ($ageMinutes -lt 0 -or $ageMinutes -gt $MaxAgeMinutes) { throw "RECOVERY_PROOF_STALE:$([math]::Round($ageMinutes,2))MIN" }
 
     if (-not $proof.stoppedAt -or -not $proof.recoveryObservedAt) { throw "RECOVERY_PROOF_TIMESTAMPS_MISSING" }
     $stoppedAt = [datetime]::Parse([string]$proof.stoppedAt).ToUniversalTime()
@@ -59,9 +66,6 @@ try {
     $watchdogObserved = [datetime]::Parse([string]$watchdogEvidence.observedAt).ToUniversalTime()
     if ($watchdogObserved -le $stoppedAt) { throw "RECOVERY_PROOF_WATCHDOG_EVIDENCE_NOT_POST_STOP" }
 
-    $watchdogTask = Get-ScheduledTask -TaskName $WatchdogTaskName -ErrorAction Stop
-    if (-not $watchdogTask -or [string]$watchdogTask.State -eq "Disabled") { throw "CONTROL_OWNER_WATCHDOG_NOT_ACTIVE_AFTER_PROOF" }
-
     $owner = Get-Pm2Process -Name $ProcessName
     if (-not $owner -or [string]$owner.pm2_env.status -ne "online") { throw "CONTROL_OWNER_NOT_ONLINE_AFTER_PROOF" }
 
@@ -74,7 +78,10 @@ try {
         recoveryObservedAt = $recoveredAt.ToString("o")
         proofAgeMinutes = [math]::Round($ageMinutes, 2)
         ownerStatus = [string]$owner.pm2_env.status
-        watchdogTaskState = [string]$watchdogTask.State
+        watchdogMode = [string]$install.mode
+        watchdogPid = [int]$heartbeat.pid
+        watchdogHeartbeatAgeSeconds = [math]::Round($heartbeatAgeSeconds, 2)
+        startupShortcut = [string]$install.startupShortcut
         observedAt = (Get-Date).ToUniversalTime().ToString("o")
         readOnlyVerification = $true
     }
