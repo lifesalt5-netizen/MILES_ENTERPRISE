@@ -20,6 +20,12 @@ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
     assert.deepStrictEqual(args, [path.join(root, 'StartMilesRemoteExecutionBridge.js')]);
     assert.strictEqual(options.shell, false);
     assert.strictEqual(options.env.MILES_BRIDGE_SUPERVISED, 'true');
+    assert.strictEqual(options.env.GIT_TERMINAL_PROMPT, '0');
+    assert.strictEqual(options.env.GIT_CONFIG_COUNT, '2');
+    assert.strictEqual(options.env.GIT_CONFIG_KEY_0, 'http.lowSpeedLimit');
+    assert.strictEqual(options.env.GIT_CONFIG_VALUE_0, '1');
+    assert.strictEqual(options.env.GIT_CONFIG_KEY_1, 'http.lowSpeedTime');
+    assert.strictEqual(options.env.GIT_CONFIG_VALUE_1, '20');
     const child = new EventEmitter();
     child.pid = 41000 + children.length;
     child.exitCode = null;
@@ -46,12 +52,16 @@ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
   assert.strictEqual(state.running, true);
   assert.strictEqual(state.status, 'BRIDGE_RUNNING');
   assert.strictEqual(state.restartCount, 1);
+  assert.strictEqual(state.gitLowSpeedLimit, 1);
+  assert.strictEqual(state.gitLowSpeedTime, 20);
 
   supervisor.stop();
   assert.strictEqual(fs.existsSync(supervisor.lockFile), false, 'supervisor lock must be released on shutdown');
   const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'runtime', 'RemoteExecutionBridgeSupervisor.js'), 'utf8');
   const bridgeSource = fs.readFileSync(path.join(__dirname, '..', 'StartMilesRemoteExecutionBridge.js'), 'utf8');
   assert(source.includes("MILES_BRIDGE_SUPERVISED: 'true'"));
+  assert(source.includes("GIT_TERMINAL_PROMPT: '0'"));
+  assert(source.includes("GIT_CONFIG_KEY_1: 'http.lowSpeedTime'"));
   assert(bridgeSource.includes('SUPERVISOR_RESTART_AFTER_CODE_UPDATE'));
   assert(bridgeSource.includes('process.exit(SUPERVISED_RESTART_EXIT_CODE)'));
   assert(!source.includes('shell: true'));
