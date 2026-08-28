@@ -56,8 +56,8 @@ assert(runner.includes('FULL_RELATED_SYSTEM_SWEEP_BEFORE_CLOSEOUT'), 'combined r
 assert(ps.includes("$env:P2GC_B12_PUBLISH = 'false'"), 'combined remediation must keep B12 public publish disabled');
 assert(ps.includes('RunPostSoakMasterAudit.ps1'), 'combined remediation must end with master sweep');
 
-// Execute the behavioral executive-inbox regression as part of the CI gate,
-// not merely syntax-check it. This catches false-positive Inbox retention before merge.
+// Execute behavioral/provider regressions as part of the CI gate, not merely syntax-check them.
 require('./ionos_inbox_cleanup_control.test.js');
+require('./instantly_lifecycle_provider_proof.test.js');
 
 console.log('OPERATIONAL_REMEDIATION_PACK_STATIC_SAFETY=GREEN');
