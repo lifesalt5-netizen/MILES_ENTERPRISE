@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-readonly-20260827-032",
+  "id": "revenue-acceptance-readonly-20260827-033",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-Instantly-green acceptance sweep. Preserve evaluation order: Calendly/Google reconciliation, ORION freshness/rebuild readiness, production truth/company health/capability. Safe read-only batch only. No sends, no lead deletion, no DNS/B12/IONOS changes. Do not start soak or external mutations."
+  "note": "Post-PR306 production proof. First acceptance target is Calendly/Google meeting reconciliation using fresh dedicated Calendly evidence fallback semantics. Preserve read-only safety: no sends, no lead deletion, no DNS/B12/IONOS changes, no calendar mutations. ORION timeout, if repeated, is to be treated separately after meeting evidence is evaluated."
 }
