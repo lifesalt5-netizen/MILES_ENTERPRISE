@@ -1,7 +1,7 @@
 {
-  "id": "instantly-lifecycle-execute-20260827-030",
+  "id": "instantly-placement-auth-audit-20260827-031",
   "enabled": true,
-  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
+  "job": "INBOX_PLACEMENT_AUDIT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-merge governed EXECUTE after PR #305. Repair the single known Instantly lifecycle mismatch for sherrie@jadaprints.com (UNSUBSCRIBE) using the current provider lead source resolution now on main. Require post-mutation provider read with providerMismatches = 0. No sends, no lead deletion, no DNS/B12/IONOS changes. Fail closed on ambiguous current provider duplicates."
+  "note": "Fresh read-only Instantly placement/auth audit after lifecycle reached providerMismatches=0. Use existing governed placement test evidence only; do not create or send any seed messages. Verify placement analytics plus observed SPF/DKIM/DMARC truth. No sends, no lead deletion, no DNS/B12/IONOS changes."
 }
