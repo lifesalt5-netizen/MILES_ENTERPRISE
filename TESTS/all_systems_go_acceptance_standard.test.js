@@ -11,6 +11,18 @@ const rules = JSON.parse(fs.readFileSync(path.join(root, 'DATA', 'governance', '
 const ruleResult = validateRules(rules);
 assert.strictEqual(ruleResult.ok, true, ruleResult.errors.join('\n'));
 
+assert.strictEqual(rules.executionOptimizationPolicy?.rule, 'FASTEST_SAFE_PATH_TO_COMPLETION');
+assert.strictEqual(rules.executionOptimizationPolicy?.priority, 'GOVERNING');
+for (const requirement of [
+  'PARALLELIZE_INDEPENDENT_WORK_WHEN_SAFE',
+  'REUSE_EXISTING_PROVEN_COMPONENTS_BEFORE_BUILDING_NEW_ONES',
+  'CHOOSE_THE_FEWEST_DEPENDENCIES_AND_SHORTEST_EXECUTION_PATH',
+  'DO_NOT_REQUIRE_CEO_MANUAL_OPERATOR_WORK_WHEN_MILES_GITHUB_OR_CONNECTED_AUTOMATION_CAN_EXECUTE_IT',
+  'NEVER_TRADE_AWAY_SAFETY_TRUTH_REVERSIBILITY_OR_REQUIRED_ACCEPTANCE_EVIDENCE_FOR_SPEED'
+]) {
+  assert(rules.executionOptimizationPolicy.requirements.includes(requirement), `Missing fastest-safe-path rule ${requirement}`);
+}
+
 const requiredIds = rules.requiredGates.map(g => g.id);
 for (const id of [
   'MILES_CORE_RUNTIME',
