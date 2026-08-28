@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-install-20260827-037",
+  "id": "control-owner-watchdog-ensure-20260828-038",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
+  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR312 live install proof using the non-admin USER_STARTUP_INDEPENDENT_PROCESS watchdog. Create only the fixed per-user Startup shortcut and launch the fixed independent watchdog process; require live heartbeat evidence. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell evaluation, or destructive Git recovery. Do not claim pre-login recovery."
+  "note": "Live post-launch verification. Confirm the fixed independent watchdog sees miles-autonomous-coo online and emits current watchdog evidence. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell evaluation, or destructive Git recovery."
 }
