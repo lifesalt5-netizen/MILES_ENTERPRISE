@@ -10,8 +10,11 @@ on:
       - 'SERVICES/RevenueMissionSourceService.js'
       - 'SERVICES/revenue/**'
       - 'SERVICES/runtime/RemoteExecutionBridgeSupervisor.js'
+      - 'GOVERNANCE/**'
+      - 'DATA/governance/**'
       - 'SCRIPTS/FinalizeLeadSupplyChainAudit.js'
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
+      - 'SCRIPTS/ValidateAllSystemsGoManifest.js'
       - 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1'
       - 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'
       - 'SCRIPTS/ScheduleMilesControlOwnerRecoveryProofWindows.ps1'
@@ -43,6 +46,9 @@ jobs:
           node --check StartMilesControlOwnerWatchdog.js
           node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
           node --check SCRIPTS/RunInfrastructureHealthAudit.js
+          node --check SCRIPTS/ValidateAllSystemsGoManifest.js
+      - name: ALL SYSTEMS GO governance contract
+        run: node TESTS/all_systems_go_acceptance_standard.test.js
       - name: Remote bridge fixed-job safety
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Remote bridge self-heal regression
