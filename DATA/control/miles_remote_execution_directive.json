@@ -1,7 +1,7 @@
 {
-  "id": "ionos-inbox-regression-plan-20260828-039",
+  "id": "revenue-instantly-reconcile-20260828-040",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Urgent read-only production regression audit after CEO observed a large new wave of Mail delivery failed / returning message to sender notices in kevin@pathways2gc.com. Classify current inbox contents and report account counts, bounce/system routing, kept actionable mail, and planned UID MOVE destinations. PLAN ONLY: no mailbox moves, no message deletion, no provider mutation, no prospect sends, no DNS/B12/calendar changes, no destructive Git recovery."
+  "note": "Fresh read-only reconciliation after CEO supplied current Instantly screenshots and IONOS DSN regression evidence. Recheck live Instantly sender inventory/capacity, protected primary-domain exclusion, current inbox placement/auth state, send-window history, meetings/Calendly, ORION readiness, repository risks, and production truth. No prospect sends, no email deletion, no IONOS moves, no provider mutation, no DNS/B12/calendar changes, no destructive Git recovery."
 }
