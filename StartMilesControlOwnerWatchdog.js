@@ -1,5 +1,6 @@
 'use strict';
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -13,6 +14,7 @@ const RUNTIME_DIR = path.join(ROOT, 'DATA', 'runtime');
 const LOCK_FILE = path.join(RUNTIME_DIR, 'control_owner_watchdog_process.lock.json');
 const HEARTBEAT_FILE = path.join(RUNTIME_DIR, 'control_owner_watchdog_process_latest.json');
 const RECOVERY_PROOF_REQUEST_FILE = path.join(RUNTIME_DIR, 'control_owner_recovery_proof_request.json');
+const SOURCE_DIGEST = crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');
 
 let recoveryProofChild = null;
 let recoveryProofId = null;
@@ -49,6 +51,7 @@ function acquireLock() {
     pid: process.pid,
     root: ROOT,
     script: __filename,
+    sourceDigest: SOURCE_DIGEST,
     startedAt: new Date().toISOString()
   });
   return { ok: true };
@@ -201,6 +204,7 @@ function writeHeartbeat(lastEnsure, cycle, recoveryProof = null) {
     pid: process.pid,
     root: ROOT,
     script: __filename,
+    sourceDigest: SOURCE_DIGEST,
     intervalMs: INTERVAL_MS,
     cycle,
     observedAt: new Date().toISOString(),
@@ -286,6 +290,7 @@ module.exports = {
   LOCK_FILE,
   HEARTBEAT_FILE,
   RECOVERY_PROOF_REQUEST_FILE,
+  SOURCE_DIGEST,
   isPidAlive,
   readJson,
   acquireLock,
