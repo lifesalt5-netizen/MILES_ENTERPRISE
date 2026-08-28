@@ -1,5 +1,6 @@
 'use strict';
 
+// Global mismatch probe is read-only provider evidence.
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
