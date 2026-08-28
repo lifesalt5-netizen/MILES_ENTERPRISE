@@ -73,7 +73,8 @@ assert(!/Invoke-Expression|\biex\b/i.test(installer), 'Installer must not evalua
 assert(proofScheduler.includes('RunMilesControlOwnerRecoveryProofWindows.ps1'));
 assert(proofScheduler.includes('Start-Process -FilePath $powershell'));
 assert(proofScheduler.includes('DETACHED_FIXED_PROCESS'));
-assert(proofScheduler.includes('$DelaySeconds = 45'));
+assert(proofScheduler.includes('$DelaySeconds = 120'));
+assert(proofScheduler.includes('above that network budget'));
 assert(proofScheduler.includes('CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED'));
 assert(!proofScheduler.includes('Register-ScheduledTask'));
 assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
