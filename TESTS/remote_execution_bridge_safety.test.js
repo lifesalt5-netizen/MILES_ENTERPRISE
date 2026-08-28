@@ -128,13 +128,15 @@ assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
 assert(proofRunner.includes('& pm2.cmd stop $ProcessName'));
 assert(proofRunner.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN'));
 assert(proofRunner.includes('recoveryMustComeFromIndependentWatchdog = $true'));
-assert(proofRunner.includes('INDEPENDENT_WATCHDOG_DID_NOT_PROVE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED'));
+assert(proofRunner.includes('bridgeRecoveryRequired = $true'));
+assert(proofRunner.includes('INDEPENDENT_WATCHDOG_DID_NOT_PROVE_OWNER_AND_BRIDGE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED'));
 assert(proofRunner.includes('RunMilesControlOwnerRecoveryFailsafeWindows.ps1'));
 assert(!proofRunner.includes('Register-ScheduledTask'));
 assert(proofFailsafe.includes('CONTROL_OWNER_RECOVERY_FAILSAFE_EXECUTED'));
 assert(proofFailsafe.includes('CONTROL_OWNER_RECOVERY_FAILSAFE_CANCELED'));
 assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_VERIFIED'));
 assert(proofVerifier.includes('RECOVERY_PROOF_WATCHDOG_EVIDENCE_NOT_POST_STOP'));
+assert(proofVerifier.includes('RECOVERY_PROOF_BRIDGE_HEALTH_MISSING'));
 assert(proofVerifier.includes('USER_STARTUP_INDEPENDENT_PROCESS'));
 assert(!proofVerifier.includes('Get-ScheduledTask'));
 for (const proofScript of [installer, proofScheduler, proofRunner, proofFailsafe, proofVerifier]) {
