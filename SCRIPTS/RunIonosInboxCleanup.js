@@ -11,7 +11,6 @@ function configureExecutionGates(execute) {
     process.env.MILES_CONTROLLED_WRITE_ENABLED = 'true';
     process.env.MILES_IONOS_MAILBOX_MUTATIONS = 'true';
 
-    // Keep unrelated mutation surfaces fail-closed for this IONOS-only lane.
     process.env.MILES_ALLOW_INSTANTLY_MUTATIONS = 'false';
     process.env.INSTANTLY_WRITE_ENABLED = 'false';
     process.env.P2GC_B12_PUBLISH = 'false';
@@ -58,7 +57,17 @@ function compactDiagnostics(result, execute) {
     executableMisroutesBefore: Number(result.totals && result.totals.executableMisroutesBefore || 0),
     executableMisroutesAfter: result.totals ? result.totals.executableMisroutesAfter : null,
     accountErrors: Array.isArray(result.errors) ? result.errors : [],
-    folderErrorCount: accounts.reduce((n, account) => n + (Array.isArray(account.folderErrors) ? account.folderErrors.length : 0), 0)
+    folderErrorCount: accounts.reduce((n, account) => n + (Array.isArray(account.folderErrors) ? account.folderErrors.length : 0), 0),
+    accounts: accounts.map(account => ({
+      account: account.account,
+      verifiedSentMessageIds: Number(account.verifiedSentMessageIds || 0),
+      inboxBefore: account.inboxBefore || null,
+      executableMisroutesBefore: Number(account.executableMisroutesBefore || 0),
+      executableMisroutesAfter: account.verification ? Number(account.verification.executableMisroutesAfter || 0) : null,
+      inboxAfter: account.verification?.inboxAfter || null,
+      folderErrorsBefore: Array.isArray(account.folderErrors) ? account.folderErrors.length : 0,
+      folderErrorsAfter: Array.isArray(account.verification?.folderErrors) ? account.verification.folderErrors.length : 0
+    }))
   };
 }
 

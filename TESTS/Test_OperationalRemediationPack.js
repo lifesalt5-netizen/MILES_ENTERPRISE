@@ -36,8 +36,11 @@ assert(ionosCleanup.includes('strongAutomationHeadersOverrideReplyThreadHeuristi
 assert(ionosCleanup.includes('genericPositiveLanguageDoesNotKeepInbox: true'), 'generic positive wording must not be sufficient to keep IONOS inbox mail');
 assert(ionosAllFolder.includes('executableMisroutesAfter'), 'all-folder IONOS reconciliation must post-verify executable misroutes');
 assert(ionosAllFolder.includes('usesUidMoveOnly: true'), 'all-folder IONOS reconciliation must use UID MOVE only');
+assert(ionosAllFolder.includes('directReplyRequiresVerifiedSentMessageId: true'), 'all-folder IONOS reconciliation must verify incoming reply references against real Sent Message-IDs');
+assert(ionosAllFolder.includes('perMailboxPostVerificationRequired: true'), 'info and kevin mailboxes must each pass post-verification independently');
 assert(ionosRemoteRunner.includes('IonosAllFolderReconciliationService'), 'governed IONOS remote lane must use all-folder reconciliation');
 assert(ionosRemoteRunner.includes("process.argv.includes('--execute')"), 'governed IONOS remote lane must preserve plan/execute separation');
+assert(ionosRemoteRunner.includes('accounts: accounts.map'), 'IONOS diagnostics must publish per-mailbox acceptance state');
 
 assert(instantly.includes('/leads/update-interest-status'), 'Instantly lifecycle must reconcile CRM interest status');
 assert(instantly.includes('/mark-as-read'), 'Instantly lifecycle must clear non-actionable unread threads');
@@ -58,6 +61,7 @@ assert(ps.includes('RunPostSoakMasterAudit.ps1'), 'combined remediation must end
 
 // Execute behavioral/provider regressions as part of the CI gate, not merely syntax-check them.
 require('./ionos_inbox_cleanup_control.test.js');
+require('./ionos_all_folder_reconciliation.test.js');
 require('./instantly_lifecycle_provider_proof.test.js');
 
 console.log('OPERATIONAL_REMEDIATION_PACK_STATIC_SAFETY=GREEN');
