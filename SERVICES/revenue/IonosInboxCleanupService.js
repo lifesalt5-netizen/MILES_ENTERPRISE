@@ -17,12 +17,14 @@ function chunk(items, size) {
 function textOf(message = {}) {
   return `${message.from || ''}\n${message.subject || ''}\n${message.text || ''}`.toLowerCase();
 }
+function headerOf(message = {}) { return String(message.rawHeader || '').toLowerCase(); }
 function senderEmail(message = {}) {
   const raw = String(message.from || '').trim();
   const bracket = raw.match(/<([^>]+@[^>]+)>/);
   const plain = raw.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
   return String(bracket?.[1] || plain?.[0] || '').trim().toLowerCase();
 }
+function senderLocalPart(message = {}) { return senderEmail(message).split('@')[0] || ''; }
 function replyThreadEvidence(message = {}) {
   return Boolean(String(message.inReplyTo || '').trim() || String(message.references || '').trim());
 }
@@ -41,7 +43,7 @@ function forwardedMilesNoise(message = {}) {
 }
 function billingNotice(message = {}) {
   const text = textOf(message);
-  return /ionos invoice|invoice .* ionos|billing notification|payment receipt|payment confirmation/i.test(text);
+  return /ionos invoice|invoice .* ionos|billing notification|payment receipt|payment confirmation|statement (?:is|now) ready|bill (?:is|now) ready|autopay|automatic payment|payment due/i.test(text);
 }
 function obviousVendorJunk(message = {}) {
   const text = textOf(message);
@@ -49,7 +51,21 @@ function obviousVendorJunk(message = {}) {
   if (/\bq913twe\b/i.test(subject)) return true;
   return /business funding|funding application|business loan|working capital|merchant cash advance|seo services?|link building|lead generation|ai voice|website redesign|can i interest you|would love to work with you|pick your brain|grow your business|new customers|appointment setting|cold email services?/i.test(text);
 }
-function activeClientEmails(customerService = new P2GCCustomerDeliveryService()) {
+function strongAutomatedOrBulkMail(message = {}) {
+  const header = headerOf(message);
+  const local = senderLocalPart(message);
+  return /(?:^|\n)list-(?:id|unsubscribe|post|help):/i.test(header) ||
+    /(?:^|\n)precedence:\s*(?:bulk|list|junk)\b/i.test(header) ||
+    /(?:^|\n)auto-submitted:\s*(?!no\b)[^\r\n]+/i.test(header) ||
+    /(?:^|\n)x-auto-response-suppress:/i.test(header) ||
+    /(?:^|\n)x-(?:campaign|mailing-list|list-id):/i.test(header) ||
+    /(?:^|[._-])(?:no-?reply|noreply|do-?not-?reply|automated|automation|notifications?|alerts?|newsletter|newsletters|marketing|promotions?|offers?|digest)(?:$|[._-])/i.test(local);
+}
+function transactionalSystemNotice(message = {}) {
+  const text = textOf(message);
+  return /security|verification|verify|account alert|account notice|statement|payment|invoice|receipt|transaction|deposit|withdrawal|balance|credit score|credit report|bank|insurance|policy|claim|password|login|sign[- ]?in|one[- ]?time|verification code|order confirmation|shipping|shipment|delivery update|appointment reminder/i.test(text);
+}
+function activeClientEmails(customerService = P2GCCustomerDeliveryService) {
   try {
     return new Set((customerService.load().clients || [])
       .filter(client => String(client.status || 'ACTIVE').toUpperCase() === 'ACTIVE')
@@ -69,11 +85,21 @@ function actionableHumanMail(classification = {}, message = {}, clients = new Se
   return { keep: true, reason: 'DIRECT_RESPONSE_TO_SENT_THREAD' };
 }
 function folderFor(classification = {}, message = {}, clients = new Set()) {
-  const actionable = actionableHumanMail(classification, message, clients);
-  if (actionable.keep) return null;
   if (ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (billingNotice(message)) return 'MILES-BILLING';
+
+  // Strong provider/header evidence of automation or bulk delivery must outrank
+  // generic reply-thread heuristics. This prevents newsletters, account alerts,
+  // promotions and generated notifications from occupying the executive Inbox
+  // merely because they carry References/In-Reply-To headers.
+  if (strongAutomatedOrBulkMail(message)) {
+    if (systemNoise(message) || transactionalSystemNotice(message)) return 'MILES-SYSTEM';
+    return 'MILES-JUNK';
+  }
+
+  const actionable = actionableHumanMail(classification, message, clients);
+  if (actionable.keep) return null;
   if (systemNoise(message)) return 'MILES-SYSTEM';
   if (obviousVendorJunk(message)) return 'MILES-JUNK';
   switch (classification.category) {
@@ -92,7 +118,7 @@ class IonosInboxCleanupService {
   constructor(options = {}) {
     this.root = path.resolve(options.root || process.env.MILES_ROOT || process.cwd());
     this.classifier = options.classifier || new ReplyIntelligenceService();
-    this.customerService = options.customerService || new P2GCCustomerDeliveryService();
+    this.customerService = options.customerService || P2GCCustomerDeliveryService;
     this.maxMessages = Math.min(Math.max(Number(options.maxMessages || process.env.MILES_IONOS_CLEANUP_MAX || 5000), 1), 20000);
     this.output = path.join(this.root, 'DATA', 'runtime', 'revenue', 'ionos_cleanup', 'latest.json');
   }
@@ -105,7 +131,6 @@ class IonosInboxCleanupService {
   async fetchByUids(mailbox, uids) {
     const messages = [];
     for (const ids of chunk(uids, 100)) {
-      if (!ids.length) continue;
       const fetched = await readonly.connectAndRun({ ...mailbox, commands: [`UID FETCH ${ids.join(',')} (UID BODY.PEEK[]<0.16384>)`] });
       messages.push(...readonly.parseFetchedMessages(fetched.extra?.[0]?.lines || [], mailbox.email));
     }
@@ -197,7 +222,7 @@ class IonosInboxCleanupService {
         deletesMessages: false,
         usesUidMoveOnly: true,
         inboxReservedForActiveClientsAndRealSentThreadReplies: true,
-        actionableHumanMailPrecedesNoisePatternRouting: true,
+        strongAutomationHeadersOverrideReplyThreadHeuristic: true,
         genericPositiveLanguageDoesNotKeepInbox: true,
         preservesOfficialEbuyInDedicatedFolder: true,
         preservesForwardedMailInDedicatedFolder: true,
@@ -212,4 +237,17 @@ class IonosInboxCleanupService {
 }
 
 module.exports = IonosInboxCleanupService;
-module.exports.helpers = { senderEmail, replyThreadEvidence, activeClientEmails, actionableHumanMail, systemNoise, ebuyNotice, forwardedMilesNoise, billingNotice, obviousVendorJunk, folderFor };
+module.exports.helpers = {
+  senderEmail,
+  replyThreadEvidence,
+  activeClientEmails,
+  actionableHumanMail,
+  systemNoise,
+  ebuyNotice,
+  forwardedMilesNoise,
+  billingNotice,
+  obviousVendorJunk,
+  strongAutomatedOrBulkMail,
+  transactionalSystemNotice,
+  folderFor
+};

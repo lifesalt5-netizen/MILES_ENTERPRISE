@@ -32,6 +32,7 @@ assert(ionosCleanup.includes('MILES-FORWARDED'), 'forwarded MILES noise must lea
 assert(ionosCleanup.includes('MILES-JUNK'), 'obvious vendor junk must leave working inbox for preserved folder');
 assert(ionosCleanup.includes('remainingRoutableNoise'), 'IONOS cleanup must verify user-visible inbox result after moves');
 assert(ionosCleanup.includes('inboxReservedForActiveClientsAndRealSentThreadReplies: true'), 'IONOS inbox must be reserved for active clients and real sent-thread replies');
+assert(ionosCleanup.includes('strongAutomationHeadersOverrideReplyThreadHeuristic: true'), 'bulk/automation headers must outrank generic reply-thread heuristics');
 assert(ionosCleanup.includes('genericPositiveLanguageDoesNotKeepInbox: true'), 'generic positive wording must not be sufficient to keep IONOS inbox mail');
 assert(ionosAllFolder.includes('executableMisroutesAfter'), 'all-folder IONOS reconciliation must post-verify executable misroutes');
 assert(ionosAllFolder.includes('usesUidMoveOnly: true'), 'all-folder IONOS reconciliation must use UID MOVE only');
@@ -54,5 +55,9 @@ assert(sendWindow.includes('manualOrReplySentIgnored'), 'manual/reply sends must
 assert(runner.includes('FULL_RELATED_SYSTEM_SWEEP_BEFORE_CLOSEOUT'), 'combined runner must encode grouped remediation rule');
 assert(ps.includes("$env:P2GC_B12_PUBLISH = 'false'"), 'combined remediation must keep B12 public publish disabled');
 assert(ps.includes('RunPostSoakMasterAudit.ps1'), 'combined remediation must end with master sweep');
+
+// Execute the behavioral executive-inbox regression as part of the CI gate,
+// not merely syntax-check it. This catches false-positive Inbox retention before merge.
+require('./ionos_inbox_cleanup_control.test.js');
 
 console.log('OPERATIONAL_REMEDIATION_PACK_STATIC_SAFETY=GREEN');
