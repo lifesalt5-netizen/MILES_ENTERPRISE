@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-schedule-20260828-050",
+  "id": "control-owner-watchdog-install-20260828-051",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
+  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Final production recovery proof on merged main ecde49930197b78ee92e45e5d1fe0ac7dc0b1959. Scheduler must publish COMPLETED before its 120-second delay expires. Then perform exactly one controlled stop of miles-autonomous-coo and require the independent user-startup watchdog to recover both the PM2 owner and a fresh BRIDGE_RUNNING supervisor state with live post-stop bridge child. Proof runner itself may not restart/start owner. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Reload the independent user-startup watchdog only if its live source digest differs from current main ee1b602fe8829c301dc646634b88b53262fa2358, then require a fresh current-source heartbeat. No controlled owner stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
