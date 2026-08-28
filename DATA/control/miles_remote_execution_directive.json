@@ -1,7 +1,7 @@
 {
-  "id": "ionos-all-folder-execute-20260827-018",
+  "id": "ionos-all-folder-execute-20260827-019",
   "enabled": true,
   "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Execute the verified IONOS all-folder reconciliation from PLAN -017. Apply governed UID MOVE only for executable misroutes; no message deletion, no EXPUNGE, no protected Sent/Drafts/Trash/Archive mutation, no prospect sends, no DNS/B12 mutation. After moves, perform a full all-folder reread and require executableMisroutesAfter=0. If any folder/account errors occur, fail closed and publish exact evidence."
+  "note": "Fresh execute diagnostics retry after PR294. Apply governed UID MOVE only for executable misroutes; no message deletion, no EXPUNGE, no protected Sent/Drafts/Trash/Archive mutation, no prospect sends, no DNS/B12 mutation. Publish compact IONOS_MOVE_DIAGNOSTICS with mutationAllowed, routesAttempted, routesExecuted, routesBlocked, movedUidCount, blockedStatuses, executableMisroutesBefore/After, accountErrors and folderErrorCount. Fail closed if post-verify executableMisroutesAfter is not zero."
 }
