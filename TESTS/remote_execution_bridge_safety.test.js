@@ -109,18 +109,35 @@ assert(infraRunner.includes('providerMutation: false'));
 assert(!infraRunner.includes('exec('));
 assert(!infraRunner.includes('shell: true'));
 
+const watchdogProcess = fs.readFileSync(path.join(__dirname, '..', 'StartMilesControlOwnerWatchdog.js'), 'utf8');
+const installer = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'InstallMilesControlOwnerWatchdogWindows.ps1'), 'utf8');
 const proofScheduler = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'ScheduleMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
 const proofRunner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
+const proofFailsafe = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunMilesControlOwnerRecoveryFailsafeWindows.ps1'), 'utf8');
 const proofVerifier = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'VerifyMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
-assert(proofScheduler.includes('New-ScheduledTaskTrigger -Once'));
-assert(proofScheduler.includes('CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED'));
+assert(watchdogProcess.includes("spawn('powershell.exe'"));
+assert(watchdogProcess.includes('fixedEnsureScriptOnly: true'));
+assert(watchdogProcess.includes('setInterval(tick, INTERVAL_MS)'));
+assert(!watchdogProcess.includes('shell: true'));
+assert(installer.includes('USER_STARTUP_INDEPENDENT_PROCESS'));
+assert(installer.includes('CreateShortcut'));
+assert(!installer.includes('Register-ScheduledTask'));
+assert(proofScheduler.includes('DETACHED_FIXED_PROCESS'));
+assert(proofScheduler.includes('Start-Process -FilePath $powershell'));
+assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
 assert(proofRunner.includes('& pm2.cmd stop $ProcessName'));
 assert(proofRunner.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN'));
 assert(proofRunner.includes('recoveryMustComeFromIndependentWatchdog = $true'));
 assert(proofRunner.includes('INDEPENDENT_WATCHDOG_DID_NOT_PROVE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED'));
+assert(proofRunner.includes('RunMilesControlOwnerRecoveryFailsafeWindows.ps1'));
+assert(!proofRunner.includes('Register-ScheduledTask'));
+assert(proofFailsafe.includes('CONTROL_OWNER_RECOVERY_FAILSAFE_EXECUTED'));
+assert(proofFailsafe.includes('CONTROL_OWNER_RECOVERY_FAILSAFE_CANCELED'));
 assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_VERIFIED'));
 assert(proofVerifier.includes('RECOVERY_PROOF_WATCHDOG_EVIDENCE_NOT_POST_STOP'));
-for (const proofScript of [proofScheduler, proofRunner, proofVerifier]) {
+assert(proofVerifier.includes('USER_STARTUP_INDEPENDENT_PROCESS'));
+assert(!proofVerifier.includes('Get-ScheduledTask'));
+for (const proofScript of [installer, proofScheduler, proofRunner, proofFailsafe, proofVerifier]) {
   assert(!/Invoke-Expression|\biex\b/i.test(proofScript), 'recovery proof must not evaluate arbitrary commands');
   assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(proofScript), 'recovery proof must not perform Git mutation/destructive recovery');
 }
