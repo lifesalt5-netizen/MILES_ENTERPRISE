@@ -14,6 +14,29 @@ assert.deepStrictEqual(Service.helpers.compactLead({
 }), {
   id: 'lead-1', email: 'a@example.com', campaignId: 'campaign-1', listId: 'list-1', interestStatus: -1, status: 3, timestampUpdated: null
 });
+
+const singleCurrent = Service.helpers.selectCurrentProviderSource([
+  { id: 'lead-live', email: 'a@example.com', campaignId: 'campaign-current', listId: null }
+], 'campaign-stale');
+assert.strictEqual(singleCurrent.ok, true);
+assert.strictEqual(singleCurrent.reason, 'SINGLE_GLOBAL_MATCH');
+assert.strictEqual(singleCurrent.source.campaignId, 'campaign-current');
+
+const preferredCurrent = Service.helpers.selectCurrentProviderSource([
+  { id: 'lead-old', email: 'a@example.com', campaignId: 'campaign-other', listId: null },
+  { id: 'lead-right', email: 'a@example.com', campaignId: 'campaign-reply', listId: null }
+], 'campaign-reply');
+assert.strictEqual(preferredCurrent.ok, true);
+assert.strictEqual(preferredCurrent.reason, 'PREFERRED_CAMPAIGN_MATCH');
+assert.strictEqual(preferredCurrent.source.id, 'lead-right');
+
+const ambiguous = Service.helpers.selectCurrentProviderSource([
+  { id: 'lead-a', email: 'a@example.com', campaignId: 'campaign-a', listId: null },
+  { id: 'lead-b', email: 'a@example.com', campaignId: 'campaign-b', listId: null }
+], 'campaign-stale');
+assert.strictEqual(ambiguous.ok, false);
+assert.strictEqual(ambiguous.reason, 'CURRENT_PROVIDER_LEAD_AMBIGUOUS');
+
 assert.strictEqual(Reconciler.helpers.lifecycleListName('OOO_FOLLOWUP'), 'P2GC Replies - OOO');
 assert.strictEqual(Reconciler.helpers.lifecycleListName('CLOSED_NEGATIVE'), 'P2GC Replies - Closed Negative');
 assert.strictEqual(Reconciler.helpers.lifecycleListName('SUPPRESSED_UNSUBSCRIBE'), 'P2GC Replies - Unsubscribe');
@@ -27,6 +50,9 @@ assert(source.includes('distinct_contacts: false'));
 assert(source.includes('globalLookup(email)'));
 assert(source.includes('globalProviderProbe'));
 assert(source.includes('mismatchGlobalProbeReadOnly: true'));
+assert(source.includes('selectCurrentProviderSource'));
+assert(source.includes('CURRENT_PROVIDER_SOURCE_CAMPAIGN_REQUIRED'));
+assert(source.includes('currentProviderSourceRequiredForRepair: true'));
 assert(source.includes('delete ledger.entries[key]'));
 assert(source.includes('postMutationProviderReadRequired: true'));
 assert(source.includes('localLedgerCannotOverrideProviderMismatch: true'));

@@ -29,6 +29,26 @@ function compactLead(item = {}) {
     timestampUpdated: item.timestamp_updated || null
   };
 }
+function selectCurrentProviderSource(matches = [], preferredCampaignId = '') {
+  const candidates = Array.isArray(matches) ? matches.filter(Boolean) : [];
+  const preferred = clean(preferredCampaignId);
+  if (preferred) {
+    const preferredMatches = candidates.filter(item => clean(item?.campaignId) === preferred);
+    if (preferredMatches.length === 1) {
+      return { ok: true, reason: 'PREFERRED_CAMPAIGN_MATCH', source: preferredMatches[0], candidates: candidates.length };
+    }
+    if (preferredMatches.length > 1) {
+      return { ok: false, reason: 'AMBIGUOUS_PREFERRED_CAMPAIGN_MATCH', source: null, candidates: candidates.length };
+    }
+  }
+  if (candidates.length === 1) {
+    return { ok: true, reason: 'SINGLE_GLOBAL_MATCH', source: candidates[0], candidates: 1 };
+  }
+  if (candidates.length === 0) {
+    return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_NOT_FOUND', source: null, candidates: 0 };
+  }
+  return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_AMBIGUOUS', source: null, candidates: candidates.length };
+}
 
 class InstantlyLifecycleProofService {
   constructor(options = {}) {
@@ -98,14 +118,45 @@ class InstantlyLifecycleProofService {
 
   async repairOne(emailRecord, classification, bucket, destination) {
     const email = clean(emailRecord.lead || emailRecord.from_address_email || classification.from).toLowerCase();
-    const campaignId = clean(emailRecord.campaign_id || classification.campaignId);
-    const ledger = this.reconciler.readSegmentLedger();
-    const key = this.reconciler.segmentKey(email, campaignId, bucket);
-    if (ledger.entries[key]) {
-      delete ledger.entries[key];
-      this.reconciler.writeSegmentLedger(ledger);
+    const replyCampaignId = clean(emailRecord.campaign_id || classification.campaignId);
+    const probe = await this.globalLookup(email);
+    const resolution = selectCurrentProviderSource(probe.matches, replyCampaignId);
+    if (!resolution.ok) {
+      throw new Error(`${resolution.reason}:${email}:candidates=${resolution.candidates}`);
     }
-    return this.reconciler.mutateOne(emailRecord, classification, destination, ledger);
+    const currentCampaignId = clean(resolution.source?.campaignId);
+    if (!currentCampaignId) {
+      throw new Error(`CURRENT_PROVIDER_SOURCE_CAMPAIGN_REQUIRED:${email}:list=${clean(resolution.source?.listId) || 'none'}`);
+    }
+
+    const effectiveEmailRecord = { ...emailRecord, campaign_id: currentCampaignId };
+    const ledger = this.reconciler.readSegmentLedger();
+    const keys = [...new Set([
+      this.reconciler.segmentKey(email, replyCampaignId, bucket),
+      this.reconciler.segmentKey(email, currentCampaignId, bucket)
+    ])];
+    let ledgerChanged = false;
+    for (const key of keys) {
+      if (ledger.entries[key]) {
+        delete ledger.entries[key];
+        ledgerChanged = true;
+      }
+    }
+    if (ledgerChanged) this.reconciler.writeSegmentLedger(ledger);
+
+    const operations = await this.reconciler.mutateOne(effectiveEmailRecord, classification, destination, ledger);
+    operations.unshift({
+      type: 'CURRENT_PROVIDER_SOURCE_RESOLUTION',
+      result: {
+        replyCampaignId: replyCampaignId || null,
+        currentCampaignId,
+        currentListId: resolution.source?.listId || null,
+        providerLeadId: resolution.source?.id || null,
+        resolutionReason: resolution.reason,
+        candidates: resolution.candidates
+      }
+    });
+    return operations;
   }
 
   async run(options = {}) {
@@ -187,7 +238,8 @@ class InstantlyLifecycleProofService {
         deletesLeads: false,
         localLedgerCannotOverrideProviderMismatch: true,
         postMutationProviderReadRequired: true,
-        mismatchGlobalProbeReadOnly: true
+        mismatchGlobalProbeReadOnly: true,
+        currentProviderSourceRequiredForRepair: true
       }
     };
     fs.mkdirSync(path.dirname(this.output), { recursive: true });
@@ -198,4 +250,4 @@ class InstantlyLifecycleProofService {
 }
 
 module.exports = InstantlyLifecycleProofService;
-module.exports.helpers = { unwrap, leadEmail, compactLead };
+module.exports.helpers = { unwrap, leadEmail, compactLead, selectCurrentProviderSource };
