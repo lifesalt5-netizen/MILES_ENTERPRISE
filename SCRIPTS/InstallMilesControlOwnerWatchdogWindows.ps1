@@ -37,6 +37,8 @@ function Write-InstallEvidence {
         [string]$Mode = $null,
         [string]$StartupShortcut = $null,
         [Nullable[int]]$WatchdogPid = $null,
+        [string]$WatchdogSourceDigest = $null,
+        [bool]$ReloadPerformed = $false,
         [string]$ErrorMessage = $null
     )
     $parent = Split-Path -Parent $EvidencePath
@@ -48,6 +50,8 @@ function Write-InstallEvidence {
         status = $Status
         mode = $Mode
         watchdogProcess = $WatchdogProcess
+        watchdogSourceDigest = $WatchdogSourceDigest
+        reloadPerformed = $ReloadPerformed
         startupShortcut = $StartupShortcut
         watchdogPid = $WatchdogPid
         heartbeatPath = $HeartbeatPath
@@ -57,9 +61,11 @@ function Write-InstallEvidence {
             currentSessionIndependentOfPm2Owner = $true
             persistsAcrossInteractiveUserLogon = $true
             preLogonRecoveryClaimed = $false
+            sourceChangeReloadSupported = $true
         }
         safety = [ordered]@{
             fixedWatchdogOnly = $true
+            watchdogReloadOnlyWhenSourceDigestDiffers = $true
             arbitraryShell = $false
             gitMutation = $false
             providerMutation = $false
@@ -82,6 +88,7 @@ try {
     $node = (Get-Command node.exe -ErrorAction Stop).Source
     & $node --check $WatchdogProcess | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "WATCHDOG_PROCESS_NODE_CHECK_FAILED" }
+    $expectedDigest = (Get-FileHash -LiteralPath $WatchdogProcess -Algorithm SHA256).Hash.ToLowerInvariant()
 
     $startup = [Environment]::GetFolderPath("Startup")
     if ([string]::IsNullOrWhiteSpace($startup)) {
@@ -102,7 +109,30 @@ try {
     if (-not (Test-Path -LiteralPath $shortcutPath)) { throw "STARTUP_SHORTCUT_CREATE_FAILED:$shortcutPath" }
 
     $heartbeat = Read-JsonSafe -Path $HeartbeatPath
-    if (-not (Test-HeartbeatLive -Heartbeat $heartbeat)) {
+    $heartbeatLive = Test-HeartbeatLive -Heartbeat $heartbeat
+    $reloadPerformed = $false
+    $needsReload = $false
+    if ($heartbeatLive) {
+        $heartbeatDigest = ([string]$heartbeat.sourceDigest).ToLowerInvariant()
+        $heartbeatScript = [string]$heartbeat.script
+        if ($heartbeatScript -ne $WatchdogProcess -or [string]::IsNullOrWhiteSpace($heartbeatDigest) -or $heartbeatDigest -ne $expectedDigest) {
+            $needsReload = $true
+        }
+    }
+
+    if ($heartbeatLive -and $needsReload) {
+        $oldPid = [int]$heartbeat.pid
+        Stop-Process -Id $oldPid -Force -ErrorAction Stop
+        $stopDeadline = (Get-Date).AddSeconds(10)
+        while ((Get-Date) -lt $stopDeadline -and (Get-Process -Id $oldPid -ErrorAction SilentlyContinue)) {
+            Start-Sleep -Milliseconds 250
+        }
+        if (Get-Process -Id $oldPid -ErrorAction SilentlyContinue) { throw "WATCHDOG_SOURCE_RELOAD_OLD_PROCESS_DID_NOT_EXIT" }
+        $reloadPerformed = $true
+        $heartbeatLive = $false
+    }
+
+    if (-not $heartbeatLive) {
         Start-Process -FilePath $node -ArgumentList @($WatchdogProcess) -WorkingDirectory $Root -WindowStyle Hidden | Out-Null
     }
 
@@ -112,13 +142,16 @@ try {
         Start-Sleep -Seconds 2
         $candidate = Read-JsonSafe -Path $HeartbeatPath
         if (Test-HeartbeatLive -Heartbeat $candidate) {
-            $live = $candidate
-            break
+            $candidateDigest = ([string]$candidate.sourceDigest).ToLowerInvariant()
+            if ($candidateDigest -eq $expectedDigest -and [string]$candidate.script -eq $WatchdogProcess) {
+                $live = $candidate
+                break
+            }
         }
     }
-    if (-not $live) { throw "USER_STARTUP_WATCHDOG_HEARTBEAT_NOT_OBSERVED_WITHIN_45_SECONDS" }
+    if (-not $live) { throw "USER_STARTUP_WATCHDOG_CURRENT_SOURCE_HEARTBEAT_NOT_OBSERVED_WITHIN_45_SECONDS" }
 
-    $evidence = Write-InstallEvidence -Ok $true -Status "CONTROL_OWNER_WATCHDOG_INSTALLED" -Mode "USER_STARTUP_INDEPENDENT_PROCESS" -StartupShortcut $shortcutPath -WatchdogPid ([int]$live.pid)
+    $evidence = Write-InstallEvidence -Ok $true -Status "CONTROL_OWNER_WATCHDOG_INSTALLED" -Mode "USER_STARTUP_INDEPENDENT_PROCESS" -StartupShortcut $shortcutPath -WatchdogPid ([int]$live.pid) -WatchdogSourceDigest $expectedDigest -ReloadPerformed $reloadPerformed
     Write-Host "MILES_CONTROL_OWNER_WATCHDOG_INSTALL_GREEN"
     Write-Host ($evidence | ConvertTo-Json -Compress -Depth 6)
     exit 0
