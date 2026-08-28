@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-ensure-20260828-038",
+  "id": "ionos-inbox-regression-plan-20260828-039",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
+  "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Live post-launch verification. Confirm the fixed independent watchdog sees miles-autonomous-coo online and emits current watchdog evidence. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell evaluation, or destructive Git recovery."
+  "note": "Urgent read-only production regression audit after CEO observed a large new wave of Mail delivery failed / returning message to sender notices in kevin@pathways2gc.com. Classify current inbox contents and report account counts, bounce/system routing, kept actionable mail, and planned UID MOVE destinations. PLAN ONLY: no mailbox moves, no message deletion, no provider mutation, no prospect sends, no DNS/B12/calendar changes, no destructive Git recovery."
 }
