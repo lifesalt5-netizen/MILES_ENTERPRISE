@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-schedule-20260828-054",
+  "id": "control-owner-watchdog-recovery-verify-20260828-055",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
+  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Final controlled autonomous recovery proof after consumption-aware stabilization 053. Publish schedule completion first, then independent watchdog must execute one bounded controlled stop of miles-autonomous-coo after the evidence margin and recover both owner and GitHub bridge without CEO/manual action. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
+  "note": "Verify final autonomous recovery proof b2d4607b575d4bf8b43c766429922f63 after controlled stop window. Require matching proofId, CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN, miles-autonomous-coo online, bridge supervisor fresh, bridge child alive, and recovery evidence newer than the controlled stop. No new stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
 }
