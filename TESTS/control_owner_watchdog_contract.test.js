@@ -12,6 +12,7 @@ const pm2Probe = fs.readFileSync(pm2ProbePath, 'utf8');
 const watchdogProcess = fs.readFileSync(path.join(root, 'StartMilesControlOwnerWatchdog.js'), 'utf8');
 const installer = fs.readFileSync(path.join(root, 'SCRIPTS', 'InstallMilesControlOwnerWatchdogWindows.ps1'), 'utf8');
 const proofScheduler = fs.readFileSync(path.join(root, 'SCRIPTS', 'ScheduleMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
+const proofLauncher = fs.readFileSync(path.join(root, 'SCRIPTS', 'LaunchMilesControlOwnerRecoveryProof.js'), 'utf8');
 const proofRunner = fs.readFileSync(path.join(root, 'SCRIPTS', 'RunMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
 const proofFailsafe = fs.readFileSync(path.join(root, 'SCRIPTS', 'RunMilesControlOwnerRecoveryFailsafeWindows.ps1'), 'utf8');
 const proofVerifier = fs.readFileSync(path.join(root, 'SCRIPTS', 'VerifyMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
@@ -71,12 +72,23 @@ assert(!/git\s+(reset|clean|push)/i.test(installer), 'Installer must not perform
 assert(!/Invoke-Expression|\biex\b/i.test(installer), 'Installer must not evaluate arbitrary commands.');
 
 assert(proofScheduler.includes('RunMilesControlOwnerRecoveryProofWindows.ps1'));
-assert(proofScheduler.includes('Start-Process -FilePath $powershell'));
+assert(proofScheduler.includes('LaunchMilesControlOwnerRecoveryProof.js'));
+assert(proofScheduler.includes('& node.exe $DetachedLauncher'));
+assert(!proofScheduler.includes('Start-Process -FilePath $powershell'));
 assert(proofScheduler.includes('DETACHED_FIXED_PROCESS'));
 assert(proofScheduler.includes('$DelaySeconds = 45'));
 assert(proofScheduler.includes('CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED'));
 assert(!proofScheduler.includes('Register-ScheduledTask'));
 assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
+
+assert(proofLauncher.includes("spawn('powershell.exe'"));
+assert(proofLauncher.includes('detached: true'));
+assert(proofLauncher.includes("stdio: 'ignore'"));
+assert(proofLauncher.includes('shell: false'));
+assert(proofLauncher.includes('child.unref()'));
+assert(proofLauncher.includes('DETACHED_RECOVERY_PROOF_SPAWN_TIMEOUT'));
+assert(!proofLauncher.includes('shell: true'));
+assert(!/exec\s*\(|execSync\s*\(/.test(proofLauncher), 'Detached proof launcher must not evaluate shell strings.');
 
 assert(proofRunner.includes('miles-autonomous-coo'));
 assert(proofRunner.includes('GetMilesPm2ProcessStatus.js'));
@@ -126,7 +138,7 @@ assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_HEARTBEAT_STALE'));
 assert(proofVerifier.includes('readOnlyVerification = $true'));
 assert(!proofVerifier.includes('Get-ScheduledTask'));
 
-for (const script of [installer, proofScheduler, proofRunner, proofFailsafe, proofVerifier]) {
+for (const script of [installer, proofScheduler, proofLauncher, proofRunner, proofFailsafe, proofVerifier]) {
   assert(!/Invoke-Expression|\biex\b/i.test(script), 'Watchdog/recovery proof must not evaluate arbitrary commands.');
   assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(script), 'Watchdog/recovery proof must not perform Git mutation/destructive recovery.');
   assert(!/sendReply|RemediateNamecheapDmarc|CreateControlledInstantlyInboxPlacementTest/i.test(script), 'Watchdog/recovery proof must not mutate providers or send outreach.');
