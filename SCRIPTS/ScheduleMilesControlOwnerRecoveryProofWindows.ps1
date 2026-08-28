@@ -4,6 +4,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ProofScript = Join-Path $Root "SCRIPTS\RunMilesControlOwnerRecoveryProofWindows.ps1"
+$DetachedLauncher = Join-Path $Root "SCRIPTS\LaunchMilesControlOwnerRecoveryProof.js"
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
 $HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
@@ -72,6 +73,10 @@ function Write-ScheduleEvidence {
 try {
     if ($env:OS -ne "Windows_NT") { throw "WINDOWS_REQUIRED" }
     if (-not (Test-Path -LiteralPath $ProofScript)) { throw "RECOVERY_PROOF_SCRIPT_NOT_FOUND:$ProofScript" }
+    if (-not (Test-Path -LiteralPath $DetachedLauncher)) { throw "RECOVERY_PROOF_DETACHED_LAUNCHER_NOT_FOUND:$DetachedLauncher" }
+    if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) { throw "NODE_NOT_FOUND" }
+    & node.exe --check $DetachedLauncher | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "RECOVERY_PROOF_DETACHED_LAUNCHER_NODE_CHECK_FAILED" }
 
     $install = Read-JsonSafe -Path $InstallEvidencePath
     $heartbeat = Read-JsonSafe -Path $HeartbeatPath
@@ -80,19 +85,13 @@ try {
     }
 
     $proofId = [guid]::NewGuid().ToString("N")
-    $powershell = (Get-Command powershell.exe -ErrorAction Stop).Source
-    $arguments = @(
-        '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
-        '-File', ('"' + $ProofScript + '"'),
-        '-Root', ('"' + $Root + '"'),
-        '-ProofId', $proofId,
-        '-DelaySeconds', [string]$DelaySeconds
-    )
-    $launcher = Start-Process -FilePath $powershell -ArgumentList $arguments -WorkingDirectory $Root -WindowStyle Hidden -PassThru
-    Start-Sleep -Seconds 1
-    if (-not $launcher -or $launcher.HasExited) { throw "DETACHED_RECOVERY_PROOF_LAUNCH_FAILED" }
+    $launchOutput = (& node.exe $DetachedLauncher --root $Root --proof-id $proofId --delay-seconds $DelaySeconds 2>&1) -join "`n"
+    if ($LASTEXITCODE -ne 0) { throw "DETACHED_RECOVERY_PROOF_LAUNCH_FAILED:$launchOutput" }
+    $match = [regex]::Match([string]$launchOutput, 'RECOVERY_PROOF_LAUNCH_PID=(\d+)')
+    if (-not $match.Success) { throw "DETACHED_RECOVERY_PROOF_PID_NOT_RETURNED" }
+    $launcherPid = [int]$match.Groups[1].Value
 
-    $evidence = Write-ScheduleEvidence -Ok $true -Status "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED" -ProofId $proofId -LauncherPid ([int]$launcher.Id)
+    $evidence = Write-ScheduleEvidence -Ok $true -Status "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED" -ProofId $proofId -LauncherPid $launcherPid
     Write-Host "MILES_CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED"
     Write-Host ($evidence | ConvertTo-Json -Compress -Depth 6)
     exit 0
