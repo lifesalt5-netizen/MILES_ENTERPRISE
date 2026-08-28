@@ -85,7 +85,7 @@ function parsePlacement(stdout = '') {
   const rows = rowsMatch ? Number(rowsMatch[1]) : 0;
   const senders = sendersMatch ? Number(sendersMatch[1]) : 0;
   const authWatchSenders = watchMatch
-    ? watchMatch[1].split(',').map(x => x.trim()).filter(Boolean)
+    ? watchMatch[1].split(',').map(x => x.trim().toLowerCase()).filter(Boolean)
     : [];
   return { rows, senders, authWatchSenders };
 }
@@ -96,6 +96,38 @@ function placementFingerprint(v = {}) {
     senders: Number(v.senders || 0),
     authWatchSenders: [...(v.authWatchSenders || [])].sort()
   });
+}
+
+function loadGovernedActiveSenders(root) {
+  const file = path.join(root, 'DATA', 'OUTBOUND', 'INSTANTLY_MASTER_RECONCILIATION', 'OUTBOUND_SENDER_CAPACITY_AUDIT_V2_LATEST.json');
+  try {
+    const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const emails = [];
+    for (const domain of Array.isArray(report?.domains) ? report.domains : []) {
+      for (const email of Array.isArray(domain?.usableEmails) ? domain.usableEmails : []) {
+        const normalized = String(email || '').trim().toLowerCase();
+        if (normalized) emails.push(normalized);
+      }
+    }
+    const generatedMs = Date.parse(report?.generatedAt || '');
+    const fresh = Number.isFinite(generatedMs) && (Date.now() - generatedMs) >= 0 && (Date.now() - generatedMs) <= 24 * 3600000;
+    return { resolved: fresh, file, generatedAt: report?.generatedAt || null, activeSenders: [...new Set(emails)] };
+  } catch {
+    return { resolved: false, file, generatedAt: null, activeSenders: [] };
+  }
+}
+
+function classifyAuthWatch(authWatchSenders = [], senderGovernance = {}) {
+  const observed = [...new Set(authWatchSenders.map(x => String(x || '').trim().toLowerCase()).filter(Boolean))];
+  if (!senderGovernance.resolved) {
+    return { blocking: observed, quarantined: [], failClosedReason: observed.length ? 'GOVERNED_ACTIVE_SENDER_SET_UNRESOLVED' : null };
+  }
+  const active = new Set((senderGovernance.activeSenders || []).map(x => String(x || '').trim().toLowerCase()));
+  return {
+    blocking: observed.filter(email => active.has(email)),
+    quarantined: observed.filter(email => !active.has(email)),
+    failClosedReason: null
+  };
 }
 
 async function pollPlacement(testId) {
@@ -197,7 +229,7 @@ async function main() {
   console.log(`Audit child timeout: ${Math.round(AUDIT_TIMEOUT_MS / 60000)}m`);
   console.log(`Placement poll: ${Math.round(POLL_MS / 1000)}s, max wait ${Math.round(MAX_WAIT_MS / 60000)}m`);
   console.log(`Placement completeness gate: >=${MIN_ANALYTICS_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_STABLE_POLLS} stable polls`);
-  console.log(`Placement plateau gate: >=${MIN_PLATEAU_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_PLATEAU_POLLS} unchanged polls; plateau never overrides AUTH WATCH`);
+  console.log(`Placement plateau gate: >=${MIN_PLATEAU_ROWS} rows, >=${MIN_SENDER_EVIDENCE} senders, ${REQUIRED_PLATEAU_POLLS} unchanged polls; plateau never overrides AUTH WATCH for governed ACTIVE senders`);
 
   const auditPromise = Promise.all(SAFE_AUDITS.map((args, i) => runNode(args, `AUDIT-${i + 1}`)));
   const placementPromise = pollPlacement(testId);
@@ -205,7 +237,9 @@ async function main() {
 
   const failedAudits = audits.filter(x => x.code !== 0);
   const timedOutAudits = audits.filter(x => x.timedOut);
-  const authWatchOpen = placement.authWatchSenders.length > 0;
+  const senderGovernance = loadGovernedActiveSenders(root);
+  const authWatch = classifyAuthWatch(placement.authWatchSenders, senderGovernance);
+  const authWatchOpen = authWatch.blocking.length > 0;
   const report = {
     generatedAt: new Date().toISOString(),
     mode: 'SAFE_READ_ONLY_BATCH',
@@ -214,6 +248,16 @@ async function main() {
     failedAuditCount: failedAudits.length,
     timedOutAuditCount: timedOutAudits.length,
     placement,
+    senderGovernance: {
+      resolved: senderGovernance.resolved,
+      evidenceFile: path.relative(root, senderGovernance.file),
+      generatedAt: senderGovernance.generatedAt,
+      activeSenders: senderGovernance.activeSenders,
+      observedAuthWatchSenders: placement.authWatchSenders,
+      blockingActiveAuthWatchSenders: authWatch.blocking,
+      quarantinedAuthWatchSenders: authWatch.quarantined,
+      failClosedReason: authWatch.failClosedReason
+    },
     placementCompletenessGate: {
       minAnalyticsRows: MIN_ANALYTICS_ROWS,
       minSenderEvidence: MIN_SENDER_EVIDENCE,
@@ -229,9 +273,13 @@ async function main() {
       startsSoak: false
     },
     truth: placement.ready
-      ? (authWatchOpen ? 'POST_DMARC_PLACEMENT_STABLE_WITH_AUTH_WATCH' : 'POST_DMARC_PLACEMENT_STABLE')
+      ? (authWatchOpen
+        ? 'POST_DMARC_PLACEMENT_STABLE_WITH_ACTIVE_AUTH_WATCH'
+        : placement.authWatchSenders.length
+          ? 'POST_DMARC_PLACEMENT_STABLE_WITH_QUARANTINED_AUTH_WATCH'
+          : 'POST_DMARC_PLACEMENT_STABLE')
       : 'POST_DMARC_PLACEMENT_EVIDENCE_INCOMPLETE',
-    result: placement.ready && !authWatchOpen && failedAudits.length === 0
+    result: placement.ready && !authWatchOpen && senderGovernance.resolved && failedAudits.length === 0
       ? 'REVENUE_ACCEPTANCE_SPRINT_EVIDENCE_READY'
       : 'REVENUE_ACCEPTANCE_SPRINT_COMPLETED_WITH_OPEN_ITEMS'
   };
@@ -246,10 +294,13 @@ async function main() {
   console.log(`Placement evidence basis: ${placement.evidenceBasis}`);
   console.log(`Placement rows: ${placement.rows}`);
   console.log(`Placement senders: ${placement.senders}`);
-  console.log(`Placement AUTH WATCH: ${placement.authWatchSenders.length ? placement.authWatchSenders.join(', ') : 'NONE'}`);
+  console.log(`Placement AUTH WATCH observed: ${placement.authWatchSenders.length ? placement.authWatchSenders.join(', ') : 'NONE'}`);
+  console.log(`Governed active sender set resolved: ${senderGovernance.resolved ? 'YES' : 'NO'}`);
+  console.log(`Blocking ACTIVE AUTH WATCH: ${authWatch.blocking.length ? authWatch.blocking.join(', ') : 'NONE'}`);
+  console.log(`Quarantined AUTH WATCH: ${authWatch.quarantined.length ? authWatch.quarantined.join(', ') : 'NONE'}`);
   console.log(`Report: ${output}`);
   console.log(`RESULT: ${report.result}`);
-  if (!placement.ready || authWatchOpen || failedAudits.length) process.exitCode = 2;
+  if (!placement.ready || authWatchOpen || !senderGovernance.resolved || failedAudits.length) process.exitCode = 2;
 }
 
 if (require.main === module) main().catch(err => {
@@ -269,5 +320,7 @@ module.exports = {
   REQUIRED_PLATEAU_POLLS,
   runNode,
   parsePlacement,
-  placementFingerprint
+  placementFingerprint,
+  loadGovernedActiveSenders,
+  classifyAuthWatch
 };
