@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-schedule-20260828-045",
+  "id": "control-owner-watchdog-stabilize-20260828-046",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
+  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Run final bridge-aware detached recovery proof on current main. Require the independent user-startup watchdog to recover miles-autonomous-coo after one controlled stop AND require fresh remote_execution_bridge_supervisor BRIDGE_RUNNING state with a live post-stop bridge child. Proof runner itself may not restart/start owner. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Stabilize the control owner and GitHub bridge after the detached -045 recovery proof. Require miles-autonomous-coo online plus fresh BRIDGE_RUNNING supervisor state with a live bridge child. Do not schedule another controlled stop. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
