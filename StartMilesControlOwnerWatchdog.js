@@ -22,11 +22,9 @@ function readJson(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
 }
 
-function writeJsonAtomic(file, payload) {
+function writeJson(file, payload) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const temp = `${file}.${process.pid}.${Date.now()}.tmp`;
-  fs.writeFileSync(temp, JSON.stringify(payload, null, 2), 'utf8');
-  fs.renameSync(temp, file);
+  fs.writeFileSync(file, JSON.stringify(payload, null, 2), 'utf8');
 }
 
 function acquireLock() {
@@ -35,7 +33,7 @@ function acquireLock() {
   if (existing?.pid && Number(existing.pid) !== process.pid && isPidAlive(existing.pid)) {
     return { ok: false, reason: 'WATCHDOG_ALREADY_RUNNING', existingPid: Number(existing.pid) };
   }
-  writeJsonAtomic(LOCK_FILE, {
+  writeJson(LOCK_FILE, {
     pid: process.pid,
     root: ROOT,
     script: __filename,
@@ -68,25 +66,25 @@ function runEnsure() {
     let stdout = '';
     let stderr = '';
     let settled = false;
+    let timer = null;
     const finish = result => {
       if (settled) return;
       settled = true;
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
       resolve({ startedAt, finishedAt: new Date().toISOString(), ...result });
     };
     child.stdout.on('data', chunk => { stdout += chunk.toString(); });
     child.stderr.on('data', chunk => { stderr += chunk.toString(); });
     child.once('error', error => finish({ code: -1, error: error.message, stdout, stderr }));
     child.once('close', code => finish({ code: Number(code), stdout, stderr }));
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       try { child.kill(); } catch {}
       finish({ code: -2, error: `ENSURE_TIMEOUT_${ENSURE_TIMEOUT_MS}MS`, stdout, stderr, timedOut: true });
     }, ENSURE_TIMEOUT_MS);
-    timer.unref?.();
   });
 }
 
-async function writeHeartbeat(lastEnsure, cycle) {
+function writeHeartbeat(lastEnsure, cycle) {
   const payload = {
     ok: lastEnsure?.code === 0,
     status: lastEnsure?.code === 0 ? 'CONTROL_OWNER_WATCHDOG_PROCESS_GREEN' : 'CONTROL_OWNER_WATCHDOG_PROCESS_WATCH',
@@ -118,7 +116,7 @@ async function writeHeartbeat(lastEnsure, cycle) {
       publishesB12: false
     }
   };
-  writeJsonAtomic(HEARTBEAT_FILE, payload);
+  writeJson(HEARTBEAT_FILE, payload);
   return payload;
 }
 
@@ -144,19 +142,17 @@ async function main() {
     cycle += 1;
     try {
       const result = await runEnsure();
-      await writeHeartbeat(result, cycle);
+      writeHeartbeat(result, cycle);
     } catch (error) {
-      await writeHeartbeat({ code: -1, error: error.message, startedAt: new Date().toISOString(), finishedAt: new Date().toISOString() }, cycle);
+      writeHeartbeat({ code: -1, error: error.message, startedAt: new Date().toISOString(), finishedAt: new Date().toISOString() }, cycle);
     } finally {
       running = false;
     }
   };
 
   await tick();
-  const timer = setInterval(tick, INTERVAL_MS);
-  timer.unref?.();
+  setInterval(tick, INTERVAL_MS);
   console.log(`MILES_CONTROL_OWNER_WATCHDOG_PROCESS_STARTED pid=${process.pid} intervalMs=${INTERVAL_MS}`);
-  await new Promise(() => {});
 }
 
 if (require.main === module) {
