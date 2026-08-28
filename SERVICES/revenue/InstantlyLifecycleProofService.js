@@ -29,25 +29,41 @@ function compactLead(item = {}) {
     timestampUpdated: item.timestamp_updated || null
   };
 }
-function selectCurrentProviderSource(matches = [], preferredCampaignId = '') {
+function interestMatches(source, expectedInterest) {
+  if (expectedInterest === null || expectedInterest === undefined) return true;
+  return Number(source?.interestStatus) === Number(expectedInterest);
+}
+function selectCurrentProviderSource(matches = [], preferredCampaignId = '', expectedInterest = null) {
   const candidates = Array.isArray(matches) ? matches.filter(Boolean) : [];
   const preferred = clean(preferredCampaignId);
   if (preferred) {
     const preferredMatches = candidates.filter(item => clean(item?.campaignId) === preferred);
     if (preferredMatches.length === 1) {
-      return { ok: true, reason: 'PREFERRED_CAMPAIGN_MATCH', source: preferredMatches[0], candidates: candidates.length };
+      return { ok: true, reason: 'PREFERRED_CAMPAIGN_MATCH', source: preferredMatches[0], candidates: candidates.length, providerSourceOverride: false };
     }
     if (preferredMatches.length > 1) {
-      return { ok: false, reason: 'AMBIGUOUS_PREFERRED_CAMPAIGN_MATCH', source: null, candidates: candidates.length };
+      return { ok: false, reason: 'AMBIGUOUS_PREFERRED_CAMPAIGN_MATCH', source: null, candidates: candidates.length, providerSourceOverride: false };
     }
   }
   if (candidates.length === 1) {
-    return { ok: true, reason: 'SINGLE_GLOBAL_MATCH', source: candidates[0], candidates: 1 };
+    const source = candidates[0];
+    if (!interestMatches(source, expectedInterest)) {
+      return {
+        ok: false,
+        reason: 'PROVIDER_SOURCE_INTEREST_MISMATCH',
+        source: null,
+        candidates: 1,
+        providerSourceOverride: true,
+        expectedInterest,
+        observedInterest: source?.interestStatus ?? null
+      };
+    }
+    return { ok: true, reason: 'SINGLE_GLOBAL_MATCH', source, candidates: 1, providerSourceOverride: true };
   }
   if (candidates.length === 0) {
-    return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_NOT_FOUND', source: null, candidates: 0 };
+    return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_NOT_FOUND', source: null, candidates: 0, providerSourceOverride: false };
   }
-  return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_AMBIGUOUS', source: null, candidates: candidates.length };
+  return { ok: false, reason: 'CURRENT_PROVIDER_LEAD_AMBIGUOUS', source: null, candidates: candidates.length, providerSourceOverride: false };
 }
 
 class InstantlyLifecycleProofService {
@@ -119,8 +135,9 @@ class InstantlyLifecycleProofService {
   async repairOne(emailRecord, classification, bucket, destination) {
     const email = clean(emailRecord.lead || emailRecord.from_address_email || classification.from).toLowerCase();
     const replyCampaignId = clean(emailRecord.campaign_id || classification.campaignId);
+    const expectedInterest = interestValue(classification.category);
     const probe = await this.globalLookup(email);
-    const resolution = selectCurrentProviderSource(probe.matches, replyCampaignId);
+    const resolution = selectCurrentProviderSource(probe.matches, replyCampaignId, expectedInterest);
     if (!resolution.ok) {
       throw new Error(`${resolution.reason}:${email}:candidates=${resolution.candidates}`);
     }
@@ -153,7 +170,10 @@ class InstantlyLifecycleProofService {
         currentListId: resolution.source?.listId || null,
         providerLeadId: resolution.source?.id || null,
         resolutionReason: resolution.reason,
-        candidates: resolution.candidates
+        candidates: resolution.candidates,
+        providerSourceOverride: resolution.providerSourceOverride === true,
+        expectedInterest,
+        observedInterest: resolution.source?.interestStatus ?? null
       }
     });
     return operations;
@@ -239,7 +259,9 @@ class InstantlyLifecycleProofService {
         localLedgerCannotOverrideProviderMismatch: true,
         postMutationProviderReadRequired: true,
         mismatchGlobalProbeReadOnly: true,
-        currentProviderSourceRequiredForRepair: true
+        currentProviderSourceRequiredForRepair: true,
+        providerCampaignOverrideRequiresExpectedInterest: true,
+        canonicalCrmKeepsOriginalReplyCampaign: true
       }
     };
     fs.mkdirSync(path.dirname(this.output), { recursive: true });
@@ -250,4 +272,4 @@ class InstantlyLifecycleProofService {
 }
 
 module.exports = InstantlyLifecycleProofService;
-module.exports.helpers = { unwrap, leadEmail, compactLead, selectCurrentProviderSource };
+module.exports.helpers = { unwrap, leadEmail, compactLead, interestMatches, selectCurrentProviderSource };
