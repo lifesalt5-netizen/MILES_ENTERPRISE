@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-08-28T16:11:00.000Z",
+  "source": "CEO_PROVIDED_PROVIDER_UI_EVIDENCE",
+  "blockers": [
+    {
+      "id": "INSTANTLY_BILLING_PAYMENT_FAILED",
+      "system": "INSTANTLY",
+      "status": "OPEN",
+      "severity": "CRITICAL_CONTINUITY",
+      "observedAt": "2026-08-28T16:11:00.000Z",
+      "evidence": "Instantly UI displayed: Your recent payment failed; update billing information to keep account active.",
+      "resolutionRequirement": "Provider UI no longer shows a payment failure and the Instantly account remains active, or an authoritative provider billing/account API confirms billing continuity is healthy.",
+      "mayBeAutoClearedWithoutFreshProviderEvidence": false
+    }
+  ]
+}

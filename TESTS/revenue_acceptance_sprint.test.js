@@ -28,6 +28,41 @@ assert.strictEqual(
   mod.placementFingerprint({ rows: 18, senders: 9, authWatchSenders: ['maya@pathwaysgovcon.com', 'evan@pathwaysgovcon.com'] }),
   mod.placementFingerprint({ rows: 18, senders: 9, authWatchSenders: ['evan@pathwaysgovcon.com', 'maya@pathwaysgovcon.com'] })
 );
+
+assert.deepStrictEqual(
+  mod.classifyAuthWatch(
+    ['maya@pathwaysgovcon.com', 'kevin@pathwaysgov.com'],
+    { resolved: true, activeSenders: ['kevin@pathwaysgov.com'] }
+  ),
+  {
+    blocking: ['kevin@pathwaysgov.com'],
+    quarantined: ['maya@pathwaysgovcon.com'],
+    failClosedReason: null
+  }
+);
+assert.deepStrictEqual(
+  mod.classifyAuthWatch(
+    ['maya@pathwaysgovcon.com'],
+    { resolved: true, activeSenders: ['kevin@pathwaysgov.com'] }
+  ),
+  {
+    blocking: [],
+    quarantined: ['maya@pathwaysgovcon.com'],
+    failClosedReason: null
+  }
+);
+assert.deepStrictEqual(
+  mod.classifyAuthWatch(
+    ['maya@pathwaysgovcon.com'],
+    { resolved: false, activeSenders: [] }
+  ),
+  {
+    blocking: ['maya@pathwaysgovcon.com'],
+    quarantined: [],
+    failClosedReason: 'GOVERNED_ACTIVE_SENDER_SET_UNRESOLVED'
+  }
+);
+
 assert(src.includes('SAFE READ-ONLY BATCH'));
 assert(src.includes("'--test-id'"));
 assert(src.includes('MILES_PLACEMENT_POLL_MS'));
@@ -38,8 +73,10 @@ assert(src.includes('MILES_PLACEMENT_REQUIRED_STABLE_POLLS'));
 assert(src.includes('MILES_PLACEMENT_MIN_PLATEAU_ROWS'));
 assert(src.includes('MILES_PLACEMENT_REQUIRED_PLATEAU_POLLS'));
 assert(src.includes('STABLE_PROVIDER_PLATEAU_BELOW_CONFIGURED_ROW_TARGET'));
-assert(src.includes('plateau never overrides AUTH WATCH'));
-assert(src.includes('POST_DMARC_PLACEMENT_STABLE_WITH_AUTH_WATCH'));
+assert(src.includes('plateau never overrides AUTH WATCH for governed ACTIVE senders'));
+assert(src.includes('POST_DMARC_PLACEMENT_STABLE_WITH_QUARANTINED_AUTH_WATCH'));
+assert(src.includes('blockingActiveAuthWatchSenders'));
+assert(src.includes('quarantinedAuthWatchSenders'));
 assert(src.includes('sendsRealProspects: false'));
 assert(src.includes('deletesEmail: false'));
 assert(src.includes('publishesB12: false'));
