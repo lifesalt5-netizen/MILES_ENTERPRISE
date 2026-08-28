@@ -6,6 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ProcessName = "miles-autonomous-coo"
+$Pm2ProbeScript = Join-Path $Root "SCRIPTS\GetMilesPm2ProcessStatus.js"
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
 $HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 $WatchdogEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_latest.json"
@@ -20,8 +21,17 @@ function Get-Pm2Process {
     param([string]$Name)
     $json = (& pm2.cmd jlist 2>$null) -join "`n"
     if ([string]::IsNullOrWhiteSpace($json)) { return $null }
-    $rows = $json | ConvertFrom-Json
-    return @($rows | Where-Object { [string]$_.name -eq $Name } | Select-Object -First 1)[0]
+    $probe = ($json | & node.exe $Pm2ProbeScript $Name 2>$null) -join "`n"
+    if ($LASTEXITCODE -ne 0) { throw "PM2_JLIST_PARSE_FAILED" }
+    $probe = [string]$probe
+    $probe = $probe.Trim()
+    if ($probe -eq "NOT_FOUND") { return $null }
+    $prefix = "FOUND`t"
+    if (-not $probe.StartsWith($prefix, [System.StringComparison]::Ordinal)) { throw "PM2_JLIST_PROBE_INVALID" }
+    return [pscustomobject]@{
+        name = $Name
+        pm2_env = [pscustomobject]@{ status = $probe.Substring($prefix.Length) }
+    }
 }
 
 function Read-JsonSafe {
@@ -123,6 +133,8 @@ try {
     if ($env:OS -ne "Windows_NT") { throw "WINDOWS_REQUIRED" }
     if ($DelaySeconds -lt 10 -or $DelaySeconds -gt 180) { throw "RECOVERY_PROOF_DELAY_OUT_OF_RANGE" }
     if (-not (Test-Path -LiteralPath (Join-Path $Root ".git"))) { throw "MILES_ROOT_NOT_FOUND:$Root" }
+    if (-not (Get-Command node.exe -ErrorAction SilentlyContinue)) { throw "NODE_NOT_FOUND" }
+    if (-not (Test-Path -LiteralPath $Pm2ProbeScript)) { throw "PM2_STATUS_PROBE_NOT_FOUND:$Pm2ProbeScript" }
     if (-not (Get-Command pm2.cmd -ErrorAction SilentlyContinue)) { throw "PM2_NOT_FOUND" }
 
     if ($DelaySeconds -gt 0) { Start-Sleep -Seconds $DelaySeconds }
