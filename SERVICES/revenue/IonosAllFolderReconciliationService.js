@@ -7,6 +7,7 @@ const governed = require('../../CONNECTORS/IONOS/imap_governed');
 const ReplyIntelligenceService = require('./ReplyIntelligenceService');
 const P2GCCustomerDeliveryService = require('../customer/P2GCCustomerDeliveryService');
 const IonosInboxCleanupService = require('./IonosInboxCleanupService');
+const SentThreadProof = require('./IonosSentThreadProof');
 
 const { activeClientEmails, actionableHumanMail, folderFor } = IonosInboxCleanupService.helpers;
 
@@ -20,8 +21,25 @@ function chunk(items, size) {
 function protectedFolder(name) {
   return /^(sent|sent items|drafts|trash|deleted items|outbox|archive|all mail)$/i.test(clean(name));
 }
+function sentFolder(name) {
+  return /^(sent|sent items)$/i.test(clean(name));
+}
 function destinationFolder(classification, message, clients) {
   return folderFor(classification, message, clients) || 'INBOX';
+}
+function inboxSnapshot(scan) {
+  const folder = (scan?.folders || []).find(item => sameFolder(item.folder, 'INBOX')) || null;
+  const decisions = folder?.decisions || [];
+  return {
+    messages: Number(folder?.scanned || 0),
+    kept: decisions.filter(item => item.alreadyCorrect).length,
+    routable: decisions.filter(item => !item.alreadyCorrect && !item.sourceProtected).length,
+    keptReasons: decisions.filter(item => item.alreadyCorrect).reduce((acc, item) => {
+      const reason = item.actionableReason || 'UNKNOWN';
+      acc[reason] = Number(acc[reason] || 0) + 1;
+      return acc;
+    }, {})
+  };
 }
 
 class IonosAllFolderReconciliationService {
@@ -50,12 +68,23 @@ class IonosAllFolderReconciliationService {
     return messages;
   }
 
-  classifyFolder(folder, messages, clients) {
+  classifyFolder(folder, messages, clients, verifiedSentIds = new Set()) {
     const decisions = [];
     for (const message of messages) {
       const classification = this.classifier.classify(message);
       const actionable = actionableHumanMail(classification, message, clients);
-      const target = destinationFolder(classification, message, clients);
+      let target = destinationFolder(classification, message, clients);
+      let actionableReason = actionable.reason;
+
+      if (
+        target === 'INBOX' &&
+        actionable.reason === 'DIRECT_RESPONSE_TO_SENT_THREAD' &&
+        !SentThreadProof.hasVerifiedSentThread(message, verifiedSentIds)
+      ) {
+        target = 'MILES-JUNK';
+        actionableReason = 'UNVERIFIED_SENT_THREAD_REFERENCE';
+      }
+
       decisions.push({
         uid: message.uid,
         from: message.from,
@@ -64,7 +93,10 @@ class IonosAllFolderReconciliationService {
         targetFolder: target,
         category: classification.category,
         humanReply: classification.humanReply === true,
-        actionableReason: actionable.reason,
+        actionableReason,
+        verifiedSentThread: actionable.reason === 'DIRECT_RESPONSE_TO_SENT_THREAD'
+          ? SentThreadProof.hasVerifiedSentThread(message, verifiedSentIds)
+          : null,
         alreadyCorrect: sameFolder(folder, target),
         sourceProtected: protectedFolder(folder)
       });
@@ -75,26 +107,41 @@ class IonosAllFolderReconciliationService {
   async scanMailbox(mailbox) {
     const names = await governed.listMailboxes(mailbox);
     const clients = activeClientEmails(this.customerService);
-    const folders = [];
+    const rawFolders = [];
+
     for (const folder of names) {
       try {
-        const messages = await this.fetchFolder(mailbox, folder);
-        const decisions = this.classifyFolder(folder, messages, clients);
-        folders.push({
-          folder,
-          protected: protectedFolder(folder),
-          scanned: messages.length,
-          correct: decisions.filter(x => x.alreadyCorrect).length,
-          misrouted: decisions.filter(x => !x.alreadyCorrect).length,
-          executableMisroutes: decisions.filter(x => !x.alreadyCorrect && !x.sourceProtected).length,
-          protectedHistoricalMismatches: decisions.filter(x => !x.alreadyCorrect && x.sourceProtected).length,
-          decisions
-        });
+        rawFolders.push({ folder, messages: await this.fetchFolder(mailbox, folder) });
       } catch (error) {
-        folders.push({ folder, protected: protectedFolder(folder), scanned: 0, error: error.message, decisions: [] });
+        rawFolders.push({ folder, messages: [], error: error.message });
       }
     }
-    return { account: mailbox.email, availableFolders: names, folders };
+
+    const sentMessages = rawFolders
+      .filter(item => !item.error && sentFolder(item.folder))
+      .flatMap(item => item.messages || []);
+    const verifiedSentIds = SentThreadProof.sentMessageIdSet(sentMessages);
+    const folders = rawFolders.map(item => {
+      if (item.error) return { folder: item.folder, protected: protectedFolder(item.folder), scanned: 0, error: item.error, decisions: [] };
+      const decisions = this.classifyFolder(item.folder, item.messages, clients, verifiedSentIds);
+      return {
+        folder: item.folder,
+        protected: protectedFolder(item.folder),
+        scanned: item.messages.length,
+        correct: decisions.filter(x => x.alreadyCorrect).length,
+        misrouted: decisions.filter(x => !x.alreadyCorrect).length,
+        executableMisroutes: decisions.filter(x => !x.alreadyCorrect && !x.sourceProtected).length,
+        protectedHistoricalMismatches: decisions.filter(x => !x.alreadyCorrect && x.sourceProtected).length,
+        decisions
+      };
+    });
+
+    return {
+      account: mailbox.email,
+      availableFolders: names,
+      verifiedSentMessageIds: verifiedSentIds.size,
+      folders
+    };
   }
 
   async executeMailbox(mailbox, scan) {
@@ -123,6 +170,8 @@ class IonosAllFolderReconciliationService {
       account: scan.account,
       foldersScanned: folders.length,
       messagesScanned: folders.reduce((n, x) => n + Number(x.scanned || 0), 0),
+      verifiedSentMessageIds: Number(scan.verifiedSentMessageIds || 0),
+      inboxBefore: inboxSnapshot(scan),
       misroutedBefore: folders.reduce((n, x) => n + Number(x.misrouted || 0), 0),
       executableMisroutesBefore: folders.reduce((n, x) => n + Number(x.executableMisroutes || 0), 0),
       protectedHistoricalMismatches: folders.reduce((n, x) => n + Number(x.protectedHistoricalMismatches || 0), 0),
@@ -130,6 +179,8 @@ class IonosAllFolderReconciliationService {
       moves,
       verification: verification ? {
         executableMisroutesAfter: verification.folders.reduce((n, x) => n + Number(x.executableMisroutes || 0), 0),
+        inboxAfter: inboxSnapshot(verification),
+        verifiedSentMessageIds: Number(verification.verifiedSentMessageIds || 0),
         folderErrors: verification.folders.filter(x => x.error).map(x => ({ folder: x.folder, error: x.error }))
       } : null,
       folders
@@ -153,7 +204,12 @@ class IonosAllFolderReconciliationService {
 
     const result = {
       ok: accounts.length > 0 && errors.length === 0 && accounts.every(account =>
-        account.folderErrors.length === 0 && (!execute || account.verification.executableMisroutesAfter === 0)
+        account.folderErrors.length === 0 &&
+        (!execute || (
+          account.verification &&
+          account.verification.executableMisroutesAfter === 0 &&
+          account.verification.folderErrors.length === 0
+        ))
       ),
       mode: execute ? 'ALL_FOLDER_GOVERNED_RECONCILIATION_WITH_POST_VERIFY' : 'ALL_FOLDER_READ_ONLY_PLAN',
       accounts,
@@ -161,10 +217,12 @@ class IonosAllFolderReconciliationService {
       totals: {
         foldersScanned: accounts.reduce((n, x) => n + x.foldersScanned, 0),
         messagesScanned: accounts.reduce((n, x) => n + x.messagesScanned, 0),
+        inboxMessagesBefore: accounts.reduce((n, x) => n + Number(x.inboxBefore?.messages || 0), 0),
         misroutedBefore: accounts.reduce((n, x) => n + x.misroutedBefore, 0),
         executableMisroutesBefore: accounts.reduce((n, x) => n + x.executableMisroutesBefore, 0),
         protectedHistoricalMismatches: accounts.reduce((n, x) => n + x.protectedHistoricalMismatches, 0),
-        executableMisroutesAfter: execute ? accounts.reduce((n, x) => n + Number(x.verification?.executableMisroutesAfter || 0), 0) : null
+        executableMisroutesAfter: execute ? accounts.reduce((n, x) => n + Number(x.verification?.executableMisroutesAfter || 0), 0) : null,
+        inboxMessagesAfter: execute ? accounts.reduce((n, x) => n + Number(x.verification?.inboxAfter?.messages || 0), 0) : null
       },
       safety: {
         deletesMessages: false,
@@ -172,6 +230,8 @@ class IonosAllFolderReconciliationService {
         scansAllDiscoveredFolders: true,
         sentDraftTrashArchiveAreAuditOnly: true,
         actionableClientAndSentThreadMailRoutesToInbox: true,
+        directReplyRequiresVerifiedSentMessageId: true,
+        perMailboxPostVerificationRequired: true,
         semanticFoldersAreReconciledBidirectionally: true,
         postMutationAllFolderReadRequired: true
       }
@@ -184,4 +244,4 @@ class IonosAllFolderReconciliationService {
 }
 
 module.exports = IonosAllFolderReconciliationService;
-module.exports.helpers = { clean, sameFolder, protectedFolder, destinationFolder };
+module.exports.helpers = { clean, sameFolder, protectedFolder, sentFolder, destinationFolder, inboxSnapshot };
