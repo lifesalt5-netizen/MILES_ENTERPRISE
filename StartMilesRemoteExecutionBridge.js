@@ -11,6 +11,8 @@ const ROOT = __dirname;
 const SOURCE_FILE = __filename;
 const POLL_MS = Math.max(5000, Number(process.env.MILES_REMOTE_BRIDGE_POLL_MS || 15000));
 const PROGRESS_MS = Math.max(30000, Number(process.env.MILES_REMOTE_BRIDGE_PROGRESS_MS || 60000));
+const DIRECTIVE_HTTP_TIMEOUT_MS = Math.max(5000, Number(process.env.MILES_BRIDGE_DIRECTIVE_HTTP_TIMEOUT_MS || 30000));
+const GIT_COMMAND_TIMEOUT_MS = Math.max(10000, Number(process.env.MILES_BRIDGE_GIT_COMMAND_TIMEOUT_MS || 45000));
 const CONTROL_BRANCH = 'miles-control';
 const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || `https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/${CONTROL_BRANCH}/DATA/control/miles_remote_execution_directive.json`;
 const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_state.json');
@@ -50,15 +52,30 @@ function writeState(state) {
 
 function getJson(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'user-agent': 'MILES-Remote-Execution-Bridge' } }, res => {
+    let settled = false;
+    const finishResolve = value => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+    const finishReject = error => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    };
+    const request = https.get(url, { headers: { 'user-agent': 'MILES-Remote-Execution-Bridge' } }, res => {
       const chunks = [];
       res.on('data', c => chunks.push(c));
       res.on('end', () => {
-        if (res.statusCode !== 200) return reject(new Error(`DIRECTIVE_HTTP_${res.statusCode}`));
-        try { resolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
-        catch (e) { reject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`)); }
+        if (res.statusCode !== 200) return finishReject(new Error(`DIRECTIVE_HTTP_${res.statusCode}`));
+        try { finishResolve(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+        catch (e) { finishReject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`)); }
       });
-    }).on('error', reject);
+    });
+    request.setTimeout(DIRECTIVE_HTTP_TIMEOUT_MS, () => {
+      request.destroy(new Error(`DIRECTIVE_HTTP_TIMEOUT_${DIRECTIVE_HTTP_TIMEOUT_MS}MS`));
+    });
+    request.on('error', finishReject);
   });
 }
 
@@ -70,23 +87,47 @@ function run(command, args, label, options = {}) {
       shell: false,
       windowsHide: true
     });
-    let stdout = '', stderr = '';
-    child.stdout.on('data', d => { const s=d.toString(); stdout += s; if (!options.quiet) process.stdout.write(`[${label}] ${s}`); });
-    child.stderr.on('data', d => { const s=d.toString(); stderr += s; if (!options.quiet) process.stderr.write(`[${label}] ${s}`); });
-    child.on('close', code => resolve({ code, stdout, stderr }));
-    child.on('error', e => resolve({ code: -1, stdout, stderr: `${stderr}\n${e.message}` }));
+    let stdout = '', stderr = '', settled = false, timer = null;
+    const timeoutMs = Math.max(0, Number(options.timeoutMs || 0));
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(result);
+    };
+    child.stdout?.on('data', d => { const s=d.toString(); stdout += s; if (!options.quiet) process.stdout.write(`[${label}] ${s}`); });
+    child.stderr?.on('data', d => { const s=d.toString(); stderr += s; if (!options.quiet) process.stderr.write(`[${label}] ${s}`); });
+    child.on('close', (code, signal) => finish({ code, signal: signal || null, stdout, stderr, timedOut: false }));
+    child.on('error', e => finish({ code: -1, signal: null, stdout, stderr: `${stderr}\n${e.message}`, timedOut: false }));
+    if (timeoutMs > 0) {
+      timer = setTimeout(() => {
+        if (settled) return;
+        const marker = `COMMAND_TIMEOUT_${timeoutMs}MS`;
+        stderr = `${stderr}\n${marker}`.trim();
+        try { child.kill(); } catch {}
+        finish({ code: -2, signal: 'TIMEOUT', stdout, stderr, timedOut: true, timeoutMs });
+      }, timeoutMs);
+      timer.unref?.();
+    }
   });
 }
 
 function requireSuccess(result, code) {
-  if (!result || result.code !== 0) throw new Error(code);
+  if (!result || result.code !== 0) {
+    const suffix = result?.timedOut ? `_TIMEOUT_${result.timeoutMs || 'UNKNOWN'}MS` : '';
+    throw new Error(`${code}${suffix}`);
+  }
   return String(result.stdout || '').trim();
 }
 
+function gitRun(commandArgs, label = 'GIT', options = {}) {
+  return run('git', commandArgs, label, { ...options, timeoutMs: GIT_COMMAND_TIMEOUT_MS });
+}
+
 async function safeFastForward() {
-  const fetchResult = await run('git', ['fetch', 'origin', 'main'], 'GIT');
+  const fetchResult = await gitRun(['fetch', 'origin', 'main']);
   requireSuccess(fetchResult, 'GIT_FETCH_FAILED');
-  const mergeResult = await run('git', ['merge', '--ff-only', 'origin/main'], 'GIT');
+  const mergeResult = await gitRun(['merge', '--ff-only', 'origin/main']);
   requireSuccess(mergeResult, 'GIT_FAST_FORWARD_FAILED_NO_DESTRUCTIVE_RECOVERY_ATTEMPTED');
 }
 
@@ -143,11 +184,11 @@ async function publishEvidence(evidence) {
   fs.mkdirSync(path.dirname(EVIDENCE_FILE), { recursive: true });
   fs.writeFileSync(EVIDENCE_FILE, JSON.stringify(evidence, null, 2), 'utf8');
 
-  const fetchResult = await run('git', ['fetch', 'origin', 'main'], 'EVIDENCE-GIT', { quiet: true });
+  const fetchResult = await gitRun(['fetch', 'origin', 'main'], 'EVIDENCE-GIT', { quiet: true });
   requireSuccess(fetchResult, 'EVIDENCE_GIT_FETCH_FAILED');
 
   const blob = requireSuccess(
-    await run('git', ['hash-object', '-w', EVIDENCE_FILE], 'EVIDENCE-GIT', { quiet: true }),
+    await gitRun(['hash-object', '-w', EVIDENCE_FILE], 'EVIDENCE-GIT', { quiet: true }),
     'EVIDENCE_BLOB_CREATE_FAILED'
   );
 
@@ -163,15 +204,15 @@ async function publishEvidence(evidence) {
   };
 
   try {
-    requireSuccess(await run('git', ['read-tree', 'origin/main'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_READ_TREE_FAILED');
-    requireSuccess(await run('git', ['update-index', '--add', '--cacheinfo', `100644,${blob},${EVIDENCE_REPO_PATH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_UPDATE_INDEX_FAILED');
-    const tree = requireSuccess(await run('git', ['write-tree'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_WRITE_TREE_FAILED');
+    requireSuccess(await gitRun(['read-tree', 'origin/main'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_READ_TREE_FAILED');
+    requireSuccess(await gitRun(['update-index', '--add', '--cacheinfo', `100644,${blob},${EVIDENCE_REPO_PATH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_UPDATE_INDEX_FAILED');
+    const tree = requireSuccess(await gitRun(['write-tree'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_WRITE_TREE_FAILED');
     const commit = requireSuccess(
-      await run('git', ['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId} ${evidence.phase || 'FINAL'}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
+      await gitRun(['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId} ${evidence.phase || 'FINAL'}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
       'EVIDENCE_COMMIT_TREE_FAILED'
     );
     requireSuccess(
-      await run('git', ['push', 'origin', `+${commit}:refs/heads/${EVIDENCE_BRANCH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
+      await gitRun(['push', 'origin', `+${commit}:refs/heads/${EVIDENCE_BRANCH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
       'EVIDENCE_PUSH_FAILED'
     );
     return { ok: true, branch: EVIDENCE_BRANCH, repoPath: EVIDENCE_REPO_PATH, commit };
@@ -288,6 +329,8 @@ async function main() {
   console.log('[MILES REMOTE BRIDGE] STARTED');
   console.log(`[MILES REMOTE BRIDGE] Poll ${Math.round(POLL_MS/1000)}s`);
   console.log(`[MILES REMOTE BRIDGE] Progress publish ${Math.round(PROGRESS_MS/1000)}s`);
+  console.log(`[MILES REMOTE BRIDGE] Directive HTTP timeout ${Math.round(DIRECTIVE_HTTP_TIMEOUT_MS/1000)}s`);
+  console.log(`[MILES REMOTE BRIDGE] Git command timeout ${Math.round(GIT_COMMAND_TIMEOUT_MS/1000)}s`);
   console.log(`[MILES REMOTE BRIDGE] Control branch: ${CONTROL_BRANCH}`);
   console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
   console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
@@ -311,6 +354,8 @@ module.exports = {
   EVIDENCE_BRANCH,
   EVIDENCE_REPO_PATH,
   PROGRESS_MS,
+  DIRECTIVE_HTTP_TIMEOUT_MS,
+  GIT_COMMAND_TIMEOUT_MS,
   STARTUP_SOURCE_DIGEST,
   BRIDGE_SUPERVISED,
   SUPERVISED_RESTART_EXIT_CODE,
@@ -322,5 +367,7 @@ module.exports = {
   baseEvidence,
   sourceDigest,
   bridgeSourceChanged,
-  relaunchCurrentBridge
+  relaunchCurrentBridge,
+  run,
+  gitRun
 };

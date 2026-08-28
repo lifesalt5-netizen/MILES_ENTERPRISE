@@ -26,6 +26,10 @@ assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_e
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
 assert.strictEqual(bridge.EVIDENCE_REPO_PATH, 'DATA/control/miles_remote_execution_result.json');
 assert(bridge.PROGRESS_MS >= 30000);
+assert(bridge.DIRECTIVE_HTTP_TIMEOUT_MS >= 5000);
+assert(bridge.GIT_COMMAND_TIMEOUT_MS >= 10000);
+assert.strictEqual(typeof bridge.run, 'function');
+assert.strictEqual(typeof bridge.gitRun, 'function');
 assert.strictEqual(typeof bridge.STARTUP_SOURCE_DIGEST, 'string');
 assert(bridge.STARTUP_SOURCE_DIGEST.length > 0);
 assert.strictEqual(bridge.sourceDigest(), bridge.STARTUP_SOURCE_DIGEST);
@@ -44,7 +48,12 @@ assert.strictEqual(typeof bridge.publishEvidenceSerialized, 'function');
 assert.strictEqual(typeof bridge.relaunchCurrentBridge, 'function');
 
 const src = fs.readFileSync(path.join(__dirname, '..', 'StartMilesRemoteExecutionBridge.js'), 'utf8');
-assert(src.includes("['merge', '--ff-only', 'origin/main']"));
+assert(src.includes("gitRun(['fetch', 'origin', 'main'])"));
+assert(src.includes("gitRun(['merge', '--ff-only', 'origin/main'])"));
+assert(src.includes('request.setTimeout(DIRECTIVE_HTTP_TIMEOUT_MS'));
+assert(src.includes('COMMAND_TIMEOUT_${timeoutMs}MS'));
+assert(src.includes('timeoutMs: GIT_COMMAND_TIMEOUT_MS'));
+assert(src.includes('child.kill()'));
 assert(src.includes("refs/heads/${EVIDENCE_BRANCH}"));
 assert(src.includes('GIT_INDEX_FILE'));
 assert(src.includes("'commit-tree'"));
