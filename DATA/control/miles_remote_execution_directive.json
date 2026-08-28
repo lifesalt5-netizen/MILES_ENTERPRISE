@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-verify-20260828-057",
+  "id": "control-owner-watchdog-recovery-diagnostic-20260828-058",
   "enabled": true,
   "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Second read-only verification pass after allowing proof b2d4607b575d4bf8b43c766429922f63 local evidence to settle following owner/bridge recovery. Require matching proofId, CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN, miles-autonomous-coo online, bridge supervisor fresh, bridge child alive, and post-stop recovery evidence. No new controlled stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
+  "note": "Read-only diagnostic verifier pass after PR #334. Do not schedule or perform any new controlled stop. Report recovery proof ID mismatch diagnostics from existing local artifacts only: schedule proofId, saved proofId, one-shot watchdog request proofId/status/exitCode/error, plus owner and bridge verification. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
 }
