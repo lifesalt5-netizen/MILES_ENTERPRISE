@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-install-20260828-051",
+  "id": "control-owner-watchdog-ensure-20260828-052",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
+  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Reload the independent user-startup watchdog only if its live source digest differs from current main ee1b602fe8829c301dc646634b88b53262fa2358, then require a fresh current-source heartbeat. No controlled owner stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Non-destructive production stabilization proof after loading current main d4d060d006c48dde18b2e1766b60d53ca4c531db. Require miles-autonomous-coo online, bridge supervisor fresh, bridge child alive, and current control directive consumption healthy. No controlled stop, prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
