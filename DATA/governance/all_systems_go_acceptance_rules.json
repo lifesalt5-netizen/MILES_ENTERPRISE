@@ -1,6 +1,6 @@
 {
   "standard": "P2GC_MILES_ALL_SYSTEMS_GO",
-  "version": 1,
+  "version": 2,
   "status": "GOVERNING",
   "purpose": "Define the mandatory production-evidence standard for testing, fixing, validating, recovering, and declaring P2GC/MILES systems complete.",
   "systemGoCriteria": [
@@ -43,7 +43,11 @@
     "MOCK_DEMO_SYNTHETIC_PLACEHOLDER_OR_STALE_FALLBACK_PRESENTED_AS_PRODUCTION_TRUTH",
     "UNKNOWN_OR_MISSING_CRITICAL_DATA_SILENTLY_DEFAULTS_TO_GREEN_OR_ZERO",
     "MANUAL_CEO_SHELL_ACTION_REQUIRED_FOR_NORMAL_RECOVERY",
-    "EVIDENCE_PREDATES_A_LATER_MATERIAL_CHANGE_WITHOUT_REGRESSION"
+    "EVIDENCE_PREDATES_A_LATER_MATERIAL_CHANGE_WITHOUT_REGRESSION",
+    "ONE_TIME_MAILBOX_CLEANUP_PASSES_BUT_AUTONOMOUS_HYGIENE_REGRESSES",
+    "PROTECTED_PRIMARY_MAILBOX_IS_ASSIGNED_TO_OUTBOUND_CAMPAIGN",
+    "HARD_BOUNCE_OR_TECHNICAL_FAILURE_IS_NOT_SUPPRESSED_FROM_FUTURE_SENDS",
+    "INSTANTLY_PROVIDER_METRICS_CONFLICT_WITH_ACTUAL_MAILBOX_DSN_EVIDENCE_WITHOUT_RECONCILIATION"
   ],
   "fixValidationLoop": [
     "OBSERVE_FAILURE_WITH_EVIDENCE",
@@ -63,16 +67,16 @@
     {"id":"MILES_CORE_RUNTIME","description":"Persistent MILES runtime is online, cycling, truthful, and free of critical runtime errors."},
     {"id":"AUTONOMOUS_RUNTIME_OWNERSHIP","description":"Normal operation and recovery do not depend on CEO shell administration."},
     {"id":"INDEPENDENT_WATCHDOG_RECOVERY","description":"Independent watchdog heartbeat is fresh and controlled owner-stop proof demonstrates watchdog-originated recovery."},
-    {"id":"GITHUB_REMOTE_CONTROL_BRIDGE","description":"Governed GitHub directives self-update safely, execute only allowlisted jobs, and publish truthful evidence."},
+    {"id":"GITHUB_REMOTE_CONTROL_BRIDGE","description":"Governed GitHub directives self-update safely, execute only allowlisted jobs, publish truthful evidence, and are demonstrably consumed after normal control-owner wake/recovery."},
     {"id":"REPOSITORY_INTEGRITY","description":"Current main is healthy, required files and tests pass, and production has no critical tracked drift or duplicate owner."},
     {"id":"CAPABILITY_AUTONOMY_REGISTRY","description":"Required capabilities are registered, routable, and genuinely executable with no unexplained critical gaps."},
     {"id":"ORION_CORE_AND_FRESHNESS","description":"Active ORION is readable, schema-complete, provenance-backed, genuinely refreshed, integrity-validated, query-validated, and safely promotable/rollback-capable."},
     {"id":"ORION_DERIVED_INTELLIGENCE","description":"Recommendations, personas, opportunities, recompetes, and partner intelligence derive from current supported sources and fail closed when evidence is absent."},
-    {"id":"INSTANTLY_CAMPAIGN_LIFECYCLE","description":"Campaign inventory, lead lifecycle, replies, source campaign mapping, and CRM progression reconcile to live provider truth."},
-    {"id":"OUTBOUND_END_TO_END","description":"Lead through send, reply, classification, CRM, and meeting/progression works end-to-end under governance."},
+    {"id":"INSTANTLY_CAMPAIGN_LIFECYCLE","description":"Campaign inventory, sender assignments, lead lifecycle, replies, source campaign mapping, hard-bounce/technical suppression, and CRM progression reconcile to live provider truth; protected pathways2gc.com mailboxes are excluded from outbound campaigns unless explicitly authorized, and provider bounce metrics reconcile to actual DSN evidence."},
+    {"id":"OUTBOUND_END_TO_END","description":"Lead through send, bounce/suppression where applicable, reply, classification, CRM, and meeting/progression works end-to-end under governance."},
     {"id":"INBOX_PLACEMENT","description":"Real placement evidence distinguishes Inbox, Spam, Promotions or equivalent; delivery alone is insufficient."},
     {"id":"SENDER_AUTHENTICATION","description":"SPF/DKIM/DMARC are observed in received-message evidence for production senders and unresolved anomalies block GREEN."},
-    {"id":"IONOS_MAILBOX_AND_REPLY_TRUTH","description":"Mailbox hygiene, folder routing, reply truth, and no-delete governance reconcile to actual mailboxes."},
+    {"id":"IONOS_MAILBOX_AND_REPLY_TRUTH","description":"Mailbox hygiene, folder routing, reply truth, and no-delete governance reconcile to actual mailboxes, and a recurring governed hygiene loop demonstrably prevents routable bounce/system noise from re-accumulating in executive Inbox under normal operation."},
     {"id":"CALENDLY_MEETING_PIPELINE","description":"Calendly is authoritative for scheduled meetings and MILES pipeline counts reconcile to live Calendly truth."},
     {"id":"SEND_WINDOW_GOVERNANCE","description":"Actual sends comply with approved windows and governing code prevents unauthorized-window sends."},
     {"id":"CRM_PROSPECT_CLIENT_STATE","description":"Prospect/client records, statuses, work, meetings, and material duplicate handling reflect real operational state."},
