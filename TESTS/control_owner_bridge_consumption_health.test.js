@@ -30,6 +30,8 @@ assert(ensure.includes('currentDirectiveId'));
 assert(ensure.includes('lastDirectiveId'));
 assert(ensure.includes('evidenceDirectiveId'));
 assert(ensure.includes('mismatchAgeSeconds'));
+assert(ensure.includes('$uri = "${ControlDirectiveUrl}?t=$nonce"'));
+assert(!ensure.includes('$uri = "$ControlDirectiveUrl?t=$nonce"'));
 assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(ensure));
 assert(!/Invoke-Expression|\biex\b/i.test(ensure));
 assert(!/sendReply|RemediateNamecheapDmarc|CreateControlledInstantlyInboxPlacementTest/i.test(ensure));

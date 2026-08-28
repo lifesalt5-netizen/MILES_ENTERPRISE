@@ -36,7 +36,7 @@ function Write-JsonAtomic {
 function Get-CurrentControlDirective {
     try {
         $nonce = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-        $uri = "$ControlDirectiveUrl?t=$nonce"
+        $uri = "${ControlDirectiveUrl}?t=$nonce"
         $headers = @{ "Cache-Control" = "no-cache, no-store"; "Pragma" = "no-cache" }
         $directive = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers -TimeoutSec $ControlDirectiveProbeTimeoutSeconds -ErrorAction Stop
         if (-not $directive -or -not $directive.id) {
