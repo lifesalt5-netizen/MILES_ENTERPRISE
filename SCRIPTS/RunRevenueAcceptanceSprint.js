@@ -25,6 +25,7 @@ const SAFE_AUDITS = [
   ['SCRIPTS/AuditInstantlySendWindowHistory.js'],
   ['SCRIPTS/AuditUnified8787ScreenAcceptance.js'],
   ['SCRIPTS/AuditOrionRebuildReadiness.js'],
+  ['SCRIPTS/AuditOrionOfficialSourceAvailability.js'],
   ['SCRIPTS/QualifyRepositoryRisks.js'],
   ['SCRIPTS/ReconcileProductionTruth.js']
 ];
