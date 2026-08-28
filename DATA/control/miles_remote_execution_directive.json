@@ -1,7 +1,7 @@
 {
-  "id": "ionos-all-folder-plan-20260827-017",
+  "id": "ionos-all-folder-execute-20260827-018",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Fresh retry after PR293 singleton hotfix. Run live all-folder IONOS reconciliation PLAN using current main. Scan every discovered folder; protected Sent/Drafts/Trash/Archive remain audit-only. Determine canonical routing for active-client/direct-reply Inbox, OOO, AUTO, JUNK, BOUNCE, CLOSED, NURTURE, GSA-EBUY, SYSTEM, FORWARDED and BILLING. Report executable misroutes and protected historical mismatches. PLAN ONLY: do not move or delete email. No prospect sends, DNS mutation, B12 publish, or destructive actions."
+  "note": "Execute the verified IONOS all-folder reconciliation from PLAN -017. Apply governed UID MOVE only for executable misroutes; no message deletion, no EXPUNGE, no protected Sent/Drafts/Trash/Archive mutation, no prospect sends, no DNS/B12 mutation. After moves, perform a full all-folder reread and require executableMisroutesAfter=0. If any folder/account errors occur, fail closed and publish exact evidence."
 }
