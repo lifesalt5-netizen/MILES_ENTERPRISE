@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-stabilize-20260828-046",
+  "id": "control-owner-watchdog-ensure-20260828-047",
   "enabled": true,
   "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Stabilize the control owner and GitHub bridge after the detached -045 recovery proof. Require miles-autonomous-coo online plus fresh BRIDGE_RUNNING supervisor state with a live bridge child. Do not schedule another controlled stop. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Production proof on merged main b7ce88500434c7e9f57df9e16cb0d4949e9bca91. Require miles-autonomous-coo online plus fresh BRIDGE_RUNNING supervisor state with a live bridge child. No controlled stop in this step. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
