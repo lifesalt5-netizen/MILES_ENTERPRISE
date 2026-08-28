@@ -7,6 +7,8 @@ const bridge = require('../StartMilesRemoteExecutionBridge');
 assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'CONTROL_OWNER_WATCHDOG_ENSURE',
   'CONTROL_OWNER_WATCHDOG_INSTALL',
+  'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE',
+  'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY',
   'INBOX_PLACEMENT_AUDIT',
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
@@ -23,6 +25,10 @@ assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[0], 'powershell.ex
 assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[1].includes('SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'));
 assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_ENSURE[0], 'powershell.exe');
 assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_ENSURE[1].includes('SCRIPTS/EnsureMilesControlOwnerWindows.ps1'));
+assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE[0], 'powershell.exe');
+assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE[1].includes('SCRIPTS/ScheduleMilesControlOwnerRecoveryProofWindows.ps1'));
+assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY[0], 'powershell.exe');
+assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY[1].includes('SCRIPTS/VerifyMilesControlOwnerRecoveryProofWindows.ps1'));
 assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_PLAN, ['node', ['SCRIPTS/RunIonosInboxCleanup.js']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_INBOX_CLEANUP_EXECUTE, ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_PLAN, ['node', ['SCRIPTS/RunIonosSpamRescue.js']]);
@@ -47,6 +53,8 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_AC
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INFRASTRUCTURE_HEALTH_AUDIT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_INSTALL'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_ENSURE'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_INBOX_CLEANUP_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_PLAN'}).ok, true);
@@ -100,5 +108,21 @@ assert(infraRunner.includes('destructiveActionsPerformed: false'));
 assert(infraRunner.includes('providerMutation: false'));
 assert(!infraRunner.includes('exec('));
 assert(!infraRunner.includes('shell: true'));
+
+const proofScheduler = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'ScheduleMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
+const proofRunner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
+const proofVerifier = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'VerifyMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
+assert(proofScheduler.includes('New-ScheduledTaskTrigger -Once'));
+assert(proofScheduler.includes('CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED'));
+assert(proofRunner.includes('& pm2.cmd stop $ProcessName'));
+assert(proofRunner.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN'));
+assert(proofRunner.includes('recoveryMustComeFromIndependentWatchdog = $true'));
+assert(proofRunner.includes('INDEPENDENT_WATCHDOG_DID_NOT_PROVE_RECOVERY_WITHIN_180_SECONDS_FAILSAFE_LEFT_ARMED'));
+assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_VERIFIED'));
+assert(proofVerifier.includes('RECOVERY_PROOF_WATCHDOG_EVIDENCE_NOT_POST_STOP'));
+for (const proofScript of [proofScheduler, proofRunner, proofVerifier]) {
+  assert(!/Invoke-Expression|\biex\b/i.test(proofScript), 'recovery proof must not evaluate arbitrary commands');
+  assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(proofScript), 'recovery proof must not perform Git mutation/destructive recovery');
+}
 
 console.log('REMOTE_EXECUTION_BRIDGE_SAFETY=PASS');

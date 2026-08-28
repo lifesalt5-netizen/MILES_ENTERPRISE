@@ -35,6 +35,8 @@ const JOBS = Object.freeze({
   INFRASTRUCTURE_HEALTH_AUDIT: ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']],
   CONTROL_OWNER_WATCHDOG_INSTALL: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1', '-Root', ROOT]],
   CONTROL_OWNER_WATCHDOG_ENSURE: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1', '-Root', ROOT]],
+  CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/ScheduleMilesControlOwnerRecoveryProofWindows.ps1', '-Root', ROOT]],
+  CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/VerifyMilesControlOwnerRecoveryProofWindows.ps1', '-Root', ROOT]],
   IONOS_INBOX_CLEANUP_PLAN: ['node', ['SCRIPTS/RunIonosInboxCleanup.js']],
   IONOS_INBOX_CLEANUP_EXECUTE: ['node', ['SCRIPTS/RunIonosInboxCleanup.js', '--execute']],
   IONOS_SPAM_RESCUE_PLAN: ['node', ['SCRIPTS/RunIonosSpamRescue.js']],
