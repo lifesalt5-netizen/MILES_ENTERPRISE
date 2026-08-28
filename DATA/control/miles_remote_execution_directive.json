@@ -1,7 +1,7 @@
 {
-  "id": "revenue-acceptance-readonly-20260827-033",
+  "id": "orion-readiness-readonly-20260827-034",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR306 production proof. First acceptance target is Calendly/Google meeting reconciliation using fresh dedicated Calendly evidence fallback semantics. Preserve read-only safety: no sends, no lead deletion, no DNS/B12/IONOS changes, no calendar mutations. ORION timeout, if repeated, is to be treated separately after meeting evidence is evaluated."
+  "note": "Post-PR308 production proof. Primary acceptance target is ORION freshness/rebuild readiness using the canonical targeted read-only scanner. Do not rebuild or mutate any ORION database/source unless the evidence proves a newer compatible source exists and a later governed execution explicitly authorizes rebuild. Preserve no-send/no-delete/no-DNS/no-B12/no-IONOS/no-calendar-mutation boundaries."
 }
