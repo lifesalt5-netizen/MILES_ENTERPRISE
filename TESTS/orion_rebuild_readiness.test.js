@@ -6,6 +6,7 @@ const path = require('path');
 const {
   classifySourceFile,
   scoreSourceCandidate,
+  normalizeIntegrityMode,
   EXPECTED_TABLES
 } = require('../SERVICES/orion/OrionRebuildReadinessService');
 
@@ -33,12 +34,26 @@ assert(freshArchive > oldDb, 'new official-source archive should outrank stale g
 assert(EXPECTED_TABLES.includes('contractors'));
 assert(EXPECTED_TABLES.includes('recompetes'));
 assert.strictEqual(path.basename('C:/x/ORION_DEMO_LIVE_READY.db'), 'ORION_DEMO_LIVE_READY.db');
+assert.strictEqual(normalizeIntegrityMode('schema_only'), 'SCHEMA_ONLY');
+assert.strictEqual(normalizeIntegrityMode('quick'), 'QUICK');
+assert.strictEqual(normalizeIntegrityMode('full'), 'FULL');
+assert.strictEqual(normalizeIntegrityMode('unexpected'), 'FULL', 'unknown profiles must fail back to full verification');
 
 const targetedScript = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AuditOrionRebuildReadinessFast.js'), 'utf8');
 assert(targetedScript.includes("'C:\\\\P2GC_Intelligence\\\\Orion Demo 6126'"), 'targeted scan must include the known C: ORION root');
 assert(targetedScript.includes("'D:\\\\P2GC_Intelligence\\\\Orion Demo 6126'"), 'targeted scan must include the known D: ORION root');
 assert(!targetedScript.includes("'C:\\\\P2GC_Intelligence'\n"), 'targeted scan must not crawl the full C: P2GC tree');
 assert(!targetedScript.includes("'D:\\\\P2GC_Intelligence'\n"), 'targeted scan must not crawl the full D: P2GC tree');
+assert(targetedScript.includes("dbIntegrityMode: 'SCHEMA_ONLY'"), 'targeted readiness must not run full SQLite integrity checks on production/candidate DBs');
+assert(targetedScript.includes('countRows: false'), 'targeted readiness must not count every large ORION table');
+assert(targetedScript.includes('hashCandidates: false'), 'targeted readiness must not hash every discovered source candidate');
+assert(targetedScript.includes('Full SQLite integrity validation remains mandatory on staging before any promotion.'), 'fast readiness must preserve full staging-validation contract');
+
+const serviceScript = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'orion', 'OrionRebuildReadinessService.js'), 'utf8');
+assert(serviceScript.includes("integrity = 'NOT_RUN_SCHEMA_ONLY'"));
+assert(serviceScript.includes("db.pragma('integrity_check'"), 'full integrity verification must remain available for staging/promotion validation');
+assert(serviceScript.includes("db.pragma('quick_check'"));
+assert(serviceScript.includes("'SQLITE_INTEGRITY_OK'"), 'promotion contract must still require integrity success');
 
 const canonicalScript = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AuditOrionRebuildReadiness.js'), 'utf8');
 assert(canonicalScript.includes("require('./AuditOrionRebuildReadinessFast')"), 'canonical ORION readiness must delegate to targeted scanner');
