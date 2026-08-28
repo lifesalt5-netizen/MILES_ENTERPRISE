@@ -1,7 +1,7 @@
 {
-  "id": "orion-readiness-readonly-20260827-034",
+  "id": "orion-readiness-readonly-20260827-035",
   "enabled": true,
   "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR308 production proof. Primary acceptance target is ORION freshness/rebuild readiness using the canonical targeted read-only scanner. Do not rebuild or mutate any ORION database/source unless the evidence proves a newer compatible source exists and a later governed execution explicitly authorizes rebuild. Preserve no-send/no-delete/no-DNS/no-B12/no-IONOS/no-calendar-mutation boundaries."
+  "note": "Post-PR310 production proof. Primary acceptance target is ORION readiness using the canonical targeted SCHEMA_ONLY read-only discovery profile with no large-table row counts and no candidate hashing. Do not rebuild, download, promote, or mutate any ORION database/source. Preserve no-send/no-delete/no-DNS/no-B12/no-IONOS/no-calendar-mutation boundaries. If a newer trusted source is discovered, report it only; promotion requires a later governed staging/full-integrity/backup/rollback execution."
 }
