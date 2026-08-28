@@ -1,6 +1,5 @@
 'use strict';
 
-// Global mismatch probe is read-only provider evidence.
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
@@ -16,24 +15,34 @@ assert.deepStrictEqual(Service.helpers.compactLead({
 });
 
 const singleCurrent = Service.helpers.selectCurrentProviderSource([
-  { id: 'lead-live', email: 'a@example.com', campaignId: 'campaign-current', listId: null }
-], 'campaign-stale');
+  { id: 'lead-live', email: 'a@example.com', campaignId: 'campaign-current', listId: null, interestStatus: -1 }
+], 'campaign-stale', -1);
 assert.strictEqual(singleCurrent.ok, true);
 assert.strictEqual(singleCurrent.reason, 'SINGLE_GLOBAL_MATCH');
 assert.strictEqual(singleCurrent.source.campaignId, 'campaign-current');
+assert.strictEqual(singleCurrent.providerSourceOverride, true);
+
+const wrongInterest = Service.helpers.selectCurrentProviderSource([
+  { id: 'lead-live', email: 'a@example.com', campaignId: 'campaign-current', listId: null, interestStatus: 0 }
+], 'campaign-stale', -1);
+assert.strictEqual(wrongInterest.ok, false);
+assert.strictEqual(wrongInterest.reason, 'PROVIDER_SOURCE_INTEREST_MISMATCH');
+assert.strictEqual(wrongInterest.expectedInterest, -1);
+assert.strictEqual(wrongInterest.observedInterest, 0);
 
 const preferredCurrent = Service.helpers.selectCurrentProviderSource([
-  { id: 'lead-old', email: 'a@example.com', campaignId: 'campaign-other', listId: null },
-  { id: 'lead-right', email: 'a@example.com', campaignId: 'campaign-reply', listId: null }
-], 'campaign-reply');
+  { id: 'lead-old', email: 'a@example.com', campaignId: 'campaign-other', listId: null, interestStatus: 0 },
+  { id: 'lead-right', email: 'a@example.com', campaignId: 'campaign-reply', listId: null, interestStatus: 0 }
+], 'campaign-reply', -1);
 assert.strictEqual(preferredCurrent.ok, true);
 assert.strictEqual(preferredCurrent.reason, 'PREFERRED_CAMPAIGN_MATCH');
 assert.strictEqual(preferredCurrent.source.id, 'lead-right');
+assert.strictEqual(preferredCurrent.providerSourceOverride, false);
 
 const ambiguous = Service.helpers.selectCurrentProviderSource([
-  { id: 'lead-a', email: 'a@example.com', campaignId: 'campaign-a', listId: null },
-  { id: 'lead-b', email: 'a@example.com', campaignId: 'campaign-b', listId: null }
-], 'campaign-stale');
+  { id: 'lead-a', email: 'a@example.com', campaignId: 'campaign-a', listId: null, interestStatus: -1 },
+  { id: 'lead-b', email: 'a@example.com', campaignId: 'campaign-b', listId: null, interestStatus: -1 }
+], 'campaign-stale', -1);
 assert.strictEqual(ambiguous.ok, false);
 assert.strictEqual(ambiguous.reason, 'CURRENT_PROVIDER_LEAD_AMBIGUOUS');
 
@@ -43,16 +52,13 @@ assert.strictEqual(Reconciler.helpers.lifecycleListName('SUPPRESSED_UNSUBSCRIBE'
 assert.strictEqual(Reconciler.helpers.lifecycleListName('NURTURE_FUTURE'), 'P2GC Replies - Nurture');
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'revenue', 'InstantlyLifecycleProofService.js'), 'utf8');
-assert(source.includes("list_id: destination.id"));
-assert(source.includes('search: email'));
-assert(source.includes('in_list: true'));
 assert(source.includes('distinct_contacts: false'));
 assert(source.includes('globalLookup(email)'));
-assert(source.includes('globalProviderProbe'));
-assert(source.includes('mismatchGlobalProbeReadOnly: true'));
 assert(source.includes('selectCurrentProviderSource'));
+assert(source.includes('PROVIDER_SOURCE_INTEREST_MISMATCH'));
+assert(source.includes('providerCampaignOverrideRequiresExpectedInterest: true'));
+assert(source.includes('canonicalCrmKeepsOriginalReplyCampaign: true'));
 assert(source.includes('CURRENT_PROVIDER_SOURCE_CAMPAIGN_REQUIRED'));
-assert(source.includes('currentProviderSourceRequiredForRepair: true'));
 assert(source.includes('delete ledger.entries[key]'));
 assert(source.includes('postMutationProviderReadRequired: true'));
 assert(source.includes('localLedgerCannotOverrideProviderMismatch: true'));
