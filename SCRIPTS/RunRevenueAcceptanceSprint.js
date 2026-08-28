@@ -21,6 +21,7 @@ const SAFE_AUDITS = [
   ['SCRIPTS/AUDIT_MILES_MEETING_PIPELINE.js'],
   ['SCRIPTS/AUDIT_MILES_CALENDLY_PIPELINE.js'],
   ['SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js'],
+  ['SCRIPTS/AuditInstantlyOperationalContinuity.js'],
   ['SCRIPTS/AUDIT_OUTREACH_DOMAIN_DNS_READONLY.js'],
   ['SCRIPTS/AuditInstantlySendWindowHistory.js'],
   ['SCRIPTS/AuditUnified8787ScreenAcceptance.js'],
