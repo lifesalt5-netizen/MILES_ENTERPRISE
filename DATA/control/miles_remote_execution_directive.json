@@ -1,7 +1,7 @@
 {
-  "id": "instantly-placement-auth-audit-20260827-031",
+  "id": "revenue-acceptance-readonly-20260827-032",
   "enabled": true,
-  "job": "INBOX_PLACEMENT_AUDIT",
+  "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Fresh read-only Instantly placement/auth audit after lifecycle reached providerMismatches=0. Use existing governed placement test evidence only; do not create or send any seed messages. Verify placement analytics plus observed SPF/DKIM/DMARC truth. No sends, no lead deletion, no DNS/B12/IONOS changes."
+  "note": "Post-Instantly-green acceptance sweep. Preserve evaluation order: Calendly/Google reconciliation, ORION freshness/rebuild readiness, production truth/company health/capability. Safe read-only batch only. No sends, no lead deletion, no DNS/B12/IONOS changes. Do not start soak or external mutations."
 }
