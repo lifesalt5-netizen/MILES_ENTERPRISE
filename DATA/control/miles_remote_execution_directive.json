@@ -1,7 +1,7 @@
 {
-  "id": "revenue-instantly-reconcile-20260828-040",
+  "id": "control-owner-watchdog-ensure-20260828-041",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Fresh read-only reconciliation after CEO supplied current Instantly screenshots and IONOS DSN regression evidence. Recheck live Instantly sender inventory/capacity, protected primary-domain exclusion, current inbox placement/auth state, send-window history, meetings/Calendly, ORION readiness, repository risks, and production truth. No prospect sends, no email deletion, no IONOS moves, no provider mutation, no DNS/B12/calendar changes, no destructive Git recovery."
+  "note": "Re-run live watchdog ENSURE on current main after PM2 JSON case-collision parser fix. Confirm miles-autonomous-coo is observed online and current watchdog evidence is emitted. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell evaluation, or destructive Git recovery."
 }
