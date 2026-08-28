@@ -18,6 +18,17 @@ function unwrap(value) {
 function leadEmail(lead = {}) { return clean(lead.email || lead.contact).toLowerCase(); }
 function listId(item = {}) { return clean(item.id || item.list_id || item.listId); }
 function listName(item = {}) { return clean(item.name || item.list_name || item.title); }
+function compactLead(item = {}) {
+  return {
+    id: clean(item.id) || null,
+    email: leadEmail(item) || null,
+    campaignId: clean(item.campaign || item.campaign_id) || null,
+    listId: clean(item.list_id || item.listId) || null,
+    interestStatus: item.lt_interest_status ?? null,
+    status: item.status ?? null,
+    timestampUpdated: item.timestamp_updated || null
+  };
+}
 
 class InstantlyLifecycleProofService {
   constructor(options = {}) {
@@ -44,6 +55,24 @@ class InstantlyLifecycleProofService {
       observedListId: clean(exact?.list_id),
       destinationListId: destination.id,
       destinationListName: destination.name,
+      providerResultCount: leads.length
+    };
+  }
+
+  async globalLookup(email) {
+    if (!email) return { found: false, reason: 'MISSING_EMAIL', matches: [], providerResultCount: 0 };
+    const response = await instantly.listLeads({
+      search: email,
+      limit: 100,
+      distinct_contacts: false
+    });
+    const leads = unwrap(response);
+    const matches = leads
+      .filter(item => leadEmail(item) === email.toLowerCase())
+      .map(compactLead);
+    return {
+      found: matches.length > 0,
+      matches,
       providerResultCount: leads.length
     };
   }
@@ -118,6 +147,11 @@ class InstantlyLifecycleProofService {
       }
 
       const verified = after.verified === true && interestAfter.verified === true;
+      let globalProviderProbe = null;
+      if (!verified) {
+        try { globalProviderProbe = await this.globalLookup(email); }
+        catch (error) { globalProviderProbe = { found: false, reason: 'GLOBAL_PROVIDER_READ_FAILED', error: error.message, matches: [] }; }
+      }
       decisions.push({
         emailId: item.emailRecord.id || null,
         threadId: item.emailRecord.thread_id || null,
@@ -129,7 +163,8 @@ class InstantlyLifecycleProofService {
         before: { membership: before, interest: interestBefore, verified: correctBefore },
         repairAttempted: repaired,
         operations,
-        after: { membership: after, interest: interestAfter, verified }
+        after: { membership: after, interest: interestAfter, verified },
+        globalProviderProbe
       });
     }
 
@@ -151,7 +186,8 @@ class InstantlyLifecycleProofService {
         deletesEmails: false,
         deletesLeads: false,
         localLedgerCannotOverrideProviderMismatch: true,
-        postMutationProviderReadRequired: true
+        postMutationProviderReadRequired: true,
+        mismatchGlobalProbeReadOnly: true
       }
     };
     fs.mkdirSync(path.dirname(this.output), { recursive: true });
@@ -162,4 +198,4 @@ class InstantlyLifecycleProofService {
 }
 
 module.exports = InstantlyLifecycleProofService;
-module.exports.helpers = { unwrap, leadEmail };
+module.exports.helpers = { unwrap, leadEmail, compactLead };

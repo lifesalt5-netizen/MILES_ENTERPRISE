@@ -33,7 +33,8 @@ function mismatchDetails(result) {
       interestVerified: item.after?.interest?.verified === true,
       interestExpected: item.after?.interest?.expected ?? null,
       interestObserved: item.after?.interest?.observed ?? null,
-      repairAttempted: item.repairAttempted === true
+      repairAttempted: item.repairAttempted === true,
+      globalProviderProbe: item.globalProviderProbe || null
     }));
 }
 
