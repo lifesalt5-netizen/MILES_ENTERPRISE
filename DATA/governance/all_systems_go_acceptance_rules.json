@@ -1,6 +1,6 @@
 {
   "standard": "P2GC_MILES_ALL_SYSTEMS_GO",
-  "version": 3,
+  "version": 4,
   "status": "GOVERNING",
   "purpose": "Define the mandatory production-evidence standard for testing, fixing, validating, recovering, and declaring P2GC/MILES systems complete.",
   "executionOptimizationPolicy": {
@@ -17,6 +17,18 @@
       "NEVER_TRADE_AWAY_SAFETY_TRUTH_REVERSIBILITY_OR_REQUIRED_ACCEPTANCE_EVIDENCE_FOR_SPEED"
     ],
     "decisionRule": "When multiple valid implementation paths exist, select the one with the shortest credible time-to-green while preserving production safety, truthfulness, reversibility, and required evidence."
+  },
+  "workflowSequencingPolicy": {
+    "rule": "APPEND_NEW_WORK_TO_END_OF_ACTIVE_QUEUE",
+    "priority": "GOVERNING",
+    "requirements": [
+      "FINISH_CURRENT_WORK_ITEM_TO_ITS_DEFINED_ACCEPTANCE_POINT_BEFORE_STARTING_NEWLY_REPORTED_NON_EMERGENCY_WORK",
+      "APPEND_NEW_FIXES_FEATURES_PROBLEMS_AND_AUDIT_FINDINGS_TO_THE_END_OF_THE_CURRENT_ACTIVE_QUEUE",
+      "DO_NOT_REORDER_ACTIVE_WORK_MERELY_BECAUSE_NEW_INFORMATION_WAS_REPORTED",
+      "PRESERVE_CURRENT_CONTEXT_AND_COMPLETE_IN_ORDER",
+      "SAFETY_EMERGENCY_MAY_PREEMPT_ONLY_WHEN_CONTINUING_CURRENT_WORK_WOULD_CREATE_IMMEDIATE_PRODUCTION_RISK"
+    ],
+    "decisionRule": "Newly reported work is recorded immediately but executed after the current ordered queue unless it is a genuine safety emergency that makes continuation unsafe."
   },
   "systemGoCriteria": [
     "FUNCTIONAL",
