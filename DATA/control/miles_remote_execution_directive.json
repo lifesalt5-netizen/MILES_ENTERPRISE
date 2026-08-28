@@ -1,7 +1,7 @@
 {
-  "id": "instantly-lifecycle-plan-20260827-029",
+  "id": "instantly-lifecycle-execute-20260827-030",
   "enabled": true,
-  "job": "INSTANTLY_LIFECYCLE_PROOF_PLAN",
+  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Read-only provider-backed lifecycle proof after -028 still showed exactly one mismatch for sherrie@jadaprints.com (UNSUBSCRIBE). PR302 adds a read-only global lead probe for mismatches. No mutations, no sends, no lead deletion, no IONOS/DNS/B12 changes. Require compact diagnostics to include globalProviderProbe showing all exact provider records for sherrie@jadaprints.com with lead id, campaign/list, interest status, status, and timestamp so we can distinguish provider suppression/visibility behavior from an actual failed move."
+  "note": "Post-merge governed EXECUTE after PR #305. Repair the single known Instantly lifecycle mismatch for sherrie@jadaprints.com (UNSUBSCRIBE) using the current provider lead source resolution now on main. Require post-mutation provider read with providerMismatches = 0. No sends, no lead deletion, no DNS/B12/IONOS changes. Fail closed on ambiguous current provider duplicates."
 }
