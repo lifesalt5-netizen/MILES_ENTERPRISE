@@ -8,6 +8,11 @@ const Reconciler = require('../SERVICES/revenue/InstantlyLifecycleReconciler');
 
 assert.deepStrictEqual(Service.helpers.unwrap({ items: [{ email: 'A@Example.com' }] }).length, 1);
 assert.strictEqual(Service.helpers.leadEmail({ email: 'A@Example.com' }), 'a@example.com');
+assert.deepStrictEqual(Service.helpers.compactLead({
+  id: 'lead-1', email: 'A@Example.com', campaign: 'campaign-1', list_id: 'list-1', lt_interest_status: -1, status: 3
+}), {
+  id: 'lead-1', email: 'a@example.com', campaignId: 'campaign-1', listId: 'list-1', interestStatus: -1, status: 3, timestampUpdated: null
+});
 assert.strictEqual(Reconciler.helpers.lifecycleListName('OOO_FOLLOWUP'), 'P2GC Replies - OOO');
 assert.strictEqual(Reconciler.helpers.lifecycleListName('CLOSED_NEGATIVE'), 'P2GC Replies - Closed Negative');
 assert.strictEqual(Reconciler.helpers.lifecycleListName('SUPPRESSED_UNSUBSCRIBE'), 'P2GC Replies - Unsubscribe');
@@ -17,6 +22,10 @@ const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'revenue',
 assert(source.includes("list_id: destination.id"));
 assert(source.includes('search: email'));
 assert(source.includes('in_list: true'));
+assert(source.includes('distinct_contacts: false'));
+assert(source.includes('globalLookup(email)'));
+assert(source.includes('globalProviderProbe'));
+assert(source.includes('mismatchGlobalProbeReadOnly: true'));
 assert(source.includes('delete ledger.entries[key]'));
 assert(source.includes('postMutationProviderReadRequired: true'));
 assert(source.includes('localLedgerCannotOverrideProviderMismatch: true'));
@@ -36,5 +45,6 @@ assert(runner.includes("process.env.P2GC_B12_PUBLISH = 'false'"));
 assert(runner.includes('INSTANTLY_EXECUTION_PREFLIGHT='));
 assert(runner.includes('INSTANTLY_EXECUTION_PREFLIGHT_FAILED'));
 assert(runner.includes('INSTANTLY_LIFECYCLE_DIAGNOSTICS='));
+assert(runner.includes('globalProviderProbe: item.globalProviderProbe || null'));
 
 console.log('INSTANTLY_LIFECYCLE_PROVIDER_PROOF=PASS');
