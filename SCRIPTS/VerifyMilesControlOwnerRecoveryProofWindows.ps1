@@ -52,13 +52,13 @@ function Get-ControlBridgeHealth {
     try { $observed = [datetime]::Parse([string]$state.observedAt).ToUniversalTime() }
     catch { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_OBSERVED_AT_INVALID"; status = [string]$state.status; childPid = $state.childPid; observedAt = $state.observedAt; ageSeconds = $null } }
     $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
-    $pid = 0
-    try { $pid = [int]$state.childPid } catch { $pid = 0 }
+    $bridgePid = 0
+    try { $bridgePid = [int]$state.childPid } catch { $bridgePid = 0 }
     $alive = $false
-    if ($pid -gt 0) { $alive = [bool](Get-Process -Id $pid -ErrorAction SilentlyContinue) }
+    if ($bridgePid -gt 0) { $alive = [bool](Get-Process -Id $bridgePid -ErrorAction SilentlyContinue) }
     $healthy = $age -ge 0 -and $age -le $MaxAgeSeconds -and $observed -ge $MinObservedAt.ToUniversalTime() -and [string]$state.status -eq "BRIDGE_RUNNING" -and $alive
     $reason = if ($healthy) { "BRIDGE_RUNNING_FRESH_CHILD_ALIVE" } elseif ($age -lt 0 -or $age -gt $MaxAgeSeconds) { "BRIDGE_SUPERVISOR_STATE_STALE" } elseif ($observed -lt $MinObservedAt.ToUniversalTime()) { "BRIDGE_SUPERVISOR_STATE_PREDATES_RECOVERY" } elseif ([string]$state.status -ne "BRIDGE_RUNNING") { "BRIDGE_SUPERVISOR_NOT_RUNNING" } elseif (-not $alive) { "BRIDGE_CHILD_NOT_ALIVE" } else { "BRIDGE_HEALTH_UNKNOWN" }
-    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($pid -gt 0) { $pid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
+    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($bridgePid -gt 0) { $bridgePid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
 }
 
 try {
