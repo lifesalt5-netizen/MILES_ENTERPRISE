@@ -27,5 +27,14 @@ assert(source.includes('deletesLeads: false'));
 const runner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunInstantlyLifecycleProof.js'), 'utf8');
 assert(runner.includes("process.argv.includes('--execute')"));
 assert(runner.includes('InstantlyLifecycleProofService'));
+assert(runner.includes("process.env.MILES_DRY_RUN = 'false'"));
+assert(runner.includes("process.env.MILES_ALLOW_INSTANTLY_MUTATIONS = 'true'"));
+assert(runner.includes("process.env.MILES_CONTROLLED_WRITE_ENABLED = 'true'"));
+assert(runner.includes("process.env.INSTANTLY_WRITE_ENABLED = 'true'"));
+assert(runner.includes("process.env.MILES_IONOS_MAILBOX_MUTATIONS = 'false'"));
+assert(runner.includes("process.env.P2GC_B12_PUBLISH = 'false'"));
+assert(runner.includes('INSTANTLY_EXECUTION_PREFLIGHT='));
+assert(runner.includes('INSTANTLY_EXECUTION_PREFLIGHT_FAILED'));
+assert(runner.includes('INSTANTLY_LIFECYCLE_DIAGNOSTICS='));
 
 console.log('INSTANTLY_LIFECYCLE_PROVIDER_PROOF=PASS');
