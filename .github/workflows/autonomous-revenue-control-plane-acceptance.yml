@@ -14,9 +14,14 @@ on:
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
       - 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1'
       - 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'
+      - 'SCRIPTS/ScheduleMilesControlOwnerRecoveryProofWindows.ps1'
+      - 'SCRIPTS/RunMilesControlOwnerRecoveryProofWindows.ps1'
+      - 'SCRIPTS/RunMilesControlOwnerRecoveryFailsafeWindows.ps1'
+      - 'SCRIPTS/VerifyMilesControlOwnerRecoveryProofWindows.ps1'
       - 'SCRIPTS/RunInfrastructureHealthAudit.js'
       - 'StartMiles.js'
       - 'StartMilesRemoteExecutionBridge.js'
+      - 'StartMilesControlOwnerWatchdog.js'
       - 'TESTS/**'
       - '.github/workflows/autonomous-revenue-control-plane-acceptance.yml'
   workflow_dispatch:
@@ -35,6 +40,7 @@ jobs:
         run: |
           node --check StartMilesRemoteExecutionBridge.js
           node --check StartMiles.js
+          node --check StartMilesControlOwnerWatchdog.js
           node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
           node --check SCRIPTS/RunInfrastructureHealthAudit.js
       - name: Remote bridge fixed-job safety

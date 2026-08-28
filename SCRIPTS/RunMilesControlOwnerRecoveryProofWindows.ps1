@@ -1,17 +1,20 @@
 param(
     [string]$Root = "C:\P2GC_Intelligence\MILES_ENTERPRISE",
-    [Parameter(Mandatory=$true)][string]$ProofId
+    [Parameter(Mandatory=$true)][string]$ProofId,
+    [int]$DelaySeconds = 45
 )
 
 $ErrorActionPreference = "Stop"
 $ProcessName = "miles-autonomous-coo"
-$WatchdogTaskName = "MILES-ControlOwner-Watchdog"
-$FailsafeTaskName = "MILES-ControlOwner-Recovery-Proof-Failsafe"
-$EnsureScript = Join-Path $Root "SCRIPTS\EnsureMilesControlOwnerWindows.ps1"
+$InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
+$HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 $WatchdogEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_latest.json"
+$FailsafeScript = Join-Path $Root "SCRIPTS\RunMilesControlOwnerRecoveryFailsafeWindows.ps1"
+$CancelMarker = Join-Path $Root ("DATA\runtime\control_owner_recovery_failsafe_cancel_" + $ProofId + ".json")
 $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_latest.json"
 $stoppedAt = $null
 $failsafeArmed = $false
+$failsafePid = $null
 
 function Get-Pm2Process {
     param([string]$Name)
@@ -30,6 +33,22 @@ function Read-JsonSafe {
     catch { return $null }
 }
 
+function Test-WatchdogLive {
+    param($InstallEvidence, $Heartbeat, [int]$MaxAgeSeconds = 180)
+    if (-not $InstallEvidence -or -not [bool]$InstallEvidence.ok) { return $false }
+    if ([string]$InstallEvidence.status -ne "CONTROL_OWNER_WATCHDOG_INSTALLED") { return $false }
+    if ([string]$InstallEvidence.mode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { return $false }
+    if (-not $InstallEvidence.startupShortcut -or -not (Test-Path -LiteralPath ([string]$InstallEvidence.startupShortcut))) { return $false }
+    if (-not $Heartbeat -or -not $Heartbeat.observedAt -or -not $Heartbeat.pid) { return $false }
+    try {
+        $observed = [datetime]::Parse([string]$Heartbeat.observedAt).ToUniversalTime()
+        $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
+        if ($age -lt 0 -or $age -gt $MaxAgeSeconds) { return $false }
+        return [bool](Get-Process -Id ([int]$Heartbeat.pid) -ErrorAction SilentlyContinue)
+    }
+    catch { return $false }
+}
+
 function Write-ProofEvidence {
     param(
         [bool]$Ok,
@@ -38,23 +57,21 @@ function Write-ProofEvidence {
         $WatchdogEvidence = $null,
         [string]$RecoveryObservedAt = $null
     )
-
     $parent = Split-Path -Parent $EvidencePath
-    if (-not (Test-Path -LiteralPath $parent)) {
-        New-Item -ItemType Directory -Path $parent -Force | Out-Null
-    }
-
+    if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
     $payload = [ordered]@{
         ok = $Ok
         status = $Status
         proofId = $ProofId
         processName = $ProcessName
-        watchdogTaskName = $WatchdogTaskName
+        watchdogMode = "USER_STARTUP_INDEPENDENT_PROCESS"
+        delaySeconds = $DelaySeconds
         stoppedAt = if ($stoppedAt) { $stoppedAt.ToString("o") } else { $null }
         recoveryObservedAt = $RecoveryObservedAt
         observedAt = (Get-Date).ToUniversalTime().ToString("o")
         watchdogEvidence = $WatchdogEvidence
         failsafeArmed = $failsafeArmed
+        failsafePid = $failsafePid
         error = $ErrorMessage
         safety = [ordered]@{
             controlledPm2StopOnly = $true
@@ -69,42 +86,52 @@ function Write-ProofEvidence {
             publishesB12 = $false
         }
     }
-
     $payload | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $EvidencePath -Encoding UTF8
     return $payload
 }
 
 function Arm-Failsafe {
+    if (-not (Test-Path -LiteralPath $FailsafeScript)) { throw "RECOVERY_FAILSAFE_SCRIPT_NOT_FOUND:$FailsafeScript" }
     $powershell = (Get-Command powershell.exe -ErrorAction Stop).Source
-    $escapedRoot = $Root.Replace('"', '""')
-    $escapedEnsure = $EnsureScript.Replace('"', '""')
-    $arguments = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$escapedEnsure`" -Root `"$escapedRoot`""
-    $action = New-ScheduledTaskAction -Execute $powershell -Argument $arguments -WorkingDirectory $Root
-    $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(5)
-    $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
-    $userId = if ($env:USERDOMAIN) { "$($env:USERDOMAIN)\$($env:USERNAME)" } else { $env:USERNAME }
-    $principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Limited
-    $task = New-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Fail-safe recovery only if the primary MILES control-owner watchdog proof does not recover the owner."
-    Register-ScheduledTask -TaskName $FailsafeTaskName -InputObject $task -Force | Out-Null
+    $arguments = @(
+        '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+        '-File', ('"' + $FailsafeScript + '"'),
+        '-Root', ('"' + $Root + '"'),
+        '-ProofId', $ProofId,
+        '-DelaySeconds', '300'
+    )
+    $process = Start-Process -FilePath $powershell -ArgumentList $arguments -WorkingDirectory $Root -WindowStyle Hidden -PassThru
+    Start-Sleep -Seconds 1
+    if (-not $process -or $process.HasExited) { throw "DETACHED_RECOVERY_FAILSAFE_LAUNCH_FAILED" }
+    $script:failsafePid = [int]$process.Id
     $script:failsafeArmed = $true
 }
 
 function Disarm-Failsafe {
-    try {
-        Unregister-ScheduledTask -TaskName $FailsafeTaskName -Confirm:$false -ErrorAction SilentlyContinue
-        $script:failsafeArmed = $false
-    } catch {}
+    $parent = Split-Path -Parent $CancelMarker
+    if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    [ordered]@{
+        ok = $true
+        proofId = $ProofId
+        status = "PRIMARY_WATCHDOG_RECOVERED_CANCEL_FAILSAFE"
+        observedAt = (Get-Date).ToUniversalTime().ToString("o")
+    } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $CancelMarker -Encoding UTF8
+    $script:failsafeArmed = $false
 }
 
 try {
     if ($env:OS -ne "Windows_NT") { throw "WINDOWS_REQUIRED" }
+    if ($DelaySeconds -lt 10 -or $DelaySeconds -gt 180) { throw "RECOVERY_PROOF_DELAY_OUT_OF_RANGE" }
     if (-not (Test-Path -LiteralPath (Join-Path $Root ".git"))) { throw "MILES_ROOT_NOT_FOUND:$Root" }
-    if (-not (Test-Path -LiteralPath $EnsureScript)) { throw "WATCHDOG_ENSURE_SCRIPT_NOT_FOUND:$EnsureScript" }
     if (-not (Get-Command pm2.cmd -ErrorAction SilentlyContinue)) { throw "PM2_NOT_FOUND" }
 
-    $watchdogTask = Get-ScheduledTask -TaskName $WatchdogTaskName -ErrorAction Stop
-    if (-not $watchdogTask) { throw "CONTROL_OWNER_WATCHDOG_NOT_INSTALLED" }
-    if ([string]$watchdogTask.State -eq "Disabled") { throw "CONTROL_OWNER_WATCHDOG_DISABLED" }
+    if ($DelaySeconds -gt 0) { Start-Sleep -Seconds $DelaySeconds }
+
+    $install = Read-JsonSafe -Path $InstallEvidencePath
+    $heartbeat = Read-JsonSafe -Path $HeartbeatPath
+    if (-not (Test-WatchdogLive -InstallEvidence $install -Heartbeat $heartbeat)) {
+        throw "CONTROL_OWNER_WATCHDOG_PROCESS_NOT_LIVE_BEFORE_PROOF"
+    }
 
     $before = Get-Pm2Process -Name $ProcessName
     if (-not $before -or [string]$before.pm2_env.status -ne "online") {
