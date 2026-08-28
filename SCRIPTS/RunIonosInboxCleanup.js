@@ -5,6 +5,45 @@ const path = require('path');
 const IonosAllFolderReconciliationService = require('../SERVICES/revenue/IonosAllFolderReconciliationService');
 const governed = require('../CONNECTORS/IONOS/imap_governed');
 
+function configureExecutionGates(execute) {
+  if (execute) {
+    process.env.MILES_DRY_RUN = 'false';
+    process.env.MILES_CONTROLLED_WRITE_ENABLED = 'true';
+    process.env.MILES_IONOS_MAILBOX_MUTATIONS = 'true';
+
+    // Keep unrelated mutation surfaces fail-closed for this IONOS-only lane.
+    process.env.MILES_ALLOW_INSTANTLY_MUTATIONS = 'false';
+    process.env.INSTANTLY_WRITE_ENABLED = 'false';
+    process.env.P2GC_B12_PUBLISH = 'false';
+    process.env.B12_PUBLISH_ENABLED = 'false';
+  } else {
+    process.env.MILES_DRY_RUN = 'true';
+    process.env.MILES_CONTROLLED_WRITE_ENABLED = 'false';
+    process.env.MILES_IONOS_MAILBOX_MUTATIONS = 'false';
+  }
+
+  const proof = {
+    execute,
+    milesDryRun: process.env.MILES_DRY_RUN,
+    controlledWriteEnabled: process.env.MILES_CONTROLLED_WRITE_ENABLED,
+    ionosMailboxMutations: process.env.MILES_IONOS_MAILBOX_MUTATIONS,
+    instantlyMutations: process.env.MILES_ALLOW_INSTANTLY_MUTATIONS,
+    instantlyWriteEnabled: process.env.INSTANTLY_WRITE_ENABLED,
+    b12Publish: process.env.P2GC_B12_PUBLISH,
+    b12PublishEnabled: process.env.B12_PUBLISH_ENABLED,
+    mutationAllowed: governed.mutationAllowed()
+  };
+
+  if (execute && proof.mutationAllowed !== true) {
+    const error = new Error(`IONOS_EXECUTE_PREFLIGHT_RED=${JSON.stringify(proof)}`);
+    error.code = 'IONOS_EXECUTE_PREFLIGHT_RED';
+    throw error;
+  }
+
+  console.log(`IONOS_EXECUTION_PREFLIGHT=${JSON.stringify(proof)}`);
+  return proof;
+}
+
 function compactDiagnostics(result, execute) {
   const accounts = Array.isArray(result.accounts) ? result.accounts : [];
   const moves = accounts.flatMap(account => Array.isArray(account.moves) ? account.moves : []);
@@ -26,6 +65,7 @@ function compactDiagnostics(result, execute) {
 async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const execute = process.argv.includes('--execute');
+  configureExecutionGates(execute);
   const service = new IonosAllFolderReconciliationService({ root });
   const result = await service.run({ execute });
   console.log(JSON.stringify(result, null, 2));
