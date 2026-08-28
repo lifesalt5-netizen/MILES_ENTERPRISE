@@ -33,7 +33,9 @@ function mismatchDetails(result) {
       interestVerified: item.after?.interest?.verified === true,
       interestExpected: item.after?.interest?.expected ?? null,
       interestObserved: item.after?.interest?.observed ?? null,
+      repairSourceCampaignId: item.repairSourceCampaignId || null,
       repairAttempted: item.repairAttempted === true,
+      preRepairGlobalProviderProbe: item.preRepairGlobalProviderProbe || null,
       globalProviderProbe: item.globalProviderProbe || null
     }));
 }
@@ -79,6 +81,7 @@ function mismatchDetails(result) {
     providerVerifiedCorrect: Number(result.providerVerifiedCorrect || 0),
     providerMismatches: Number(result.providerMismatches || 0),
     repaired: Number(result.repaired || 0),
+    providerSourceOverridesUsed: Number(result.providerSourceOverridesUsed || 0),
     errors: Array.isArray(result.errors) ? result.errors.length : 0,
     missingDestinations: Object.values(result.destinations || {}).filter(x => x?.missing === true || !x?.id).length,
     mismatches
