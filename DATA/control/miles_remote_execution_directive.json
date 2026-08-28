@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-diagnostic-20260828-058",
+  "id": "control-owner-watchdog-reload-current-source-20260828-059",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
+  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Read-only diagnostic verifier pass after PR #334. Do not schedule or perform any new controlled stop. Report recovery proof ID mismatch diagnostics from existing local artifacts only: schedule proofId, saved proofId, one-shot watchdog request proofId/status/exitCode/error, plus owner and bridge verification. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
+  "note": "Reload or confirm the independent control-owner watchdog on the current StartMilesControlOwnerWatchdog.js source digest after diagnostic 058 showed the existing recovery proof request b2d4607b575d4bf8b43c766429922f63 still PENDING. Do not create a duplicate proof request. This install/reload must not stop miles-autonomous-coo itself; the already-scheduled one-shot recovery proof may be consumed by the independent watchdog after reload according to its existing notBefore/safety contract. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
 }
