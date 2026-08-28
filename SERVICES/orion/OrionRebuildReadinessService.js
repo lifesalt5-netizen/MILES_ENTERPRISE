@@ -88,9 +88,17 @@ function walk(root, options = {}) {
   return out;
 }
 
-function inspectDb(file) {
+function normalizeIntegrityMode(value) {
+  const mode = String(value || 'FULL').trim().toUpperCase();
+  if (mode === 'SCHEMA_ONLY' || mode === 'QUICK' || mode === 'FULL') return mode;
+  return 'FULL';
+}
+
+function inspectDb(file, options = {}) {
   const stat = safeStat(file);
   if (!stat || !stat.isFile()) return { ok: false, reason: 'FILE_NOT_FOUND', path: file };
+  const integrityMode = normalizeIntegrityMode(options.integrityMode);
+  const countRows = options.countRows !== false;
   let Database;
   try { Database = require('better-sqlite3'); }
   catch (error) { return { ok: false, reason: 'BETTER_SQLITE3_UNAVAILABLE', path: file, error: error.message }; }
@@ -98,7 +106,10 @@ function inspectDb(file) {
   let db;
   try {
     db = new Database(file, { readonly: true, fileMustExist: true });
-    const integrity = db.pragma('integrity_check', { simple: true });
+    let integrity = 'NOT_RUN_SCHEMA_ONLY';
+    if (integrityMode === 'FULL') integrity = db.pragma('integrity_check', { simple: true });
+    else if (integrityMode === 'QUICK') integrity = db.pragma('quick_check', { simple: true });
+
     const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all().map(x => x.name);
     const schema = {};
     const counts = {};
@@ -107,13 +118,17 @@ function inspectDb(file) {
       if (!safe) continue;
       try {
         schema[safe] = db.prepare(`PRAGMA table_info(${safe})`).all().map(col => ({ name: col.name, type: col.type, notnull: Boolean(col.notnull), pk: Boolean(col.pk) }));
-        if (EXPECTED_TABLES.includes(safe)) counts[safe] = db.prepare(`SELECT COUNT(*) AS count FROM ${safe}`).get().count;
+        if (countRows && EXPECTED_TABLES.includes(safe)) counts[safe] = db.prepare(`SELECT COUNT(*) AS count FROM ${safe}`).get().count;
       } catch {}
     }
+    const integrityOk = integrityMode === 'SCHEMA_ONLY' || String(integrity).toLowerCase() === 'ok';
     return {
-      ok: String(integrity).toLowerCase() === 'ok',
+      ok: integrityOk,
       path: file,
       integrity,
+      integrityMode,
+      verificationLevel: integrityMode === 'SCHEMA_ONLY' ? 'READABLE_SCHEMA_ONLY' : `${integrityMode}_INTEGRITY_CHECK`,
+      rowCountsCollected: countRows,
       size: stat.size,
       mtime: stat.mtime.toISOString(),
       mtimeMs: stat.mtimeMs,
@@ -124,7 +139,7 @@ function inspectDb(file) {
       schema
     };
   } catch (error) {
-    return { ok: false, reason: 'SQLITE_OPEN_FAILED', path: file, error: error.message };
+    return { ok: false, reason: 'SQLITE_OPEN_FAILED', path: file, error: error.message, integrityMode };
   } finally {
     try { if (db) db.close(); } catch {}
   }
@@ -153,10 +168,14 @@ class OrionRebuildReadinessService {
       'C:\\P2GC_Intelligence',
       'D:\\P2GC_Intelligence'
     ].filter(Boolean);
+    this.dbIntegrityMode = normalizeIntegrityMode(options.dbIntegrityMode || 'FULL');
+    this.countRows = options.countRows !== false;
+    this.hashCandidates = options.hashCandidates !== false;
   }
 
   run() {
-    const current = inspectDb(this.currentDb);
+    const dbInspection = { integrityMode: this.dbIntegrityMode, countRows: this.countRows };
+    const current = inspectDb(this.currentDb, dbInspection);
     const seen = new Set();
     const candidates = [];
 
@@ -175,10 +194,10 @@ class OrionRebuildReadinessService {
           mtime: stat.mtime.toISOString(),
           mtimeMs: stat.mtimeMs,
           newerThanCurrent: Boolean(current?.mtimeMs && stat.mtimeMs > current.mtimeMs),
-          sampleSha256: sha256File(item.file)
+          sampleSha256: this.hashCandidates ? sha256File(item.file) : null
         };
         if (item.type === 'SOURCE_CSV') row.header = readCsvHeader(item.file);
-        if (item.type === 'ORION_DB' || item.type === 'SQLITE_DB') row.database = inspectDb(item.file);
+        if (item.type === 'ORION_DB' || item.type === 'SQLITE_DB') row.database = inspectDb(item.file, dbInspection);
         row.score = scoreSourceCandidate(row, current?.mtimeMs || 0);
         candidates.push(row);
       }
@@ -191,6 +210,7 @@ class OrionRebuildReadinessService {
 
     const blockers = [];
     if (!current.ok) blockers.push('CURRENT_ORION_DB_NOT_READABLE');
+    if (current.ok && current.expectedTablesMissing?.length) blockers.push('CURRENT_ORION_EXPECTED_TABLES_MISSING');
     if (!sourceFiles.length) blockers.push('NO_LOCAL_REFRESH_SOURCE_FILES_FOUND');
     if (sourceFiles.length && !newerInputs.length) blockers.push('NO_SOURCE_FILES_NEWER_THAN_CURRENT_DB');
 
@@ -203,6 +223,14 @@ class OrionRebuildReadinessService {
         activeDatabaseModified: false,
         downloadsStarted: false,
         promotionAttempted: false
+      },
+      inspection: {
+        dbIntegrityMode: this.dbIntegrityMode,
+        rowCountsCollected: this.countRows,
+        candidateHashesCollected: this.hashCandidates,
+        note: this.dbIntegrityMode === 'SCHEMA_ONLY'
+          ? 'Readiness discovery verifies DB readability and schema only; staging promotion still requires full integrity validation.'
+          : null
       },
       current,
       searchRoots: this.searchRoots,
@@ -239,4 +267,5 @@ module.exports.classifySourceFile = classifySourceFile;
 module.exports.scoreSourceCandidate = scoreSourceCandidate;
 module.exports.readCsvHeader = readCsvHeader;
 module.exports.inspectDb = inspectDb;
+module.exports.normalizeIntegrityMode = normalizeIntegrityMode;
 module.exports.EXPECTED_TABLES = EXPECTED_TABLES;
