@@ -1,7 +1,7 @@
 {
-  "id": "orion-readiness-readonly-20260827-035",
+  "id": "control-owner-watchdog-install-20260827-036",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Post-PR310 production proof. Primary acceptance target is ORION readiness using the canonical targeted SCHEMA_ONLY read-only discovery profile with no large-table row counts and no candidate hashing. Do not rebuild, download, promote, or mutate any ORION database/source. Preserve no-send/no-delete/no-DNS/no-B12/no-IONOS/no-calendar-mutation boundaries. If a newer trusted source is discovered, report it only; promotion requires a later governed staging/full-integrity/backup/rollback execution."
+  "note": "Install/register the fixed independent Windows Scheduled Task MILES-ControlOwner-Watchdog using the merged governed script. This is a bounded local runtime resilience change only. No prospect sends, provider mutation, email deletion, DNS/B12/IONOS/calendar changes, arbitrary shell, or destructive Git recovery."
 }
