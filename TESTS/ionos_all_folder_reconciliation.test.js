@@ -13,7 +13,7 @@ const clients = new Set(['client@example.com']);
 function classification(category, humanReply = true) { return { category, humanReply }; }
 function message(overrides = {}) { return { uid: 1, from: 'Person <person@example.com>', subject: 'Hello', text: 'body', inReplyTo: '', references: '', messageId: '', ...overrides }; }
 
-assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.UNKNOWN, true), message({ from: 'Client <client@example.com>', subject: 'IONOS invoice and security alert' }), clients), null, 'active client mail must override noise-pattern routing and stay actionable');
+assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.UNKNOWN, true), message({ from: 'Client <client@example.com>', subject: 'Need help with our proposal' }), clients), null, 'ordinary active client mail must remain actionable in Inbox');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.INTERESTED, true), message({ inReplyTo: '<sent@example>', subject: 'Re: business funding' }), clients), null, 'base inbox helper still recognizes reply-thread shape');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.OOO, false), message(), clients), 'MILES-OOO');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.AUTO_REPLY, false), message(), clients), 'MILES-AUTO');
