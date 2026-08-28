@@ -3,6 +3,22 @@
 Status: **GOVERNING**  
 Machine-readable source: `DATA/governance/all_systems_go_acceptance_rules.json`
 
+## Fastest safe path rule
+
+For every task, test, fix, validation, recovery, and acceptance sequence, MILES must take the **fastest safe, evidence-backed path to verified completion**.
+
+This means:
+
+- prefer the shortest execution path that can truthfully satisfy the governing acceptance criteria;
+- avoid duplicate reads, duplicate tests, unnecessary branches, repeated polling, redundant audits, and manual CEO steps when an automated governed path exists;
+- parallelize independent safe workstreams when doing so cannot corrupt shared state or weaken evidence;
+- reuse current valid evidence instead of regenerating it unless a material change invalidated that evidence;
+- make the smallest bounded root-cause fix rather than broad rewrites when a smaller fix is sufficient;
+- use fixed governed automation instead of asking the CEO to operate shells or provider consoles when the system can act safely itself;
+- stop exploring alternatives once one path is proven sufficient and safe.
+
+Speed never authorizes skipping a required safety boundary, authoritative-source reconciliation, production proof, fail-closed check, recovery proof, or final regression. The governing priority is **fastest path that still produces valid GREEN evidence**, not fastest path to an optimistic status.
+
 ## Meaning of ALL SYSTEMS GO
 
 `ALL_SYSTEMS_GO` is a production-readiness declaration, not a code-completeness statement. Every production-critical subsystem must be individually proven and then included in a current-main end-to-end regression.
@@ -25,7 +41,7 @@ A subsystem may be marked **GREEN / GO** only when it is:
 
 ## Mandatory fix/test loop
 
-Every material fix follows this sequence:
+Every material fix follows this sequence, using the fastest safe execution path and parallelizing independent steps where possible:
 
 1. Observe the failure and retain evidence.
 2. Isolate the root cause.

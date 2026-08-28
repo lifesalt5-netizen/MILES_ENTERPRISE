@@ -10,6 +10,22 @@ const rules = JSON.parse(fs.readFileSync(path.join(root, 'DATA', 'governance', '
 
 const ruleResult = validateRules(rules);
 assert.strictEqual(ruleResult.ok, true, ruleResult.errors.join('\n'));
+assert.strictEqual(rules.executionPrinciples?.primary, 'FASTEST_SAFE_EVIDENCE_BACKED_PATH_TO_VERIFIED_COMPLETION');
+for (const required of [
+  'AVOID_DUPLICATE_READS_TESTS_POLLS_AUDITS_BRANCHES_AND_MANUAL_CEO_STEPS',
+  'PREFER_GOVERNED_AUTOMATION_OVER_CEO_SHELL_OR_PROVIDER_CONSOLE_WORK',
+  'PARALLELIZE_INDEPENDENT_SAFE_WORKSTREAMS_WHEN_SHARED_STATE_AND_EVIDENCE_REMAIN_VALID'
+]) {
+  assert(rules.executionPrinciples.requirements.includes(required), `Missing fastest-path requirement ${required}`);
+}
+for (const boundary of [
+  'SAFETY_BOUNDARIES',
+  'AUTHORITATIVE_SOURCE_RECONCILIATION',
+  'REQUIRED_PRODUCTION_PROOF',
+  'FINAL_CURRENT_MAIN_REGRESSION'
+]) {
+  assert(rules.executionPrinciples.speedNeverOverrides.includes(boundary), `Speed must never override ${boundary}`);
+}
 
 const requiredIds = rules.requiredGates.map(g => g.id);
 for (const id of [
