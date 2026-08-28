@@ -29,6 +29,21 @@ function compactLead(item = {}) {
     timestampUpdated: item.timestamp_updated || null
   };
 }
+function selectProviderSourceOverride(probe, originalCampaignId, expectedInterest) {
+  const matches = Array.isArray(probe?.matches) ? probe.matches : [];
+  if (matches.length !== 1) return null;
+  const match = matches[0] || {};
+  const providerCampaignId = clean(match.campaignId);
+  const original = clean(originalCampaignId);
+  if (!providerCampaignId || providerCampaignId === original) return null;
+  if (expectedInterest !== null && Number(match.interestStatus) !== Number(expectedInterest)) return null;
+  return {
+    campaignId: providerCampaignId,
+    leadId: clean(match.id) || null,
+    interestStatus: match.interestStatus ?? null,
+    status: match.status ?? null
+  };
+}
 
 class InstantlyLifecycleProofService {
   constructor(options = {}) {
@@ -96,16 +111,36 @@ class InstantlyLifecycleProofService {
     return result;
   }
 
-  async repairOne(emailRecord, classification, bucket, destination) {
+  async repairOne(emailRecord, classification, bucket, destination, options = {}) {
     const email = clean(emailRecord.lead || emailRecord.from_address_email || classification.from).toLowerCase();
-    const campaignId = clean(emailRecord.campaign_id || classification.campaignId);
+    const originalCampaignId = clean(emailRecord.campaign_id || classification.campaignId);
+    const providerSourceCampaignId = clean(options.providerSourceCampaignId);
     const ledger = this.reconciler.readSegmentLedger();
-    const key = this.reconciler.segmentKey(email, campaignId, bucket);
-    if (ledger.entries[key]) {
-      delete ledger.entries[key];
-      this.reconciler.writeSegmentLedger(ledger);
+    const keys = new Set([
+      this.reconciler.segmentKey(email, originalCampaignId, bucket),
+      providerSourceCampaignId ? this.reconciler.segmentKey(email, providerSourceCampaignId, bucket) : ''
+    ].filter(Boolean));
+    let ledgerChanged = false;
+    for (const key of keys) {
+      if (ledger.entries[key]) {
+        delete ledger.entries[key];
+        ledgerChanged = true;
+      }
     }
-    return this.reconciler.mutateOne(emailRecord, classification, destination, ledger);
+    if (ledgerChanged) this.reconciler.writeSegmentLedger(ledger);
+
+    const operations = await this.reconciler.mutateOne(emailRecord, classification, destination, ledger);
+    if (providerSourceCampaignId && providerSourceCampaignId !== originalCampaignId) {
+      const providerSourceRecord = { ...emailRecord, campaign_id: providerSourceCampaignId };
+      const move = await this.reconciler.moveToLifecycleList(providerSourceRecord, classification, bucket, destination, ledger);
+      operations.push({
+        type: 'MOVE_TO_REPLY_LIFECYCLE_SEGMENT_PROVIDER_SOURCE_OVERRIDE',
+        originalReplyCampaignId: originalCampaignId || null,
+        providerSourceCampaignId,
+        result: move
+      });
+    }
+    return operations;
   }
 
   async run(options = {}) {
@@ -123,6 +158,8 @@ class InstantlyLifecycleProofService {
       const bucket = bucketFor(item.classification.category);
       const destination = destinations[bucket] || { id: null, name: lifecycleListName(bucket), missing: true };
       const email = clean(item.emailRecord.lead || item.emailRecord.from_address_email || item.classification.from).toLowerCase();
+      const originalCampaignId = clean(item.emailRecord.campaign_id || item.classification.campaignId);
+      const expectedInterest = interestValue(item.classification.category);
       let before;
       try { before = await this.exactMembership(email, destination); }
       catch (error) { before = { verified: false, reason: 'PROVIDER_READ_FAILED', error: error.message }; }
@@ -132,10 +169,16 @@ class InstantlyLifecycleProofService {
       let after = before;
       let interestAfter = interestBefore;
       let repaired = false;
+      let preRepairGlobalProviderProbe = null;
+      let repairSourceOverride = null;
 
       if (execute && mayMutate() && !correctBefore) {
         try {
-          operations = await this.repairOne(item.emailRecord, item.classification, bucket, destination);
+          preRepairGlobalProviderProbe = await this.globalLookup(email);
+          repairSourceOverride = selectProviderSourceOverride(preRepairGlobalProviderProbe, originalCampaignId, expectedInterest);
+          operations = await this.repairOne(item.emailRecord, item.classification, bucket, destination, {
+            providerSourceCampaignId: repairSourceOverride?.campaignId || null
+          });
           repaired = true;
           after = await this.exactMembership(email, destination);
           interestAfter = this.interestVerified(item.classification, after);
@@ -161,6 +204,8 @@ class InstantlyLifecycleProofService {
         bucket,
         destination,
         before: { membership: before, interest: interestBefore, verified: correctBefore },
+        preRepairGlobalProviderProbe,
+        repairSourceCampaignId: repairSourceOverride?.campaignId || null,
         repairAttempted: repaired,
         operations,
         after: { membership: after, interest: interestAfter, verified },
@@ -178,6 +223,7 @@ class InstantlyLifecycleProofService {
       providerVerifiedCorrect: decisions.filter(x => x.after.verified).length,
       providerMismatches: mismatches.length,
       repaired: decisions.filter(x => x.repairAttempted && x.after.verified).length,
+      providerSourceOverridesUsed: decisions.filter(x => Boolean(x.repairSourceCampaignId)).length,
       destinations,
       decisions,
       errors,
@@ -187,7 +233,9 @@ class InstantlyLifecycleProofService {
         deletesLeads: false,
         localLedgerCannotOverrideProviderMismatch: true,
         postMutationProviderReadRequired: true,
-        mismatchGlobalProbeReadOnly: true
+        mismatchGlobalProbeReadOnly: true,
+        providerSourceOverrideRequiresUniqueExactMatchAndVerifiedInterest: true,
+        canonicalCrmKeepsOriginalReplyCampaign: true
       }
     };
     fs.mkdirSync(path.dirname(this.output), { recursive: true });
@@ -198,4 +246,4 @@ class InstantlyLifecycleProofService {
 }
 
 module.exports = InstantlyLifecycleProofService;
-module.exports.helpers = { unwrap, leadEmail, compactLead };
+module.exports.helpers = { unwrap, leadEmail, compactLead, selectProviderSourceOverride };
