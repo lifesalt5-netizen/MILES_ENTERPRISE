@@ -1,7 +1,7 @@
 {
-  "id": "instantly-lifecycle-plan-20260827-027",
+  "id": "instantly-lifecycle-execute-20260827-028",
   "enabled": true,
-  "job": "INSTANTLY_LIFECYCLE_PROOF_PLAN",
+  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Read-only provider-backed Instantly lifecycle proof after -024 repaired 49/50 and PR300 added exact compact mismatch identity. No mutations, no email sends, no lead deletion, no IONOS/DNS/B12 changes. Require compact INSTANTLY_LIFECYCLE_DIAGNOSTICS with inspected/providerVerifiedCorrect/providerMismatches plus exact mismatches array showing lead, category, bucket, destination, membership and interest observed/expected state."
+  "note": "Governed provider-backed Instantly lifecycle repair after PLAN -027 identified exactly one mismatch: sherrie@jadaprints.com, category UNSUBSCRIBE, bucket SUPPRESSED_UNSUBSCRIBE, expected destination P2GC Replies - Unsubscribe (effe3fd7-ac9a-4cb0-8112-0a2098cec0fd), expected interest -1, provider currently missing membership and interest state. Open only Instantly lifecycle write gates. No email sends, no lead deletion, no IONOS/DNS/B12 mutation. Repair only provider-mismatched lifecycle records; preserve already-correct records. Require INSTANTLY_EXECUTION_PREFLIGHT mutationAllowed=true, providerMismatches=0, errors=0, missingDestinations=0, and exact post-read showing unsubscribe membership verified and interest -1 before GREEN."
 }
