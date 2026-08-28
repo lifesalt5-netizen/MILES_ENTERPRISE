@@ -16,6 +16,27 @@ function mutationAllowed() {
     envBool('INSTANTLY_WRITE_ENABLED', false) === true;
 }
 
+function mismatchDetails(result) {
+  return (Array.isArray(result?.decisions) ? result.decisions : [])
+    .filter(item => item?.after?.verified !== true)
+    .map(item => ({
+      emailId: item.emailId || null,
+      lead: item.lead || null,
+      campaignId: item.campaignId || null,
+      category: item.category || null,
+      bucket: item.bucket || null,
+      destinationId: item.destination?.id || null,
+      destinationName: item.destination?.name || null,
+      membershipVerified: item.after?.membership?.verified === true,
+      membershipReason: item.after?.membership?.reason || null,
+      observedListId: item.after?.membership?.observedListId || null,
+      interestVerified: item.after?.interest?.verified === true,
+      interestExpected: item.after?.interest?.expected ?? null,
+      interestObserved: item.after?.interest?.observed ?? null,
+      repairAttempted: item.repairAttempted === true
+    }));
+}
+
 (async () => {
   const execute = process.argv.includes('--execute');
 
@@ -48,6 +69,7 @@ function mutationAllowed() {
   }
 
   const result = await new InstantlyLifecycleProofService().run({ execute });
+  const mismatches = mismatchDetails(result);
   console.log(JSON.stringify(result, null, 2));
   console.log(`INSTANTLY_LIFECYCLE_DIAGNOSTICS=${JSON.stringify({
     execute,
@@ -57,7 +79,8 @@ function mutationAllowed() {
     providerMismatches: Number(result.providerMismatches || 0),
     repaired: Number(result.repaired || 0),
     errors: Array.isArray(result.errors) ? result.errors.length : 0,
-    missingDestinations: Object.values(result.destinations || {}).filter(x => x?.missing === true || !x?.id).length
+    missingDestinations: Object.values(result.destinations || {}).filter(x => x?.missing === true || !x?.id).length,
+    mismatches
   })}`);
   process.exitCode = result.ok ? 0 : 2;
 })().catch(error => {
