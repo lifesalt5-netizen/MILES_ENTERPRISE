@@ -12,6 +12,8 @@ on:
       - 'SERVICES/runtime/RemoteExecutionBridgeSupervisor.js'
       - 'SCRIPTS/FinalizeLeadSupplyChainAudit.js'
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
+      - 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1'
+      - 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'
       - 'StartMiles.js'
       - 'StartMilesRemoteExecutionBridge.js'
       - 'TESTS/**'
@@ -35,6 +37,8 @@ jobs:
           node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
       - name: Remote bridge self-heal regression
         run: node TESTS/remote_execution_bridge_supervisor.test.js
+      - name: Independent control-owner watchdog contract
+        run: node TESTS/control_owner_watchdog_contract.test.js
       - name: Runtime ownership regressions
         run: |
           node TESTS/single_taskqueue_executor_test.js
