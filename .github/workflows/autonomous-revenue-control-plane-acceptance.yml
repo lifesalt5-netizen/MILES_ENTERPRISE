@@ -14,6 +14,7 @@ on:
       - 'SCRIPTS/RunMilesFullGoAcceptance.ps1'
       - 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1'
       - 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'
+      - 'SCRIPTS/RunInfrastructureHealthAudit.js'
       - 'StartMiles.js'
       - 'StartMilesRemoteExecutionBridge.js'
       - 'TESTS/**'
@@ -35,6 +36,9 @@ jobs:
           node --check StartMilesRemoteExecutionBridge.js
           node --check StartMiles.js
           node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
+          node --check SCRIPTS/RunInfrastructureHealthAudit.js
+      - name: Remote bridge fixed-job safety
+        run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Remote bridge self-heal regression
         run: node TESTS/remote_execution_bridge_supervisor.test.js
       - name: Independent control-owner watchdog contract
