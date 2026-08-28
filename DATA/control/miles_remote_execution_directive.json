@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-schedule-20260828-042",
+  "id": "control-owner-watchdog-recovery-verify-20260828-043",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
+  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Schedule the fixed detached live recovery proof. After the directive result is safely published, stop only miles-autonomous-coo once after the governed delay and require recovery evidence from the independent user-startup watchdog. The proof runner itself may not restart/start the owner. Failsafe remains armed. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell evaluation, or destructive Git recovery."
+  "note": "Verify live recovery proof ab83a9dacdd74d5db323e3ecfd9f7fa4 after the governed owner stop. Require post-stop CONTROL_OWNER_RECOVERED evidence from the independent user-startup watchdog, owner currently online, fresh heartbeat, matching proof ID, and no proof-runner restart/start of owner. Read-only verification only; no provider mutation, sends, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
