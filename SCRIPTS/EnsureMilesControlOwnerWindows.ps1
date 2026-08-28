@@ -5,12 +5,42 @@ param(
 $ErrorActionPreference = "Stop"
 $ProcessName = "miles-autonomous-coo"
 $EvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_latest.json"
+$BridgeSupervisorStatePath = Join-Path $Root "DATA\runtime\remote_execution_bridge_supervisor.json"
+
+function Read-JsonSafe {
+    param([string]$Path)
+    try {
+        if (-not (Test-Path -LiteralPath $Path)) { return $null }
+        return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    }
+    catch { return $null }
+}
+
+function Get-ControlBridgeHealth {
+    param([datetime]$MinObservedAt = [datetime]::MinValue, [int]$MaxAgeSeconds = 30)
+    $state = Read-JsonSafe -Path $BridgeSupervisorStatePath
+    if (-not $state) {
+        return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_STATE_MISSING"; status = $null; childPid = $null; observedAt = $null; ageSeconds = $null }
+    }
+    try { $observed = [datetime]::Parse([string]$state.observedAt).ToUniversalTime() }
+    catch { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_OBSERVED_AT_INVALID"; status = [string]$state.status; childPid = $state.childPid; observedAt = $state.observedAt; ageSeconds = $null } }
+    $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
+    $pid = 0
+    try { $pid = [int]$state.childPid } catch { $pid = 0 }
+    $alive = $false
+    if ($pid -gt 0) { $alive = [bool](Get-Process -Id $pid -ErrorAction SilentlyContinue) }
+    $healthy = $age -ge 0 -and $age -le $MaxAgeSeconds -and $observed -ge $MinObservedAt.ToUniversalTime() -and [string]$state.status -eq "BRIDGE_RUNNING" -and $alive
+    $reason = if ($healthy) { "BRIDGE_RUNNING_FRESH_CHILD_ALIVE" } elseif ($age -lt 0 -or $age -gt $MaxAgeSeconds) { "BRIDGE_SUPERVISOR_STATE_STALE" } elseif ($observed -lt $MinObservedAt.ToUniversalTime()) { "BRIDGE_SUPERVISOR_STATE_PREDATES_RECOVERY" } elseif ([string]$state.status -ne "BRIDGE_RUNNING") { "BRIDGE_SUPERVISOR_NOT_RUNNING" } elseif (-not $alive) { "BRIDGE_CHILD_NOT_ALIVE" } else { "BRIDGE_HEALTH_UNKNOWN" }
+    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($pid -gt 0) { $pid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
+}
 
 function Write-WatchdogEvidence {
     param(
         [bool]$Ok,
         [string]$Status,
         [string]$Action,
+        [string]$RecoveryReason = $null,
+        $BridgeHealth = $null,
         [string]$ErrorMessage = $null
     )
 
@@ -23,7 +53,9 @@ function Write-WatchdogEvidence {
         ok = $Ok
         status = $Status
         action = $Action
+        recoveryReason = $RecoveryReason
         processName = $ProcessName
+        bridgeHealth = $BridgeHealth
         observedAt = (Get-Date).ToUniversalTime().ToString("o")
         root = $Root
         error = $ErrorMessage
@@ -40,7 +72,7 @@ function Write-WatchdogEvidence {
         }
     }
 
-    $payload | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $EvidencePath -Encoding UTF8
+    $payload | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath $EvidencePath -Encoding UTF8
     return $payload
 }
 
@@ -116,10 +148,11 @@ try {
     }
 
     $existing = Get-Pm2Process -Name $ProcessName
-    if ($existing -and [string]$existing.pm2_env.status -eq "online") {
-        $evidence = Write-WatchdogEvidence -Ok $true -Status "CONTROL_OWNER_ONLINE" -Action "NONE_ALREADY_ONLINE"
+    $bridgeBefore = Get-ControlBridgeHealth
+    if ($existing -and [string]$existing.pm2_env.status -eq "online" -and [bool]$bridgeBefore.healthy) {
+        $evidence = Write-WatchdogEvidence -Ok $true -Status "CONTROL_OWNER_ONLINE" -Action "NONE_ALREADY_ONLINE" -BridgeHealth $bridgeBefore
         Write-Host "MILES_CONTROL_OWNER_WATCHDOG_GREEN"
-        Write-Host ($evidence | ConvertTo-Json -Compress -Depth 6)
+        Write-Host ($evidence | ConvertTo-Json -Compress -Depth 7)
         exit 0
     }
 
@@ -135,7 +168,9 @@ try {
         if ($LASTEXITCODE -ne 0) { throw "NODE_CHECK_FAILED:$file" }
     }
 
+    $recoveryStartedAt = (Get-Date).ToUniversalTime()
     $action = $null
+    $recoveryReason = if ($existing -and [string]$existing.pm2_env.status -eq "online") { "CONTROL_BRIDGE_UNHEALTHY:$([string]$bridgeBefore.reason)" } else { "CONTROL_OWNER_NOT_ONLINE" }
     if ($existing) {
         & pm2.cmd restart $ProcessName --update-env | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "PM2_RESTART_FAILED" }
@@ -147,22 +182,34 @@ try {
     }
 
     & pm2.cmd save | Out-Null
-    Start-Sleep -Seconds 3
 
-    $verified = Get-Pm2Process -Name $ProcessName
+    $verified = $null
+    $bridgeAfter = $null
+    $deadline = (Get-Date).AddSeconds(30)
+    while ((Get-Date) -lt $deadline) {
+        Start-Sleep -Seconds 2
+        $verified = Get-Pm2Process -Name $ProcessName
+        $bridgeAfter = Get-ControlBridgeHealth -MinObservedAt $recoveryStartedAt
+        if ($verified -and [string]$verified.pm2_env.status -eq "online" -and [bool]$bridgeAfter.healthy) { break }
+    }
+
     if (-not $verified -or [string]$verified.pm2_env.status -ne "online") {
         throw "CONTROL_OWNER_NOT_ONLINE_AFTER_RECOVERY"
     }
+    if (-not $bridgeAfter -or -not [bool]$bridgeAfter.healthy) {
+        throw "CONTROL_BRIDGE_NOT_HEALTHY_AFTER_RECOVERY:$([string]$bridgeAfter.reason)"
+    }
 
-    $evidence = Write-WatchdogEvidence -Ok $true -Status "CONTROL_OWNER_RECOVERED" -Action $action
+    $evidence = Write-WatchdogEvidence -Ok $true -Status "CONTROL_OWNER_RECOVERED" -Action $action -RecoveryReason $recoveryReason -BridgeHealth $bridgeAfter
     Write-Host "MILES_CONTROL_OWNER_WATCHDOG_GREEN"
-    Write-Host ($evidence | ConvertTo-Json -Compress -Depth 6)
+    Write-Host ($evidence | ConvertTo-Json -Compress -Depth 7)
     exit 0
 }
 catch {
     $message = $_.Exception.Message
-    $evidence = Write-WatchdogEvidence -Ok $false -Status "CONTROL_OWNER_WATCHDOG_RED" -Action "FAIL_CLOSED" -ErrorMessage $message
+    $bridgeFailure = Get-ControlBridgeHealth
+    $evidence = Write-WatchdogEvidence -Ok $false -Status "CONTROL_OWNER_WATCHDOG_RED" -Action "FAIL_CLOSED" -BridgeHealth $bridgeFailure -ErrorMessage $message
     Write-Error $message
-    Write-Host ($evidence | ConvertTo-Json -Compress -Depth 6)
+    Write-Host ($evidence | ConvertTo-Json -Compress -Depth 7)
     exit 2
 }
