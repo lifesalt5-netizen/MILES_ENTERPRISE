@@ -1,7 +1,7 @@
 {
-  "id": "instantly-lifecycle-execute-20260827-028",
+  "id": "instantly-lifecycle-plan-20260827-029",
   "enabled": true,
-  "job": "INSTANTLY_LIFECYCLE_PROOF_EXECUTE",
+  "job": "INSTANTLY_LIFECYCLE_PROOF_PLAN",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Governed provider-backed Instantly lifecycle repair after PLAN -027 identified exactly one mismatch: sherrie@jadaprints.com, category UNSUBSCRIBE, bucket SUPPRESSED_UNSUBSCRIBE, expected destination P2GC Replies - Unsubscribe (effe3fd7-ac9a-4cb0-8112-0a2098cec0fd), expected interest -1, provider currently missing membership and interest state. Open only Instantly lifecycle write gates. No email sends, no lead deletion, no IONOS/DNS/B12 mutation. Repair only provider-mismatched lifecycle records; preserve already-correct records. Require INSTANTLY_EXECUTION_PREFLIGHT mutationAllowed=true, providerMismatches=0, errors=0, missingDestinations=0, and exact post-read showing unsubscribe membership verified and interest -1 before GREEN."
+  "note": "Read-only provider-backed lifecycle proof after -028 still showed exactly one mismatch for sherrie@jadaprints.com (UNSUBSCRIBE). PR302 adds a read-only global lead probe for mismatches. No mutations, no sends, no lead deletion, no IONOS/DNS/B12 changes. Require compact diagnostics to include globalProviderProbe showing all exact provider records for sherrie@jadaprints.com with lead id, campaign/list, interest status, status, and timestamp so we can distinguish provider suppression/visibility behavior from an actual failed move."
 }
