@@ -1,7 +1,7 @@
 {
-  "id": "ionos-dual-mailbox-plan-20260827-025",
+  "id": "ionos-dual-mailbox-execute-20260827-026",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Read-only dual-mailbox IONOS PLAN after PR299. Reconcile BOTH info@pathways2gc.com and kevin@pathways2gc.com independently. A DIRECT_RESPONSE_TO_SENT_THREAD may stay Inbox only if its In-Reply-To/References matches an actual Message-ID found in the SAME mailbox's Sent/Sent Items history; active clients remain protected. Report per-mailbox inboxBefore, verifiedSentMessageIds, executableMisroutesBefore, folder errors, and kept reasons. No moves, no deletes, no EXPUNGE, no sends, no Instantly mutation, no DNS/B12 mutation."
+  "note": "Execute governed dual-mailbox IONOS reconciliation after GREEN PLAN -025. Reconcile BOTH info@pathways2gc.com and kevin@pathways2gc.com independently using verified same-mailbox Sent Message-ID proof for direct replies. PLAN found info@ inbox=3, routable=3, kept=0 and kevin@ inbox=454, routable=414, kept=40, total executable misroutes=417, zero account/folder errors. Use UID MOVE only; no deletes, no EXPUNGE, no sends, no Instantly mutation, no DNS/B12 mutation. Require IONOS_EXECUTION_PREFLIGHT mutationAllowed=true, nonzero movedUidCount, each mailbox verification executableMisroutesAfter=0, zero folder/account errors, and publish per-mailbox inboxAfter before GREEN."
 }
