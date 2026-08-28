@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-recovery-schedule-20260828-044",
+  "id": "control-owner-watchdog-recovery-schedule-20260828-045",
   "enabled": true,
   "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
   "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Rerun the fixed detached live recovery proof on current main after PM2 parser correction. After directive evidence publishes, stop only miles-autonomous-coo once after governed delay and require recovery evidence from the independent user-startup watchdog. Proof runner itself may not restart/start owner. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
+  "note": "Run final bridge-aware detached recovery proof on current main. Require the independent user-startup watchdog to recover miles-autonomous-coo after one controlled stop AND require fresh remote_execution_bridge_supervisor BRIDGE_RUNNING state with a live post-stop bridge child. Proof runner itself may not restart/start owner. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, or destructive Git recovery."
 }
