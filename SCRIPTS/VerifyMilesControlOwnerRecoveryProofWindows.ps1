@@ -6,6 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 $ProcessName = "miles-autonomous-coo"
 $Pm2ProbeScript = Join-Path $Root "SCRIPTS\GetMilesPm2ProcessStatus.js"
+$BridgeSupervisorStatePath = Join-Path $Root "DATA\runtime\remote_execution_bridge_supervisor.json"
 $ScheduleEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
 $ProofEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_latest.json"
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
@@ -16,6 +17,15 @@ function Read-JsonRequired {
     if (-not (Test-Path -LiteralPath $Path)) { throw "$Code`_MISSING:$Path" }
     try { return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json }
     catch { throw "$Code`_INVALID_JSON:$Path" }
+}
+
+function Read-JsonSafe {
+    param([string]$Path)
+    try {
+        if (-not (Test-Path -LiteralPath $Path)) { return $null }
+        return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    }
+    catch { return $null }
 }
 
 function Get-Pm2Process {
@@ -33,6 +43,22 @@ function Get-Pm2Process {
         name = $Name
         pm2_env = [pscustomobject]@{ status = $probe.Substring($prefix.Length) }
     }
+}
+
+function Get-ControlBridgeHealth {
+    param([datetime]$MinObservedAt = [datetime]::MinValue, [int]$MaxAgeSeconds = 30)
+    $state = Read-JsonSafe -Path $BridgeSupervisorStatePath
+    if (-not $state) { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_STATE_MISSING"; status = $null; childPid = $null; observedAt = $null; ageSeconds = $null } }
+    try { $observed = [datetime]::Parse([string]$state.observedAt).ToUniversalTime() }
+    catch { return [pscustomobject]@{ healthy = $false; reason = "BRIDGE_SUPERVISOR_OBSERVED_AT_INVALID"; status = [string]$state.status; childPid = $state.childPid; observedAt = $state.observedAt; ageSeconds = $null } }
+    $age = ((Get-Date).ToUniversalTime() - $observed).TotalSeconds
+    $pid = 0
+    try { $pid = [int]$state.childPid } catch { $pid = 0 }
+    $alive = $false
+    if ($pid -gt 0) { $alive = [bool](Get-Process -Id $pid -ErrorAction SilentlyContinue) }
+    $healthy = $age -ge 0 -and $age -le $MaxAgeSeconds -and $observed -ge $MinObservedAt.ToUniversalTime() -and [string]$state.status -eq "BRIDGE_RUNNING" -and $alive
+    $reason = if ($healthy) { "BRIDGE_RUNNING_FRESH_CHILD_ALIVE" } elseif ($age -lt 0 -or $age -gt $MaxAgeSeconds) { "BRIDGE_SUPERVISOR_STATE_STALE" } elseif ($observed -lt $MinObservedAt.ToUniversalTime()) { "BRIDGE_SUPERVISOR_STATE_PREDATES_RECOVERY" } elseif ([string]$state.status -ne "BRIDGE_RUNNING") { "BRIDGE_SUPERVISOR_NOT_RUNNING" } elseif (-not $alive) { "BRIDGE_CHILD_NOT_ALIVE" } else { "BRIDGE_HEALTH_UNKNOWN" }
+    return [pscustomobject]@{ healthy = $healthy; reason = $reason; status = [string]$state.status; childPid = if ($pid -gt 0) { $pid } else { $null }; observedAt = $observed.ToString("o"); ageSeconds = [math]::Round($age, 2) }
 }
 
 try {
@@ -78,8 +104,14 @@ try {
     $watchdogObserved = [datetime]::Parse([string]$watchdogEvidence.observedAt).ToUniversalTime()
     if ($watchdogObserved -le $stoppedAt) { throw "RECOVERY_PROOF_WATCHDOG_EVIDENCE_NOT_POST_STOP" }
 
+    if (-not $proof.bridgeHealth -or -not [bool]$proof.bridgeHealth.healthy) { throw "RECOVERY_PROOF_BRIDGE_HEALTH_MISSING" }
+    $proofBridgeObserved = [datetime]::Parse([string]$proof.bridgeHealth.observedAt).ToUniversalTime()
+    if ($proofBridgeObserved -le $stoppedAt) { throw "RECOVERY_PROOF_BRIDGE_HEALTH_NOT_POST_STOP" }
+
     $owner = Get-Pm2Process -Name $ProcessName
     if (-not $owner -or [string]$owner.pm2_env.status -ne "online") { throw "CONTROL_OWNER_NOT_ONLINE_AFTER_PROOF" }
+    $bridge = Get-ControlBridgeHealth -MinObservedAt $stoppedAt
+    if (-not [bool]$bridge.healthy) { throw "CONTROL_BRIDGE_NOT_HEALTHY_AFTER_PROOF:$([string]$bridge.reason)" }
 
     $result = [ordered]@{
         ok = $true
@@ -87,9 +119,11 @@ try {
         proofId = [string]$proof.proofId
         stoppedAt = $stoppedAt.ToString("o")
         watchdogRecoveredAt = $watchdogObserved.ToString("o")
+        bridgeRecoveredAt = [string]$bridge.observedAt
         recoveryObservedAt = $recoveredAt.ToString("o")
         proofAgeMinutes = [math]::Round($ageMinutes, 2)
         ownerStatus = [string]$owner.pm2_env.status
+        bridgeHealth = $bridge
         watchdogMode = [string]$install.mode
         watchdogPid = [int]$heartbeat.pid
         watchdogHeartbeatAgeSeconds = [math]::Round($heartbeatAgeSeconds, 2)
@@ -99,7 +133,7 @@ try {
     }
 
     Write-Host "MILES_CONTROL_OWNER_WATCHDOG_RECOVERY_VERIFIED"
-    Write-Host ($result | ConvertTo-Json -Compress -Depth 6)
+    Write-Host ($result | ConvertTo-Json -Compress -Depth 7)
     exit 0
 }
 catch {
