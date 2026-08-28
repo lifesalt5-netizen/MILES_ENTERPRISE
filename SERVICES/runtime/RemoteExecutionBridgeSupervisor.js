@@ -13,6 +13,8 @@ class RemoteExecutionBridgeSupervisor {
     this.stateFile = path.join(this.runtimeDir, 'remote_execution_bridge_supervisor.json');
     this.spawnFn = options.spawnFn || spawn;
     this.restartDelayMs = Math.max(500, Number(options.restartDelayMs || process.env.MILES_BRIDGE_RESTART_DELAY_MS || 3000));
+    this.gitLowSpeedLimit = Math.max(1, Number(options.gitLowSpeedLimit || process.env.MILES_BRIDGE_GIT_LOW_SPEED_LIMIT || 1));
+    this.gitLowSpeedTime = Math.max(5, Number(options.gitLowSpeedTime || process.env.MILES_BRIDGE_GIT_LOW_SPEED_TIME || 20));
     this.child = null;
     this.running = false;
     this.ownsLock = false;
@@ -41,6 +43,8 @@ class RemoteExecutionBridgeSupervisor {
       ownsLock: this.ownsLock,
       restartCount: this.restartCount,
       bridgeFile: this.bridgeFile,
+      gitLowSpeedLimit: this.gitLowSpeedLimit,
+      gitLowSpeedTime: this.gitLowSpeedTime,
       observedAt: new Date().toISOString(),
       ...extra
     };
@@ -83,7 +87,16 @@ class RemoteExecutionBridgeSupervisor {
     if (!fs.existsSync(this.bridgeFile)) throw new Error(`REMOTE_BRIDGE_FILE_MISSING:${this.bridgeFile}`);
     const child = this.spawnFn(process.execPath, [this.bridgeFile], {
       cwd: this.root,
-      env: { ...process.env, MILES_BRIDGE_SUPERVISED: 'true' },
+      env: {
+        ...process.env,
+        MILES_BRIDGE_SUPERVISED: 'true',
+        GIT_TERMINAL_PROMPT: '0',
+        GIT_CONFIG_COUNT: '2',
+        GIT_CONFIG_KEY_0: 'http.lowSpeedLimit',
+        GIT_CONFIG_VALUE_0: String(this.gitLowSpeedLimit),
+        GIT_CONFIG_KEY_1: 'http.lowSpeedTime',
+        GIT_CONFIG_VALUE_1: String(this.gitLowSpeedTime)
+      },
       shell: false,
       windowsHide: true,
       stdio: 'inherit'
