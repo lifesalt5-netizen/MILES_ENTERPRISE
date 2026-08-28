@@ -9,6 +9,7 @@ $Pm2ProbeScript = Join-Path $Root "SCRIPTS\GetMilesPm2ProcessStatus.js"
 $BridgeSupervisorStatePath = Join-Path $Root "DATA\runtime\remote_execution_bridge_supervisor.json"
 $ScheduleEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_schedule_latest.json"
 $ProofEvidencePath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_latest.json"
+$RequestPath = Join-Path $Root "DATA\runtime\control_owner_recovery_proof_request.json"
 $InstallEvidencePath = Join-Path $Root "DATA\runtime\control_owner_watchdog_install_latest.json"
 $HeartbeatPath = Join-Path $Root "DATA\runtime\control_owner_watchdog_process_latest.json"
 
@@ -66,6 +67,7 @@ try {
 
     $schedule = Read-JsonRequired -Path $ScheduleEvidencePath -Code "RECOVERY_PROOF_SCHEDULE_EVIDENCE"
     $proof = Read-JsonRequired -Path $ProofEvidencePath -Code "RECOVERY_PROOF_EVIDENCE"
+    $request = Read-JsonSafe -Path $RequestPath
     $install = Read-JsonRequired -Path $InstallEvidencePath -Code "WATCHDOG_INSTALL_EVIDENCE"
     $heartbeat = Read-JsonRequired -Path $HeartbeatPath -Code "WATCHDOG_PROCESS_HEARTBEAT"
 
@@ -73,7 +75,13 @@ try {
     if ([string]$schedule.launchMode -ne "INDEPENDENT_WATCHDOG_REQUEST") { throw "RECOVERY_PROOF_SCHEDULE_MODE_INVALID" }
     if (-not [bool]$proof.ok -or [string]$proof.status -ne "CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN") { throw "RECOVERY_PROOF_NOT_GREEN" }
     if ([string]$proof.watchdogMode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { throw "RECOVERY_PROOF_WATCHDOG_MODE_INVALID" }
-    if ([string]::IsNullOrWhiteSpace([string]$schedule.proofId) -or [string]$schedule.proofId -ne [string]$proof.proofId) { throw "RECOVERY_PROOF_ID_MISMATCH" }
+    if ([string]::IsNullOrWhiteSpace([string]$schedule.proofId) -or [string]$schedule.proofId -ne [string]$proof.proofId) {
+        $requestProofId = if ($request) { [string]$request.proofId } else { "MISSING" }
+        $requestStatus = if ($request) { [string]$request.status } else { "MISSING" }
+        $requestExitCode = if ($request -and $null -ne $request.exitCode) { [string]$request.exitCode } else { "NULL" }
+        $requestError = if ($request -and $request.error) { ([string]$request.error).Replace("`r", " ").Replace("`n", " ") } else { "NONE" }
+        throw "RECOVERY_PROOF_ID_MISMATCH:SCHEDULE=$([string]$schedule.proofId);PROOF=$([string]$proof.proofId);REQUEST=$requestProofId;REQUEST_STATUS=$requestStatus;REQUEST_EXIT=$requestExitCode;REQUEST_ERROR=$requestError"
+    }
 
     if (-not [bool]$install.ok -or [string]$install.status -ne "CONTROL_OWNER_WATCHDOG_INSTALLED") { throw "CONTROL_OWNER_WATCHDOG_INSTALL_NOT_GREEN" }
     if ([string]$install.mode -ne "USER_STARTUP_INDEPENDENT_PROCESS") { throw "CONTROL_OWNER_WATCHDOG_INSTALL_MODE_INVALID" }
