@@ -3,9 +3,12 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const ensure = fs.readFileSync(path.join(root, 'SCRIPTS', 'EnsureMilesControlOwnerWindows.ps1'), 'utf8');
+const pm2ProbePath = path.join(root, 'SCRIPTS', 'GetMilesPm2ProcessStatus.js');
+const pm2Probe = fs.readFileSync(pm2ProbePath, 'utf8');
 const watchdogProcess = fs.readFileSync(path.join(root, 'StartMilesControlOwnerWatchdog.js'), 'utf8');
 const installer = fs.readFileSync(path.join(root, 'SCRIPTS', 'InstallMilesControlOwnerWatchdogWindows.ps1'), 'utf8');
 const proofScheduler = fs.readFileSync(path.join(root, 'SCRIPTS', 'ScheduleMilesControlOwnerRecoveryProofWindows.ps1'), 'utf8');
@@ -31,6 +34,13 @@ assert(ensure.includes('PM2_JLIST_PARSE_FAILED'));
 assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(ensure), 'Raw PM2 jlist must not use Windows PowerShell ConvertFrom-Json because environment keys may collide by case.');
 assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(ensure), 'Ensure script must not perform Git mutation/destructive recovery.');
 assert(!/Invoke-Expression|\biex\b/i.test(ensure), 'Ensure script must not evaluate arbitrary commands.');
+
+assert(pm2Probe.includes('JSON.parse'));
+assert(pm2Probe.includes('FOUND\\t'));
+const collisionPayload = JSON.stringify([{ name: 'miles-autonomous-coo', pm2_env: { status: 'online', username: 'lower', USERNAME: 'upper' } }]);
+const collisionProbe = spawnSync(process.execPath, [pm2ProbePath, 'miles-autonomous-coo'], { input: collisionPayload, encoding: 'utf8' });
+assert.strictEqual(collisionProbe.status, 0, collisionProbe.stderr);
+assert.strictEqual(collisionProbe.stdout, 'FOUND\tonline');
 
 assert(watchdogProcess.includes("path.join(ROOT, 'SCRIPTS', 'EnsureMilesControlOwnerWindows.ps1')"));
 assert(watchdogProcess.includes("spawn('powershell.exe'"));
@@ -64,6 +74,9 @@ assert(!proofScheduler.includes('Register-ScheduledTask'));
 assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
 
 assert(proofRunner.includes('miles-autonomous-coo'));
+assert(proofRunner.includes('GetMilesPm2ProcessStatus.js'));
+assert(proofRunner.includes('$json | & node.exe $Pm2ProbeScript $Name'));
+assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(proofRunner), 'Recovery runner must not parse raw PM2 jlist with PowerShell ConvertFrom-Json.');
 assert(proofRunner.includes('RunMilesControlOwnerRecoveryFailsafeWindows.ps1'));
 assert(proofRunner.includes('Start-Process -FilePath $powershell'));
 assert(proofRunner.includes('& pm2.cmd stop $ProcessName'));
@@ -86,6 +99,9 @@ assert(proofFailsafe.includes('CONTROL_OWNER_RECOVERY_FAILSAFE_EXECUTED'));
 assert(proofFailsafe.includes('EnsureMilesControlOwnerWindows.ps1'));
 assert(!proofFailsafe.includes('Register-ScheduledTask'));
 
+assert(proofVerifier.includes('GetMilesPm2ProcessStatus.js'));
+assert(proofVerifier.includes('$json | & node.exe $Pm2ProbeScript $Name'));
+assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(proofVerifier), 'Recovery verifier must not parse raw PM2 jlist with PowerShell ConvertFrom-Json.');
 assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_PROVEN'));
 assert(proofVerifier.includes('CONTROL_OWNER_WATCHDOG_RECOVERY_VERIFIED'));
 assert(proofVerifier.includes('RECOVERY_PROOF_ID_MISMATCH'));
