@@ -85,10 +85,13 @@ assert(!proofScheduler.includes('New-ScheduledTaskTrigger'));
 
 assert(proofLauncher.includes("spawn('powershell.exe'"));
 assert(proofLauncher.includes('detached: true'));
-assert(proofLauncher.includes("stdio: 'ignore'"));
+assert(proofLauncher.includes("stdio: ['ignore', logFd, logFd]"));
 assert(proofLauncher.includes('shell: false'));
 assert(proofLauncher.includes('child.unref()'));
 assert(proofLauncher.includes('DETACHED_RECOVERY_PROOF_SPAWN_TIMEOUT'));
+assert(proofLauncher.includes('isPidAlive(child.pid)'));
+assert(proofLauncher.includes('DETACHED_RECOVERY_PROOF_NOT_ALIVE'));
+assert(proofLauncher.includes('control_owner_recovery_proof_launch_'));
 assert(!proofLauncher.includes('shell: true'));
 assert(!/exec\s*\(|execSync\s*\(/.test(proofLauncher), 'Detached proof launcher must not evaluate shell strings.');
 
