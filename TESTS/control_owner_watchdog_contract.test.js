@@ -25,6 +25,10 @@ assert(ensure.includes('fixedCommandAllowlistOnly = $true'));
 assert(ensure.includes('arbitraryShell = $false'));
 assert(ensure.includes('gitMutation = $false'));
 assert(ensure.includes('providerMutation = $false'));
+assert(ensure.includes("$json | & node.exe -e $nodeProbe $Name"), 'PM2 jlist must be parsed by the fixed Node probe on Windows PowerShell.');
+assert(ensure.includes('PM2_JLIST_JSON_PARSE_FAILED'));
+assert(ensure.includes('PM2_JLIST_PARSE_FAILED'));
+assert(!/\$rows\s*=\s*\$json\s*\|\s*ConvertFrom-Json/i.test(ensure), 'Raw PM2 jlist must not use Windows PowerShell ConvertFrom-Json because environment keys may collide by case.');
 assert(!/git\s+(reset|clean|checkout\s+--|push)/i.test(ensure), 'Ensure script must not perform Git mutation/destructive recovery.');
 assert(!/Invoke-Expression|\biex\b/i.test(ensure), 'Ensure script must not evaluate arbitrary commands.');
 
