@@ -43,21 +43,36 @@ function runApprovalDashboardDiagnostic(root) {
 
 async function main() {
   const root = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
-  const audit = new InfrastructureHealthAuditService({ root, intervalHours: 72 });
-  const dueBefore = audit.due();
-  const result = await audit.run();
-  const dueAfter = audit.due();
+
+  // Run the CEO approval-control diagnostic first so it still produces evidence
+  // when an unrelated infrastructure sub-check fails later in the audit.
   const approvalDashboardDiagnostic = runApprovalDashboardDiagnostic(root);
 
+  const audit = new InfrastructureHealthAuditService({ root, intervalHours: 72 });
+  const dueBefore = audit.due();
+  let result = null;
+  let auditError = null;
+  try {
+    result = await audit.run();
+  } catch (error) {
+    auditError = {
+      message: error.message,
+      stack: error.stack || null
+    };
+  }
+  const dueAfter = audit.due();
+
+  const auditOk = result?.ok === true;
   const proof = {
-    ok: result.ok === true && approvalDashboardDiagnostic.ok === true,
+    ok: auditOk && approvalDashboardDiagnostic.ok === true,
     service: 'MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF',
     mode: 'FORCED_READ_ONLY_PROOF',
     intervalHours: 72,
     dueBefore,
     dueAfter,
-    observedAt: result.observedAt,
+    observedAt: result?.observedAt || new Date().toISOString(),
     result,
+    auditError,
     approvalDashboardDiagnostic,
     safety: {
       arbitraryShell: false,
