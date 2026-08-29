@@ -2,277 +2,119 @@
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
+const core = require('./ReconcileProductionTruthCore');
 const ROOT = path.resolve(process.argv[2] || process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 process.env.MILES_ROOT = ROOT;
 
-const ProductionTruthReconciliationService = require('../SERVICES/ProductionTruthReconciliationService');
-
-const DEFAULT_ARCHIVE_ROTATE_MIB = 384;
-
-function isWorkQueueArchiveSerializationFailure(error) {
-  const message = String(error?.message || error || '');
-  const stack = String(error?.stack || '');
-  return /Invalid string length/i.test(message) &&
-    /WorkQueueService\.(?:writeJsonAtomic|saveArchive|archiveClosed)/i.test(stack);
-}
-
-function archiveStat(queue) {
-  try {
-    const stat = fs.statSync(queue.archivePath);
-    return {
-      path: queue.archivePath,
-      exists: true,
-      sizeBytes: stat.size,
-      sizeMiB: Number((stat.size / 1024 / 1024).toFixed(2)),
-      modifiedAt: stat.mtime.toISOString()
-    };
-  } catch (error) {
-    return {
-      path: queue.archivePath,
-      exists: false,
-      error: error.message
-    };
-  }
-}
-
-function archivePathForRoot(root = ROOT) {
-  return path.join(root, 'DATA', 'runtime', 'work_queue_archive.json');
-}
-
-function archiveRotateThresholdMiB(env = process.env) {
-  const parsed = Number(env.MILES_WORK_QUEUE_ARCHIVE_ROTATE_MIB);
-  return Number.isFinite(parsed) && parsed >= 64
-    ? parsed
-    : DEFAULT_ARCHIVE_ROTATE_MIB;
-}
-
-function rotateOversizedWorkQueueArchive(root = ROOT, options = {}) {
-  const archivePath = options.archivePath || archivePathForRoot(root);
-  const thresholdMiB = Number(options.thresholdMiB || archiveRotateThresholdMiB(options.env || process.env));
-  const thresholdBytes = thresholdMiB * 1024 * 1024;
-
-  let stat;
-  try {
-    stat = fs.statSync(archivePath);
-  } catch (error) {
-    if (error?.code === 'ENOENT') {
-      return {
-        ok: true,
-        rotated: false,
-        reason: 'ARCHIVE_NOT_PRESENT',
-        archivePath,
-        thresholdMiB
-      };
-    }
-    throw error;
-  }
-
-  const sizeMiB = Number((stat.size / 1024 / 1024).toFixed(2));
-  if (stat.size <= thresholdBytes) {
-    return {
-      ok: true,
-      rotated: false,
-      reason: 'ARCHIVE_WITHIN_BOUND',
-      archivePath,
-      sizeBytes: stat.size,
-      sizeMiB,
-      thresholdMiB
-    };
-  }
-
-  const stamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-  const ext = path.extname(archivePath) || '.json';
-  const base = archivePath.slice(0, archivePath.length - ext.length);
-  let segmentPath = `${base}.segment_${stamp}${ext}`;
-  let suffix = 1;
-  while (fs.existsSync(segmentPath)) {
-    segmentPath = `${base}.segment_${stamp}_${suffix}${ext}`;
-    suffix += 1;
-  }
-
-  fs.mkdirSync(path.dirname(archivePath), { recursive: true });
-  let method = 'rename';
-  try {
-    fs.renameSync(archivePath, segmentPath);
-  } catch (error) {
-    if (!['EPERM', 'EACCES', 'EXDEV'].includes(error?.code)) throw error;
-    method = 'copy-unlink';
-    fs.copyFileSync(archivePath, segmentPath);
-    const copied = fs.statSync(segmentPath);
-    if (copied.size !== stat.size) {
-      throw new Error(`WORK_QUEUE_ARCHIVE_ROTATION_COPY_SIZE_MISMATCH:${copied.size}:${stat.size}`);
-    }
-    fs.unlinkSync(archivePath);
-  }
-
-  fs.writeFileSync(archivePath, '[]\n', 'utf8');
-
-  return {
-    ok: true,
-    rotated: true,
-    reason: 'ARCHIVE_ROTATED_BEFORE_NODE_STRING_LIMIT',
-    archivePath,
-    segmentPath,
-    method,
-    preservedBytes: stat.size,
-    preservedMiB: sizeMiB,
-    thresholdMiB,
-    historicalEvidencePreserved: true
-  };
-}
-
-async function buildFailClosedFallback(service, error) {
-  const WorkQueueService = require('../SERVICES/WorkQueueService');
-  const CompanyStateService = require('../SERVICES/CompanyStateService');
-  const queue = new WorkQueueService();
-  const stats = queue.getStats();
-
-  let registry = null;
-  try {
-    registry = service.reconcileRepositoryAndCapability();
-  } catch (registryError) {
-    registry = { ok: false, error: registryError.message };
-  }
-
-  let companyState = null;
-  try {
-    companyState = CompanyStateService.run({ source: 'ProductionTruthReconciliationServiceFallback' });
-  } catch (companyError) {
-    companyState = { ok: false, error: companyError.message };
-  }
-
-  let orion = null;
-  try {
-    orion = await service.auditOrion();
-  } catch (orionError) {
-    orion = { ok: false, status: 'AUDIT_FAILED', error: orionError.message };
-  }
-
-  const result = {
-    ok: false,
-    service: 'MILES_PRODUCTION_TRUTH_RECONCILIATION',
-    generatedAt: new Date().toISOString(),
-    degradedMode: 'WORK_QUEUE_ARCHIVE_FAIL_CLOSED',
-    blocker: 'WORK_QUEUE_ARCHIVE_SERIALIZATION_FAILED',
-    workQueue: {
-      archival: {
-        ok: false,
-        archived: 0,
-        blocker: 'WORK_QUEUE_ARCHIVE_SERIALIZATION_FAILED',
-        errorName: error?.name || null,
-        error: String(error?.message || error)
-      },
-      before: stats,
-      after: stats,
-      archiveFile: archiveStat(queue)
-    },
-    registry,
-    companyState,
-    orion,
-    rules: {
-      historicalFailuresPreservedInArchive: false,
-      archiveFailureVisible: true,
-      noFabricatedFreshness: true,
-      noFalseGreenOnArchiveFailure: true
-    }
-  };
-
-  const outFile = ProductionTruthReconciliationService.OUT_FILE ||
-    path.join(ROOT, 'DATA', 'production_truth', 'latest_reconciliation.json');
-  fs.mkdirSync(path.dirname(outFile), { recursive: true });
-  fs.writeFileSync(outFile, JSON.stringify(result, null, 2), 'utf8');
-  return result;
-}
-
-async function runReconciliation(service) {
-  try {
-    return await service.run({ auditOrion: true });
-  } catch (error) {
-    if (!isWorkQueueArchiveSerializationFailure(error)) throw error;
-    console.error('[MILES] Work queue archive serialization failed; continuing in fail-closed truth mode.');
-    return buildFailClosedFallback(service, error);
-  }
-}
-
-function persistAugmentedResult(result) {
-  const outFile = ProductionTruthReconciliationService.OUT_FILE ||
-    path.join(ROOT, 'DATA', 'production_truth', 'latest_reconciliation.json');
-  fs.mkdirSync(path.dirname(outFile), { recursive: true });
-  fs.writeFileSync(outFile, JSON.stringify(result, null, 2), 'utf8');
-}
-
-async function main() {
-  console.log('============================================================');
-  console.log('MILES PRODUCTION TRUTH RECONCILIATION');
-  console.log('============================================================');
-  console.log(`Root: ${ROOT}`);
-
-  const archiveRotation = rotateOversizedWorkQueueArchive(ROOT);
-  if (archiveRotation.rotated) {
-    console.log(`Work queue archive rotated safely: ${archiveRotation.preservedMiB} MiB -> ${archiveRotation.segmentPath}`);
-  }
-
-  const service = new ProductionTruthReconciliationService({ rootDir: ROOT });
-  const result = await runReconciliation(service);
-  result.workQueue = {
-    ...(result.workQueue || {}),
-    archiveRotation
-  };
-  persistAugmentedResult(result);
-
-  const queue = result.workQueue || {};
-  const repo = result.registry?.repository || {};
-  const cap = result.registry?.capability || {};
-  const freshness = result.orion?.databaseFreshness || {};
-
-  console.log(`Work queue closed archived: ${queue.archival?.archived ?? 0}`);
-  console.log(`Work queue archive status: ${queue.archival?.ok === false ? 'RED' : 'OK'}`);
-  if (queue.archival?.blocker) console.log(`WORK_QUEUE_ARCHIVE_BLOCKER=${queue.archival.blocker}`);
-  if (queue.archiveFile?.exists) console.log(`Work queue archive size MiB: ${queue.archiveFile.sizeMiB}`);
-  console.log(`Work queue archive rotated: ${archiveRotation.rotated}`);
-  if (archiveRotation.rotated) console.log(`Work queue archive segment preserved MiB: ${archiveRotation.preservedMiB}`);
-  console.log(`Work queue open after: ${queue.after?.open ?? 'UNKNOWN'}`);
-  console.log(`Work queue failed after: ${queue.after?.failed ?? 'UNKNOWN'}`);
-  console.log(`Work queue approval escalations after: ${queue.after?.escalations ?? 'UNKNOWN'}`);
-  console.log(`Repository active duplicate risks: ${repo.statistics?.duplicateRisks ?? 'UNKNOWN'}`);
-  console.log(`Repository active orphan risks: ${repo.statistics?.orphanRisks ?? 'UNKNOWN'}`);
-  console.log(`Repository health: ${repo.health?.score ?? 'UNKNOWN'} / ${repo.health?.status ?? 'UNKNOWN'}`);
-  console.log(`Capability gaps: ${cap.statistics?.gaps ?? 'UNKNOWN'}`);
-  console.log(`Capability autonomy: ${cap.autonomy?.score ?? 'UNKNOWN'} / ${cap.autonomy?.status ?? 'UNKNOWN'}`);
-  console.log(`Company health: ${result.companyState?.health?.score ?? 'UNKNOWN'} / ${result.companyState?.health?.status ?? 'UNKNOWN'}`);
-  console.log(`ORION audit status: ${result.orion?.status ?? 'NOT_RUN'}`);
-  console.log(`ORION database age hours: ${freshness.ageHours ?? 'UNKNOWN'}`);
-  console.log(`ORION database stale: ${freshness.stale ?? 'UNKNOWN'}`);
-
-  if (freshness.stale === true) {
-    console.log('ORION_DATASET_REFRESH_REQUIRED=YES');
-    console.log('The audit did not falsify freshness. A real source/dataset refresh is still required.');
-  } else if (freshness.stale === false) {
-    console.log('ORION_DATASET_REFRESH_REQUIRED=NO');
-  }
-
-  console.log(`RESULT: ${result.ok ? 'PRODUCTION_TRUTH_RECONCILIATION_GREEN' : 'PRODUCTION_TRUTH_RECONCILIATION_RED'}`);
-  process.exitCode = result.ok ? 0 : 1;
-  return result;
-}
-
-if (require.main === module) {
-  main().catch(error => {
-    console.error(error.stack || error.message);
-    process.exit(1);
+function runNode(scriptName, args = [], timeoutMs = 90000) {
+  const script = path.join(__dirname, scriptName);
+  const run = spawnSync(process.execPath, [script, ...args], {
+    cwd: ROOT,
+    env: process.env,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: timeoutMs
   });
+  return {
+    ok: run.status === 0,
+    exitCode: run.status,
+    error: run.error ? run.error.message : null,
+    stdout: String(run.stdout || ''),
+    stderr: String(run.stderr || '')
+  };
 }
 
-module.exports = {
-  DEFAULT_ARCHIVE_ROTATE_MIB,
-  isWorkQueueArchiveSerializationFailure,
-  archiveStat,
-  archivePathForRoot,
-  archiveRotateThresholdMiB,
-  rotateOversizedWorkQueueArchive,
-  buildFailClosedFallback,
-  runReconciliation,
-  persistAugmentedResult,
-  main
-};
+function readJson(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
+  catch { return null; }
+}
+
+function tail(value, max = 5000) {
+  const text = String(value || '');
+  return text.length > max ? text.slice(-max) : text;
+}
+
+function compactReadiness() {
+  const refreshDir = path.join(ROOT, 'DATA', 'orion_refresh');
+  const local = readJson(path.join(refreshDir, 'latest_source_audit.json'));
+  const official = readJson(path.join(refreshDir, 'latest_official_source_availability.json'));
+  const rebuild = readJson(path.join(refreshDir, 'latest_rebuild_readiness.json'));
+  return {
+    service: 'MILES_ORION_REFRESH_READINESS_COMPACT',
+    observedAt: new Date().toISOString(),
+    localSourceDiscovery: local ? {
+      conclusion: local.conclusion || null,
+      currentAgeHours: local.current?.ageHours ?? null,
+      usableCandidateCount: local.usableCandidateCount ?? null,
+      newerCompatibleCandidateFound: local.newerCompatibleCandidateFound === true,
+      newestUsablePath: local.newestUsable?.path || null,
+      newestUsableAgeHours: local.newestUsable?.ageHours ?? null
+    } : null,
+    officialSourceAvailability: official ? {
+      ok: official.ok === true,
+      fiscalYear: official.fiscalYear ?? null,
+      sourceNewerThanCurrentDb: official.summary?.sourceNewerThanCurrentDb ?? null,
+      filesReturned: official.summary?.filesReturned ?? null,
+      officialFiles: official.summary?.officialFiles ?? null,
+      blockers: official.summary?.blockers || [],
+      conclusion: official.conclusion || null,
+      provesFullOrionFreshness: official.scopeBoundary?.provesFullOrionFreshness ?? null
+    } : null,
+    rebuildReadiness: rebuild ? {
+      ok: rebuild.ok === true,
+      currentDb: rebuild.current?.path || null,
+      currentDbReadable: rebuild.current?.ok === true,
+      missingTables: rebuild.current?.expectedTablesMissing || [],
+      candidates: rebuild.summary?.candidates ?? null,
+      sourceFiles: rebuild.summary?.sourceFiles ?? null,
+      newerSourceFiles: rebuild.summary?.newerSourceFiles ?? null,
+      compatibleDatabases: rebuild.summary?.compatibleDatabases ?? null,
+      blockers: rebuild.summary?.blockers || [],
+      nextStep: rebuild.reconstructionContract?.nextStep || null
+    } : null,
+    safety: {
+      readOnlyAuditsOnly: true,
+      filesDownloaded: false,
+      productionDatabaseModified: false,
+      stagingDatabasePromoted: false,
+      freshnessFabricated: false
+    }
+  };
+}
+
+function main() {
+  console.log('============================================================');
+  console.log('MILES PRODUCTION TRUTH + ORION REFRESH READINESS');
+  console.log('============================================================');
+
+  const coreRun = runNode('ReconcileProductionTruthCore.js', process.argv[2] ? [process.argv[2]] : [], 180000);
+  if (coreRun.stdout) process.stdout.write(tail(coreRun.stdout, 7000));
+  if (coreRun.stderr) process.stderr.write(tail(coreRun.stderr, 4000));
+
+  const localAudit = runNode('AuditOrionRefreshSources.js', [], 90000);
+  const officialAudit = runNode('AuditOrionOfficialSourceAvailability.js', [], 120000);
+  const readinessAudit = runNode('AuditOrionRebuildReadinessFast.js', [], 120000);
+
+  const compact = compactReadiness();
+  compact.auditRuns = {
+    localSourceDiscovery: { ok: localAudit.ok, exitCode: localAudit.exitCode, error: localAudit.error, stderr: tail(localAudit.stderr, 1000) },
+    officialSourceAvailability: { ok: officialAudit.ok, exitCode: officialAudit.exitCode, error: officialAudit.error, stderr: tail(officialAudit.stderr, 1000) },
+    rebuildReadiness: { ok: readinessAudit.ok, exitCode: readinessAudit.exitCode, error: readinessAudit.error, stderr: tail(readinessAudit.stderr, 1000) }
+  };
+
+  console.log('\nMILES_ORION_REFRESH_READINESS_COMPACT');
+  console.log(JSON.stringify(compact, null, 2));
+
+  if (!coreRun.ok) {
+    console.error(`PRODUCTION_TRUTH_CORE_EXIT_${coreRun.exitCode}`);
+    process.exitCode = coreRun.exitCode || 1;
+  } else {
+    process.exitCode = 0;
+  }
+}
+
+if (require.main === module) main();
+
+module.exports = core;
