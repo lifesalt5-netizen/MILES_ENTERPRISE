@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-ensure-20260829-010",
+  "id": "governed-ceo-approval-canary-20260829-011",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Ensure the fixed MILES control owner and remote execution bridge are online, fresh, and consuming the current control directive. Use only the existing watchdog recovery path and fixed allowlist. Do not mutate providers, campaigns, email, DNS, B12, ORION, customer data, approval records, or perform destructive Git recovery. Publish evidence."
+  "note": "Fast-forward to current main and run the one-time governed CEO approval canary requested by CONFIG/CEO_APPROVAL_CANARY_REQUEST.json. Exercise synthetic Approve, Reject, and Request Changes through 8787; the approved canary may execute only MILES REPOSITORY_SEARCH against the local repository. Verify worker completion and cleanup of synthetic approval records. Do not mutate Instantly, email, DNS, B12, ORION, customer data, external providers, or use destructive Git recovery. Publish compact evidence."
 }
