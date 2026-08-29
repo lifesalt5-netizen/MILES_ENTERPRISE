@@ -4,9 +4,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-function Safe-Count($items) {
-  if ($null -eq $items) { return 0 }
-  return @($items).Count
+function Get-Sha256([string]$Text) {
+  return ([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($Text)) | ForEach-Object ToString x2) -join ''
 }
 
 $result = [ordered]@{
@@ -15,8 +14,10 @@ $result = [ordered]@{
   observedAt = (Get-Date).ToUniversalTime().ToString('o')
   root = $Root
   process8787 = $null
+  pm2 = $null
   liveHtml = $null
   localIndex = $null
+  servedIndexCandidate = $null
   api = $null
   diagnosis = $null
   safety = [ordered]@{
@@ -42,8 +43,56 @@ try {
     $result.process8787 = [ordered]@{ listening = $false }
   }
 
+  try {
+    $pm2Raw = & pm2 jlist 2>$null
+    if ($LASTEXITCODE -eq 0 -and $pm2Raw) {
+      $pm2List = $pm2Raw | ConvertFrom-Json
+      $match = @($pm2List | Where-Object { [int]$_.pid -eq [int]$conn.OwningProcess }) | Select-Object -First 1
+      if ($match) {
+        $envInfo = $match.pm2_env
+        $result.pm2 = [ordered]@{
+          matched = $true
+          name = $match.name
+          pid = $match.pid
+          status = $envInfo.status
+          pmExecPath = $envInfo.pm_exec_path
+          pmCwd = $envInfo.pm_cwd
+          nodeArgs = @($envInfo.node_args)
+          args = @($envInfo.args)
+          milesRoot = $envInfo.MILES_ROOT
+          milesCommandPort = $envInfo.MILES_COMMAND_PORT
+        }
+
+        $candidateIndex = $null
+        if ($envInfo.pm_exec_path) {
+          $candidateIndex = Join-Path (Split-Path -Parent $envInfo.pm_exec_path) 'public\index.html'
+        }
+        if ($candidateIndex -and (Test-Path $candidateIndex)) {
+          $candidateText = Get-Content $candidateIndex -Raw
+          $result.servedIndexCandidate = [ordered]@{
+            path = $candidateIndex
+            bytes = [Text.Encoding]::UTF8.GetByteCount($candidateText)
+            containsCompanyHealth = $candidateText -match 'COMPANY HEALTH'
+            containsKevinApprovalMetric = $candidateText -match 'KEVIN APPROVAL'
+            containsKevinApprovalQueue = $candidateText -match 'Kevin Approval Queue'
+            containsCommandMiles = $candidateText -match 'Command MILES'
+            sha256 = Get-Sha256 $candidateText
+            matchesLive = $false
+          }
+        }
+      } else {
+        $result.pm2 = [ordered]@{ matched = $false }
+      }
+    } else {
+      $result.pm2 = [ordered]@{ matched = $false; error = 'pm2 jlist unavailable' }
+    }
+  } catch {
+    $result.pm2 = [ordered]@{ matched = $false; error = $_.Exception.Message }
+  }
+
   $live = Invoke-WebRequest 'http://127.0.0.1:8787/' -UseBasicParsing -TimeoutSec 15
   $liveText = [string]$live.Content
+  $liveHash = Get-Sha256 $liveText
   $result.liveHtml = [ordered]@{
     httpStatus = [int]$live.StatusCode
     bytes = [Text.Encoding]::UTF8.GetByteCount($liveText)
@@ -51,7 +100,10 @@ try {
     containsKevinApprovalMetric = $liveText -match 'KEVIN APPROVAL'
     containsKevinApprovalQueue = $liveText -match 'Kevin Approval Queue'
     containsCommandMiles = $liveText -match 'Command MILES'
-    sha256 = ([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($liveText)) | ForEach-Object ToString x2) -join ''
+    sha256 = $liveHash
+  }
+  if ($result.servedIndexCandidate) {
+    $result.servedIndexCandidate.matchesLive = $result.servedIndexCandidate.sha256 -eq $liveHash
   }
 
   $indexPath = Join-Path $Root 'SERVICES\digital_coo\public\index.html'
@@ -64,7 +116,7 @@ try {
       containsKevinApprovalMetric = $indexText -match 'KEVIN APPROVAL'
       containsKevinApprovalQueue = $indexText -match 'Kevin Approval Queue'
       containsCommandMiles = $indexText -match 'Command MILES'
-      sha256 = ([Security.Cryptography.SHA256]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($indexText)) | ForEach-Object ToString x2) -join ''
+      sha256 = Get-Sha256 $indexText
       matchesLive = $false
     }
     $result.localIndex.matchesLive = $result.localIndex.sha256 -eq $result.liveHtml.sha256
@@ -91,7 +143,10 @@ try {
     $issues += 'Worker runtime approval backlog differs from canonical CEO approval count and must not drive the Kevin Approval metric.'
   }
   if ($result.localIndex -and -not $result.localIndex.matchesLive) {
-    $issues += 'The HTML served on port 8787 does not byte-match SERVICES/digital_coo/public/index.html.'
+    $issues += 'The HTML served on port 8787 does not byte-match the active-repo SERVICES/digital_coo/public/index.html.'
+  }
+  if ($result.servedIndexCandidate -and $result.servedIndexCandidate.matchesLive) {
+    $issues += "Port 8787 is serving a different checkout: $($result.servedIndexCandidate.path)"
   }
   if ($result.liveHtml.containsKevinApprovalMetric -and $result.api.canonicalPendingApprovals -eq 0) {
     $issues += 'Live HTML contains a Kevin Approval metric while canonical pending approvals are zero; client-side/runtime data source must be verified.'
@@ -102,6 +157,9 @@ try {
     issues = $issues
     canonicalTruth = "Kevin approvals = $($result.api.canonicalPendingApprovals)"
     workerRuntimeBacklog = $result.api.workerRuntimeAwaitingApproval
+    activeRepoExpected = $Root
+    runtimeCwd = $result.pm2.pmCwd
+    runtimeExecPath = $result.pm2.pmExecPath
   }
   $result.ok = $true
 } catch {
@@ -109,5 +167,5 @@ try {
   $result.stack = $_.ScriptStackTrace
 }
 
-$result | ConvertTo-Json -Depth 8
+$result | ConvertTo-Json -Depth 10
 if (-not $result.ok) { exit 2 }
