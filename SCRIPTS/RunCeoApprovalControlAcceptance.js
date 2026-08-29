@@ -1,6 +1,8 @@
 'use strict';
 
 const http = require('http');
+const path = require('path');
+const { spawnSync } = require('child_process');
 
 function request({ port, path, method = 'GET', payload = null, timeoutMs = 10000 }) {
   return new Promise(resolve => {
@@ -48,6 +50,27 @@ function statusFrom(response) {
   return response?.json?.status || null;
 }
 
+function analyzeWorkerBacklog() {
+  const root = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
+  const script = path.join(root, 'SCRIPTS', 'AnalyzeWorkerApprovalBacklog.js');
+  const execution = spawnSync(process.execPath, [script], {
+    cwd: root,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: 30000
+  });
+  let proof = null;
+  try { proof = JSON.parse(String(execution.stdout || '').trim()); } catch {}
+  return proof || {
+    ok: false,
+    service: 'MILES_WORKER_APPROVAL_BACKLOG_ANALYSIS',
+    exitCode: execution.status,
+    error: execution.error ? execution.error.message : null,
+    stdout: String(execution.stdout || '').slice(-6000),
+    stderr: String(execution.stderr || '').slice(-3000)
+  };
+}
+
 async function main() {
   const fakeId = '__MILES_ACCEPTANCE_NONEXISTENT_OPERATION__';
 
@@ -88,6 +111,7 @@ async function main() {
   const js = String(ceoJs.text || '');
   const html = String(rootHtml.text || '');
   const execution = String(executionHtml.text || '');
+  const workerApprovalBacklog = analyzeWorkerBacklog();
 
   const checks = {
     unifiedHealth: health.ok && health.json?.service === 'MILES_UNIFIED_CEO_GATEWAY',
@@ -103,7 +127,8 @@ async function main() {
     liveCeoJsHasAllDecisionControls: js.includes('data-approval-action="approve"') && js.includes('data-approval-action="request-changes"') && js.includes('data-approval-action="reject"'),
     executionSurfaceReachable: executionHtml.ok && execution.length > 100,
     desktopUsesCanonicalApprovalControl: desktopStatus.ok && desktopStatus.json?.approvalControl?.canonical === true,
-    desktopCanonicalCountMatches: desktopStatus.ok && Number(desktopStatus.json?.approvalControl?.count || 0) === beforePending.length
+    desktopCanonicalCountMatches: desktopStatus.ok && Number(desktopStatus.json?.approvalControl?.count || 0) === beforePending.length,
+    workerApprovalBacklogAnalyzed: workerApprovalBacklog.ok === true
   };
 
   const failedChecks = Object.entries(checks).filter(([,value]) => value !== true).map(([key]) => key);
@@ -118,6 +143,7 @@ async function main() {
       workerRuntimeAwaitingApproval: runtimeBacklog,
       workerRuntimeSource: dashboardBefore.json?.taskQueue?.source || null
     },
+    workerApprovalBacklog,
     routes: {
       requestChanges: { http: requestChangesProbe.statusCode, status: statusFrom(requestChangesProbe) },
       approve: { http: approveProbe.statusCode, status: statusFrom(approveProbe) },
@@ -133,6 +159,7 @@ async function main() {
     safety: {
       nonexistentOperationProbeOnly: true,
       approvalRecordsCreated: false,
+      workerBacklogAnalysisReadOnly: true,
       providerMutation: false,
       campaignMutation: false,
       emailSent: false,
@@ -153,4 +180,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { request, pendingApprovals, main };
+module.exports = { request, pendingApprovals, analyzeWorkerBacklog, main };
