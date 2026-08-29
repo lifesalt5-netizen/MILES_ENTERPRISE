@@ -3,12 +3,14 @@
 const http = require('http');
 const { spawn } = require('child_process');
 const path = require('path');
+const CanonicalApprovalGovernanceService = require('./CanonicalApprovalGovernanceService');
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, '..', '..');
 const PUBLIC_PORT = Number(process.env.MILES_UNIFIED_PORT || 8787);
 const COMMAND_PORT = Number(process.env.MILES_INTERNAL_COMMAND_PORT || 8788);
 const DASHBOARD_PORT = Number(process.env.MILES_DASHBOARD_PORT || 8737);
 const PRODUCT_PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
+const approvalGovernance = new CanonicalApprovalGovernanceService({ root: ROOT });
 
 const COMMAND_API_PREFIXES = [
   '/api/command',
@@ -136,62 +138,61 @@ async function handleRequestChanges(req, res, operationId) {
   }
 
   const instructions = String(payload.instructions || payload.reason || '').trim();
-  if (!instructions) {
-    sendJson(res, 400, { ok: false, status: 'CHANGE_INSTRUCTIONS_REQUIRED', operationId });
+  const result = approvalGovernance.requestChanges(operationId, instructions);
+  sendJson(res, result.ok ? 200 : 400, result);
+}
+
+async function handleGovernedDecision(req, res, operationId, action) {
+  let payload = {};
+  try { payload = await readJsonBody(req); }
+  catch (error) {
+    sendJson(res, 400, { ok: false, status: error.message });
     return;
   }
 
-  const rejectReason = `CHANGES_REQUESTED_BY_CEO: ${instructions}`;
-  const rejected = await internalJsonRequest(
+  if (action === 'request-changes') {
+    const instructions = String(payload.instructions || payload.reason || '').trim();
+    const result = approvalGovernance.requestChanges(operationId, instructions);
+    sendJson(res, result.ok ? 200 : 400, result);
+    return;
+  }
+
+  const validation = approvalGovernance.validateDecision(operationId);
+  if (!validation.ok) {
+    sendJson(res, 400, validation);
+    return;
+  }
+
+  if (action === 'approve') {
+    const normalized = approvalGovernance.normalizeForLegacyApprove(operationId);
+    if (!normalized.ok) {
+      sendJson(res, 400, normalized);
+      return;
+    }
+  }
+
+  const upstream = await internalJsonRequest(
     COMMAND_PORT,
-    `/api/operations/${encodeURIComponent(operationId)}/reject`,
+    `/api/operations/${encodeURIComponent(operationId)}/${action}`,
     'POST',
-    { reason: rejectReason }
+    { reason: String(payload.reason || '').trim() }
   );
 
-  if (!rejected.ok) {
-    sendJson(res, rejected.statusCode || 400, {
+  if (!upstream.ok) {
+    sendJson(res, upstream.statusCode || 400, upstream.json || {
       ok: false,
-      status: 'REQUEST_CHANGES_REJECT_PHASE_FAILED',
+      status: 'DECISION_UPSTREAM_FAILED',
       operationId,
-      originalResult: rejected.json || rejected.text || rejected.error || null
+      action,
+      error: upstream.text || upstream.error || null
     });
     return;
   }
 
-  const revisionCommand = [
-    `MILES — CEO REQUESTED CHANGES for governed operation ${operationId}.`,
-    'Do not execute the rejected original operation.',
-    `CEO instructions: ${instructions}`,
-    'Review the original operation, preserve its objective and relevant evidence, make the requested changes, and create a revised governed operation.',
-    'If the revised action still requires CEO approval, return the revision to the canonical CEO approval queue before execution.',
-    `Preserve lineage to parent operation ${operationId} in the revised mission title/objective/evidence.`
-  ].join('\n\n');
-
-  const revision = await internalJsonRequest(COMMAND_PORT, '/api/command', 'POST', { command: revisionCommand });
-  if (!revision.ok) {
-    sendJson(res, 502, {
-      ok: false,
-      status: 'CHANGES_REQUESTED_REVISION_DISPATCH_FAILED',
-      operationId,
-      instructions,
-      originalStopped: true,
-      originalResult: rejected.json || null,
-      revisionResult: revision.json || revision.text || revision.error || null
-    });
-    return;
-  }
-
-  sendJson(res, 200, {
+  sendJson(res, upstream.statusCode || 200, upstream.json || {
     ok: true,
-    status: 'CHANGES_REQUESTED',
-    operationId,
-    instructions,
-    originalStopped: true,
-    originalResult: rejected.json || null,
-    revisionOperationId: revision.json?.operation?.id || revision.json?.operationId || revision.json?.enqueueResult?.operationId || null,
-    revisionResult: revision.json || null,
-    message: 'The original governed operation was stopped and MILES received the CEO change instructions as a linked revision mission.'
+    status: action === 'approve' ? 'APPROVED' : 'REJECTED',
+    operationId
   });
 }
 
@@ -302,9 +303,9 @@ function createGatewayServer() {
       return;
     }
 
-    const requestChangesMatch = pathname.match(/^\/api\/operations\/([^/]+)\/request-changes$/);
-    if (req.method === 'POST' && requestChangesMatch) {
-      await handleRequestChanges(req, res, decodeURIComponent(requestChangesMatch[1]));
+    const decisionMatch = pathname.match(/^\/api\/operations\/([^/]+)\/(approve|reject|request-changes)$/);
+    if (req.method === 'POST' && decisionMatch) {
+      await handleGovernedDecision(req, res, decodeURIComponent(decisionMatch[1]), decisionMatch[2]);
       return;
     }
 
@@ -386,6 +387,7 @@ module.exports = {
   readJsonBody,
   internalJsonRequest,
   handleRequestChanges,
+  handleGovernedDecision,
   rewriteDashboardHtml,
   rewriteExecutionHtml,
   createGatewayServer,
