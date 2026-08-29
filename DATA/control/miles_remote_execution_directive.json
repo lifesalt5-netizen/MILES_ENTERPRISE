@@ -1,7 +1,7 @@
 {
-  "id": "approval-dashboard-pm2-source-diagnostic-20260829-004",
+  "id": "approval-dashboard-live-html-source-20260829-005",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Retry the read-only 8787 PM2 source diagnostic after PR 351. Use Node to parse pm2 jlist so Windows duplicate-case environment keys cannot block inspection. Return PM2 app name, pm_exec_path, pm_cwd, MILES_ROOT, MILES_COMMAND_PORT, candidate served public/index.html hash, live HTML hash, active-repo index hash, canonical CEO approvals, and worker-runtime awaitingApproval backlog. No provider, campaign, email, DNS, B12, ORION, approval-record, process-stop, service-restart, or destructive Git mutation. Publish evidence to miles-runtime-evidence."
+  "note": "Run the read-only 8787 live HTML source diagnostic after PR 352. Invoke PM2 through cmd.exe and scan C:\\P2GC_Intelligence\\MILES_ENTERPRISE plus C:\\MILES_RECOVERY_20260727\\MILES_ENTERPRISE for index.html files whose SHA-256 exactly matches the live 8787 HTML. Return PM2 app metadata, exact matching paths, canonical CEO approval count, and worker-runtime approval backlog. No provider, campaign, email, DNS, B12, ORION, approval-record, process-stop, service-restart, or destructive Git mutation. Publish evidence."
 }
