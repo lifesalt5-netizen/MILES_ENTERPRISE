@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "requestId": "20260829-001",
+  "mode": "EXECUTE",
+  "basis": {
+    "rawAwaitingApproval": 130,
+    "genuinelyCurrentCanonicalApprovals": 0,
+    "clearlyLegacyOrStale": 130,
+    "unresolvedReviewRequired": 0
+  },
+  "policy": "Cancel only stale/legacy TaskQueue approval records; preserve canonical approvals and preserve full task history/audit metadata."
+}
