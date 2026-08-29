@@ -1,7 +1,7 @@
 {
-  "id": "approval-dashboard-canonical-diagnostic-20260829-002",
+  "id": "approval-dashboard-pm2-source-diagnostic-20260829-003",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Retry the read-only approval dashboard diagnostic after wrapper repair. The PowerShell diagnostic must run before unrelated infrastructure subchecks. Verify live port 8787 process, served HTML, local SERVICES/digital_coo/public/index.html, canonical CEO approvals, worker-runtime awaitingApproval backlog, and publish all evidence. No provider, campaign, email, DNS, B12, ORION, approval-record, or destructive Git mutation."
+  "note": "Run the read-only canonical approval dashboard diagnostic after PR 350. Identify the PM2 app bound to 8787 including pm_exec_path, pm_cwd, MILES_ROOT, candidate public/index.html, live HTML hash, active-repo index hash, canonical CEO approval count, and worker-runtime awaitingApproval backlog. The approval diagnostic runs before unrelated infrastructure subchecks. No provider, campaign, email, DNS, B12, ORION, approval-record, process-stop, service-restart, or destructive Git mutation. Publish evidence to miles-runtime-evidence."
 }
