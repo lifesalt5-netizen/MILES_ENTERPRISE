@@ -1,7 +1,7 @@
 {
-  "id": "worker-approval-backlog-analysis-20260829-013",
+  "id": "worker-approval-backlog-reconcile-20260829-014",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and run the compact infrastructure/CEO acceptance proof with the new read-only worker approval backlog analyzer. Do not rerun the completed governed canary. Return raw awaiting-approval count, genuine canonical approval-linked count, stale/orphan/unsupported classifications, age summary, providers/actions, and samples. Do not mutate TaskQueue, canonical approvals, providers, campaigns, email, DNS, B12, ORION, or customer data. Publish compact evidence."
+  "note": "Fast-forward to current main and execute the guarded worker approval backlog reconciliation requested by CONFIG/WORKER_APPROVAL_BACKLOG_RECONCILIATION_REQUEST.json. Only TaskQueue records already classified stale/legacy may move from AWAITING_APPROVAL/AWAITING_CEO_APPROVAL to terminal CANCELLED with audit metadata preserved. Fail closed if any current canonical or unresolved approval is present. After reconciliation verify worker approval backlog analysis returns 0 awaiting approvals, canonical Kevin approvals remain 0, 8787/3737 acceptance stays green, and no provider/campaign/email/DNS/B12/ORION/customer mutation occurred. Publish compact evidence."
 }
