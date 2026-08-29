@@ -1,7 +1,7 @@
 {
-  "id": "governed-ceo-approval-canary-20260829-012",
+  "id": "worker-approval-backlog-analysis-20260829-013",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and run the one-time governed CEO approval canary requested by CONFIG/CEO_APPROVAL_CANARY_REQUEST.json. Exercise synthetic Approve, Reject, and Request Changes through 8787; the approved canary may execute only MILES REPOSITORY_SEARCH against the local repository. Verify worker completion and cleanup of synthetic approval records. Do not mutate Instantly, email, DNS, B12, ORION, customer data, external providers, or use destructive Git recovery. Publish compact evidence."
+  "note": "Fast-forward to current main and run the compact infrastructure/CEO acceptance proof with the new read-only worker approval backlog analyzer. Do not rerun the completed governed canary. Return raw awaiting-approval count, genuine canonical approval-linked count, stale/orphan/unsupported classifications, age summary, providers/actions, and samples. Do not mutate TaskQueue, canonical approvals, providers, campaigns, email, DNS, B12, ORION, or customer data. Publish compact evidence."
 }
