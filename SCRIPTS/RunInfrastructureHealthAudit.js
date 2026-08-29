@@ -23,6 +23,25 @@ function runCeoDashboardBackendTrace(root) {
   return { ok: execution.status === 0 && parsed?.ok === true, exitCode: execution.status, signal: execution.signal || null, error: execution.error ? execution.error.message : null, result: parsed, stdout: parsed ? undefined : String(execution.stdout || '').slice(-16000), stderr: String(execution.stderr || '').slice(-8000) };
 }
 
+function runCeoApprovalAcceptance(root) {
+  const script = path.join(root, 'SCRIPTS', 'RunCeoApprovalControlAcceptance.js');
+  const execution = spawnSync(process.execPath, [script], { cwd: root, encoding: 'utf8', windowsHide: true, timeout: 45000 });
+  const stdout = String(execution.stdout || '');
+  const jsonStart = stdout.indexOf('{');
+  let parsed = null;
+  if (jsonStart >= 0) {
+    try { parsed = JSON.parse(stdout.slice(jsonStart)); } catch {}
+  }
+  return {
+    ok: execution.status === 0 && parsed?.ok === true,
+    exitCode: execution.status,
+    error: execution.error ? execution.error.message : null,
+    proof: parsed,
+    stdout: parsed ? null : stdout.slice(-12000),
+    stderr: String(execution.stderr || '').slice(-4000)
+  };
+}
+
 function pm2List(root) {
   try {
     const shell = process.env.ComSpec || 'cmd.exe';
@@ -106,9 +125,10 @@ async function main() {
   catch (error) { auditError = { message:error.message, stack:error.stack || null }; }
   const dueAfter = audit.due();
 
+  const acceptance = runCeoApprovalAcceptance(root);
   const auditOk = result?.ok === true;
   const proof = {
-    ok: auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true,
+    ok: auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true && acceptance.ok === true,
     service: 'MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF',
     mode: 'CONTROL_PLANE_HEALTH_AND_SAFE_SELF_HEAL',
     intervalHours: 72,
@@ -122,6 +142,7 @@ async function main() {
     approvalDashboardDiagnostic,
     ceoDashboardBackendTraceBefore,
     ceoDashboardBackendTrace,
+    ceoApprovalAcceptance: acceptance,
     safety: {
       arbitraryShell: false,
       destructiveActionsPerformed: false,
@@ -132,6 +153,7 @@ async function main() {
       publishesB12: false,
       approvalDashboardDiagnosticReadOnly: true,
       ceoDashboardBackendTraceReadOnly: true,
+      ceoApprovalAcceptanceNonexistentOperationProbeOnly: true,
       controlPlaneRestartOnlyWhenSourceNewer: true,
       restartTargetAllowlisted: 'miles-command-center',
       controlPlaneRestartPerformed: unifiedControlCenter.restartPerformed === true
@@ -140,9 +162,11 @@ async function main() {
 
   console.log('MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF');
   console.log(JSON.stringify(proof, null, 2));
+  console.log('MILES_CEO_APPROVAL_ACCEPTANCE_TAIL');
+  console.log(JSON.stringify(acceptance.proof || acceptance, null, 2));
   process.exitCode = proof.ok ? 0 : 2;
 }
 
 if (require.main === module) main().catch(error => { console.error('MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF_RED'); console.error(error.stack || error.message); process.exitCode = 2; });
 
-module.exports = { main, runApprovalDashboardDiagnostic, runCeoDashboardBackendTrace, pm2List, httpJson, sourceMtimeMs, ensureUnifiedControlCenterCurrent };
+module.exports = { main, runApprovalDashboardDiagnostic, runCeoDashboardBackendTrace, runCeoApprovalAcceptance, pm2List, httpJson, sourceMtimeMs, ensureUnifiedControlCenterCurrent };
