@@ -62,6 +62,139 @@ function matchesPrefix(pathname, prefixes) {
   return prefixes.some(prefix => pathname === prefix || pathname.startsWith(prefix));
 }
 
+function sendJson(res, statusCode, payload) {
+  const body = JSON.stringify(payload, null, 2);
+  res.writeHead(statusCode, {
+    'content-type': 'application/json; charset=utf-8',
+    'content-length': Buffer.byteLength(body),
+    'cache-control': 'no-store'
+  });
+  res.end(body);
+}
+
+function readJsonBody(req, maxBytes = 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let total = 0;
+    req.on('data', chunk => {
+      total += chunk.length;
+      if (total > maxBytes) {
+        reject(new Error('REQUEST_BODY_TOO_LARGE'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      const text = Buffer.concat(chunks).toString('utf8');
+      try { resolve(text ? JSON.parse(text) : {}); }
+      catch { reject(new Error('INVALID_JSON')); }
+    });
+    req.on('error', reject);
+  });
+}
+
+function internalJsonRequest(port, targetPath, method = 'GET', payload = null) {
+  return new Promise(resolve => {
+    const body = payload == null ? null : JSON.stringify(payload);
+    const request = http.request({
+      hostname: '127.0.0.1',
+      port,
+      path: targetPath,
+      method,
+      headers: body ? {
+        'content-type': 'application/json',
+        'content-length': Buffer.byteLength(body)
+      } : undefined
+    }, response => {
+      const chunks = [];
+      response.on('data', chunk => chunks.push(chunk));
+      response.on('end', () => {
+        const text = Buffer.concat(chunks).toString('utf8');
+        let json = null;
+        try { json = JSON.parse(text); } catch {}
+        resolve({
+          ok: response.statusCode >= 200 && response.statusCode < 300,
+          statusCode: response.statusCode,
+          json,
+          text: json ? null : text
+        });
+      });
+    });
+    request.on('error', error => resolve({ ok: false, statusCode: 502, error: error.message }));
+    if (body) request.write(body);
+    request.end();
+  });
+}
+
+async function handleRequestChanges(req, res, operationId) {
+  let payload = {};
+  try { payload = await readJsonBody(req); }
+  catch (error) {
+    sendJson(res, 400, { ok: false, status: error.message });
+    return;
+  }
+
+  const instructions = String(payload.instructions || payload.reason || '').trim();
+  if (!instructions) {
+    sendJson(res, 400, { ok: false, status: 'CHANGE_INSTRUCTIONS_REQUIRED', operationId });
+    return;
+  }
+
+  const rejectReason = `CHANGES_REQUESTED_BY_CEO: ${instructions}`;
+  const rejected = await internalJsonRequest(
+    COMMAND_PORT,
+    `/api/operations/${encodeURIComponent(operationId)}/reject`,
+    'POST',
+    { reason: rejectReason }
+  );
+
+  if (!rejected.ok) {
+    sendJson(res, rejected.statusCode || 400, {
+      ok: false,
+      status: 'REQUEST_CHANGES_REJECT_PHASE_FAILED',
+      operationId,
+      originalResult: rejected.json || rejected.text || rejected.error || null
+    });
+    return;
+  }
+
+  const revisionCommand = [
+    `MILES — CEO REQUESTED CHANGES for governed operation ${operationId}.`,
+    'Do not execute the rejected original operation.',
+    `CEO instructions: ${instructions}`,
+    'Review the original operation, preserve its objective and relevant evidence, make the requested changes, and create a revised governed operation.',
+    'If the revised action still requires CEO approval, return the revision to the canonical CEO approval queue before execution.',
+    `Preserve lineage to parent operation ${operationId} in the revised mission title/objective/evidence.`
+  ].join('\n\n');
+
+  const revision = await internalJsonRequest(COMMAND_PORT, '/api/command', 'POST', { command: revisionCommand });
+  if (!revision.ok) {
+    sendJson(res, 502, {
+      ok: false,
+      status: 'CHANGES_REQUESTED_REVISION_DISPATCH_FAILED',
+      operationId,
+      instructions,
+      originalStopped: true,
+      originalResult: rejected.json || null,
+      revisionResult: revision.json || revision.text || revision.error || null
+    });
+    return;
+  }
+
+  sendJson(res, 200, {
+    ok: true,
+    status: 'CHANGES_REQUESTED',
+    operationId,
+    instructions,
+    originalStopped: true,
+    originalResult: rejected.json || null,
+    revisionOperationId: revision.json?.operation?.id || revision.json?.operationId || revision.json?.enqueueResult?.operationId || null,
+    revisionResult: revision.json || null,
+    message: 'The original governed operation was stopped and MILES received the CEO change instructions as a linked revision mission.'
+  });
+}
+
 function upstreamRequest(req, res, port, options = {}) {
   const targetPath = options.path || req.url;
   const headers = { ...req.headers, host: `127.0.0.1:${port}` };
@@ -95,18 +228,12 @@ function upstreamRequest(req, res, port, options = {}) {
 
   request.on('error', error => {
     if (res.headersSent) return res.end();
-    const body = JSON.stringify({
+    sendJson(res, 502, {
       ok: false,
       status: 'UPSTREAM_UNAVAILABLE',
       port,
       error: error.message
-    }, null, 2);
-    res.writeHead(502, {
-      'content-type': 'application/json; charset=utf-8',
-      'content-length': Buffer.byteLength(body),
-      'cache-control': 'no-store'
     });
-    res.end(body);
   });
 
   req.pipe(request);
@@ -130,12 +257,12 @@ function rewriteExecutionHtml(html) {
 }
 
 function createGatewayServer() {
-  return http.createServer((req, res) => {
+  return http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://127.0.0.1:${PUBLIC_PORT}`);
     const pathname = url.pathname;
 
     if (pathname === '/api/health') {
-      const body = JSON.stringify({
+      sendJson(res, 200, {
         ok: true,
         status: 'HEALTHY',
         service: 'MILES_UNIFIED_CEO_GATEWAY',
@@ -146,21 +273,12 @@ function createGatewayServer() {
           productLaunchpad: `http://127.0.0.1:${PRODUCT_PORT}`
         },
         generatedAt: new Date().toISOString()
-      }, null, 2);
-      res.writeHead(200, {
-        'content-type': 'application/json; charset=utf-8',
-        'content-length': Buffer.byteLength(body),
-        'cache-control': 'no-store'
       });
-      res.end(body);
       return;
     }
 
     if (pathname === '/' || pathname === '/index.html') {
-      upstreamRequest(req, res, DASHBOARD_PORT, {
-        path: '/',
-        transform: rewriteDashboardHtml
-      });
+      upstreamRequest(req, res, DASHBOARD_PORT, { path: '/', transform: rewriteDashboardHtml });
       return;
     }
 
@@ -170,10 +288,7 @@ function createGatewayServer() {
     }
 
     if (pathname === '/execution' || pathname === '/execution/') {
-      upstreamRequest(req, res, COMMAND_PORT, {
-        path: '/',
-        transform: rewriteExecutionHtml
-      });
+      upstreamRequest(req, res, COMMAND_PORT, { path: '/', transform: rewriteExecutionHtml });
       return;
     }
 
@@ -184,6 +299,12 @@ function createGatewayServer() {
 
     if (pathname === '/execution/styles.css') {
       upstreamRequest(req, res, COMMAND_PORT, { path: '/styles.css' });
+      return;
+    }
+
+    const requestChangesMatch = pathname.match(/^\/api\/operations\/([^/]+)\/request-changes$/);
+    if (req.method === 'POST' && requestChangesMatch) {
+      await handleRequestChanges(req, res, decodeURIComponent(requestChangesMatch[1]));
       return;
     }
 
@@ -202,18 +323,12 @@ function createGatewayServer() {
       return;
     }
 
-    const body = JSON.stringify({
+    sendJson(res, 404, {
       ok: false,
       status: 'NOT_FOUND',
       path: pathname,
       publicSurface: `http://127.0.0.1:${PUBLIC_PORT}`
-    }, null, 2);
-    res.writeHead(404, {
-      'content-type': 'application/json; charset=utf-8',
-      'content-length': Buffer.byteLength(body),
-      'cache-control': 'no-store'
     });
-    res.end(body);
   });
 }
 
@@ -222,11 +337,7 @@ function startInternalCommandCenter() {
   return spawn(process.execPath, [commandPath], {
     cwd: ROOT,
     stdio: 'inherit',
-    env: {
-      ...process.env,
-      MILES_ROOT: ROOT,
-      MILES_COMMAND_PORT: String(COMMAND_PORT)
-    }
+    env: { ...process.env, MILES_ROOT: ROOT, MILES_COMMAND_PORT: String(COMMAND_PORT) }
   });
 }
 
@@ -271,6 +382,10 @@ module.exports = {
   PRODUCT_API_PREFIXES,
   PRODUCT_PAGE_PATHS,
   matchesPrefix,
+  sendJson,
+  readJsonBody,
+  internalJsonRequest,
+  handleRequestChanges,
   rewriteDashboardHtml,
   rewriteExecutionHtml,
   createGatewayServer,
