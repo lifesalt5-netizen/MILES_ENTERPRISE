@@ -1,7 +1,7 @@
 {
-  "id": "ceo-approval-control-acceptance-20260829-008",
+  "id": "ceo-approval-control-acceptance-20260829-009",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward active repo to current main, run the allowlisted infrastructure job, self-heal only the fixed miles-command-center if its source is newer, and publish the compact MILES_CEO_APPROVAL_ACCEPTANCE_TAIL proof. Verify 8787 unified health, canonical CEO approval count, live root CEO dashboard, canonical ceo.js approval logic, separation of worker-runtime backlog, Approve/Reject/Request Changes route recognition using only the guaranteed nonexistent acceptance operation, /execution reachability, and 3737 desktop canonical-count agreement. Do not create approval records or mutate providers, campaigns, email, DNS, B12, ORION, customers, or use destructive Git recovery."
+  "note": "Fast-forward active repo to current main and rerun the CEO approval-control acceptance using the compact evidence format from PR 361. Verify 8787 unified health, canonical CEO approval count, live CEO dashboard source/logic, separation of worker-runtime backlog, Approve/Reject/Request Changes recognition against only the guaranteed nonexistent acceptance operation, /execution reachability, and 3737 canonical-count agreement. Publish compact evidence. Do not create approval records or mutate providers, campaigns, email, DNS, B12, ORION, customers, or use destructive Git recovery."
 }
