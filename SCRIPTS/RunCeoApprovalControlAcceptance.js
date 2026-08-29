@@ -94,7 +94,7 @@ async function main() {
     dashboardReadable: dashboardBefore.ok && dashboardBefore.json?.service === 'MILES_COMMAND_CENTER',
     canonicalPendingStable: beforePending.length === afterPending.length,
     fakeProbeDidNotCreateOperation: !fakeAppeared,
-    requestChangesRouteLive: requestChangesProbe.statusCode === 400 && statusFrom(requestChangesProbe) === 'REQUEST_CHANGES_REJECT_PHASE_FAILED',
+    requestChangesRouteLive: requestChangesProbe.statusCode === 400 && statusFrom(requestChangesProbe) === 'NOT_FOUND',
     approveRouteLive: approveProbe.statusCode === 400 && ['NOT_FOUND','INVALID_STATUS'].includes(String(statusFrom(approveProbe) || '')),
     rejectRouteLive: rejectProbe.statusCode === 400 && String(statusFrom(rejectProbe) || '') === 'NOT_FOUND',
     liveRootUsesCeoDashboard: rootHtml.ok && html.includes('MILES Executive Dashboard') && html.includes('/ceo.js'),
