@@ -1,7 +1,7 @@
 {
-  "id": "control-owner-watchdog-reload-current-source-20260828-059",
+  "id": "approval-dashboard-canonical-diagnostic-20260829-001",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_INSTALL",
-  "requestedBy": "MILES_CONTROL_PLANE",
-  "note": "Reload or confirm the independent control-owner watchdog on the current StartMilesControlOwnerWatchdog.js source digest after diagnostic 058 showed the existing recovery proof request b2d4607b575d4bf8b43c766429922f63 still PENDING. Do not create a duplicate proof request. This install/reload must not stop miles-autonomous-coo itself; the already-scheduled one-shot recovery proof may be consumed by the independent watchdog after reload according to its existing notBefore/safety contract. No prospect sends, provider mutation, email deletion, IONOS moves, DNS/B12/calendar changes, arbitrary shell, destructive Git recovery, or ORION mutation."
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
+  "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
+  "note": "Run the existing allowlisted infrastructure health audit. It now includes a read-only PowerShell diagnostic for the live 8787 approval dashboard. Verify the process bound to 8787, served HTML, local SERVICES/digital_coo/public/index.html, canonical CEO approval count from state/business_operations_queue.json, and worker-runtime awaitingApproval backlog. Do not mutate providers, campaigns, email, DNS, B12, ORION, or approval records. Publish evidence to miles-runtime-evidence."
 }
