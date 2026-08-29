@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -50,20 +51,18 @@ function statusFrom(response) {
   return response?.json?.status || null;
 }
 
-function analyzeWorkerBacklog() {
+function runJsonScript(script, args = [], timeout = 30000) {
   const root = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
-  const script = path.join(root, 'SCRIPTS', 'AnalyzeWorkerApprovalBacklog.js');
-  const execution = spawnSync(process.execPath, [script], {
+  const execution = spawnSync(process.execPath, [path.join(root, 'SCRIPTS', script), ...args], {
     cwd: root,
     encoding: 'utf8',
     windowsHide: true,
-    timeout: 30000
+    timeout
   });
   let proof = null;
   try { proof = JSON.parse(String(execution.stdout || '').trim()); } catch {}
   return proof || {
     ok: false,
-    service: 'MILES_WORKER_APPROVAL_BACKLOG_ANALYSIS',
     exitCode: execution.status,
     error: execution.error ? execution.error.message : null,
     stdout: String(execution.stdout || '').slice(-6000),
@@ -71,9 +70,25 @@ function analyzeWorkerBacklog() {
   };
 }
 
+function analyzeWorkerBacklog() {
+  return runJsonScript('AnalyzeWorkerApprovalBacklog.js');
+}
+
+function reconcileWorkerBacklogIfRequested() {
+  const root = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
+  const file = path.join(root, 'CONFIG', 'WORKER_APPROVAL_BACKLOG_RECONCILIATION_REQUEST.json');
+  let request = null;
+  try { request = JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
+  catch { return { ok: true, skipped: true, reason: 'NO_RECONCILIATION_REQUEST' }; }
+  if (request?.enabled !== true) return { ok: true, skipped: true, reason: 'RECONCILIATION_DISABLED', request };
+  if (String(request.mode || '').toUpperCase() !== 'EXECUTE') return { ok: false, skipped: false, reason: 'EXECUTE_MODE_REQUIRED', request };
+  return { ...runJsonScript('ReconcileWorkerApprovalBacklog.js', ['--execute'], 60000), skipped: false, request };
+}
+
 async function main() {
   const fakeId = '__MILES_ACCEPTANCE_NONEXISTENT_OPERATION__';
 
+  const reconciliation = reconcileWorkerBacklogIfRequested();
   const health = await request({ port: 8787, path: '/api/health' });
   const dashboardBefore = await request({ port: 8787, path: '/api/dashboard' });
   const rootHtml = await request({ port: 8787, path: '/' });
@@ -114,6 +129,7 @@ async function main() {
   const workerApprovalBacklog = analyzeWorkerBacklog();
 
   const checks = {
+    reconciliationSafe: reconciliation.ok === true,
     unifiedHealth: health.ok && health.json?.service === 'MILES_UNIFIED_CEO_GATEWAY',
     dashboardReadable: dashboardBefore.ok && dashboardBefore.json?.service === 'MILES_COMMAND_CENTER',
     canonicalPendingStable: beforePending.length === afterPending.length,
@@ -128,7 +144,8 @@ async function main() {
     executionSurfaceReachable: executionHtml.ok && execution.length > 100,
     desktopUsesCanonicalApprovalControl: desktopStatus.ok && desktopStatus.json?.approvalControl?.canonical === true,
     desktopCanonicalCountMatches: desktopStatus.ok && Number(desktopStatus.json?.approvalControl?.count || 0) === beforePending.length,
-    workerApprovalBacklogAnalyzed: workerApprovalBacklog.ok === true
+    workerApprovalBacklogAnalyzed: workerApprovalBacklog.ok === true,
+    workerApprovalBacklogClearedWhenExecuted: reconciliation.skipped === true || Number(workerApprovalBacklog.rawAwaitingApproval || 0) === 0
   };
 
   const failedChecks = Object.entries(checks).filter(([,value]) => value !== true).map(([key]) => key);
@@ -143,6 +160,7 @@ async function main() {
       workerRuntimeAwaitingApproval: runtimeBacklog,
       workerRuntimeSource: dashboardBefore.json?.taskQueue?.source || null
     },
+    workerApprovalReconciliation: reconciliation,
     workerApprovalBacklog,
     routes: {
       requestChanges: { http: requestChangesProbe.statusCode, status: statusFrom(requestChangesProbe) },
@@ -160,6 +178,8 @@ async function main() {
       nonexistentOperationProbeOnly: true,
       approvalRecordsCreated: false,
       workerBacklogAnalysisReadOnly: true,
+      workerBacklogReconciliationRequested: reconciliation.skipped !== true,
+      canonicalApprovalRecordsProtected: true,
       providerMutation: false,
       campaignMutation: false,
       emailSent: false,
@@ -180,4 +200,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { request, pendingApprovals, analyzeWorkerBacklog, main };
+module.exports = { request, pendingApprovals, analyzeWorkerBacklog, reconcileWorkerBacklogIfRequested, main };
