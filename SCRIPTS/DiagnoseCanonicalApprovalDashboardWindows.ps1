@@ -44,28 +44,47 @@ try {
   }
 
   try {
-    $pm2Raw = & pm2 jlist 2>$null
-    if ($LASTEXITCODE -eq 0 -and $pm2Raw) {
-      $pm2List = $pm2Raw | ConvertFrom-Json
-      $match = @($pm2List | Where-Object { [int]$_.pid -eq [int]$conn.OwningProcess }) | Select-Object -First 1
-      if ($match) {
-        $envInfo = $match.pm2_env
+    if ($conn) {
+      $pidText = [string]$conn.OwningProcess
+      $nodeCode = @'
+const { execFileSync } = require('child_process');
+const pid = Number(process.argv[1]);
+const list = JSON.parse(execFileSync('pm2', ['jlist'], { encoding: 'utf8', windowsHide: true }));
+const match = list.find(item => Number(item.pid) === pid);
+if (!match) { process.stdout.write(JSON.stringify({ matched: false, pid })); process.exit(0); }
+const env = match.pm2_env || {};
+process.stdout.write(JSON.stringify({
+  matched: true,
+  name: match.name || env.name || null,
+  pid: match.pid || null,
+  status: env.status || null,
+  pmExecPath: env.pm_exec_path || null,
+  pmCwd: env.pm_cwd || null,
+  nodeArgs: env.node_args || [],
+  args: env.args || [],
+  milesRoot: env.MILES_ROOT || null,
+  milesCommandPort: env.MILES_COMMAND_PORT || null
+}));
+'@
+      $pm2SelectedRaw = & node -e $nodeCode $pidText 2>$null
+      if ($LASTEXITCODE -eq 0 -and $pm2SelectedRaw) {
+        $selected = $pm2SelectedRaw | ConvertFrom-Json
         $result.pm2 = [ordered]@{
-          matched = $true
-          name = $match.name
-          pid = $match.pid
-          status = $envInfo.status
-          pmExecPath = $envInfo.pm_exec_path
-          pmCwd = $envInfo.pm_cwd
-          nodeArgs = @($envInfo.node_args)
-          args = @($envInfo.args)
-          milesRoot = $envInfo.MILES_ROOT
-          milesCommandPort = $envInfo.MILES_COMMAND_PORT
+          matched = [bool]$selected.matched
+          name = $selected.name
+          pid = $selected.pid
+          status = $selected.status
+          pmExecPath = $selected.pmExecPath
+          pmCwd = $selected.pmCwd
+          nodeArgs = @($selected.nodeArgs)
+          args = @($selected.args)
+          milesRoot = $selected.milesRoot
+          milesCommandPort = $selected.milesCommandPort
         }
 
         $candidateIndex = $null
-        if ($envInfo.pm_exec_path) {
-          $candidateIndex = Join-Path (Split-Path -Parent $envInfo.pm_exec_path) 'public\index.html'
+        if ($selected.pmExecPath) {
+          $candidateIndex = Join-Path (Split-Path -Parent $selected.pmExecPath) 'public\index.html'
         }
         if ($candidateIndex -and (Test-Path $candidateIndex)) {
           $candidateText = Get-Content $candidateIndex -Raw
@@ -81,10 +100,10 @@ try {
           }
         }
       } else {
-        $result.pm2 = [ordered]@{ matched = $false }
+        $result.pm2 = [ordered]@{ matched = $false; error = 'Node PM2 parser unavailable' }
       }
     } else {
-      $result.pm2 = [ordered]@{ matched = $false; error = 'pm2 jlist unavailable' }
+      $result.pm2 = [ordered]@{ matched = $false; error = 'No listener on 8787' }
     }
   } catch {
     $result.pm2 = [ordered]@{ matched = $false; error = $_.Exception.Message }
