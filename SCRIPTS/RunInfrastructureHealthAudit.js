@@ -6,30 +6,40 @@ const InfrastructureHealthAuditService = require('../SERVICES/runtime/Infrastruc
 
 function runApprovalDashboardDiagnostic(root) {
   if (process.platform !== 'win32') {
-    return {
-      ok: true,
-      skipped: true,
-      reason: 'WINDOWS_ONLY_DIAGNOSTIC'
-    };
+    return { ok: true, skipped: true, reason: 'WINDOWS_ONLY_DIAGNOSTIC' };
   }
 
   const script = path.join(root, 'SCRIPTS', 'DiagnoseCanonicalApprovalDashboardWindows.ps1');
   const execution = spawnSync(
     'powershell.exe',
     ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', script, '-Root', root],
-    {
-      cwd: root,
-      encoding: 'utf8',
-      windowsHide: true,
-      timeout: 60000
-    }
+    { cwd: root, encoding: 'utf8', windowsHide: true, timeout: 60000 }
   );
 
   let parsed = null;
-  try {
-    parsed = JSON.parse(String(execution.stdout || '').trim());
-  } catch {}
+  try { parsed = JSON.parse(String(execution.stdout || '').trim()); } catch {}
 
+  return {
+    ok: execution.status === 0 && parsed?.ok === true,
+    exitCode: execution.status,
+    signal: execution.signal || null,
+    error: execution.error ? execution.error.message : null,
+    result: parsed,
+    stdout: parsed ? undefined : String(execution.stdout || '').slice(-16000),
+    stderr: String(execution.stderr || '').slice(-8000)
+  };
+}
+
+function runCeoDashboardBackendTrace(root) {
+  const script = path.join(root, 'SCRIPTS', 'TraceCeoDashboardBackend.js');
+  const execution = spawnSync(process.execPath, [script], {
+    cwd: root,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: 30000
+  });
+  let parsed = null;
+  try { parsed = JSON.parse(String(execution.stdout || '').trim()); } catch {}
   return {
     ok: execution.status === 0 && parsed?.ok === true,
     exitCode: execution.status,
@@ -44,9 +54,8 @@ function runApprovalDashboardDiagnostic(root) {
 async function main() {
   const root = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 
-  // Run the CEO approval-control diagnostic first so it still produces evidence
-  // when an unrelated infrastructure sub-check fails later in the audit.
   const approvalDashboardDiagnostic = runApprovalDashboardDiagnostic(root);
+  const ceoDashboardBackendTrace = runCeoDashboardBackendTrace(root);
 
   const audit = new InfrastructureHealthAuditService({ root, intervalHours: 72 });
   const dueBefore = audit.due();
@@ -55,16 +64,13 @@ async function main() {
   try {
     result = await audit.run();
   } catch (error) {
-    auditError = {
-      message: error.message,
-      stack: error.stack || null
-    };
+    auditError = { message: error.message, stack: error.stack || null };
   }
   const dueAfter = audit.due();
 
   const auditOk = result?.ok === true;
   const proof = {
-    ok: auditOk && approvalDashboardDiagnostic.ok === true,
+    ok: auditOk && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true,
     service: 'MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF',
     mode: 'FORCED_READ_ONLY_PROOF',
     intervalHours: 72,
@@ -74,6 +80,7 @@ async function main() {
     result,
     auditError,
     approvalDashboardDiagnostic,
+    ceoDashboardBackendTrace,
     safety: {
       arbitraryShell: false,
       destructiveActionsPerformed: false,
@@ -82,7 +89,8 @@ async function main() {
       deletesEmail: false,
       changesDns: false,
       publishesB12: false,
-      approvalDashboardDiagnosticReadOnly: true
+      approvalDashboardDiagnosticReadOnly: true,
+      ceoDashboardBackendTraceReadOnly: true
     }
   };
 
@@ -99,4 +107,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, runApprovalDashboardDiagnostic };
+module.exports = { main, runApprovalDashboardDiagnostic, runCeoDashboardBackendTrace };
