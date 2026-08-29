@@ -104,6 +104,21 @@
         <pre id="rawJson">{}</pre>
       </details>
     </section>
+
+    <section class="approval-queue-panel">
+      <div class="panel-heading">
+        <div>
+          <div class="eyebrow">CEO CONTROL</div>
+          <h2>Kevin Approval Queue <span id="approvalCount" class="count-pill">0</span></h2>
+          <p class="panel-subtitle">These are the canonical operations currently waiting for CEO approval.</p>
+        </div>
+        <button id="refreshApprovalsButton" type="button" class="secondary">Refresh Queue</button>
+      </div>
+
+      <div id="approvalQueue" class="approval-queue">
+        <div class="approval-empty">Loading approval queue…</div>
+      </div>
+    </section>
   </main>
 
   <script src="/app.js"></script>
