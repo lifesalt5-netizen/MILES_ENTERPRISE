@@ -1,7 +1,7 @@
 {
-  "id": "production-truth-reconcile-20260829-018",
+  "id": "orion-refresh-readiness-20260829-019",
   "enabled": true,
   "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Run canonical production-truth reconciliation now that the worker approval backlog is cleared. Reconcile WorkQueue against CORE tasks, archive only closed historical items while preserving evidence, report before/after open/failed/escalation counts, and perform the existing read-only ORION intelligence audit. Do not fabricate ORION freshness, mutate external providers/campaigns/email/DNS/B12/customer data, or use destructive Git recovery. Publish evidence with failed-work after count and ORION database age/staleness."
+  "note": "Fast-forward to current main and run production truth plus the newly merged ORION read-only refresh-readiness bundle. Return: current ORION DB age/staleness, local compatible DB discovery conclusion, live official USAspending source availability and whether it is newer than the current DB, targeted rebuild-readiness blockers/next step, and failed-work count after reconciliation. Do not download source files, modify or touch the production ORION DB, create/promote staging, fabricate freshness, mutate providers/campaigns/email/DNS/B12/customer data, or use destructive Git recovery. Publish compact evidence."
 }
