@@ -6,6 +6,7 @@ const WinBackLocalHistoryDiscoveryService = require("./WinBackLocalHistoryDiscov
 const WinBackProspectReconstructionService = require("./WinBackProspectReconstructionService");
 const WinBackCampaignService = require("./WinBackCampaignCrossGenService");
 const WinBackMasterExportService = require("./WinBackMasterExportService");
+const HistoricalProspectLifecycleService = require("./HistoricalProspectLifecycleService");
 
 const DEFAULT_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
@@ -24,6 +25,7 @@ class WinBackProductionLoopService {
     this.reconstruction = options.reconstruction || null;
     this.campaign = options.campaign || null;
     this.exporter = options.exporter || null;
+    this.lifecycle = options.lifecycle || HistoricalProspectLifecycleService;
     this.timer = null;
     this.started = false;
     this.passRunning = false;
@@ -90,6 +92,7 @@ class WinBackProductionLoopService {
     try {
       const localHistory = await Promise.resolve(this.getLocalDiscovery().execute({ writeReport: true }));
       const reconstruction = await Promise.resolve(this.getReconstruction(localHistory.seedPath).execute({ writeReport: true }));
+      const lifecycle = this.lifecycle.applyToReconstruction(reconstruction);
       const masterExport = await Promise.resolve(this.getExporter().execute({ reconstruction, localHistory }));
       const campaignPlan = await this.getCampaign().execute({
         priorConversationCandidates: reconstruction.priorConversationCandidates || [],
@@ -134,6 +137,16 @@ class WinBackProductionLoopService {
           blockedCount: Number(reconstruction?.blockedCount || 0),
           artifact: reconstruction?.artifact || null
         },
+        lifecycle: {
+          taxonomy: ["HOT", "REACTIVATION", "NURTURE", "SUPPRESS", "REVIEW"],
+          counts: lifecycle.counts,
+          hot: lifecycle.byBucket.HOT,
+          reactivation: lifecycle.byBucket.REACTIVATION,
+          nurture: lifecycle.byBucket.NURTURE,
+          suppress: lifecycle.byBucket.SUPPRESS,
+          review: lifecycle.byBucket.REVIEW,
+          safety: lifecycle.rules
+        },
         exports: {
           masterCount: Number(masterExport?.masterCount || 0),
           priorReadyCount: Number(masterExport?.priorReadyCount || 0),
@@ -152,23 +165,27 @@ class WinBackProductionLoopService {
           messagingStandard: campaignPlan?.prior?.definition?.messagingStandard?.version || null,
           artifact: campaignPlan?.artifact || null
         },
-        nextAction: totalReady > 0
-          ? "REVIEW_WINBACK_MASTER_THEN_STAGE_DRAFTS"
-          : Number(masterExport?.reviewCount || 0) > 0
-            ? "REVIEW_WINBACK_REVIEW_QUEUE"
-            : "LOCATE_ADDITIONAL_B12_OBSIDIAN_HISTORY_SOURCES",
+        nextAction: lifecycle.counts.HOT > 0
+          ? "SURFACE_HOT_RECORDS_TO_REVENUE_OWNER_WITHOUT_WINBACK_ENROLLMENT"
+          : totalReady > 0
+            ? "REVIEW_WINBACK_MASTER_THEN_STAGE_DRAFTS"
+            : Number(masterExport?.reviewCount || 0) > 0
+              ? "REVIEW_WINBACK_REVIEW_QUEUE"
+              : "LOCATE_ADDITIONAL_B12_OBSIDIAN_HISTORY_SOURCES",
         safety: {
           localScanReadOnly: true,
           instantlyMutationRequested: false,
           campaignActivationRequested: false,
           productionLoopMayActivateCampaign: false,
-          duplicateCampaignCreationPossibleFromThisLoop: false
+          duplicateCampaignCreationPossibleFromThisLoop: false,
+          hotRecordsAutoEnrolled: false,
+          suppressedRecordsAutoEnrolled: false
         },
         generatedAt: new Date().toISOString()
       };
 
       report.artifact = this.writeReport(report);
-      this.log(`${report.status}; recovered=${report.localHistory.recordsRecovered}; master=${report.exports.masterCount}; eligible=${totalReady}`);
+      this.log(`${report.status}; recovered=${report.localHistory.recordsRecovered}; master=${report.exports.masterCount}; eligible=${totalReady}; hot=${report.lifecycle.counts.HOT}; suppress=${report.lifecycle.counts.SUPPRESS}`);
       return report;
     } catch (error) {
       const report = {
