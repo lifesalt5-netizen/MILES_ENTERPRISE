@@ -84,6 +84,26 @@ const INSTANTLY_BY_COMPACT = new Map(
   INSTANTLY_ACTIONS.map(action => [compactToken(action), action])
 );
 
+/*
+  Legacy/business-language Instantly actions are translated to the nearest
+  canonical read action before preflight. This prevents stale CEO missions
+  such as SYNC_CAMPAIGNS or REVIEW_PAUSED_CAMPAIGNS from failing with
+  ACTION_NOT_SUPPORTED while keeping the connector contract narrow.
+
+  These aliases deliberately resolve to listCampaigns because the legacy
+  intents are inspection/reconciliation requests. Mutating actions are never
+  inferred from a review/sync label.
+*/
+const INSTANTLY_READ_ALIASES = new Map([
+  ["SYNCCAMPAIGNS", "listCampaigns"],
+  ["REVIEWPAUSEDCAMPAIGNS", "listCampaigns"],
+  ["REVIEWCAMPAIGNS", "listCampaigns"],
+  ["CAMPAIGNREVIEW", "listCampaigns"],
+  ["AUDITCAMPAIGNS", "listCampaigns"],
+  ["CAMPAIGNSTATUS", "listCampaigns"],
+  ["LISTPAUSEDCAMPAIGNS", "listCampaigns"]
+]);
+
 function normalizeMilesAction(value) {
   const action = normalizeToken(value);
   return MILES_ACTIONS.includes(action) ? action : null;
@@ -93,7 +113,7 @@ function normalizeInstantlyAction(value) {
   const compact = compactToken(value);
   if (compact === "HEALTH") return "healthCheck";
   if (compact === "SENDREPLY" || compact === "REPLY") return "replyToEmail";
-  return INSTANTLY_BY_COMPACT.get(compact) || null;
+  return INSTANTLY_BY_COMPACT.get(compact) || INSTANTLY_READ_ALIASES.get(compact) || null;
 }
 
 function normalizeOrionAction(value) {
