@@ -88,7 +88,9 @@ class InfrastructureHealthAuditService {
 
   async runtime() {
     const git = await runReadOnly('git', ['status','--porcelain=v1'], this.root);
-    const pm2 = await runReadOnly(process.platform === 'win32' ? 'pm2.cmd' : 'pm2', ['jlist'], this.root);
+    const pm2Command = process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'pm2';
+    const pm2Args = process.platform === 'win32' ? ['/d','/s','/c','pm2','jlist'] : ['jlist'];
+    const pm2 = await runReadOnly(pm2Command, pm2Args, this.root);
     let pm2Apps = [];
     if (pm2.ok) { try { pm2Apps = JSON.parse(pm2.stdout || '[]').map(x=>({ name:x.name, pid:x.pid, status:x.pm2_env?.status || null, restarts:x.pm2_env?.restart_time ?? null, memoryBytes:x.monit?.memory ?? null, cpuPct:x.monit?.cpu ?? null })); } catch {} }
     const evidence = path.join(this.root,'DATA','runtime','remote_execution_bridge_evidence.json');
