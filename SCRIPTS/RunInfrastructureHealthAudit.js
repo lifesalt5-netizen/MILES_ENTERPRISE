@@ -127,22 +127,45 @@ async function main() {
 
   const acceptance = runCeoApprovalAcceptance(root);
   const auditOk = result?.ok === true;
-  const proof = {
-    ok: auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true && acceptance.ok === true,
-    service: 'MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF',
-    mode: 'CONTROL_PLANE_HEALTH_AND_SAFE_SELF_HEAL',
-    intervalHours: 72,
-    dueBefore,
-    dueAfter,
+  const overallOk = auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true && acceptance.ok === true;
+
+  const compact = {
+    ok: overallOk,
+    service: 'MILES_INFRASTRUCTURE_HEALTH_AUDIT_COMPACT',
     observedAt: result?.observedAt || new Date().toISOString(),
-    result,
-    auditError,
-    unifiedControlCenter,
-    approvalDashboardDiagnosticBefore,
-    approvalDashboardDiagnostic,
-    ceoDashboardBackendTraceBefore,
-    ceoDashboardBackendTrace,
-    ceoApprovalAcceptance: acceptance,
+    infrastructureAudit: {
+      ok: auditOk,
+      error: auditError?.message || null,
+      dueBefore: dueBefore?.reason || null,
+      dueAfter: dueAfter?.reason || null
+    },
+    unifiedControlCenter: {
+      ok: unifiedControlCenter.ok === true,
+      status: unifiedControlCenter.status || null,
+      restartPerformed: unifiedControlCenter.restartPerformed === true,
+      healthStatus: unifiedControlCenter.health?.json?.status || null,
+      service: unifiedControlCenter.health?.json?.service || null
+    },
+    approvalDashboardDiagnostic: {
+      ok: approvalDashboardDiagnostic.ok === true,
+      canonicalPendingApprovals: approvalDashboardDiagnostic.result?.api?.canonicalPendingApprovals ?? null,
+      workerRuntimeAwaitingApproval: approvalDashboardDiagnostic.result?.api?.workerRuntimeAwaitingApproval ?? null,
+      taskQueueSource: approvalDashboardDiagnostic.result?.api?.taskQueueSource || null,
+      exactHtmlMatchPaths: approvalDashboardDiagnostic.result?.diagnosis?.exactHtmlMatchPaths || []
+    },
+    ceoDashboardBackendTrace: {
+      ok: ceoDashboardBackendTrace.ok === true,
+      stateAwaitingApproval: ceoDashboardBackendTrace.result?.apiState?.workQueue?.awaitingApproval ?? null,
+      briefApprovalCount: ceoDashboardBackendTrace.result?.apiBrief?.approvalCount ?? null,
+      briefRequiresKevin: ceoDashboardBackendTrace.result?.apiBrief?.requiresKevin ?? null
+    },
+    ceoApprovalAcceptance: acceptance.proof || {
+      ok: false,
+      exitCode: acceptance.exitCode,
+      error: acceptance.error || null,
+      stdout: acceptance.stdout || null,
+      stderr: acceptance.stderr || null
+    },
     safety: {
       arbitraryShell: false,
       destructiveActionsPerformed: false,
@@ -151,20 +174,15 @@ async function main() {
       deletesEmail: false,
       changesDns: false,
       publishesB12: false,
-      approvalDashboardDiagnosticReadOnly: true,
-      ceoDashboardBackendTraceReadOnly: true,
       ceoApprovalAcceptanceNonexistentOperationProbeOnly: true,
       controlPlaneRestartOnlyWhenSourceNewer: true,
-      restartTargetAllowlisted: 'miles-command-center',
-      controlPlaneRestartPerformed: unifiedControlCenter.restartPerformed === true
+      restartTargetAllowlisted: 'miles-command-center'
     }
   };
 
-  console.log('MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF');
-  console.log(JSON.stringify(proof, null, 2));
-  console.log('MILES_CEO_APPROVAL_ACCEPTANCE_TAIL');
-  console.log(JSON.stringify(acceptance.proof || acceptance, null, 2));
-  process.exitCode = proof.ok ? 0 : 2;
+  console.log('MILES_INFRASTRUCTURE_HEALTH_AUDIT_COMPACT');
+  console.log(JSON.stringify(compact, null, 2));
+  process.exitCode = overallOk ? 0 : 2;
 }
 
 if (require.main === module) main().catch(error => { console.error('MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF_RED'); console.error(error.stack || error.message); process.exitCode = 2; });
