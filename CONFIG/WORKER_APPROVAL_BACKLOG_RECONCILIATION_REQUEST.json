@@ -1,12 +1,17 @@
 {
-  "enabled": true,
+  "enabled": false,
   "requestId": "20260829-001",
   "mode": "EXECUTE",
+  "completed": true,
+  "completedAt": "2026-08-29T23:47:35.591Z",
+  "result": "PASS",
+  "beforeAwaitingApproval": 130,
+  "afterAwaitingApproval": 0,
   "basis": {
     "rawAwaitingApproval": 130,
     "genuinelyCurrentCanonicalApprovals": 0,
     "clearlyLegacyOrStale": 130,
     "unresolvedReviewRequired": 0
   },
-  "policy": "Cancel only stale/legacy TaskQueue approval records; preserve canonical approvals and preserve full task history/audit metadata."
+  "policy": "Completed guarded reconciliation. Historical records were preserved as CANCELLED audit history; canonical approvals were not mutated."
 }
