@@ -1,7 +1,7 @@
 {
-  "id": "ceo-approval-control-deploy-verify-20260829-007",
+  "id": "ceo-approval-control-acceptance-20260829-008",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Deploy and verify the merged CEO approval-control repairs through the already-allowlisted infrastructure job. Fast-forward active repo to current main. If the fixed miles-command-center source is newer than the running PM2 process, restart only that allowlisted control-plane app and verify 8787 /api/health. Then verify canonical 8787 CEO approvals, live CEO dashboard source, port 8737 /api/state and /api/brief legacy values, and the fixed Windows infrastructure audit. No provider, campaign, email, DNS, B12, ORION, customer, or destructive Git mutation. Publish evidence to miles-runtime-evidence."
+  "note": "Fast-forward active repo to current main, run the allowlisted infrastructure job, self-heal only the fixed miles-command-center if its source is newer, and publish the compact MILES_CEO_APPROVAL_ACCEPTANCE_TAIL proof. Verify 8787 unified health, canonical CEO approval count, live root CEO dashboard, canonical ceo.js approval logic, separation of worker-runtime backlog, Approve/Reject/Request Changes route recognition using only the guaranteed nonexistent acceptance operation, /execution reachability, and 3737 desktop canonical-count agreement. Do not create approval records or mutate providers, campaigns, email, DNS, B12, ORION, customers, or use destructive Git recovery."
 }
