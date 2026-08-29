@@ -1,7 +1,7 @@
 {
-  "id": "approval-dashboard-canonical-diagnostic-20260829-001",
+  "id": "approval-dashboard-canonical-diagnostic-20260829-002",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Run the existing allowlisted infrastructure health audit. It now includes a read-only PowerShell diagnostic for the live 8787 approval dashboard. Verify the process bound to 8787, served HTML, local SERVICES/digital_coo/public/index.html, canonical CEO approval count from state/business_operations_queue.json, and worker-runtime awaitingApproval backlog. Do not mutate providers, campaigns, email, DNS, B12, ORION, or approval records. Publish evidence to miles-runtime-evidence."
+  "note": "Retry the read-only approval dashboard diagnostic after wrapper repair. The PowerShell diagnostic must run before unrelated infrastructure subchecks. Verify live port 8787 process, served HTML, local SERVICES/digital_coo/public/index.html, canonical CEO approvals, worker-runtime awaitingApproval backlog, and publish all evidence. No provider, campaign, email, DNS, B12, ORION, approval-record, or destructive Git mutation."
 }
