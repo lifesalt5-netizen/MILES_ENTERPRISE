@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "canaryId": "20260829-001",
+  "purpose": "One-time governed CEO approval end-to-end acceptance using only MILES REPOSITORY_SEARCH.",
+  "safety": {
+    "externalProviderMutation": false,
+    "campaignMutation": false,
+    "emailSent": false,
+    "dnsMutation": false,
+    "b12Mutation": false,
+    "orionMutation": false,
+    "customerMutation": false
+  }
+}

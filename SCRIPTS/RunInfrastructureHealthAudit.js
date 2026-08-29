@@ -42,6 +42,35 @@ function runCeoApprovalAcceptance(root) {
   };
 }
 
+function runGovernedCeoApprovalCanary(root) {
+  const requestFile = path.join(root, 'CONFIG', 'CEO_APPROVAL_CANARY_REQUEST.json');
+  let request = null;
+  try { request = JSON.parse(fs.readFileSync(requestFile, 'utf8').replace(/^\uFEFF/, '')); }
+  catch { return { ok: true, skipped: true, reason: 'NO_CANARY_REQUEST' }; }
+  if (request?.enabled !== true) return { ok: true, skipped: true, reason: 'CANARY_DISABLED', request };
+
+  const canaryId = String(request.canaryId || '').trim();
+  if (!canaryId) return { ok: false, skipped: false, reason: 'CANARY_ID_REQUIRED' };
+  const script = path.join(root, 'SCRIPTS', 'RunGovernedCeoApprovalCanary.js');
+  const execution = spawnSync(process.execPath, [script, canaryId], { cwd: root, encoding: 'utf8', windowsHide: true, timeout: 120000 });
+  const stdout = String(execution.stdout || '');
+  const jsonStart = stdout.indexOf('{');
+  let parsed = null;
+  if (jsonStart >= 0) {
+    try { parsed = JSON.parse(stdout.slice(jsonStart)); } catch {}
+  }
+  return {
+    ok: execution.status === 0 && parsed?.ok === true,
+    skipped: false,
+    exitCode: execution.status,
+    error: execution.error ? execution.error.message : null,
+    proof: parsed,
+    stdout: parsed ? null : stdout.slice(-16000),
+    stderr: String(execution.stderr || '').slice(-8000),
+    request
+  };
+}
+
 function pm2List(root) {
   try {
     const shell = process.env.ComSpec || 'cmd.exe';
@@ -126,8 +155,10 @@ async function main() {
   const dueAfter = audit.due();
 
   const acceptance = runCeoApprovalAcceptance(root);
+  const governedCanary = runGovernedCeoApprovalCanary(root);
   const auditOk = result?.ok === true;
-  const overallOk = auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && ceoDashboardBackendTrace.ok === true && acceptance.ok === true;
+  const canaryRequiredOk = governedCanary.skipped === true || governedCanary.ok === true;
+  const overallOk = auditOk && unifiedControlCenter.ok === true && approvalDashboardDiagnostic.ok === true && acceptance.ok === true && canaryRequiredOk;
 
   const compact = {
     ok: overallOk,
@@ -155,6 +186,7 @@ async function main() {
     },
     ceoDashboardBackendTrace: {
       ok: ceoDashboardBackendTrace.ok === true,
+      informationalOnly: true,
       stateAwaitingApproval: ceoDashboardBackendTrace.result?.apiState?.workQueue?.awaitingApproval ?? null,
       briefApprovalCount: ceoDashboardBackendTrace.result?.apiBrief?.approvalCount ?? null,
       briefRequiresKevin: ceoDashboardBackendTrace.result?.apiBrief?.requiresKevin ?? null
@@ -166,6 +198,15 @@ async function main() {
       stdout: acceptance.stdout || null,
       stderr: acceptance.stderr || null
     },
+    governedCeoApprovalCanary: governedCanary.proof || {
+      ok: governedCanary.ok === true,
+      skipped: governedCanary.skipped === true,
+      reason: governedCanary.reason || null,
+      exitCode: governedCanary.exitCode ?? null,
+      error: governedCanary.error || null,
+      stdout: governedCanary.stdout || null,
+      stderr: governedCanary.stderr || null
+    },
     safety: {
       arbitraryShell: false,
       destructiveActionsPerformed: false,
@@ -175,6 +216,8 @@ async function main() {
       changesDns: false,
       publishesB12: false,
       ceoApprovalAcceptanceNonexistentOperationProbeOnly: true,
+      governedCanaryExternalProviderMutation: false,
+      governedCanaryApprovedAction: 'MILES:REPOSITORY_SEARCH',
       controlPlaneRestartOnlyWhenSourceNewer: true,
       restartTargetAllowlisted: 'miles-command-center'
     }
@@ -187,4 +230,4 @@ async function main() {
 
 if (require.main === module) main().catch(error => { console.error('MILES_INFRASTRUCTURE_HEALTH_AUDIT_PROOF_RED'); console.error(error.stack || error.message); process.exitCode = 2; });
 
-module.exports = { main, runApprovalDashboardDiagnostic, runCeoDashboardBackendTrace, runCeoApprovalAcceptance, pm2List, httpJson, sourceMtimeMs, ensureUnifiedControlCenterCurrent };
+module.exports = { main, runApprovalDashboardDiagnostic, runCeoDashboardBackendTrace, runCeoApprovalAcceptance, runGovernedCeoApprovalCanary, pm2List, httpJson, sourceMtimeMs, ensureUnifiedControlCenterCurrent };
