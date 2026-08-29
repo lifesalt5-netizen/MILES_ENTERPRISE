@@ -1,7 +1,7 @@
 {
-  "id": "worker-approval-backlog-reconcile-20260829-014",
+  "id": "control-owner-watchdog-ensure-20260829-015",
   "enabled": true,
-  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
+  "job": "CONTROL_OWNER_WATCHDOG_ENSURE",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and execute the guarded worker approval backlog reconciliation requested by CONFIG/WORKER_APPROVAL_BACKLOG_RECONCILIATION_REQUEST.json. Only TaskQueue records already classified stale/legacy may move from AWAITING_APPROVAL/AWAITING_CEO_APPROVAL to terminal CANCELLED with audit metadata preserved. Fail closed if any current canonical or unresolved approval is present. After reconciliation verify worker approval backlog analysis returns 0 awaiting approvals, canonical Kevin approvals remain 0, 8787/3737 acceptance stays green, and no provider/campaign/email/DNS/B12/ORION/customer mutation occurred. Publish compact evidence."
+  "note": "Ensure the fixed MILES control owner and remote execution bridge are online, fresh, and consuming the current control branch. Use only the existing watchdog recovery path and fixed allowlist. Do not mutate providers, campaigns, email, DNS, B12, ORION, customer data, canonical approval records, or perform destructive Git recovery. Publish evidence."
 }
