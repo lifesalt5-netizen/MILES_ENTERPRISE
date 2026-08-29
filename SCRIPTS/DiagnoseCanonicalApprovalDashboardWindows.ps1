@@ -18,6 +18,7 @@ $result = [ordered]@{
   liveHtml = $null
   localIndex = $null
   servedIndexCandidate = $null
+  htmlMatches = @()
   api = $null
   diagnosis = $null
   safety = [ordered]@{
@@ -49,7 +50,9 @@ try {
       $nodeCode = @'
 const { execFileSync } = require('child_process');
 const pid = Number(process.argv[1]);
-const list = JSON.parse(execFileSync('pm2', ['jlist'], { encoding: 'utf8', windowsHide: true }));
+const shell = process.env.ComSpec || 'cmd.exe';
+const raw = execFileSync(shell, ['/d', '/s', '/c', 'pm2 jlist'], { encoding: 'utf8', windowsHide: true });
+const list = JSON.parse(raw);
 const match = list.find(item => Number(item.pid) === pid);
 if (!match) { process.stdout.write(JSON.stringify({ matched: false, pid })); process.exit(0); }
 const env = match.pm2_env || {};
@@ -141,6 +144,31 @@ process.stdout.write(JSON.stringify({
     $result.localIndex.matchesLive = $result.localIndex.sha256 -eq $result.liveHtml.sha256
   }
 
+  $scanRoots = @(
+    $Root,
+    'C:\MILES_RECOVERY_20260727\MILES_ENTERPRISE'
+  ) | Select-Object -Unique
+  $matches = @()
+  foreach ($scanRoot in $scanRoots) {
+    if (-not (Test-Path $scanRoot)) { continue }
+    Get-ChildItem $scanRoot -Recurse -File -Filter 'index.html' -ErrorAction SilentlyContinue | ForEach-Object {
+      try {
+        if ($_.Length -gt 100000) { return }
+        $text = Get-Content $_.FullName -Raw -ErrorAction Stop
+        if ((Get-Sha256 $text) -eq $liveHash) {
+          $matches += [ordered]@{
+            path = $_.FullName
+            bytes = [Text.Encoding]::UTF8.GetByteCount($text)
+            sha256 = $liveHash
+            containsCommandMiles = $text -match 'Command MILES'
+            containsKevinApprovalMetric = $text -match 'KEVIN APPROVAL'
+          }
+        }
+      } catch {}
+    }
+  }
+  $result.htmlMatches = @($matches)
+
   $cc = Invoke-RestMethod 'http://127.0.0.1:8787/api/dashboard' -TimeoutSec 15
   $pending = @($cc.operations | Where-Object {
     [string]$_.status -match 'AWAITING_APPROVAL|WAITING_FOR_CEO_APPROVAL|AWAITING_CEO_APPROVAL'
@@ -165,7 +193,10 @@ process.stdout.write(JSON.stringify({
     $issues += 'The HTML served on port 8787 does not byte-match the active-repo SERVICES/digital_coo/public/index.html.'
   }
   if ($result.servedIndexCandidate -and $result.servedIndexCandidate.matchesLive) {
-    $issues += "Port 8787 is serving a different checkout: $($result.servedIndexCandidate.path)"
+    $issues += "Port 8787 PM2 exec path resolves to the served index: $($result.servedIndexCandidate.path)"
+  }
+  if ($result.htmlMatches.Count -gt 0) {
+    $issues += "Filesystem scan found $($result.htmlMatches.Count) exact live HTML match(es)."
   }
   if ($result.liveHtml.containsKevinApprovalMetric -and $result.api.canonicalPendingApprovals -eq 0) {
     $issues += 'Live HTML contains a Kevin Approval metric while canonical pending approvals are zero; client-side/runtime data source must be verified.'
@@ -179,6 +210,7 @@ process.stdout.write(JSON.stringify({
     activeRepoExpected = $Root
     runtimeCwd = $result.pm2.pmCwd
     runtimeExecPath = $result.pm2.pmExecPath
+    exactHtmlMatchPaths = @($result.htmlMatches | ForEach-Object { $_.path })
   }
   $result.ok = $true
 } catch {
