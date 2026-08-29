@@ -1,7 +1,7 @@
 {
-  "id": "worker-approval-backlog-reconcile-20260829-016",
+  "id": "worker-approval-backlog-reconcile-20260829-017",
   "enabled": true,
   "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and execute the guarded worker approval backlog reconciliation requested by CONFIG/WORKER_APPROVAL_BACKLOG_RECONCILIATION_REQUEST.json. Only TaskQueue records already classified stale/legacy may move from AWAITING_APPROVAL/AWAITING_CEO_APPROVAL to terminal CANCELLED with audit metadata preserved. Fail closed if any current canonical or unresolved approval is present. After reconciliation verify worker approval backlog analysis returns 0 awaiting approvals, canonical Kevin approvals remain 0, 8787/3737 acceptance stays green, and no provider/campaign/email/DNS/B12/ORION/customer mutation occurred. Publish compact evidence."
+  "note": "Execute the already-merged guarded worker approval backlog reconciliation. Move only stale/legacy TaskQueue approval records to terminal CANCELLED with audit metadata preserved; protect any current canonical or unresolved approval and fail closed if one exists. Verify TaskQueue awaiting approval becomes 0, canonical Kevin approvals remain 0, and 8787/3737 acceptance remains green. The operation is idempotent; if a prior reconciliation already completed, verify zero candidates and make no additional changes. No external provider, campaign, email, DNS, B12, ORION, or customer mutation."
 }
