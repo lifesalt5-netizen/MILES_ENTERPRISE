@@ -33,6 +33,7 @@ const JOBS = Object.freeze({
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
   PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
   INFRASTRUCTURE_HEALTH_AUDIT: ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']],
+  CEO_APPROVAL_CONTROL_ACCEPTANCE: ['node', ['SCRIPTS/RunCeoApprovalControlAcceptance.js']],
   CONTROL_OWNER_WATCHDOG_INSTALL: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1', '-Root', ROOT]],
   CONTROL_OWNER_WATCHDOG_ENSURE: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/EnsureMilesControlOwnerWindows.ps1', '-Root', ROOT]],
   CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/ScheduleMilesControlOwnerRecoveryProofWindows.ps1', '-Root', ROOT]],
@@ -58,16 +59,8 @@ function writeState(state) {
 function getJson(url) {
   return new Promise((resolve, reject) => {
     let settled = false;
-    const finishResolve = value => {
-      if (settled) return;
-      settled = true;
-      resolve(value);
-    };
-    const finishReject = error => {
-      if (settled) return;
-      settled = true;
-      reject(error);
-    };
+    const finishResolve = value => { if (!settled) { settled = true; resolve(value); } };
+    const finishReject = error => { if (!settled) { settled = true; reject(error); } };
     const request = https.get(url, { headers: { 'user-agent': 'MILES-Remote-Execution-Bridge' } }, res => {
       const chunks = [];
       res.on('data', c => chunks.push(c));
@@ -77,42 +70,40 @@ function getJson(url) {
         catch (e) { finishReject(new Error(`DIRECTIVE_JSON_INVALID:${e.message}`)); }
       });
     });
-    request.setTimeout(DIRECTIVE_HTTP_TIMEOUT_MS, () => {
-      request.destroy(new Error(`DIRECTIVE_HTTP_TIMEOUT_${DIRECTIVE_HTTP_TIMEOUT_MS}MS`));
-    });
+    request.setTimeout(DIRECTIVE_HTTP_TIMEOUT_MS, () => { request.destroy(new Error('DIRECTIVE_HTTP_TIMEOUT')); });
     request.on('error', finishReject);
   });
 }
 
-function run(command, args, label, options = {}) {
+function run(command, args, label = 'JOB', options = {}) {
+  const timeoutMs = Math.max(1000, Number(options.timeoutMs || 0)) || null;
   return new Promise(resolve => {
     const child = spawn(command, args, {
       cwd: ROOT,
       env: options.env || process.env,
       shell: false,
-      windowsHide: true
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe']
     });
-    let stdout = '', stderr = '', settled = false, timer = null;
-    const timeoutMs = Math.max(0, Number(options.timeoutMs || 0));
-    const finish = result => {
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    let timer = null;
+    const finish = payload => {
       if (settled) return;
       settled = true;
       if (timer) clearTimeout(timer);
-      resolve(result);
+      resolve(payload);
     };
-    child.stdout?.on('data', d => { const s=d.toString(); stdout += s; if (!options.quiet) process.stdout.write(`[${label}] ${s}`); });
-    child.stderr?.on('data', d => { const s=d.toString(); stderr += s; if (!options.quiet) process.stderr.write(`[${label}] ${s}`); });
-    child.on('close', (code, signal) => finish({ code, signal: signal || null, stdout, stderr, timedOut: false }));
-    child.on('error', e => finish({ code: -1, signal: null, stdout, stderr: `${stderr}\n${e.message}`, timedOut: false }));
-    if (timeoutMs > 0) {
+    child.stdout.on('data', c => { stdout += c.toString(); });
+    child.stderr.on('data', c => { stderr += c.toString(); });
+    child.once('error', error => finish({ code: -1, error: error.message, stdout, stderr }));
+    child.once('close', code => finish({ code: Number(code), stdout, stderr }));
+    if (timeoutMs) {
       timer = setTimeout(() => {
-        if (settled) return;
-        const marker = `COMMAND_TIMEOUT_${timeoutMs}MS`;
-        stderr = `${stderr}\n${marker}`.trim();
         try { child.kill(); } catch {}
-        finish({ code: -2, signal: 'TIMEOUT', stdout, stderr, timedOut: true, timeoutMs });
+        finish({ code: -2, error: `${label}_TIMEOUT`, stdout, stderr, timedOut: true, timeoutMs });
       }, timeoutMs);
-      timer.unref?.();
     }
   });
 }
@@ -149,7 +140,6 @@ async function relaunchCurrentBridge() {
     detached: true,
     stdio: 'ignore'
   });
-
   await new Promise((resolve, reject) => {
     let settled = false;
     const timer = setTimeout(() => {
@@ -157,20 +147,9 @@ async function relaunchCurrentBridge() {
       settled = true;
       reject(new Error('SELF_RELOAD_SPAWN_TIMEOUT'));
     }, 3000);
-    child.once('spawn', () => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      resolve();
-    });
-    child.once('error', error => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      reject(error);
-    });
+    child.once('spawn', () => { if (!settled) { settled = true; clearTimeout(timer); resolve(); } });
+    child.once('error', error => { if (!settled) { settled = true; clearTimeout(timer); reject(error); } });
   });
-
   child.unref();
   console.log(`[MILES REMOTE BRIDGE] SELF-RELOAD pid=${child.pid}`);
   await new Promise(resolve => setTimeout(resolve, 750));
@@ -188,38 +167,18 @@ function validateDirective(d) {
 async function publishEvidence(evidence) {
   fs.mkdirSync(path.dirname(EVIDENCE_FILE), { recursive: true });
   fs.writeFileSync(EVIDENCE_FILE, JSON.stringify(evidence, null, 2), 'utf8');
-
   const fetchResult = await gitRun(['fetch', 'origin', 'main'], 'EVIDENCE-GIT', { quiet: true });
   requireSuccess(fetchResult, 'EVIDENCE_GIT_FETCH_FAILED');
-
-  const blob = requireSuccess(
-    await gitRun(['hash-object', '-w', EVIDENCE_FILE], 'EVIDENCE-GIT', { quiet: true }),
-    'EVIDENCE_BLOB_CREATE_FAILED'
-  );
-
+  const blob = requireSuccess(await gitRun(['hash-object', '-w', EVIDENCE_FILE], 'EVIDENCE-GIT', { quiet: true }), 'EVIDENCE_BLOB_CREATE_FAILED');
   const indexNonce = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
   const indexPath = path.join(ROOT, 'DATA', 'runtime', `remote-evidence-${process.pid}-${indexNonce}.index`);
-  const gitEnv = {
-    ...process.env,
-    GIT_INDEX_FILE: indexPath,
-    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME || 'MILES Runtime',
-    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL || 'miles-runtime@local.invalid',
-    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME || 'MILES Runtime',
-    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || 'miles-runtime@local.invalid'
-  };
-
+  const gitEnv = { ...process.env, GIT_INDEX_FILE: indexPath, GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME || 'MILES Runtime', GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL || 'miles-runtime@local.invalid', GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME || 'MILES Runtime', GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || 'miles-runtime@local.invalid' };
   try {
     requireSuccess(await gitRun(['read-tree', 'origin/main'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_READ_TREE_FAILED');
     requireSuccess(await gitRun(['update-index', '--add', '--cacheinfo', `100644,${blob},${EVIDENCE_REPO_PATH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_UPDATE_INDEX_FAILED');
     const tree = requireSuccess(await gitRun(['write-tree'], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_WRITE_TREE_FAILED');
-    const commit = requireSuccess(
-      await gitRun(['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId} ${evidence.phase || 'FINAL'}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
-      'EVIDENCE_COMMIT_TREE_FAILED'
-    );
-    requireSuccess(
-      await gitRun(['push', 'origin', `+${commit}:refs/heads/${EVIDENCE_BRANCH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }),
-      'EVIDENCE_PUSH_FAILED'
-    );
+    const commit = requireSuccess(await gitRun(['commit-tree', tree, '-p', 'origin/main', '-m', `MILES runtime evidence ${evidence.directiveId} ${evidence.phase || 'FINAL'}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_COMMIT_TREE_FAILED');
+    requireSuccess(await gitRun(['push', 'origin', `+${commit}:refs/heads/${EVIDENCE_BRANCH}`], 'EVIDENCE-GIT', { env: gitEnv, quiet: true }), 'EVIDENCE_PUSH_FAILED');
     return { ok: true, branch: EVIDENCE_BRANCH, repoPath: EVIDENCE_REPO_PATH, commit };
   } finally {
     try { fs.unlinkSync(indexPath); } catch {}
@@ -227,35 +186,19 @@ async function publishEvidence(evidence) {
 }
 
 function publishEvidenceSerialized(evidence) {
-  const task = evidencePublishTail.then(
-    () => publishEvidence(evidence),
-    () => publishEvidence(evidence)
-  );
+  const task = evidencePublishTail.then(() => publishEvidence(evidence), () => publishEvidence(evidence));
   evidencePublishTail = task.catch(() => undefined);
   return task;
 }
 
 function baseEvidence(directive, startedAt, phase) {
-  return {
-    ok: phase === 'COMPLETED',
-    phase,
-    directiveId: directive.id,
-    job: directive.job,
-    startedAt,
-    observedAt: new Date().toISOString(),
-    safety: {
-      arbitraryShell: false,
-      destructiveGitRecovery: false,
-      evidenceBranchOnly: EVIDENCE_BRANCH
-    }
-  };
+  return { ok: phase === 'COMPLETED', phase, directiveId: directive.id, job: directive.job, startedAt, observedAt: new Date().toISOString(), safety: { arbitraryShell: false, destructiveGitRecovery: false, evidenceBranchOnly: EVIDENCE_BRANCH } };
 }
 
 async function executeDirective(directive, state) {
   if (!directive || directive.enabled !== true) return { skipped: true, reason: 'DISABLED' };
   if (!directive.id || typeof directive.id !== 'string') return { skipped: true, reason: 'MISSING_ID' };
   if (directive.id === state.lastDirectiveId) return { skipped: true, reason: 'ALREADY_EXECUTED' };
-
   await safeFastForward();
   if (bridgeSourceChanged()) {
     if (BRIDGE_SUPERVISED) {
@@ -267,35 +210,20 @@ async function executeDirective(directive, state) {
     setTimeout(() => process.exit(0), 0);
     return { skipped: true, reason: 'SELF_RELOAD_AFTER_CODE_UPDATE' };
   }
-
   const validation = validateDirective(directive);
   if (!validation.ok) return { skipped: true, reason: validation.reason };
-
   const [command, args] = JOBS[directive.job];
   const startedAt = new Date().toISOString();
-
-  try {
-    await publishEvidenceSerialized(baseEvidence(directive, startedAt, 'STARTED'));
-  } catch (error) {
-    console.error('[MILES REMOTE BRIDGE] STARTED evidence publish failed:', error.message);
-  }
-
+  try { await publishEvidenceSerialized(baseEvidence(directive, startedAt, 'STARTED')); }
+  catch (error) { console.error('[MILES REMOTE BRIDGE] STARTED evidence publish failed:', error.message); }
   let progressPublishing = false;
   const progressTimer = setInterval(async () => {
     if (progressPublishing) return;
     progressPublishing = true;
-    try {
-      await publishEvidenceSerialized({
-        ...baseEvidence(directive, startedAt, 'RUNNING'),
-        elapsedSeconds: Math.max(0, Math.round((Date.now() - Date.parse(startedAt)) / 1000))
-      });
-    } catch (error) {
-      console.error('[MILES REMOTE BRIDGE] RUNNING evidence publish failed:', error.message);
-    } finally {
-      progressPublishing = false;
-    }
+    try { await publishEvidenceSerialized({ ...baseEvidence(directive, startedAt, 'RUNNING'), elapsedSeconds: Math.max(0, Math.round((Date.now() - Date.parse(startedAt)) / 1000)) }); }
+    catch (error) { console.error('[MILES REMOTE BRIDGE] RUNNING evidence publish failed:', error.message); }
+    finally { progressPublishing = false; }
   }, PROGRESS_MS);
-
   const result = await run(command, args, directive.job);
   clearInterval(progressTimer);
   const finishedAt = new Date().toISOString();
@@ -304,75 +232,28 @@ async function executeDirective(directive, state) {
   state.runs = [...(state.runs || []).slice(-49), record];
   state.lastResult = record;
   writeState(state);
-
-  const evidence = {
-    ...baseEvidence(directive, startedAt, 'COMPLETED'),
-    ok: result.code === 0,
-    finishedAt,
-    exitCode: result.code,
-    stdoutTail: String(result.stdout || '').slice(-16000),
-    stderrTail: String(result.stderr || '').slice(-8000)
-  };
-
-  try {
-    record.evidence = await publishEvidenceSerialized(evidence);
-  } catch (error) {
-    record.evidence = { ok: false, error: error.message };
-    state.lastResult = record;
-    writeState(state);
-  }
+  const evidence = { ...baseEvidence(directive, startedAt, 'COMPLETED'), ok: result.code === 0, finishedAt, exitCode: result.code, stdoutTail: String(result.stdout || '').slice(-16000), stderrTail: String(result.stderr || '').slice(-8000) };
+  try { record.evidence = await publishEvidenceSerialized(evidence); }
+  catch (error) { record.evidence = { ok: false, error: error.message }; console.error('[MILES REMOTE BRIDGE] FINAL evidence publish failed:', error.message); }
   return record;
 }
 
-async function tick() {
-  const state = readState();
-  const directive = await getJson(`${DIRECTIVE_URL}?t=${Date.now()}`);
-  return executeDirective(directive, state);
-}
-
 async function main() {
-  console.log('[MILES REMOTE BRIDGE] STARTED');
-  console.log(`[MILES REMOTE BRIDGE] Poll ${Math.round(POLL_MS/1000)}s`);
-  console.log(`[MILES REMOTE BRIDGE] Progress publish ${Math.round(PROGRESS_MS/1000)}s`);
-  console.log(`[MILES REMOTE BRIDGE] Directive HTTP timeout ${Math.round(DIRECTIVE_HTTP_TIMEOUT_MS/1000)}s`);
-  console.log(`[MILES REMOTE BRIDGE] Git command timeout ${Math.round(GIT_COMMAND_TIMEOUT_MS/1000)}s`);
-  console.log(`[MILES REMOTE BRIDGE] Control branch: ${CONTROL_BRANCH}`);
-  console.log(`[MILES REMOTE BRIDGE] Allowlisted jobs: ${Object.keys(JOBS).join(', ')}`);
-  console.log(`[MILES REMOTE BRIDGE] Evidence branch: ${EVIDENCE_BRANCH}`);
-  console.log(`[MILES REMOTE BRIDGE] Supervised: ${BRIDGE_SUPERVISED}`);
-  for (;;) {
+  const state = readState();
+  const poll = async () => {
     try {
-      const result = await tick();
+      const directive = await getJson(`${DIRECTIVE_URL}?t=${Date.now()}`);
+      const result = await executeDirective(directive, state);
       if (!result?.skipped) console.log('[MILES REMOTE BRIDGE] EXECUTED', JSON.stringify(result));
     } catch (error) {
-      console.error('[MILES REMOTE BRIDGE] ERROR', error.message);
+      console.error('[MILES REMOTE BRIDGE] poll error:', error.message);
     }
-    await new Promise(resolve => setTimeout(resolve, POLL_MS));
-  }
+  };
+  await poll();
+  setInterval(poll, POLL_MS);
+  console.log(`[MILES REMOTE BRIDGE] STARTED pollMs=${POLL_MS} directive=${DIRECTIVE_URL}`);
 }
 
-if (require.main === module) main().catch(e => { console.error(e.stack || e); process.exitCode = 1; });
-module.exports = {
-  JOBS,
-  CONTROL_BRANCH,
-  DIRECTIVE_URL,
-  EVIDENCE_BRANCH,
-  EVIDENCE_REPO_PATH,
-  PROGRESS_MS,
-  DIRECTIVE_HTTP_TIMEOUT_MS,
-  GIT_COMMAND_TIMEOUT_MS,
-  STARTUP_SOURCE_DIGEST,
-  BRIDGE_SUPERVISED,
-  SUPERVISED_RESTART_EXIT_CODE,
-  validateDirective,
-  executeDirective,
-  safeFastForward,
-  publishEvidence,
-  publishEvidenceSerialized,
-  baseEvidence,
-  sourceDigest,
-  bridgeSourceChanged,
-  relaunchCurrentBridge,
-  run,
-  gitRun
-};
+if (require.main === module) main().catch(error => { console.error('[MILES REMOTE BRIDGE] FATAL', error.stack || error.message); process.exitCode = 2; });
+
+module.exports = { JOBS, readState, writeState, validateDirective, executeDirective, safeFastForward, bridgeSourceChanged, sourceDigest, relaunchCurrentBridge, main };
