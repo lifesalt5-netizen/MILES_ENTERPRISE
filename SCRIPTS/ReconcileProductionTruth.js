@@ -46,6 +46,8 @@ function compactReadiness() {
   const local = readJson(path.join(refreshDir, 'latest_source_audit.json'));
   const official = readJson(path.join(refreshDir, 'latest_official_source_availability.json'));
   const rebuild = readJson(path.join(refreshDir, 'latest_rebuild_readiness.json'));
+  const postRefresh = readJson(path.join(refreshDir, 'latest_post_refresh_validation.json'));
+  const federal = readJson(path.join(refreshDir, 'latest_federal_source_readiness.json'));
   return {
     service: 'MILES_ORION_REFRESH_READINESS_COMPACT',
     observedAt: new Date().toISOString(),
@@ -79,6 +81,27 @@ function compactReadiness() {
       blockers: rebuild.summary?.blockers || [],
       nextStep: rebuild.reconstructionContract?.nextStep || null
     } : null,
+    postRefreshValidation: postRefresh ? {
+      ok: postRefresh.ok === true,
+      sidecarDb: postRefresh.sidecarDb || null,
+      sidecarBytes: postRefresh.sidecarBytes ?? null,
+      counts: postRefresh.counts || null,
+      componentFreshness: postRefresh.componentFreshness ? {
+        overallStatus: postRefresh.componentFreshness.overallStatus || null,
+        fullyFresh: postRefresh.componentFreshness.fullyFresh === true,
+        partialFreshness: postRefresh.componentFreshness.partialFreshness === true,
+        freshComponents: postRefresh.componentFreshness.freshComponents || [],
+        unresolvedComponents: postRefresh.componentFreshness.unresolvedComponents || []
+      } : null
+    } : null,
+    federalSourceReadiness: federal ? {
+      ok: federal.ok === true,
+      presentKeyEnvNames: federal.credentials?.presentKeyEnvNames || (federal.credentials?.samApiKeyEnvName ? [federal.credentials.samApiKeyEnvName] : []),
+      selectedKeyEnvName: federal.credentials?.selectedKeyEnvName || null,
+      blockers: federal.blockers || [],
+      nextStep: federal.nextStep || null,
+      keyValuesExposed: false
+    } : null,
     safety: {
       readOnlyAuditsOnly: true,
       filesDownloaded: false,
@@ -94,6 +117,14 @@ function main() {
   console.log('MILES PRODUCTION TRUTH + ORION REFRESH READINESS');
   console.log('============================================================');
 
+  const postRefreshValidation = runNode('ValidateOrionPostRefresh.js', [], 180000);
+  if (postRefreshValidation.stdout) process.stdout.write(tail(postRefreshValidation.stdout, 8000));
+  if (postRefreshValidation.stderr) process.stderr.write(tail(postRefreshValidation.stderr, 3000));
+
+  const federalSourceReadiness = runNode('AuditFederalSourceReadiness.js', [], 120000);
+  if (federalSourceReadiness.stdout) process.stdout.write(tail(federalSourceReadiness.stdout, 7000));
+  if (federalSourceReadiness.stderr) process.stderr.write(tail(federalSourceReadiness.stderr, 3000));
+
   const coreRun = runNode('ReconcileProductionTruthCore.js', process.argv[2] ? [process.argv[2]] : [], 180000);
   if (coreRun.stdout) process.stdout.write(tail(coreRun.stdout, 7000));
   if (coreRun.stderr) process.stderr.write(tail(coreRun.stderr, 4000));
@@ -106,6 +137,8 @@ function main() {
   const compact = compactReadiness();
   compact.runtimeApprovalBacklog = parseJsonOutput(runtimeApprovalAudit.stdout);
   compact.auditRuns = {
+    postRefreshValidation: { ok: postRefreshValidation.ok, exitCode: postRefreshValidation.exitCode, error: postRefreshValidation.error, stderr: tail(postRefreshValidation.stderr, 1000) },
+    federalSourceReadiness: { ok: federalSourceReadiness.ok, exitCode: federalSourceReadiness.exitCode, error: federalSourceReadiness.error, stderr: tail(federalSourceReadiness.stderr, 1000) },
     localSourceDiscovery: { ok: localAudit.ok, exitCode: localAudit.exitCode, error: localAudit.error, stderr: tail(localAudit.stderr, 1000) },
     officialSourceAvailability: { ok: officialAudit.ok, exitCode: officialAudit.exitCode, error: officialAudit.error, stderr: tail(officialAudit.stderr, 1000) },
     rebuildReadiness: { ok: readinessAudit.ok, exitCode: readinessAudit.exitCode, error: readinessAudit.error, stderr: tail(readinessAudit.stderr, 1000) },
