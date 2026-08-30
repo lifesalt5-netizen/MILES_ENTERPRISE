@@ -31,6 +31,9 @@ jobs:
           node --check SERVICES/CapabilityDispatcherService.js
           node --check SERVICES/governance/PolicyEngineService.js
           node --check SERVICES/SelfMaintenanceService.js
+          node --check TESTS/self_maintenance_autonomy_regression.test.js
+      - name: Run self-maintenance autonomy regression
+        run: node TESTS/self_maintenance_autonomy_regression.test.js
       - name: Verify autonomy markers
         run: |
           grep -q 'SELF_MAINTENANCE_RECONCILE_RUNTIME_APPROVALS' SERVICES/CommandIntentPlannerService.js
