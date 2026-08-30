@@ -116,6 +116,27 @@ function explicitApprovalPattern(text, patterns = []) {
   return null;
 }
 
+const GOVERNED_SELF_MAINTENANCE_ACTIONS = new Set([
+  "SELF_MAINTENANCE",
+  "SELF_MAINTENANCE_DIAGNOSE",
+  "SELF_MAINTENANCE_PLAN",
+  "SELF_MAINTENANCE_VALIDATE",
+  "SELF_MAINTENANCE_REPORT",
+  "SELF_MAINTENANCE_AUDIT_RUNTIME_APPROVALS",
+  "SELF_MAINTENANCE_RECONCILE_RUNTIME_APPROVALS"
+]);
+
+function isGovernedSelfMaintenance(task = {}) {
+  const payload = task.payload || {};
+  const plan = payload.plan || task.plan || {};
+  const action = normalize(task.action || payload.action || plan.action || task.type);
+  const provider = normalize(task.provider || payload.provider || plan.provider || task.system || payload.system || plan.system);
+  const system = normalize(task.system || payload.system || plan.system || "MILES");
+  return GOVERNED_SELF_MAINTENANCE_ACTIONS.has(action) &&
+    ["MILES", "SELFMAINTENANCESERVICE"].includes(provider) &&
+    (system === "MILES" || provider === "MILES");
+}
+
 function isGovernedQualifiedReply(task = {}) {
   const payload = task.payload || {};
   const action = normalize(payload.action || task.action || task.type);
@@ -169,8 +190,11 @@ class PolicyEngineService {
 
     const structuredApprovalPattern = matchPattern(structured, approvals.approvalPatterns);
     const proseApprovalPattern = explicitApprovalPattern(affirmative, approvals.approvalPatterns);
-    const rawApprovalPattern = structuredApprovalPattern || proseApprovalPattern;
     const governedQualifiedReply = isGovernedQualifiedReply(task);
+    const governedSelfMaintenance = isGovernedSelfMaintenance(task);
+    const rawApprovalPattern = governedSelfMaintenance
+      ? proseApprovalPattern
+      : structuredApprovalPattern || proseApprovalPattern;
     const approvalPattern =
       governedQualifiedReply && ["SEND", "REPLY"].includes(normalize(rawApprovalPattern))
         ? null
@@ -179,8 +203,10 @@ class PolicyEngineService {
     const autonomousPattern =
       governedQualifiedReply
         ? "GOVERNED_QUALIFIED_REPLY"
-        : matchPattern(structured, approvals.autonomousPatterns) ||
-          matchPattern(affirmative, approvals.autonomousPatterns);
+        : governedSelfMaintenance
+          ? "GOVERNED_SELF_MAINTENANCE"
+          : matchPattern(structured, approvals.autonomousPatterns) ||
+            matchPattern(affirmative, approvals.autonomousPatterns);
 
     const data = dataAccess.evaluate({ task, ...context });
     const demo = demoProtection.evaluate({ task, ...context });
@@ -190,7 +216,9 @@ class PolicyEngineService {
     let risk = "LOW";
     let reason = governedQualifiedReply
       ? "Evidence-gated qualified prospect reply is authorized for autonomous execution through controlled-write governance."
-      : "Read-only or low-risk action is authorized.";
+      : governedSelfMaintenance
+        ? "Bounded MILES self-maintenance is authorized for autonomous execution; explicit protected CEO actions remain governed."
+        : "Read-only or low-risk action is authorized.";
 
     if (neverAllowedPattern) {
       decision = "DENY";
@@ -239,7 +267,8 @@ class PolicyEngineService {
         proseApprovalPattern,
         autonomousPattern,
         protectedDomain,
-        governedQualifiedReply
+        governedQualifiedReply,
+        governedSelfMaintenance
       },
       interpretation: {
         structuredIntent: structured,
@@ -261,4 +290,5 @@ class PolicyEngineService {
 
 module.exports = new PolicyEngineService();
 module.exports.isGovernedQualifiedReply = isGovernedQualifiedReply;
+module.exports.isGovernedSelfMaintenance = isGovernedSelfMaintenance;
 module.exports.explicitApprovalPattern = explicitApprovalPattern;
