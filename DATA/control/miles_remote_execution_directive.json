@@ -1,7 +1,7 @@
 {
-  "id": "coo-post-credential-cleanup-truth-20260829-007",
+  "id": "orion-official-source-acquisition-plan-20260830-008",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "After the completed credential-orphan cleanup and deferred autonomous COO restart, fast-forward to current main and verify production truth. Confirm canonical approvals, runtime awaiting-approval count, failed queue count, and that autonomous credential findings are not recreated as executable approval tasks. Do not grant approvals, resume tasks, delete tasks, mutate credentials/providers/campaigns/email/DNS/B12/customer data, or modify the ORION production database. Publish complete evidence."
+  "note": "Fast-forward the local MILES checkout to current main, then run the guarded ORION official-source acquisition planner. HEAD-probe only official USAspending contract archives, record content lengths and final hosts, verify staging free-space reserve and archive-size ceiling, and publish complete evidence. Do not download archives, modify or promote the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery."
 }
