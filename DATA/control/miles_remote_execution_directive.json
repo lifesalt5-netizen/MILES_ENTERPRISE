@@ -1,7 +1,7 @@
 {
-  "id": "orion-official-source-acquisition-plan-20260830-008",
+  "id": "orion-official-source-acquire-staging-20260830-009",
   "enabled": true,
-  "job": "ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN",
+  "job": "ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward the local MILES checkout to current main, then run the guarded ORION official-source acquisition planner. HEAD-probe only official USAspending contract archives, record content lengths and final hosts, verify staging free-space reserve and archive-size ceiling, and publish complete evidence. Do not download archives, modify or promote the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery."
+  "note": "Fast-forward the local MILES checkout to current main and acquire only the two archives approved by the latest green ORION acquisition plan. Download from official USAspending hosts only into DATA/orion_refresh/official_source_staging using .part files; enforce expected content lengths, staging disk reserve, and SHA-256 manifest evidence. Do not overwrite an existing final archive, extract archives, build or promote a staging database, modify the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery."
 }
