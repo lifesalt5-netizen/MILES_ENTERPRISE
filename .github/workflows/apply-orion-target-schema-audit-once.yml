@@ -1,0 +1,45 @@
+name: Apply ORION Target Schema Audit Once
+
+on:
+  push:
+    branches:
+      - 'feat/orion-refresh-target-schema-audit-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/orion-refresh-target-schema-audit-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate sources
+        run: |
+          node --check SCRIPTS/AuditOrionRefreshTargetSchema.js
+          node --check SCRIPTS/RepairOrionTargetSchemaAuditAllowlist.js
+          node SCRIPTS/RepairOrionTargetSchemaAuditAllowlist.js
+      - name: Apply guarded allowlist repair
+        run: node SCRIPTS/RepairOrionTargetSchemaAuditAllowlist.js --apply
+      - name: Validate bridge
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -Fq "ORION_REFRESH_TARGET_SCHEMA_AUDIT: ['node', ['SCRIPTS/AuditOrionRefreshTargetSchema.js']]" StartMilesRemoteExecutionBridge.js
+          echo ORION_TARGET_SCHEMA_AUDIT_SOURCE_PASS
+      - name: Commit bridge allowlist
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No source changes required.'
+          else
+            git commit -m 'Allowlist ORION refresh target schema audit'
+            git push origin HEAD:feat/orion-refresh-target-schema-audit-20260830
+          fi
