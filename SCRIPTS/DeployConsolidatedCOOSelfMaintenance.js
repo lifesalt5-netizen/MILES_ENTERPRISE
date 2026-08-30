@@ -1,6 +1,6 @@
 'use strict';
 
-const { execFileSync } = require('child_process');
+const { execFileSync, spawn } = require('child_process');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +11,12 @@ const REQUIRED_PM2_APPS = [
   'miles-autonomous-coo',
   'miles-command-center'
 ];
+const REMOTE_BRIDGE_SUPERVISED = ['1', 'true', 'yes', 'y', 'on']
+  .includes(String(process.env.MILES_BRIDGE_SUPERVISED || '').trim().toLowerCase());
+const AUTONOMOUS_RESTART_DELAY_MS = Math.max(
+  15000,
+  Number(process.env.MILES_COO_DEPLOY_AUTONOMOUS_RESTART_DELAY_MS || 20000)
+);
 
 function fail(message, details = null) {
   console.error(`COO_CONSOLIDATED_DEPLOY_RED: ${message}`);
@@ -106,6 +112,13 @@ function pm2Name(item) {
   return String(item?.name || item?.pm2_env?.name || '').trim();
 }
 
+function pm2Selector(item) {
+  const name = pm2Name(item);
+  const selector = item?.pm_id != null ? String(item.pm_id) : name;
+  if (!selector) fail(`Could not determine PM2 selector for ${name || 'unknown app'}.`);
+  return selector;
+}
+
 function verifyRuntimeOwners(list, portPid) {
   const byName = new Map(list.map(item => [pm2Name(item), item]));
   for (const name of REQUIRED_PM2_APPS) {
@@ -125,10 +138,37 @@ function verifyRuntimeOwners(list, portPid) {
 
 function restartKnownApp(item) {
   const name = pm2Name(item);
-  const selector = item?.pm_id != null ? String(item.pm_id) : name;
-  if (!selector) fail(`Could not determine PM2 selector for ${name || 'unknown app'}.`);
+  const selector = pm2Selector(item);
   console.log(`RESTARTING_PM2_APP=${name}`);
   runPm2(['restart', selector, '--update-env'], { stdio: 'inherit' });
+}
+
+function scheduleDelayedRestart(item, delayMs = AUTONOMOUS_RESTART_DELAY_MS) {
+  const name = pm2Name(item);
+  const selector = pm2Selector(item);
+  const delay = Math.max(15000, Number(delayMs || AUTONOMOUS_RESTART_DELAY_MS));
+  const code = [
+    "const { execFileSync } = require('child_process');",
+    `setTimeout(() => {`,
+    `  try {`,
+    `    const shell = process.env.ComSpec || 'cmd.exe';`,
+    `    execFileSync(shell, ['/d','/s','/c','pm2.cmd','restart',${JSON.stringify(selector)},'--update-env'], { cwd: ${JSON.stringify(ROOT)}, windowsHide: true, stdio: 'ignore' });`,
+    `    process.exit(0);`,
+    `  } catch { process.exit(2); }`,
+    `}, ${delay});`
+  ].join('\n');
+
+  const child = spawn(process.execPath, ['-e', code], {
+    cwd: ROOT,
+    env: process.env,
+    detached: true,
+    windowsHide: true,
+    stdio: 'ignore'
+  });
+  child.unref();
+  console.log(`SCHEDULED_PM2_RESTART=${name}`);
+  console.log(`SCHEDULED_PM2_RESTART_DELAY_MS=${delay}`);
+  return { name, selector, pid: child.pid, delayMs: delay };
 }
 
 function getJson(url, timeoutMs = 5000) {
@@ -217,13 +257,27 @@ async function main() {
     fail('Self-maintenance reported an unsafe runtime mutation.');
   }
 
-  // Reload only the MILES processes that cache the changed planner/policy/self-maintenance code.
+  // Reload worker + Command Center immediately. When this helper is launched by
+  // the supervised remote bridge, restarting miles-autonomous-coo here would
+  // kill the bridge before it can persist completion/evidence and the same
+  // directive would be picked up again. In that mode, schedule the autonomous
+  // COO restart only after this helper exits and the bridge has recorded result.
   restartKnownApp(byName.get('miles-worker'));
-  restartKnownApp(byName.get('miles-autonomous-coo'));
+  if (!REMOTE_BRIDGE_SUPERVISED) {
+    restartKnownApp(byName.get('miles-autonomous-coo'));
+  }
   restartKnownApp(byName.get('miles-command-center'));
 
   const dashboard = await waitForDashboard();
   const afterPid = listenerPid(8787);
+
+  let autonomousRestart = { mode: 'IMMEDIATE' };
+  if (REMOTE_BRIDGE_SUPERVISED) {
+    autonomousRestart = {
+      mode: 'DELAYED_AFTER_REMOTE_EVIDENCE',
+      ...scheduleDelayedRestart(byName.get('miles-autonomous-coo'))
+    };
+  }
 
   console.log(`RUNTIME_APPROVALS_AUDITED=${maintenance?.approvalAudit?.total ?? 'UNKNOWN'}`);
   console.log(`RUNTIME_APPROVALS_RECONCILED=${maintenance?.approvalReconciliation?.reconciledCount ?? 'UNKNOWN'}`);
@@ -232,6 +286,8 @@ async function main() {
   console.log(`WORKER_RUNTIME_AWAITING_APPROVAL_AFTER=${dashboard.taskQueue?.awaitingApproval ?? 'UNKNOWN'}`);
   console.log(`PORT_8787_PID_BEFORE=${beforePid}`);
   console.log(`PORT_8787_PID_AFTER=${afterPid || 'UNKNOWN'}`);
+  console.log(`REMOTE_BRIDGE_SUPERVISED=${REMOTE_BRIDGE_SUPERVISED}`);
+  console.log(`AUTONOMOUS_COO_RESTART_MODE=${autonomousRestart.mode}`);
   console.log('APPROVALS_GRANTED_BY_MAINTENANCE=0');
   console.log('TASKS_RESUMED_BY_MAINTENANCE=0');
   console.log('TASKS_DELETED_BY_MAINTENANCE=0');
