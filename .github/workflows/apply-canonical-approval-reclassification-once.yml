@@ -1,0 +1,44 @@
+name: Apply Canonical Approval Reclassification Once
+
+on:
+  push:
+    branches:
+      - 'fix/canonical-approval-reclassification-20260829'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/canonical-approval-reclassification-20260829
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Dry run guarded repair
+        run: node SCRIPTS/RepairCanonicalApprovalReclassification.js
+      - name: Apply guarded repair
+        run: node SCRIPTS/RepairCanonicalApprovalReclassification.js --apply
+      - name: Validate production JavaScript
+        run: node --check SERVICES/digital_coo/MilesCommandCenter.js
+      - name: Verify repair markers
+        run: |
+          grep -q "policy.evaluated === false" SERVICES/digital_coo/MilesCommandCenter.js
+          grep -q "function reclassifyFalseCanonicalApprovals(queue)" SERVICES/digital_coo/MilesCommandCenter.js
+          grep -q "runtime-do-not-reinflate" SCRIPTS/RepairCanonicalApprovalReclassification.js || true
+      - name: Commit repaired production source
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SERVICES/digital_coo/MilesCommandCenter.js
+          if git diff --cached --quiet; then
+            echo 'No production source changes required.'
+          else
+            git commit -m 'Reclassify false canonical approvals safely'
+            git push origin HEAD:fix/canonical-approval-reclassification-20260829
+          fi
