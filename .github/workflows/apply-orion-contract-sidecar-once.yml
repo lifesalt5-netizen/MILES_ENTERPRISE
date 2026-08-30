@@ -1,0 +1,47 @@
+name: Apply ORION Contract Sidecar Once
+
+on:
+  push:
+    branches:
+      - 'fix/orion-sidecar-staging-disk-safe-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/orion-sidecar-staging-disk-safe-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate sources
+        run: |
+          node --check SERVICES/orion/OrionContractSidecarBuildService.js
+          node --check SCRIPTS/BuildOrionContractSidecar.js
+          node --check SCRIPTS/RepairOrionContractSidecarAllowlist.js
+          node TESTS/orion_contract_sidecar_build.test.js
+          node SCRIPTS/RepairOrionContractSidecarAllowlist.js
+      - name: Apply guarded allowlist repair
+        run: node SCRIPTS/RepairOrionContractSidecarAllowlist.js --apply
+      - name: Validate bridge
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -Fq "ORION_CONTRACT_SIDECAR_BUILD: ['node', ['SCRIPTS/BuildOrionContractSidecar.js']]" StartMilesRemoteExecutionBridge.js
+          echo ORION_CONTRACT_SIDECAR_SOURCE_PASS
+      - name: Commit bridge allowlist
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No source changes required.'
+          else
+            git commit -m 'Allowlist ORION contract sidecar build'
+            git push origin HEAD:fix/orion-sidecar-staging-disk-safe-20260830
+          fi
