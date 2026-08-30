@@ -1,0 +1,47 @@
+name: Apply Federal Source Readiness Once
+
+on:
+  push:
+    branches:
+      - 'feat/federal-source-readiness-audit-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/federal-source-readiness-audit-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate sources
+        run: |
+          node --check SERVICES/orion/FederalSourceReadinessAuditService.js
+          node --check SCRIPTS/AuditFederalSourceReadiness.js
+          node --check SCRIPTS/RepairFederalSourceReadinessAllowlist.js
+          node TESTS/federal_source_readiness_audit.test.js
+          node SCRIPTS/RepairFederalSourceReadinessAllowlist.js
+      - name: Apply guarded allowlist repair
+        run: node SCRIPTS/RepairFederalSourceReadinessAllowlist.js --apply
+      - name: Validate bridge
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -Fq "FEDERAL_SOURCE_READINESS_AUDIT: ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]" StartMilesRemoteExecutionBridge.js
+          echo FEDERAL_SOURCE_READINESS_SOURCE_PASS
+      - name: Commit bridge allowlist
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No bridge changes required.'
+          else
+            git commit -m 'Allowlist federal source readiness audit'
+            git push origin HEAD:feat/federal-source-readiness-audit-20260830
+          fi
