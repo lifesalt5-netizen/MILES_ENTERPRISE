@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'..');
+const policy=JSON.parse(fs.readFileSync(path.join(root,'CONFIG','GOVERNMENT_DATA','sam_lead_eligibility_policy.json'),'utf8'));
+const service=fs.readFileSync(path.join(root,'SERVICES','orion','SamQualifiedUniverseBuildService.js'),'utf8');
+if(policy.versionRetention?.keepExactlyOneActiveConsolidatedSamUniverse!==true) throw new Error('freshest-only retention missing');
+if(policy.versionRetention?.retireSupersededOnlyAfterNewVersionValidated!==true) throw new Error('validated cutover guard missing');
+if(policy.downstreamContactGate?.verifiedDeliverableEmailRequiredBeforeCampaign!==true) throw new Error('verified email gate missing');
+if(policy.downstreamContactGate?.inferredOrFabricatedEmailsProhibited!==true) throw new Error('fabricated email prohibition missing');
+if(!Array.isArray(policy.downstreamContactGate?.enrichmentPriority)||!policy.downstreamContactGate.enrichmentPriority.includes('PRIOR_VALIDATED_SAM_CONTACT')) throw new Error('prior SAM recovery priority missing');
+if(policy.campaignGovernance?.dedupeBeforeCampaign!==true||policy.campaignGovernance?.suppressionBeforeCampaign!==true||policy.campaignGovernance?.highestPrioritySegmentWins!==true) throw new Error('campaign collision governance missing');
+if(!service.includes("email_status TEXT NOT NULL DEFAULT 'ENRICHMENT_REQUIRED'")) throw new Error('missing enrichment-required staging state');
+if(!service.includes('oldSamRetainedForEmailReuse:true')) throw new Error('old SAM must be retained during qualification');
+if(!service.includes('allStoredLeadsBlockedFromOutboundUntilVerifiedEmail:true')) throw new Error('outbound email gate missing');
+console.log('SAM_QUALIFIED_UNIVERSE_CUTOVER_GOVERNANCE_TEST=PASS');

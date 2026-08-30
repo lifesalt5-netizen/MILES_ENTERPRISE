@@ -1,0 +1,35 @@
+name: Apply SAM Qualified Universe Build Once
+on:
+  push:
+    branches:
+      - 'feature/sam-qualified-universe-build-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/sam-qualified-universe-build-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --check SERVICES/orion/SamLeadEligibilityService.js
+      - run: node --check SERVICES/orion/SamQualifiedUniverseBuildService.js
+      - run: node --check SCRIPTS/BuildSamQualifiedUniverse.js
+      - run: node TESTS/sam_qualified_universe_policy.test.js
+      - run: node SCRIPTS/RepairSamQualifiedUniverseBridge.js
+      - run: node SCRIPTS/RepairSamQualifiedUniverseBridge.js --apply
+      - run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -q "SAM_QUALIFIED_UNIVERSE_BUILD" StartMilesRemoteExecutionBridge.js
+          grep -q "oldSamRetainedForEmailReuse:true" SERVICES/orion/SamQualifiedUniverseBuildService.js
+          grep -q "allStoredLeadsBlockedFromOutboundUntilVerifiedEmail:true" SERVICES/orion/SamQualifiedUniverseBuildService.js
+      - name: Commit repaired source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Allow remote qualified SAM universe build'; git push origin HEAD:feature/sam-qualified-universe-build-20260830; fi

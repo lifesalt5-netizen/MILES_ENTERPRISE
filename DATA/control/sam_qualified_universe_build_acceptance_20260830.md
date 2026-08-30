@@ -1,0 +1,13 @@
+SAM qualified-universe acceptance criteria:
+- source is newest staged full SAM Public V2 entity archive
+- streaming/local processing; no API pagination dependency
+- only active, confirmed for-profit, non-government, non-nonprofit, non-excluded, target-industry companies retained
+- manufacturing and established non-target consumer industries excluded by governed policy
+- every retained company begins blocked from outbound until verified deliverable email exists
+- missing email is enrichment-required, not campaign-eligible
+- old SAM retained during prior-contact recovery
+- no production ORION mutation during staging build
+- dedupe/suppression/current-segment collision checks occur before campaign eligibility
+- exactly one highest-priority active segment per company
+- old SAM active version may be retired only after new consolidated version passes integrity, contact, dedupe, segment and cutover validation
+- provenance/hash/counts/policy version retained after cutover
