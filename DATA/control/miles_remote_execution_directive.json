@@ -1,7 +1,7 @@
 {
-  "id": "orion-contract-sidecar-build-20260830-015",
+  "id": "federal-source-readiness-audit-20260830-016",
   "enabled": true,
-  "job": "ORION_CONTRACT_SIDECAR_BUILD",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main. Safely remove only unreferenced failed ORION staging candidates from DATA/orion_refresh/staging_db, verify free disk reserve, then build a new sidecar-only database from the completed official FY2026 USAspending full contract archive. Stream the ZIP without extraction, create only award/contractor-year/buyer/recompete sidecar tables with explicit source provenance, validate SQLite integrity and UEI coverage against production in read-only mode, and publish progress/final evidence. Do not copy, modify, touch mtime, or promote the production ORION database; do not update existing contractors/buyers/recompetes/opportunities/recommendations/persona tables; do not delete official source archives; do not mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery."
+  "note": "After the currently running ORION contract sidecar build completes, fast-forward local MILES to current main and run the read-only federal source readiness audit. Detect an existing SAM/GSA API key only by environment variable name, never expose its value, and probe only official api.sam.gov entity and opportunities endpoints when a key is present. Report exact blockers and next governed refresh path. Do not modify credentials, production ORION, sidecar data, campaigns, email, DNS, B12, customer data, approvals, or historical work; do not perform destructive git recovery. Publish complete runtime evidence."
 }
