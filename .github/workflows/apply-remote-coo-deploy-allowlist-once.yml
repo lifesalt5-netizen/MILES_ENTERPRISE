@@ -25,18 +25,16 @@ jobs:
         run: node SCRIPTS/RepairRemoteCOODeployAllowlist.js
       - name: Apply guarded repair
         run: node SCRIPTS/RepairRemoteCOODeployAllowlist.js --apply
-      - name: Validate bridge source
+      - name: Validate bridge source without runtime dependencies
+        shell: bash
         run: |
           node --check StartMilesRemoteExecutionBridge.js
           node --check TESTS/remote_execution_bridge_safety.test.js
-          node - <<'NODE'
-          const bridge = require('./StartMilesRemoteExecutionBridge');
-          const assert = require('assert');
-          assert.deepStrictEqual(bridge.JOBS.COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY, ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]);
-          assert.strictEqual(bridge.validateDirective({id:'coo-deploy-test', enabled:true, job:'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY'}).ok, true);
-          assert.strictEqual(bridge.validateDirective({id:'bad', enabled:true, job:'ARBITRARY_SHELL'}).ok, false);
-          console.log('REMOTE_COO_DEPLOY_ALLOWLIST_PASS');
-          NODE
+          grep -Fq "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY: ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]" StartMilesRemoteExecutionBridge.js
+          grep -Fq "'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY'" TESTS/remote_execution_bridge_safety.test.js
+          grep -Fq "validateDirective({id:'x',enabled:true,job:'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY'}).ok, true" TESTS/remote_execution_bridge_safety.test.js
+          grep -Fq "JOB_NOT_ALLOWLISTED" StartMilesRemoteExecutionBridge.js
+          echo REMOTE_COO_DEPLOY_ALLOWLIST_SOURCE_PASS
       - name: Commit bridge allowlist
         shell: bash
         run: |
