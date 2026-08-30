@@ -31,6 +31,11 @@ function readJson(file) {
   catch { return null; }
 }
 
+function parseJsonOutput(value) {
+  try { return JSON.parse(String(value || '').trim()); }
+  catch { return null; }
+}
+
 function tail(value, max = 5000) {
   const text = String(value || '');
   return text.length > max ? text.slice(-max) : text;
@@ -96,12 +101,15 @@ function main() {
   const localAudit = runNode('AuditOrionRefreshSources.js', [], 90000);
   const officialAudit = runNode('AuditOrionOfficialSourceAvailability.js', [], 120000);
   const readinessAudit = runNode('AuditOrionRebuildReadinessFast.js', [], 120000);
+  const runtimeApprovalAudit = runNode('AuditRuntimeApprovalBacklog.js', [], 90000);
 
   const compact = compactReadiness();
+  compact.runtimeApprovalBacklog = parseJsonOutput(runtimeApprovalAudit.stdout);
   compact.auditRuns = {
     localSourceDiscovery: { ok: localAudit.ok, exitCode: localAudit.exitCode, error: localAudit.error, stderr: tail(localAudit.stderr, 1000) },
     officialSourceAvailability: { ok: officialAudit.ok, exitCode: officialAudit.exitCode, error: officialAudit.error, stderr: tail(officialAudit.stderr, 1000) },
-    rebuildReadiness: { ok: readinessAudit.ok, exitCode: readinessAudit.exitCode, error: readinessAudit.error, stderr: tail(readinessAudit.stderr, 1000) }
+    rebuildReadiness: { ok: readinessAudit.ok, exitCode: readinessAudit.exitCode, error: readinessAudit.error, stderr: tail(readinessAudit.stderr, 1000) },
+    runtimeApprovalBacklog: { ok: runtimeApprovalAudit.ok, exitCode: runtimeApprovalAudit.exitCode, error: runtimeApprovalAudit.error, stderr: tail(runtimeApprovalAudit.stderr, 1000) }
   };
 
   console.log('\nMILES_ORION_REFRESH_READINESS_COMPACT');
