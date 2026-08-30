@@ -1,6 +1,6 @@
 {
   "policyId": "P2GC_SAM_OPERATIONAL_LEAD_ELIGIBILITY",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "effectiveDate": "2026-08-30",
   "purpose": "Consolidate the full SAM.gov entity universe into the commercial-company population P2GC can actually serve before contact enrichment, segmentation, or outbound.",
   "requirements": {
@@ -9,6 +9,13 @@
     "notGovernmentEntity": true,
     "notExcludedSuspendedOrDebarred": true,
     "notHardExcludedIndustry": true
+  },
+  "samBusinessTypeCodes": {
+    "forProfit": ["2X"],
+    "government": ["2R", "2F", "12", "3I", "CY"],
+    "nonprofit": ["A7", "A8", "2U"],
+    "manufacturer": ["MF"],
+    "source": "SAM Functional Data Dictionary / SAM Entity Management public documentation"
   },
   "hardExcludedNaicsPrefixes": ["523", "721", "6111", "6112", "6113", "6114", "31", "32", "33"],
   "hardExcludedNaics": [
@@ -37,7 +44,9 @@
     "verifiedDeliverableEmailRequiredBeforeCampaign": true,
     "commercialEmailAndWebsiteDomainsRequired": true,
     "institutionalDomainsRejected": [".gov", ".mil", ".edu", ".org"],
-    "inferredOrFabricatedEmailsProhibited": true
+    "inferredOrFabricatedEmailsProhibited": true,
+    "missingEmailDisposition": "ENRICHMENT_REQUIRED_NOT_CAMPAIGN_ELIGIBLE",
+    "enrichmentPriority": ["PRIOR_VALIDATED_SAM_CONTACT", "CURRENT_P2GC_INTERNAL_CONTACT", "OTHER_P2GC_INTERNAL_SOURCE", "GOVERNED_EXTERNAL_ENRICHMENT"]
   },
   "segmentPriority": ["EXPIRED_EVERYTHING", "EXPIRING_6_MONTHS", "EXPIRING_12_MONTHS", "CURRENTLY_LOOKING_FOR_HELP", "GSA", "VA", "SAM", "CERTIFICATIONS", "SBS"],
   "campaignGovernance": {
@@ -46,5 +55,10 @@
     "suppressionBeforeCampaign": true,
     "dedupeBeforeCampaign": true,
     "verificationBeforeCampaign": true
+  },
+  "versionRetention": {
+    "keepExactlyOneActiveConsolidatedSamUniverse": true,
+    "retireSupersededOnlyAfterNewVersionValidated": true,
+    "preserveAuditProvenance": true
   }
 }
