@@ -10,7 +10,7 @@ let f=fields();f[31]='2X~2R';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.eli
 f=fields();f[31]='A8';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.eligible,false);assert(r.reasons.includes('NONPROFIT_OR_NONCOMMERCIAL_ENTITY'));
 f=fields();f[31]='2X~MF';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.eligible,false);assert(r.reasons.includes('EXCLUDED_INDUSTRY'));
 f=fields();f[32]='332710';f[34]='332710Y';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.eligible,false);assert(r.reasons.includes('EXCLUDED_INDUSTRY'));
-f=fields();f[31]='LJ';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.status,'REVIEW_REQUIRED');assert(r.reviewReasons.includes('FOR_PROFIT_NOT_CONFIRMED'));
+f=fields();f[31]='LJ';c=parseRecord(f);r=e.evaluate(c);assert.equal(r.status,'REJECTED');assert(r.reasons.includes('NOT_FOR_PROFIT'));
 assert.equal(policy.downstreamContactGate.verifiedDeliverableEmailRequiredBeforeCampaign,true);
 assert.equal(policy.versionRetention.keepExactlyOneActiveConsolidatedSamUniverse,true);
 console.log('SAM_QUALIFIED_UNIVERSE_POLICY_TEST=PASS');
