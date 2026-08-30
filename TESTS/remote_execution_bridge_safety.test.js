@@ -10,6 +10,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE',
   'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY',
   'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY',
+  'COO_RUNTIME_APPROVAL_AUDIT',
   'INBOX_PLACEMENT_AUDIT',
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
@@ -23,6 +24,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
 ]);
 assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY, ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]);
+assert.deepStrictEqual(bridge.JOBS.COO_RUNTIME_APPROVAL_AUDIT, ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']]);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY'}).ok, true);
 assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[0], 'powershell.exe');
 assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[1].includes('SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'));
