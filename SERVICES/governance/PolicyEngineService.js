@@ -77,6 +77,45 @@ function matchPattern(text, patterns = []) {
   return patterns.find(pattern => text.includes(normalize(pattern))) || null;
 }
 
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function explicitApprovalPattern(text, patterns = []) {
+  const normalized = normalize(text)
+    .replace(/^MILES\s*(?:[-—:]\s*)?/, "")
+    .trim();
+
+  if (!normalized) return null;
+
+  for (const pattern of patterns) {
+    const token = normalize(pattern);
+    if (!token) continue;
+    const escaped = escapeRegExp(token);
+
+    // Prose is advisory evidence, not authoritative intent. Only treat a
+    // protected verb appearing in prose as an approval request when the CEO
+    // is actually issuing that verb as an imperative/request. This prevents
+    // diagnostic narratives such as "why did this say BUY/SPEND/SUBMIT?"
+    // from manufacturing approvals merely because those words are quoted.
+    const direct = new RegExp(`^(?:(?:PLEASE|KINDLY)\\s+)?${escaped}\\b`);
+    const request = new RegExp(`^(?:CAN|COULD|WOULD|WILL)\\s+YOU\\s+${escaped}\\b`);
+    const intent = new RegExp(`^(?:I\\s+)?(?:WANT|NEED)\\s+(?:YOU\\s+)?TO\\s+${escaped}\\b`);
+    const authorization = new RegExp(`^(?:GO\\s+AHEAD\\s+AND|PROCEED\\s+TO|YOU\\s+ARE\\s+AUTHORIZED\\s+TO)\\s+${escaped}\\b`);
+
+    if (
+      direct.test(normalized) ||
+      request.test(normalized) ||
+      intent.test(normalized) ||
+      authorization.test(normalized)
+    ) {
+      return pattern;
+    }
+  }
+
+  return null;
+}
+
 function isGovernedQualifiedReply(task = {}) {
   const payload = task.payload || {};
   const action = normalize(payload.action || task.action || task.type);
@@ -128,9 +167,9 @@ class PolicyEngineService {
     ) || null;
     const outboundContext = /OUTBOUND|INSTANTLY|CAMPAIGN|SEND/.test(actionableText);
 
-    const rawApprovalPattern =
-      matchPattern(structured, approvals.approvalPatterns) ||
-      matchPattern(affirmative, approvals.approvalPatterns);
+    const structuredApprovalPattern = matchPattern(structured, approvals.approvalPatterns);
+    const proseApprovalPattern = explicitApprovalPattern(affirmative, approvals.approvalPatterns);
+    const rawApprovalPattern = structuredApprovalPattern || proseApprovalPattern;
     const governedQualifiedReply = isGovernedQualifiedReply(task);
     const approvalPattern =
       governedQualifiedReply && ["SEND", "REPLY"].includes(normalize(rawApprovalPattern))
@@ -196,6 +235,8 @@ class PolicyEngineService {
         neverAllowedPattern,
         approvalPattern,
         rawApprovalPattern,
+        structuredApprovalPattern,
+        proseApprovalPattern,
         autonomousPattern,
         protectedDomain,
         governedQualifiedReply
@@ -203,6 +244,7 @@ class PolicyEngineService {
       interpretation: {
         structuredIntent: structured,
         affirmativeProse: affirmative,
+        proseApprovalRequiresExplicitIntent: true,
         negationAware: true
       },
       dataAccess: data,
@@ -219,3 +261,4 @@ class PolicyEngineService {
 
 module.exports = new PolicyEngineService();
 module.exports.isGovernedQualifiedReply = isGovernedQualifiedReply;
+module.exports.explicitApprovalPattern = explicitApprovalPattern;
