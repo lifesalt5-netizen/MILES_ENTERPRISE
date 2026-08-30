@@ -1,7 +1,7 @@
 {
-  "id": "orion-refresh-readiness-20260829-019",
+  "id": "coo-consolidated-self-maintenance-deploy-20260829-001",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and run production truth plus the newly merged ORION read-only refresh-readiness bundle. Return: current ORION DB age/staleness, local compatible DB discovery conclusion, live official USAspending source availability and whether it is newer than the current DB, targeted rebuild-readiness blockers/next step, and failed-work count after reconciliation. Do not download source files, modify or touch the production ORION DB, create/promote staging, fabricate freshness, mutate providers/campaigns/email/DNS/B12/customer data, or use destructive Git recovery. Publish compact evidence."
+  "note": "Fast-forward to current main and execute the allowlisted consolidated MILES COO self-maintenance deployment. Reconcile only proven stale false or terminal-source runtime approvals. Do not grant approvals, resume tasks, delete tasks, mutate true CEO approvals, or alter orphaned approvals. Restart only miles-worker, miles-autonomous-coo, and miles-command-center. Verify Command Center recovery and publish complete runtime evidence."
 }
