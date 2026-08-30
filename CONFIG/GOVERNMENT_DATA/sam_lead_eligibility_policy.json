@@ -1,0 +1,50 @@
+{
+  "policyId": "P2GC_SAM_OPERATIONAL_LEAD_ELIGIBILITY",
+  "version": "1.0.0",
+  "effectiveDate": "2026-08-30",
+  "purpose": "Consolidate the full SAM.gov entity universe into the commercial-company population P2GC can actually serve before contact enrichment, segmentation, or outbound.",
+  "requirements": {
+    "activeSamRegistration": true,
+    "forProfitConfirmed": true,
+    "notGovernmentEntity": true,
+    "notExcludedSuspendedOrDebarred": true,
+    "notHardExcludedIndustry": true
+  },
+  "hardExcludedNaicsPrefixes": ["523", "721", "6111", "6112", "6113", "6114", "31", "32", "33"],
+  "hardExcludedNaics": [
+    "522292", "522310", "611511", "611512", "611519", "611610", "611620", "611630", "611691", "611692", "611699", "611710",
+    "722330", "722410", "722511", "722513", "722515", "811192", "812111", "812112", "812113", "812199", "812910", "813110"
+  ],
+  "hardExcludedPatterns": [
+    "\\bdog walk(er|ing)?\\b", "\\bpet sitt(er|ing)?\\b", "\\bpet groom(er|ing)?\\b", "\\bcar wash\\b", "\\bauto detail(ing|er)?\\b",
+    "\\bfast[ -]?food\\b", "\\bfood truck\\b", "\\brestaurant\\b", "\\bnail salon\\b", "\\bhair salon\\b", "\\bbarber(shop)?\\b",
+    "\\bmassage\\b", "\\bday spa\\b", "\\bchurch\\b", "\\bministry\\b", "\\breligious organization\\b", "\\bhotel\\b", "\\bmotel\\b",
+    "\\bmortgage\\b", "\\binvestment (firm|company|advisor|adviser|management)\\b", "\\bday ?care\\b", "\\bpreschool\\b", "\\belementary school\\b",
+    "\\bmiddle school\\b", "\\bhigh school\\b", "\\bcollege\\b", "\\buniversity\\b", "\\btattoo\\b", "\\b(custom[ -]+)?manufactur(?:e|er|ing)\\b"
+  ],
+  "nonprofitPatterns": [
+    "\\bnon[ -]?profit\\b", "\\bnot for profit\\b", "\\bfoundation\\b", "\\breligious organization\\b", "\\bstate controlled institution of higher learning\\b", "\\bprivate university or college\\b"
+  ],
+  "governmentEntityPatterns": [
+    "\\bfederal government\\b", "\\bstate government\\b", "\\blocal government\\b", "\\bmunicipal government\\b", "\\bgovernment agency\\b",
+    "\\bgovernment owned\\b", "\\bgovernment controlled\\b", "\\bindian tribe\\b", "\\btribal government\\b", "\\bforeign government\\b"
+  ],
+  "retentionSignals": {
+    "validSamOnlyLead": "Active for-profit commercial entity passing exclusions; may enter SAM lead universe even with zero awards and no GSA contract.",
+    "higherPrioritySignals": ["federalAwardHistory", "positiveFederalRevenue", "activeGsaContract", "activeVaFss", "sbaCertification", "expiringVehicleOrRegistration", "currentlyLookingForHelp"]
+  },
+  "downstreamContactGate": {
+    "verifiedDeliverableEmailRequiredBeforeCampaign": true,
+    "commercialEmailAndWebsiteDomainsRequired": true,
+    "institutionalDomainsRejected": [".gov", ".mil", ".edu", ".org"],
+    "inferredOrFabricatedEmailsProhibited": true
+  },
+  "segmentPriority": ["EXPIRED_EVERYTHING", "EXPIRING_6_MONTHS", "EXPIRING_12_MONTHS", "CURRENTLY_LOOKING_FOR_HELP", "GSA", "VA", "SAM", "CERTIFICATIONS", "SBS"],
+  "campaignGovernance": {
+    "oneActiveCampaignPerCompany": true,
+    "highestPrioritySegmentWins": true,
+    "suppressionBeforeCampaign": true,
+    "dedupeBeforeCampaign": true,
+    "verificationBeforeCampaign": true
+  }
+}
