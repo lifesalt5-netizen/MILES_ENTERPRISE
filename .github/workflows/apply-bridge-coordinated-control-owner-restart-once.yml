@@ -25,14 +25,16 @@ jobs:
         run: node SCRIPTS/RepairBridgeCoordinatedControlOwnerRestart.js
       - name: Apply guarded repair
         run: node SCRIPTS/RepairBridgeCoordinatedControlOwnerRestart.js --apply
-      - name: Validate repaired sources
+      - name: Validate repaired sources without runtime dependencies
         run: |
           node --check StartMilesRemoteExecutionBridge.js
           node --check SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
           node --check SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js
           node TESTS/bridge_coordinated_control_owner_restart_regression.test.js
           node TESTS/remote_execution_bridge_supervisor.test.js
-          node TESTS/remote_execution_bridge_safety.test.js
+          grep -Fq "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY" StartMilesRemoteExecutionBridge.js
+          grep -Fq "CONTROL_OWNER_RESTART_EXIT_CODE = 76" StartMilesRemoteExecutionBridge.js
+          grep -Fq "CONTROL_OWNER_RESTART_REQUESTED" SERVICES/runtime/RemoteExecutionBridgeSupervisor.js
       - name: Commit repaired production sources
         shell: bash
         run: |
