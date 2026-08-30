@@ -1,0 +1,48 @@
+name: Apply ORION Archive Inspection Once
+
+on:
+  push:
+    branches:
+      - 'feat/orion-inspect-official-archives-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/orion-inspect-official-archives-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax and contract validation
+        run: |
+          node --check SERVICES/orion/OrionOfficialArchiveInspectorService.js
+          node --check SCRIPTS/InspectOrionOfficialArchives.js
+          node --check SCRIPTS/RepairOrionArchiveInspectionAllowlist.js
+          node TESTS/orion_official_archive_inspection.test.js
+      - name: Dry run guarded allowlist repair
+        run: node SCRIPTS/RepairOrionArchiveInspectionAllowlist.js
+      - name: Apply guarded allowlist repair
+        run: node SCRIPTS/RepairOrionArchiveInspectionAllowlist.js --apply
+      - name: Validate patched bridge source
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -Fq "ORION_OFFICIAL_ARCHIVE_INSPECTION: ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']]" StartMilesRemoteExecutionBridge.js
+          echo ORION_ARCHIVE_INSPECTION_SOURCE_PASS
+      - name: Commit bridge allowlist
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No source changes required.'
+          else
+            git commit -m 'Allowlist ORION official archive inspection'
+            git push origin HEAD:feat/orion-inspect-official-archives-20260830
+          fi
