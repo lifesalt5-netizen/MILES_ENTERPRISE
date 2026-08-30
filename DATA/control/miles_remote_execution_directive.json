@@ -1,7 +1,7 @@
 {
-  "id": "orion-production-truth-final-validation-20260830-017",
+  "id": "orion-sidecar-state-reconciliation-20260830-018",
   "enabled": true,
   "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main and run the consolidated production-truth reconciliation. This now includes read-only ORION sidecar validation, component-level freshness validation, retry of all present SAM/SAM_GOV/GSA API credential candidates without exposing secret values, core production-truth reconciliation, source-readiness audits, and runtime approval backlog verification. Do not modify or promote production ORION, do not mutate credentials, campaigns, email, DNS, B12, customer data, approvals, or historical work, and do not perform destructive git recovery. Publish complete runtime evidence and exact remaining blockers."
+  "note": "Fast-forward local MILES to current main and run the consolidated production-truth reconciliation. Include the new read-only ORION sidecar build-state audit so the exact cause of ORION_SIDECAR_REPORT_NOT_GREEN is exposed: sidecar report content/status, staging files and sizes/timestamps, partial candidates, free disk, acquisition manifest, schema-audit state, post-refresh validation, current SAM-only API readiness, core production truth, and runtime approval backlog. Treat GSA MAS/SIN/schedule truth as an official GSA eLibrary source family, not an API-key source. Do not modify or promote production ORION; do not modify sidecar files, credentials, campaigns, email, DNS, B12, customer data, approvals, or historical work; do not perform destructive git recovery. Publish complete runtime evidence and exact next repair action."
 }
