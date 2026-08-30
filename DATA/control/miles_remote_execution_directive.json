@@ -1,7 +1,7 @@
 {
-  "id": "coo-consolidated-self-maintenance-deploy-20260829-001",
-  "enabled": true,
+  "id": "coo-consolidated-self-maintenance-deploy-paused-20260829-001",
+  "enabled": false,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and execute the allowlisted consolidated MILES COO self-maintenance deployment. Reconcile only proven stale false or terminal-source runtime approvals. Do not grant approvals, resume tasks, delete tasks, mutate true CEO approvals, or alter orphaned approvals. Restart only miles-worker, miles-autonomous-coo, and miles-command-center. Verify Command Center recovery and publish complete runtime evidence."
+  "note": "Temporarily disabled after duplicate STARTED evidence exposed concurrent bridge consumers. Do not execute until the bridge has a single-winner directive claim."
 }
