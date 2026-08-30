@@ -9,6 +9,7 @@ const ExecutiveResponseService = require('../ExecutiveResponseService');
 const BusinessOperationsBridgeService = require('../BusinessOperationsBridgeService');
 const workforce = require('../WorkforceService');
 const taskQueue = require('../../CORE/TaskQueue');
+const policyEngine = require('../governance/PolicyEngineService');
 
 const ROOT = process.env.MILES_ROOT || path.resolve(__dirname, '..', '..');
 const PORT = Number(process.env.MILES_COMMAND_PORT || 8787);
@@ -283,7 +284,7 @@ function normalizeProvider(provider) {
   return value.toUpperCase();
 }
 
-function requiresCEOApproval(command, plan = {}) {
+function legacyRequiresCEOApproval(command, plan = {}) {
   const text = String(command || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const action = String(plan.action || '').toUpperCase();
   const protectedActions = new Set([
@@ -300,20 +301,76 @@ function requiresCEOApproval(command, plan = {}) {
   ]);
   if (protectedActions.has(action)) return true;
   return [
-    /\b(change|set|increase|decrease|discount|override)\s+(our\s+)?pricing\b/,
-    /\b(send|submit|deliver)\s+(the\s+|a\s+)?(final\s+)?proposal\b/,
-    /\b(sign|execute)\s+(the\s+|a\s+|an\s+)?(agreement|contract|legal document)\b/,
-    /\b(hire|fire|terminate)\s+(an?\s+|the\s+)?(employee|contractor|staff|person|worker)\b/,
-    /\b(delete|drop|destroy|purge)\s+(production\s+)?(database|records?|data|campaign|account|repository|repo)\b/,
+    /\b(change|set|increase|decrease|discount|override)\s+(our\s+)?pricing\b/ ,
+    /\b(send|submit|deliver)\s+(the\s+|a\s+)?(final\s+)?proposal\b/ ,
+    /\b(sign|execute)\s+(the\s+|a\s+|an\s+)?(agreement|contract|legal document)\b/ ,
+    /\b(hire|fire|terminate)\s+(an?\s+|the\s+)?(employee|contractor|staff|person|worker)\b/ ,
+    /\b(delete|drop|destroy|purge)\s+(production\s+)?(database|records?|data|campaign|account|repository|repo)\b/ ,
     /\b(make|approve|authorize|commit|spend|purchase|pay)\b.{0,60}\b(financial commitment|payment|expense|purchase|spend|budget)\b/
   ].some(pattern => pattern.test(text));
+}
+
+function governanceForCommand(command, plan = {}) {
+  const provider = normalizeProvider(plan.provider || 'MILES');
+  const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';
+  const capability = plan.capability || action;
+  const connector = plan.connector || provider;
+  const taskLike = {
+    type: action,
+    action,
+    provider,
+    connector,
+    intent: plan.intent || null,
+    workflow: plan.workflow || null,
+    title: String(command || '').slice(0, 160),
+    command,
+    objective: plan.objective || command,
+    payload: {
+      provider,
+      connector,
+      action,
+      capability,
+      intent: plan.intent || null,
+      workflow: plan.workflow || null,
+      command,
+      objective: plan.objective || command,
+      plan: {
+        ...plan,
+        provider,
+        connector,
+        action,
+        capability,
+        originalCommand: plan.originalCommand || command,
+        objective: plan.objective || command
+      }
+    }
+  };
+  try {
+    return policyEngine.evaluate(taskLike, { actor: 'MILES_COMMAND_CENTER', role: 'MILES' });
+  } catch (error) {
+    return {
+      ok: false,
+      evaluated: false,
+      decision: 'ALLOW',
+      approvalRequired: legacyRequiresCEOApproval(command, plan),
+      approver: 'CEO',
+      risk: 'UNKNOWN',
+      reason: 'Command-center governance evaluation failed: ' + error.message,
+      evaluationError: error.message
+    };
+  }
 }
 
 function makeOperation(command, suppliedPlan = null) {
   const plan = suppliedPlan || CommandIntentPlannerService.plan({ command });
   const provider = normalizeProvider(plan.provider || 'MILES');
   const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';
-  const approvalRequired = requiresCEOApproval(command, plan);
+  const policy = governanceForCommand(command, plan);
+  const approvalRequired = legacyRequiresCEOApproval(command, plan) || policy.approvalRequired === true;
+  const governance = {
+    policy,
+    approval: { approved: false, approver: policy.approver || 'CEO', approvedAt: null }
+  };
 
   return {
     id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -345,6 +402,9 @@ function makeOperation(command, suppliedPlan = null) {
     },
     approvalRequired,
     ceoEscalationOnly: approvalRequired,
+    approvalReason: approvalRequired ? (policy.reason || 'CEO approval required by canonical governance policy.') : null,
+    risk: policy.risk || 'UNKNOWN',
+    governance,
     createdAt: now(),
     updatedAt: now(),
     result: null
@@ -413,6 +473,21 @@ async function handleCommand(command) {
 
   const operation = makeOperation(clean, plan);
   saveOperation(operation);
+
+  if (operation.governance?.policy?.decision === 'DENY') {
+    const blocked = updateOperation(operation.id, {
+      status: 'BLOCKED',
+      blockedAt: now(),
+      error: operation.governance.policy.reason || 'Governance denied this operation.'
+    });
+    return {
+      ok: false,
+      status: 'GOVERNANCE_DENIED',
+      message: blocked.error,
+      operation: blocked,
+      enqueueResult: { ok: false, status: 'GOVERNANCE_DENIED', operationId: operation.id, taskId: null }
+    };
+  }
 
   if (operation.approvalRequired) {
     log('INFO', 'Command routed to CEO approval.', {
@@ -624,6 +699,75 @@ function workforceStatus() {
   catch (error) { return { ok: false, error: error.message }; }
 }
 
+function runtimeApprovalTasks() {
+  try {
+    if (!fs.existsSync(TASK_QUEUE_FILE)) return [];
+    const text = fs.readFileSync(TASK_QUEUE_FILE, 'utf8').replace(/^\uFEFF/, '').trim();
+    const tasks = text ? JSON.parse(text) : [];
+    if (!Array.isArray(tasks)) return [];
+    return tasks.filter(task =>
+      ['AWAITING_APPROVAL', 'AWAITING_CEO_APPROVAL', 'WAITING_FOR_CEO_APPROVAL']
+        .includes(String(task?.status || '').toUpperCase())
+    );
+  } catch {
+    return [];
+  }
+}
+
+function runtimeTaskSourceOperationId(task = {}) {
+  const payload = task.payload || {};
+  return payload.sourceOperationId || payload.operationId || payload.businessOperationId || null;
+}
+
+function reconcileRuntimeApprovals() {
+  const runtimeTasks = runtimeApprovalTasks();
+  if (!runtimeTasks.length) return { changed: 0, runtimePending: 0 };
+  const queue = queueState();
+  const byId = new Map(queue.operations.filter(Boolean).map(operation => [operation.id, operation]));
+  let changed = 0;
+
+  for (const task of runtimeTasks) {
+    const sourceOperationId = runtimeTaskSourceOperationId(task);
+    if (!sourceOperationId) continue;
+    const operation = byId.get(sourceOperationId);
+    if (!operation) continue;
+    const operationStatus = String(operation.status || '').toUpperCase();
+    if (['COMPLETED', 'REJECTED', 'CANCELLED', 'BLOCKED'].includes(operationStatus)) continue;
+
+    const policy = task.governance?.policy || task.payload?.governance?.policy || null;
+    const approval = task.governance?.approval || task.payload?.governance?.approval || null;
+    const reason = approval?.reason || policy?.reason || task.error || 'Worker runtime requires CEO approval.';
+
+    if (
+      operationStatus !== 'AWAITING_APPROVAL' ||
+      operation.runtimeTaskId !== task.id ||
+      operation.approvalReason !== reason
+    ) {
+      Object.assign(operation, {
+        status: 'AWAITING_APPROVAL',
+        approvalRequired: true,
+        ceoEscalationOnly: true,
+        approvalSource: 'WORKER_RUNTIME',
+        runtimeTaskId: task.id,
+        taskId: operation.taskId || task.id,
+        taskQueueStatus: 'AWAITING_APPROVAL',
+        approvalReason: reason,
+        risk: policy?.risk || operation.risk || 'UNKNOWN',
+        governance: task.governance || task.payload?.governance || operation.governance || null,
+        updatedAt: now()
+      });
+      changed += 1;
+    }
+  }
+
+  if (changed) {
+    queue.generatedAt = now();
+    queue.source = 'MILES_COMMAND_CENTER';
+    writeJson(QUEUE_FILE, queue);
+  }
+  return { changed, runtimePending: runtimeTasks.length };
+}
+
 function healthPayload() {
   const queue = taskQueueSummary();
   const status = workforceStatus();
@@ -645,6 +789,7 @@ function healthPayload() {
 }
 
 function dashboardPayload() {
+  reconcileRuntimeApprovals();
   const operationSnapshot = dashboardOperationSnapshot();
   return {
     ok: true,
@@ -687,23 +832,84 @@ function demoPayload() {
 }
 
 function operationResponse(operationId) {
+  reconcileRuntimeApprovals();
   return executiveResponses.getResponse(operationId);
 }
 
 function approveOperation(operationId, reason = '') {
+  reconcileRuntimeApprovals();
   const queue = queueState();
   const operation = queue.operations.find(item => item && item.id === operationId);
   if (!operation) return { ok: false, status: 'NOT_FOUND', operationId };
-  if (!['AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL'].includes(String(operation.status || '').toUpperCase())) {
+  if (!['AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL', 'AWAITING_CEO_APPROVAL'].includes(String(operation.status || '').toUpperCase())) {
     return { ok: false, status: 'INVALID_STATUS', operationId, currentStatus: operation.status };
   }
+
+  const approvedAt = now();
+  const approval = {
+    approved: true,
+    approver: 'CEO',
+    approvedAt,
+    reason: reason || operation.approvalReason || ''
+  };
+  const governance = { ...(operation.governance || {}), approval };
+
   const approved = updateOperation(operationId, {
-    status: 'READY',
+    status: operation.runtimeTaskId ? 'BRIDGED' : 'READY',
     approvalDecision: 'APPROVED',
     approvedBy: 'CEO',
-    approvedAt: now(),
-    approvalReason: reason
+    approvedAt,
+    approvalReason: reason || operation.approvalReason || '',
+    approval,
+    governance,
+    taskQueueStatus: operation.runtimeTaskId ? 'QUEUED' : operation.taskQueueStatus
   });
+
+  if (operation.runtimeTaskId) {
+    try {
+      const runtimeTask = typeof taskQueue.list === 'function'
+        ? taskQueue.list().find(item => item && item.id === operation.runtimeTaskId)
+        : null;
+      if (!runtimeTask) throw new Error('Runtime task not found: ' + operation.runtimeTaskId);
+      const runtimeGovernance = {
+        ...(runtimeTask.governance || runtimeTask.payload?.governance || {}),
+        approval
+      };
+      const payload = {
+        ...(runtimeTask.payload || {}),
+        approval,
+        governance: runtimeGovernance
+      };
+      taskQueue.update(operation.runtimeTaskId, {
+        status: 'QUEUED',
+        approval,
+        governance: runtimeGovernance,
+        payload,
+        error: null,
+        resumedFromApprovalAt: approvedAt
+      });
+      const resumed = updateOperation(operationId, {
+        status: 'BRIDGED',
+        taskQueueStatus: 'QUEUED',
+        runtimeApprovalResumedAt: approvedAt
+      });
+      return {
+        ok: true,
+        status: 'APPROVED_AND_RESUMED',
+        operation: resumed || approved,
+        enqueueResult: {
+          ok: true,
+          status: 'RUNTIME_TASK_RESUMED',
+          operationId,
+          taskId: operation.runtimeTaskId
+        }
+      };
+    } catch (error) {
+      updateOperation(operationId, { status: 'APPROVAL_RESUME_FAILED', error: error.message });
+      return { ok: false, status: 'APPROVAL_RESUME_FAILED', operationId, error: error.message };
+    }
+  }
+
   try {
     const enqueueResult = bridgeOperation(approved);
     return {
@@ -719,6 +925,18 @@ function approveOperation(operationId, reason = '') {
 }
 
 function rejectOperation(operationId, reason = '') {
+  reconcileRuntimeApprovals();
+  const existing = queueState().operations.find(item => item && item.id === operationId);
+  if (existing?.runtimeTaskId && typeof taskQueue.update === 'function') {
+    try {
+      taskQueue.update(existing.runtimeTaskId, {
+        status: 'REJECTED',
+        rejectedBy: 'CEO',
+        rejectedAt: now(),
+        rejectionReason: reason || ''
+      });
+    } catch {}
+  }
   const operation = updateOperation(operationId, {
     status: 'REJECTED',
     approvalDecision: 'REJECTED',

@@ -127,7 +127,7 @@ async function loadState() {
 
   const alerts = (state.alerts || []).filter(alert => !isLegacyApprovalAlert(alert));
   if (runtimeBacklog > 0 && runtimeBacklog !== pending.length) {
-    alerts.unshift({ severity:"INFO", title:"Worker runtime approval backlog", message:`${runtimeBacklog} worker-runtime item(s) are classified as awaiting approval. These are tracked separately and are not counted as Kevin approvals.` });
+    alerts.unshift({ severity:"WARNING", title:"Worker runtime approval backlog", message:`${runtimeBacklog} worker-runtime item(s) are classified as awaiting approval. These are tracked separately and are not counted as Kevin approvals.` });
   }
   if (pending.length > 0) alerts.unshift({ severity:"WARNING", title:"Kevin approval queue", message:`${pending.length} canonical CEO approval item(s) require a decision.` });
   $("alerts").innerHTML = rows(alerts, x => `<div class="row"><b>${esc(x.severity || "INFO")} · ${esc(x.title || x.area || "Alert")}</b><div class="muted">${esc(x.message || x.action || "")}</div></div>`, "No current alerts.");
@@ -166,7 +166,7 @@ function renderCommandResult(data) {
   const status = normalizeStatus(data.status || operation.status || "UNKNOWN");
   const approvalRequired = isApproval(operation) || APPROVAL_STATUSES.has(status) || operation.approvalRequired === true;
   const message = data.message || data.response?.message || (data.conversation ? data.response?.message : null) || "MILES accepted the request.";
-  $("commandResult").innerHTML = `<div class="command-summary"><b>${esc(message)}</b><div class="command-meta"><span>Status: <strong>${esc(status)}</strong></span><span>Mission ID: <strong>${esc(operationId)}</strong></span><span>Approval required: <strong>${approvalRequired ? "Yes" : "No"}</strong></span></div>${operationId !== "—" ? `<a class="product-action secondary-action" href="/execution" target="_blank" rel="noopener">View Mission</a>` : ""}${approvalRequired ? `<button id="reviewCommandApproval" class="secondary">Review Approval</button>` : ""}</div>`;
+  $("commandResult").innerHTML = `<div class="command-summary"><b>${esc(message)}</b><div class="command-meta"><span>Status: <strong>${esc(status)}</strong></span><span>Mission ID: <strong>${esc(operationId)}</strong></span><span>Approval required: <strong>${approvalRequired ? "Yes" : "No"}</strong></span></div>${operationId !== "—" ? `<a class="product-action secondary-action" href="/execution?operationId=${encodeURIComponent(operationId)}" target="_blank" rel="noopener">View Mission</a>` : ""}${approvalRequired ? `<button id="reviewCommandApproval" class="secondary">Review Approval</button>` : ""}</div>`;
   $("commandTechnicalJson").textContent = JSON.stringify(data, null, 2);
   $("commandTechnical").classList.remove("hidden");
   $("reviewCommandApproval")?.addEventListener("click", scrollToApprovals);
