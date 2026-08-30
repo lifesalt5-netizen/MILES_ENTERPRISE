@@ -1,0 +1,30 @@
+name: Apply COO Governance Reporting Once
+on:
+  push:
+    branches:
+      - 'fix/coo-cycle-work-reporting-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/coo-cycle-work-reporting-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node SCRIPTS/RepairCOORepairGovernanceAndCycleReporting.js
+      - run: node SCRIPTS/RepairCOORepairGovernanceAndCycleReporting.js --apply
+      - run: |
+          node --check SERVICES/AutonomousCOOLoopService.js
+          node --check StartAutonomousCOO.js
+          node TESTS/coo_repair_governance_and_reporting.test.js
+      - name: Commit repaired sources
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SERVICES/AutonomousCOOLoopService.js StartAutonomousCOO.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Use intent governance and truthful COO cycle reporting'; git push origin HEAD:fix/coo-cycle-work-reporting-20260830; fi
