@@ -5,8 +5,10 @@ on:
     paths:
       - 'SCRIPTS/RepairCommandCenterRuntimeIntegrity.js'
       - 'SCRIPTS/RestartCommandCenterAfterRepair.js'
+      - 'SERVICES/governance/PolicyEngineService.js'
       - 'TESTS/Test_CommandCenterRuntimeIntegrityRepair.js'
       - 'TESTS/Test_CommandCenterRuntimeIntegrityApply.js'
+      - 'TESTS/policy_approval_intent_regression.test.js'
       - '.github/workflows/command-center-runtime-integrity.yml'
   workflow_dispatch:
 
@@ -22,7 +24,11 @@ jobs:
         run: node --check SCRIPTS/RepairCommandCenterRuntimeIntegrity.js
       - name: Syntax check restart helper
         run: node --check SCRIPTS/RestartCommandCenterAfterRepair.js
+      - name: Syntax check approval policy
+        run: node --check SERVICES/governance/PolicyEngineService.js
       - name: Dry-run contract test
         run: node TESTS/Test_CommandCenterRuntimeIntegrityRepair.js
       - name: Apply and idempotence test
         run: node TESTS/Test_CommandCenterRuntimeIntegrityApply.js
+      - name: Approval intent regression
+        run: node TESTS/policy_approval_intent_regression.test.js
