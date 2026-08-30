@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const fs = require("fs");
 const path = require("path");
@@ -428,11 +428,11 @@ class WorkQueueService {
             };
         }
 
-        if (PROTECTED_GOVERNANCE_TERMS.test(fullText)) {
+        if (protectedMutationIntent) {
             return {
                 requiresKevin: true,
                 executionType: "APPROVAL_REQUIRED",
-                reason: "Protected executive action detected."
+                reason: "Explicit protected external or destructive action detected."
             };
         }
 
