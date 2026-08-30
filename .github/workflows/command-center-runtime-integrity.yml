@@ -1,0 +1,25 @@
+name: Command Center Runtime Integrity
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RepairCommandCenterRuntimeIntegrity.js'
+      - 'TESTS/Test_CommandCenterRuntimeIntegrityRepair.js'
+      - 'TESTS/Test_CommandCenterRuntimeIntegrityApply.js'
+      - '.github/workflows/command-center-runtime-integrity.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check repair tool
+        run: node --check SCRIPTS/RepairCommandCenterRuntimeIntegrity.js
+      - name: Dry-run contract test
+        run: node TESTS/Test_CommandCenterRuntimeIntegrityRepair.js
+      - name: Apply and idempotence test
+        run: node TESTS/Test_CommandCenterRuntimeIntegrityApply.js
