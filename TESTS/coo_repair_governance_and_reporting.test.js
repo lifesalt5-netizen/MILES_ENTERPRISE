@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const loop=fs.readFileSync(path.resolve(__dirname,'../SERVICES/AutonomousCOOLoopService.js'),'utf8');
+const start=fs.readFileSync(path.resolve(__dirname,'../StartAutonomousCOO.js'),'utf8');
+assert(loop.includes('explicitProtectedRepairIntent'));
+assert(!loop.includes('/delete|pricing|price|contract|legal|publish|dns|domain|payment|hire/.test(text)'));
+for(const noun of ['pricing','contract','legal','domain']) assert(!new RegExp('if \\(.*'+noun+'.*test\\(text\\)').test(loop),'broad noun guard remains: '+noun);
+for(const marker of ['cycleWorkTouched','currentOpenWork','workflowsProcessedThisCycle','taskQueueExecutionOwner','Cycle counts describe work touched/processed']) assert(start.includes(marker),'missing '+marker);
+assert(!start.includes('workCreated: result.workCreated?.total'));
+assert(!start.includes('workflowsQueued: result.workflowResults?.length'));
+console.log('COO_REPAIR_GOVERNANCE_AND_REPORTING_PASS');

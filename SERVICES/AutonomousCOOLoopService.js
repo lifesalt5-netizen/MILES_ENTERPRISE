@@ -833,15 +833,18 @@ class AutonomousCOOLoopService {
       exception.message || ""
     }`.toLowerCase();
 
-    if (/delete|pricing|price|contract|legal|publish|dns|domain|payment|hire/.test(text)) {
+    const explicitProtectedRepairIntent =
+      /\b(send|submit|publish|deploy|delete|remove|purge|purchase|charge|pay|transfer|sign|hire|fire|change dns|update dns|modify dns|change credentials|modify credentials|rotate credentials|revoke access|grant access|drop table|alter schema)\b/i.test(text);
+
+    if (explicitProtectedRepairIntent) {
       return {
         safeAutonomous: false,
         requiresKevin: true,
         recommendedRepair:
-          "Prepare diagnosis and request CEO approval before action.",
+          "Prepare diagnosis and request CEO approval before the explicit protected action.",
         verification:
-          "Verify CEO approval is recorded before any protected action.",
-        rollback: "No autonomous change performed."
+          "Verify CEO approval is recorded before any protected external or destructive action.",
+        rollback: "No autonomous protected change performed."
       };
     }
 
