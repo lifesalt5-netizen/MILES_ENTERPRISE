@@ -9,6 +9,7 @@ const {
 } = require("../../CORE/ExecutionActionContracts");
 
 const DB_NAME = "ORION_DEMO_LIVE_READY.db";
+const OrionSidecarOverlayService = require("../../SERVICES/orion/OrionSidecarOverlayService");
 
 function isFile(file) {
     try {
@@ -87,6 +88,7 @@ class OrionConnector {
     constructor() {
         this.db = null;
         this.supportedActions = [...ORION_ACTIONS];
+        this.sidecar = new OrionSidecarOverlayService({ rootDir: process.env.MILES_ROOT || process.cwd() });
     }
 
     canExecuteAction(action) {
@@ -131,6 +133,7 @@ class OrionConnector {
             db: ORION_DB,
             tableCount,
             supportedActions: [...ORION_ACTIONS],
+            sidecar: this.sidecar.status(),
             checkedAt: new Date().toISOString()
         };
     }
@@ -176,7 +179,8 @@ class OrionConnector {
             opportunities: this.getTableCount("opportunities"),
             recompetes: this.getTableCount("recompetes"),
             recommendations: this.getTableCount("contractor_recommendations_v2"),
-            personas: this.getTableCount("persona_scores")
+            personas: this.getTableCount("persona_scores"),
+            contractSidecar: this.sidecar.status()
         };
     }
 
@@ -202,7 +206,7 @@ class OrionConnector {
     }
 
     getContractors(limit = 100, offset = 0) {
-        return this.getRows("contractors", limit, offset);
+        return this.sidecar.enrichContractors(this.getRows("contractors", limit, offset));
     }
 
     getBuyers(limit = 100, offset = 0) {
@@ -357,6 +361,7 @@ class OrionConnector {
     }
 
     shutdown() {
+        this.sidecar.close();
         if (this.db) {
             this.db.close();
             this.db = null;
