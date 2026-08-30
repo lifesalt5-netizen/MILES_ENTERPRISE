@@ -33,10 +33,5 @@ patch(
   '      if (dbFreshness.stale) {\n        this.recommendations.push(\n          componentFreshness.partialFreshness\n            ? "ORION has partial freshness: use the current contract sidecar for award-derived facts and refresh remaining source families before claiming full freshness."\n            : "Run the governed ORION source-family refresh; database modification time alone must not be used as freshness proof."\n        );\n      }',
   'ORION_PROVIDER_FRESHNESS_RECOMMENDATION'
 );
-patch(
-  '          intelligenceJobExecuted: false\n        }',
-  '          intelligenceJobExecuted: false,\n          componentFreshnessEvaluated: true,\n          databaseMtimeAloneCannotProveFullFreshness: true\n        }',
-  'ORION_PROVIDER_SAFETY_FRESHNESS'
-);
 if(APPLY) fs.writeFileSync(file,text,'utf8');
 console.log(APPLY?'ORION_PROVIDER_COMPONENT_FRESHNESS_REPAIR_APPLIED':'ORION_PROVIDER_COMPONENT_FRESHNESS_REPAIR_DRY_RUN_OK');
