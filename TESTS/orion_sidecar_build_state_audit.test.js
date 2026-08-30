@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const os=require('os');
+const {spawnSync}=require('child_process');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'miles-sidecar-audit-'));
+fs.mkdirSync(path.join(root,'DATA','orion_refresh','staging_db'),{recursive:true});
+fs.writeFileSync(path.join(root,'DATA','orion_refresh','latest_contract_sidecar_build.json'),JSON.stringify({ok:false,error:'x'}));
+const run=spawnSync(process.execPath,[path.resolve(__dirname,'../SCRIPTS/AuditOrionSidecarBuildState.js'),root],{encoding:'utf8'});
+assert.strictEqual(run.status,0,run.stderr);
+const result=JSON.parse(run.stdout);
+assert.strictEqual(result.readOnly,true);
+assert.strictEqual(result.safety.filesChanged,0);
+assert.strictEqual(result.safety.productionDatabaseModified,false);
+assert.strictEqual(result.diagnosis,'NO_GREEN_REPORT_OR_SIDECAR_DB');
+console.log('ORION_SIDECAR_BUILD_STATE_AUDIT_PASS');

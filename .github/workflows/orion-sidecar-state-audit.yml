@@ -1,0 +1,21 @@
+name: ORION Sidecar State Audit Validation
+on:
+  push:
+    branches:
+      - 'fix/gsa-elibrary-source-strategy-20260830'
+  pull_request:
+    paths:
+      - 'SCRIPTS/AuditOrionSidecarBuildState.js'
+      - 'SCRIPTS/ReconcileProductionTruth.js'
+      - 'TESTS/orion_sidecar_build_state_audit.test.js'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --check SCRIPTS/AuditOrionSidecarBuildState.js
+      - run: node --check SCRIPTS/ReconcileProductionTruth.js
+      - run: node TESTS/orion_sidecar_build_state_audit.test.js
