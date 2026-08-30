@@ -14,7 +14,9 @@ const PROGRESS_MS = Math.max(30000, Number(process.env.MILES_REMOTE_BRIDGE_PROGR
 const DIRECTIVE_HTTP_TIMEOUT_MS = Math.max(5000, Number(process.env.MILES_BRIDGE_DIRECTIVE_HTTP_TIMEOUT_MS || 30000));
 const GIT_COMMAND_TIMEOUT_MS = Math.max(10000, Number(process.env.MILES_BRIDGE_GIT_COMMAND_TIMEOUT_MS || 45000));
 const CONTROL_BRANCH = 'miles-control';
-const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || `https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/${CONTROL_BRANCH}/DATA/control/miles_remote_execution_directive.json`;
+const DIRECTIVE_REPO_PATH = 'DATA/control/miles_remote_execution_directive.json';
+const DIRECTIVE_URL = process.env.MILES_REMOTE_DIRECTIVE_URL || `https://raw.githubusercontent.com/lifesalt5-netizen/MILES_ENTERPRISE/${CONTROL_BRANCH}/${DIRECTIVE_REPO_PATH}`;
+let controlDirectiveCache = { sha: null, directive: null };
 const STATE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_state.json');
 const EVIDENCE_FILE = path.join(ROOT, 'DATA', 'runtime', 'remote_execution_bridge_evidence.json');
 const EVIDENCE_BRANCH = 'miles-runtime-evidence';
@@ -88,6 +90,38 @@ function getJson(url) {
     });
     request.on('error', finishReject);
   });
+}
+
+async function getDirectiveViaGit() {
+  const ref = `refs/heads/${CONTROL_BRANCH}`;
+  const remoteRef = `refs/remotes/origin/${CONTROL_BRANCH}`;
+  const ls = await gitRun(['ls-remote', 'origin', ref], 'CONTROL-GIT', { quiet: true });
+  const line = requireSuccess(ls, 'CONTROL_GIT_LS_REMOTE_FAILED').split(/\r?\n/).find(Boolean) || '';
+  const sha = line.trim().split(/\s+/)[0] || '';
+  if (!/^[a-f0-9]{40}$/i.test(sha)) throw new Error('CONTROL_GIT_REMOTE_SHA_INVALID');
+  if (controlDirectiveCache.sha === sha && controlDirectiveCache.directive) return controlDirectiveCache.directive;
+
+  requireSuccess(
+    await gitRun(['fetch', '--quiet', 'origin', `+${ref}:${remoteRef}`], 'CONTROL-GIT', { quiet: true }),
+    'CONTROL_GIT_FETCH_FAILED'
+  );
+  const shown = requireSuccess(
+    await gitRun(['show', `${sha}:${DIRECTIVE_REPO_PATH}`], 'CONTROL-GIT', { quiet: true }),
+    'CONTROL_GIT_SHOW_FAILED'
+  );
+  let directive;
+  try { directive = JSON.parse(shown); }
+  catch (error) { throw new Error(`CONTROL_GIT_DIRECTIVE_JSON_INVALID:${error.message}`); }
+  controlDirectiveCache = { sha, directive };
+  return directive;
+}
+
+async function getDirective() {
+  try { return await getDirectiveViaGit(); }
+  catch (error) {
+    console.error('[MILES REMOTE BRIDGE] CONTROL-GIT fallback:', error.message);
+    return getJson(`${DIRECTIVE_URL}?t=${Date.now()}`);
+  }
 }
 
 function run(command, args, label, options = {}) {
@@ -346,7 +380,7 @@ async function executeDirective(directive, state) {
 
 async function tick() {
   const state = readState();
-  const directive = await getJson(`${DIRECTIVE_URL}?t=${Date.now()}`);
+  const directive = await getDirective();
   return executeDirective(directive, state);
 }
 
@@ -375,6 +409,7 @@ if (require.main === module) main().catch(e => { console.error(e.stack || e); pr
 module.exports = {
   JOBS,
   CONTROL_BRANCH,
+  DIRECTIVE_REPO_PATH,
   DIRECTIVE_URL,
   EVIDENCE_BRANCH,
   EVIDENCE_REPO_PATH,
@@ -386,6 +421,8 @@ module.exports = {
   SUPERVISED_RESTART_EXIT_CODE,
   CONTROL_OWNER_RESTART_EXIT_CODE,
   validateDirective,
+  getDirectiveViaGit,
+  getDirective,
   executeDirective,
   safeFastForward,
   publishEvidence,
