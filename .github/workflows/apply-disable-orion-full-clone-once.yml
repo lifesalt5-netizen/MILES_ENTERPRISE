@@ -1,0 +1,51 @@
+name: Apply Disable ORION Full Clone Once
+
+on:
+  push:
+    branches:
+      - 'fix/disable-orion-full-clone-job-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/disable-orion-full-clone-job-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate guard and repair
+        run: |
+          node --check SCRIPTS/BuildOrionContractStaging.js
+          node --check SCRIPTS/RepairDisableOrionFullCloneRemoteJob.js
+          node TESTS/orion_full_clone_disabled.test.js
+          node SCRIPTS/RepairDisableOrionFullCloneRemoteJob.js
+      - name: Apply guarded remote-job removal
+        run: node SCRIPTS/RepairDisableOrionFullCloneRemoteJob.js --apply
+      - name: Validate bridge and fail-closed runner
+        shell: bash
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          if grep -Fq "ORION_CONTRACT_STAGING_BUILD: ['node', ['SCRIPTS/BuildOrionContractStaging.js']]" StartMilesRemoteExecutionBridge.js; then
+            echo 'Deprecated full-clone remote job still present' >&2
+            exit 1
+          fi
+          grep -Fq 'DEPRECATED_FULL_DATABASE_CLONE_DISABLED_USE_ORION_CONTRACT_SIDECAR_BUILD' SCRIPTS/BuildOrionContractStaging.js
+          echo ORION_FULL_CLONE_REMOTE_DISABLE_PASS
+      - name: Commit bridge removal
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No bridge changes required.'
+          else
+            git commit -m 'Remove deprecated ORION full clone remote job'
+            git push origin HEAD:fix/disable-orion-full-clone-job-20260830
+          fi
