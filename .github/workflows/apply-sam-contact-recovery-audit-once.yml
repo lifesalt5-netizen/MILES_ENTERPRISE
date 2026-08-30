@@ -1,0 +1,32 @@
+name: Apply SAM Contact Recovery Audit Once
+on:
+  push:
+    branches:
+      - 'feature/sam-contact-source-audit-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/sam-contact-source-audit-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --check SERVICES/orion/SamContactRecoverySourceAuditService.js
+      - run: node --check SCRIPTS/AuditSamContactRecoverySources.js
+      - run: node TESTS/sam_contact_recovery_source_audit.test.js
+      - run: node SCRIPTS/RepairSamContactRecoveryAuditBridge.js
+      - run: node SCRIPTS/RepairSamContactRecoveryAuditBridge.js --apply
+      - run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -q "SAM_CONTACT_RECOVERY_SOURCE_AUDIT" StartMilesRemoteExecutionBridge.js
+      - name: Commit repaired source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Allow remote SAM contact recovery source audit'; git push origin HEAD:feature/sam-contact-source-audit-20260830; fi
