@@ -1,7 +1,7 @@
 {
-  "id": "coo-runtime-bootstrap-20260829-004",
+  "id": "coo-runtime-approval-detail-refresh-20260829-005",
   "enabled": true,
   "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Bootstrap the supervised MILES control bridge onto current main using an already-established allowlisted job, then run production truth reconciliation. Do not use destructive Git recovery, grant approvals, resume tasks, delete tasks, mutate providers/campaigns/email/DNS/B12/customer data, or modify the ORION production database. Publish completion evidence."
+  "note": "Fast-forward to current main and rerun production truth reconciliation so the newly merged read-only runtime approval backlog details are included in evidence. Do not use destructive Git recovery, grant approvals, resume tasks, delete tasks, mutate providers/campaigns/email/DNS/B12/customer data, or modify the ORION production database. Publish complete evidence."
 }
