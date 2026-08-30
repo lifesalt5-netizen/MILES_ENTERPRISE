@@ -1,7 +1,7 @@
 {
-  "id": "orion-refresh-target-schema-audit-20260830-013",
+  "id": "orion-contract-staging-build-20260830-014",
   "enabled": true,
-  "job": "ORION_REFRESH_TARGET_SCHEMA_AUDIT",
+  "job": "ORION_CONTRACT_STAGING_BUILD",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main and run the read-only ORION refresh target schema audit. Report exact current target-table columns and counts needed to map the already-staged USAspending contract archives. Do not modify or promote the production ORION database, build a staging database yet, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish complete evidence."
+  "note": "Fast-forward local MILES to current main and build the guarded ORION contract staging candidate from the completed official FY2026 USAspending full archive. Clone the current ORION DB to a new staging file, stream the ZIP without extraction, build only sidecar award/buyer/recompete/contractor-year refresh tables with source provenance, and validate SQLite integrity and row counts. Do not modify or promote the production ORION database, update existing contractors/buyers/recompetes/opportunities/recommendations/persona tables, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish progress and final evidence."
 }
