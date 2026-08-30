@@ -1,7 +1,7 @@
 {
-  "id": "orion-sidecar-state-reconciliation-20260830-018",
+  "id": "orion-contract-sidecar-rebuild-20260830-019",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "ORION_CONTRACT_SIDECAR_BUILD",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main and run the consolidated production-truth reconciliation. Include the new read-only ORION sidecar build-state audit so the exact cause of ORION_SIDECAR_REPORT_NOT_GREEN is exposed: sidecar report content/status, staging files and sizes/timestamps, partial candidates, free disk, acquisition manifest, schema-audit state, post-refresh validation, current SAM-only API readiness, core production truth, and runtime approval backlog. Treat GSA MAS/SIN/schedule truth as an official GSA eLibrary source family, not an API-key source. Do not modify or promote production ORION; do not modify sidecar files, credentials, campaigns, email, DNS, B12, customer data, approvals, or historical work; do not perform destructive git recovery. Publish complete runtime evidence and exact next repair action."
+  "note": "Fast-forward local MILES to current main. Safely remove only the unreferenced failed ORION partial sidecar candidate identified by the read-only audit, preserve the official USAspending source archives and production ORION database, verify disk reserve, then rebuild the FY2026 contract sidecar from the already acquired official full contract archive. Stream the source archive, validate SQLite integrity, contractor summary rows, buyer/recompete derivations, and UEI coverage against production in read-only mode, write the green sidecar build report, and publish final evidence. Do not copy, modify, touch mtime, or promote the production ORION database. Do not modify credentials, GSA eLibrary data, campaigns, email, DNS, B12, customer data, approvals, or historical work; do not perform destructive git recovery."
 }
