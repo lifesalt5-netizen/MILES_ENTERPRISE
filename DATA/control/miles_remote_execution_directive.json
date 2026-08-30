@@ -1,7 +1,7 @@
 {
-  "id": "orion-official-archive-inspection-20260830-012",
+  "id": "orion-refresh-target-schema-audit-20260830-013",
   "enabled": true,
-  "job": "ORION_OFFICIAL_ARCHIVE_INSPECTION",
+  "job": "ORION_REFRESH_TARGET_SCHEMA_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Run the read-only ORION official archive inspection now that the supervised bridge is current. Inspect only the two completed staged USAspending archives from the latest green acquisition manifest. Read ZIP central directories and sample CSV header rows by streaming decompression only. Do not extract archives, modify source files, build or promote a staging database, modify the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish complete evidence including entry names, declared sizes, and sampled headers needed to design the staging import."
+  "note": "Fast-forward local MILES to current main and run the read-only ORION refresh target schema audit. Report exact current target-table columns and counts needed to map the already-staged USAspending contract archives. Do not modify or promote the production ORION database, build a staging database yet, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish complete evidence."
 }
