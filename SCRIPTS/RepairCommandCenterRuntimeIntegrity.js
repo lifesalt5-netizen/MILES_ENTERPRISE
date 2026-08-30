@@ -153,7 +153,7 @@ function patchCommandCenter(source) {
   patch = replaceRequired(
     result,
     "  const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';\n  const approvalRequired = requiresCEOApproval(command, plan);\n",
-    "  const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';\n  const policy = governanceForCommand(command, plan);\n  const approvalRequired = legacyRequiresCEOApproval(command, plan) || policy.approvalRequired === true;\n  const governance = {\n    policy,\n    approval: { approved: false, approver: policy.approver || 'CEO', approvedAt: null }\n  };\n",
+    "  const action = plan.action || plan.capability || 'BUSINESS_EXECUTION';\n  const policy = governanceForCommand(command, plan);\n  const approvalRequired = policy.evaluated === false\n    ? legacyRequiresCEOApproval(command, plan)\n    : policy.approvalRequired === true;\n  const governance = {\n    policy,\n    approval: { approved: false, approver: policy.approver || 'CEO', approvedAt: null }\n  };\n",
     'make-operation-policy'
   );
   result = patch.source;
