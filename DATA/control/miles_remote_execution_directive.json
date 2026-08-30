@@ -1,7 +1,7 @@
 {
-  "id": "sam-bulk-schema-audit-20260830-026",
+  "id": "sam-qualified-universe-build-20260830-027",
   "enabled": true,
-  "job": "SAM_BULK_SCHEMA_AUDIT",
+  "job": "SAM_QUALIFIED_UNIVERSE_BUILD",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main and rerun the SAM bulk schema audit using the native Node ZIP parser merged in PR #402. Report the actual entity archive entry name, compression method, delimiter, exact header fields, and Contract Opportunities header fields. Read only; do not extract or modify production data. The next consolidation must enforce P2GC lead eligibility, one freshest validated SAM universe, global suppression, company/contact dedupe, current send-segment ownership, and mandatory verified commercial email before campaign eligibility, using prior validated SAM/internal P2GC contact truth first for missing-email enrichment. Publish complete evidence."
+  "note": "Fast-forward local MILES to current main and build the staging-only qualified P2GC SAM company universe from the newest full SAM Public V2 bulk archive. Stream locally; do not depend on SAM API pagination. Apply the governed lead eligibility policy: active SAM, explicit for-profit, non-government/nonprofit, not excluded/suspended/debarred, and not a hard-excluded industry including manufacturing. Store qualified companies only. Every stored company must remain ENRICHMENT_REQUIRED and blocked from outbound until a verified deliverable email exists. Retain prior SAM data for later contact/email recovery. Do not modify production ORION, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM yet. Publish complete waterfall counts, rejection reasons, SQLite integrity, source/provenance, and safety evidence."
 }
