@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'..');
+const readiness=fs.readFileSync(path.join(root,'SERVICES','orion','FederalSourceReadinessAuditService.js'),'utf8');
+const acquire=fs.readFileSync(path.join(root,'SERVICES','orion','SamBulkExtractAcquisitionService.js'),'utf8');
+assert(readiness.includes('useBulkExtractForOrionScaleRefresh:true'));
+assert(readiness.includes('automated401DoesNotInvalidateUserConfirmedKey:true'));
+assert(readiness.includes('SAM_ENTITY_PUBLIC_BULK_EXTRACT_NOT_DISCOVERED'));
+assert(readiness.includes('ContractOpportunitiesFullCSV.csv'));
+assert(readiness.includes('GSA eLibrary'));
+assert(acquire.includes('SAM_PUBLIC_UTF-8_MONTHLY_V2_'));
+assert(acquire.includes('publicDataServicesOnly:true'));
+assert(acquire.includes('samApiKeyUsed:false'));
+assert(acquire.includes('productionDatabaseModified:false'));
+console.log('SAM_BULK_REFRESH_STRATEGY_TEST=PASS');
