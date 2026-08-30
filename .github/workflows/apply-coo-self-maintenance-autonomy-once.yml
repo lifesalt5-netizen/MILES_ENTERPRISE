@@ -19,10 +19,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Dry run guarded repair
-        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js
-      - name: Apply guarded repair
-        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js --apply
+      - name: Syntax check consolidated repair
+        run: node --check SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js
+      - name: Dry run consolidated repair
+        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js
+      - name: Apply consolidated repair
+        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js --apply
       - name: Validate production JavaScript
         run: |
           node --check SERVICES/CommandIntentPlannerService.js
@@ -36,6 +38,7 @@ jobs:
           grep -q 'auditRuntimeApprovals()' SERVICES/SelfMaintenanceService.js
           grep -q 'reconcileRuntimeApprovals()' SERVICES/SelfMaintenanceService.js
           grep -q 'approvalsGranted: 0' SERVICES/SelfMaintenanceService.js
+          grep -q 'tasksResumed: 0' SERVICES/SelfMaintenanceService.js
       - name: Commit repaired production source
         shell: bash
         run: |
