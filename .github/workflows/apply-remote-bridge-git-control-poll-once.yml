@@ -1,0 +1,46 @@
+name: Apply Remote Bridge Git Control Poll Once
+
+on:
+  push:
+    branches:
+      - 'fix/remote-bridge-git-control-poll-20260830'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/remote-bridge-git-control-poll-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate guarded repair source
+        run: |
+          node --check SCRIPTS/RepairRemoteBridgeGitControlPoll.js
+          node SCRIPTS/RepairRemoteBridgeGitControlPoll.js
+      - name: Apply guarded repair
+        run: node SCRIPTS/RepairRemoteBridgeGitControlPoll.js --apply
+      - name: Validate repaired bridge
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          node TESTS/remote_bridge_git_control_poll.test.js
+          grep -Fq "CONTROL-GIT fallback" StartMilesRemoteExecutionBridge.js
+          grep -Fq "const directive = await getDirective();" StartMilesRemoteExecutionBridge.js
+          echo REMOTE_BRIDGE_GIT_CONTROL_POLL_SOURCE_PASS
+      - name: Commit repaired bridge
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No source changes required.'
+          else
+            git commit -m 'Use git-backed remote bridge control polling'
+            git push origin HEAD:fix/remote-bridge-git-control-poll-20260830
+          fi
