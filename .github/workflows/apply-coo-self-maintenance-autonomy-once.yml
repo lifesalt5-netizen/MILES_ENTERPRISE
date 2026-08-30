@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: '20'
       - name: Syntax check consolidated repair
-        run: node --check SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js
+        run: node --check SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js
       - name: Dry run consolidated repair
-        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js
+        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js
       - name: Apply consolidated repair
-        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomyV2.js --apply
+        run: node SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js --apply
       - name: Validate production JavaScript
         run: |
           node --check SERVICES/CommandIntentPlannerService.js
