@@ -1,0 +1,16 @@
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const src = fs.readFileSync(path.join(__dirname,'..','SERVICES','orion','OrionContractSidecarBuildService.js'),'utf8');
+assert(src.includes('productionDatabaseModified: false'));
+assert(src.includes('productionDatabaseCopied: false'));
+assert(src.includes('sidecarOnly: true'));
+assert(src.includes('failedPartialCandidatesSafelyRemoved: true'));
+assert(src.includes('INSUFFICIENT_FREE_SPACE_AFTER_SAFE_CLEANUP'));
+assert(src.includes('ORION_CONTRACT_STAGING_'));
+assert(src.includes('ORION_CONTRACT_SIDECAR_'));
+assert(!src.includes('copyFileSync(inputs.schemaAudit.currentDb'));
+assert(!src.includes('UPDATE contractors SET'));
+assert(!src.includes('DELETE FROM contractors'));
+console.log('ORION_CONTRACT_SIDECAR_BUILD_TEST_PASS');
