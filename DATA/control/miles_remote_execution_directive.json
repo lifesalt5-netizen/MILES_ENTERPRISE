@@ -1,7 +1,7 @@
 {
-  "id": "bridge-wake-production-truth-20260830-011",
+  "id": "orion-official-archive-inspection-20260830-012",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "ORION_OFFICIAL_ARCHIVE_INSPECTION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward the local MILES checkout to current main and run the existing read-only production truth reconciliation so the supervised remote bridge reloads current code before the next ORION archive inspection directive. Do not grant approvals, resume historical work, mutate credentials/providers/campaigns/email/DNS/B12/customer data, download or extract archives, modify the ORION production database, or perform destructive git recovery. Publish complete evidence."
+  "note": "Run the read-only ORION official archive inspection now that the supervised bridge is current. Inspect only the two completed staged USAspending archives from the latest green acquisition manifest. Read ZIP central directories and sample CSV header rows by streaming decompression only. Do not extract archives, modify source files, build or promote a staging database, modify the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish complete evidence including entry names, declared sizes, and sampled headers needed to design the staging import."
 }
