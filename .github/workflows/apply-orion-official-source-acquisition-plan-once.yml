@@ -1,0 +1,54 @@
+name: Apply ORION Official Source Acquisition Plan Once
+
+on:
+  push:
+    branches:
+      - 'feat/orion-official-source-acquisition-plan-20260829'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/orion-official-source-acquisition-plan-20260829
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check acquisition plan sources
+        run: |
+          node --check SERVICES/orion/OrionOfficialSourceAcquisitionPlanService.js
+          node --check SCRIPTS/PlanOrionOfficialSourceAcquisition.js
+          node --check SCRIPTS/RepairOrionAcquisitionPlanAllowlist.js
+          node --check TESTS/orion_official_source_acquisition_plan.test.js
+      - name: Run acquisition plan regression
+        run: node TESTS/orion_official_source_acquisition_plan.test.js
+      - name: Dry run guarded allowlist repair
+        run: node SCRIPTS/RepairOrionAcquisitionPlanAllowlist.js
+      - name: Apply guarded allowlist repair
+        run: node SCRIPTS/RepairOrionAcquisitionPlanAllowlist.js --apply
+      - name: Validate patched bridge source
+        shell: bash
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -Fq "ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN: ['node', ['SCRIPTS/PlanOrionOfficialSourceAcquisition.js']]" StartMilesRemoteExecutionBridge.js
+          grep -Fq "headRequestsOnly: true" SERVICES/orion/OrionOfficialSourceAcquisitionPlanService.js
+          grep -Fq "filesDownloaded: false" SERVICES/orion/OrionOfficialSourceAcquisitionPlanService.js
+          grep -Fq "productionDatabaseModified: false" SERVICES/orion/OrionOfficialSourceAcquisitionPlanService.js
+          echo ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN_SOURCE_PASS
+      - name: Commit bridge allowlist
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then
+            echo 'No source changes required.'
+          else
+            git commit -m 'Allowlist ORION official source acquisition plan'
+            git push origin HEAD:feat/orion-official-source-acquisition-plan-20260829
+          fi
