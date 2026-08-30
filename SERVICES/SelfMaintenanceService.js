@@ -301,7 +301,15 @@ class SelfMaintenanceService {
       let policy = null;
       let classification = "REVIEW_REQUIRED";
       let reason = "Runtime approval requires review.";
-      if (!sourceOperationId) {
+      const autonomousCredentialOrphan =
+        !sourceOperationId &&
+        String(task?.source || "") === "AutonomousWorkGenerationService" &&
+        /^AUTO_/i.test(String(task?.id || "")) &&
+        String(task?.payload?.finding?.category || "").toUpperCase() === "CREDENTIAL";
+      if (autonomousCredentialOrphan) {
+        classification = "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING";
+        reason = "Legacy autonomous credential finding has no canonical CEO-routable source operation; cancel it without approval or execution.";
+      } else if (!sourceOperationId) {
         classification = "ORPHANED_NO_SOURCE_ID";
         reason = "Runtime approval has no source operation ID; no automatic mutation is permitted.";
       } else if (!operation) {
@@ -347,7 +355,7 @@ class SelfMaintenanceService {
     const reconciled = [];
     const untouched = [];
     for (const item of audit.items) {
-      if (!["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE"].includes(item.classification)) {
+      if (!["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING"].includes(item.classification)) {
         untouched.push(item);
         continue;
       }
@@ -365,7 +373,7 @@ class SelfMaintenanceService {
     return {
       ok: true, service: "SelfMaintenanceService", action: "SELF_MAINTENANCE_RECONCILE_RUNTIME_APPROVALS",
       audited: audit.total, reconciledCount: reconciled.length, untouchedCount: untouched.length, reconciled, untouched,
-      safety: { approvalsGranted: 0, tasksResumed: 0, tasksDeleted: 0, onlyCancelledClassifications: ["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE"] },
+      safety: { approvalsGranted: 0, tasksResumed: 0, tasksDeleted: 0, onlyCancelledClassifications: ["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING"] },
       completedAt: now()
     };
   }
