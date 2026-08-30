@@ -50,7 +50,8 @@ const JOBS = Object.freeze({
   COO_RUNTIME_APPROVAL_AUDIT: ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']],
   ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN: ['node', ['SCRIPTS/PlanOrionOfficialSourceAcquisition.js']],
   ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireOrionOfficialSourceToStaging.js']],
-  ORION_OFFICIAL_ARCHIVE_INSPECTION: ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']]
+  ORION_OFFICIAL_ARCHIVE_INSPECTION: ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']],
+  ORION_REFRESH_TARGET_SCHEMA_AUDIT: ['node', ['SCRIPTS/AuditOrionRefreshTargetSchema.js']]
 });
 
 function readState() {
