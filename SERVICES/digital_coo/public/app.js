@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 let currentOperationId = null;
 let pollTimer = null;
@@ -406,7 +406,16 @@ window.addEventListener("beforeunload", () => {
   if (approvalRefreshTimer) clearInterval(approvalRefreshTimer);
 });
 
-setBadge("READY");
-elements.systemStatus.textContent = "Miles is ready";
+const initialParams = new URLSearchParams(window.location.search);
+const initialOperationId = initialParams.get("operationId") || initialParams.get("missionId");
+if (initialOperationId) {
+  currentOperationId = initialOperationId;
+  setBadge("LOADING");
+  elements.systemStatus.textContent = "Loading selected mission";
+  startPolling(initialOperationId);
+} else {
+  setBadge("READY");
+  elements.systemStatus.textContent = "Miles is ready";
+}
 loadApprovalQueue();
 approvalRefreshTimer = setInterval(loadApprovalQueue, 5000);
