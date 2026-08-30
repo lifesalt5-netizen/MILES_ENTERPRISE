@@ -53,7 +53,8 @@ const JOBS = Object.freeze({
   ORION_OFFICIAL_ARCHIVE_INSPECTION: ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']],
   ORION_REFRESH_TARGET_SCHEMA_AUDIT: ['node', ['SCRIPTS/AuditOrionRefreshTargetSchema.js']],
   ORION_CONTRACT_STAGING_BUILD: ['node', ['SCRIPTS/BuildOrionContractStaging.js']],
-  ORION_CONTRACT_SIDECAR_BUILD: ['node', ['SCRIPTS/BuildOrionContractSidecar.js']]
+  ORION_CONTRACT_SIDECAR_BUILD: ['node', ['SCRIPTS/BuildOrionContractSidecar.js']],
+  FEDERAL_SOURCE_READINESS_AUDIT: ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]
 });
 
 function readState() {
