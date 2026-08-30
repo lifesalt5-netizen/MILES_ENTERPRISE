@@ -1,0 +1,21 @@
+name: Validate SAM Lead Consolidation Once
+on:
+  push:
+    branches: ['fix/sam-bulk-extract-refresh-20260830']
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sam-bulk-extract-refresh-20260830
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          node --check SERVICES/orion/FederalSourceReadinessAuditService.js
+          node --check SERVICES/orion/SamBulkExtractAcquisitionService.js
+          node --check SERVICES/orion/SamLeadEligibilityService.js
+          node --check SCRIPTS/AcquireSamBulkExtractsToStaging.js
+          node --check StartMilesRemoteExecutionBridge.js
+          node TESTS/sam_bulk_refresh_strategy.test.js
