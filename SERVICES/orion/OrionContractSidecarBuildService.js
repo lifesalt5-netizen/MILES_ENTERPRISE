@@ -16,6 +16,9 @@ function freeBytesFor(targetPath) {
     return Number(stat.bavail ?? stat.bfree ?? 0) * Number(stat.bsize ?? stat.frsize ?? 0);
   } catch { return null; }
 }
+function fileBytes(file) {
+  try { return fs.statSync(file).size; } catch { return null; }
+}
 
 class OrionContractSidecarBuildService {
   constructor(options = {}) {
@@ -33,12 +36,39 @@ class OrionContractSidecarBuildService {
     return this.Database;
   }
 
+  writeReport(report) {
+    fs.mkdirSync(path.dirname(this.reportPath), { recursive: true });
+    fs.writeFileSync(this.reportPath, JSON.stringify(report, null, 2), 'utf8');
+    return report;
+  }
+
+  stageReport(stage, context = {}) {
+    return this.writeReport({
+      ok: false,
+      phase: 'RUNNING',
+      stage,
+      service: 'ORION_CONTRACT_SIDECAR_BUILD',
+      observedAt: now(),
+      ...context,
+      safety: {
+        productionDatabaseModified: false,
+        productionDatabaseCopied: false,
+        sidecarOnly: true,
+        stagingDatabasePromoted: false,
+        existingCoreTablesModified: false,
+        freshnessFabricated: false,
+        ...(context.safety || {})
+      }
+    });
+  }
+
   cleanupFailedStagingCandidates() {
     fs.mkdirSync(this.stagingDir, { recursive: true });
     const keep = new Set();
     const reports = [readJson(this.reportPath), readJson(this.oldReportPath)].filter(Boolean);
     for (const report of reports) {
-      if (report?.ok === true && report?.stagingDb) keep.add(path.resolve(report.stagingDb));
+      const protectedPath = report?.sidecarDb || report?.stagingDb || null;
+      if (report?.ok === true && protectedPath) keep.add(path.resolve(protectedPath));
     }
     const removed = [];
     for (const name of fs.readdirSync(this.stagingDir)) {
@@ -92,10 +122,26 @@ class OrionContractSidecarBuildService {
     const inputs = this.base.validateInputs();
     const freeBefore = freeBytesFor(this.stagingDir);
     if (freeBefore != null && freeBefore < this.minFreeBytes) {
-      throw new Error(`INSUFFICIENT_FREE_SPACE_AFTER_SAFE_CLEANUP:${freeBefore}:required=${this.minFreeBytes}`);
+      const error = `INSUFFICIENT_FREE_SPACE_AFTER_SAFE_CLEANUP:${freeBefore}:required=${this.minFreeBytes}`;
+      this.writeReport({
+        ok: false,
+        phase: 'FAILED',
+        stage: 'PRECHECK',
+        service: 'ORION_CONTRACT_SIDECAR_BUILD',
+        generatedAt: now(),
+        error,
+        cleanup,
+        storage: { freeBefore, freeAfter: freeBytesFor(this.stagingDir), minFreeBytes: this.minFreeBytes },
+        safety: { productionDatabaseModified:false, productionDatabaseCopied:false, sidecarOnly:true, stagingDatabasePromoted:false, existingCoreTablesModified:false, freshnessFabricated:false }
+      });
+      throw new Error(error);
     }
 
     const { finalPath, partialPath } = this.preparePaths(inputs.full.updatedDate || inputs.acquisition.planGeneratedAt);
+    const source = { archive: inputs.full.fileName, sha256: inputs.full.sha256 || null, updatedDate: inputs.full.updatedDate || null };
+    const shared = { productionDb: inputs.schemaAudit.currentDb, sidecarDb: finalPath, partialDb: partialPath, cleanup, storage: { freeBefore, minFreeBytes: this.minFreeBytes }, source };
+    this.stageReport('IMPORTING_OFFICIAL_ARCHIVE', shared);
+
     const Database = this.loadDatabase();
     const db = new Database(partialPath);
     let imported, validation;
@@ -104,7 +150,9 @@ class OrionContractSidecarBuildService {
       db.pragma('synchronous = NORMAL');
       this.base.ensureSchema(db);
       imported = await this.base.importFullArchive(db, inputs.full);
+      this.stageReport('DERIVING_SUMMARIES', { ...shared, imported, partialBytes: fileBytes(partialPath), storage: { freeBefore, freeNow: freeBytesFor(this.stagingDir), minFreeBytes: this.minFreeBytes } });
       this.base.derive(db, imported.refreshedAt);
+      this.stageReport('VALIDATING_SIDECAR', { ...shared, imported, partialBytes: fileBytes(partialPath), storage: { freeBefore, freeNow: freeBytesFor(this.stagingDir), minFreeBytes: this.minFreeBytes } });
       validation = this.validateSidecar(db, inputs.schemaAudit.currentDb);
       if (!validation.ok) throw new Error(`SIDECAR_VALIDATION_FAILED:${JSON.stringify(validation)}`);
       db.prepare(`INSERT OR REPLACE INTO orion_source_refresh_manifest
@@ -121,10 +169,34 @@ class OrionContractSidecarBuildService {
           imported.refreshedAt,
           'Sidecar-only refresh. Production ORION core database and core tables remain untouched.'
         );
+      this.stageReport('FINALIZING', { ...shared, imported, validation, partialBytes: fileBytes(partialPath), storage: { freeBefore, freeNow: freeBytesFor(this.stagingDir), minFreeBytes: this.minFreeBytes } });
       db.pragma('wal_checkpoint(TRUNCATE)');
     } catch (error) {
+      const partialBytesBeforeCleanup = fileBytes(partialPath);
       try { db.close(); } catch {}
-      try { fs.unlinkSync(partialPath); } catch {}
+      let partialRemoved = false;
+      try { fs.unlinkSync(partialPath); partialRemoved = true; } catch {}
+      const failure = {
+        ok: false,
+        phase: 'FAILED',
+        stage: readJson(this.reportPath)?.stage || 'BUILD',
+        service: 'ORION_CONTRACT_SIDECAR_BUILD',
+        generatedAt: now(),
+        error: error.message,
+        productionDb: inputs.schemaAudit.currentDb,
+        sidecarDb: finalPath,
+        partialDb: partialPath,
+        partialBytesBeforeCleanup,
+        partialRemoved,
+        cleanup,
+        storage: { freeBefore, freeAfter: freeBytesFor(this.stagingDir), minFreeBytes: this.minFreeBytes },
+        source,
+        imported: imported || null,
+        validation: validation || null,
+        safety: { productionDatabaseModified:false, productionDatabaseCopied:false, sidecarOnly:true, stagingDatabasePromoted:false, existingCoreTablesModified:false, failedPartialCandidateRemoved:partialRemoved, freshnessFabricated:false }
+      };
+      this.writeReport(failure);
+      console.error(JSON.stringify(failure, null, 2));
       throw error;
     }
     db.close();
@@ -133,6 +205,8 @@ class OrionContractSidecarBuildService {
     const freeAfter = freeBytesFor(this.stagingDir);
     const result = {
       ok: true,
+      phase: 'COMPLETED',
+      stage: 'COMPLETE',
       service: 'ORION_CONTRACT_SIDECAR_BUILD',
       generatedAt: now(),
       productionDb: inputs.schemaAudit.currentDb,
@@ -140,7 +214,7 @@ class OrionContractSidecarBuildService {
       sidecarBytes: finalStat.size,
       cleanup,
       storage: { freeBefore, freeAfter, minFreeBytes: this.minFreeBytes },
-      source: { archive: inputs.full.fileName, sha256: inputs.full.sha256 || null, updatedDate: inputs.full.updatedDate || null },
+      source,
       imported,
       validation,
       nextStep: 'VALIDATE_AND_WIRE_SIDECAR_READ_PATH_WITH_COMPONENT_FRESHNESS',
@@ -154,8 +228,7 @@ class OrionContractSidecarBuildService {
         freshnessFabricated: false
       }
     };
-    fs.mkdirSync(path.dirname(this.reportPath), { recursive: true });
-    fs.writeFileSync(this.reportPath, JSON.stringify(result, null, 2), 'utf8');
+    this.writeReport(result);
     console.log(JSON.stringify(result, null, 2));
     return result;
   }
@@ -163,3 +236,4 @@ class OrionContractSidecarBuildService {
 
 module.exports = OrionContractSidecarBuildService;
 module.exports.freeBytesFor = freeBytesFor;
+module.exports.fileBytes = fileBytes;

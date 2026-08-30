@@ -1,0 +1,19 @@
+name: ORION Sidecar Resilience Validation
+on:
+  push:
+    branches:
+      - 'fix/orion-sidecar-resilience-20260830'
+  pull_request:
+    paths:
+      - 'SERVICES/orion/OrionContractSidecarBuildService.js'
+      - 'TESTS/orion_sidecar_resilience.test.js'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --check SERVICES/orion/OrionContractSidecarBuildService.js
+      - run: node TESTS/orion_sidecar_resilience.test.js
