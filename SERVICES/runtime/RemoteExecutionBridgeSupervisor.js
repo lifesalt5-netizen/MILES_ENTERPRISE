@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
+const CONTROL_OWNER_RESTART_EXIT_CODE = 76;
+
 class RemoteExecutionBridgeSupervisor {
   constructor(options = {}) {
     this.root = path.resolve(options.root || process.env.MILES_ROOT || path.resolve(__dirname, '..', '..'));
@@ -109,6 +111,13 @@ class RemoteExecutionBridgeSupervisor {
       this.child = null;
       this.writeState({ status: 'BRIDGE_EXITED', exitCode: code, signal: signal || null });
       if (!this.running || !this.ownsLock) return;
+      if (Number(code) === CONTROL_OWNER_RESTART_EXIT_CODE) {
+        this.running = false;
+        this.writeState({ status: 'CONTROL_OWNER_RESTART_REQUESTED', exitCode: code, signal: signal || null });
+        this.releaseLock();
+        setTimeout(() => process.exit(CONTROL_OWNER_RESTART_EXIT_CODE), 0);
+        return;
+      }
       this.restartCount += 1;
       this.writeState({ status: 'BRIDGE_RESTART_SCHEDULED', exitCode: code, signal: signal || null });
       clearTimeout(this.restartTimer);
@@ -159,4 +168,5 @@ class RemoteExecutionBridgeSupervisor {
   }
 }
 
+RemoteExecutionBridgeSupervisor.CONTROL_OWNER_RESTART_EXIT_CODE = CONTROL_OWNER_RESTART_EXIT_CODE;
 module.exports = RemoteExecutionBridgeSupervisor;

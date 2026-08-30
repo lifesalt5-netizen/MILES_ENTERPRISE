@@ -21,6 +21,7 @@ const EVIDENCE_BRANCH = 'miles-runtime-evidence';
 const EVIDENCE_REPO_PATH = 'DATA/control/miles_remote_execution_result.json';
 const BRIDGE_SUPERVISED = ['1','true','yes','y','on'].includes(String(process.env.MILES_BRIDGE_SUPERVISED || '').trim().toLowerCase());
 const SUPERVISED_RESTART_EXIT_CODE = 75;
+const CONTROL_OWNER_RESTART_EXIT_CODE = 76;
 let evidencePublishTail = Promise.resolve();
 
 function sourceDigest(file = SOURCE_FILE) {
@@ -323,6 +324,20 @@ async function executeDirective(directive, state) {
     state.lastResult = record;
     writeState(state);
   }
+
+  // The consolidated deploy changes code loaded by the autonomous COO runtime.
+  // Only after final state and evidence are safely persisted may the supervised
+  // bridge request a whole control-owner recycle. Exit 76 is interpreted by the
+  // supervisor as a PM2/runtime-guard restart request rather than a bridge-only
+  // restart, eliminating detached restart helpers and post-deploy control gaps.
+  if (
+    BRIDGE_SUPERVISED &&
+    directive.job === 'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY' &&
+    result.code === 0
+  ) {
+    console.log(`[MILES REMOTE BRIDGE] CONTROL_OWNER_RESTART_REQUESTED exit=${CONTROL_OWNER_RESTART_EXIT_CODE}`);
+    setTimeout(() => process.exit(CONTROL_OWNER_RESTART_EXIT_CODE), 0);
+  }
   return record;
 }
 
@@ -366,6 +381,7 @@ module.exports = {
   STARTUP_SOURCE_DIGEST,
   BRIDGE_SUPERVISED,
   SUPERVISED_RESTART_EXIT_CODE,
+  CONTROL_OWNER_RESTART_EXIT_CODE,
   validateDirective,
   executeDirective,
   safeFastForward,
