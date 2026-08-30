@@ -1,0 +1,3 @@
+# SAM bulk acquisition repair
+
+The initial bulk acquisition failed because the SAM.gov `listfiles` backend returned HTTP 500. The public Data Services page itself still advertises the current Entity Registration Public V2 monthly UTF-8 extract. Acquisition now uses the list endpoint when healthy and falls back to deterministic first-Sunday monthly filenames through the official public file-extract download endpoint. No SAM API key is used, no Login.gov automation is attempted, and production ORION is untouched. After acquisition, the entity file must be consolidated through the P2GC SAM lead eligibility gate before enrichment or outbound use.
