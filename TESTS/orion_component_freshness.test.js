@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('fs'); const os=require('os'); const path=require('path'); const assert=require('assert');
+const Service=require('../SERVICES/orion/OrionComponentFreshnessService');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'orion-freshness-'));
+const refresh=path.join(root,'DATA','orion_refresh'); fs.mkdirSync(refresh,{recursive:true});
+const sidecar=path.join(refresh,'sidecar.db'); fs.writeFileSync(sidecar,'x');
+fs.writeFileSync(path.join(refresh,'latest_contract_sidecar_build.json'),JSON.stringify({ok:true,sidecarDb:sidecar,source:{archive:'FY2026_All_Contracts_Full_20260806.zip',updatedDate:'2026-08-06'},validation:{ok:true},safety:{productionDatabaseModified:false,sidecarOnly:true}}));
+fs.writeFileSync(path.join(refresh,'latest_official_source_availability.json'),JSON.stringify({selected:{full:{file_name:'FY2026_All_Contracts_Full_20260806.zip',updated_date:'2026-08-06'}}}));
+const result=new Service({rootDir:root,nowMs:Date.parse('2026-08-30T12:00:00Z')}).run({stale:true,ageHours:1700});
+assert.strictEqual(result.overallStatus,'PARTIAL_FRESHNESS');
+assert.strictEqual(result.components.contracts.fresh,true);
+assert.strictEqual(result.components.opportunities.fresh,false);
+assert.strictEqual(result.components.samRegistration.fresh,false);
+assert.strictEqual(result.components.recommendations.fresh,false);
+assert.strictEqual(result.rules.databaseMtimeAloneCannotProveFullFreshness,true);
+fs.rmSync(root,{recursive:true,force:true});
+console.log('ORION_COMPONENT_FRESHNESS_TEST_PASS');

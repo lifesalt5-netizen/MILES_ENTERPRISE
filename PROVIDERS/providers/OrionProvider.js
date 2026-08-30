@@ -1,10 +1,11 @@
-﻿"use strict";
+"use strict";
 
 const fs = require("fs");
 const path = require("path");
 const IDataProvider = require("../contracts/IDataProvider");
 const defaultConnector =
   require("../../CONNECTORS/ORION/connector");
+const OrionComponentFreshnessService = require("../../SERVICES/orion/OrionComponentFreshnessService");
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const OUT_DIR = path.join(ROOT, "DATA", "orion_coo");
@@ -167,6 +168,7 @@ class OrionProvider extends IDataProvider {
 
       const dbFreshness =
         databaseFreshness(health.db);
+      const componentFreshness = new OrionComponentFreshnessService({ rootDir: ROOT }).run(dbFreshness);
 
       const counts = {
         contractors:
@@ -248,8 +250,8 @@ class OrionProvider extends IDataProvider {
           severity: "Warning",
           message:
             dbFreshness.ageHours === null
-              ? "ORION database freshness could not be determined."
-              : `ORION database is ${dbFreshness.ageHours} hours old.`
+              ? "ORION core database freshness could not be determined; component freshness is tracked separately."
+              : `ORION core database is ${dbFreshness.ageHours} hours old; component freshness is tracked separately and must not be inferred from database mtime.`
         });
       }
 
@@ -335,6 +337,7 @@ class OrionProvider extends IDataProvider {
         personaCoverage,
         databaseFreshness:
           dbFreshness,
+        componentFreshness,
         sampleSizes: {
           contractors:
             this.contractors.length,
@@ -357,7 +360,9 @@ class OrionProvider extends IDataProvider {
 
       if (dbFreshness.stale) {
         this.recommendations.push(
-          "Run the authorized ORION dataset refresh and verify database modification time afterward."
+          componentFreshness.partialFreshness
+            ? "ORION has partial freshness: use the current contract sidecar for award-derived facts and refresh remaining source families before claiming full freshness."
+            : "Run the governed ORION source-family refresh; database modification time alone must not be used as freshness proof."
         );
       }
 
