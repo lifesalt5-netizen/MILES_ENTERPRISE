@@ -1,7 +1,7 @@
 {
-  "id": "coo-runtime-approval-detail-refresh-20260829-005",
+  "id": "coo-credential-orphan-cleanup-deploy-20260829-006",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and rerun production truth reconciliation so the newly merged read-only runtime approval backlog details are included in evidence. Do not use destructive Git recovery, grant approvals, resume tasks, delete tasks, mutate providers/campaigns/email/DNS/B12/customer data, or modify the ORION production database. Publish complete evidence."
+  "note": "Fast-forward to current main and deploy the merged autonomous credential orphan routing fix. Self-maintenance may CANCEL only legacy AUTO_* credential findings proven to originate from AutonomousWorkGenerationService with no canonical source operation. Do not grant approvals, resume tasks, execute credential actions, delete queue records, mutate legitimate CEO approvals, or alter unrelated orphan records. Verify Command Center recovery and publish complete evidence."
 }
