@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'SCRIPTS/RepairCommandCenterRuntimeIntegrity.js'
+      - 'SCRIPTS/RestartCommandCenterAfterRepair.js'
       - 'TESTS/Test_CommandCenterRuntimeIntegrityRepair.js'
       - 'TESTS/Test_CommandCenterRuntimeIntegrityApply.js'
       - '.github/workflows/command-center-runtime-integrity.yml'
@@ -19,6 +20,8 @@ jobs:
           node-version: '20'
       - name: Syntax check repair tool
         run: node --check SCRIPTS/RepairCommandCenterRuntimeIntegrity.js
+      - name: Syntax check restart helper
+        run: node --check SCRIPTS/RestartCommandCenterAfterRepair.js
       - name: Dry-run contract test
         run: node TESTS/Test_CommandCenterRuntimeIntegrityRepair.js
       - name: Apply and idempotence test
