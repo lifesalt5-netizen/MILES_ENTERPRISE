@@ -117,6 +117,10 @@ function main() {
   console.log('MILES PRODUCTION TRUTH + ORION REFRESH READINESS');
   console.log('============================================================');
 
+  const sidecarStateAudit = runNode('AuditOrionSidecarBuildState.js', [], 90000);
+  if (sidecarStateAudit.stdout) process.stdout.write(tail(sidecarStateAudit.stdout, 12000));
+  if (sidecarStateAudit.stderr) process.stderr.write(tail(sidecarStateAudit.stderr, 3000));
+
   const postRefreshValidation = runNode('ValidateOrionPostRefresh.js', [], 180000);
   if (postRefreshValidation.stdout) process.stdout.write(tail(postRefreshValidation.stdout, 8000));
   if (postRefreshValidation.stderr) process.stderr.write(tail(postRefreshValidation.stderr, 3000));
@@ -135,8 +139,10 @@ function main() {
   const runtimeApprovalAudit = runNode('AuditRuntimeApprovalBacklog.js', [], 90000);
 
   const compact = compactReadiness();
+  compact.sidecarBuildState = parseJsonOutput(sidecarStateAudit.stdout);
   compact.runtimeApprovalBacklog = parseJsonOutput(runtimeApprovalAudit.stdout);
   compact.auditRuns = {
+    sidecarBuildState: { ok: sidecarStateAudit.ok, exitCode: sidecarStateAudit.exitCode, error: sidecarStateAudit.error, stderr: tail(sidecarStateAudit.stderr, 1000) },
     postRefreshValidation: { ok: postRefreshValidation.ok, exitCode: postRefreshValidation.exitCode, error: postRefreshValidation.error, stderr: tail(postRefreshValidation.stderr, 1000) },
     federalSourceReadiness: { ok: federalSourceReadiness.ok, exitCode: federalSourceReadiness.exitCode, error: federalSourceReadiness.error, stderr: tail(federalSourceReadiness.stderr, 1000) },
     localSourceDiscovery: { ok: localAudit.ok, exitCode: localAudit.exitCode, error: localAudit.error, stderr: tail(localAudit.stderr, 1000) },
