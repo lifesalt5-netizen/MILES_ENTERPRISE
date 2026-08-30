@@ -1,7 +1,7 @@
 {
-  "id": "orion-official-source-acquire-staging-20260830-009",
+  "id": "orion-official-archive-inspection-20260830-010",
   "enabled": true,
-  "job": "ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING",
+  "job": "ORION_OFFICIAL_ARCHIVE_INSPECTION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward the local MILES checkout to current main and acquire only the two archives approved by the latest green ORION acquisition plan. Download from official USAspending hosts only into DATA/orion_refresh/official_source_staging using .part files; enforce expected content lengths, staging disk reserve, and SHA-256 manifest evidence. Do not overwrite an existing final archive, extract archives, build or promote a staging database, modify the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery."
+  "note": "Fast-forward the local MILES checkout to current main and inspect only the two completed staged USAspending archives from the latest green acquisition manifest. Read ZIP central directories and sample CSV header rows by streaming decompression only. Do not extract archives, modify source files, build or promote a staging database, modify the ORION production database, mutate credentials/providers/campaigns/email/DNS/B12/customer data, grant approvals, resume historical work, or perform destructive git recovery. Publish complete evidence including entry names, declared sizes, and sampled headers needed to design the staging import."
 }
