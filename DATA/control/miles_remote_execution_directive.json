@@ -1,7 +1,7 @@
 {
-  "id": "orion-contract-sidecar-rebuild-20260830-019",
+  "id": "post-sidecar-consolidated-validation-20260830-020",
   "enabled": true,
-  "job": "ORION_CONTRACT_SIDECAR_BUILD",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main. Safely remove only the unreferenced failed ORION partial sidecar candidate identified by the read-only audit, preserve the official USAspending source archives and production ORION database, verify disk reserve, then rebuild the FY2026 contract sidecar from the already acquired official full contract archive. Stream the source archive, validate SQLite integrity, contractor summary rows, buyer/recompete derivations, and UEI coverage against production in read-only mode, write the green sidecar build report, and publish final evidence. Do not copy, modify, touch mtime, or promote the production ORION database. Do not modify credentials, GSA eLibrary data, campaigns, email, DNS, B12, customer data, approvals, or historical work; do not perform destructive git recovery."
+  "note": "After the currently running ORION sidecar rebuild completes, fast-forward local MILES to current main and run the consolidated production-truth reconciliation. Validate the ORION sidecar/report, component freshness, official-source readiness, runtime approval backlog, failed queue/duplicate/orphan state, and current WorkQueue CEO escalations. Load the latest intent-based WorkQueue and COO repair governance so diagnostic mentions of contract/pricing/legal/domain/DNS do not create CEO approvals, while explicit protected mutations remain protected. Use the corrected COO cycle reporting semantics so cycle work counts are not presented as total persistent work. Treat SAM.gov entity/opportunity truth as SAM API only; treat GSA MAS schedule/SIN/contractor truth as official GSA eLibrary retrieval, not an API. Do not modify production ORION, credentials, campaigns, email, DNS, B12, customer data, or historical protected work; do not perform destructive git recovery. Publish complete evidence and exact remaining blockers."
 }
