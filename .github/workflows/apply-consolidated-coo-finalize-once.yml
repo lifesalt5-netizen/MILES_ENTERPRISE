@@ -1,0 +1,56 @@
+name: Apply Consolidated COO Finalize Once
+
+on:
+  push:
+    branches:
+      - 'fix/coo-self-maintenance-autonomy-20260829'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/coo-self-maintenance-autonomy-20260829
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check repair helpers
+        run: |
+          node --check SCRIPTS/RepairCOOSelfMaintenanceAutonomy.js
+          node --check SCRIPTS/RefreshCommandCenterRepairIdempotence.js
+      - name: Refresh command-center repair idempotence
+        run: node SCRIPTS/RefreshCommandCenterRepairIdempotence.js --apply
+      - name: Validate all affected production JavaScript
+        run: |
+          node --check SCRIPTS/RepairCommandCenterRuntimeIntegrity.js
+          node --check SERVICES/CommandIntentPlannerService.js
+          node --check SERVICES/CapabilityDispatcherService.js
+          node --check SERVICES/governance/PolicyEngineService.js
+          node --check SERVICES/SelfMaintenanceService.js
+          node --check SERVICES/digital_coo/MilesCommandCenter.js
+          node --check TESTS/self_maintenance_autonomy_regression.test.js
+      - name: Run command-center repair contract
+        run: node TESTS/Test_CommandCenterRuntimeIntegrityRepair.js
+      - name: Run command-center apply idempotence
+        run: node TESTS/Test_CommandCenterRuntimeIntegrityApply.js
+      - name: Run approval intent regression
+        run: node TESTS/policy_approval_intent_regression.test.js
+      - name: Run self-maintenance autonomy regression
+        run: node TESTS/self_maintenance_autonomy_regression.test.js
+      - name: Commit finalized source
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SCRIPTS/RepairCommandCenterRuntimeIntegrity.js
+          if git diff --cached --quiet; then
+            echo 'No source refresh required.'
+          else
+            git commit -m 'Keep Command Center repair idempotent with canonical governance'
+            git push origin HEAD:fix/coo-self-maintenance-autonomy-20260829
+          fi
