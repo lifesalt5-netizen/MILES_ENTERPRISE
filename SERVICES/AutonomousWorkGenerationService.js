@@ -1082,6 +1082,25 @@ class AutonomousWorkGenerationService {
   }
 
   submitTask(task) {
+    // Credential findings are observations about missing/partial authentication,
+    // not authorization to access a protected account. Keep them visible in the
+    // autonomous-work evidence, but never enqueue an executable orphan task.
+    // A protected credential action must originate from a canonical CEO-routable
+    // operation instead of being synthesized directly into the runtime queue.
+    const findingCategory = statusUpper(task?.payload?.finding?.category);
+    if (findingCategory === "CREDENTIAL") {
+      this.metrics.tasksBlocked += 1;
+      return {
+        ok: true,
+        created: false,
+        duplicate: false,
+        blocked: true,
+        governanceBlocked: true,
+        blockReason: "CREDENTIAL_FINDING_REQUIRES_CANONICAL_CEO_OPERATION",
+        task
+      };
+    }
+
     const duplicate =
       activeDuplicate(task);
 
@@ -1260,10 +1279,14 @@ class AutonomousWorkGenerationService {
             ).length,
 
           blocked:
-            generated.filter(
-              task =>
-                task.payload.blocked ===
-                true
+            submissions.filter(
+              item => item.blocked === true || item.governanceBlocked === true
+            ).length,
+
+          credentialGovernanceBlocked:
+            submissions.filter(
+              item => item.governanceBlocked === true &&
+                item.blockReason === "CREDENTIAL_FINDING_REQUIRES_CANONICAL_CEO_OPERATION"
             ).length,
 
           failed:
