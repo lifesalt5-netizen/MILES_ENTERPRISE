@@ -55,7 +55,8 @@ const JOBS = Object.freeze({
   ORION_CONTRACT_SIDECAR_BUILD: ['node', ['SCRIPTS/BuildOrionContractSidecar.js']],
   FEDERAL_SOURCE_READINESS_AUDIT: ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']],
   SAM_BULK_EXTRACT_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireSamBulkExtractsToStaging.js']],
-  SAM_BULK_SCHEMA_AUDIT: ['node', ['SCRIPTS/InspectSamBulkSchema.js']]
+  SAM_BULK_SCHEMA_AUDIT: ['node', ['SCRIPTS/InspectSamBulkSchema.js']],
+  SAM_QUALIFIED_UNIVERSE_BUILD: ['node', ['SCRIPTS/BuildSamQualifiedUniverse.js']]
 });
 
 function readState() {
