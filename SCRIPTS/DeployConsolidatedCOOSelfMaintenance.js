@@ -271,13 +271,9 @@ async function main() {
   const dashboard = await waitForDashboard();
   const afterPid = listenerPid(8787);
 
-  let autonomousRestart = { mode: 'IMMEDIATE' };
-  if (REMOTE_BRIDGE_SUPERVISED) {
-    autonomousRestart = {
-      mode: 'DELAYED_AFTER_REMOTE_EVIDENCE',
-      ...scheduleDelayedRestart(byName.get('miles-autonomous-coo'))
-    };
-  }
+  const autonomousRestart = REMOTE_BRIDGE_SUPERVISED
+    ? { mode: 'SUPERVISOR_AFTER_REMOTE_EVIDENCE' }
+    : { mode: 'IMMEDIATE' };
 
   console.log(`RUNTIME_APPROVALS_AUDITED=${maintenance?.approvalAudit?.total ?? 'UNKNOWN'}`);
   console.log(`RUNTIME_APPROVALS_RECONCILED=${maintenance?.approvalReconciliation?.reconciledCount ?? 'UNKNOWN'}`);
