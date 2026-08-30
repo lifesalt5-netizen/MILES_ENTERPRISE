@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('fs'); const os=require('os'); const path=require('path'); const assert=require('assert');
+const Service=require('../SERVICES/orion/OrionSidecarOverlayService');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'orion-overlay-'));
+fs.mkdirSync(path.join(root,'DATA','orion_refresh'),{recursive:true});
+let s=new Service({rootDir:root});
+assert.strictEqual(s.status().usable,false);
+const src=fs.readFileSync(path.join(__dirname,'..','SERVICES','orion','OrionSidecarOverlayService.js'),'utf8');
+assert(src.includes('readonly: true'));
+assert(src.includes('fy2026_federal_obligations'));
+assert(src.includes('award_data_freshness'));
+assert(!src.includes('UPDATE contractors'));
+assert(!src.includes('DELETE FROM contractors'));
+fs.rmSync(root,{recursive:true,force:true});
+console.log('ORION_SIDECAR_OVERLAY_TEST_PASS');
