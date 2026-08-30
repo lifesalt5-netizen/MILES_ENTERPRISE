@@ -1,7 +1,7 @@
 {
-  "id": "coo-runtime-approval-audit-20260829-003",
+  "id": "coo-runtime-bootstrap-20260829-004",
   "enabled": true,
-  "job": "COO_RUNTIME_APPROVAL_AUDIT",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Run the read-only runtime approval backlog audit and publish complete evidence for every worker-runtime approval still pending. Do not mutate files, restart processes, approve, reject, resume, cancel, delete, or reclassify any task."
+  "note": "Bootstrap the supervised MILES control bridge onto current main using an already-established allowlisted job, then run production truth reconciliation. Do not use destructive Git recovery, grant approvals, resume tasks, delete tasks, mutate providers/campaigns/email/DNS/B12/customer data, or modify the ORION production database. Publish completion evidence."
 }
