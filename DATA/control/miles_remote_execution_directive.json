@@ -1,7 +1,7 @@
 {
-  "id": "coo-consolidated-self-maintenance-deploy-20260829-002",
+  "id": "coo-runtime-approval-audit-20260829-003",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "COO_RUNTIME_APPROVAL_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward to current main and execute the corrected allowlisted consolidated MILES COO self-maintenance deployment. Reconcile only proven stale false or terminal-source runtime approvals. Do not grant approvals, resume tasks, delete tasks, mutate true CEO approvals, or alter orphaned approvals. Preserve the supervised remote bridge through completion; restart miles-worker and miles-command-center immediately and defer the miles-autonomous-coo restart until completion evidence can be persisted. Publish complete runtime evidence."
+  "note": "Run the read-only runtime approval backlog audit and publish complete evidence for every worker-runtime approval still pending. Do not mutate files, restart processes, approve, reject, resume, cancel, delete, or reclassify any task."
 }
