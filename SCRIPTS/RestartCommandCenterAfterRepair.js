@@ -55,15 +55,24 @@ function listenerPid() {
   }
 }
 
-function pm2Executable() {
-  return process.platform === 'win32' ? 'pm2.cmd' : 'pm2';
-}
-
-function pm2List() {
-  const raw = execFileSync(pm2Executable(), ['jlist'], {
+function runPm2(args, options = {}) {
+  const baseOptions = {
     cwd: ROOT,
     encoding: 'utf8',
     windowsHide: true,
+    ...options
+  };
+
+  if (process.platform === 'win32') {
+    const commandShell = process.env.ComSpec || 'cmd.exe';
+    return execFileSync(commandShell, ['/d', '/s', '/c', 'pm2.cmd', ...args], baseOptions);
+  }
+
+  return execFileSync('pm2', args, baseOptions);
+}
+
+function pm2List() {
+  const raw = runPm2(['jlist'], {
     stdio: ['ignore', 'pipe', 'pipe']
   });
   const list = JSON.parse(raw);
@@ -84,10 +93,7 @@ function restartOwner(owner) {
   if (!selector) fail('Could not identify the PM2 selector for port 8787 owner.');
   const name = owner.name || env.name || selector;
   console.log(`RESTARTING_PM2_OWNER=${name}`);
-  execFileSync(pm2Executable(), ['restart', selector, '--update-env'], {
-    cwd: ROOT,
-    encoding: 'utf8',
-    windowsHide: true,
+  runPm2(['restart', selector, '--update-env'], {
     stdio: 'inherit'
   });
   return name;
