@@ -1,7 +1,7 @@
 {
-  "id": "sam-public-email-discovery-max-20260831-040",
+  "id": "sam-public-email-discovery-continuous-20260831-041",
   "enabled": true,
   "job": "SAM_PUBLIC_EMAIL_DISCOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Continue the governed max-throughput public website discovery pass against the same SAM staging universe using the existing PR #411 runner and existing safety guardrails. Process up to 10,000 additional unattempted qualified companies and publish aggregate runtime evidence."
+  "note": "MAX SPEED standing rule. After the current active run completes, fast-forward local MILES to current main including PR #412 and run the self-continuing governed SAM public-company website discovery path. Continue automatically across checkpointed 2,500-company batches at concurrency 12 for up to 200 batches or 18 hours, stopping early only if the eligible website pool is exhausted or a real batch/runtime blocker occurs. Preserve same-domain public-page discovery, exact identity, institutional-domain exclusions, no fabricated emails, and mark all newly discovered contacts NEEDS_VERIFICATION only. Do not invoke paid verification, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish continuous runtime evidence and final aggregate safety assertions."
 }
