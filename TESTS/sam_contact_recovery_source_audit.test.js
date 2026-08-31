@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('assert');
+const {normalizeHeader,scoreColumns}=require('../SERVICES/orion/SamContactRecoverySourceAuditService');
+assert.equal(normalizeHeader('Unique Entity Identifier'),'unique_entity_identifier');
+let s=scoreColumns(['uei','legal_business_name','email']);assert.equal(s.contactRecoveryCandidate,true);assert.equal(s.uei,true);assert.equal(s.email,true);
+s=scoreColumns(['company_name','website']);assert.equal(s.contactRecoveryCandidate,false);
+s=scoreColumns(['cage_code','contact_email']);assert.equal(s.contactRecoveryCandidate,true);assert.equal(s.cage,true);
+const source=require('fs').readFileSync(require('path').resolve(__dirname,'../SERVICES/orion/SamContactRecoverySourceAuditService.js'),'utf8');
+for(const needle of ['readOnly:true','emailValuesRead:false','headersAndSchemaOnly:true','unboundedDiskScan:false'])assert(source.includes(needle),needle);
+console.log('SAM_CONTACT_RECOVERY_SOURCE_AUDIT_TEST=PASS');
