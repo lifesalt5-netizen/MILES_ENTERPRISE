@@ -1,0 +1,37 @@
+name: Apply SAM Public Email Discovery Once
+on:
+  push:
+    branches:
+      - 'feature/sam-public-email-discovery-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/sam-public-email-discovery-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node SCRIPTS/RepairSamPublicDiscoveryAndSqliteSourceGuard.js
+      - run: node SCRIPTS/RepairSamPublicDiscoveryAndSqliteSourceGuard.js --apply
+      - name: Validate syntax and safety
+        run: |
+          node --check SERVICES/orion/SamPublicEmailDiscoveryService.js
+          node --check SERVICES/orion/SamSqliteEmailRecoveryService.js
+          node --check SCRIPTS/DiscoverSamPublicEmails.js
+          node --check StartMilesRemoteExecutionBridge.js
+          grep -q "paidVerificationInvoked:false" SERVICES/orion/SamPublicEmailDiscoveryService.js
+          grep -q "emailsFabricated:false" SERVICES/orion/SamPublicEmailDiscoveryService.js
+          grep -q "oldSamDeleted:false" SERVICES/orion/SamPublicEmailDiscoveryService.js
+          grep -q "path.resolve(source.file)!==path.resolve(dbPath)" SERVICES/orion/SamSqliteEmailRecoveryService.js
+          echo SAM_PUBLIC_DISCOVERY_SAFETY=PASS
+      - name: Commit repaired sources
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js SERVICES/orion/SamSqliteEmailRecoveryService.js
+          if git diff --cached --quiet; then echo 'No source repairs required.'; else git commit -m 'Guard SAM recovery source and allow public discovery'; git push origin HEAD:feature/sam-public-email-discovery-20260830; fi
