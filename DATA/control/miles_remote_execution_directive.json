@@ -1,7 +1,7 @@
 {
-  "id": "sam-email-recovery-20260830-032",
+  "id": "sam-sqlite-email-recovery-20260830-033",
   "enabled": true,
-  "job": "SAM_EMAIL_RECOVERY",
+  "job": "SAM_SQLITE_EMAIL_RECOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #407 and rerun governed staging-only SAM email recovery from a clean service-generated recovery state. Only explicit email/verification/validation/deliverability status fields may prove VERIFIED; generic source status must not. Match exact UEI first, unique CAGE second, unique exact company+domain only; prohibit name-only matching. Reject .gov/.mil/.edu/.org and invalid emails. Preserve non-service/manual/external contact truth. Do not log or expose emails. Do not modify production ORION, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Publish corrected recovered/verified/enrichment counts and safety evidence."
+  "note": "Fast-forward local MILES to current main including PR #408. Recover additional contact emails for the fresh qualified SAM staging universe from previously discovered internal SQLite contact sources only. Open source databases read-only. Match exact UEI first, unique CAGE second, unique exact company+domain only; prohibit name-only matching and fabricated addresses. Treat an email as VERIFIED only from explicit email/verification/validation/deliverability status fields; reject .gov/.mil/.edu/.org and invalid emails. Preserve the prior CSV recovery results and any higher-priority verified truth. Do not log or expose email values. Do not modify production ORION, source databases, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Publish resulting recovered/verified/enrichment counts and safety evidence."
 }
