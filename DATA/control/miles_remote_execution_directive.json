@@ -1,7 +1,7 @@
 {
-  "id": "sam-contact-recovery-source-audit-20260830-029",
+  "id": "sam-contact-recovery-source-audit-20260830-030",
   "enabled": true,
   "job": "SAM_CONTACT_RECOVERY_SOURCE_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main and run the bounded read-only SAM contact recovery source audit. Inspect only candidate filenames plus delimited headers and SQLite schemas under the governed search roots to identify prior SAM and P2GC internal sources that can supply email truth for the 386,980 unique qualified SAM companies. Do not read or expose email values in this audit. Do not modify source files, databases, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM. Report exact candidate source paths, source types, matching identity fields such as UEI/CAGE/company/domain, and which sources contain an email field so the next recovery job can be built from actual data rather than guesses."
+  "note": "Fast-forward local MILES to current main including PR #405 and rerun the bounded read-only SAM contact recovery source audit. Inspect only candidate filenames plus delimited headers and SQLite schemas under the governed search roots to identify prior SAM and P2GC internal sources that can supply email truth for the 386,980 unique qualified SAM companies. Do not read or expose email values in this audit. Do not modify source files, databases, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM. Report exact candidate source paths, source types, matching identity fields such as UEI/CAGE/company/domain, and which sources contain an email field so the recovery job can be built from actual data rather than guesses."
 }
