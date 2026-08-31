@@ -1,0 +1,29 @@
+name: Apply SAM Contact Audit Path Fix Once
+on:
+  push:
+    branches:
+      - 'cleanup/sam-refresh-hygiene-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cleanup/sam-refresh-hygiene-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --check SERVICES/orion/SamContactRecoverySourceAuditService.js
+      - run: node SCRIPTS/RepairSamContactAuditPathMap.js
+      - run: node SCRIPTS/RepairSamContactAuditPathMap.js --apply
+      - run: node --check SERVICES/orion/SamContactRecoverySourceAuditService.js
+      - run: node TESTS/sam_contact_recovery_source_audit.test.js
+      - name: Commit repaired source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SERVICES/orion/SamContactRecoverySourceAuditService.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Fix SAM contact audit search-root normalization'; git push origin HEAD:cleanup/sam-refresh-hygiene-20260830; fi
