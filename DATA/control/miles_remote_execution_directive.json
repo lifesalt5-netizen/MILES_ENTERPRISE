@@ -1,7 +1,7 @@
 {
-  "id": "sam-qualified-universe-build-20260830-028",
+  "id": "sam-contact-recovery-source-audit-20260830-029",
   "enabled": true,
-  "job": "SAM_QUALIFIED_UNIVERSE_BUILD",
+  "job": "SAM_CONTACT_RECOVERY_SOURCE_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #404 and rerun the staging-only qualified P2GC SAM company-universe build from the newest full Public V2 archive. Canonicalize by UEI, report raw qualifying records versus unique qualified companies and duplicate qualifying UEI records, reject missing UEIs, and validate SQLite integrity. Keep every company blocked from outbound as ENRICHMENT_REQUIRED pending verified deliverable email. Retain prior SAM for later contact recovery. Do not modify production ORION, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM yet. Publish full waterfall and safety evidence."
+  "note": "Fast-forward local MILES to current main and run the bounded read-only SAM contact recovery source audit. Inspect only candidate filenames plus delimited headers and SQLite schemas under the governed search roots to identify prior SAM and P2GC internal sources that can supply email truth for the 386,980 unique qualified SAM companies. Do not read or expose email values in this audit. Do not modify source files, databases, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM. Report exact candidate source paths, source types, matching identity fields such as UEI/CAGE/company/domain, and which sources contain an email field so the next recovery job can be built from actual data rather than guesses."
 }
