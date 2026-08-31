@@ -4,16 +4,13 @@
   MILES Enterprise
   Business Work Planner
 
-  Contract:
-  - Read-only CEO reviews return recommendations and queue NO external work.
-  - Execution missions emit only concrete work packages backed by canonical
-    connector contracts. Conceptual departments such as "Revenue" are never
-    used as connector identities.
-  - Capture-capacity / CURRENTLY_LOOKING_FOR_HELP missions use the existing
-    governed MILES capture-capacity execution lane; they do not infer live
-    campaign activation.
-  - Generic business planning never infers protected writes. Those remain
-    explicit governed actions handled by their dedicated command paths.
+  Governing rules:
+  - Explicit review-only requests queue no execution work.
+  - Scoped safety constraints (for example "do not send to Instantly") do NOT
+    convert an otherwise explicit execution mission into a read-only review.
+  - Government-data refresh/reconciliation missions use the governed MILES
+    government-data execution lane, never generic Instantly inventory reads.
+  - Generic business planning never infers protected writes.
 */
 
 const SAFE_INSTANTLY_READ_ACTIONS = Object.freeze([
@@ -32,15 +29,45 @@ function normalizeObjective(task = {}) {
   ).trim();
 }
 
-function isReadOnlyReview(objective = "") {
+function hasExecutionDirective(objective = "") {
   const text = String(objective || "");
+  return /\b(execute|run|refresh|reconcile|reconciliation|ingest|pull|harvest|build|rebuild|generate|produce|stage|join|calculate|assign|update|create|route|queue|deploy|implement)\b/i.test(text);
+}
 
+function isExplicitReadOnlyReview(objective = "") {
+  const text = String(objective || "");
   return (
     /\bread[\s-]?only\b/i.test(text) ||
+    /\b(?:review|analysis|audit|report)\s+only\b/i.test(text) ||
+    /\bdo\s+not\s+execute\b/i.test(text) ||
+    /\bdon['’]t\s+execute\b/i.test(text) ||
+    /\bwithout\s+execut(?:e|ing)\b/i.test(text) ||
+    /\bdo\s+not\s+make\s+(?:any\s+)?changes\b/i.test(text) ||
+    /\bwithout\s+making\s+(?:any\s+)?changes\b/i.test(text)
+  );
+}
+
+function isReadOnlyReview(objective = "") {
+  const text = String(objective || "");
+  if (isExplicitReadOnlyReview(text)) return true;
+
+  // A localized guardrail is read-only only when the overall request is a
+  // review/audit and contains no affirmative execution directive.
+  const reviewSignal = /\b(review|audit|inspect|analy[sz]e|check|assess)\b/i.test(text);
+  const scopedNoChange = (
     /\bdo\s+not\s+(?:send|modify|change|publish|launch|activate|pause|delete|create|update|write)\b/i.test(text) ||
     /\bdon['’]t\s+(?:send|modify|change|publish|launch|activate|pause|delete|create|update|write)\b/i.test(text) ||
     /\bwithout\s+(?:sending|modifying|changing|publishing|launching|activating|pausing|deleting|creating|updating|writing)\b/i.test(text)
   );
+
+  return reviewSignal && scopedNoChange && !hasExecutionDirective(text);
+}
+
+function isGovernmentDataMission(objective = "") {
+  const text = String(objective || "");
+  const govSubject = /\b(gsa|sam\.?gov|sam registration|usaspending|usa spending|government data|gsa holder|gsa holders|schedule holder|schedule holders|sin master|vendor universe|vendor ingest|vendor refresh|vendor reconciliation)\b/i.test(text);
+  const govWork = /\b(refresh|reconcile|reconciliation|ingest|pull|harvest|holder|holders|dataset|data|sales|award|awards|segment|segmenting|segmentation|vendor|vendors)\b/i.test(text);
+  return govSubject && govWork && hasExecutionDirective(text);
 }
 
 function isCaptureRevenueMission(objective = "") {
@@ -132,42 +159,71 @@ function executableReadPackages() {
 }
 
 function captureRevenuePackages(objective) {
-  return [
-    {
-      priority: 1,
-      taskType: "CAPTURE_CAPACITY_DISCOVERY",
-      department: "Revenue Operations",
-      provider: "MILES",
-      connector: "MILES",
-      system: "MILES",
-      action: "CAPTURE_CAPACITY_DISCOVERY",
-      capability: "revenue.capture_capacity_handoff",
-      readOnly: false,
-      requiresKevin: false,
-      description: "Discover evidence-backed CURRENTLY_LOOKING_FOR_HELP prospects and stage qualified capture-capacity work through the existing governed revenue lane.",
-      objective,
-      activationPolicy: "NEVER_AUTO_ACTIVATE"
-    }
-  ];
+  return [{
+    priority: 1,
+    taskType: "CAPTURE_CAPACITY_DISCOVERY",
+    department: "Revenue Operations",
+    provider: "MILES",
+    connector: "MILES",
+    system: "MILES",
+    action: "CAPTURE_CAPACITY_DISCOVERY",
+    capability: "revenue.capture_capacity_handoff",
+    readOnly: false,
+    requiresKevin: false,
+    description: "Discover evidence-backed CURRENTLY_LOOKING_FOR_HELP prospects and stage qualified capture-capacity work through the existing governed revenue lane.",
+    objective,
+    activationPolicy: "NEVER_AUTO_ACTIVATE"
+  }];
+}
+
+function governmentDataPackages(objective) {
+  return [{
+    priority: 1,
+    taskType: "GSA_DATA_EXECUTION",
+    department: "Government Market Intelligence",
+    provider: "MILES",
+    connector: "MILES",
+    system: "MILES",
+    action: "GSA_DATA_EXECUTION",
+    capability: "government_data.gsa_execution",
+    readOnly: false,
+    requiresKevin: false,
+    description: "Execute the governed GSA vendor refresh/reconciliation mission, stage authoritative outputs, and fail closed when required execution capabilities or evidence are missing.",
+    objective,
+    activationPolicy: "STAGING_ONLY_NO_INSTANTLY_PUSH"
+  }];
 }
 
 class BusinessWorkPlannerService {
   async plan(task = {}) {
     const objective = normalizeObjective(task);
     const readOnly = isReadOnlyReview(objective);
-    const captureMission = !readOnly && isCaptureRevenueMission(objective);
+    const governmentDataMission = !readOnly && isGovernmentDataMission(objective);
+    const captureMission = !readOnly && !governmentDataMission && isCaptureRevenueMission(objective);
     const recommendedActions = recommendations();
+
     const workPackages = readOnly
       ? []
-      : captureMission
-        ? captureRevenuePackages(objective)
-        : executableReadPackages();
+      : governmentDataMission
+        ? governmentDataPackages(objective)
+        : captureMission
+          ? captureRevenuePackages(objective)
+          : executableReadPackages();
+
+    const mode = readOnly
+      ? "READ_ONLY_REVIEW"
+      : governmentDataMission
+        ? "GOVERNMENT_DATA_EXECUTION"
+        : captureMission
+          ? "CAPTURE_REVENUE_EXECUTION"
+          : "EXECUTION";
 
     return {
       ok: true,
       service: "BusinessWorkPlannerService",
-      mode: readOnly ? "READ_ONLY_REVIEW" : captureMission ? "CAPTURE_REVENUE_EXECUTION" : "EXECUTION",
+      mode,
       readOnly,
+      governmentDataMission,
       captureMission,
       objective,
       generatedAt: new Date().toISOString(),
@@ -176,8 +232,9 @@ class BusinessWorkPlannerService {
       workPackageCount: workPackages.length,
       workPackages,
       connectorContract: {
-        canonicalConnectors: captureMission ? ["MILES"] : ["INSTANTLY"],
+        canonicalConnectors: governmentDataMission || captureMission ? ["MILES"] : ["INSTANTLY"],
         safeInstantlyReadActions: [...SAFE_INSTANTLY_READ_ACTIONS],
+        governmentDataAction: governmentDataMission ? "GSA_DATA_EXECUTION" : null,
         captureAction: captureMission ? "CAPTURE_CAPACITY_DISCOVERY" : null,
         pseudoConnectorsForbidden: ["Revenue"],
         protectedWritesInferred: false,
@@ -190,6 +247,10 @@ class BusinessWorkPlannerService {
 module.exports = new BusinessWorkPlannerService();
 module.exports.BusinessWorkPlannerService = BusinessWorkPlannerService;
 module.exports.SAFE_INSTANTLY_READ_ACTIONS = SAFE_INSTANTLY_READ_ACTIONS;
+module.exports.hasExecutionDirective = hasExecutionDirective;
+module.exports.isExplicitReadOnlyReview = isExplicitReadOnlyReview;
 module.exports.isReadOnlyReview = isReadOnlyReview;
+module.exports.isGovernmentDataMission = isGovernmentDataMission;
 module.exports.isCaptureRevenueMission = isCaptureRevenueMission;
+module.exports.governmentDataPackages = governmentDataPackages;
 module.exports.captureRevenuePackages = captureRevenuePackages;

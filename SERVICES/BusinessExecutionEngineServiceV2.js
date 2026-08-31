@@ -121,6 +121,7 @@ class BusinessExecutionEngineServiceV2 {
       completedAt: null,
       stepCount: normalized.steps.length,
       completedSteps: 0,
+      inProgressSteps: 0,
       failedSteps: 0,
       approvalSteps: 0,
       blockedSteps: 0,
@@ -132,18 +133,25 @@ class BusinessExecutionEngineServiceV2 {
       const result = await this.executeStep(step, normalized, executionId);
       record.results.push(result);
       if (result.status === "COMPLETED") record.completedSteps += 1;
+      else if (result.status === "IN_PROGRESS") record.inProgressSteps += 1;
       else if (result.status === "AWAITING_APPROVAL") record.approvalSteps += 1;
       else if (result.status === "BLOCKED") record.blockedSteps += 1;
       else if (result.status === "FAILED") record.failedSteps += 1;
     }
 
-    record.ok = record.failedSteps === 0;
+    record.ok = record.failedSteps === 0 && record.blockedSteps === 0;
     record.status = record.failedSteps > 0
       ? "COMPLETED_WITH_ERRORS"
-      : record.approvalSteps > 0
-        ? "AWAITING_APPROVAL"
-        : "COMPLETED";
-    record.completedAt = now();
+      : record.blockedSteps > 0
+        ? "BLOCKED"
+        : record.approvalSteps > 0
+          ? "AWAITING_APPROVAL"
+          : record.inProgressSteps > 0
+            ? "IN_PROGRESS"
+            : "COMPLETED";
+    record.completedAt = record.status === "COMPLETED" || record.status === "COMPLETED_WITH_ERRORS"
+      ? now()
+      : null;
     record.executiveSummary = this.buildExecutiveSummary(record);
 
     this.save(record);
@@ -218,19 +226,26 @@ class BusinessExecutionEngineServiceV2 {
 
       const result = await invoke(service, stepTask);
       const status = String(result?.status || result?.action || "").toUpperCase();
-      const awaitingApproval =
-        status === "AWAITING_APPROVAL" || status === "AWAITING_CEO_APPROVAL";
+      const awaitingApproval = status === "AWAITING_APPROVAL" || status === "AWAITING_CEO_APPROVAL";
+      const blocked = status === "BLOCKED" || status === "PARTIAL";
+      const inProgress = status === "IN_PROGRESS" || status === "WORK_QUEUED" || status === "QUEUED";
 
       base.result = result;
       base.status = awaitingApproval
         ? "AWAITING_APPROVAL"
-        : result?.ok === false
-          ? "FAILED"
-          : "COMPLETED";
+        : blocked
+          ? "BLOCKED"
+          : inProgress
+            ? "IN_PROGRESS"
+            : result?.ok === false
+              ? "FAILED"
+              : "COMPLETED";
       base.error = base.status === "FAILED"
         ? result?.error || result?.message || `${action} returned failure.`
         : null;
-      base.completedAt = now();
+      base.completedAt = ["COMPLETED", "FAILED", "BLOCKED", "AWAITING_APPROVAL"].includes(base.status)
+        ? now()
+        : null;
       return base;
     } catch (error) {
       base.status = "FAILED";
@@ -246,12 +261,8 @@ class BusinessExecutionEngineServiceV2 {
       payload: normalized.payload
     });
 
-    const workPackages = Array.isArray(workPlan.workPackages)
-      ? workPlan.workPackages
-      : [];
-    const recommendedActions = Array.isArray(workPlan.recommendations)
-      ? workPlan.recommendations
-      : [];
+    const workPackages = Array.isArray(workPlan.workPackages) ? workPlan.workPackages : [];
+    const recommendedActions = Array.isArray(workPlan.recommendations) ? workPlan.recommendations : [];
 
     if (!workPlan.ok) {
       base.status = "FAILED";
@@ -396,15 +407,16 @@ class BusinessExecutionEngineServiceV2 {
       workPackages,
       generatedAt: workPlan.generatedAt
     };
+
     base.status = failed > 0
       ? "FAILED"
       : awaitingApproval > 0 && queued === 0
         ? "AWAITING_APPROVAL"
-        : "COMPLETED";
-    base.error = failed > 0
-      ? `${failed} business operation(s) failed while entering TaskQueue.`
-      : null;
-    base.completedAt = now();
+        : queued > 0
+          ? "IN_PROGRESS"
+          : "BLOCKED";
+    base.error = failed > 0 ? `${failed} business operation(s) failed while entering TaskQueue.` : null;
+    base.completedAt = ["FAILED", "AWAITING_APPROVAL", "BLOCKED"].includes(base.status) ? now() : null;
     return base;
   }
 
@@ -428,16 +440,12 @@ class BusinessExecutionEngineServiceV2 {
       });
     };
 
-    for (const item of Array.isArray(companyState?.priorities) ? companyState.priorities : []) {
-      addPriority(item, "Executive");
-    }
-
+    for (const item of Array.isArray(companyState?.priorities) ? companyState.priorities : []) addPriority(item, "Executive");
     if (priorities.length < 3) {
       for (const item of Array.isArray(businessWork?.recommendations) ? businessWork.recommendations : []) {
         addPriority(item, "Revenue", "Generated from the canonical executive business review.");
       }
     }
-
     if (priorities.length < 3) {
       for (const item of Array.isArray(businessWork?.workPackages) ? businessWork.workPackages : []) {
         addPriority(item, "Operations", "Generated from the canonical business work plan.");
@@ -445,23 +453,30 @@ class BusinessExecutionEngineServiceV2 {
     }
 
     const readOnly = businessWork?.readOnly === true || record.readOnly === true;
+    const workQueued = Number(businessWork?.operationsQueued || 0);
 
     return {
-      ok: record.failedSteps === 0,
+      ok: record.status === "COMPLETED" || record.status === "IN_PROGRESS" || record.status === "AWAITING_APPROVAL",
       objective: record.objective,
       status: record.status,
       readOnly,
       topActions: priorities.slice(0, 3),
       completedSteps: record.completedSteps,
+      inProgressSteps: record.inProgressSteps,
       failedSteps: record.failedSteps,
+      blockedSteps: record.blockedSteps,
       approvalSteps: record.approvalSteps,
-      workQueued: Number(businessWork?.operationsQueued || 0),
+      workQueued,
       dashboardSummary: dashboard?.summary || null,
       message: record.failedSteps > 0
-        ? "MILES completed the executive mission with one or more step failures."
-        : readOnly
-          ? "MILES completed the read-only executive review and returned prioritized recommendations without queuing or changing external systems."
-          : "MILES reviewed the operating state, produced prioritized actions, and routed authorized work through the canonical execution queue."
+        ? "MILES encountered one or more execution failures; the mission is not complete."
+        : record.blockedSteps > 0
+          ? "MILES is blocked on one or more required execution steps; the mission is not complete."
+          : record.inProgressSteps > 0 || workQueued > 0
+            ? "MILES routed executable work through the canonical queue; the mission remains in progress until downstream work and acceptance evidence complete."
+            : readOnly
+              ? "MILES completed the explicitly read-only executive review without queuing or changing external systems."
+              : "MILES completed the executive mission with required execution evidence."
     };
   }
 

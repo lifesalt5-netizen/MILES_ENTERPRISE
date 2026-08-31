@@ -3,17 +3,11 @@
 /*
   MILES Enterprise
   Canonical execution action contracts.
-
-  Purpose:
-  - One dependency-free source of truth for actions executable by the
-    ephemeral connector path.
-  - Shared by connector implementations, capability routing, and CEO
-    command preflight so an action cannot be called supported in one layer
-    and then fail as unknown in another.
 */
 
 const MILES_ACTIONS = Object.freeze([
   "BUSINESS_EXECUTION",
+  "GSA_DATA_EXECUTION",
   "CAPTURE_CAPACITY_DISCOVERY",
   "PROVIDER_AUTHORITY",
   "PROVIDER_AUTHORITY_REGISTRY",
@@ -84,16 +78,6 @@ const INSTANTLY_BY_COMPACT = new Map(
   INSTANTLY_ACTIONS.map(action => [compactToken(action), action])
 );
 
-/*
-  Legacy/business-language Instantly actions are translated to the nearest
-  canonical read action before preflight. This prevents stale CEO missions
-  such as SYNC_CAMPAIGNS or REVIEW_PAUSED_CAMPAIGNS from failing with
-  ACTION_NOT_SUPPORTED while keeping the connector contract narrow.
-
-  These aliases deliberately resolve to listCampaigns because the legacy
-  intents are inspection/reconciliation requests. Mutating actions are never
-  inferred from a review/sync label.
-*/
 const INSTANTLY_READ_ALIASES = new Map([
   ["SYNCCAMPAIGNS", "listCampaigns"],
   ["REVIEWPAUSEDCAMPAIGNS", "listCampaigns"],
