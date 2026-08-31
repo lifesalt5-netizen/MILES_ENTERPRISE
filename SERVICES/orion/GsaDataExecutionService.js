@@ -29,7 +29,7 @@ class GsaDataExecutionService {
     const objective = String(task.objective || task.payload?.objective || task.payload?.command || task.command || '');
     const readiness = await new GsaElibraryReadinessAuditService({ rootDir: this.rootDir }).run();
 
-    const holderModule = loadOptional(this.rootDir, path.join('SERVICES', 'GsaHolderSnapshotService.js'));
+    const holderModule = loadOptional(this.rootDir, path.join('SERVICES', 'GsaHolderSnapshotResilientService.js'));
     const spendingModule = loadOptional(this.rootDir, path.join('SERVICES', 'UsaspendingAwardHistoryStagingService.js'));
     const matcherModule = loadOptional(this.rootDir, path.join('SERVICES', 'GovernmentDataGsaMatcherService.js'));
     const normalizerModule = loadOptional(this.rootDir, path.join('SERVICES', 'GovernmentDataNormalizerService.js'));
@@ -77,9 +77,6 @@ class GsaDataExecutionService {
       }
     }
 
-    // The dormant July services cover acquisition/staging. Until modern
-    // reconciliation + acceptance wiring is proven in the current runtime,
-    // fail closed rather than claiming mission completion.
     const acceptanceReady = blockers.length === 0 &&
       Boolean(results.gsaHolderRefresh?.ok) &&
       Boolean(results.usaspendingRefresh?.ok) &&
@@ -103,9 +100,13 @@ class GsaDataExecutionService {
       capabilityEvidence,
       readiness,
       results,
+      limitations: Array.isArray(results.gsaHolderRefresh?.warnings)
+        ? results.gsaHolderRefresh.warnings
+        : [],
       blockers,
       completionEvidence: {
         authoritativeGsaRefreshProduced: Boolean(results.gsaHolderRefresh?.ok),
+        samEnrichmentAvailable: results.gsaHolderRefresh?.rules?.samEnrichmentAvailable !== false,
         usaspendingRefreshProduced: Boolean(results.usaspendingRefresh?.ok),
         reconciliationProduced: false,
         segmentationProduced: false,
