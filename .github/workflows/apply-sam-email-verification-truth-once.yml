@@ -1,0 +1,31 @@
+name: Apply SAM Email Verification Truth Once
+on:
+  push:
+    branches:
+      - 'fix/sam-email-verification-truth-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/sam-email-verification-truth-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node SCRIPTS/RepairSamEmailVerificationTruth.js
+      - run: node SCRIPTS/RepairSamEmailVerificationTruth.js --apply
+      - run: node --check SERVICES/orion/SamEmailRecoveryService.js
+      - run: node TESTS/sam_email_recovery.test.js
+      - run: |
+          grep -q "recoveryResetRows" SERVICES/orion/SamEmailRecoveryService.js
+          ! grep -q "'validation_status','status'" SERVICES/orion/SamEmailRecoveryService.js
+      - name: Commit repaired source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add SERVICES/orion/SamEmailRecoveryService.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Require explicit email verification status and reset generated recovery'; git push origin HEAD:fix/sam-email-verification-truth-20260830; fi
