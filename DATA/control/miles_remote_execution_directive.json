@@ -1,7 +1,7 @@
 {
-  "id": "sam-contact-recovery-source-audit-20260830-030",
+  "id": "sam-email-recovery-20260830-031",
   "enabled": true,
-  "job": "SAM_CONTACT_RECOVERY_SOURCE_AUDIT",
+  "job": "SAM_EMAIL_RECOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #405 and rerun the bounded read-only SAM contact recovery source audit. Inspect only candidate filenames plus delimited headers and SQLite schemas under the governed search roots to identify prior SAM and P2GC internal sources that can supply email truth for the 386,980 unique qualified SAM companies. Do not read or expose email values in this audit. Do not modify source files, databases, campaigns, current send segments, credentials, email systems, DNS, B12, or delete old SAM. Report exact candidate source paths, source types, matching identity fields such as UEI/CAGE/company/domain, and which sources contain an email field so the recovery job can be built from actual data rather than guesses."
+  "note": "Fast-forward local MILES to current main including PR #406 and recover email/contact truth into the staging-only qualified SAM database using only contact sources identified by the source audit. Match by exact UEI first, unique CAGE second, and unique exact company+domain only; prohibit name-only matching. Reject .gov/.mil/.edu/.org and invalid emails. Prefer explicit verified/validated internal sources, then prior SAM. Mark prior/unverified recoveries as RECOVERED_NEEDS_VERIFICATION, never as campaign eligible. Do not log or expose email values. Do not modify production ORION, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Report source-level counts, recovered counts, verified counts, remaining enrichment-required counts, integrity, and safety evidence."
 }
