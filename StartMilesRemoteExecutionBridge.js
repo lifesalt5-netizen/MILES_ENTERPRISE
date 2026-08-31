@@ -60,7 +60,8 @@ const JOBS = Object.freeze({
   SAM_CONTACT_RECOVERY_SOURCE_AUDIT: ['node', ['SCRIPTS/AuditSamContactRecoverySources.js']],
   SAM_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmails.js']],
   SAM_SQLITE_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmailsFromSqlite.js']],
-  SAM_CURRENT_SEND_COLLISION_AUDIT: ['node', ['SCRIPTS/AuditSamCurrentSendCollisions.js']]
+  SAM_CURRENT_SEND_COLLISION_AUDIT: ['node', ['SCRIPTS/AuditSamCurrentSendCollisions.js']],
+  SAM_PUBLIC_EMAIL_DISCOVERY: ['node', ['SCRIPTS/DiscoverSamPublicEmails.js']]
 });
 
 function readState() {
