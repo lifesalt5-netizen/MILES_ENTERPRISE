@@ -1,7 +1,7 @@
 {
-  "id": "sam-email-recovery-20260830-031",
+  "id": "sam-email-recovery-20260830-032",
   "enabled": true,
   "job": "SAM_EMAIL_RECOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #406 and recover email/contact truth into the staging-only qualified SAM database using only contact sources identified by the source audit. Match by exact UEI first, unique CAGE second, and unique exact company+domain only; prohibit name-only matching. Reject .gov/.mil/.edu/.org and invalid emails. Prefer explicit verified/validated internal sources, then prior SAM. Mark prior/unverified recoveries as RECOVERED_NEEDS_VERIFICATION, never as campaign eligible. Do not log or expose email values. Do not modify production ORION, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Report source-level counts, recovered counts, verified counts, remaining enrichment-required counts, integrity, and safety evidence."
+  "note": "Fast-forward local MILES to current main including PR #407 and rerun governed staging-only SAM email recovery from a clean service-generated recovery state. Only explicit email/verification/validation/deliverability status fields may prove VERIFIED; generic source status must not. Match exact UEI first, unique CAGE second, unique exact company+domain only; prohibit name-only matching. Reject .gov/.mil/.edu/.org and invalid emails. Preserve non-service/manual/external contact truth. Do not log or expose emails. Do not modify production ORION, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Publish corrected recovered/verified/enrichment counts and safety evidence."
 }
