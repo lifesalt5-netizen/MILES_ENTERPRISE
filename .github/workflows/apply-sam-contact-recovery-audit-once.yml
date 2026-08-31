@@ -19,14 +19,18 @@ jobs:
       - run: node --check SERVICES/orion/SamContactRecoverySourceAuditService.js
       - run: node --check SCRIPTS/AuditSamContactRecoverySources.js
       - run: node TESTS/sam_contact_recovery_source_audit.test.js
+      - run: node SCRIPTS/RepairSamQualifiedUniqueValidation.js
+      - run: node SCRIPTS/RepairSamQualifiedUniqueValidation.js --apply
       - run: node SCRIPTS/RepairSamContactRecoveryAuditBridge.js
       - run: node SCRIPTS/RepairSamContactRecoveryAuditBridge.js --apply
       - run: |
+          node --check SERVICES/orion/SamQualifiedUniverseBuildService.js
           node --check StartMilesRemoteExecutionBridge.js
+          grep -q "duplicateQualifiedRecords" SERVICES/orion/SamQualifiedUniverseBuildService.js
           grep -q "SAM_CONTACT_RECOVERY_SOURCE_AUDIT" StartMilesRemoteExecutionBridge.js
       - name: Commit repaired source
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add StartMilesRemoteExecutionBridge.js
-          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Allow remote SAM contact recovery source audit'; git push origin HEAD:feature/sam-contact-source-audit-20260830; fi
+          git add SERVICES/orion/SamQualifiedUniverseBuildService.js StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then echo 'No source changes required.'; else git commit -m 'Handle duplicate SAM UEIs and allow contact source audit'; git push origin HEAD:feature/sam-contact-source-audit-20260830; fi
