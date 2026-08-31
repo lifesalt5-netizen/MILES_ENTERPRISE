@@ -1,7 +1,7 @@
 {
-  "id": "sam-public-email-discovery-continuous-20260831-041",
+  "id": "miles-closeout-deploy-20260831-001",
   "enabled": true,
-  "job": "SAM_PUBLIC_EMAIL_DISCOVERY",
-  "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "MAX SPEED standing rule. After the current active run completes, fast-forward local MILES to current main including PR #412 and run the self-continuing governed SAM public-company website discovery path. Continue automatically across checkpointed 2,500-company batches at concurrency 12 for up to 200 batches or 18 hours, stopping early only if the eligible website pool is exhausted or a real batch/runtime blocker occurs. Preserve same-domain public-page discovery, exact identity, institutional-domain exclusions, no fabricated emails, and mark all newly discovered contacts NEEDS_VERIFICATION only. Do not invoke paid verification, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish continuous runtime evidence and final aggregate safety assertions."
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "requestedBy": "CEO_VIA_CHATGPT",
+  "note": "MAX SPEED closeout. Fast-forward the production MILES_ENTERPRISE runtime to current GitHub main, preserving runtime data, local state, queues, databases, and historical intelligence. Deploy the merged approval bridge, durable government-data routing, GSA holder reconciliation, USAspending aggregation, GSA sales/trigger segmentation, sample truth verification, and final GSA acceptance path. Run bounded self-maintenance, reconcile only proven stale runtime approval records, restart only the governed MILES runtime owners, and publish runtime evidence. Do not grant approvals, do not push leads to Instantly, do not mutate production ORION from the GSA staging path, and do not delete historical government-data assets. Existing approved/queued business missions should be allowed to resume normally after runtime recovery."
 }
