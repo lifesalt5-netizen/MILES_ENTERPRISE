@@ -1,0 +1,39 @@
+name: Apply SAM Current Send Collision Audit Once
+on:
+  push:
+    branches:
+      - 'feature/sam-current-send-collision-audit-20260830'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/sam-current-send-collision-audit-20260830
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node SCRIPTS/RepairSamCollisionAuditAllowlist.js
+      - run: node SCRIPTS/RepairSamCollisionAuditAllowlist.js --apply
+      - name: Validate syntax and helper behavior
+        run: |
+          node --check SERVICES/orion/SamCurrentSendCollisionAuditService.js
+          node --check SCRIPTS/AuditSamCurrentSendCollisions.js
+          node --check StartMilesRemoteExecutionBridge.js
+          node - <<'NODE'
+          const h=require('./SERVICES/orion/SamCurrentSendCollisionAuditService').helpers;
+          if(h.emailKey(' Test@Example.COM ')!=='test@example.com') throw new Error('email normalization failed');
+          if(h.ueiKey(' abc123 ')!=='ABC123') throw new Error('UEI normalization failed');
+          if(h.nextCursor({next_starting_after:'x'})!=='x') throw new Error('cursor extraction failed');
+          if(h.leadUei({custom_variables:{uei:'abc'}})!=='ABC') throw new Error('custom UEI extraction failed');
+          console.log('SAM_CURRENT_SEND_COLLISION_AUDIT_HELPERS=PASS');
+          NODE
+      - name: Commit bridge allowlist repair
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js
+          if git diff --cached --quiet; then echo 'No bridge changes required.'; else git commit -m 'Allow read-only SAM current-send collision audit'; git push origin HEAD:feature/sam-current-send-collision-audit-20260830; fi
