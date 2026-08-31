@@ -1,7 +1,7 @@
 {
-  "id": "sam-current-send-collision-audit-20260830-034",
+  "id": "sam-public-email-discovery-20260830-035",
   "enabled": true,
-  "job": "SAM_CURRENT_SEND_COLLISION_AUDIT",
+  "job": "SAM_PUBLIC_EMAIL_DISCOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #409. Run a read-only collision audit between the fresh qualified SAM staging universe and the complete current Instantly lead inventory plus active global suppression registry. Compare exact email and UEI where available, publish aggregate collision counts and hashed samples only. Do not expose raw emails, mutate Instantly, campaigns, current send segments, staging database, production ORION, credentials, DNS, B12, or delete old SAM. If provider pagination cannot be proven complete, report truncation and do not treat counts as complete dedupe truth."
+  "note": "Fast-forward local MILES to current main including PR #410. Run bounded public-company-website email discovery for qualified fresh SAM companies still missing email, using only the company's public website/domain and same-domain public pages. Preserve exact identity, institutional-domain exclusions, bounded concurrency/page count, no email fabrication, and mark discovered contacts NEEDS_VERIFICATION only. Do not invoke MillionVerifier or any paid verifier, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish complete aggregate evidence and safety assertions."
 }
