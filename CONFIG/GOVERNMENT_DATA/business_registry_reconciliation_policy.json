@@ -1,0 +1,72 @@
+{
+  "policyId": "P2GC_BUSINESS_REGISTRY_RECONCILIATION",
+  "version": "1.0.0",
+  "effectiveDate": "2026-07-27",
+  "purpose": "Enrich authoritative SAM entities with SBA/DSBS and state business-registration evidence, while preserving source truth for businesses not found in SAM.",
+  "sources": {
+    "SAM_PUBLIC_V2": {
+      "authority": "SAM.gov",
+      "role": "FEDERAL_REGISTRATION_AUTHORITY",
+      "mayEstablishSamRegistration": true
+    },
+    "SAM_ENTITY_PUBLIC_POC": {
+      "authority": "SAM.gov Entity Management API",
+      "role": "PUBLIC_CONTACT_NAME_AND_TITLE",
+      "mayProvidePublicEmail": false
+    },
+    "SBA_DSBS": {
+      "authority": "U.S. Small Business Administration",
+      "role": "SMALL_BUSINESS_PROFILE_AND_CERTIFICATION",
+      "mayEstablishSamRegistration": false
+    },
+    "STATE_BUSINESS_REGISTRY": {
+      "authority": "State Secretary of State or official business agency",
+      "role": "STATE_LEGAL_REGISTRATION_AND_OFFICERS",
+      "mayEstablishSamRegistration": false
+    },
+    "GSA_ELIBRARY": {
+      "authority": "U.S. General Services Administration",
+      "role": "GSA_CONTRACT_AND_PUBLISHED_CONTACT",
+      "mayEstablishSamRegistration": false
+    },
+    "OFFICIAL_COMPANY_WEBSITE": {
+      "authority": "Official company-controlled website",
+      "role": "EXACT_PUBLISHED_CONTACT",
+      "mayEstablishSamRegistration": false
+    },
+    "VERIFIED_EMAIL_REPOSITORY": {
+      "authority": "P2GC verified-email repository",
+      "role": "EXACT_VERIFIED_EMAIL",
+      "mayEstablishSamRegistration": false
+    }
+  },
+  "matchPrecedence": [
+    "UEI_EXACT",
+    "CAGE_EXACT",
+    "STATE_REGISTRATION_ID_AND_JURISDICTION_EXACT",
+    "WEBSITE_DOMAIN_EXACT",
+    "LEGAL_NAME_STATE_ADDRESS_EXACT"
+  ],
+  "rules": {
+    "stateOrSbaRecordMayBeLabeledSamRegistered": false,
+    "unmatchedStateOrSbaMayEnterSamMaster": false,
+    "unmatchedQualifiedBusinessPool": "SAM_REGISTRATION_OPPORTUNITY",
+    "unmatchedRecordsRequireEligibilityGate": true,
+    "unmatchedRecordsRequireVerifiedEmail": true,
+    "unmatchedRecordsRequireAuthorityContactPreference": true,
+    "sourceProvenanceRequired": true,
+    "newestSourceRecordPreferredWithinSameAuthority": true,
+    "rawSourceRecordsRetained": true,
+    "guessedOrInferredEmailsAllowed": false
+  },
+  "safety": {
+    "mode": "STAGING_ONLY",
+    "operationalWritesAllowed": false,
+    "orionDatabaseWrites": false,
+    "outboundInventoryWrites": false,
+    "taskQueueWrites": false,
+    "instantlyWrites": false,
+    "campaignWrites": false,
+    "campaignUploadsRequireKevinApproval": true
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "policyId": "P2GC_GOVERNMENT_DATA_STAGING",
+  "version": "1.0.0",
+  "mode": "STAGING_ONLY",
+  "defaultStagingPath": "DATA/staging/government_data",
+  "operationalWritesAllowed": false,
+  "blockedDestinations": [
+    "ORION database",
+    "DATA/OUTBOUND",
+    "DATA/runtime/task_queue.json",
+    "Instantly",
+    "campaigns",
+    "mailboxes"
+  ],
+  "sources": {
+    "sam_public_entities": {
+      "enabled": true,
+      "phase": 1,
+      "authority": "SAM.gov",
+      "documentation": "https://open.gsa.gov/api/sam-entity-extracts-api/",
+      "endpoint": "https://api.sam.gov/data-services/v1/extracts",
+      "method": "GET",
+      "requiresEnvironmentVariable": "SAM_API_KEY",
+      "responseType": "zip",
+      "extension": ".zip",
+      "minimumBytes": 1024,
+      "acceptedContentTypes": [
+        "application/zip",
+        "application/octet-stream"
+      ],
+      "parameters": {
+        "fileType": "ENTITY",
+        "sensitivity": "PUBLIC",
+        "frequency": "MONTHLY",
+        "charset": "UTF8"
+      }
+    },
+    "sam_public_exclusions": {
+      "enabled": true,
+      "phase": 1,
+      "authority": "SAM.gov",
+      "documentation": "https://open.gsa.gov/api/sam-entity-extracts-api/",
+      "endpoint": "https://api.sam.gov/data-services/v1/extracts",
+      "method": "GET",
+      "requiresEnvironmentVariable": "SAM_API_KEY",
+      "responseType": "zip",
+      "extension": ".zip",
+      "minimumBytes": 256,
+      "acceptedContentTypes": [
+        "application/zip",
+        "application/octet-stream"
+      ],
+      "parameters": {
+        "fileType": "EXCLUSION"
+      }
+    },
+    "gsa_mas_catalog": {
+      "enabled": true,
+      "phase": 1,
+      "authority": "U.S. General Services Administration",
+      "documentation": "https://www.gsa.gov/buy-through-us/purchasing-programs/multiple-award-schedule",
+      "endpoint": "https://www.gsa.gov/buy-through-us/purchasing-programs/multiple-award-schedule",
+      "method": "GET",
+      "responseType": "html",
+      "extension": ".html",
+      "minimumBytes": 1024,
+      "acceptedContentTypes": [
+        "text/html"
+      ],
+      "parameters": {}
+    },
+    "va_fss": {
+      "enabled": false,
+      "phase": 2,
+      "status": "INGESTION_CONTRACT_PENDING",
+      "authority": "U.S. Department of Veterans Affairs",
+      "documentation": "https://department.va.gov/procurement-acquisition-and-logistics/national-acquisition-center/federal-supply-schedule-service/"
+    },
+    "sba_open_data": {
+      "enabled": false,
+      "phase": 2,
+      "status": "INGESTION_CONTRACT_PENDING",
+      "authority": "U.S. Small Business Administration",
+      "documentation": "https://data.sba.gov/"
+    },
+    "usaspending_awards": {
+      "enabled": false,
+      "phase": 2,
+      "status": "INGESTION_CONTRACT_PENDING",
+      "authority": "USAspending.gov",
+      "documentation": "https://api.usaspending.gov/"
+    }
+  }
+}
