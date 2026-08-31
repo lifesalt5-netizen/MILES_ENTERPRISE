@@ -16,6 +16,15 @@ require(path.join(
   'CommandIntentPlannerGovernmentDataOverride'
 ));
 
+// Preserve connector semantic truth before the gateway loads execution
+// ownership. A governed BLOCKED, IN_PROGRESS, QUEUED, RUNNING, or
+// AWAITING_APPROVAL result must never be collapsed into FAILED/COMPLETED.
+require(path.join(
+  __dirname,
+  'SERVICES',
+  'ExecutionStatusSemanticsOverride'
+));
+
 const gateway = require(path.join(
   __dirname,
   'SERVICES',
