@@ -1,7 +1,7 @@
 {
-  "id": "sam-public-email-discovery-max-20260830-038",
+  "id": "sam-public-email-discovery-max-20260830-039",
   "enabled": true,
   "job": "SAM_PUBLIC_EMAIL_DISCOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "MAX SPEED standing rule. Fast-forward local MILES to current main including PR #411, then run governed high-throughput public-company-website email discovery against the fresh qualified SAM staging universe. The runner now processes up to 2,500 qualified unattempted missing-email companies per batch at concurrency 12 and performs four sequential batches per invocation by default (up to 10,000 companies) without manual checkpoints. Preserve same-domain public-page discovery, exact identity, institutional-domain exclusions, no email fabrication, and mark all newly discovered contacts NEEDS_VERIFICATION only. Do not invoke paid verification, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish aggregate evidence and safety assertions."
+  "note": "MAX SPEED standing rule. Continue governed high-throughput public-company-website email discovery against the same fresh qualified SAM staging universe. Run the current PR #411 max-throughput path again: up to 2,500 qualified unattempted missing-email companies per batch at concurrency 12, four sequential batches per invocation (up to 10,000 companies) without manual checkpoints. Preserve same-domain public-page discovery, exact identity, institutional-domain exclusions, no fabrication, and mark newly discovered contacts NEEDS_VERIFICATION only. Do not invoke paid verification, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish aggregate evidence and safety assertions." 
 }
