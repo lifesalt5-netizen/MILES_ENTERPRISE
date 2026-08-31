@@ -59,7 +59,8 @@ const JOBS = Object.freeze({
   SAM_QUALIFIED_UNIVERSE_BUILD: ['node', ['SCRIPTS/BuildSamQualifiedUniverse.js']],
   SAM_CONTACT_RECOVERY_SOURCE_AUDIT: ['node', ['SCRIPTS/AuditSamContactRecoverySources.js']],
   SAM_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmails.js']],
-  SAM_SQLITE_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmailsFromSqlite.js']]
+  SAM_SQLITE_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmailsFromSqlite.js']],
+  SAM_CURRENT_SEND_COLLISION_AUDIT: ['node', ['SCRIPTS/AuditSamCurrentSendCollisions.js']]
 });
 
 function readState() {
