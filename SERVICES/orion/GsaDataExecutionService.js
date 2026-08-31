@@ -35,7 +35,11 @@ class GsaDataExecutionService {
     const normalizerModule = loadOptional(this.rootDir, path.join('SERVICES', 'GovernmentDataNormalizerService.js'));
     const reconciliationModule = loadOptional(this.rootDir, path.join('SERVICES', 'LegacySegmentReconciliationService.js'));
     const holderReconciliationModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaHolderReconciliationService.js'));
-    const acceptanceModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaExecutionAcceptanceService.js'));
+    const stagingAcceptanceModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaExecutionAcceptanceService.js'));
+    const awardAggregationModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'UsaspendingAwardAggregationService.js'));
+    const segmentationModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaSalesSegmentationService.js'));
+    const sampleTruthModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaSampleTruthVerificationService.js'));
+    const finalAcceptanceModule = loadOptional(this.rootDir, path.join('SERVICES', 'orion', 'GsaFinalMissionAcceptanceService.js'));
 
     const capabilityEvidence = {
       gsaElibraryReadiness: readiness.ok === true,
@@ -45,7 +49,11 @@ class GsaDataExecutionService {
       governmentDataNormalizerService: normalizerModule.available,
       segmentReconciliationService: reconciliationModule.available,
       holderReconciliationService: holderReconciliationModule.available,
-      acceptanceService: acceptanceModule.available
+      stagingAcceptanceService: stagingAcceptanceModule.available,
+      awardAggregationService: awardAggregationModule.available,
+      salesSegmentationService: segmentationModule.available,
+      sampleTruthVerificationService: sampleTruthModule.available,
+      finalAcceptanceService: finalAcceptanceModule.available
     };
 
     const blockers = [];
@@ -96,7 +104,7 @@ class GsaDataExecutionService {
       }
 
       try {
-        const AcceptanceService = acceptanceModule.module;
+        const AcceptanceService = stagingAcceptanceModule.module;
         const acceptance = new AcceptanceService({ rootDir: this.rootDir });
         results.acceptance = acceptance.run({
           gsaHolderRefresh: results.gsaHolderRefresh,
@@ -105,18 +113,79 @@ class GsaDataExecutionService {
           limitations: Array.isArray(results.gsaHolderRefresh?.warnings) ? results.gsaHolderRefresh.warnings : []
         });
       } catch (error) {
-        blockers.push(`GSA_ACCEPTANCE_REPORT_FAILED:${error.message}`);
+        blockers.push(`GSA_STAGING_ACCEPTANCE_REPORT_FAILED:${error.message}`);
+      }
+
+      if (results.usaspendingRefresh?.ok) {
+        try {
+          const AwardAggregationService = awardAggregationModule.module;
+          const aggregation = new AwardAggregationService({ rootDir: this.rootDir });
+          results.awardAggregation = await aggregation.run({
+            usaspendingManifestPath: results.usaspendingRefresh.manifestPath
+          });
+          if (!results.awardAggregation?.ok) {
+            blockers.push(`USASPENDING_AWARD_AGGREGATION_BLOCKED:${results.awardAggregation?.blocker || results.awardAggregation?.status || 'UNKNOWN'}`);
+          }
+        } catch (error) {
+          blockers.push(`USASPENDING_AWARD_AGGREGATION_FAILED:${error.message}`);
+        }
+      }
+
+      if (results.gsaHolderRefresh?.ok && results.awardAggregation?.ok) {
+        try {
+          const SegmentationService = segmentationModule.module;
+          const segmentation = new SegmentationService({ rootDir: this.rootDir });
+          results.segmentation = await segmentation.run({
+            holderManifestPath: results.gsaHolderRefresh.manifestPath,
+            awardAggregatePath: results.awardAggregation.aggregatePath,
+            reconciliationReportPath: results.gsaReconciliation?.reportPath || null,
+            measurementWindow: {
+              startDate: process.env.MILES_USASPENDING_START_DATE || '2026-02-01',
+              endDate: new Date().toISOString().slice(0, 10)
+            }
+          });
+          if (!results.segmentation?.ok) {
+            blockers.push(`GSA_SEGMENTATION_BLOCKED:${results.segmentation?.blocker || results.segmentation?.status || 'UNKNOWN'}`);
+          }
+        } catch (error) {
+          blockers.push(`GSA_SEGMENTATION_FAILED:${error.message}`);
+        }
+      }
+
+      if (results.segmentation?.ok) {
+        try {
+          const SampleTruthService = sampleTruthModule.module;
+          const verifier = new SampleTruthService({ rootDir: this.rootDir });
+          results.sampleTruth = await verifier.run({ segmentedPath: results.segmentation.segmentedPath, sampleSize: 25 });
+          if (!results.sampleTruth?.ok) blockers.push('GSA_SAMPLE_TRUTH_VERIFICATION_FAILED');
+        } catch (error) {
+          blockers.push(`GSA_SAMPLE_TRUTH_VERIFICATION_FAILED:${error.message}`);
+        }
+      }
+
+      try {
+        const FinalAcceptanceService = finalAcceptanceModule.module;
+        const finalAcceptance = new FinalAcceptanceService({ rootDir: this.rootDir });
+        results.finalAcceptance = finalAcceptance.run({
+          stagingAcceptance: results.acceptance,
+          awardAggregation: results.awardAggregation,
+          segmentation: results.segmentation,
+          sampleTruth: results.sampleTruth
+        });
+        if (!results.finalAcceptance?.ok) {
+          for (const blocker of results.finalAcceptance?.blockers || []) {
+            if (!blockers.includes(blocker)) blockers.push(blocker);
+          }
+        }
+      } catch (error) {
+        blockers.push(`GSA_FINAL_ACCEPTANCE_REPORT_FAILED:${error.message}`);
       }
     }
 
-    const stagingAccepted = results.acceptance?.status === 'STAGING_ACCEPTED';
-    if (stagingAccepted) {
-      blockers.push('GSA_DOWNSTREAM_SALES_SEGMENTATION_AND_CAMPAIGN_READY_PIPELINE_NOT_YET_WIRED');
-    }
-
-    const status = blockers.length ? 'BLOCKED' : 'IN_PROGRESS';
+    const fullMissionComplete = results.finalAcceptance?.fullMissionComplete === true && blockers.length === 0;
+    const status = fullMissionComplete ? 'COMPLETED' : (blockers.length ? 'BLOCKED' : 'IN_PROGRESS');
     const record = {
-      ok: false,
+      ok: fullMissionComplete,
       status,
       service: 'GsaDataExecutionService',
       objective,
@@ -126,9 +195,7 @@ class GsaDataExecutionService {
       capabilityEvidence,
       readiness,
       results,
-      limitations: Array.isArray(results.gsaHolderRefresh?.warnings)
-        ? results.gsaHolderRefresh.warnings
-        : [],
+      limitations: Array.isArray(results.gsaHolderRefresh?.warnings) ? results.gsaHolderRefresh.warnings : [],
       blockers,
       completionEvidence: {
         authoritativeGsaRefreshProduced: Boolean(results.gsaHolderRefresh?.ok),
@@ -136,31 +203,33 @@ class GsaDataExecutionService {
         usaspendingRefreshProduced: Boolean(results.usaspendingRefresh?.ok),
         reconciliationProduced: Boolean(results.gsaReconciliation?.ok),
         stagingAcceptanceReportProduced: Boolean(results.acceptance?.reportPath),
-        stagingAccepted,
-        segmentationProduced: false,
-        campaignReadyStagingProduced: false,
-        acceptanceReportProduced: Boolean(results.acceptance?.reportPath),
-        fullMissionComplete: false
+        awardAggregationProduced: Boolean(results.awardAggregation?.ok),
+        segmentationProduced: Boolean(results.segmentation?.ok),
+        campaignReadyStagingProduced: Boolean(results.segmentation?.campaignReadyPath && fs.existsSync(results.segmentation.campaignReadyPath)),
+        sampleTruthVerificationPassed: Boolean(results.sampleTruth?.ok),
+        finalAcceptanceReportProduced: Boolean(results.finalAcceptance?.reportPath),
+        fullMissionComplete
       },
       outputPaths: {
         holderManifest: results.gsaHolderRefresh?.manifestPath || null,
         usaspendingManifest: results.usaspendingRefresh?.manifestPath || null,
         reconciliationReport: results.gsaReconciliation?.reportPath || null,
-        acceptanceReport: results.acceptance?.reportPath || null
+        stagingAcceptanceReport: results.acceptance?.reportPath || null,
+        awardAggregationReport: results.awardAggregation?.reportPath || null,
+        awardAggregatePath: results.awardAggregation?.aggregatePath || null,
+        segmentationReport: results.segmentation?.reportPath || null,
+        segmentedHolders: results.segmentation?.segmentedPath || null,
+        campaignReadyStaging: results.segmentation?.campaignReadyPath || null,
+        sampleTruthReport: results.sampleTruth?.reportPath || null,
+        finalAcceptanceReport: results.finalAcceptance?.reportPath || null
       }
     };
 
-    fs.writeFileSync(
-      path.join(this.outDir, 'latest_gsa_data_execution.json'),
-      JSON.stringify(record, null, 2),
-      'utf8'
-    );
+    fs.writeFileSync(path.join(this.outDir, 'latest_gsa_data_execution.json'), JSON.stringify(record, null, 2), 'utf8');
     return record;
   }
 
-  async execute(task = {}) {
-    return this.run(task);
-  }
+  async execute(task = {}) { return this.run(task); }
 }
 
 module.exports = new GsaDataExecutionService();
