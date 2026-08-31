@@ -57,7 +57,8 @@ const JOBS = Object.freeze({
   SAM_BULK_EXTRACT_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireSamBulkExtractsToStaging.js']],
   SAM_BULK_SCHEMA_AUDIT: ['node', ['SCRIPTS/InspectSamBulkSchema.js']],
   SAM_QUALIFIED_UNIVERSE_BUILD: ['node', ['SCRIPTS/BuildSamQualifiedUniverse.js']],
-  SAM_CONTACT_RECOVERY_SOURCE_AUDIT: ['node', ['SCRIPTS/AuditSamContactRecoverySources.js']]
+  SAM_CONTACT_RECOVERY_SOURCE_AUDIT: ['node', ['SCRIPTS/AuditSamContactRecoverySources.js']],
+  SAM_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmails.js']]
 });
 
 function readState() {
