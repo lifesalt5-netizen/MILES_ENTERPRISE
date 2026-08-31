@@ -1,7 +1,7 @@
 {
-  "id": "sam-sqlite-email-recovery-20260830-033",
+  "id": "sam-current-send-collision-audit-20260830-034",
   "enabled": true,
-  "job": "SAM_SQLITE_EMAIL_RECOVERY",
+  "job": "SAM_CURRENT_SEND_COLLISION_AUDIT",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "Fast-forward local MILES to current main including PR #408. Recover additional contact emails for the fresh qualified SAM staging universe from previously discovered internal SQLite contact sources only. Open source databases read-only. Match exact UEI first, unique CAGE second, unique exact company+domain only; prohibit name-only matching and fabricated addresses. Treat an email as VERIFIED only from explicit email/verification/validation/deliverability status fields; reject .gov/.mil/.edu/.org and invalid emails. Preserve the prior CSV recovery results and any higher-priority verified truth. Do not log or expose email values. Do not modify production ORION, source databases, campaigns, current send segments, credentials, DNS, B12, or delete old SAM. Publish resulting recovered/verified/enrichment counts and safety evidence."
+  "note": "Fast-forward local MILES to current main including PR #409. Run a read-only collision audit between the fresh qualified SAM staging universe and the complete current Instantly lead inventory plus active global suppression registry. Compare exact email and UEI where available, publish aggregate collision counts and hashed samples only. Do not expose raw emails, mutate Instantly, campaigns, current send segments, staging database, production ORION, credentials, DNS, B12, or delete old SAM. If provider pagination cannot be proven complete, report truncation and do not treat counts as complete dedupe truth."
 }
