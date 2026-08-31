@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const {parseCsvLine,validEmail,strictVerified,sourcePriority}=require('../SERVICES/orion/SamEmailRecoveryService');
+assert.deepEqual(parseCsvLine('A,"B,C","D""E"'),['A','B,C','D"E']);
+assert.equal(validEmail('person@example.com'),true);
+assert.equal(validEmail('person@agency.gov'),false);
+assert.equal(validEmail('person@school.edu'),false);
+assert.equal(validEmail('person@nonprofit.org'),false);
+assert.equal(strictVerified('verified'),true);
+assert.equal(strictVerified('valid'),true);
+assert.equal(strictVerified('catch_all'),false);
+assert(sourcePriority('SAM_Registry/sam_registry.csv')>sourcePriority('misc.csv'));
+const source=fs.readFileSync(path.resolve(__dirname,'../SERVICES/orion/SamEmailRecoveryService.js'),'utf8');
+for(const needle of ['nameOnlyMatchingAllowed:false','emailsFabricated:false','verifiedRequiredBeforeCampaign:true','oldSamDeleted:false','productionOrionModified:false','currentSendSegmentsModified:false'])assert(source.includes(needle),needle);
+console.log('SAM_EMAIL_RECOVERY_TEST=PASS');
