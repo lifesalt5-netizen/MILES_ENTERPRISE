@@ -16,7 +16,7 @@ function allowedExt(name){return /\.(csv|tsv|txt|jsonl|json|db|sqlite|sqlite3)$/
 class SamContactRecoverySourceAuditService{
  constructor(options={}){
   this.rootDir=path.resolve(options.rootDir||process.env.MILES_ROOT||process.cwd());
-  this.searchRoots=(options.searchRoots||[this.rootDir,path.resolve(this.rootDir,'..')]).map(path.resolve);
+  this.searchRoots=(options.searchRoots||[this.rootDir,path.resolve(this.rootDir,'..')]).map(x=>path.resolve(x));
   this.maxDepth=Math.max(1,Number(options.maxDepth||5));
   this.maxFiles=Math.max(100,Number(options.maxFiles||6000));
   this.reportPath=path.join(this.rootDir,'DATA','orion_refresh','latest_sam_contact_recovery_source_audit.json');
