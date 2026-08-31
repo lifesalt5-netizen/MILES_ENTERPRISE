@@ -10,20 +10,20 @@ const GsaHolderSnapshotResilientService = require("../SERVICES/GsaHolderSnapshot
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "miles-gsa-resilient-"));
   const service = new GsaHolderSnapshotResilientService({ root });
 
-  service.loadMonthlyAwards = async function () {
-    this.samEnrichmentWarning = {
-      code: "SAM_ENRICHMENT_UNAVAILABLE",
-      message: "Official source returned HTTP 401.",
-      effect: "Current holder truth remains authoritative from GSA eLibrary.",
-      nonBlockingForCurrentHolderSnapshot: true
-    };
-    return { awards: [], totalRecords: 0, degraded: true, warning: this.samEnrichmentWarning };
+  service.samAwardsUrl = "https://api.sam.gov/contract-awards/v1/search";
+  service.requestText = async () => {
+    throw new Error("Official source returned HTTP 401.");
   };
 
-  assert.strictEqual(service.samEnrichmentWarning, null);
-  const monthly = await service.loadMonthlyAwards("bad-key", {});
+  const monthly = await service.loadMonthlyAwards("bad-key", {
+    start: "08/01/2026",
+    end: "08/31/2026"
+  });
+
   assert.strictEqual(monthly.degraded, true);
+  assert.strictEqual(monthly.awards.length, 0);
   assert.strictEqual(service.samEnrichmentWarning.code, "SAM_ENRICHMENT_UNAVAILABLE");
+  assert.strictEqual(service.samEnrichmentWarning.nonBlockingForCurrentHolderSnapshot, true);
 
   console.log("GSA_RESILIENT_SAM_ENRICHMENT_TEST_PASS");
 })().catch(error => {
