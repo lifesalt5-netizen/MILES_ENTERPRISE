@@ -1,7 +1,7 @@
 {
-  "id": "sam-public-email-discovery-max-20260830-039",
+  "id": "sam-public-email-discovery-max-20260831-040",
   "enabled": true,
   "job": "SAM_PUBLIC_EMAIL_DISCOVERY",
   "requestedBy": "KEVIN_CEO_VIA_CHATGPT",
-  "note": "MAX SPEED standing rule. Continue governed high-throughput public-company-website email discovery against the same fresh qualified SAM staging universe. Run the current PR #411 max-throughput path again: up to 2,500 qualified unattempted missing-email companies per batch at concurrency 12, four sequential batches per invocation (up to 10,000 companies) without manual checkpoints. Preserve same-domain public-page discovery, exact identity, institutional-domain exclusions, no fabrication, and mark newly discovered contacts NEEDS_VERIFICATION only. Do not invoke paid verification, do not send email, do not modify campaigns/current send segments/production ORION/credentials/DNS/B12, and do not delete old SAM. Publish aggregate evidence and safety assertions." 
+  "note": "Continue the governed max-throughput public website discovery pass against the same SAM staging universe using the existing PR #411 runner and existing safety guardrails. Process up to 10,000 additional unattempted qualified companies and publish aggregate runtime evidence."
 }
