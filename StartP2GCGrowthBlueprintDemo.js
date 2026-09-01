@@ -6,6 +6,7 @@ const path = require("path");
 const { URL } = require("url");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
+const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
@@ -16,6 +17,7 @@ const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
 const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
 const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
+const commercialPreview = new DemoCommercialPreviewService();
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
@@ -56,7 +58,7 @@ function getModel(term, refresh = false) {
     if (Date.now() - hit.at < TTL) return { ...hit.model, cache:{ hit:true, ttlMs:TTL } };
     cache.delete(k);
   }
-  const model = truthReconciler.reconcile(service.build(term));
+  const model = commercialPreview.apply(truthReconciler.reconcile(service.build(term)));
   if (model?.ok) {
     const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
     const record = { at:Date.now(), model };
@@ -79,7 +81,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
