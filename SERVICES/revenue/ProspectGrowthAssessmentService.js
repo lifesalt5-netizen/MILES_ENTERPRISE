@@ -32,6 +32,13 @@ function toDateOnly(value) {
     return parsed.toISOString().slice(0, 10);
 }
 
+function splitTilde(value) {
+    return String(value || "")
+        .split("~")
+        .map(item => item.trim())
+        .filter(Boolean);
+}
+
 function isProspectOpportunity(row = {}, asOfDate) {
     const source = String(row.source || "").toUpperCase();
     const status = String(row.status || "").toUpperCase();
@@ -82,6 +89,7 @@ function normalizeRecompete(row = {}, asOfDate) {
 class ProspectGrowthAssessmentService {
     constructor(options = {}) {
         this.orion = options.orion || null;
+        this.samIdentity = options.samIdentityService || null;
     }
 
     getOrion() {
@@ -90,6 +98,14 @@ class ProspectGrowthAssessmentService {
         }
 
         return this.orion;
+    }
+
+    getSamIdentity() {
+        if (!this.samIdentity) {
+            const SamQualifiedIdentityService = require("../orion/SamQualifiedIdentityService");
+            this.samIdentity = new SamQualifiedIdentityService();
+        }
+        return this.samIdentity;
     }
 
     selectContractor(term, candidates = []) {
@@ -115,6 +131,25 @@ class ProspectGrowthAssessmentService {
         return exactCompany || candidates[0];
     }
 
+    currentSamIdentity(searchTerm, contractor = null) {
+        const service = this.getSamIdentity();
+        const attempts = [];
+        if (contractor?.uei) attempts.push(contractor.uei);
+        if (contractor?.company) attempts.push(contractor.company);
+        attempts.push(searchTerm);
+        const seen = new Set();
+        let last = null;
+        for (const term of attempts) {
+            const key = String(term || "").trim().toUpperCase();
+            if (!key || seen.has(key)) continue;
+            seen.add(key);
+            const result = service.lookup(term);
+            last = result;
+            if (result?.ok && result.record) return result;
+        }
+        return last || { ok: false, status: "SAM_QUALIFIED_UNIVERSE_UNAVAILABLE", record: null, candidates: [] };
+    }
+
     build(term, options = {}) {
         const searchTerm = String(term || "").trim();
 
@@ -129,64 +164,64 @@ class ProspectGrowthAssessmentService {
 
         const orion = this.getOrion();
         const init = orion.initialize();
-
-        if (!init?.ok) {
-            return {
-                ok: false,
-                service: "PROSPECT_GROWTH_ASSESSMENT",
-                status: "ORION_UNAVAILABLE",
-                error: init?.message || "ORION initialization failed.",
-                readOnly: true
-            };
+        let candidates = [];
+        if (init?.ok) {
+            candidates = orion.searchContractors(
+                searchTerm,
+                Math.max(1, Math.min(Number(options.searchLimit) || 10, 50))
+            );
         }
-
-        const candidates = orion.searchContractors(
-            searchTerm,
-            Math.max(1, Math.min(Number(options.searchLimit) || 10, 50))
-        );
 
         const contractor = this.selectContractor(searchTerm, candidates);
+        const samResult = this.currentSamIdentity(searchTerm, contractor);
+        const sam = samResult?.ok ? samResult.record : null;
 
-        if (!contractor) {
+        if (!contractor && !sam) {
             return {
                 ok: false,
                 service: "PROSPECT_GROWTH_ASSESSMENT",
-                status: "CONTRACTOR_NOT_FOUND",
+                status: init?.ok ? "CONTRACTOR_NOT_FOUND" : "ORION_AND_SAM_IDENTITY_UNAVAILABLE",
                 term: searchTerm,
                 candidates: [],
+                identityEvidence: {
+                    orionAvailable: init?.ok === true,
+                    samQualifiedStatus: samResult?.status || null,
+                    samQualifiedEvidence: samResult?.evidence || null
+                },
                 readOnly: true
             };
         }
 
-        const contractorId = contractor.id;
+        const contractorId = contractor?.id ?? null;
         const detailLimit = Math.max(1, Math.min(Number(options.detailLimit) || 25, 100));
         const rawDetailLimit = Math.max(detailLimit, Math.min(Number(options.rawDetailLimit) || 100, 250));
         const asOfDate = toDateOnly(options.asOfDate || new Date()) || new Date().toISOString().slice(0, 10);
+        const linkedOrionAvailable = init?.ok === true && contractorId != null;
 
-        const recommendationRows = orion.query(
+        const recommendationRows = linkedOrionAvailable ? orion.query(
             "SELECT * FROM contractor_recommendations_v2 WHERE contractor_id = ? LIMIT 1",
             [contractorId]
-        );
+        ) : [];
 
-        const personaRows = orion.query(
+        const personaRows = linkedOrionAvailable ? orion.query(
             "SELECT * FROM persona_scores WHERE contractor_id = ? LIMIT 1",
             [contractorId]
-        );
+        ) : [];
 
-        const buyers = orion.query(
+        const buyers = linkedOrionAvailable ? orion.query(
             "SELECT * FROM buyers WHERE company_id = ? ORDER BY spend DESC, award_count DESC LIMIT ?",
             [contractorId, detailLimit]
-        );
+        ) : [];
 
-        const rawOpportunities = orion.query(
+        const rawOpportunities = linkedOrionAvailable ? orion.query(
             "SELECT * FROM opportunities WHERE company_id = ? ORDER BY CASE WHEN due_date = '' OR due_date IS NULL THEN 1 ELSE 0 END, due_date ASC LIMIT ?",
             [contractorId, rawDetailLimit]
-        );
+        ) : [];
 
-        const rawRecompetes = orion.query(
+        const rawRecompetes = linkedOrionAvailable ? orion.query(
             "SELECT * FROM recompetes WHERE company_id = ? ORDER BY CASE WHEN recompete_date = '' OR recompete_date IS NULL THEN 1 ELSE 0 END, recompete_date ASC LIMIT ?",
             [contractorId, rawDetailLimit]
-        );
+        ) : [];
 
         const opportunities = rawOpportunities
             .filter((row) => isProspectOpportunity(row, asOfDate))
@@ -223,6 +258,9 @@ class ProspectGrowthAssessmentService {
             };
 
         const warnings = [];
+        if (!linkedOrionAvailable) {
+            warnings.push("Identity is confirmed from the current qualified SAM universe, but this company has no linked ORION contractor row; ORION buyer/opportunity/recompete/persona joins are explicitly unavailable.");
+        }
         if (buyers.length === 0) {
             warnings.push("No linked buyer history is available for this contractor.");
         }
@@ -233,40 +271,50 @@ class ProspectGrowthAssessmentService {
             warnings.push("At least one recompete item is a modeled monitoring profile and must not be presented as a confirmed procurement event.");
         }
 
+        const identitySource = contractor
+            ? (sam ? "ORION_PLUS_CURRENT_SAM_QUALIFIED" : "ORION")
+            : "CURRENT_SAM_QUALIFIED_UNIVERSE";
+        const matchedNaics = contractor?.all_matched_naics ?? (sam?.naicsCodes ? splitTilde(sam.naicsCodes) : []);
+
         return {
             ok: true,
             service: "PROSPECT_GROWTH_ASSESSMENT",
-            status: "ASSESSMENT_READY",
+            status: linkedOrionAvailable ? "ASSESSMENT_READY" : "ASSESSMENT_READY_SAM_IDENTITY_ORION_LINKS_UNAVAILABLE",
             generatedAt: new Date().toISOString(),
             asOfDate,
             term: searchTerm,
             match: {
-                candidateCount: candidates.length,
+                candidateCount: candidates.length + (sam ? 1 : 0),
                 selectedContractorId: contractorId,
-                selectedUei: contractor.uei || null
+                selectedUei: contractor?.uei || sam?.uei || null,
+                identitySource
             },
             company: {
                 contractorId,
-                company: contractor.company || null,
-                companyNorm: contractor.company_norm || null,
-                uei: contractor.uei || null,
-                federalRevenue: contractor.federal_revenue ?? null,
-                awardCount: contractor.award_count ?? null,
-                vehicle: contractor.vehicle || null,
-                vehicleHint: contractor.vehicle_hint || null,
-                segment: contractor.segment || null,
-                primaryNaics: contractor.primary_naics || null,
-                matchedNaics: contractor.all_matched_naics || null,
-                smallBusinessFlag: contractor.small_business_flag || null,
-                industrySegment: contractor.industry_segment || null,
-                marketPriority: contractor.market_priority || null,
-                leadScore: contractor.lead_score ?? null,
-                city: contractor.city || null,
-                state: contractor.state || null,
-                entityStatus: contractor.entity_status || null,
-                registrationDate: contractor.registration_date || null,
-                expirationDate: contractor.expiration_date || null,
-                lastUpdated: contractor.last_updated || null
+                company: contractor?.company || sam?.legalBusinessName || null,
+                companyNorm: contractor?.company_norm || normalizeText(sam?.legalBusinessName) || null,
+                uei: contractor?.uei || sam?.uei || null,
+                cage: sam?.cage || contractor?.cage || contractor?.cage_code || null,
+                website: sam?.website || contractor?.website || null,
+                federalRevenue: contractor?.federal_revenue ?? null,
+                awardCount: contractor?.award_count ?? null,
+                vehicle: contractor?.vehicle || null,
+                vehicleHint: contractor?.vehicle_hint || null,
+                segment: contractor?.segment || null,
+                primaryNaics: contractor?.primary_naics || sam?.primaryNaics || null,
+                matchedNaics,
+                smallBusinessFlag: contractor?.small_business_flag || null,
+                industrySegment: contractor?.industry_segment || null,
+                marketPriority: contractor?.market_priority || null,
+                leadScore: contractor?.lead_score ?? null,
+                city: contractor?.city || sam?.city || null,
+                state: contractor?.state || sam?.state || null,
+                entityStatus: sam ? "A" : (contractor?.entity_status || null),
+                registrationDate: sam?.activationDate || contractor?.registration_date || null,
+                expirationDate: sam?.registrationExpirationDate || contractor?.expiration_date || null,
+                lastUpdated: sam?.lastUpdateDate || contractor?.last_updated || null,
+                identitySource,
+                samEvidenceSource: sam ? "SAM_QUALIFIED_UNIVERSE" : null
             },
             persona: persona
                 ? {
@@ -289,6 +337,7 @@ class ProspectGrowthAssessmentService {
             linkedOpportunities: opportunities,
             recompeteSignals: recompetes,
             dataQuality: {
+                identitySource,
                 rawOpportunityRows: rawOpportunities.length,
                 prospectOpportunityRows: opportunities.length,
                 filteredOpportunityRows: rawOpportunities.length - opportunities.length,
@@ -298,16 +347,20 @@ class ProspectGrowthAssessmentService {
                 warnings
             },
             evidence: {
-                contractorJoinKey: "contractors.id",
-                recommendationJoinKey: "contractor_recommendations_v2.contractor_id",
-                personaJoinKey: "persona_scores.contractor_id",
-                buyerJoinKey: "buyers.company_id",
-                opportunityJoinKey: "opportunities.company_id",
-                recompeteJoinKey: "recompetes.company_id"
+                identitySource,
+                samQualifiedUniverse: samResult?.evidence || null,
+                samQualifiedMatch: sam || null,
+                contractorJoinKey: linkedOrionAvailable ? "contractors.id" : null,
+                recommendationJoinKey: linkedOrionAvailable ? "contractor_recommendations_v2.contractor_id" : null,
+                personaJoinKey: linkedOrionAvailable ? "persona_scores.contractor_id" : null,
+                buyerJoinKey: linkedOrionAvailable ? "buyers.company_id" : null,
+                opportunityJoinKey: linkedOrionAvailable ? "opportunities.company_id" : null,
+                recompeteJoinKey: linkedOrionAvailable ? "recompetes.company_id" : null
             },
             safety: {
                 databaseMode: "READ_ONLY",
                 writesEnabled: false,
+                samQualifiedUniverseReadOnly: true,
                 datasetRefreshExecuted: false,
                 intelligenceJobExecuted: false,
                 emailsSent: false,
@@ -318,3 +371,5 @@ class ProspectGrowthAssessmentService {
 }
 
 module.exports = ProspectGrowthAssessmentService;
+module.exports.normalizeText = normalizeText;
+module.exports.splitTilde = splitTilde;
