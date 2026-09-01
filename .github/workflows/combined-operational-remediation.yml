@@ -18,6 +18,7 @@ on:
       - 'SERVICES/ProductionTruthReconciliationService.js'
       - 'SERVICES/RepositoryRiskQualificationService.js'
       - 'SERVICES/orion/OrionRebuildReadinessService.js'
+      - 'SERVICES/orion/OrionContractSummaryDerivationService.js'
       - 'SERVICES/digital_coo/public/app.js'
       - 'SERVICES/digital_coo/UnifiedMilesGateway.js'
       - 'SERVICES/ceo_dashboard/public/**'
@@ -38,6 +39,7 @@ on:
       - 'SCRIPTS/AuditUnified8787ScreenAcceptance.js'
       - 'SCRIPTS/AuditOrionRefreshSources.js'
       - 'SCRIPTS/AuditOrionRebuildReadiness.js'
+      - 'SCRIPTS/BuildOrionContractSidecar.js'
       - 'SCRIPTS/QualifyRepositoryRisks.js'
       - 'SCRIPTS/ReconcileProductionTruth.js'
       - 'RUN_OPERATIONAL_REMEDIATION_ALL.js'
@@ -47,6 +49,7 @@ on:
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
       - 'TESTS/Test_SamQualifiedProspectFallbackService.js'
+      - 'TESTS/orion_contract_summary_derivation.test.js'
       - 'TESTS/instantly_lifecycle_provider_proof.test.js'
       - 'TESTS/instantly_sender_failover.test.js'
       - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
@@ -90,6 +93,7 @@ jobs:
           node --check SERVICES/ProductionTruthReconciliationService.js
           node --check SERVICES/RepositoryRiskQualificationService.js
           node --check SERVICES/orion/OrionRebuildReadinessService.js
+          node --check SERVICES/orion/OrionContractSummaryDerivationService.js
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
           node --check SERVICES/demo/SamQualifiedProspectFallbackService.js
@@ -104,6 +108,7 @@ jobs:
           node --check SCRIPTS/AuditUnified8787ScreenAcceptance.js
           node --check SCRIPTS/AuditOrionRefreshSources.js
           node --check SCRIPTS/AuditOrionRebuildReadiness.js
+          node --check SCRIPTS/BuildOrionContractSidecar.js
           node --check SCRIPTS/QualifyRepositoryRisks.js
           node --check SCRIPTS/ReconcileProductionTruth.js
           node --check RUN_OPERATIONAL_REMEDIATION_ALL.js
@@ -111,6 +116,7 @@ jobs:
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
           node --check TESTS/Test_SamQualifiedProspectFallbackService.js
+          node --check TESTS/orion_contract_summary_derivation.test.js
           node --check TESTS/instantly_lifecycle_provider_proof.test.js
           node --check TESTS/instantly_sender_failover.test.js
           node --check TESTS/instantly_inbox_placement_controlled_test.test.js
@@ -129,6 +135,7 @@ jobs:
           node TESTS/Test_GroupedRemediationV2.js
           node TESTS/Test_InstantlyGuardedReplySend.js
           node TESTS/Test_SamQualifiedProspectFallbackService.js
+          node TESTS/orion_contract_summary_derivation.test.js
           node TESTS/instantly_sender_failover.test.js
           node TESTS/instantly_inbox_placement_controlled_test.test.js
           node TESTS/instantly_inbox_placement_diagnostic_truth.test.js
