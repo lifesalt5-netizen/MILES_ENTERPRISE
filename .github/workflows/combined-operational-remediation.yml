@@ -130,7 +130,7 @@ jobs:
           node TESTS/Test_InstantlyGuardedReplySend.js
           node TESTS/Test_SamQualifiedProspectFallbackService.js
           node TESTS/instantly_sender_failover.test.js
-          node TESTS/instantly_inbox_placement_controlled_test.js
+          node TESTS/instantly_inbox_placement_controlled_test.test.js
           node TESTS/instantly_inbox_placement_diagnostic_truth.test.js
           node TESTS/instantly_inbox_placement_auth_governance.test.js
           node TESTS/namecheap_dmarc_remediation.test.js
