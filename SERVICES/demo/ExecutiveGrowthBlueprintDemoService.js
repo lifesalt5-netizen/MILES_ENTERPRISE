@@ -305,7 +305,15 @@ class ExecutiveGrowthBlueprintDemoService {
     const founded = pick(raw,["year_established","founded_year","year_founded","business_start_year"]);
     const yearsInBusiness = founded && Number(founded) > 1800 ? new Date().getFullYear()-Number(founded) : null;
     const expiration = company.expirationDate || pick(raw,["expiration_date","sam_expiration_date"]);
-    const samActive = /^(A|ACTIVE|Y|YES|TRUE|1)$/i.test(clean(company.entityStatus || pick(raw,["sam_status","entity_status"]))) && (!expiration || new Date(expiration) >= new Date());
+    const samSourceStatus = clean(company.entityStatus || pick(raw,["sam_status","entity_status"]));
+    const samAffirmative = /^(A|ACTIVE|Y|YES|TRUE|1)$/i.test(samSourceStatus);
+    const samExplicitInactive = /^(INACTIVE|EXPIRED|N|NO|FALSE|0)$/i.test(samSourceStatus);
+    const expirationDate = expiration ? new Date(expiration) : null;
+    const expirationValid = !expirationDate || !Number.isNaN(expirationDate.getTime());
+    const expirationCurrent = !expirationDate || (expirationValid && expirationDate >= new Date());
+    const samActive = samAffirmative && expirationCurrent;
+    const samRegistrationState = samActive ? true : samExplicitInactive ? false : null;
+    const samDisplayStatus = samActive ? "ACTIVE" : samExplicitInactive ? "INACTIVE" : "UNVERIFIED";
     const gsa = vehicles.some(v => /GSA|MAS|MULTIPLE AWARD SCHEDULE/i.test(v));
 
     const profile = {
@@ -316,7 +324,7 @@ class ExecutiveGrowthBlueprintDemoService {
       website:website || null,
       naicsCodes,
       certifications:certs,
-      samStatus:samActive ? "ACTIVE" : (company.entityStatus || "UNVERIFIED"),
+      samStatus:samDisplayStatus,
       gsaStatus:gsa ? "IDENTIFIED" : "NOT IDENTIFIED IN CURRENT ORION RECORD",
       contractVehicles:vehicles,
       yearsInBusiness,
@@ -328,7 +336,7 @@ class ExecutiveGrowthBlueprintDemoService {
     const market = this.peerIntelligence(assessment,raw);
     const agencies = this.agencyAlignment(assessment);
     const currentState = {
-      samRegistration:samActive,
+      samRegistration:samRegistrationState,
       certifications:certs,
       contractVehicles:vehicles,
       activeContracts:Number(company.awardCount||0),

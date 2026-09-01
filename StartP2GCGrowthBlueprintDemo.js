@@ -8,6 +8,7 @@ const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGr
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
+const HistoricalProspectFallbackService = require("./SERVICES/demo/HistoricalProspectFallbackService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
@@ -20,6 +21,7 @@ const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
 const commercialPreview = new DemoCommercialPreviewService();
 const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
+const historicalFallback = new HistoricalProspectFallbackService({ rootDir: ROOT });
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
@@ -65,15 +67,29 @@ function getModel(term, refresh = false) {
   if (!baseModel?.ok && baseModel?.status === "CONTRACTOR_NOT_FOUND") {
     const fallback = samFallback.build(term);
     if (fallback?.ok) baseModel = fallback;
-    else {
+    else baseModel = historicalFallback.build(term, { samFallback: fallback, orionFailure: baseModel });
+  }
+
+  if (baseModel?.ok && baseModel.profile?.uei) {
+    const currentSam = samFallback.build(baseModel.profile.uei);
+    const resolvedUei = String(baseModel.profile.uei || '').trim().toUpperCase();
+    const samUei = String(currentSam?.profile?.uei || '').trim().toUpperCase();
+    if (currentSam?.ok === true && resolvedUei && samUei === resolvedUei) {
       baseModel = {
         ...baseModel,
-        fallback: {
-          attempted: true,
-          service: fallback?.service || "P2GC_SAM_QUALIFIED_PROSPECT_FALLBACK",
-          status: fallback?.status || "SAM_FALLBACK_UNAVAILABLE",
-          source: fallback?.source || null,
-          candidateCount: fallback?.candidateCount ?? null
+        profile: {
+          ...(baseModel.profile || {}),
+          cage: baseModel.profile?.cage || currentSam.profile?.cage || null,
+          website: baseModel.profile?.website || currentSam.profile?.website || null,
+          samStatus: 'ACTIVE'
+        },
+        currentState: {
+          ...(baseModel.currentState || {}),
+          samRegistration: true
+        },
+        evidence: {
+          ...(baseModel.evidence || {}),
+          currentSamRegistration: currentSam.evidence?.identity || null
         }
       };
     }

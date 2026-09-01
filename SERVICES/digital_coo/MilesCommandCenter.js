@@ -194,6 +194,19 @@ function queueState() {
   return queue;
 }
 
+function isPendingApprovalOperation(operation) {
+  return operation && ['AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL', 'AWAITING_CEO_APPROVAL']
+    .includes(String(operation.status || '').trim().toUpperCase());
+}
+
+function dashboardOperations(operations = [], limit = 50) {
+  const rows = Array.isArray(operations) ? operations : [];
+  const pending = rows.filter(isPendingApprovalOperation);
+  const pendingRefs = new Set(pending);
+  const recent = rows.slice(0, Math.max(1, Number(limit) || 50)).filter(row => !pendingRefs.has(row));
+  return [...pending, ...recent].slice(0, Math.max(Math.max(1, Number(limit) || 50), pending.length));
+}
+
 function dashboardOperationSnapshot() {
   try {
     if (!fs.existsSync(QUEUE_FILE)) {
@@ -227,8 +240,9 @@ function dashboardOperationSnapshot() {
     }
 
     const queue = queueState();
+    const operations = dashboardOperations(queue.operations, 50);
     return {
-      operations: queue.operations.slice(0, 50),
+      operations,
       metadata: {
         ok: true,
         source: queue.source || 'MILES_COMMAND_CENTER',
