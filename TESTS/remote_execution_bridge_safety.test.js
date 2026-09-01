@@ -12,6 +12,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY',
   'COO_RUNTIME_APPROVAL_AUDIT',
   'FEDERAL_SOURCE_READINESS_AUDIT',
+  'FY2026_AWARDED_UNIVERSE_COVERAGE',
   'INBOX_PLACEMENT_AUDIT',
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
@@ -38,6 +39,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'SAM_SQLITE_EMAIL_RECOVERY'
 ]);
 assert.deepStrictEqual(bridge.JOBS.REVENUE_UNIVERSE_RECONCILIATION, ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]);
+assert.deepStrictEqual(bridge.JOBS.FY2026_AWARDED_UNIVERSE_COVERAGE, ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]);
 assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY, ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_RUNTIME_APPROVAL_AUDIT, ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']]);
@@ -78,6 +80,7 @@ assert.strictEqual(bridge.bridgeSourceChanged(bridge.STARTUP_SOURCE_DIGEST), fal
 assert.deepStrictEqual(bridge.baseEvidence({ id: 'x', job: 'REVENUE_ACCEPTANCE_SPRINT' }, '2026-01-01T00:00:00.000Z', 'STARTED').phase, 'STARTED');
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_UNIVERSE_RECONCILIATION'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FY2026_AWARDED_UNIVERSE_COVERAGE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INFRASTRUCTURE_HEALTH_AUDIT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FEDERAL_SOURCE_READINESS_AUDIT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_INSTALL'}).ok, true);
