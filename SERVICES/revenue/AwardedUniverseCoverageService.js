@@ -199,9 +199,20 @@ class AwardedUniverseCoverageService {
       const identity = collected.prime.get(key) || collected.sub.get(key);
       return identity?.inCurrentMaster === true;
     });
-    const missing = [...awardedKeys].filter(key => !inMaster.includes(key));
+    const inMasterSet = new Set(inMaster);
+    const missing = [...awardedKeys].filter(key => !inMasterSet.has(key));
     const primeInMaster = [...primeKeys].filter(key => collected.prime.get(key)?.inCurrentMaster === true);
     const subInMaster = [...subKeys].filter(key => collected.sub.get(key)?.inCurrentMaster === true);
+
+    const primeUeis = new Set([...collected.prime.values()].map(identity => identity.uei).filter(Boolean));
+    const subUeis = new Set([...collected.sub.values()].map(identity => identity.uei).filter(Boolean));
+    const awardedUeis = new Set([...primeUeis, ...subUeis]);
+    const ueiOverlap = [...primeUeis].filter(uei => subUeis.has(uei));
+    const awardedUeisInMaster = [...awardedUeis].filter(uei => master.uei.has(uei));
+    const primeUeisInMaster = [...primeUeis].filter(uei => master.uei.has(uei));
+    const subUeisInMaster = [...subUeis].filter(uei => master.uei.has(uei));
+    const primeNameFallbackOnly = [...collected.prime.values()].filter(identity => !identity.uei && identity.name).length;
+    const subNameFallbackOnly = [...collected.sub.values()].filter(identity => !identity.uei && identity.name).length;
 
     const report = {
       ok: true,
@@ -223,22 +234,37 @@ class AwardedUniverseCoverageService {
         uniqueNormalizedNames: master.names.size
       },
       awardedUniverse: {
-        uniquePrimeAwardedContractors: primeKeys.size,
-        uniqueSubcontractAwardedContractors: subKeys.size,
-        primeAndSubRoleOverlap: overlap.length,
-        uniqueAwardedContractorsEitherRole: awardedKeys.size,
+        exactUniquePrimeAwardedUeis: primeUeis.size,
+        exactUniqueSubcontractAwardedUeis: subUeis.size,
+        exactPrimeAndSubUeiOverlap: ueiOverlap.length,
+        exactUniqueAwardedUeisEitherRole: awardedUeis.size,
+        exactAwardedUeisInCurrentMaster: awardedUeisInMaster.length,
+        exactAwardedUeisMissingFromCurrentMaster: awardedUeis.size - awardedUeisInMaster.length,
+        exactPrimeAwardedUeisInCurrentMaster: primeUeisInMaster.length,
+        exactPrimeAwardedUeisMissingFromCurrentMaster: primeUeis.size - primeUeisInMaster.length,
+        exactSubcontractAwardedUeisInCurrentMaster: subUeisInMaster.length,
+        exactSubcontractAwardedUeisMissingFromCurrentMaster: subUeis.size - subUeisInMaster.length,
+        primeNameFallbackOnlyIdentities: primeNameFallbackOnly,
+        subcontractNameFallbackOnlyIdentities: subNameFallbackOnly,
+        uniquePrimeAwardedContractorsWithNameFallback: primeKeys.size,
+        uniqueSubcontractAwardedContractorsWithNameFallback: subKeys.size,
+        primeAndSubRoleOverlapWithNameFallback: overlap.length,
+        uniqueAwardedContractorsEitherRoleWithNameFallback: awardedKeys.size,
         awardedContractorsInCurrentMaster: inMaster.length,
         awardedContractorsMissingFromCurrentMaster: missing.length,
         primeAwardedContractorsInCurrentMaster: primeInMaster.length,
         primeAwardedContractorsMissingFromCurrentMaster: primeKeys.size - primeInMaster.length,
         subcontractAwardedContractorsInCurrentMaster: subInMaster.length,
         subcontractAwardedContractorsMissingFromCurrentMaster: subKeys.size - subInMaster.length,
-        awardedUniverseExceedsCurrentMasterRowCount: awardedKeys.size > master.rows.length,
-        netAwardedUniverseVsMasterRows: awardedKeys.size - master.rows.length
+        exactAwardedUeiUniverseExceedsCurrentMasterRowCount: awardedUeis.size > master.rows.length,
+        exactNetAwardedUeiUniverseVsMasterRows: awardedUeis.size - master.rows.length,
+        awardedUniverseWithNameFallbackExceedsCurrentMasterRowCount: awardedKeys.size > master.rows.length,
+        netAwardedUniverseWithNameFallbackVsMasterRows: awardedKeys.size - master.rows.length
       },
       sourceRows: collected.counters,
-      identityRule: "UEI_FIRST_THEN_NORMALIZED_LEGAL_NAME_FALLBACK",
+      identityRule: "EXACT_COUNTS_USE_UEI_ONLY; SECONDARY_COUNTS_USE_UEI_FIRST_THEN_NORMALIZED_LEGAL_NAME_FALLBACK",
       exactness: {
+        exactMetricsUseUeiOnly: true,
         dedupedWithinSourceScope: true,
         everySourceRowHasCanonicalIdentity: collected.counters.rowsWithoutCanonicalIdentity === 0,
         rowsWithoutCanonicalIdentity: collected.counters.rowsWithoutCanonicalIdentity,
