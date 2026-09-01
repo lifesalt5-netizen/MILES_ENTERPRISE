@@ -4,6 +4,7 @@ const assert = require("assert");
 const planner = require("../SERVICES/BusinessWorkPlannerService");
 const connector = require("../CONNECTORS/MILES/connector");
 const contracts = require("../CORE/ExecutionActionContracts");
+const reconciliation = require("../SERVICES/revenue/RevenueUniverseReconciliationService");
 
 async function main() {
   const b12 = await planner.plan({
@@ -36,6 +37,7 @@ async function main() {
 
   assert.ok(contracts.MILES_ACTIONS.includes("REVENUE_UNIVERSE_RECONCILIATION"));
   assert.strictEqual(connector.canExecuteAction("REVENUE_UNIVERSE_RECONCILIATION"), true);
+  assert.strictEqual(typeof reconciliation.execute, "function");
   assert.deepStrictEqual(connector.contractIntegrity(), { ok: true, missingHandlers: [], undeclaredHandlers: [] });
 
   console.log("REVENUE_UNIVERSE_MISSION_ROUTING_TEST: GREEN");
