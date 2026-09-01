@@ -1,0 +1,115 @@
+{
+  "version": "2026-09-01",
+  "policy": "GOVERNMENT_OPPORTUNITY_SOURCE_ACCESS_REGISTRY",
+  "purpose": "Define which government opportunity sources are public, registration-gated, contract-holder-gated, or partially gated so MILES can maximize lawful coverage without misrepresenting access.",
+  "globalRules": {
+    "bypassAuthentication": false,
+    "bypassAccessControls": false,
+    "scrapeBehindAuthenticationWithoutAuthorization": false,
+    "publicPortionsShouldBeIngestedWhenTechnicallyFeasible": true,
+    "authorizedAccessMayBeUsedOnlyWithinGrantedScope": true,
+    "gatedLiveOpportunityMayNotBeLabeledLiveWithoutAccessEvidence": true,
+    "historicalOrPublicProxyRequiredWhenLiveSourceIsGatedAndProxyEvidenceExists": true,
+    "noEvidenceMustBeExplicitlyLabeled": true,
+    "sourceFreshnessAndProvenanceRequired": true
+  },
+  "sources": [
+    {
+      "id": "GSA_EBUY",
+      "name": "GSA eBuy / eBuy Open",
+      "accessClass": "CONTRACT_HOLDER_OR_FAS_ID_GATED",
+      "liveOpportunityAccess": "AUTHORIZED_ONLY",
+      "publicDiscovery": "LANDING_PAGE_ONLY_FOR_EBUY; PUBLIC_GSA_ELIBRARY_AND_PROGRAM_DATA_AVAILABLE",
+      "notes": "eBuy task-order/RFQ/RFP/RFI visibility is tied to authorized contractor access and applicable awarded categories/SINs. OASIS+ uses eBuy as the required task-order solicitation system.",
+      "fallback": ["GSA eLibrary", "public GSA contract/SIN/vehicle data", "USAspending award history", "SAM public notices where applicable", "recent comparable GSA-linked awards"]
+    },
+    {
+      "id": "NITAAC_EGOS",
+      "name": "NITAAC e-GOS",
+      "accessClass": "GWAC_CONTRACT_HOLDER_GATED",
+      "liveOpportunityAccess": "AUTHORIZED_CONTRACT_HOLDERS_ONLY",
+      "publicDiscovery": "PROGRAM_AND_CONTRACT_HOLDER_INFORMATION_PUBLIC",
+      "notes": "NITAAC requires e-GOS for CIO-SP3 RFP/RFI distribution. Task orders under IDIQs generally are not required to be synopsized on SAM.gov.",
+      "fallback": ["USAspending task-order/award history", "NITAAC public contract-holder directories", "agency forecasts", "SAM notices when separately published", "incumbent/recompete analysis"]
+    },
+    {
+      "id": "NASA_SEWP_QRT_CHOP",
+      "name": "NASA SEWP Quote Request Tool / Contract Holder Portal (CHOP)",
+      "accessClass": "CONTRACT_HOLDER_AND_ROLE_GATED",
+      "liveOpportunityAccess": "AUTHORIZED_ONLY",
+      "publicDiscovery": "PUBLIC_PROVIDER_AND_CATALOG_INFORMATION_AVAILABLE",
+      "notes": "SEWP RFQ/RFI response tooling requires account access; contract-holder quote functions can require elevated permissions.",
+      "fallback": ["USAspending delivery-order history", "SEWP public provider/contract-holder data", "public SEWP catalog and scope data", "agency buyer history", "recompete and whitespace analysis"]
+    },
+    {
+      "id": "ARMY_CHESS_DIGITAL_MARKET",
+      "name": "Army CHESS Digital Market / IT e-Mart RFx",
+      "accessClass": "REGISTERED_CONTRACTOR_OR_VEHICLE_HOLDER_GATED",
+      "liveOpportunityAccess": "AUTHORIZED_REGISTERED_CONTRACTORS",
+      "publicDiscovery": "SOME SAM SYNOPSES_AND_PUBLIC_PROGRAM_INFORMATION_AVAILABLE",
+      "notes": "CHESS RFQ/RFP/RFI and reverse-auction tools require login; many orders are competed among CHESS-authorized resellers or relevant vehicle holders.",
+      "fallback": ["SAM synopsis notices when posted", "USAspending award/order history", "CHESS public contract catalogs/holder lists", "Army procurement forecasts", "winner/incumbent analysis"]
+    },
+    {
+      "id": "VA_ECMS_VENDOR_PORTAL",
+      "name": "VA eCMS Vendor Portal",
+      "accessClass": "VENDOR_REGISTRATION_GATED",
+      "liveOpportunityAccess": "REGISTERED_VENDOR_SCOPE",
+      "publicDiscovery": "VA_FORECAST_OF_CONTRACTING_OPPORTUNITIES_IS_PUBLIC; MANY_PUBLIC_NOTICES_ALSO_APPEAR_ON_SAM",
+      "notes": "VA Vendor Portal requires vendor account registration tied to company/UEI for portal functions. VA FCO forecast search is public.",
+      "fallback": ["VA public Forecast of Contracting Opportunities", "SAM notices", "USAspending VA award history", "VA facility/NCO buyer history", "recompete analysis"]
+    },
+    {
+      "id": "DLA_DIBBS",
+      "name": "DLA Internet Bid Board System (DIBBS)",
+      "accessClass": "PUBLIC_SEARCH_PARTIALLY_GATED",
+      "liveOpportunityAccess": "PUBLIC_SEARCH_AND_VIEW; REGISTRATION_REQUIRED_FOR_SECURE_QUOTES_AND_RESTRICTED_FUNCTIONS",
+      "publicDiscovery": "PUBLIC_RFQ_RFP_IFB_AND_AWARD_SEARCH_AVAILABLE",
+      "notes": "Discovery should ingest public solicitation and award metadata. Login is required for quote submission and restricted portions; some technical data requires additional controlled access.",
+      "fallback": ["public DIBBS solicitation/award search", "SAM notices", "USAspending DLA awards", "public DLA vendor opportunity pages"]
+    },
+    {
+      "id": "DOD_PIEE_SOLICITATION",
+      "name": "DoD PIEE Solicitation Module",
+      "accessClass": "PUBLIC_SEARCH_PARTIALLY_GATED",
+      "liveOpportunityAccess": "PUBLIC_SOLICITATION_SEARCH; VENDOR_ROLE_REQUIRED_FOR_OFFERS_AND_RESTRICTED_ATTACHMENTS",
+      "publicDiscovery": "PUBLIC_SOLICITATION_SEARCH_AVAILABLE",
+      "notes": "PIEE provides a public Solicitation Search, while vendor registration/roles are required for submissions and restricted content.",
+      "fallback": ["public PIEE solicitation search", "SAM notices", "USAspending DoD award history", "agency forecasts"]
+    },
+    {
+      "id": "FEDCONNECT",
+      "name": "FedConnect",
+      "accessClass": "PUBLIC_SEARCH_PLUS_REGISTERED_DIRECTED_CONTENT",
+      "liveOpportunityAccess": "PUBLIC_OPPORTUNITIES_AVAILABLE; DIRECTED_OPPORTUNITIES_AND_MESSAGES_REQUIRE_VENDOR_REGISTRATION",
+      "publicDiscovery": "PUBLIC_OPPORTUNITIES_AVAILABLE_WITHOUT_REGISTRATION",
+      "notes": "MILES should ingest the public opportunity feed. Registered vendor access is needed for directed opportunities, awards, and messaging.",
+      "fallback": ["FedConnect public opportunities", "SAM notices", "USAspending awards"]
+    },
+    {
+      "id": "OTHER_IDIQ_MAC_TASK_ORDER_PORTALS",
+      "name": "Other agency/GWAC/MAC task-order portals",
+      "accessClass": "OFTEN_CONTRACT_HOLDER_GATED",
+      "liveOpportunityAccess": "VEHICLE_SPECIFIC",
+      "publicDiscovery": "PARENT_CONTRACT_AND_AWARD_HISTORY_USUALLY_PUBLIC; ORDER_SOLICITATIONS_MAY_NOT_BE",
+      "notes": "FAR 16.505 generally does not require synopsis of orders under indefinite-delivery contracts. Therefore many task-order opportunities are visible only to holders of the applicable IDIQ/MAC or ordering portal.",
+      "fallback": ["USAspending order history", "parent vehicle holder lists", "agency forecasts", "incumbent/recompete intelligence", "public justifications and award notices when required"]
+    },
+    {
+      "id": "SLED_LOCAL_HOSTED_PORTALS",
+      "name": "State/local hosted procurement portals and third-party bid platforms",
+      "accessClass": "MIXED_PUBLIC_FREE_REGISTRATION_PARTIALLY_GATED",
+      "liveOpportunityAccess": "SOURCE_SPECIFIC",
+      "publicDiscovery": "MOST_NOTICES_ARE_PUBLIC_OR_FREE_REGISTRATION; ATTACHMENTS_ADDENDA_PLANHOLDER_LISTS_OR_RESPONSE_FUNCTIONS_MAY_REQUIRE_ACCOUNT_OR_FEE",
+      "notes": "Coverage must use a governed source-adapter registry rather than assume one national SLED API. Public pages/feeds should be collected where terms permit; account-only content must use authorized access or be explicitly labeled unavailable.",
+      "fallback": ["public bid notice", "agency procurement calendar", "budget/CIP/board agenda", "award/tabulation history", "incumbent/vendor history"]
+    }
+  ],
+  "acceptance": {
+    "unauthorizedAccessAttempts": 0,
+    "gatedRecordsMisrepresentedAsPublicLive": 0,
+    "publiclyAccessibleMustHaveSourcesLeftUncollectedWithoutReason": 0,
+    "gatedSourcesWithoutFallbackOrExplicitCoverageGap": 0,
+    "recordsWithoutSourceAndFreshnessEvidence": 0
+  }
+}
