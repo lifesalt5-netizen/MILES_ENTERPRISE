@@ -1,7 +1,7 @@
 {
-  "id": "miles-deploy-post-restart-truth-closeout-20260901-011",
+  "id": "miles-post-pr439-infrastructure-health-20260901-012",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main at/including merge 8686910c12e1f72cd040430653e738720ff9688e from PR #439. Fast-forward production safely, then run the existing consolidated self-maintenance deployment. Re-evaluate runtime approvals under corrected policy so read-only Instantly listAccounts / READ_SENDING_ACCOUNTS is not treated as protected SEND; reconcile only proven false/stale approval state. Restart only governed MILES runtime owners through the existing supervised path and require dashboard recovery. Preserve DATA, databases, queues, runtime history, credentials, provider state, validated ORION sidecar, and production ORION DB. Do not grant approvals, resume protected tasks, delete queue records, mutate providers/campaigns, send mail, change DNS, bypass auth, or use destructive Git recovery. Publish fresh runtime evidence and remain RED on any deployment, ownership, approval-safety, or dashboard failure."
+  "note": "Run a fresh post-deployment infrastructure/CEO approval semantic audit after PR #439 deployment -011 completed GREEN and reclassified TASK-1788190848227-51087 under corrected Instantly read-only policy. Require current canonical CEO approval counts, worker runtime approval counts, desktop approval count, dashboard visibility, gateway health and decision routes to reconcile after worker/command-center restart. The prior immediate post-restart worker count may have reflected a pre-refresh status snapshot, so use current evidence only. Do not reconcile by granting approvals, resuming protected tasks, deleting queue records, mutating providers/campaigns, sending mail, changing DNS, bypassing auth or using destructive recovery. Publish fresh runtime evidence; remain RED on any current count/surface contradiction."
 }
