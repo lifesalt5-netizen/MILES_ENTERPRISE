@@ -15,6 +15,8 @@ function message(overrides = {}) { return { uid: 1, from: 'Person <person@exampl
 
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.UNKNOWN, true), message({ from: 'Client <client@example.com>', subject: 'Need help with our proposal' }), clients), null, 'ordinary active client mail must remain actionable in Inbox');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.INTERESTED, true), message({ inReplyTo: '<sent@example>', subject: 'Re: business funding' }), clients), null, 'base inbox helper still recognizes reply-thread shape');
+assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.INTERESTED, true), message({ inReplyTo: '<sent@example>', references: '<sent@example>', subject: 'Kevin - who should I talk to? | 1C6252F Q913TWE' }), clients), 'MILES-JUNK', 'known Q913TWE cold-outreach marker must outrank generic reply-thread headers');
+assert.strictEqual(Inbox.helpers.knownColdOutreachMarker(message({ subject: 'Martha would this be a good fit? | SP3X4ET Q913TWE' })), true, 'screenshot cold-outreach marker must be recognized deterministically');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.OOO, false), message(), clients), 'MILES-OOO');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.AUTO_REPLY, false), message(), clients), 'MILES-AUTO');
 assert.strictEqual(Inbox.helpers.folderFor(classification(CATEGORIES.BOUNCE_TECHNICAL, false), message(), clients), 'MILES-BOUNCE');
@@ -47,6 +49,7 @@ assert.strictEqual(Service.helpers.protectedFolder('MILES-OOO'), false);
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'revenue', 'IonosAllFolderReconciliationService.js'), 'utf8');
 const remoteRunner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunIonosInboxCleanup.js'), 'utf8');
+const inboxSource = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'revenue', 'IonosInboxCleanupService.js'), 'utf8');
 const governed = fs.readFileSync(path.join(__dirname, '..', 'CONNECTORS', 'IONOS', 'imap_governed.js'), 'utf8');
 assert(source.includes('scansAllDiscoveredFolders: true'));
 assert(source.includes('sentDraftTrashArchiveAreAuditOnly: true'));
@@ -56,6 +59,7 @@ assert(source.includes('UNVERIFIED_SENT_THREAD_REFERENCE'));
 assert(source.includes('semanticFoldersAreReconciledBidirectionally: true'));
 assert(source.includes('postMutationAllFolderReadRequired: true'));
 assert(source.includes("governed.moveUids(mailbox, ids, route.target, route.source)"));
+assert(inboxSource.includes('knownColdOutreachMarkersOverrideReplyThreadHeuristic: true'));
 assert(remoteRunner.includes("process.argv.includes('--execute')"));
 assert(remoteRunner.includes('accounts: accounts.map'));
 assert(remoteRunner.includes('inboxBefore: account.inboxBefore'));
