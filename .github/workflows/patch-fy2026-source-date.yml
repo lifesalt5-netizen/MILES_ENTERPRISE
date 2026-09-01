@@ -61,6 +61,12 @@ jobs:
               x = x.replace(old_report, new_report, 1)
           elif new_report not in x:
               raise SystemExit('test report anchor missing')
+          explicit_row = "source_updated_date: '2026-08-31', contractor_summary_rows: 3"
+          fallback_row = "source_updated_date: null, source_archive: 'FY2026_All_Contracts_Full_20260831.zip', contractor_summary_rows: 3"
+          if explicit_row in x:
+              x = x.replace(explicit_row, fallback_row, 1)
+          elif fallback_row not in x:
+              raise SystemExit('source row fixture anchor missing')
           assertion = "  assert.strictEqual(green.awardedUniverse.exactUniquePrimeAwardedUeis, 3);\n"
           extra = "  assert.strictEqual(green.scope.endDate, '2026-08-31');\n  assert.strictEqual(green.scope.primeSourceDateAuthority.authority, 'VALIDATED_SOURCE_ARCHIVE_FILENAME_DATE');\n"
           if extra not in x:
