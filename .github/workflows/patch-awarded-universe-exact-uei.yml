@@ -1,0 +1,74 @@
+name: Patch Awarded Universe Exact UEI Metrics
+
+on:
+  push:
+    branches:
+      - feat/awarded-universe-master-coverage-20260901
+    paths:
+      - '.github/workflows/patch-awarded-universe-exact-uei.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/awarded-universe-master-coverage-20260901
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
+      - name: Apply exact UEI metric patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('SERVICES/revenue/AwardedUniverseCoverageService.js')
+          s=p.read_text(encoding='utf-8')
+          old='''    const primeKeys = new Set(collected.prime.keys());\n    const subKeys = new Set(collected.sub.keys());\n    const awardedKeys = new Set([...primeKeys, ...subKeys]);\n    const overlap = [...primeKeys].filter(key => subKeys.has(key));\n    const inMaster = [...awardedKeys].filter(key => {\n      const identity = collected.prime.get(key) || collected.sub.get(key);\n      return identity?.inCurrentMaster === true;\n    });\n    const missing = [...awardedKeys].filter(key => !inMaster.includes(key));\n    const primeInMaster = [...primeKeys].filter(key => collected.prime.get(key)?.inCurrentMaster === true);\n    const subInMaster = [...subKeys].filter(key => collected.sub.get(key)?.inCurrentMaster === true);\n'''
+          new='''    const primeKeys = new Set(collected.prime.keys());\n    const subKeys = new Set(collected.sub.keys());\n    const awardedKeys = new Set([...primeKeys, ...subKeys]);\n    const overlap = [...primeKeys].filter(key => subKeys.has(key));\n    const inMaster = [...awardedKeys].filter(key => {\n      const identity = collected.prime.get(key) || collected.sub.get(key);\n      return identity?.inCurrentMaster === true;\n    });\n    const inMasterSet = new Set(inMaster);\n    const missing = [...awardedKeys].filter(key => !inMasterSet.has(key));\n    const primeInMaster = [...primeKeys].filter(key => collected.prime.get(key)?.inCurrentMaster === true);\n    const subInMaster = [...subKeys].filter(key => collected.sub.get(key)?.inCurrentMaster === true);\n\n    const primeUeis = new Set([...collected.prime.values()].map(identity => identity.uei).filter(Boolean));\n    const subUeis = new Set([...collected.sub.values()].map(identity => identity.uei).filter(Boolean));\n    const awardedUeis = new Set([...primeUeis, ...subUeis]);\n    const ueiOverlap = [...primeUeis].filter(uei => subUeis.has(uei));\n    const awardedUeisInMaster = [...awardedUeis].filter(uei => master.uei.has(uei));\n    const primeUeisInMaster = [...primeUeis].filter(uei => master.uei.has(uei));\n    const subUeisInMaster = [...subUeis].filter(uei => master.uei.has(uei));\n    const primeNameFallbackOnly = [...collected.prime.values()].filter(identity => !identity.uei && identity.name).length;\n    const subNameFallbackOnly = [...collected.sub.values()].filter(identity => !identity.uei && identity.name).length;\n'''
+          if old not in s: raise SystemExit('COUNT_ANCHOR_MISSING')
+          s=s.replace(old,new,1)
+          old='''      awardedUniverse: {\n        uniquePrimeAwardedContractors: primeKeys.size,\n        uniqueSubcontractAwardedContractors: subKeys.size,\n        primeAndSubRoleOverlap: overlap.length,\n        uniqueAwardedContractorsEitherRole: awardedKeys.size,\n'''
+          new='''      awardedUniverse: {\n        exactUniquePrimeAwardedUeis: primeUeis.size,\n        exactUniqueSubcontractAwardedUeis: subUeis.size,\n        exactPrimeAndSubUeiOverlap: ueiOverlap.length,\n        exactUniqueAwardedUeisEitherRole: awardedUeis.size,\n        exactAwardedUeisInCurrentMaster: awardedUeisInMaster.length,\n        exactAwardedUeisMissingFromCurrentMaster: awardedUeis.size - awardedUeisInMaster.length,\n        exactPrimeAwardedUeisInCurrentMaster: primeUeisInMaster.length,\n        exactPrimeAwardedUeisMissingFromCurrentMaster: primeUeis.size - primeUeisInMaster.length,\n        exactSubcontractAwardedUeisInCurrentMaster: subUeisInMaster.length,\n        exactSubcontractAwardedUeisMissingFromCurrentMaster: subUeis.size - subUeisInMaster.length,\n        primeNameFallbackOnlyIdentities: primeNameFallbackOnly,\n        subcontractNameFallbackOnlyIdentities: subNameFallbackOnly,\n        uniquePrimeAwardedContractorsWithNameFallback: primeKeys.size,\n        uniqueSubcontractAwardedContractorsWithNameFallback: subKeys.size,\n        primeAndSubRoleOverlapWithNameFallback: overlap.length,\n        uniqueAwardedContractorsEitherRoleWithNameFallback: awardedKeys.size,\n'''
+          if old not in s: raise SystemExit('REPORT_ANCHOR_MISSING')
+          s=s.replace(old,new,1)
+          old='''        awardedUniverseExceedsCurrentMasterRowCount: awardedKeys.size > master.rows.length,\n        netAwardedUniverseVsMasterRows: awardedKeys.size - master.rows.length\n'''
+          new='''        exactAwardedUeiUniverseExceedsCurrentMasterRowCount: awardedUeis.size > master.rows.length,\n        exactNetAwardedUeiUniverseVsMasterRows: awardedUeis.size - master.rows.length,\n        awardedUniverseWithNameFallbackExceedsCurrentMasterRowCount: awardedKeys.size > master.rows.length,\n        netAwardedUniverseWithNameFallbackVsMasterRows: awardedKeys.size - master.rows.length\n'''
+          if old not in s: raise SystemExit('EXCEEDS_ANCHOR_MISSING')
+          s=s.replace(old,new,1)
+          old='''      identityRule: "UEI_FIRST_THEN_NORMALIZED_LEGAL_NAME_FALLBACK",\n      exactness: {\n        dedupedWithinSourceScope: true,\n'''
+          new='''      identityRule: "EXACT_COUNTS_USE_UEI_ONLY; SECONDARY_COUNTS_USE_UEI_FIRST_THEN_NORMALIZED_LEGAL_NAME_FALLBACK",\n      exactness: {\n        exactMetricsUseUeiOnly: true,\n        dedupedWithinSourceScope: true,\n'''
+          if old not in s: raise SystemExit('EXACTNESS_ANCHOR_MISSING')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Add identity regression
+        run: |
+          cat > TESTS/Test_AwardedUniverseCoverageIdentity.js <<'NODE'
+          "use strict";
+          const assert = require("assert");
+          const { canonicalIdentity } = require("../SERVICES/revenue/AwardedUniverseCoverageService");
+          assert.deepStrictEqual(canonicalIdentity({recipient_uei:"abc123",recipient_name:"Acme Inc"},"PRIME_AWARD"), {key:"UEI:ABC123",uei:"ABC123",name:"ACME INC",authority:"UEI"});
+          assert.deepStrictEqual(canonicalIdentity({"Sub-Recipient UEI":"sub999","Sub-Awardee Name":"Sub Co"},"SUBAWARD"), {key:"UEI:SUB999",uei:"SUB999",name:"SUB CO",authority:"UEI"});
+          assert.deepStrictEqual(canonicalIdentity({"Sub-Awardee Name":"Name Only LLC"},"SUBAWARD"), {key:"NAME:NAME ONLY LLC",uei:null,name:"NAME ONLY LLC",authority:"NORMALIZED_LEGAL_NAME_FALLBACK"});
+          assert.strictEqual(canonicalIdentity({},"PRIME_AWARD"), null);
+          console.log("AWARDED_UNIVERSE_COVERAGE_IDENTITY_TEST: GREEN");
+          NODE
+      - name: Validate
+        run: |
+          node --check SERVICES/revenue/AwardedUniverseCoverageService.js
+          node --check SCRIPTS/RunRevenueUniverseReconciliation.js
+          node TESTS/Test_AwardedUniverseCoverageIdentity.js
+          node TESTS/Test_RevenueUniverseMissionRouting.js
+      - name: Commit patch
+        run: |
+          git config user.name 'MILES Awarded Universe Bot'
+          git config user.email 'miles-awarded-universe@users.noreply.github.com'
+          git add SERVICES/revenue/AwardedUniverseCoverageService.js TESTS/Test_AwardedUniverseCoverageIdentity.js
+          git commit -m 'Report exact awarded universe coverage by UEI'
+          git push origin HEAD:feat/awarded-universe-master-coverage-20260901
