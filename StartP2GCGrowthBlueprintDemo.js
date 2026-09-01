@@ -7,6 +7,7 @@ const { URL } = require("url");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
+const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
@@ -18,6 +19,7 @@ const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
 const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
 const commercialPreview = new DemoCommercialPreviewService();
+const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
@@ -58,7 +60,26 @@ function getModel(term, refresh = false) {
     if (Date.now() - hit.at < TTL) return { ...hit.model, cache:{ hit:true, ttlMs:TTL } };
     cache.delete(k);
   }
-  const model = commercialPreview.apply(truthReconciler.reconcile(service.build(term)));
+
+  let baseModel = service.build(term);
+  if (!baseModel?.ok && baseModel?.status === "CONTRACTOR_NOT_FOUND") {
+    const fallback = samFallback.build(term);
+    if (fallback?.ok) baseModel = fallback;
+    else {
+      baseModel = {
+        ...baseModel,
+        fallback: {
+          attempted: true,
+          service: fallback?.service || "P2GC_SAM_QUALIFIED_PROSPECT_FALLBACK",
+          status: fallback?.status || "SAM_FALLBACK_UNAVAILABLE",
+          source: fallback?.source || null,
+          candidateCount: fallback?.candidateCount ?? null
+        }
+      };
+    }
+  }
+
+  const model = commercialPreview.apply(truthReconciler.reconcile(baseModel));
   if (model?.ok) {
     const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
     const record = { at:Date.now(), model };
@@ -81,7 +102,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());

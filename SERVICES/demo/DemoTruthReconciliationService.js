@@ -52,7 +52,8 @@ class DemoTruthReconciliationService {
     else if (/^NOT IDENTIFIED/i.test(clean(profile.gsaStatus))) profile.gsaStatus = "NOT CONFIRMED FROM CURRENT EVIDENCE";
 
     const oldActiveContracts = state.activeContracts;
-    const awardCount = Number.isFinite(Number(oldActiveContracts)) ? Number(oldActiveContracts) : null;
+    const hasExplicitAwardCountValue = oldActiveContracts !== null && oldActiveContracts !== undefined && clean(oldActiveContracts) !== "";
+    const awardCount = hasExplicitAwardCountValue && Number.isFinite(Number(oldActiveContracts)) ? Number(oldActiveContracts) : null;
     state.awardCount = awardCount;
     state.activeContracts = null;
     state.activeContractsStatus = "NOT_DERIVED_FROM_AWARD_COUNT";

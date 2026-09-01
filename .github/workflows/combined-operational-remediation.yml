@@ -22,10 +22,14 @@ on:
       - 'SERVICES/digital_coo/UnifiedMilesGateway.js'
       - 'SERVICES/ceo_dashboard/public/**'
       - 'SERVICES/demo/public/**'
+      - 'SERVICES/demo/SamQualifiedProspectFallbackService.js'
+      - 'SERVICES/demo/DemoTruthReconciliationService.js'
       - 'SERVICES/demo/P2GCFocusedIntelligenceService.js'
       - 'SERVICES/teaming/P2GCPrimeSubTeamingService.js'
       - 'SERVICES/proposal/P2GCProposalCommandService.js'
       - 'SERVICES/customer/P2GCCustomerDeliveryService.js'
+      - 'StartP2GCGrowthBlueprintDemo.js'
+      - 'SCRIPTS/AuditLiveP2GCDemoAcceptance.js'
       - 'SCRIPTS/AuditInstantlySendWindowHistory.js'
       - 'SCRIPTS/AuditInstantlyInboxPlacement.js'
       - 'SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js'
@@ -42,6 +46,7 @@ on:
       - 'TESTS/Test_OperationalRemediationPack.js'
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/Test_SamQualifiedProspectFallbackService.js'
       - 'TESTS/instantly_lifecycle_provider_proof.test.js'
       - 'TESTS/instantly_sender_failover.test.js'
       - 'TESTS/instantly_inbox_placement_controlled_test.test.js'
@@ -87,6 +92,10 @@ jobs:
           node --check SERVICES/orion/OrionRebuildReadinessService.js
           node --check SERVICES/digital_coo/public/app.js
           node --check SERVICES/digital_coo/UnifiedMilesGateway.js
+          node --check SERVICES/demo/SamQualifiedProspectFallbackService.js
+          node --check SERVICES/demo/DemoTruthReconciliationService.js
+          node --check StartP2GCGrowthBlueprintDemo.js
+          node --check SCRIPTS/AuditLiveP2GCDemoAcceptance.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/AuditInstantlyInboxPlacement.js
           node --check SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js
@@ -101,6 +110,7 @@ jobs:
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/Test_SamQualifiedProspectFallbackService.js
           node --check TESTS/instantly_lifecycle_provider_proof.test.js
           node --check TESTS/instantly_sender_failover.test.js
           node --check TESTS/instantly_inbox_placement_controlled_test.test.js
@@ -118,6 +128,7 @@ jobs:
           node TESTS/Test_OperationalRemediationPack.js
           node TESTS/Test_GroupedRemediationV2.js
           node TESTS/Test_InstantlyGuardedReplySend.js
+          node TESTS/Test_SamQualifiedProspectFallbackService.js
           node TESTS/instantly_sender_failover.test.js
           node TESTS/instantly_inbox_placement_controlled_test.test.js
           node TESTS/instantly_inbox_placement_diagnostic_truth.test.js
