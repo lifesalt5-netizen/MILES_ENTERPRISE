@@ -5,12 +5,14 @@ on:
     paths:
       - 'SERVICES/BusinessWorkPlannerService.js'
       - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
+      - 'SERVICES/revenue/AwardedUniverseCoverageService.js'
       - 'CORE/ExecutionActionContracts.js'
       - 'CONNECTORS/MILES/connector.js'
       - 'StartMilesRemoteExecutionBridge.js'
       - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
       - 'TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js'
+      - 'TESTS/Test_AwardedUniverseCoverageIdentity.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -33,17 +35,21 @@ jobs:
         run: |
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
+          node --check SERVICES/revenue/AwardedUniverseCoverageService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
           node --check StartMilesRemoteExecutionBridge.js
           node --check SCRIPTS/RunRevenueUniverseReconciliation.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
           node --check TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
+          node --check TESTS/Test_AwardedUniverseCoverageIdentity.js
           node --check TESTS/remote_execution_bridge_safety.test.js
       - name: Revenue universe routing regression
         run: node TESTS/Test_RevenueUniverseMissionRouting.js
       - name: Duplicate identity accounting regression
         run: node TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
+      - name: Awarded universe identity regression
+        run: node TESTS/Test_AwardedUniverseCoverageIdentity.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety assertions
@@ -51,6 +57,7 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const source = fs.readFileSync('SERVICES/revenue/RevenueUniverseReconciliationService.js','utf8');
+          const awarded = fs.readFileSync('SERVICES/revenue/AwardedUniverseCoverageService.js','utf8');
           const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
           const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
           const required = [
@@ -66,7 +73,18 @@ jobs:
           for (const token of required) {
             if (!source.includes(token)) throw new Error('Missing safety/accounting assertion: ' + token);
           }
-          for (const text of [source, runner]) {
+          const awardRequired = [
+            'exactUniquePrimeAwardedUeis',
+            'exactUniqueSubcontractAwardedUeis',
+            'exactUniqueAwardedUeisEitherRole',
+            'exactAwardedUeisInCurrentMaster',
+            'exactAwardedUeisMissingFromCurrentMaster',
+            'EXACT_COUNTS_USE_UEI_ONLY'
+          ];
+          for (const token of awardRequired) {
+            if (!awarded.includes(token)) throw new Error('Missing exact awarded-universe assertion: ' + token);
+          }
+          for (const text of [source, awarded, runner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
               throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
             }
