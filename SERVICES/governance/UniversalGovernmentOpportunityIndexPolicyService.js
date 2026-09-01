@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const clientPortalPolicy = require('./ClientAuthorizedPortalAccessPolicyService');
 
 const ROOT = process.env.MILES_ROOT || process.cwd();
 const POLICY_PATH = path.join(ROOT, 'CONFIG', 'UNIVERSAL_GOVERNMENT_OPPORTUNITY_INDEX_POLICY.json');
@@ -25,11 +26,6 @@ class UniversalGovernmentOpportunityIndexPolicyService {
     const sourceAccess = norm(record.sourceAccess || context.sourceAccess);
     const stage = norm(record.stage);
     const source = norm([record.source, record.portal, record.sourceUrl, record.url].filter(Boolean).join(' '));
-    const activePayingClient = context.activePayingClient === true;
-    const dedicatedWorkspace = context.dedicatedClientWorkspace === true;
-    const authorized = context.authorizedAccess === true || record.authorizedAccess === true || record.authorizedEbuyAccess === true;
-    const evidenceId = clean(context.accessEvidenceId || record.accessEvidenceId || record.authorizedAccessEvidence);
-    const withinScope = context.withinGrantedScope !== false && record.withinGrantedScope !== false;
 
     const historical =
       sourceAccess === 'PUBLIC_AWARD_HISTORY' ||
@@ -52,24 +48,32 @@ class UniversalGovernmentOpportunityIndexPolicyService {
       /EBUY|E GOS|EGOS|SEWP|CHESS|ECMS|PIEE/.test(source);
 
     if (restricted) {
-      const permitted = activePayingClient && dedicatedWorkspace && authorized && Boolean(evidenceId) && withinScope;
-      return permitted ? {
+      const decision = clientPortalPolicy.evaluate({
+        activePayingClient:context.activePayingClient === true,
+        dedicatedClientWorkspace:context.dedicatedClientWorkspace === true,
+        authorizedAccess:context.authorizedAccess === true || record.authorizedAccess === true || record.authorizedEbuyAccess === true,
+        accessEvidenceId:clean(context.accessEvidenceId || record.accessEvidenceId || record.authorizedAccessEvidence),
+        withinGrantedScope:context.withinGrantedScope !== false && record.withinGrantedScope !== false,
+        prospectDemo:context.prospectDemo === true,
+        readWriteScope:context.readWriteScope || record.readWriteScope || 'READ'
+      });
+
+      return decision.allowed ? {
         allowed:true,
         evidenceLane:'AUTHORIZED_CLIENT_LIVE',
         badge:'LIVE AUTHORIZED',
         live:true,
         restricted:true,
-        accessEvidenceId:evidenceId
+        accessEvidenceId:decision.accessEvidenceId,
+        requiresSeparateWriteGovernance:decision.requiresSeparateWriteGovernance === true
       } : {
         allowed:false,
         evidenceLane:'COVERAGE_GAP',
         badge:'GATED / COVERAGE GAP',
         live:false,
         restricted:true,
-        reason:!activePayingClient ? 'ACTIVE_PAYING_CLIENT_REQUIRED' :
-          (!dedicatedWorkspace ? 'DEDICATED_CLIENT_WORKSPACE_REQUIRED' :
-            (!authorized ? 'AUTHORIZED_ACCESS_REQUIRED' :
-              (!evidenceId ? 'ACCESS_EVIDENCE_REQUIRED' : 'OUTSIDE_GRANTED_SCOPE')))
+        reason:decision.reason || decision.status,
+        fallbackRequired:true
       };
     }
 
@@ -85,16 +89,13 @@ class UniversalGovernmentOpportunityIndexPolicyService {
   }
 
   prospectDemo(record = {}) {
-    const decision = this.classify(record, {
+    return this.classify(record, {
+      prospectDemo:true,
       activePayingClient:false,
       dedicatedClientWorkspace:false,
       authorizedAccess:false,
       withinGrantedScope:false
     });
-    if (decision.evidenceLane === 'AUTHORIZED_CLIENT_LIVE') {
-      return { ...decision, allowed:false, reason:'PROSPECT_DEMO_RESTRICTED_DATA_PROHIBITED' };
-    }
-    return decision;
   }
 }
 
