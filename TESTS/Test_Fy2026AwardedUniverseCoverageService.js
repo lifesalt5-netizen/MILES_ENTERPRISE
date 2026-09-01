@@ -60,6 +60,9 @@ async function run() {
   const root = makeRoot();
   const aggregationReport = path.join(root, 'DATA', 'staging', 'government_data', 'usaspending_aggregation', 'fake', 'aggregation_report.json');
   fs.writeFileSync(aggregationReport, '{}');
+  const defaultFactoryProbe = new Fy2026AwardedUniverseCoverageService({ rootDir: root, Database: FakeDatabase });
+  assert.doesNotThrow(() => defaultFactoryProbe.coverageFactory());
+
   const common = {
     rootDir: root,
     Database: FakeDatabase,
