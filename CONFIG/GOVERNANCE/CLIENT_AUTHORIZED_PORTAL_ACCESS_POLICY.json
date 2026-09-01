@@ -1,0 +1,56 @@
+{
+  "version": "2026-09-01",
+  "status": "GOVERNING_RULE",
+  "policy": "CLIENT_AUTHORIZED_PORTAL_ACCESS",
+  "purpose": "Allow lawful restricted government-portal ingestion only for active paying clients in dedicated client workspaces while protecting credentials, MFA, scope, and prospect-demo separation.",
+  "eligibility": {
+    "activePayingClientRequired": true,
+    "dedicatedClientWorkspaceRequired": true,
+    "authorizationEvidenceRequired": true,
+    "withinGrantedPortalVehicleSinCategoryScopeRequired": true,
+    "prospectDemoRestrictedAccessProhibited": true
+  },
+  "preferredAccessMethodsInOrder": [
+    "DELEGATED_AUTHORIZED_PORTAL_ROLE",
+    "OFFICIAL_API_OAUTH_OR_TOKEN",
+    "CLIENT_AUTHORIZED_BROWSER_SESSION_WHERE_PORTAL_RULES_PERMIT",
+    "DEDICATED_CLIENT_CREATED_LOGIN_WITH_LEAST_PRIVILEGE",
+    "SHARED_PERSONAL_CREDENTIAL_ONLY_IF_PORTAL_EXPLICITLY_PERMITS"
+  ],
+  "credentialRules": {
+    "neverStoreSecretsInGitHub": true,
+    "neverStoreSecretsInSourceCode": true,
+    "neverStoreSecretsInLogs": true,
+    "neverStoreSecretsInChatOrCRMNotes": true,
+    "encryptedSecretsVaultRequired": true,
+    "mfaMustNotBeBypassed": true,
+    "leastPrivilegeRequired": true,
+    "readOnlyDefault": true,
+    "writeActionsRequireSeparateGovernance": true,
+    "revocationOnClientOffboardingRequired": true
+  },
+  "clientAccessRecordRequiredFields": [
+    "clientId",
+    "portalId",
+    "authorizationBasis",
+    "allowedVehiclesOrPrograms",
+    "allowedSINsOrCategories",
+    "accessMode",
+    "readWriteScope",
+    "mfaState",
+    "accessEvidenceId",
+    "authorizedAt",
+    "expiresAt",
+    "lastSuccessfulAccessAt",
+    "lastSuccessfulDataPullAt",
+    "revocationState"
+  ],
+  "runtimeRules": {
+    "verifyAuthorizationBeforeEveryRestrictedPull": true,
+    "verifyScopeBeforeEveryRestrictedRecordAdmission": true,
+    "markSourceRedWhenAuthorizationExpiresOrAccessFails": true,
+    "fallBackToPublicAndHistoricalIntelligenceWhenPossible": true,
+    "neverLeakOneClientRestrictedDataToAnotherClient": true,
+    "neverExposeRestrictedClientDataInProspectDemo": true
+  }
+}
