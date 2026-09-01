@@ -1,11 +1,25 @@
 'use strict';
 
+const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const path = require('path');
+const { spawnSync } = require('child_process');
 const { URL } = require('url');
 
+const ROOT = path.resolve(process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 const BASE_URL = String(process.env.P2GC_LIVE_DEMO_BASE_URL || 'http://127.0.0.1:8791').replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = Math.max(3000, Number(process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS || 20000));
+const DEMO_PM2_NAME = 'p2gc-growth-demo';
+const DEMO_SOURCE_FILES = Object.freeze([
+  'StartP2GCGrowthBlueprintDemo.js',
+  'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
+  'SERVICES/demo/DemoTruthReconciliationService.js',
+  'SERVICES/demo/DemoCommercialPreviewService.js',
+  'SERVICES/demo/DemoUnifiedOpportunityService.js',
+  'SERVICES/demo/P2GCFocusedIntelligenceService.js',
+  'SERVICES/teaming/P2GCPrimeSubTeamingService.js'
+]);
 const DEFAULT_COMPANIES = [
   'DeLune Corporation',
   'Dreamers Inc.',
@@ -44,6 +58,114 @@ function requestJson(pathname) {
     req.setTimeout(REQUEST_TIMEOUT_MS, () => req.destroy(new Error(`REQUEST_TIMEOUT_${REQUEST_TIMEOUT_MS}MS`)));
     req.on('error', error => finish({ ok: false, statusCode: null, body: null, error: error.message }));
   });
+}
+
+function runPm2(args = []) {
+  const shell = process.env.ComSpec || 'cmd.exe';
+  return spawnSync(shell, ['/d', '/s', '/c', 'pm2.cmd', ...args], {
+    cwd: ROOT,
+    env: process.env,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: 60000
+  });
+}
+
+function latestDemoSourceMtimeMs() {
+  let latest = 0;
+  for (const rel of DEMO_SOURCE_FILES) {
+    const file = path.join(ROOT, rel);
+    if (!fs.existsSync(file)) continue;
+    latest = Math.max(latest, fs.statSync(file).mtimeMs);
+  }
+  return latest;
+}
+
+function parsePm2List(raw) {
+  try {
+    const parsed = JSON.parse(String(raw || '[]'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+async function waitForCurrentDemoHealth(timeoutMs = 45000) {
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  while (Date.now() < deadline) {
+    last = await requestJson('/api/health');
+    const capabilities = Array.isArray(last.body?.capabilities) ? last.body.capabilities : [];
+    if (last.ok && last.body?.ok === true && capabilities.includes('truth_reconciliation')) return last;
+    await new Promise(resolve => setTimeout(resolve, 1250));
+  }
+  return last || { ok: false, error: 'DEMO_HEALTH_TIMEOUT' };
+}
+
+async function ensureDemoCurrent() {
+  if (process.platform !== 'win32') {
+    return { ok: true, skipped: true, reason: 'WINDOWS_ONLY_PM2_RELOAD', restartPerformed: false };
+  }
+
+  const listed = runPm2(['jlist']);
+  if (listed.status !== 0) {
+    return {
+      ok: false,
+      status: 'PM2_LIST_FAILED',
+      restartPerformed: false,
+      exitCode: listed.status,
+      stderr: String(listed.stderr || '').slice(-3000)
+    };
+  }
+  const apps = parsePm2List(listed.stdout);
+  const app = apps.find(item => String(item?.name || item?.pm2_env?.name || '') === DEMO_PM2_NAME);
+  if (!app) return { ok: false, status: 'P2GC_GROWTH_DEMO_PM2_NOT_FOUND', restartPerformed: false };
+
+  const pm2Status = String(app?.pm2_env?.status || '').toLowerCase();
+  const processStartedMs = Number(app?.pm2_env?.pm_uptime || 0);
+  const latestSourceMs = latestDemoSourceMtimeMs();
+  const sourceNewer = latestSourceMs > 0 && (!Number.isFinite(processStartedMs) || processStartedMs <= 0 || latestSourceMs > processStartedMs + 1000);
+  const restartRequired = pm2Status !== 'online' || sourceNewer;
+
+  if (!restartRequired) {
+    const health = await waitForCurrentDemoHealth(10000);
+    return {
+      ok: health.ok === true && health.body?.ok === true,
+      status: 'CURRENT_NO_RESTART',
+      restartPerformed: false,
+      pm2Status,
+      pid: app.pid || null,
+      processStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null,
+      latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null,
+      health
+    };
+  }
+
+  const restarted = runPm2(['restart', DEMO_PM2_NAME, '--update-env']);
+  if (restarted.status !== 0) {
+    return {
+      ok: false,
+      status: 'P2GC_GROWTH_DEMO_RESTART_FAILED',
+      restartPerformed: true,
+      sourceNewer,
+      exitCode: restarted.status,
+      stderr: String(restarted.stderr || '').slice(-4000)
+    };
+  }
+
+  const health = await waitForCurrentDemoHealth();
+  return {
+    ok: health.ok === true && health.body?.ok === true && Array.isArray(health.body?.capabilities) && health.body.capabilities.includes('truth_reconciliation'),
+    status: health.ok && health.body?.capabilities?.includes('truth_reconciliation') ? 'RESTARTED_AND_CURRENT' : 'RESTARTED_BUT_CURRENT_HEALTH_NOT_PROVEN',
+    restartPerformed: true,
+    restartTarget: DEMO_PM2_NAME,
+    sourceNewer,
+    previousPid: app.pid || null,
+    previousPm2Status: pm2Status,
+    previousProcessStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null,
+    latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null,
+    health
+  };
 }
 
 function arr(value) { return Array.isArray(value) ? value : []; }
@@ -171,8 +293,13 @@ async function main() {
   console.log('============================================================');
   console.log(`Base URL: ${BASE_URL}`);
 
-  const health = await requestJson('/api/health');
+  const runtimeReload = await ensureDemoCurrent();
+  console.log('LIVE_DEMO_RUNTIME_CURRENCY');
+  console.log(JSON.stringify(runtimeReload, null, 2));
+
+  const health = runtimeReload.health || await requestJson('/api/health');
   const healthFailures = [];
+  if (runtimeReload.ok !== true) addFailure(healthFailures, 'DEMO_RUNTIME_NOT_CURRENT', runtimeReload.status || runtimeReload.reason || 'UNKNOWN');
   if (!health.ok || health.body?.ok !== true) addFailure(healthFailures, 'DEMO_HEALTH_NOT_OK', health.error || health.raw || String(health.statusCode));
   for (const capability of ['truth_reconciliation','prime_sub_teaming','opportunity_intelligence','vehicle_intelligence','recompete_intelligence']) {
     if (!arr(health.body?.capabilities).includes(capability)) addFailure(healthFailures, 'DEMO_CAPABILITY_MISSING', capability);
@@ -188,12 +315,20 @@ async function main() {
     status: healthFailures.length === 0 && failedCompanies.length === 0 ? 'LIVE_DEMO_ACCEPTANCE_GREEN' : 'LIVE_DEMO_ACCEPTANCE_RED',
     generatedAt: new Date().toISOString(),
     baseUrl: BASE_URL,
+    runtimeReload,
     health: { ok: healthFailures.length === 0, failures: healthFailures, service: health.body?.service || null },
     companyCount: results.length,
     passedCompanyCount: results.length - failedCompanies.length,
     failedCompanyCount: failedCompanies.length,
     results,
-    safety: { readOnly: true, prospectSends: false, externalWrites: false, authBypass: false }
+    safety: {
+      dataReadOnly: true,
+      prospectSends: false,
+      externalWrites: false,
+      authBypass: false,
+      processRestartOnlyWhenSourceNewerOrOffline: true,
+      restartTargetAllowlisted: DEMO_PM2_NAME
+    }
   };
 
   console.log('LIVE_DEMO_ACCEPTANCE_RESULT');
@@ -209,10 +344,17 @@ if (require.main === module) main().catch(error => {
 });
 
 module.exports = {
+  ROOT,
   BASE_URL,
+  DEMO_PM2_NAME,
+  DEMO_SOURCE_FILES,
   DEFAULT_COMPANIES,
   companyList,
   requestJson,
+  latestDemoSourceMtimeMs,
+  parsePm2List,
+  waitForCurrentDemoHealth,
+  ensureDemoCurrent,
   validateAssessment,
   validateOpportunities,
   validateVehicles,

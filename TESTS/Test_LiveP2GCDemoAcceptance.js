@@ -52,9 +52,22 @@ function goodTeaming() {
   };
 }
 
-function main() {
+async function main() {
   assert.ok(audit.DEFAULT_COMPANIES.includes('DeLune Corporation'));
   assert.ok(audit.DEFAULT_COMPANIES.length >= 5);
+  assert.strictEqual(audit.DEMO_PM2_NAME, 'p2gc-growth-demo');
+  assert.ok(audit.DEMO_SOURCE_FILES.includes('StartP2GCGrowthBlueprintDemo.js'));
+  assert.strictEqual(typeof audit.ensureDemoCurrent, 'function');
+  assert.strictEqual(typeof audit.latestDemoSourceMtimeMs, 'function');
+  assert.deepStrictEqual(audit.parsePm2List('[{"name":"p2gc-growth-demo"}]'), [{ name: 'p2gc-growth-demo' }]);
+  assert.deepStrictEqual(audit.parsePm2List('not-json'), []);
+  if (process.platform !== 'win32') {
+    const currency = await audit.ensureDemoCurrent();
+    assert.equal(currency.ok, true);
+    assert.equal(currency.skipped, true);
+    assert.equal(currency.reason, 'WINDOWS_ONLY_PM2_RELOAD');
+    assert.equal(currency.restartPerformed, false);
+  }
 
   let failures = [];
   audit.validateAssessment(goodAssessment(), failures);
@@ -96,4 +109,7 @@ function main() {
   console.log('LIVE_P2GC_DEMO_ACCEPTANCE_TEST: GREEN');
 }
 
-main();
+main().catch(error => {
+  console.error(error.stack || error.message);
+  process.exit(1);
+});
