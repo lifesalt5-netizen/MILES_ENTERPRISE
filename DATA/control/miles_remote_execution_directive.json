@@ -1,7 +1,7 @@
 {
-  "id": "miles-fy2026-awarded-universe-coverage-20260901-023",
+  "id": "miles-deploy-fy2026-constructor-hotfix-20260901-024",
   "enabled": true,
-  "job": "FY2026_AWARDED_UNIVERSE_COVERAGE",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun the governed cap-safe FY2026 awarded-contractor coverage after PR #446. Use validated read-only ORION FY2026 sidecar for exact prime UEIs; resolve sidecar source date from explicit validated metadata or, only if absent, a strict YYYYMMDD date in the validated source archive metadata. Acquire/reuse official USAspending subawards only from 2025-10-01 through that exact source date. Require exact UEI-only prime/sub counts, overlap, deduped union, in-current-master/missing counts, prime/sub in/missing, current master rows/UEIs, coverage and missing percentages. Fail closed on sidecar/source/date/schema/identity/integrity errors or if subaward rows reach 500000. Staging/read-only only: no production ORION mutation, provider/campaign mutation, emails, suppression override, approvals, queue/history deletion, DNS/B12 changes or destructive Git. Publish fresh evidence."
+  "note": "Fast-forward Windows production to main at or beyond ff7ea08362d9ce64f3b333c99e12adbdf609b832 containing PR #447. Restart only governed MILES components required by the deployment contract and preserve the supervised bridge. Preserve production ORION, runtime/data/queues/history/secrets/provider state. No campaign activation, email sends, suppression override, approvals, DNS/B12 changes, destructive Git, production database reset or unrelated mutation. Publish fresh runtime evidence."
 }
