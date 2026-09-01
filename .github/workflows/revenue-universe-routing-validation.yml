@@ -1,0 +1,54 @@
+name: Revenue Universe Routing Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/BusinessWorkPlannerService.js'
+      - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
+      - 'CORE/ExecutionActionContracts.js'
+      - 'CONNECTORS/MILES/connector.js'
+      - 'TESTS/Test_RevenueUniverseMissionRouting.js'
+      - '.github/workflows/revenue-universe-routing-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check SERVICES/BusinessWorkPlannerService.js
+          node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
+          node --check CORE/ExecutionActionContracts.js
+          node --check CONNECTORS/MILES/connector.js
+          node --check TESTS/Test_RevenueUniverseMissionRouting.js
+      - name: Revenue universe routing regression
+        run: node TESTS/Test_RevenueUniverseMissionRouting.js
+      - name: Static safety assertions
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const source = fs.readFileSync('SERVICES/revenue/RevenueUniverseReconciliationService.js','utf8');
+          const required = [
+            'productionOrionModified: false',
+            'providerMutation: false',
+            'campaignMutation: false',
+            'emailSent: false',
+            'suppressionOverridden: false',
+            'outputStagingOnly: true'
+          ];
+          for (const token of required) {
+            if (!source.includes(token)) throw new Error('Missing safety assertion: ' + token);
+          }
+          if (source.includes('uploadLeads(') || source.includes('activateCampaign(') || source.includes('sendEmail(')) {
+            throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
+          }
+          console.log('REVENUE_UNIVERSE_STATIC_SAFETY: GREEN');
+          NODE
