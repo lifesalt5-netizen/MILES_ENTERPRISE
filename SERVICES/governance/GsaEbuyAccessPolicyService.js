@@ -1,5 +1,7 @@
 'use strict';
 
+const clientPortalPolicy = require('./ClientAuthorizedPortalAccessPolicyService');
+
 function clean(value) { return String(value == null ? '' : value).trim(); }
 function norm(value) { return clean(value).toUpperCase(); }
 
@@ -49,13 +51,30 @@ class GsaEbuyAccessPolicyService {
     const inScope = context.withinGrantedScope !== false && record.withinGrantedScope !== false;
 
     if (authorized && evidence && inScope) {
+      const clientGate = clientPortalPolicy.evaluate({
+        ...context,
+        authorizationEvidenceId:context.authorizationEvidenceId || evidence,
+        withinGrantedScope:inScope
+      });
+      if (!clientGate.allowed) {
+        return {
+          allowed:false,
+          status:clientGate.status,
+          live:false,
+          requiresFallback:true,
+          fallbackMode:'PUBLIC_GSA_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY',
+          reason:clientGate.reason,
+          clientAccessGate:clientGate
+        };
+      }
       return {
         allowed:true,
         status:'AUTHORIZED_EBUY_LIVE',
         live:true,
         requiresFallback:false,
         requiredLabel:'AUTHORIZED_EBUY_LIVE',
-        accessEvidenceId:evidence
+        accessEvidenceId:evidence,
+        clientAccessGate:clientGate
       };
     }
 
