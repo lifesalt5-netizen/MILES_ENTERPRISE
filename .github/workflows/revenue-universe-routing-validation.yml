@@ -10,6 +10,7 @@ on:
       - 'StartMilesRemoteExecutionBridge.js'
       - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
+      - 'TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -37,9 +38,12 @@ jobs:
           node --check StartMilesRemoteExecutionBridge.js
           node --check SCRIPTS/RunRevenueUniverseReconciliation.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
+          node --check TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
           node --check TESTS/remote_execution_bridge_safety.test.js
       - name: Revenue universe routing regression
         run: node TESTS/Test_RevenueUniverseMissionRouting.js
+      - name: Duplicate identity accounting regression
+        run: node TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety assertions
@@ -55,10 +59,12 @@ jobs:
             'campaignMutation: false',
             'emailSent: false',
             'suppressionOverridden: false',
-            'outputStagingOnly: true'
+            'outputStagingOnly: true',
+            'DUPLICATE_MERGED_ENTITY',
+            'canonicalContractorIdentities: seenIdentityKeys.size'
           ];
           for (const token of required) {
-            if (!source.includes(token)) throw new Error('Missing safety assertion: ' + token);
+            if (!source.includes(token)) throw new Error('Missing safety/accounting assertion: ' + token);
           }
           for (const text of [source, runner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {

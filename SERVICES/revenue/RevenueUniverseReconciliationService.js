@@ -103,6 +103,15 @@ function chooseColumn(columns, names) {
   return null;
 }
 function q(identifier) { return `"${String(identifier).replace(/"/g, '""')}"`; }
+function identityKeyFor({ uei, cage, companyNorm, ordinal }) {
+  const normalizedUei = upper(uei);
+  const normalizedCage = upper(cage);
+  const normalizedCompany = normalizeName(companyNorm);
+  if (normalizedUei) return `UEI:${normalizedUei}`;
+  if (normalizedCage) return `CAGE:${normalizedCage}`;
+  if (normalizedCompany) return `NAME:${normalizedCompany}`;
+  return `ROW:${Number(ordinal || 0)}`;
+}
 
 class RevenueUniverseReconciliationService {
   constructor(options = {}) {
@@ -254,16 +263,23 @@ class RevenueUniverseReconciliationService {
       const counts = Object.create(null);
       let verifiedDecisionMakers = 0, actuallyContacted = 0, commerciallyViableConfirmed = 0, campaignReadyIdle = 0, matchedCurrentMaster = 0;
       let ordinal = 0;
+      const seenIdentityKeys = new Set();
       const tx = output.transaction(rows => { for (const row of rows) insert.run(row); });
       let batch = [];
       for (const row of orion.prepare(`SELECT ${select} FROM contractors`).iterate()) {
         ordinal += 1;
         const uei = upper(row.uei), cage = upper(row.cage), company = clean(row.company), companyNorm = normalizeName(company), domain = domainFromValue(row.website);
+        const identityKey = identityKeyFor({ uei, cage, companyNorm, ordinal });
+        const duplicateIdentity = seenIdentityKeys.has(identityKey);
+        if (!duplicateIdentity) seenIdentityKeys.add(identityKey);
         const current = (uei && master.byUei.get(uei)) || (cage && master.byCage.get(cage)) || (domain && master.byDomain.get(domain)) || (companyNorm && master.byCompany.get(companyNorm)) || null;
         const currentSam = Boolean(uei && samUeis.has(uei));
         const awardEvidence = Boolean(uei && awardUeis.has(uei));
         let disposition, nextAction, verified = false, contacted = false;
-        if (current) {
+        if (duplicateIdentity) {
+          disposition = "DUPLICATE_MERGED_ENTITY";
+          nextAction = "MERGE_WITH_CANONICAL_CONTRACTOR_IDENTITY";
+        } else if (current) {
           matchedCurrentMaster += 1;
           verified = emailIsVerified(current);
           contacted = isContacted(current);
@@ -284,12 +300,12 @@ class RevenueUniverseReconciliationService {
           nextAction = "QUALIFY_ENTITY_COMMERCIAL_STATUS_AND_P2GC_FIT";
         }
         counts[disposition] = (counts[disposition] || 0) + 1;
-        const key = uei || cage || `${companyNorm || "contractor"}#${ordinal}`;
+        const key = `${identityKey}#ROW:${ordinal}`;
         batch.push({
           contractor_key: key, uei: uei || null, cage: cage || null, company: company || null, domain: domain || null,
           disposition, next_action: nextAction, in_current_master: current ? 1 : 0, verified_contact: verified ? 1 : 0,
           actually_contacted: contacted ? 1 : 0, current_sam_qualified: currentSam ? 1 : 0, fy2026_award_evidence: awardEvidence ? 1 : 0,
-          evidence: JSON.stringify({ currentMaster: Boolean(current), currentSamQualified: currentSam, fy2026AwardEvidence: awardEvidence })
+          evidence: JSON.stringify({ canonicalIdentityKey: identityKey, duplicateIdentity, currentMaster: Boolean(current), currentSamQualified: currentSam, fy2026AwardEvidence: awardEvidence })
         });
         if (batch.length >= 5000) { tx(batch); batch = []; }
       }
@@ -310,6 +326,8 @@ class RevenueUniverseReconciliationService {
         universe: {
           totalContractors: total,
           accountedContractors: accounted,
+          canonicalContractorIdentities: seenIdentityKeys.size,
+          duplicateIdentityRows: counts.DUPLICATE_MERGED_ENTITY || 0,
           currentMasterRows: master.rows.length,
           contractorsMatchedToCurrentMaster: matchedCurrentMaster,
           currentSamQualifiedUeis: samUeis.size,
@@ -356,3 +374,4 @@ class RevenueUniverseReconciliationService {
 
 module.exports = new RevenueUniverseReconciliationService();
 module.exports.RevenueUniverseReconciliationService = RevenueUniverseReconciliationService;
+module.exports.identityKeyFor = identityKeyFor;
