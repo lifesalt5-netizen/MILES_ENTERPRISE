@@ -17,7 +17,7 @@ function makeRoot() {
   fs.writeFileSync(path.join(root, 'DATA', 'orion_refresh', 'latest_contract_sidecar_build.json'), JSON.stringify({
     ok: true,
     sidecarDb: sidecar,
-    source: { updatedDate: '2026-08-31' },
+    source: { updatedDate: null, archive: 'FY2026_All_Contracts_Full_20260831.zip' },
     validation: { ok: true, summaryRows: 3 },
     safety: { productionDatabaseModified: false, sidecarOnly: true }
   }));
@@ -29,7 +29,7 @@ class FakeDatabase {
   prepare(sql) {
     if (sql.includes("sqlite_master")) return { get: () => ({ name: 'orion_contractor_fy2026_summary' }) };
     if (sql.includes('FROM orion_contractor_fy2026_summary')) return { all: () => [{ uei: 'A' }, { uei: 'B' }, { uei: 'C' }] };
-    if (sql.includes('FROM orion_source_refresh_manifest')) return { all: () => [{ source_family: 'USAspending', source_scope: 'FY2026', source_updated_date: '2026-08-31', contractor_summary_rows: 3, imported_at: '2026-09-01T00:00:00Z' }] };
+    if (sql.includes('FROM orion_source_refresh_manifest')) return { all: () => [{ source_family: 'USAspending', source_scope: 'FY2026', source_updated_date: null, source_archive: 'FY2026_All_Contracts_Full_20260831.zip', contractor_summary_rows: 3, imported_at: '2026-09-01T00:00:00Z' }] };
     throw new Error(`UNEXPECTED_SQL:${sql}`);
   }
   close() {}
@@ -69,6 +69,8 @@ async function run() {
 
   const green = await new Fy2026AwardedUniverseCoverageService({ ...common, coverageFactory: makeCoverageFactory(root, 2) }).run();
   assert.strictEqual(green.ok, true);
+  assert.strictEqual(green.scope.endDate, '2026-08-31');
+  assert.strictEqual(green.scope.primeSourceDateAuthority.authority, 'VALIDATED_SOURCE_ARCHIVE_FILENAME_DATE');
   assert.strictEqual(green.awardedUniverse.exactUniquePrimeAwardedUeis, 3);
   assert.strictEqual(green.awardedUniverse.exactUniqueSubcontractAwardedUeis, 2);
   assert.strictEqual(green.awardedUniverse.exactPrimeAndSubUeiOverlap, 1);

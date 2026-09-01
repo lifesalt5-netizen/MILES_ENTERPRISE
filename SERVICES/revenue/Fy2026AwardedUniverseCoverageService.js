@@ -14,6 +14,29 @@ function isoDate(value) {
 function clean(value) { return value == null ? '' : String(value).trim(); }
 function upper(value) { return clean(value).toUpperCase(); }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
+function sourceDateFromText(value) {
+  const text = clean(value);
+  const matches = [...text.matchAll(/(?:^|[^0-9])(20[0-9]{2})(0[1-9]|1[0-2])([0-2][0-9]|3[01])(?:[^0-9]|$)/g)];
+  for (const match of matches) {
+    const candidate = `${match[1]}-${match[2]}-${match[3]}`;
+    const parsed = isoDate(candidate);
+    if (parsed === candidate) return candidate;
+  }
+  return null;
+}
+function resolveSourceUpdatedDate(report, sourceRows) {
+  const explicit = isoDate(report?.source?.updatedDate || (sourceRows || []).map(row => row.source_updated_date).find(Boolean));
+  if (explicit) return { date: explicit, authority: 'EXPLICIT_SOURCE_UPDATED_DATE' };
+  const archiveCandidates = [
+    report?.source?.archive,
+    ...(sourceRows || []).map(row => row.source_archive)
+  ].filter(Boolean);
+  for (const archive of archiveCandidates) {
+    const parsed = sourceDateFromText(archive);
+    if (parsed) return { date: parsed, authority: 'VALIDATED_SOURCE_ARCHIVE_FILENAME_DATE', archive: clean(archive) };
+  }
+  return { date: null, authority: 'UNRESOLVED' };
+}
 
 class SubawardOnlyStagingService extends UsaspendingAwardHistoryStagingService {
   requestPayload(resolved) {
@@ -76,7 +99,8 @@ class Fy2026AwardedUniverseCoverageService {
       const primeUeis = new Set(ueiRows.map(row => upper(row.uei)).filter(Boolean));
       if (!primeUeis.size) throw new Error('ORION_FY2026_PRIME_UEI_SET_EMPTY');
       const sourceRows = db.prepare("SELECT source_family, source_scope, source_updated_date, source_archive, transaction_rows, award_rows, contractor_summary_rows, imported_at FROM orion_source_refresh_manifest ORDER BY imported_at DESC").all();
-      const sourceUpdatedDate = isoDate(report?.source?.updatedDate || sourceRows.map(row => row.source_updated_date).find(Boolean));
+      const resolvedSourceDate = resolveSourceUpdatedDate(report, sourceRows);
+      const sourceUpdatedDate = resolvedSourceDate.date;
       if (!sourceUpdatedDate) throw new Error('ORION_FY2026_SOURCE_DATE_UNKNOWN');
       const expectedSummaryRows = Number(report?.validation?.summaryRows || 0);
       if (expectedSummaryRows > 0 && expectedSummaryRows !== primeUeis.size) {
@@ -86,6 +110,7 @@ class Fy2026AwardedUniverseCoverageService {
         report,
         sidecarDb,
         sourceUpdatedDate,
+        sourceDateAuthority: resolvedSourceDate,
         primeUeis,
         sourceRows,
         expectedSummaryRows: expectedSummaryRows || primeUeis.size
@@ -174,6 +199,7 @@ class Fy2026AwardedUniverseCoverageService {
           fiscalYear: 2026,
           startDate,
           endDate,
+          primeSourceDateAuthority: prime.sourceDateAuthority,
           primeAuthority: 'ORION_VALIDATED_USASPENDING_FY2026_SIDECAR',
           subawardAuthority: 'USAspending.gov',
           primeSidecarDb: prime.sidecarDb,
