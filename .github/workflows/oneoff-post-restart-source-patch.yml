@@ -30,7 +30,6 @@ jobs:
                   raise SystemExit(f'PATCH_ANCHOR_NOT_FOUND:{path}:{old[:120]!r}')
               p.write_text(text.replace(old, new, 1), encoding='utf-8')
 
-          # Protected-action matching must not match SEND inside SENDING.
           replace_once(
               'SERVICES/governance/PolicyEngineService.js',
               '''function escapeRegExp(value) {
@@ -56,7 +55,6 @@ jobs:
               '    const structuredApprovalPattern = matchPattern(structured, approvals.approvalPatterns);',
               '    const structuredApprovalPattern = matchStructuredApprovalPattern(structured, approvals.approvalPatterns);')
 
-          # Never omit a current CEO approval merely because it is older than the newest 50 history rows.
           replace_once(
               'SERVICES/digital_coo/MilesCommandCenter.js',
               '''function dashboardOperationSnapshot() {
@@ -87,20 +85,7 @@ jobs:
               return {
                 operations,
           ''')
-          replace_once(
-              'SERVICES/digital_coo/MilesCommandCenter.js',
-              '''        displayed: Math.min(50, queue.operations.length),
-                fileBytes: stat.size,
-                historyOmitted: false
-          ''',
-              '''        displayed: operations.length,
-                pendingApprovalCount: queue.operations.filter(isPendingApprovalOperation).length,
-                pendingApprovalsAlwaysIncluded: true,
-                fileBytes: stat.size,
-                historyOmitted: false
-          ''')
 
-          # Do not turn a stale ORION A-code plus expired/invalid expiration into contradictory ACTIVE vs false state.
           replace_once(
               'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
               '''    const expiration = company.expirationDate || pick(raw,["expiration_date","sam_expiration_date"]);
@@ -132,7 +117,6 @@ jobs:
               '''      samRegistration:samRegistrationState,
           ''')
 
-          # Add validated USAspending historical identity fallback and current-SAM enrichment for every resolved UEI.
           replace_once(
               'StartP2GCGrowthBlueprintDemo.js',
               '''const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
