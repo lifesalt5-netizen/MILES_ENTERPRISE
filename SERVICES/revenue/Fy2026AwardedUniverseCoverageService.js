@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const AwardedUniverseCoverageService = require('./AwardedUniverseCoverageService');
+const { AwardedUniverseCoverageService } = require('./AwardedUniverseCoverageService');
 const UsaspendingAwardHistoryStagingService = require('../UsaspendingAwardHistoryStagingService');
 const UsaspendingAwardAggregationService = require('../orion/UsaspendingAwardAggregationService');
 
