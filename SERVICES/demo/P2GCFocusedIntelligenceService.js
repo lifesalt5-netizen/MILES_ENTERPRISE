@@ -52,7 +52,8 @@ class P2GCFocusedIntelligenceService {
       const unified = this.unifiedOpportunities.build(model, list(model.opportunities?.publicSourceAdditions), accessContext);
       return {
         ...base,
-        status:unified.status,
+        status:unified.records.length ? unified.status : "NO_CURRENT_MATCHED_OPPORTUNITY_SIGNAL",
+        universalStatus:unified.status,
         records:unified.records,
         markets:unified.markets,
         evidenceLanes:unified.evidenceLanes,
