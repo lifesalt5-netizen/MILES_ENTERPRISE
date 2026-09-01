@@ -1,0 +1,35 @@
+name: Post Restart Truth Closeout
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/governance/PolicyEngineService.js'
+      - 'SERVICES/digital_coo/MilesCommandCenter.js'
+      - 'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js'
+      - 'SERVICES/demo/HistoricalProspectFallbackService.js'
+      - 'StartP2GCGrowthBlueprintDemo.js'
+      - 'TESTS/post_restart_truth_closeout.test.js'
+      - '.github/workflows/post-restart-truth-closeout.yml'
+  workflow_dispatch:
+
+jobs:
+  semantic-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install locked dependencies without native lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Syntax
+        run: |
+          node --check SERVICES/governance/PolicyEngineService.js
+          node --check SERVICES/digital_coo/MilesCommandCenter.js
+          node --check SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js
+          node --check SERVICES/demo/HistoricalProspectFallbackService.js
+          node --check StartP2GCGrowthBlueprintDemo.js
+          node --check TESTS/post_restart_truth_closeout.test.js
+      - name: Post-restart semantic regression
+        run: node TESTS/post_restart_truth_closeout.test.js
