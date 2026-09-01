@@ -1,7 +1,7 @@
 {
-  "id": "miles-revenue-universe-awarded-coverage-20260901-019",
+  "id": "miles-deploy-fy2026-awarded-universe-20260901-020",
   "enabled": true,
-  "job": "REVENUE_UNIVERSE_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the full governed revenue-universe reconciliation on deployed main including PR #441, #442 and #443. Account for every ORION contractor row with canonical/duplicate identity integrity. For awarded coverage, if the governed USAspending prime+subaward manifest is absent, acquire the official awards+subawards CSV ZIP through the existing staging-only USAspending service, wait for completion, validate/download only from official usaspending.gov hosts, then calculate exact UEI-only metrics: unique prime awardee UEIs, unique subcontract awardee UEIs, prime/sub UEI overlap, deduped unique awarded UEIs in either role, awarded UEIs in current master, awarded UEIs missing from current master, and prime/sub in-master and missing separately. Report current master rows, source date range, source row counts, identity coverage gaps, whether exact awarded union exceeds the master, and by how many. Name-fallback metrics must remain separately labeled non-exact. No production ORION/award merge, provider/campaign mutation, email sends, suppression override, DNS/B12 changes, approvals, queue deletion or destructive Git. Publish fresh evidence; fail closed on official-source, staging, extraction, identity, accounting, SQLite or safety failure."
+  "note": "Fast-forward the Windows production checkout to main at or beyond e228e5c665e2a165ef41c69427a94d5cde6f36b5, containing PR #445. Restart only the governed MILES runtime components required by the deployment contract, preserve the supervised control bridge, and publish fresh runtime evidence. Preserve production ORION, DATA/runtime, queues, history, credentials and provider state. No campaign activation, email sends, suppression override, DNS/B12 change, approval grant, destructive Git recovery, production database reset or unrelated mutation."
 }
