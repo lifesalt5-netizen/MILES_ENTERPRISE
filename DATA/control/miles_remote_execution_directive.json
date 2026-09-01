@@ -1,7 +1,7 @@
 {
-  "id": "miles-post-restart-infrastructure-health-20260901-009",
+  "id": "miles-post-restart-production-truth-20260901-010",
   "enabled": true,
-  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Post-restart current-state audit after clean governed MILES restart -008 and ORION sidecar -007 GREEN. Verify semantic infrastructure health from the restarted runtime, not just process-online status. Check current dependencies, runtime ownership, freshness and functional probes under the existing audit contract. Preserve all DATA/databases/queues/history/credentials/provider state. No sends, provider mutation, DNS changes, auth bypass, destructive Git recovery, queue deletion, or fabricated health. Publish fresh runtime evidence and keep any unhealthy lane RED."
+  "note": "Run current production truth reconciliation after clean restart -008, infrastructure audit -009, ORION sidecar -007 GREEN, and IONOS live acceptance GREEN. Reconcile actual current production evidence across governed lanes and surface contradictions explicitly. Do not infer GREEN from process online, HTTP 200, CI, or stale evidence. Preserve DATA/databases/queues/history/credentials/providers; do not send mail, mutate providers/campaigns, change DNS, publish website changes, delete queue records, bypass auth, or use destructive Git recovery. Keep UNKNOWN distinct from zero and keep any unproven lane RED/WATCH. Publish fresh runtime evidence."
 }
