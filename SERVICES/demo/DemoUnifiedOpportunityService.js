@@ -80,7 +80,8 @@ function normalizeRecord(row = {}, defaults = {}) {
     qualification:pick(row,['qualification','prospectClaim','fitReason','fit_reason']) || defaults.qualification || null,
     fitScore:Number.isFinite(Number(row.fitScore)) ? Number(row.fitScore) : null,
     confidence:pick(row,['confidence','evidenceConfidence','evidence_confidence']) || defaults.confidence || 'SOURCE_DEPENDENT',
-    freshnessAt:pick(row,['freshnessAt','generatedAt','updatedAt','updated_at','last_seen_at']) || defaults.freshnessAt || null
+    freshnessAt:pick(row,['freshnessAt','generatedAt','updatedAt','updated_at','last_seen_at']) || defaults.freshnessAt || null,
+    collectionPriority:Number.isFinite(Number(defaults.collectionPriority)) ? Number(defaults.collectionPriority) : 1
   };
 }
 
@@ -153,14 +154,16 @@ class DemoUnifiedOpportunityService {
       base.push(normalized);
     };
 
-    for (const row of list(model.opportunities?.liveAndForecast)) addGoverned(row);
-    for (const row of list(model.opportunities?.recompetes)) addGoverned(row,{stage:'RECOMPETE'});
-    for (const row of list(model.opportunities?.similarRecentAwards)) addGoverned(row,{stage:'RECENT_SIMILAR_AWARD',sourceAccess:'PUBLIC_AWARD_HISTORY'});
-    for (const row of list(additions)) addGoverned(row);
+    for (const row of list(model.opportunities?.liveAndForecast)) addGoverned(row,{collectionPriority:0});
+    for (const row of list(model.opportunities?.recompetes)) addGoverned(row,{stage:'RECOMPETE',collectionPriority:2});
+    for (const row of list(model.opportunities?.similarRecentAwards)) addGoverned(row,{stage:'RECENT_SIMILAR_AWARD',sourceAccess:'PUBLIC_AWARD_HISTORY',collectionPriority:3});
+    for (const row of list(additions)) addGoverned(row,{collectionPriority:0});
 
     const records = dedupe(base).sort((a,b) => {
       const score = Number(b.fitScore || 0) - Number(a.fitScore || 0);
       if (score) return score;
+      const collectionPriority = Number(a.collectionPriority || 0) - Number(b.collectionPriority || 0);
+      if (collectionPriority) return collectionPriority;
       const stagePriority = Number(STAGE_PRIORITY[a.stage] ?? 99) - Number(STAGE_PRIORITY[b.stage] ?? 99);
       if (stagePriority) return stagePriority;
       const aDate = clean(a.dueDate || a.postedDate || '9999-12-31');
