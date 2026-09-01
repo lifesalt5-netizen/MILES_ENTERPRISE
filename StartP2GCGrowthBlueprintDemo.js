@@ -8,6 +8,7 @@ const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGr
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
+const DemoSamLiveOpportunityService = require("./SERVICES/demo/DemoSamLiveOpportunityService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
 const P2GCProposalCommandService = require("./SERVICES/proposal/P2GCProposalCommandService");
@@ -19,6 +20,7 @@ const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
 const commercialPreview = new DemoCommercialPreviewService();
 const focused = new P2GCFocusedIntelligenceService();
+const samLive = new DemoSamLiveOpportunityService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
 const proposalCommand = new P2GCProposalCommandService();
@@ -66,6 +68,26 @@ function getModel(term, refresh = false) {
   }
   return model?.ok ? { ...model, cache:{ hit:false, ttlMs:TTL } } : model;
 }
+function buyerAgencies(model) {
+  return [...new Set([
+    ...(Array.isArray(model?.buyerIntelligence?.records) ? model.buyerIntelligence.records.map(x => x?.agency) : []),
+    ...(Array.isArray(model?.agencyAlignment?.agencies) ? model.agencyAlignment.agencies.map(x => typeof x === "string" ? x : x?.agency) : [])
+  ].filter(Boolean))];
+}
+async function enrichOpportunitySources(model) {
+  if (!model?.ok) return model;
+  const sam = await samLive.fetchForCompany(model.profile || {}, { buyerAgencies:buyerAgencies(model) });
+  const existing = Array.isArray(model.opportunities?.publicSourceAdditions) ? model.opportunities.publicSourceAdditions : [];
+  model.opportunities = {
+    ...(model.opportunities || {}),
+    publicSourceAdditions:[...existing, ...(Array.isArray(sam.records) ? sam.records : [])],
+    sourceCoverage:{
+      ...(model.opportunities?.sourceCoverage || {}),
+      federalSam:{ ...sam.sourceCoverage, status:sam.status, errors:sam.errors || [] }
+    }
+  };
+  return model;
+}
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
@@ -81,7 +103,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","live_sam_opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
@@ -116,14 +138,14 @@ const server = http.createServer((req, res) => {
     const term = String(url.searchParams.get("term") || "").trim();
     const type = String(url.searchParams.get("type") || "").trim();
     if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
-    try {
+    (async () => {
       const model = getModel(term, url.searchParams.get("refresh") === "1");
       if (!model?.ok) return json(res, 404, model);
+      if (/^opportunit/i.test(type)) await enrichOpportunitySources(model);
       const result = focused.build(type, model);
       return json(res, result?.ok ? 200 : 400, result);
-    } catch (error) {
-      return json(res, 500, { ok:false, status:"FOCUSED_INTELLIGENCE_FAILED", error:error.message });
-    }
+    })().catch(error => json(res, 500, { ok:false, status:"FOCUSED_INTELLIGENCE_FAILED", error:error.message }));
+    return;
   }
 
   if (req.method === "GET" && pathname === "/api/teaming") {
