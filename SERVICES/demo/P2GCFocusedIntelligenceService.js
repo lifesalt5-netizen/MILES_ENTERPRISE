@@ -1,10 +1,16 @@
 "use strict";
 
+const DemoUnifiedOpportunityService = require("./DemoUnifiedOpportunityService");
+
 function clean(value) { return String(value == null ? "" : value).trim(); }
 function list(value) { return Array.isArray(value) ? value.filter(Boolean) : []; }
 function uniq(values) { return [...new Set((values || []).map(clean).filter(Boolean))]; }
 
 class P2GCFocusedIntelligenceService {
+  constructor(options = {}) {
+    this.unifiedOpportunities = options.unifiedOpportunityService || new DemoUnifiedOpportunityService();
+  }
+
   normalizeType(type) {
     const value = clean(type).toLowerCase();
     if (["opportunity", "opportunities"].includes(value)) return "opportunities";
@@ -43,16 +49,21 @@ class P2GCFocusedIntelligenceService {
     const base = this.common(model, normalized);
 
     if (normalized === "opportunities") {
-      const records = list(model.opportunities?.liveAndForecast);
+      const unified = this.unifiedOpportunities.build(model, list(model.opportunities?.publicSourceAdditions));
       return {
         ...base,
-        status:records.length ? "ORION_OPPORTUNITY_SIGNALS_AVAILABLE" : "NO_CURRENT_MATCHED_OPPORTUNITY_SIGNAL",
-        records,
+        status:unified.status,
+        records:unified.records,
+        markets:unified.markets,
+        totals:unified.totals,
+        taxonomy:unified.taxonomy,
+        opportunityRules:unified.rules,
         agencies:list(model.agencyAlignment?.agencies),
         recommendations:list(model.recommendations?.opportunity),
         immediateActions:list(model.recommendations?.immediate),
         pathway:model.pathway || null,
-        disclosure:"Opportunity records are prospect-safe ORION linked signals. Qualification, live status, due date, scope, and procurement details must be validated before bid action."
+        sourceCoverage:model.opportunities?.sourceCoverage || null,
+        disclosure:"Unified opportunity intelligence is organized by Federal / SLED / Local market and by Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stage. Login-gated sources are never represented as live; where direct access is unavailable, public award/history evidence is used and labeled."
       };
     }
 
