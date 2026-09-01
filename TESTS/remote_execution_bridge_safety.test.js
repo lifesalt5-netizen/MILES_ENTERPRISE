@@ -11,6 +11,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY',
   'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY',
   'COO_RUNTIME_APPROVAL_AUDIT',
+  'FEDERAL_SOURCE_READINESS_AUDIT',
   'INBOX_PLACEMENT_AUDIT',
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
@@ -19,12 +20,31 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'IONOS_INBOX_CLEANUP_PLAN',
   'IONOS_SPAM_RESCUE_EXECUTE',
   'IONOS_SPAM_RESCUE_PLAN',
+  'ORION_CONTRACT_SIDECAR_BUILD',
+  'ORION_OFFICIAL_ARCHIVE_INSPECTION',
+  'ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING',
+  'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN',
+  'ORION_REFRESH_TARGET_SCHEMA_AUDIT',
   'PRODUCTION_TRUTH_RECONCILIATION',
-  'REVENUE_ACCEPTANCE_SPRINT'
+  'REVENUE_ACCEPTANCE_SPRINT',
+  'SAM_BULK_EXTRACT_ACQUIRE_STAGING',
+  'SAM_BULK_SCHEMA_AUDIT',
+  'SAM_CONTACT_RECOVERY_SOURCE_AUDIT',
+  'SAM_CURRENT_SEND_COLLISION_AUDIT',
+  'SAM_EMAIL_RECOVERY',
+  'SAM_PUBLIC_EMAIL_DISCOVERY',
+  'SAM_QUALIFIED_UNIVERSE_BUILD',
+  'SAM_SQLITE_EMAIL_RECOVERY'
 ]);
 assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY, ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_RUNTIME_APPROVAL_AUDIT, ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']]);
+assert.deepStrictEqual(bridge.JOBS.FEDERAL_SOURCE_READINESS_AUDIT, ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]);
+assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN, ['node', ['SCRIPTS/PlanOrionOfficialSourceAcquisition.js']]);
+assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING, ['node', ['SCRIPTS/AcquireOrionOfficialSourceToStaging.js']]);
+assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_ARCHIVE_INSPECTION, ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']]);
+assert.deepStrictEqual(bridge.JOBS.ORION_REFRESH_TARGET_SCHEMA_AUDIT, ['node', ['SCRIPTS/AuditOrionRefreshTargetSchema.js']]);
+assert.deepStrictEqual(bridge.JOBS.ORION_CONTRACT_SIDECAR_BUILD, ['node', ['SCRIPTS/BuildOrionContractSidecar.js']]);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY'}).ok, true);
 assert.strictEqual(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[0], 'powershell.exe');
 assert(bridge.JOBS.CONTROL_OWNER_WATCHDOG_INSTALL[1].includes('SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1'));
@@ -56,6 +76,7 @@ assert.strictEqual(bridge.bridgeSourceChanged(bridge.STARTUP_SOURCE_DIGEST), fal
 assert.deepStrictEqual(bridge.baseEvidence({ id: 'x', job: 'REVENUE_ACCEPTANCE_SPRINT' }, '2026-01-01T00:00:00.000Z', 'STARTED').phase, 'STARTED');
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INFRASTRUCTURE_HEALTH_AUDIT'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FEDERAL_SOURCE_READINESS_AUDIT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_INSTALL'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_ENSURE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE'}).ok, true);
@@ -66,6 +87,8 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_EXECUTE'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'SAM_PUBLIC_EMAIL_DISCOVERY'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:false,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, false);
 assert.strictEqual(typeof bridge.publishEvidenceSerialized, 'function');
