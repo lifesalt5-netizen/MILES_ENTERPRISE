@@ -1,9 +1,10 @@
 'use strict';
 
+const gsaEbuyPolicy = require('../governance/GsaEbuyAccessPolicyService');
+
 function clean(v) { return String(v == null ? '' : v).trim(); }
 function norm(v) { return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
 function list(v) { return Array.isArray(v) ? v.filter(Boolean) : (v == null || v === '' ? [] : [v]); }
-function uniq(v) { return [...new Set((v || []).map(clean).filter(Boolean))]; }
 function pick(row, names) { for (const n of names) if (row && row[n] != null && clean(row[n]) !== '') return row[n]; return null; }
 function dateOnly(v) { const d = new Date(v || 0); return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0,10); }
 
@@ -84,10 +85,30 @@ function dedupe(records = []) {
 class DemoUnifiedOpportunityService {
   build(model = {}, additions = []) {
     const base = [];
-    for (const row of list(model.opportunities?.liveAndForecast)) base.push(normalizeRecord(row));
-    for (const row of list(model.opportunities?.recompetes)) base.push(normalizeRecord(row,{stage:'RECOMPETE'}));
-    for (const row of list(model.opportunities?.similarRecentAwards)) base.push(normalizeRecord(row,{stage:'RECENT_SIMILAR_AWARD',sourceAccess:'PUBLIC_AWARD_HISTORY'}));
-    for (const row of list(additions)) base.push(normalizeRecord(row));
+    const blockedGatedSources = [];
+
+    const addGoverned = (row, defaults = {}) => {
+      const normalized = normalizeRecord(row, defaults);
+      const access = gsaEbuyPolicy.evaluate({ ...row, ...normalized });
+      if (!access.allowed) {
+        blockedGatedSources.push({
+          source:normalized.source || null,
+          sourceUrl:normalized.sourceUrl || null,
+          status:access.status,
+          reason:access.reason,
+          fallbackMode:access.fallbackMode
+        });
+        return;
+      }
+      if (access.requiredLabel) normalized.sourceAccess = access.requiredLabel;
+      normalized.accessDecisionStatus = access.status;
+      base.push(normalized);
+    };
+
+    for (const row of list(model.opportunities?.liveAndForecast)) addGoverned(row);
+    for (const row of list(model.opportunities?.recompetes)) addGoverned(row,{stage:'RECOMPETE'});
+    for (const row of list(model.opportunities?.similarRecentAwards)) addGoverned(row,{stage:'RECENT_SIMILAR_AWARD',sourceAccess:'PUBLIC_AWARD_HISTORY'});
+    for (const row of list(additions)) addGoverned(row);
 
     const records = dedupe(base).sort((a,b) => {
       const score = Number(b.fitScore || 0) - Number(a.fitScore || 0);
@@ -109,10 +130,22 @@ class DemoUnifiedOpportunityService {
       records,
       totals:{ all:records.length, federal:byMarket.FEDERAL.total, sled:byMarket.SLED.total, local:byMarket.LOCAL.total },
       taxonomy:{ markets:MARKETS, stages:STAGES },
+      sourceAccessGovernance:{
+        policy:'GSA_EBUY_ACCESS_GOVERNANCE',
+        blockedUnauthorizedLiveEbuyRecords:blockedGatedSources.length,
+        blockedGatedSources,
+        fallbackMode:'PUBLIC_GSA_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY'
+      },
       rules:{
         publicSourcesPreferred:true,
+        bypassAuthentication:false,
+        bypassAccessControls:false,
+        unauthorizedAuthenticatedScraping:false,
+        liveEbuyRequiresAuthorizedAccessAndEvidence:true,
+        liveEbuyMustRemainWithinGrantedContractSinCategoryScope:true,
         loginGatedSourcesNeverPretendedLive:true,
         gsaFallback:'PUBLIC_GSA_HOLDER_SIN_VEHICLE_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY',
+        gsaFallbackLabel:'GSA_PUBLIC_HISTORICAL_PROXY',
         noFitBehavior:'SHOW_NO_QUALIFIED_FITS_WITH_SOURCE_COVERAGE_INSTEAD_OF_BROKEN_BLANK',
         lockedPreview:'REVEAL_SMALL_NUMBER_OF_KNOWN_MATCHES_AND_LOCK_ONLY_REAL_REMAINDER'
       }
