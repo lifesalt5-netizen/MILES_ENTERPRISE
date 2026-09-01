@@ -1,0 +1,61 @@
+name: Patch FY2026 Awarded Coverage Constructor
+
+on:
+  push:
+    branches:
+      - fix/fy2026-awarded-coverage-constructor-20260901
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/fy2026-awarded-coverage-constructor-20260901
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
+      - name: Patch named constructor import and default-factory regression
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js')
+          s = p.read_text()
+          old = "const AwardedUniverseCoverageService = require('./AwardedUniverseCoverageService');\n"
+          new = "const { AwardedUniverseCoverageService } = require('./AwardedUniverseCoverageService');\n"
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif new not in s:
+              raise SystemExit('constructor import anchor missing')
+          p.write_text(s)
+
+          t = Path('TESTS/Test_Fy2026AwardedUniverseCoverageService.js')
+          x = t.read_text()
+          anchor = "  const common = {\n"
+          regression = "  const defaultFactoryProbe = new Fy2026AwardedUniverseCoverageService({ rootDir: root, Database: FakeDatabase });\n  assert.doesNotThrow(() => defaultFactoryProbe.coverageFactory());\n\n"
+          if regression not in x:
+              if anchor not in x:
+                  raise SystemExit('test factory anchor missing')
+              x = x.replace(anchor, regression + anchor, 1)
+          t.write_text(x)
+          PY
+      - name: Validate bounded constructor repair
+        run: |
+          node --check SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
+          node --check TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node TESTS/remote_execution_bridge_safety.test.js
+          grep -F "const { AwardedUniverseCoverageService } = require('./AwardedUniverseCoverageService');" SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
+      - name: Commit bounded repair
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'MILES CI'
+          git config user.email 'miles-ci@local.invalid'
+          git add SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          git commit -m 'Use named awarded coverage constructor in FY2026 service'
+          git push origin HEAD:fix/fy2026-awarded-coverage-constructor-20260901
