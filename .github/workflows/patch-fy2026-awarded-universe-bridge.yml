@@ -21,19 +21,42 @@ jobs:
           cache: 'npm'
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
-      - name: Patch fixed bridge job
+      - name: Patch fixed bridge job and exact allowlist test
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('StartMilesRemoteExecutionBridge.js')
-          s = p.read_text()
+
+          bridge = Path('StartMilesRemoteExecutionBridge.js')
+          s = bridge.read_text()
           anchor = "  REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']],\n"
           insert = "  FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']],\n"
           if insert not in s:
               if anchor not in s:
                   raise SystemExit('bridge anchor missing')
               s = s.replace(anchor, anchor + insert, 1)
-              p.write_text(s)
+              bridge.write_text(s)
+
+          test = Path('TESTS/remote_execution_bridge_safety.test.js')
+          t = test.read_text()
+          list_anchor = "  'FEDERAL_SOURCE_READINESS_AUDIT',\n"
+          list_insert = "  'FY2026_AWARDED_UNIVERSE_COVERAGE',\n"
+          if list_insert not in t:
+              if list_anchor not in t:
+                  raise SystemExit('allowlist test anchor missing')
+              t = t.replace(list_anchor, list_anchor + list_insert, 1)
+          job_anchor = "assert.deepStrictEqual(bridge.JOBS.REVENUE_UNIVERSE_RECONCILIATION, ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]);\n"
+          job_insert = "assert.deepStrictEqual(bridge.JOBS.FY2026_AWARDED_UNIVERSE_COVERAGE, ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]);\n"
+          if job_insert not in t:
+              if job_anchor not in t:
+                  raise SystemExit('job assertion anchor missing')
+              t = t.replace(job_anchor, job_anchor + job_insert, 1)
+          validate_anchor = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_UNIVERSE_RECONCILIATION'}).ok, true);\n"
+          validate_insert = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FY2026_AWARDED_UNIVERSE_COVERAGE'}).ok, true);\n"
+          if validate_insert not in t:
+              if validate_anchor not in t:
+                  raise SystemExit('validate assertion anchor missing')
+              t = t.replace(validate_anchor, validate_anchor + validate_insert, 1)
+          test.write_text(t)
           PY
       - name: Validate
         run: |
@@ -41,6 +64,7 @@ jobs:
           node --check SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
           node --check SCRIPTS/RunFy2026AwardedUniverseCoverage.js
           node --check TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node --check TESTS/remote_execution_bridge_safety.test.js
           node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
           node TESTS/remote_execution_bridge_safety.test.js
           grep -F "FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]" StartMilesRemoteExecutionBridge.js
@@ -52,6 +76,6 @@ jobs:
           fi
           git config user.name 'MILES CI'
           git config user.email 'miles-ci@local.invalid'
-          git add StartMilesRemoteExecutionBridge.js
+          git add StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js
           git commit -m 'Allowlist FY2026 awarded universe coverage job'
           git push origin HEAD:fix/usaspending-partitioned-fy2026-awarded-universe-20260901
