@@ -3,6 +3,7 @@
 require('dotenv').config();
 const path = require('path');
 const IonosAllFolderReconciliationService = require('../SERVICES/revenue/IonosAllFolderReconciliationService');
+const IonosPitchJunkClassifier = require('../SERVICES/revenue/IonosPitchJunkClassifier');
 const governed = require('../CONNECTORS/IONOS/imap_governed');
 
 function configureExecutionGates(execute) {
@@ -75,7 +76,7 @@ async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const execute = process.argv.includes('--execute');
   configureExecutionGates(execute);
-  const service = new IonosAllFolderReconciliationService({ root });
+  const service = new IonosAllFolderReconciliationService({ root, classifier:new IonosPitchJunkClassifier() });
   const result = await service.run({ execute });
   console.log(JSON.stringify(result, null, 2));
   console.log(`IONOS_MOVE_DIAGNOSTICS=${JSON.stringify(compactDiagnostics(result, execute))}`);
