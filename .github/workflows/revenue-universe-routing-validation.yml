@@ -7,7 +7,10 @@ on:
       - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
       - 'CORE/ExecutionActionContracts.js'
       - 'CONNECTORS/MILES/connector.js'
+      - 'StartMilesRemoteExecutionBridge.js'
+      - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
+      - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
 
@@ -22,20 +25,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
       - name: Syntax check
         run: |
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check SCRIPTS/RunRevenueUniverseReconciliation.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
+          node --check TESTS/remote_execution_bridge_safety.test.js
       - name: Revenue universe routing regression
         run: node TESTS/Test_RevenueUniverseMissionRouting.js
+      - name: Remote bridge allowlist regression
+        run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety assertions
         run: |
           node - <<'NODE'
           const fs = require('fs');
           const source = fs.readFileSync('SERVICES/revenue/RevenueUniverseReconciliationService.js','utf8');
+          const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
+          const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
           const required = [
             'productionOrionModified: false',
             'providerMutation: false',
@@ -47,8 +60,13 @@ jobs:
           for (const token of required) {
             if (!source.includes(token)) throw new Error('Missing safety assertion: ' + token);
           }
-          if (source.includes('uploadLeads(') || source.includes('activateCampaign(') || source.includes('sendEmail(')) {
-            throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
+          for (const text of [source, runner]) {
+            if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
+              throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
+            }
+          }
+          if (!bridge.includes("REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]")) {
+            throw new Error('Governed revenue universe runtime job is not fixed-allowlisted.');
           }
           console.log('REVENUE_UNIVERSE_STATIC_SAFETY: GREEN');
           NODE
