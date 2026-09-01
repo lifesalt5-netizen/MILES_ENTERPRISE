@@ -4,7 +4,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
-const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
+const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintCurrentEvidenceService");
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","current_sam_identity_reconciliation","commercial_preview","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
