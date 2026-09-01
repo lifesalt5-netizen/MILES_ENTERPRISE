@@ -31,7 +31,7 @@
       <p id="welcomeText">Enter a company to build a focused, evidence-backed intelligence view.</p>
       <p class="disclosure">Read-only decision support. Unavailable facts remain unavailable and modeled signals are labeled.</p>
     </section>
-    <section id="loading" class="loading hidden">Building current ORION intelligence…</section>
+    <section id="loading" class="loading hidden">Building current government-market intelligence…</section>
     <section id="error" class="error hidden"></section>
 
     <div id="report" class="hidden">
@@ -61,19 +61,46 @@ const money=v=>v==null?"Unavailable":"$"+Number(v).toLocaleString("en-US");
 const list=(items,empty)=>items&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>${esc(empty)}</p>`;
 const mode=location.pathname.includes("vehicles")?"vehicles":location.pathname.includes("recompetes")?"recompetes":"opportunities";
 const config={
-  opportunities:{title:"Opportunity Intelligence™",sub:"Live and forecast opportunity signals, agency alignment, qualification context, and recommended capture actions.",welcome:"Find opportunity signals that align to the prospect's current government-market evidence.",primary:"Matched Live / Forecast Opportunity Signals",secondary:"Agency Alignment"},
+  opportunities:{title:"Opportunity Intelligence™",sub:"Company-specific Federal, SLED and Local opportunity intelligence across open solicitations, RFIs, Sources Sought, pre-solicitations, forecasts, recompetes and recent comparable awards.",welcome:"Find current and future government-market opportunities that fit the prospect, plus recent comparable awards where direct live access is gated.",primary:"Federal / SLED / Local Opportunity Intelligence",secondary:"Agency Alignment"},
   vehicles:{title:"Government Contract Vehicle Intelligence™",sub:"Current vehicle evidence, vehicle gaps, readiness, agency context, and recommended vehicle actions.",welcome:"Assess current contract-vehicle position and the next evidence-backed optimization actions.",primary:"Contract Vehicle Position",secondary:"Vehicle Readiness / Agency Context"},
   recompetes:{title:"Recompete Intelligence™",sub:"Current ORION recompete signals, agencies, partner strategy, and explicit coverage limitations.",welcome:"Surface current recompete signals without inventing incumbents, dates, values, or alert coverage.",primary:"Recompete Signals",secondary:"Agency / Coverage Intelligence"}
 }[mode];
 document.title=config.title+" | P2GC";$("pageTitle").textContent=config.title;$("pageSub").textContent=config.sub;$("welcomeTitle").textContent=config.title;$("welcomeText").textContent=config.welcome;$("primaryTitle").textContent=config.primary;$("secondaryTitle").textContent=config.secondary;$("reportEyebrow").textContent=config.title.toUpperCase();
-function opportunityTable(records){return records&&records.length?`<div class="table-wrap"><table><thead><tr><th>Opportunity</th><th>Source</th><th>Status</th><th>Due date</th><th>Qualification</th></tr></thead><tbody>${records.map(r=>`<tr><td><strong>${esc(r.title||"Unavailable")}</strong></td><td>${esc(r.source||"Unavailable")}</td><td>${esc(r.status||"Unavailable")}</td><td>${esc(r.dueDate||"Unavailable")}</td><td>${esc(r.qualification||"")}</td></tr>`).join("")}</tbody></table></div>`:"<p>No current matched opportunity signal is available in the prospect-safe ORION record.</p>";}
+
+const stageLabels={OPEN:"Open Solicitations",RFI:"RFIs",SOURCES_SOUGHT:"Sources Sought",PRESOLICITATION:"Pre-Solicitations",DRAFT:"Draft RFP / RFQ",FORECAST:"Forecasted / Planned",RECOMPETE:"Recompetes / Expirations",RECENT_SIMILAR_AWARD:"Recent Similar Awards / Missed Work",SPECIAL_NOTICE:"Special Notices",UNKNOWN:"Other Qualified Signals"};
+const stageOrder=["OPEN","RFI","SOURCES_SOUGHT","PRESOLICITATION","DRAFT","FORECAST","RECOMPETE","RECENT_SIMILAR_AWARD","SPECIAL_NOTICE","UNKNOWN"];
+const marketLabels={FEDERAL:"Federal Opportunities",SLED:"State / SLED Opportunities",LOCAL:"Local Opportunities"};
+
+function opportunityTable(records){return records&&records.length?`<div class="table-wrap"><table><thead><tr><th>Opportunity / Signal</th><th>Agency / Buyer</th><th>Source</th><th>Stage</th><th>Due / Expected</th><th>Why It Fits</th></tr></thead><tbody>${records.map(r=>`<tr><td><strong>${esc(r.title||"Unavailable")}</strong>${r.id?`<br><small>${esc(r.id)}</small>`:""}</td><td>${esc(r.agency||"Unavailable")}</td><td>${r.sourceUrl?`<a href="${esc(r.sourceUrl)}" target="_blank" rel="noopener">${esc(r.source||"Public source")}</a>`:esc(r.source||"Public / staged source")}</td><td>${esc(stageLabels[r.stage]||r.stage||"Unavailable")}</td><td>${esc(r.dueDate||r.postedDate||"Unavailable")}</td><td>${esc(r.qualification||"Qualified by current company-market evidence; validate scope before pursuit.")}</td></tr>`).join("")}</tbody></table></div>`:"<p>No qualified records in this stage from the currently connected public sources.</p>";}
+
+function teaserStage(records,stage){
+  const known=records||[];
+  if(!known.length)return "";
+  const visible=known.slice(0,3);
+  const locked=Math.max(0,known.length-visible.length);
+  return `<div style="margin:18px 0 28px"><h3>${esc(stageLabels[stage]||stage)} <small>(${known.length})</small></h3>${opportunityTable(visible)}${locked?`<div class="locked-preview" style="margin-top:10px;padding:14px;border:1px dashed #aab4c3;border-radius:10px;opacity:.72"><strong>${locked} additional known ${esc(stageLabels[stage]||stage).toLowerCase()} match${locked===1?"":"es"} locked.</strong><br><small>P2GC reveals a proof sample in the demo and preserves the remaining verified inventory for the full engagement.</small></div>`:""}</div>`;
+}
+
+function marketSection(key,market){
+  const m=market||{total:0,byStage:{}};
+  const groups=stageOrder.map(stage=>teaserStage((m.byStage||{})[stage]||[],stage)).filter(Boolean).join("");
+  const noFit=`<p><strong>No qualified ${esc(marketLabels[key]||key)} fits were found from the currently connected sources for this company.</strong></p><p class="disclosure">This is a valid no-fit result, not a broken blank. Source coverage and freshness still determine how complete the conclusion can be.</p>`;
+  return `<section style="margin:24px 0"><div class="section-head"><div><div class="eyebrow">${esc(key)}</div><h2>${esc(marketLabels[key]||key)}</h2></div><span class="pill modeled">${Number(m.total||0)} MATCH${Number(m.total||0)===1?"":"ES"}</span></div>${groups||noFit}</section>`;
+}
+
+function opportunityDashboard(m){
+  const totals=m.totals||{};
+  const summary=`<div class="meta-grid" style="margin-bottom:18px">${[["Federal",totals.federal||0],["SLED / State",totals.sled||0],["Local",totals.local||0],["All Qualified Signals",totals.all||0]].map(x=>`<div><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join("")}</div>`;
+  return summary+["FEDERAL","SLED","LOCAL"].map(k=>marketSection(k,(m.markets||{})[k])).join("");
+}
+
 function recompeteTable(records){return records&&records.length?`<div class="table-wrap"><table><thead><tr><th>Recompete</th><th>Agency</th><th>Expected date</th><th>Value</th><th>Evidence</th></tr></thead><tbody>${records.map(r=>`<tr><td><strong>${esc(r.title||"Unavailable")}</strong></td><td>${esc(r.agency||"Unavailable")}</td><td>${esc(r.date||"Unavailable")}</td><td>${money(r.value)}</td><td>${esc(r.qualification||r.signalType||"Current ORION signal")}</td></tr>`).join("")}</tbody></table></div>`:"<p>No current recompete signal is available in the prospect-safe ORION record.</p>";}
 function agencyList(items){return items&&items.length?items.map(a=>typeof a==="string"?`<p><strong>${esc(a)}</strong></p>`:`<p><strong>${esc(a.agency||"Unavailable")}</strong>${a.fitScore==null?"":` — ${a.fitScore}% modeled alignment`}<br><small>${esc(a.basis||"")}</small></p>`).join(""):"<p>No agency-alignment evidence is currently available.</p>";}
 function render(m){
   $("companyName").textContent=m.prospect.companyName||m.prospect.uei||"Prospect";$("readiness").textContent=m.prospect.readiness==null?"—":m.prospect.readiness;$("status").textContent=m.status;
   $("profileMeta").innerHTML=[["UEI",m.prospect.uei||"Unavailable"],["CAGE",m.prospect.cage||"Unavailable"],["SAM",m.prospect.samStatus||"Unavailable"],["GSA",m.prospect.gsaStatus||"Unavailable"]].map(x=>`<div><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join("");
   if(mode==="opportunities"){
-    $("primary").innerHTML=opportunityTable(m.records);$("secondary").innerHTML=agencyList(m.agencies);$("actions").innerHTML=list([...(m.recommendations||[]),...(m.immediateActions||[])],"No additional opportunity action is defensible from the current record.");$("capability").innerHTML=`<p>Current matched signals: <strong>${(m.records||[]).length}</strong>. Pathway: <strong>${esc(m.pathway?.title||"Unavailable")}</strong>.</p>`;
+    $("primary").innerHTML=opportunityDashboard(m);$("secondary").innerHTML=agencyList(m.agencies);$("actions").innerHTML=list([...(m.recommendations||[]),...(m.immediateActions||[])],"No additional opportunity action is defensible from the current record.");$("capability").innerHTML=`<p>Qualified opportunity/future-demand signals: <strong>${Number(m.totals?.all||0)}</strong>. Federal: <strong>${Number(m.totals?.federal||0)}</strong>; SLED: <strong>${Number(m.totals?.sled||0)}</strong>; Local: <strong>${Number(m.totals?.local||0)}</strong>.</p><p><strong>GSA/eBuy rule:</strong> login-gated task-order access is never represented as live. Public GSA evidence and recent comparable award history are used to show likely missed work and buyer/vehicle patterns.</p>`;
   } else if(mode==="vehicles"){
     $("primary").innerHTML=`<h3>Current Vehicles</h3>${list(m.currentVehicles,"No current vehicle identified in the ORION prospect record.")}<h3>Vehicle Gaps</h3>${list(m.vehicleGaps,"No vehicle-specific gap is identified from current evidence.")}`;$("secondary").innerHTML=`${m.readiness?`<p><strong>Vehicle readiness:</strong> ${esc(m.readiness.score)}%</p>`:""}${agencyList(m.agencies)}`;$("actions").innerHTML=list(m.recommendations,"No vehicle recommendation is defensible from the current record.");$("capability").innerHTML=`<p>Current vehicle records: <strong>${(m.currentVehicles||[]).length}</strong>. Recommendations: <strong>${(m.recommendations||[]).length}</strong>.</p>`;
   } else {
@@ -81,7 +108,7 @@ function render(m){
   }
   $("disclosure").textContent=m.disclosure||m.evidence?.disclosure||"Validate source-sensitive facts before external reliance.";$("generatedAt").textContent="Generated "+new Date(m.generatedAt).toLocaleString();$("welcome").classList.add("hidden");$("report").classList.remove("hidden");
 }
-async function run(){const term=$("term").value.trim();if(!term)return;$("error").classList.add("hidden");$("report").classList.add("hidden");$("welcome").classList.add("hidden");$("loading").classList.remove("hidden");try{const r=await fetch(`/api/intelligence?type=${encodeURIComponent(mode)}&term=${encodeURIComponent(term)}`,{cache:"no-store"});const m=await r.json();if(!r.ok||!m.ok)throw new Error(m.message||m.error||m.status||"Unable to build intelligence");render(m);}catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");}finally{$("loading").classList.add("hidden");}}
+async function run(){const term=$("term").value.trim();if(!term)return;$("error").classList.add("hidden");$("report").classList.add("hidden");$("welcome").classList.add("hidden");$("loading").classList.remove("hidden");try{const r=await fetch(`/api/intelligence?type=${encodeURIComponent(mode)}&term=${encodeURIComponent(term)}&refresh=1`,{cache:"no-store"});const m=await r.json();if(!r.ok||!m.ok)throw new Error(m.message||m.error||m.status||"Unable to build intelligence");render(m);}catch(e){$("error").textContent=e.message;$("error").classList.remove("hidden");}finally{$("loading").classList.add("hidden");}}
 $("analyze").addEventListener("click",run);$("term").addEventListener("keydown",e=>{if(e.key==="Enter")run();});
 </script>
 </body>
