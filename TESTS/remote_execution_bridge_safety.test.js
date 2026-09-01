@@ -131,9 +131,11 @@ assert(!src.includes('RemediateNamecheapDmarc'));
 assert(!src.includes('sendReply'));
 
 const infraRunner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'RunInfrastructureHealthAudit.js'), 'utf8');
-assert(infraRunner.includes("mode: 'FORCED_READ_ONLY_PROOF'"));
+assert(infraRunner.includes('arbitraryShell: false'));
 assert(infraRunner.includes('destructiveActionsPerformed: false'));
 assert(infraRunner.includes('providerMutation: false'));
+assert(infraRunner.includes('controlPlaneRestartOnlyWhenSourceNewer: true'));
+assert(infraRunner.includes("restartTargetAllowlisted: 'miles-command-center'"));
 assert(!infraRunner.includes('exec('));
 assert(!infraRunner.includes('shell: true'));
 
