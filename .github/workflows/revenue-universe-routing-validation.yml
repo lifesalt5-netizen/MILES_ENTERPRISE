@@ -6,13 +6,16 @@ on:
       - 'SERVICES/BusinessWorkPlannerService.js'
       - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
       - 'SERVICES/revenue/AwardedUniverseCoverageService.js'
+      - 'SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js'
       - 'CORE/ExecutionActionContracts.js'
       - 'CONNECTORS/MILES/connector.js'
       - 'StartMilesRemoteExecutionBridge.js'
       - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
+      - 'SCRIPTS/RunFy2026AwardedUniverseCoverage.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
       - 'TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js'
       - 'TESTS/Test_AwardedUniverseCoverageIdentity.js'
+      - 'TESTS/Test_Fy2026AwardedUniverseCoverageService.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -36,13 +39,16 @@ jobs:
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
           node --check SERVICES/revenue/AwardedUniverseCoverageService.js
+          node --check SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
           node --check StartMilesRemoteExecutionBridge.js
           node --check SCRIPTS/RunRevenueUniverseReconciliation.js
+          node --check SCRIPTS/RunFy2026AwardedUniverseCoverage.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
           node --check TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
           node --check TESTS/Test_AwardedUniverseCoverageIdentity.js
+          node --check TESTS/Test_Fy2026AwardedUniverseCoverageService.js
           node --check TESTS/remote_execution_bridge_safety.test.js
       - name: Revenue universe routing regression
         run: node TESTS/Test_RevenueUniverseMissionRouting.js
@@ -50,6 +56,8 @@ jobs:
         run: node TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
       - name: Awarded universe identity regression
         run: node TESTS/Test_AwardedUniverseCoverageIdentity.js
+      - name: FY2026 awarded universe regression
+        run: node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety assertions
@@ -58,7 +66,9 @@ jobs:
           const fs = require('fs');
           const source = fs.readFileSync('SERVICES/revenue/RevenueUniverseReconciliationService.js','utf8');
           const awarded = fs.readFileSync('SERVICES/revenue/AwardedUniverseCoverageService.js','utf8');
+          const fyAwarded = fs.readFileSync('SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js','utf8');
           const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
+          const fyRunner = fs.readFileSync('SCRIPTS/RunFy2026AwardedUniverseCoverage.js','utf8');
           const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
           const required = [
             'productionOrionModified: false',
@@ -84,13 +94,29 @@ jobs:
           for (const token of awardRequired) {
             if (!awarded.includes(token)) throw new Error('Missing exact awarded-universe assertion: ' + token);
           }
-          for (const text of [source, awarded, runner]) {
+          const fyRequired = [
+            'ORION_VALIDATED_USASPENDING_FY2026_SIDECAR',
+            "spending_level: ['subawards']",
+            'SUBAWARD_SOURCE_REACHED_500K_CAP',
+            'sourceDatesAligned: true',
+            'exactUniqueAwardedUeisEitherRole',
+            'currentMasterCoveragePercentOfAwardedUniverse',
+            'productionOrionModified: false',
+            'emailSent: false'
+          ];
+          for (const token of fyRequired) {
+            if (!fyAwarded.includes(token)) throw new Error('Missing FY2026 exactness/safety assertion: ' + token);
+          }
+          for (const text of [source, awarded, fyAwarded, runner, fyRunner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
               throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
             }
           }
           if (!bridge.includes("REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]")) {
             throw new Error('Governed revenue universe runtime job is not fixed-allowlisted.');
+          }
+          if (!bridge.includes("FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]")) {
+            throw new Error('Governed FY2026 awarded-universe runtime job is not fixed-allowlisted.');
           }
           console.log('REVENUE_UNIVERSE_STATIC_SAFETY: GREEN');
           NODE
