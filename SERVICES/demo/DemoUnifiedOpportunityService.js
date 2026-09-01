@@ -11,6 +11,18 @@ function dateOnly(v) { const d = new Date(v || 0); return Number.isNaN(d.getTime
 
 const MARKETS = Object.freeze(['FEDERAL','SLED','LOCAL']);
 const STAGES = Object.freeze(['OPEN','RFI','SOURCES_SOUGHT','PRESOLICITATION','DRAFT','FORECAST','RECOMPETE','RECENT_SIMILAR_AWARD','SPECIAL_NOTICE','UNKNOWN']);
+const STAGE_PRIORITY = Object.freeze({
+  OPEN:0,
+  RFI:1,
+  SOURCES_SOUGHT:2,
+  PRESOLICITATION:3,
+  DRAFT:4,
+  FORECAST:5,
+  SPECIAL_NOTICE:6,
+  RECOMPETE:7,
+  RECENT_SIMILAR_AWARD:8,
+  UNKNOWN:9
+});
 
 function stageOf(row = {}) {
   const code = clean(pick(row,['ptype','noticeTypeCode','notice_type_code'])).toLowerCase();
@@ -149,7 +161,11 @@ class DemoUnifiedOpportunityService {
     const records = dedupe(base).sort((a,b) => {
       const score = Number(b.fitScore || 0) - Number(a.fitScore || 0);
       if (score) return score;
-      return clean(a.dueDate).localeCompare(clean(b.dueDate));
+      const stagePriority = Number(STAGE_PRIORITY[a.stage] ?? 99) - Number(STAGE_PRIORITY[b.stage] ?? 99);
+      if (stagePriority) return stagePriority;
+      const aDate = clean(a.dueDate || a.postedDate || '9999-12-31');
+      const bDate = clean(b.dueDate || b.postedDate || '9999-12-31');
+      return aDate.localeCompare(bDate);
     });
 
     const byMarket = {};
