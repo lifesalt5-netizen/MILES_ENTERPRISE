@@ -5,6 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const Service = require('../SERVICES/demo/SamQualifiedProspectFallbackService');
+const DemoTruthReconciliationService = require('../SERVICES/demo/DemoTruthReconciliationService');
 
 function makeRoot(rows, reportOverrides = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sam-prospect-fallback-'));
@@ -75,6 +76,15 @@ const delune = {
   assert.equal(result.evidence.identity.authority, 'SAM_PUBLIC_BULK_QUALIFIED_UNIVERSE');
   assert.equal(result.safety.readOnly, true);
   assert.equal(result.safety.contactsInvented, false);
+
+  const reconciled = new DemoTruthReconciliationService().reconcile(result);
+  assert.equal(reconciled.truthIntegrity.clientSafe, true);
+  assert.deepStrictEqual(reconciled.truthIntegrity.conflicts, []);
+  assert.equal(reconciled.currentState.activeContracts, null);
+  assert.equal(reconciled.currentState.awardCount, null, 'UNKNOWN award count must remain null, never coerced to zero');
+  assert.equal(reconciled.currentState.federalSales, null);
+  assert.equal(reconciled.revenue.current.federal, null);
+  assert.equal(reconciled.vehicles.status, 'VEHICLE_STATUS_UNCONFIRMED');
   service.close();
 }
 
