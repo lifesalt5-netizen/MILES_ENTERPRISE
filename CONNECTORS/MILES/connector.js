@@ -17,6 +17,7 @@ const {
 
 const HANDLER_PATHS = Object.freeze({
   BUSINESS_EXECUTION: "../../SERVICES/BusinessExecutionEngineServiceV2",
+  REVENUE_UNIVERSE_RECONCILIATION: "../../SERVICES/revenue/RevenueUniverseReconciliationService",
   GSA_DATA_EXECUTION: "../../SERVICES/orion/GsaDataExecutionService",
   CAPTURE_CAPACITY_DISCOVERY: "../../SERVICES/revenue/CaptureCapacityAutonomousExecutionService",
   PROVIDER_AUTHORITY: "../../SERVICES/ProviderAuthorityRegistryService",

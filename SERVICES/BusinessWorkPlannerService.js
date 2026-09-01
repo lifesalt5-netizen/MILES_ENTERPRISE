@@ -8,6 +8,9 @@
   - Explicit review-only requests queue no execution work.
   - Scoped safety constraints (for example "do not send to Instantly") do NOT
     convert an otherwise explicit execution mission into a read-only review.
+  - Revenue-universe reconciliation outranks government-data refresh when the
+    CEO is commercializing known contractors, recovering historical leads, or
+    rebuilding addressable-market coverage.
   - Government-data refresh/reconciliation missions use the governed MILES
     government-data execution lane, never generic Instantly inventory reads.
   - Generic business planning never infers protected writes.
@@ -31,7 +34,7 @@ function normalizeObjective(task = {}) {
 
 function hasExecutionDirective(objective = "") {
   const text = String(objective || "");
-  return /\b(execute|run|refresh|reconcile|reconciliation|ingest|pull|harvest|build|rebuild|generate|produce|stage|join|calculate|assign|update|create|route|queue|deploy|implement)\b/i.test(text);
+  return /\b(execute|run|refresh|reconcile|reconciliation|ingest|pull|harvest|build|rebuild|generate|produce|stage|join|calculate|assign|update|create|route|queue|deploy|implement|recover|restore|enrich|qualify|commercialize)\b/i.test(text);
 }
 
 function isExplicitReadOnlyReview(objective = "") {
@@ -51,8 +54,6 @@ function isReadOnlyReview(objective = "") {
   const text = String(objective || "");
   if (isExplicitReadOnlyReview(text)) return true;
 
-  // A localized guardrail is read-only only when the overall request is a
-  // review/audit and contains no affirmative execution directive.
   const reviewSignal = /\b(review|audit|inspect|analy[sz]e|check|assess)\b/i.test(text);
   const scopedNoChange = (
     /\bdo\s+not\s+(?:send|modify|change|publish|launch|activate|pause|delete|create|update|write)\b/i.test(text) ||
@@ -61,6 +62,15 @@ function isReadOnlyReview(objective = "") {
   );
 
   return reviewSignal && scopedNoChange && !hasExecutionDirective(text);
+}
+
+function isRevenueUniverseMission(objective = "") {
+  const text = String(objective || "");
+  const universeSignal = (
+    /\bb12\b|b12[- ]to[- ]instantly|historical\s+b12|lead\s+universe|prospect\s+universe|contractor\s+universe|addressable\s+market|revenue\s+lifecycle|commercial\s+disposition|recoverable\s+lead|recoverable\s+prospect|re[- ]?enrich|decision[- ]?maker|campaign[- ]?ready\s+inventory|market[- ]?coverage|campaign\s+starvation|continuous\s+refill|current\s+(?:~?26k|26,?000)|361,?873/.test(text.toLowerCase())
+  );
+  const revenueSignal = /\b(revenue|prospect|lead|contractor|company|contact|outreach|campaign|commercial|enrichment|verification|addressable|decision[- ]?maker)\b/i.test(text);
+  return universeSignal && revenueSignal && hasExecutionDirective(text);
 }
 
 function isGovernmentDataMission(objective = "") {
@@ -158,6 +168,24 @@ function executableReadPackages() {
   ];
 }
 
+function revenueUniversePackages(objective) {
+  return [{
+    priority: 1,
+    taskType: "REVENUE_UNIVERSE_RECONCILIATION",
+    department: "Revenue Operations",
+    provider: "MILES",
+    connector: "MILES",
+    system: "MILES",
+    action: "REVENUE_UNIVERSE_RECONCILIATION",
+    capability: "revenue.universe_reconciliation",
+    readOnly: false,
+    requiresKevin: false,
+    description: "Reconcile the durable contractor/company universe into explicit commercial dispositions, current-contact states, enrichment queues, campaign-ready inventory, and evidence-backed market coverage without automatically sending or overriding suppression.",
+    objective,
+    activationPolicy: "STAGING_ONLY_NO_AUTO_SEND_NO_SUPPRESSION_OVERRIDE"
+  }];
+}
+
 function captureRevenuePackages(objective) {
   return [{
     priority: 1,
@@ -198,31 +226,37 @@ class BusinessWorkPlannerService {
   async plan(task = {}) {
     const objective = normalizeObjective(task);
     const readOnly = isReadOnlyReview(objective);
-    const governmentDataMission = !readOnly && isGovernmentDataMission(objective);
-    const captureMission = !readOnly && !governmentDataMission && isCaptureRevenueMission(objective);
+    const revenueUniverseMission = !readOnly && isRevenueUniverseMission(objective);
+    const governmentDataMission = !readOnly && !revenueUniverseMission && isGovernmentDataMission(objective);
+    const captureMission = !readOnly && !revenueUniverseMission && !governmentDataMission && isCaptureRevenueMission(objective);
     const recommendedActions = recommendations();
 
     const workPackages = readOnly
       ? []
-      : governmentDataMission
-        ? governmentDataPackages(objective)
-        : captureMission
-          ? captureRevenuePackages(objective)
-          : executableReadPackages();
+      : revenueUniverseMission
+        ? revenueUniversePackages(objective)
+        : governmentDataMission
+          ? governmentDataPackages(objective)
+          : captureMission
+            ? captureRevenuePackages(objective)
+            : executableReadPackages();
 
     const mode = readOnly
       ? "READ_ONLY_REVIEW"
-      : governmentDataMission
-        ? "GOVERNMENT_DATA_EXECUTION"
-        : captureMission
-          ? "CAPTURE_REVENUE_EXECUTION"
-          : "EXECUTION";
+      : revenueUniverseMission
+        ? "REVENUE_UNIVERSE_RECONCILIATION"
+        : governmentDataMission
+          ? "GOVERNMENT_DATA_EXECUTION"
+          : captureMission
+            ? "CAPTURE_REVENUE_EXECUTION"
+            : "EXECUTION";
 
     return {
       ok: true,
       service: "BusinessWorkPlannerService",
       mode,
       readOnly,
+      revenueUniverseMission,
       governmentDataMission,
       captureMission,
       objective,
@@ -232,8 +266,9 @@ class BusinessWorkPlannerService {
       workPackageCount: workPackages.length,
       workPackages,
       connectorContract: {
-        canonicalConnectors: governmentDataMission || captureMission ? ["MILES"] : ["INSTANTLY"],
+        canonicalConnectors: revenueUniverseMission || governmentDataMission || captureMission ? ["MILES"] : ["INSTANTLY"],
         safeInstantlyReadActions: [...SAFE_INSTANTLY_READ_ACTIONS],
+        revenueUniverseAction: revenueUniverseMission ? "REVENUE_UNIVERSE_RECONCILIATION" : null,
         governmentDataAction: governmentDataMission ? "GSA_DATA_EXECUTION" : null,
         captureAction: captureMission ? "CAPTURE_CAPACITY_DISCOVERY" : null,
         pseudoConnectorsForbidden: ["Revenue"],
@@ -250,7 +285,9 @@ module.exports.SAFE_INSTANTLY_READ_ACTIONS = SAFE_INSTANTLY_READ_ACTIONS;
 module.exports.hasExecutionDirective = hasExecutionDirective;
 module.exports.isExplicitReadOnlyReview = isExplicitReadOnlyReview;
 module.exports.isReadOnlyReview = isReadOnlyReview;
+module.exports.isRevenueUniverseMission = isRevenueUniverseMission;
 module.exports.isGovernmentDataMission = isGovernmentDataMission;
 module.exports.isCaptureRevenueMission = isCaptureRevenueMission;
+module.exports.revenueUniversePackages = revenueUniversePackages;
 module.exports.governmentDataPackages = governmentDataPackages;
 module.exports.captureRevenuePackages = captureRevenuePackages;
