@@ -1,0 +1,59 @@
+{
+  "version": "2026-09-01",
+  "policy": "GSA_EBUY_ACCESS_GOVERNANCE",
+  "status": "MANDATORY",
+  "scope": [
+    "MILES",
+    "ORION",
+    "P2GC_DEMO",
+    "GOVERNMENT_DATA_COLLECTORS",
+    "OPPORTUNITY_INTELLIGENCE",
+    "REVENUE_INTELLIGENCE"
+  ],
+  "rules": {
+    "bypassAuthentication": false,
+    "bypassAccessControls": false,
+    "scrapeBehindAuthenticationWithoutAuthorization": false,
+    "credentialSharingOrImpersonation": false,
+    "liveEbuyRequiresAuthorizedAccess": true,
+    "liveEbuyRequiresAccessEvidence": true,
+    "authorizedAccessMustRemainWithinGrantedContractSinCategoryScope": true,
+    "publicGovernmentSourcesPreferred": true,
+    "gatedFallbackRequired": true,
+    "gatedFallbackMode": "PUBLIC_GSA_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY",
+    "gatedFallbackMayBeLabeledLive": false,
+    "sourceAccessLabelRequired": true,
+    "sourceFreshnessRequired": true,
+    "provenanceRequired": true,
+    "accessDecisionEvidenceRequired": true
+  },
+  "authorizedEbuyMode": {
+    "description": "Use legitimate eBuy access only when P2GC/MILES is authorized for the applicable contractor/account and the requested data is within the granted contract/category/SIN scope.",
+    "allowedUses": [
+      "authorized eBuy notifications",
+      "authorized eBuy request monitoring",
+      "authorized opportunity matching",
+      "authorized client-specific category/SIN analysis"
+    ],
+    "requiredLabel": "AUTHORIZED_EBUY_LIVE"
+  },
+  "publicFallbackMode": {
+    "description": "When live eBuy access is not authorized, reconstruct GSA demand and missed-work intelligence from public GSA contract/SIN/vehicle evidence plus public award history and other lawful public sources.",
+    "requiredLabel": "GSA_PUBLIC_HISTORICAL_PROXY",
+    "permittedOutputs": [
+      "recent comparable GSA-linked awards",
+      "winning contractors",
+      "awarding agencies and offices",
+      "contract/SIN/category patterns",
+      "award values and timing",
+      "target-company capability fit",
+      "missed-revenue and whitespace analysis"
+    ]
+  },
+  "acceptance": {
+    "unauthorizedLiveEbuyRecords": 0,
+    "liveEbuyRecordsWithoutAccessEvidence": 0,
+    "historicalProxyRecordsMisrepresentedAsLive": 0,
+    "gatedSourcesWithSilentBlankInsteadOfFallbackOrExplicitNoEvidence": 0
+  }
+}
