@@ -1,0 +1,57 @@
+name: Patch FY2026 Awarded Universe Bridge
+
+on:
+  push:
+    branches:
+      - fix/usaspending-partitioned-fy2026-awarded-universe-20260901
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/usaspending-partitioned-fy2026-awarded-universe-20260901
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Patch fixed bridge job
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('StartMilesRemoteExecutionBridge.js')
+          s = p.read_text()
+          anchor = "  REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']],\n"
+          insert = "  FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']],\n"
+          if insert not in s:
+              if anchor not in s:
+                  raise SystemExit('bridge anchor missing')
+              s = s.replace(anchor, anchor + insert, 1)
+              p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
+          node --check SCRIPTS/RunFy2026AwardedUniverseCoverage.js
+          node --check TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node TESTS/remote_execution_bridge_safety.test.js
+          grep -F "FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]" StartMilesRemoteExecutionBridge.js
+      - name: Commit bounded patch
+        run: |
+          if git diff --quiet; then
+            echo 'No bridge patch needed.'
+            exit 0
+          fi
+          git config user.name 'MILES CI'
+          git config user.email 'miles-ci@local.invalid'
+          git add StartMilesRemoteExecutionBridge.js
+          git commit -m 'Allowlist FY2026 awarded universe coverage job'
+          git push origin HEAD:fix/usaspending-partitioned-fy2026-awarded-universe-20260901
