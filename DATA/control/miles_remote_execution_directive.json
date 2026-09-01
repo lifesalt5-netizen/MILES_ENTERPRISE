@@ -1,7 +1,7 @@
 {
-  "id": "miles-post-restart-production-truth-20260901-010",
+  "id": "miles-deploy-post-restart-truth-closeout-20260901-011",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run current production truth reconciliation after clean restart -008, infrastructure audit -009, ORION sidecar -007 GREEN, and IONOS live acceptance GREEN. Reconcile actual current production evidence across governed lanes and surface contradictions explicitly. Do not infer GREEN from process online, HTTP 200, CI, or stale evidence. Preserve DATA/databases/queues/history/credentials/providers; do not send mail, mutate providers/campaigns, change DNS, publish website changes, delete queue records, bypass auth, or use destructive Git recovery. Keep UNKNOWN distinct from zero and keep any unproven lane RED/WATCH. Publish fresh runtime evidence."
+  "note": "Deploy current main at/including merge 8686910c12e1f72cd040430653e738720ff9688e from PR #439. Fast-forward production safely, then run the existing consolidated self-maintenance deployment. Re-evaluate runtime approvals under corrected policy so read-only Instantly listAccounts / READ_SENDING_ACCOUNTS is not treated as protected SEND; reconcile only proven false/stale approval state. Restart only governed MILES runtime owners through the existing supervised path and require dashboard recovery. Preserve DATA, databases, queues, runtime history, credentials, provider state, validated ORION sidecar, and production ORION DB. Do not grant approvals, resume protected tasks, delete queue records, mutate providers/campaigns, send mail, change DNS, bypass auth, or use destructive Git recovery. Publish fresh runtime evidence and remain RED on any deployment, ownership, approval-safety, or dashboard failure."
 }
