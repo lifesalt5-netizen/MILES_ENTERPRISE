@@ -81,6 +81,16 @@ function escapeRegExp(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function matchStructuredApprovalPattern(text, patterns = []) {
+  const normalizedText = normalize(text);
+  return patterns.find(pattern => {
+    const token = normalize(pattern);
+    if (!token) return false;
+    const escaped = escapeRegExp(token);
+    return new RegExp(`(^|[^A-Z0-9])${escaped}([^A-Z0-9]|$)`).test(normalizedText);
+  }) || null;
+}
+
 function explicitApprovalPattern(text, patterns = []) {
   const normalized = normalize(text)
     .replace(/^MILES\s*(?:[-—:]\s*)?/, "")
@@ -188,7 +198,7 @@ class PolicyEngineService {
     ) || null;
     const outboundContext = /OUTBOUND|INSTANTLY|CAMPAIGN|SEND/.test(actionableText);
 
-    const structuredApprovalPattern = matchPattern(structured, approvals.approvalPatterns);
+    const structuredApprovalPattern = matchStructuredApprovalPattern(structured, approvals.approvalPatterns);
     const proseApprovalPattern = explicitApprovalPattern(affirmative, approvals.approvalPatterns);
     const governedQualifiedReply = isGovernedQualifiedReply(task);
     const governedSelfMaintenance = isGovernedSelfMaintenance(task);
