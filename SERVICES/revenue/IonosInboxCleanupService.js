@@ -45,10 +45,13 @@ function billingNotice(message = {}) {
   const text = textOf(message);
   return /ionos invoice|invoice .* ionos|billing notification|payment receipt|payment confirmation|statement (?:is|now) ready|bill (?:is|now) ready|autopay|automatic payment|payment due/i.test(text);
 }
+function knownColdOutreachMarker(message = {}) {
+  const subject = String(message.subject || '');
+  return /\bq913twe\b/i.test(subject);
+}
 function obviousVendorJunk(message = {}) {
   const text = textOf(message);
-  const subject = String(message.subject || '').toLowerCase();
-  if (/\bq913twe\b/i.test(subject)) return true;
+  if (knownColdOutreachMarker(message)) return true;
   return /business funding|funding application|business loan|working capital|merchant cash advance|seo services?|link building|lead generation|ai voice|website redesign|can i interest you|would love to work with you|pick your brain|grow your business|new customers|appointment setting|cold email services?/i.test(text);
 }
 function strongAutomatedOrBulkMail(message = {}) {
@@ -88,6 +91,11 @@ function folderFor(classification = {}, message = {}, clients = new Set()) {
   if (ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (billingNotice(message)) return 'MILES-BILLING';
+
+  // Known cold-outreach campaign markers are stronger evidence than generic
+  // References/In-Reply-To headers. Some unsolicited messages carry thread-like
+  // headers and were incorrectly retained as human replies in the executive Inbox.
+  if (knownColdOutreachMarker(message)) return 'MILES-JUNK';
 
   // Strong provider/header evidence of automation or bulk delivery must outrank
   // generic reply-thread heuristics. This prevents newsletters, account alerts,
@@ -222,6 +230,7 @@ class IonosInboxCleanupService {
         deletesMessages: false,
         usesUidMoveOnly: true,
         inboxReservedForActiveClientsAndRealSentThreadReplies: true,
+        knownColdOutreachMarkersOverrideReplyThreadHeuristic: true,
         strongAutomationHeadersOverrideReplyThreadHeuristic: true,
         genericPositiveLanguageDoesNotKeepInbox: true,
         preservesOfficialEbuyInDedicatedFolder: true,
@@ -246,6 +255,7 @@ module.exports.helpers = {
   ebuyNotice,
   forwardedMilesNoise,
   billingNotice,
+  knownColdOutreachMarker,
   obviousVendorJunk,
   strongAutomatedOrBulkMail,
   transactionalSystemNotice,
