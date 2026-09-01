@@ -154,9 +154,17 @@ function main() {
   console.log('\nMILES_ORION_REFRESH_READINESS_COMPACT');
   console.log(JSON.stringify(compact, null, 2));
 
-  if (!coreRun.ok) {
-    console.error(`PRODUCTION_TRUTH_CORE_EXIT_${coreRun.exitCode}`);
-    process.exitCode = coreRun.exitCode || 1;
+  console.log('\n============================================================');
+  console.log('LIVE PROSPECT DEMO ACCEPTANCE GATE');
+  console.log('============================================================');
+  const demoAcceptance = runNode('AuditLiveP2GCDemoAcceptance.js', [], 420000);
+  if (demoAcceptance.stdout) process.stdout.write(tail(demoAcceptance.stdout, 24000));
+  if (demoAcceptance.stderr) process.stderr.write(tail(demoAcceptance.stderr, 5000));
+
+  if (!coreRun.ok || !demoAcceptance.ok) {
+    if (!coreRun.ok) console.error(`PRODUCTION_TRUTH_CORE_EXIT_${coreRun.exitCode}`);
+    if (!demoAcceptance.ok) console.error(`LIVE_DEMO_ACCEPTANCE_EXIT_${demoAcceptance.exitCode}`);
+    process.exitCode = demoAcceptance.ok ? (coreRun.exitCode || 1) : (demoAcceptance.exitCode || 2);
   } else {
     process.exitCode = 0;
   }
