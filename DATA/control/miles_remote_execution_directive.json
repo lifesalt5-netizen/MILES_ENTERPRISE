@@ -1,7 +1,7 @@
 {
-  "id": "miles-clean-restart-post-orion-green-20260901-008",
+  "id": "miles-post-restart-infrastructure-health-20260901-009",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Clean governed MILES restart after ORION sidecar rebuild -007 completed GREEN. Fast-forward production to current main including a55e473118b5f62d29101abc9ad703b560b696cb. Use the existing consolidated self-maintenance deployment path to verify canonical PM2 ownership, audit/reconcile only proven stale runtime approvals, restart miles-worker and miles-command-center immediately, and restart miles-autonomous-coo only through the supervised post-evidence path so remote evidence is not lost. Preserve DATA, databases, queues, runtime history, credentials, provider state, ORION production DB and newly validated sidecar. Do not grant approvals, resume queued tasks, delete queue records, mutate providers, send mail, change DNS, bypass auth, or use destructive Git recovery. Require dashboard recovery and publish fresh runtime evidence. Keep MILES RED on any restart/ownership/dashboard failure."
+  "note": "Post-restart current-state audit after clean governed MILES restart -008 and ORION sidecar -007 GREEN. Verify semantic infrastructure health from the restarted runtime, not just process-online status. Check current dependencies, runtime ownership, freshness and functional probes under the existing audit contract. Preserve all DATA/databases/queues/history/credentials/provider state. No sends, provider mutation, DNS changes, auth bypass, destructive Git recovery, queue deletion, or fabricated health. Publish fresh runtime evidence and keep any unhealthy lane RED."
 }
