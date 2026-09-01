@@ -8,6 +8,10 @@ on:
       - 'CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js'
       - 'CONNECTORS/IONOS/imap_governed.js'
       - 'CONNECTORS/INSTANTLY/connector.js'
+      - 'CONNECTORS/MILES/connector.js'
+      - 'CORE/ExecutionActionContracts.js'
+      - 'SERVICES/BusinessWorkPlannerService.js'
+      - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
       - 'SERVICES/revenue/InstantlyLifecycleProofService.js'
@@ -49,6 +53,7 @@ on:
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
       - 'TESTS/Test_SamQualifiedProspectFallbackService.js'
+      - 'TESTS/Test_RevenueUniverseMissionRouting.js'
       - 'TESTS/orion_contract_summary_derivation.test.js'
       - 'TESTS/instantly_lifecycle_provider_proof.test.js'
       - 'TESTS/instantly_sender_failover.test.js'
@@ -83,6 +88,10 @@ jobs:
           node --check CONNECTORS/WEBSITE_B12/B12_AUTH_AND_STAGE_SINGLE_SESSION.js
           node --check CONNECTORS/IONOS/imap_governed.js
           node --check CONNECTORS/INSTANTLY/connector.js
+          node --check CONNECTORS/MILES/connector.js
+          node --check CORE/ExecutionActionContracts.js
+          node --check SERVICES/BusinessWorkPlannerService.js
+          node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
           node --check SERVICES/revenue/IonosInboxCleanupService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
           node --check SERVICES/revenue/InstantlyLifecycleProofService.js
@@ -116,6 +125,7 @@ jobs:
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
           node --check TESTS/Test_SamQualifiedProspectFallbackService.js
+          node --check TESTS/Test_RevenueUniverseMissionRouting.js
           node --check TESTS/orion_contract_summary_derivation.test.js
           node --check TESTS/instantly_lifecycle_provider_proof.test.js
           node --check TESTS/instantly_sender_failover.test.js
@@ -135,6 +145,7 @@ jobs:
           node TESTS/Test_GroupedRemediationV2.js
           node TESTS/Test_InstantlyGuardedReplySend.js
           node TESTS/Test_SamQualifiedProspectFallbackService.js
+          node TESTS/Test_RevenueUniverseMissionRouting.js
           node TESTS/orion_contract_summary_derivation.test.js
           node TESTS/instantly_sender_failover.test.js
           node TESTS/instantly_inbox_placement_controlled_test.test.js
