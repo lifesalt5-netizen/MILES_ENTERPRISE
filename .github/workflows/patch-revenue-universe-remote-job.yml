@@ -1,0 +1,79 @@
+name: Patch Revenue Universe Remote Job
+
+on:
+  push:
+    branches:
+      - fix/b12-lead-universe-recovery-routing-20260901
+    paths:
+      - '.github/workflows/patch-revenue-universe-remote-job.yml'
+      - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bounded-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/b12-lead-universe-recovery-routing-20260901
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply bounded allowlist patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          bridge = Path('StartMilesRemoteExecutionBridge.js')
+          text = bridge.read_text(encoding='utf-8')
+          old = "  REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],\n"
+          new = old + "  REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']],\n"
+          if "REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]" not in text:
+              if old not in text:
+                  raise SystemExit('BRIDGE_PATCH_ANCHOR_MISSING')
+              text = text.replace(old, new, 1)
+              bridge.write_text(text, encoding='utf-8')
+
+          test = Path('TESTS/remote_execution_bridge_safety.test.js')
+          text = test.read_text(encoding='utf-8')
+          array_anchor = "  'REVENUE_ACCEPTANCE_SPRINT',\n"
+          array_new = array_anchor + "  'REVENUE_UNIVERSE_RECONCILIATION',\n"
+          if "  'REVENUE_UNIVERSE_RECONCILIATION',\n" not in text:
+              if array_anchor not in text:
+                  raise SystemExit('TEST_ARRAY_ANCHOR_MISSING')
+              text = text.replace(array_anchor, array_new, 1)
+
+          assert_anchor = "assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']]);\n"
+          assert_new = "assert.deepStrictEqual(bridge.JOBS.REVENUE_UNIVERSE_RECONCILIATION, ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]);\n" + assert_anchor
+          if "assert.deepStrictEqual(bridge.JOBS.REVENUE_UNIVERSE_RECONCILIATION" not in text:
+              if assert_anchor not in text:
+                  raise SystemExit('TEST_JOB_ASSERT_ANCHOR_MISSING')
+              text = text.replace(assert_anchor, assert_new, 1)
+
+          validate_anchor = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_SPRINT'}).ok, true);\n"
+          validate_new = validate_anchor + "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_UNIVERSE_RECONCILIATION'}).ok, true);\n"
+          if "job:'REVENUE_UNIVERSE_RECONCILIATION'" not in text:
+              if validate_anchor not in text:
+                  raise SystemExit('TEST_VALIDATE_ANCHOR_MISSING')
+              text = text.replace(validate_anchor, validate_new, 1)
+          test.write_text(text, encoding='utf-8')
+          PY
+      - name: Validate bounded patch
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check SCRIPTS/RunRevenueUniverseReconciliation.js
+          node TESTS/remote_execution_bridge_safety.test.js
+      - name: Commit bounded patch
+        run: |
+          if git diff --quiet -- StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js; then
+            echo 'REVENUE_UNIVERSE_REMOTE_JOB_ALREADY_PATCHED=YES'
+            exit 0
+          fi
+          git config user.name 'MILES Revenue Routing Bot'
+          git config user.email 'miles-revenue-routing@users.noreply.github.com'
+          git add StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js
+          git commit -m 'Allowlist governed revenue universe reconciliation runtime job'
+          git push origin HEAD:fix/b12-lead-universe-recovery-routing-20260901
