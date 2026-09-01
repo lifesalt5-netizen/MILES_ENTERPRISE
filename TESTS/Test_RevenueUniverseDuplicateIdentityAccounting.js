@@ -1,0 +1,13 @@
+"use strict";
+const assert = require("assert");
+const service = require("../SERVICES/revenue/RevenueUniverseReconciliationService");
+const key = service.identityKeyFor;
+assert.strictEqual(typeof key, "function");
+assert.strictEqual(key({ uei: " abc123 ", cage: "C1", companyNorm: "Acme", ordinal: 1 }), "UEI:ABC123");
+assert.strictEqual(key({ uei: "ABC123", cage: "C2", companyNorm: "Different", ordinal: 2 }), "UEI:ABC123");
+assert.strictEqual(key({ uei: "", cage: " c1 ", companyNorm: "Acme", ordinal: 3 }), "CAGE:C1");
+assert.strictEqual(key({ uei: "", cage: "", companyNorm: "Acme, Inc.", ordinal: 4 }), "NAME:acme inc");
+assert.strictEqual(key({ uei: "", cage: "", companyNorm: "", ordinal: 5 }), "ROW:5");
+const identity = key({ uei: "ABC123", cage: "", companyNorm: "Acme", ordinal: 1 });
+assert.notStrictEqual(`${identity}#ROW:1`, `${identity}#ROW:2`);
+console.log("REVENUE_UNIVERSE_DUPLICATE_IDENTITY_ACCOUNTING_TEST: GREEN");
