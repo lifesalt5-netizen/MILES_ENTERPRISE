@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-20",
-  "purpose": "Canonical source-closure contract for CEO command and product functional acceptance.",
+  "version": "2026-09-01",
+  "purpose": "Canonical source-closure contract for CEO command, universal government opportunity intelligence, client-authorized restricted-source access, continuous functional health, and product functional acceptance.",
   "criticalModules": [
     "CORE/TaskQueue.js",
     "CORE/ExecutionActionContracts.js",
@@ -9,15 +9,29 @@
     "SERVICES/BusinessWorkPlannerService.js",
     "SERVICES/BusinessExecutionEngineServiceV2.js",
     "SERVICES/CapabilityDispatcherService.js",
+    "SERVICES/SelfMaintenanceService.js",
     "SERVICES/governance/CommandPreflightService.js",
     "SERVICES/governance/ExecutionActionCapabilityService.js",
+    "SERVICES/governance/GsaEbuyAccessPolicyService.js",
+    "SERVICES/governance/ClientAuthorizedPortalAccessPolicyService.js",
+    "SERVICES/governance/UniversalGovernmentOpportunityIndexPolicyService.js",
+    "SERVICES/governance/ContinuousSystemHealthPolicyService.js",
     "SERVICES/digital_coo/MilesCommandCenter.js",
     "CONNECTORS/MILES/connector.js",
+    "CONNECTORS/ORION/connector.js",
     "RUN_CAPTURE_CAPACITY_PROSPECT_DISCOVERY.js",
     "SERVICES/revenue/CaptureCapacityProspectDiscoveryService.js",
     "SERVICES/Discovery/CaptureCapacityRevenueDiscovery.js",
     "SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js",
+    "SERVICES/demo/DemoUnifiedOpportunityService.js",
     "SERVICES/demo/P2GCFocusedIntelligenceService.js",
     "SERVICES/teaming/P2GCPrimeSubTeamingService.js"
+  ],
+  "criticalPolicies": [
+    "CONFIG/UNIVERSAL_GOVERNMENT_OPPORTUNITY_INDEX_POLICY.json",
+    "CONFIG/GOVERNANCE/GOVERNMENT_OPPORTUNITY_SOURCE_ACCESS_REGISTRY.json",
+    "CONFIG/GOVERNANCE/CLIENT_AUTHORIZED_PORTAL_ACCESS_POLICY.json",
+    "CONFIG/GOVERNANCE/CONTINUOUS_SYSTEM_HEALTH_POLICY.json",
+    "CONFIG/MISSION_COMPLETION_STANDARDS.json"
   ]
 }

@@ -41,7 +41,7 @@ class P2GCFocusedIntelligenceService {
     };
   }
 
-  build(type, model) {
+  build(type, model, accessContext = {}) {
     const normalized = this.normalizeType(type);
     if (!normalized) return { ok:false, status:"INTELLIGENCE_TYPE_UNSUPPORTED", supported:["opportunities","vehicles","recompetes"] };
     if (!model?.ok) return model || { ok:false, status:"ASSESSMENT_UNAVAILABLE" };
@@ -49,21 +49,23 @@ class P2GCFocusedIntelligenceService {
     const base = this.common(model, normalized);
 
     if (normalized === "opportunities") {
-      const unified = this.unifiedOpportunities.build(model, list(model.opportunities?.publicSourceAdditions));
+      const unified = this.unifiedOpportunities.build(model, list(model.opportunities?.publicSourceAdditions), accessContext);
       return {
         ...base,
         status:unified.status,
         records:unified.records,
         markets:unified.markets,
+        evidenceLanes:unified.evidenceLanes,
         totals:unified.totals,
         taxonomy:unified.taxonomy,
         opportunityRules:unified.rules,
+        sourceAccessGovernance:unified.sourceAccessGovernance,
         agencies:list(model.agencyAlignment?.agencies),
         recommendations:list(model.recommendations?.opportunity),
         immediateActions:list(model.recommendations?.immediate),
         pathway:model.pathway || null,
         sourceCoverage:model.opportunities?.sourceCoverage || null,
-        disclosure:"Unified opportunity intelligence is organized by Federal / SLED / Local market and by Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stage. Login-gated sources are never represented as live; where direct access is unavailable, public award/history evidence is used and labeled."
+        disclosure:"Universal Government Opportunity Index organized by Federal / SLED / Local market and Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stage. Public live, authorized client-only, reconstructed historical, and coverage-gap evidence are explicitly separated. Restricted live records require a paying client, dedicated workspace, lawful authorization and scope evidence; gated data is never represented as public live."
       };
     }
 

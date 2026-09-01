@@ -1,0 +1,54 @@
+{
+  "version": "2026-09-01",
+  "status": "GOVERNING_RULE",
+  "policy": "CONTINUOUS_FUNCTIONAL_HEALTH",
+  "purpose": "Require every critical MILES production system to continuously prove availability, functional correctness, dependency health, and data freshness, with bounded recovery and explicit RED state on failure.",
+  "globalRules": {
+    "processOnlineAloneIsInsufficient": true,
+    "http200AloneIsInsufficient": true,
+    "semanticFunctionalProbeRequired": true,
+    "dependencyProbeRequired": true,
+    "freshnessProbeRequiredWhenDataDriven": true,
+    "boundedAutomaticRecoveryRequiredWhereSafe": true,
+    "recoveryEvidenceRequired": true,
+    "failureMustSetRed": true,
+    "staleEvidenceMustSetRedOrUnknown": true,
+    "neverClaimZeroDowntimeGuarantee": true,
+    "designForNearContinuousAvailability": true
+  },
+  "requiredCriticalLanes": [
+    "MILES_COMMAND_CENTER",
+    "MILES_WORKER",
+    "MILES_AUTONOMOUS_COO",
+    "P2GC_DEMO",
+    "ORION",
+    "GOVERNMENT_SOURCE_COLLECTORS",
+    "SAM",
+    "GSA_PUBLIC_DATA",
+    "USASPENDING_PRIME_AND_SUBAWARDS",
+    "SLED_LOCAL_COLLECTORS",
+    "INSTANTLY",
+    "IONOS_INBOX_CLEANUP",
+    "LINKEDIN",
+    "WEBSITE",
+    "CRM_CALENDLY",
+    "APPROVAL_AND_WORK_QUEUES"
+  ],
+  "requiredEvidencePerLane": [
+    "observedAt",
+    "functionalProbe",
+    "semanticResult",
+    "dependencyStatus",
+    "freshnessStatus",
+    "recoveryAttempted",
+    "recoveryResult",
+    "currentState"
+  ],
+  "acceptance": {
+    "criticalLaneWithoutFunctionalProbe": 0,
+    "criticalLaneGreenOnProcessOnly": 0,
+    "criticalLaneGreenWithStaleRequiredData": 0,
+    "unrecordedRecoveryAttempts": 0,
+    "silentCriticalFailures": 0
+  }
+}

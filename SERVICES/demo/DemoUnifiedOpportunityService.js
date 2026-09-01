@@ -1,6 +1,7 @@
 'use strict';
 
 const gsaEbuyPolicy = require('../governance/GsaEbuyAccessPolicyService');
+const universalPolicy = require('../governance/UniversalGovernmentOpportunityIndexPolicyService');
 
 function clean(v) { return String(v == null ? '' : v).trim(); }
 function norm(v) { return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
@@ -83,25 +84,60 @@ function dedupe(records = []) {
 }
 
 class DemoUnifiedOpportunityService {
-  build(model = {}, additions = []) {
+  build(model = {}, additions = [], context = {}) {
     const base = [];
     const blockedGatedSources = [];
+    const accessContext = Object.keys(context || {}).length ? context : {
+      prospectDemo:true,
+      activePayingClient:false,
+      dedicatedClientWorkspace:false,
+      authorizedAccess:false,
+      withinGrantedScope:false
+    };
 
     const addGoverned = (row, defaults = {}) => {
       const normalized = normalizeRecord(row, defaults);
-      const access = gsaEbuyPolicy.evaluate({ ...row, ...normalized });
-      if (!access.allowed) {
+      const universalAccess = universalPolicy.classify({ ...row, ...normalized }, accessContext);
+      if (!universalAccess.allowed) {
         blockedGatedSources.push({
           source:normalized.source || null,
           sourceUrl:normalized.sourceUrl || null,
-          status:access.status,
-          reason:access.reason,
-          fallbackMode:access.fallbackMode
+          market:normalized.market,
+          stage:normalized.stage,
+          evidenceLane:universalAccess.evidenceLane,
+          badge:universalAccess.badge,
+          reason:universalAccess.reason,
+          fallbackRequired:universalAccess.fallbackRequired === true
         });
         return;
       }
-      if (access.requiredLabel) normalized.sourceAccess = access.requiredLabel;
-      normalized.accessDecisionStatus = access.status;
+
+      const ebuyAccess = gsaEbuyPolicy.evaluate({ ...row, ...normalized }, {
+        authorizedEbuyAccess:accessContext.authorizedEbuyAccess === true || accessContext.authorizedAccess === true,
+        accessEvidenceId:accessContext.accessEvidenceId || row.accessEvidenceId || row.authorizedAccessEvidence,
+        withinGrantedScope:accessContext.withinGrantedScope !== false && row.withinGrantedScope !== false
+      });
+      if (!ebuyAccess.allowed) {
+        blockedGatedSources.push({
+          source:normalized.source || null,
+          sourceUrl:normalized.sourceUrl || null,
+          market:normalized.market,
+          stage:normalized.stage,
+          evidenceLane:'COVERAGE_GAP',
+          badge:'GATED / COVERAGE GAP',
+          reason:ebuyAccess.reason,
+          fallbackRequired:true,
+          fallbackMode:ebuyAccess.fallbackMode
+        });
+        return;
+      }
+
+      normalized.evidenceLane = universalAccess.evidenceLane;
+      normalized.evidenceBadge = universalAccess.badge;
+      normalized.live = universalAccess.live === true;
+      normalized.restricted = universalAccess.restricted === true;
+      normalized.accessDecisionStatus = ebuyAccess.status === 'NOT_EBUY_SOURCE' ? universalAccess.evidenceLane : ebuyAccess.status;
+      if (ebuyAccess.requiredLabel) normalized.sourceAccess = ebuyAccess.requiredLabel;
       base.push(normalized);
     };
 
@@ -124,28 +160,38 @@ class DemoUnifiedOpportunityService {
       byMarket[market] = { total:marketRecords.length, records:marketRecords, byStage };
     }
 
+    const byEvidenceLane = records.reduce((acc, row) => {
+      const lane = row.evidenceLane || 'UNKNOWN';
+      if (!acc[lane]) acc[lane] = [];
+      acc[lane].push(row);
+      return acc;
+    }, {});
+
     return {
-      status:records.length ? 'UNIFIED_GOVERNMENT_OPPORTUNITY_INTELLIGENCE_AVAILABLE' : 'NO_QUALIFIED_PUBLIC_OPPORTUNITY_OR_HISTORY_SIGNAL',
+      status:records.length ? 'UNIVERSAL_GOVERNMENT_OPPORTUNITY_INDEX_AVAILABLE' : 'NO_QUALIFIED_PUBLIC_OPPORTUNITY_OR_HISTORY_SIGNAL',
       markets:byMarket,
+      evidenceLanes:byEvidenceLane,
       records,
       totals:{ all:records.length, federal:byMarket.FEDERAL.total, sled:byMarket.SLED.total, local:byMarket.LOCAL.total },
       taxonomy:{ markets:MARKETS, stages:STAGES },
       sourceAccessGovernance:{
-        policy:'GSA_EBUY_ACCESS_GOVERNANCE',
-        blockedUnauthorizedLiveEbuyRecords:blockedGatedSources.length,
+        policy:'UNIVERSAL_GOVERNMENT_OPPORTUNITY_INDEX',
+        blockedUnauthorizedOrGatedRecords:blockedGatedSources.length,
         blockedGatedSources,
-        fallbackMode:'PUBLIC_GSA_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY'
+        prospectDemo:accessContext.prospectDemo === true,
+        activePayingClient:accessContext.activePayingClient === true,
+        dedicatedClientWorkspace:accessContext.dedicatedClientWorkspace === true,
+        fallbackMode:'PUBLIC_AWARD_HISTORY_FORECAST_RECOMPETE_AND_VEHICLE_INTELLIGENCE'
       },
       rules:{
         publicSourcesPreferred:true,
         bypassAuthentication:false,
         bypassAccessControls:false,
         unauthorizedAuthenticatedScraping:false,
-        liveEbuyRequiresAuthorizedAccessAndEvidence:true,
-        liveEbuyMustRemainWithinGrantedContractSinCategoryScope:true,
+        restrictedLiveRequiresActivePayingClientDedicatedWorkspaceAuthorizationAndEvidence:true,
+        restrictedClientDataNeverAllowedInProspectDemo:true,
         loginGatedSourcesNeverPretendedLive:true,
-        gsaFallback:'PUBLIC_GSA_HOLDER_SIN_VEHICLE_EVIDENCE_PLUS_RECENT_COMPARABLE_AWARD_HISTORY',
-        gsaFallbackLabel:'GSA_PUBLIC_HISTORICAL_PROXY',
+        historicalProxyMustBeLabeledNonLive:true,
         noFitBehavior:'SHOW_NO_QUALIFIED_FITS_WITH_SOURCE_COVERAGE_INSTEAD_OF_BROKEN_BLANK',
         lockedPreview:'REVEAL_SMALL_NUMBER_OF_KNOWN_MATCHES_AND_LOCK_ONLY_REAL_REMAINDER'
       }

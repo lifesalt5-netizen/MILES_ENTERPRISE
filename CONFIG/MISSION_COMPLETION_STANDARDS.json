@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "standards": {
     "POSITIVE_REPLY": [
       "Reply classified",
@@ -43,13 +43,50 @@
       "Launch or resume action authorized",
       "Post-action metrics scheduled for verification"
     ],
+    "GOVERNMENT_OPPORTUNITY_INTELLIGENCE": [
+      "Company identity and capability profile reconciled",
+      "Federal, SLED, and Local lanes evaluated",
+      "Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stages evaluated",
+      "Public live, authorized client-only, reconstructed historical, and coverage-gap evidence lanes kept distinct",
+      "Prime and subcontract award history included when relevant",
+      "Restricted live records admitted only with active paying client, dedicated workspace, authorization evidence, and scope validation",
+      "Prospect demo contains no restricted client-only data",
+      "Gated sources have historical/public proxy intelligence when defensible or an explicit coverage-gap label",
+      "Every material record has source and freshness evidence",
+      "No-fit result is explicit and is not represented as a broken blank",
+      "Live screen/API result verified"
+    ],
+    "CLIENT_AUTHORIZED_PORTAL_ACCESS": [
+      "Active paying client verified",
+      "Dedicated client workspace verified",
+      "Authorization basis and access evidence recorded",
+      "Vehicle/program/SIN/category scope verified",
+      "Least-privilege and read-only-default rules applied",
+      "MFA is preserved and not bypassed",
+      "Credentials or sessions are stored only in an approved encrypted secrets mechanism and never in GitHub, source code, logs, chat, or CRM notes",
+      "Cross-client isolation verified",
+      "Revocation/expiration behavior verified",
+      "Restricted data excluded from prospect demo"
+    ],
+    "CONTINUOUS_SYSTEM_HEALTH": [
+      "Critical lane has a functional probe",
+      "Semantic result is verified rather than process-online or HTTP 200 alone",
+      "Required dependencies are verified",
+      "Required data freshness is verified",
+      "Failure sets lane RED",
+      "Safe bounded recovery is attempted where defined",
+      "Recovery result is recorded",
+      "Stale health evidence cannot remain GREEN",
+      "Live runtime evidence is current"
+    ],
     "SYSTEM_REPAIR": [
       "Problem reproduced or verified",
       "Root cause identified or bounded",
       "Risk classified",
       "Protected-action rules checked",
       "Safe repair executed or approval requested",
-      "Post-repair test passed",
+      "Post-repair semantic test passed",
+      "Dependent health/freshness checks passed",
       "Rollback path documented",
       "Learning recorded"
     ],

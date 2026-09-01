@@ -1,0 +1,90 @@
+{
+  "version": "2026-09-01",
+  "status": "GOVERNING_RULE",
+  "name": "P2GC Universal Government Opportunity Index",
+  "purpose": "Present fragmented government opportunity intelligence as one evidence-backed contractor-specific system without bypassing access controls or inventing coverage.",
+  "canonicalEvidenceLanes": [
+    {
+      "id": "PUBLIC_LIVE",
+      "label": "LIVE PUBLIC",
+      "rule": "Continuously ingest current public government opportunities and pre-award signals from lawful public APIs, feeds, pages, notices, forecasts, procurement plans, budgets, CIPs and other public sources."
+    },
+    {
+      "id": "AUTHORIZED_CLIENT_LIVE",
+      "label": "LIVE AUTHORIZED",
+      "rule": "Restricted vehicle/task-order data may be ingested only for an active paying client in its dedicated workspace when legitimate authorization, scope and access evidence exist. Never expose restricted client data in the prospect demo."
+    },
+    {
+      "id": "RECONSTRUCTED_INTELLIGENCE",
+      "label": "RECENT AWARD / MISSED WORK",
+      "rule": "When a live source is gated or unavailable, reconstruct decision-useful intelligence from public award history, prime/subaward history, incumbent history, buyer patterns, vehicle/SIN history, competitor wins, forecasts, recompetes and related public evidence. Never label reconstructed intelligence as live opportunity data."
+    },
+    {
+      "id": "COVERAGE_GAP",
+      "label": "GATED / COVERAGE GAP",
+      "rule": "When neither lawful live data nor a defensible historical/public proxy exists, explicitly show the coverage limitation. Never leave a broken blank and never fabricate a result."
+    }
+  ],
+  "markets": ["FEDERAL", "SLED", "LOCAL"],
+  "stages": [
+    "OPEN",
+    "RFI",
+    "SOURCES_SOUGHT",
+    "PRESOLICITATION",
+    "DRAFT",
+    "FORECAST",
+    "RECOMPETE",
+    "RECENT_SIMILAR_AWARD",
+    "SPECIAL_NOTICE"
+  ],
+  "mandatorySearchBehavior": {
+    "singleCompanySearch": true,
+    "companySpecificFiltering": true,
+    "requiredInputs": [
+      "company identity / UEI when available",
+      "NAICS and capabilities",
+      "certifications",
+      "geography",
+      "contract vehicles / SINs when known",
+      "prime and subcontract award history",
+      "buyers / agencies",
+      "past performance"
+    ],
+    "requiredOutput": "For one company search, reconcile all available Federal, SLED and Local opportunity/future-demand signals, authorized client-only vehicle feeds where permitted, and reconstructed missed-work intelligence into one normalized result set ranked by company fit."
+  },
+  "requiredEvidenceBadges": [
+    "LIVE PUBLIC",
+    "LIVE AUTHORIZED",
+    "FORECAST",
+    "PRE-AWARD SIGNAL",
+    "RECOMPETE",
+    "RECENT AWARD / MISSED WORK",
+    "GATED - HISTORICAL PROXY AVAILABLE",
+    "GATED / COVERAGE GAP",
+    "NO QUALIFIED FIT"
+  ],
+  "accessRules": {
+    "neverBypassAuthentication": true,
+    "neverCircumventAccessControls": true,
+    "neverScrapeBehindLoginWithoutAuthorization": true,
+    "authorizedRestrictedAccessPayingClientsOnly": true,
+    "dedicatedClientWorkspaceRequired": true,
+    "leastPrivilegeRequired": true,
+    "authorizationEvidenceRequired": true,
+    "scopeEnforcementRequired": true,
+    "prospectDemoRestrictedDataProhibited": true,
+    "historicalProxyMustBeLabeledNonLive": true
+  },
+  "truthRules": {
+    "unknownIsNotZero": true,
+    "unknownIsNotNone": true,
+    "noBrokenBlankSections": true,
+    "noFabricatedOpportunities": true,
+    "noFabricatedHiddenInventory": true,
+    "sourceProvenanceRequired": true,
+    "freshnessRequired": true,
+    "factInferenceUnknownSeparated": true,
+    "failClosedWhenEvidenceInsufficient": true
+  },
+  "availabilityRule": "Every source and dependent collector must have functional health checks, freshness checks, bounded recovery and explicit RED state when unavailable. Process-online status alone is not sufficient evidence of functionality."
+}
