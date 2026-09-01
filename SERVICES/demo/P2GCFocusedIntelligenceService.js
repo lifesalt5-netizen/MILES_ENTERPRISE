@@ -52,7 +52,8 @@ class P2GCFocusedIntelligenceService {
       const unified = this.unifiedOpportunities.build(model, list(model.opportunities?.publicSourceAdditions), accessContext);
       return {
         ...base,
-        status:unified.status,
+        status:unified.records.length ? unified.status : "NO_CURRENT_MATCHED_OPPORTUNITY_SIGNAL",
+        universalStatus:unified.status,
         records:unified.records,
         markets:unified.markets,
         evidenceLanes:unified.evidenceLanes,
@@ -65,7 +66,7 @@ class P2GCFocusedIntelligenceService {
         immediateActions:list(model.recommendations?.immediate),
         pathway:model.pathway || null,
         sourceCoverage:model.opportunities?.sourceCoverage || null,
-        disclosure:"Universal Government Opportunity Index organized by Federal / SLED / Local market and Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stage. Public live, authorized client-only, reconstructed historical, and coverage-gap evidence are explicitly separated. Restricted live records require a paying client, dedicated workspace, lawful authorization and scope evidence; gated data is never represented as public live."
+        disclosure:"Universal Government Opportunity Index organized by Federal / SLED / Local market and Open, RFI, Sources Sought, Presolicitation, Draft, Forecast, Recompete, Recent Similar Award, and Special Notice stage. Public live, authorized client-only, reconstructed historical, and coverage-gap evidence are explicitly separated. Restricted live records require a paying client, dedicated workspace, lawful authorization and scope evidence; gated data is never represented as public live. Qualification, live status, due date, scope, and procurement details must be validated before bid action."
       };
     }
 
