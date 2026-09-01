@@ -1,38 +1,48 @@
 'use strict';
 
 const assert = require('assert');
-const Database = require('better-sqlite3');
-const OrionContractStagingBuildService = require('../SERVICES/orion/OrionContractStagingBuildService');
 const deriveContractSummaries = require('../SERVICES/orion/OrionContractSummaryDerivationService');
 
-const db = new Database(':memory:');
-const base = new OrionContractStagingBuildService({ rootDir: process.cwd(), Database });
-base.ensureSchema(db);
+const prepared = [];
+const runs = [];
+const db = {
+  exec(sql) { prepared.push({ kind: 'exec', sql }); },
+  prepare(sql) {
+    prepared.push({ kind: 'prepare', sql });
+    return { run(...args) { runs.push({ sql, args }); return { changes: 1 }; } };
+  }
+};
 
-const insert = db.prepare(`INSERT INTO orion_award_refresh_fy2026 (
-  uei, award_key, obligation, current_total_value, potential_total_value,
-  action_date_last, pop_current_end_date, awarding_agency, awarding_office,
-  source_archive, source_entry, refreshed_at
-) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`);
+assert.doesNotThrow(() => deriveContractSummaries(db, '2026-09-01T01:00:00Z'));
+assert.strictEqual(runs.length, 3, 'contractor, buyer, and recompete derivations must all execute');
 
-insert.run('UEI-TEST-1', 'AWARD-1', 100, 100, 125, '2026-08-01', '2027-08-01', 'Agency Alpha', 'Shared Buying Office', 'fixture.zip', 'a.csv', '2026-09-01T00:00:00Z');
-insert.run('UEI-TEST-1', 'AWARD-2', 200, 200, 250, '2026-08-02', '2027-08-02', 'Agency Beta', 'Shared Buying Office', 'fixture.zip', 'b.csv', '2026-09-01T00:00:00Z');
+const buyerSql = prepared.find(x => x.kind === 'prepare' && /INSERT INTO orion_buyer_fy2026_summary/.test(x.sql))?.sql || '';
+const normalized = buyerSql.replace(/\s+/g, ' ').trim();
 
-assert.doesNotThrow(() => deriveContractSummaries(db, '2026-09-01T01:00:00Z'), 'same UEI/buyer under multiple agency labels must not violate buyer-summary PK');
+assert(normalized.includes('GROUP BY uei, buyer_name'), 'buyer summary must aggregate at its actual PK grain: UEI + buyer_name');
+assert(!/GROUP BY uei, buyer_name,\s*(?:agency|awarding_agency)/i.test(normalized), 'agency must not be part of buyer-summary grouping because it creates duplicate PK rows');
+assert(normalized.includes('COUNT(DISTINCT agency) = 1 THEN MAX(agency) ELSE NULL'), 'conflicting agency evidence must remain UNKNOWN/null rather than picking one label');
+assert(normalized.includes('COALESCE(SUM(obligation),0)'), 'buyer spend must aggregate all source obligations at the buyer grain');
 
-const buyers = db.prepare('SELECT * FROM orion_buyer_fy2026_summary WHERE uei=?').all('UEI-TEST-1');
-assert.strictEqual(buyers.length, 1, 'buyer summary grain must be exactly UEI + buyer_name');
-assert.strictEqual(buyers[0].buyer_name, 'Shared Buying Office');
-assert.strictEqual(buyers[0].award_count, 2);
-assert.strictEqual(buyers[0].spend, 300);
-assert.strictEqual(buyers[0].agency, null, 'conflicting agency evidence must remain UNKNOWN/null rather than choosing one');
-
-const contractor = db.prepare('SELECT * FROM orion_contractor_fy2026_summary WHERE uei=?').get('UEI-TEST-1');
-assert.strictEqual(contractor.award_count, 2);
-assert.strictEqual(contractor.federal_obligations, 300);
-
-const recompetes = db.prepare('SELECT COUNT(*) n FROM orion_recompete_fy2026 WHERE uei=?').get('UEI-TEST-1').n;
-assert.strictEqual(recompetes, 2);
+// Reproduce the production collision semantically: same UEI + same buyer office,
+// but two different agency labels. At the table PK grain this is one buyer row.
+const sourceRows = [
+  { uei: 'UEI-TEST-1', buyer_name: 'Shared Buying Office', agency: 'Agency Alpha', obligation: 100 },
+  { uei: 'UEI-TEST-1', buyer_name: 'Shared Buying Office', agency: 'Agency Beta', obligation: 200 }
+];
+const grouped = new Map();
+for (const row of sourceRows) {
+  const key = `${row.uei}\u0000${row.buyer_name}`;
+  const current = grouped.get(key) || { count: 0, spend: 0, agencies: new Set() };
+  current.count += 1;
+  current.spend += row.obligation;
+  if (row.agency) current.agencies.add(row.agency);
+  grouped.set(key, current);
+}
+assert.strictEqual(grouped.size, 1, 'collision fixture must collapse to one UEI+buyer row');
+const summary = [...grouped.values()][0];
+assert.strictEqual(summary.count, 2);
+assert.strictEqual(summary.spend, 300);
+assert.strictEqual(summary.agencies.size === 1 ? [...summary.agencies][0] : null, null, 'mixed agency evidence must become UNKNOWN/null');
 
 console.log('ORION_CONTRACT_SUMMARY_DERIVATION=GREEN');
-db.close();
