@@ -14,6 +14,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'FEDERAL_SOURCE_READINESS_AUDIT',
   'FY2026_AWARDED_UNIVERSE_COVERAGE',
   'INBOX_PLACEMENT_AUDIT',
+  'INBOX_PLACEMENT_CREATE_FRESH',
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
   'INSTANTLY_LIFECYCLE_PROOF_PLAN',
@@ -28,6 +29,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN',
   'ORION_REFRESH_TARGET_SCHEMA_AUDIT',
   'PRODUCTION_TRUTH_RECONCILIATION',
+  'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',
   'REVENUE_ACCEPTANCE_SPRINT',
   'REVENUE_UNIVERSE_RECONCILIATION',
   'SAM_BULK_EXTRACT_ACQUIRE_STAGING',
@@ -47,6 +49,8 @@ assert.deepStrictEqual(bridge.JOBS.INFRASTRUCTURE_HEALTH_AUDIT, ['node', ['SCRIP
 assert.deepStrictEqual(bridge.JOBS.COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY, ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']]);
 assert.deepStrictEqual(bridge.JOBS.COO_RUNTIME_APPROVAL_AUDIT, ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']]);
 assert.deepStrictEqual(bridge.JOBS.FEDERAL_SOURCE_READINESS_AUDIT, ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]);
+assert.deepStrictEqual(bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH, ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]);
+assert.deepStrictEqual(bridge.JOBS.REVENUE_ACCEPTANCE_LATEST_PLACEMENT, ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]);
 assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN, ['node', ['SCRIPTS/PlanOrionOfficialSourceAcquisition.js']]);
 assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING, ['node', ['SCRIPTS/AcquireOrionOfficialSourceToStaging.js']]);
 assert.deepStrictEqual(bridge.JOBS.ORION_OFFICIAL_ARCHIVE_INSPECTION, ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']]);
@@ -88,6 +92,8 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FY2026_AWA
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'SIX_FY_AWARDED_UNIVERSE_NORMALIZE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INFRASTRUCTURE_HEALTH_AUDIT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FEDERAL_SOURCE_READINESS_AUDIT'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INBOX_PLACEMENT_CREATE_FRESH'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_LATEST_PLACEMENT'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_INSTALL'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_ENSURE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE'}).ok, true);
@@ -138,7 +144,8 @@ assert(!src.includes('refs/heads/main'));
 assert(!src.includes('reset --hard'));
 assert(!src.includes('git clean'));
 assert(!src.includes('shell: true'));
-assert(!src.includes('CreateControlledInstantlyInboxPlacementTest'));
+assert(src.includes("INBOX_PLACEMENT_CREATE_FRESH: ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]"));
+assert(src.includes("REVENUE_ACCEPTANCE_LATEST_PLACEMENT: ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]"));
 assert(!src.includes('RemediateNamecheapDmarc'));
 assert(!src.includes('sendReply'));
 
