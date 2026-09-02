@@ -22,6 +22,16 @@ function valueByAliases(row, aliases) {
   }
   return '';
 }
+function recipientUeiAliases(level) {
+  if (level === 'SUBAWARD') {
+    return [
+      'sub_recipient_uei', 'Sub-Recipient UEI', 'subrecipient_uei', 'subawardee_uei',
+      'subawardee_or_recipient_uei', 'sub_awardee_or_recipient_uei',
+      'recipient_uei', 'Recipient UEI', 'recipient_unique_entity_identifier'
+    ];
+  }
+  return ['recipient_uei', 'Recipient UEI', 'recipient_unique_entity_identifier'];
+}
 function artifactPath(manifest, basename) {
   const item = (manifest?.artifacts || []).find(a => path.basename(a.filePath || '') === basename);
   return item?.filePath || null;
@@ -82,11 +92,11 @@ class UsaspendingAwardAggregationService {
           if (level === 'SUBAWARD') counters.subawardRows += 1;
           else counters.primeAwardRows += 1;
 
-          const uei = norm(valueByAliases(row, ['recipient_uei', 'Recipient UEI', 'recipient_unique_entity_identifier']));
+          const uei = norm(valueByAliases(row, recipientUeiAliases(level)));
           if (!uei) { counters.rowsWithoutUei += 1; return; }
 
-          const awardId = norm(valueByAliases(row, ['award_id_piid', 'Award ID', 'piid', 'generated_unique_award_id']));
-          const parentAwardId = norm(valueByAliases(row, ['parent_award_id_piid', 'Parent Award ID', 'parent_award_id']));
+          const awardId = norm(valueByAliases(row, ['award_id_piid', 'Award ID', 'piid', 'generated_unique_award_id', 'subaward_id', 'Subaward ID', 'Sub-Award ID']));
+          const parentAwardId = norm(valueByAliases(row, ['parent_award_id_piid', 'Parent Award ID', 'parent_award_id', 'prime_award_id', 'prime_award_id_piid']));
           const obligation = num(valueByAliases(row, [
             'federal_action_obligation', 'Federal Action Obligation', 'subaward_amount', 'Subaward Amount',
             'total_obligation', 'Total Obligation', 'current_total_value_of_award'
@@ -176,3 +186,4 @@ class UsaspendingAwardAggregationService {
 }
 
 module.exports = UsaspendingAwardAggregationService;
+module.exports.recipientUeiAliases = recipientUeiAliases;

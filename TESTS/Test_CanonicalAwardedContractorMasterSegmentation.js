@@ -1,25 +1,59 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const service = require('../SERVICES/revenue/CanonicalAwardedContractorMasterService');
+const UsaspendingAwardAggregationService = require('../SERVICES/orion/UsaspendingAwardAggregationService');
 
-assert.strictEqual(service.awardTier(0), '0_500k');
-assert.strictEqual(service.awardTier(499999.99), '0_500k');
-assert.strictEqual(service.awardTier(500000), '500k_3m');
-assert.strictEqual(service.awardTier(2999999.99), '500k_3m');
-assert.strictEqual(service.awardTier(3000000), '3m_5m');
-assert.strictEqual(service.awardTier(5000000), '5m_plus');
+async function main() {
+  assert.strictEqual(service.awardTier(0), '0_500k');
+  assert.strictEqual(service.awardTier(499999.99), '0_500k');
+  assert.strictEqual(service.awardTier(500000), '500k_3m');
+  assert.strictEqual(service.awardTier(2999999.99), '500k_3m');
+  assert.strictEqual(service.awardTier(3000000), '3m_5m');
+  assert.strictEqual(service.awardTier(5000000), '5m_plus');
 
-assert.strictEqual(service.fallbackSegment('PRIME', 250000), 'awarded_prime_0_500k');
-assert.strictEqual(service.fallbackSegment('SUB', 750000), 'awarded_sub_500k_3m');
-assert.strictEqual(service.fallbackSegment('BOTH', 4000000), 'awarded_both_3m_5m');
-assert.strictEqual(service.fallbackSegment('BOTH', 9000000), 'awarded_both_5m_plus');
+  assert.strictEqual(service.fallbackSegment('PRIME', 250000), 'awarded_prime_0_500k');
+  assert.strictEqual(service.fallbackSegment('SUB', 750000), 'awarded_sub_500k_3m');
+  assert.strictEqual(service.fallbackSegment('BOTH', 4000000), 'awarded_both_3m_5m');
+  assert.strictEqual(service.fallbackSegment('BOTH', 9000000), 'awarded_both_5m_plus');
 
-assert.strictEqual(service.lifecycleState({ company: 'Acme', verifiedContact: true }), 'OUTBOUND_READY');
-assert.strictEqual(service.lifecycleState({ company: 'Acme', hasUnsuppressedEmail: true }), 'CONTACT_VERIFICATION_REQUIRED');
-assert.strictEqual(service.lifecycleState({ company: 'Acme' }), 'CONTACT_ENRICHMENT_REQUIRED');
-assert.strictEqual(service.lifecycleState({ company: '' }), 'IDENTITY_ENRICHMENT_REQUIRED');
-assert.strictEqual(service.lifecycleState({ company: 'Acme', existingClient: true, verifiedContact: true }), 'EXISTING_CLIENT');
-assert.strictEqual(service.lifecycleState({ company: 'Acme', accountDoNotProspect: true, verifiedContact: true }), 'DO_NOT_PROSPECT');
+  assert.strictEqual(service.lifecycleState({ company: 'Acme', verifiedContact: true }), 'OUTBOUND_READY');
+  assert.strictEqual(service.lifecycleState({ company: 'Acme', hasUnsuppressedEmail: true }), 'CONTACT_VERIFICATION_REQUIRED');
+  assert.strictEqual(service.lifecycleState({ company: 'Acme' }), 'CONTACT_ENRICHMENT_REQUIRED');
+  assert.strictEqual(service.lifecycleState({ company: '' }), 'IDENTITY_ENRICHMENT_REQUIRED');
+  assert.strictEqual(service.lifecycleState({ company: 'Acme', existingClient: true, verifiedContact: true }), 'EXISTING_CLIENT');
+  assert.strictEqual(service.lifecycleState({ company: 'Acme', accountDoNotProspect: true, verifiedContact: true }), 'DO_NOT_PROSPECT');
 
-console.log('CANONICAL_AWARDED_CONTRACTOR_MASTER_SEGMENTATION_TEST=GREEN');
+  // Production regression: USAspending subaward exports use sub-recipient identity headers.
+  // The canonical master must aggregate the exact same subcontract UEIs used by coverage.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miles-canonical-subagg-'));
+  const file = path.join(root, 'subawards.csv');
+  fs.writeFileSync(file, [
+    'Sub-Recipient UEI,Subaward Amount,Subaward ID,Prime Award ID,Awarding Agency',
+    'SUBUEI001,125000,SUB-1,PRIME-1,DEPARTMENT OF DEFENSE',
+    'SUBUEI002,75000,SUB-2,PRIME-2,DEPARTMENT OF ENERGY'
+  ].join('\n'), 'utf8');
+  const aggregator = new UsaspendingAwardAggregationService({ rootDir: root });
+  const totals = new Map();
+  const agencies = new Map();
+  const counters = { rows: 0, primeAwardRows: 0, subawardRows: 0, rowsWithoutUei: 0 };
+  await aggregator.aggregateCsv(file, totals, agencies, counters);
+  assert.strictEqual(counters.subawardRows, 2);
+  assert.strictEqual(counters.rowsWithoutUei, 0);
+  assert.strictEqual(totals.size, 2);
+  assert.strictEqual(totals.get('SUBUEI001').subawardObligations, 125000);
+  assert.strictEqual(totals.get('SUBUEI002').subawardObligations, 75000);
+  assert(UsaspendingAwardAggregationService.recipientUeiAliases('SUBAWARD').includes('sub_recipient_uei'));
+  assert(UsaspendingAwardAggregationService.recipientUeiAliases('SUBAWARD').includes('Sub-Recipient UEI'));
+  assert(UsaspendingAwardAggregationService.recipientUeiAliases('SUBAWARD').includes('subawardee_uei'));
+
+  console.log('CANONICAL_AWARDED_CONTRACTOR_MASTER_SEGMENTATION_TEST=GREEN');
+}
+
+main().catch(error => {
+  console.error(error.stack || error.message);
+  process.exitCode = 1;
+});
