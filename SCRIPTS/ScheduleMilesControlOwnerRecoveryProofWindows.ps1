@@ -59,7 +59,9 @@ function Write-ScheduleEvidence {
         [string]$Status,
         [string]$ProofId = $null,
         [string]$ScheduledFor = $null,
-        [string]$ErrorMessage = $null
+        [string]$ErrorMessage = $null,
+        [bool]$IdempotentReuse = $false,
+        [string]$ExistingRequestStatus = $null
     )
     $payload = [ordered]@{
         ok = $Ok
@@ -70,6 +72,8 @@ function Write-ScheduleEvidence {
         delaySeconds = $DelaySeconds
         runnerDelaySeconds = $RunnerDelaySeconds
         scheduledFor = $ScheduledFor
+        idempotentReuse = $IdempotentReuse
+        existingRequestStatus = $ExistingRequestStatus
         observedAt = (Get-Date).ToUniversalTime().ToString("o")
         error = $ErrorMessage
         safety = [ordered]@{
@@ -99,9 +103,26 @@ try {
 
     $existing = Read-JsonSafe -Path $RequestPath
     if ($existing) {
-        $existingStatus = [string]$existing.status
-        if (@("PENDING", "LAUNCHED") -contains $existingStatus.ToUpperInvariant()) {
-            throw "RECOVERY_PROOF_REQUEST_ALREADY_ACTIVE:$([string]$existing.proofId)"
+        $existingStatus = ([string]$existing.status).ToUpperInvariant()
+        if (@("PENDING", "LAUNCHED") -contains $existingStatus) {
+            $existingProofId = [string]$existing.proofId
+            $existingNotBefore = [string]$existing.notBefore
+            if ([string]::IsNullOrWhiteSpace($existingProofId)) { throw "ACTIVE_RECOVERY_PROOF_REQUEST_MISSING_PROOF_ID" }
+            if ([string]::IsNullOrWhiteSpace($existingNotBefore)) { throw "ACTIVE_RECOVERY_PROOF_REQUEST_MISSING_NOT_BEFORE" }
+
+            # Idempotent scheduling: preserve the already-active one-shot request and
+            # republish GREEN schedule evidence for the same proof rather than
+            # destroying valid schedule evidence with a duplicate-request RED record.
+            $evidence = Write-ScheduleEvidence `
+                -Ok $true `
+                -Status "CONTROL_OWNER_RECOVERY_PROOF_SCHEDULED" `
+                -ProofId $existingProofId `
+                -ScheduledFor $existingNotBefore `
+                -IdempotentReuse $true `
+                -ExistingRequestStatus $existingStatus
+            Write-Host "MILES_CONTROL_OWNER_RECOVERY_PROOF_ALREADY_ACTIVE"
+            Write-Host ($evidence | ConvertTo-Json -Compress -Depth 8)
+            exit 0
         }
     }
 
