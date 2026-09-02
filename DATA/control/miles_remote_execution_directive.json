@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-hygiene-deploy-20260902-001",
+  "id": "miles-ionos-postdeploy-plan-20260902-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main at or beyond 2758d5fc7cbc33c02b0c4c8b70bbe2d9a8db776f so the supervised Miles autonomous COO loads the merged IONOS continuous inbox hygiene fix. Preserve the scoped IONOS_HYGIENE_UID_MOVE_ONLY authorization: IONOS folder CREATE + UID MOVE only for high-confidence routable inbox noise; no delete/EXPUNGE, no SMTP/prospect send, no Instantly mutation, no B12 publish, no DNS/forwarding mutation, and no broadening of global controlled-write gates. After successful deploy, perform the normal control-owner recycle so StartAutonomousCOO starts the updated hygiene lane. Do not change any other provider or campaign state as part of this deployment."
+  "note": "Post-deploy read-only verification of live IONOS inbox state after the merged continuous hygiene fix and control-owner recycle. Plan only: inspect info@pathways2gc.com and kevin@pathways2gc.com, classify/routable high-confidence inbox noise, and report counts/routes. Do not mutate folders or messages, send SMTP, change DNS/forwarding, mutate Instantly/B12, or alter campaign state."
 }
