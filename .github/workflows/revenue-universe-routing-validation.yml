@@ -11,6 +11,7 @@ on:
       - 'SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js'
       - 'SERVICES/revenue/MasterContractorTaxonomyEngine.js'
       - 'SERVICES/revenue/AwardHistoryLocalInventoryService.js'
+      - 'SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js'
       - 'DATA/registry/OutboundRevenueSegmentModel.json'
       - 'DATA/registry/AwardedContractorSegmentOverlayModel.json'
       - 'DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json'
@@ -27,6 +28,7 @@ on:
       - 'TESTS/Test_CanonicalAwardedContractorMasterSegmentation.js'
       - 'TESTS/Test_MasterContractorTaxonomyEngine.js'
       - 'TESTS/Test_AwardHistoryLocalInventoryService.js'
+      - 'TESTS/Test_SixFiscalYearAwardSourceValidationService.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -55,6 +57,7 @@ jobs:
           node --check SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js
           node --check SERVICES/revenue/MasterContractorTaxonomyEngine.js
           node --check SERVICES/revenue/AwardHistoryLocalInventoryService.js
+          node --check SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
           node --check StartMilesRemoteExecutionBridge.js
@@ -67,6 +70,7 @@ jobs:
           node --check TESTS/Test_CanonicalAwardedContractorMasterSegmentation.js
           node --check TESTS/Test_MasterContractorTaxonomyEngine.js
           node --check TESTS/Test_AwardHistoryLocalInventoryService.js
+          node --check TESTS/Test_SixFiscalYearAwardSourceValidationService.js
           node --check TESTS/remote_execution_bridge_safety.test.js
           node - <<'NODE'
           const fs = require('fs');
@@ -90,6 +94,8 @@ jobs:
         run: node TESTS/Test_MasterContractorTaxonomyEngine.js
       - name: Local award-history inventory regression
         run: node TESTS/Test_AwardHistoryLocalInventoryService.js
+      - name: Six-FY local award source validation regression
+        run: node TESTS/Test_SixFiscalYearAwardSourceValidationService.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety and architecture assertions
@@ -103,6 +109,7 @@ jobs:
           const taxonomyOverlay = fs.readFileSync('SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js','utf8');
           const taxonomyEngine = fs.readFileSync('SERVICES/revenue/MasterContractorTaxonomyEngine.js','utf8');
           const localHistory = fs.readFileSync('SERVICES/revenue/AwardHistoryLocalInventoryService.js','utf8');
+          const sixFySources = fs.readFileSync('SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js','utf8');
           const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
           const fyRunner = fs.readFileSync('SCRIPTS/RunFy2026AwardedUniverseCoverage.js','utf8');
           const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
@@ -146,6 +153,14 @@ jobs:
             if (!localHistory.includes(token)) throw new Error('Missing local history inventory safeguard: ' + token);
           }
 
+          for (const token of [
+            'SIX_FY_LOCAL_SOURCE_VALIDATION_GREEN','SIX_FY_LOCAL_SOURCE_GAPS_PRESENT',
+            'localInventoryFirst: true','schemaValidationRequired: true','backupsPenalized: true',
+            'duplicateDatedFullSnapshotsCollapsedToNewest: true','missingUeiRowsMustNotBeDiscardedByNormalizer: true',
+            "secondaryIdentityResolutionRequired: ['CAGE', 'NORMALIZED_NAME_PLUS_DOMAIN', 'NORMALIZED_NAME_PLUS_ADDRESS']",
+            'unknownIdentityMustRemainVisible: true','acquisitionTriggered: false'
+          ]) if (!sixFySources.includes(token)) throw new Error('Missing six-FY source-validation contract: ' + token);
+
           if (taxonomyRegistry.architecture !== 'MULTI_DIMENSIONAL_NON_MUTUALLY_EXCLUSIVE') throw new Error('Master taxonomy must remain multi-dimensional.');
           if (taxonomyRegistry.governingRules?.onePrimaryOutboundCampaignPerCompany !== true) throw new Error('One primary outbound campaign rule missing.');
           if (taxonomyRegistry.governingRules?.unknownMustRemainDistinctFromZero !== true) throw new Error('UNKNOWN/zero distinction missing.');
@@ -154,12 +169,12 @@ jobs:
           if (lookback.sourceReusePolicy?.acquireOnlyYearsMissingOrUnusableAfterInventory !== true) throw new Error('Missing-only acquisition rule missing.');
           if (JSON.stringify(lookback.fiscalYearScope?.includedFiscalYears) !== JSON.stringify([2021,2022,2023,2024,2025,2026])) throw new Error('Six-FY lookback scope incorrect.');
 
-          for (const text of [source, awarded, fyAwarded, canonical, taxonomyOverlay, taxonomyEngine, localHistory, runner, fyRunner]) {
+          for (const text of [source, awarded, fyAwarded, canonical, taxonomyOverlay, taxonomyEngine, localHistory, sixFySources, runner, fyRunner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
               throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
             }
           }
-          for (const token of ['CanonicalAwardedContractorMasterService','CanonicalContractorTaxonomyOverlayService','AwardHistoryLocalInventoryService','Fy2026AwardedUniverseCoverageService']) {
+          for (const token of ['CanonicalAwardedContractorMasterService','CanonicalContractorTaxonomyOverlayService','AwardHistoryLocalInventoryService','SixFiscalYearAwardSourceValidationService','Fy2026AwardedUniverseCoverageService']) {
             if (!runner.includes(token)) throw new Error('Runtime runner missing component: ' + token);
           }
           if (!bridge.includes("REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]")) throw new Error('Governed revenue universe runtime job is not fixed-allowlisted.');
