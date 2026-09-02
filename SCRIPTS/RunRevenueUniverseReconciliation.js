@@ -5,11 +5,13 @@ const Fy2026AwardedUniverseCoverageService = require("../SERVICES/revenue/Fy2026
 const CanonicalAwardedContractorMasterService = require("../SERVICES/revenue/CanonicalAwardedContractorMasterService");
 const CanonicalContractorTaxonomyOverlayService = require("../SERVICES/revenue/CanonicalContractorTaxonomyOverlayService");
 const AwardHistoryLocalInventoryService = require("../SERVICES/revenue/AwardHistoryLocalInventoryService");
+const SixFiscalYearAwardSourceValidationService = require("../SERVICES/revenue/SixFiscalYearAwardSourceValidationService");
 
 const objective = [
   "Reconcile the full ORION contractor universe into the P2GC revenue lifecycle.",
   "Treat the current governed contact master as one outbound subset, not the total addressable market or canonical company master.",
   "Inventory existing local FY2021-FY2026 prime and subcontract award history before any reacquisition; Git repository absence is not evidence that Windows data is missing.",
+  "Validate the actual local FY2021-FY2026 source files by fiscal year and award role before normalization; prefer exact official annual files, reject ambiguous or backup copies, and do not acquire missing data during validation.",
   "For every contractor produce an evidence-backed commercial disposition and next-action state.",
   "Companies with stale or missing contacts must remain visible for qualification or enrichment rather than disappearing.",
   "Calculate the exact aligned FY2026 unique prime awardee universe, unique subcontract awardee universe, overlap across roles, and deduped union across either awarded role.",
@@ -36,11 +38,15 @@ async function main() {
   });
 
   let localAwardHistory = null;
+  let sixFySourceValidation = null;
   let awards = null;
   let canonical = null;
   let taxonomy = null;
   if (result?.ok === true) {
     localAwardHistory = new AwardHistoryLocalInventoryService().run();
+    if (localAwardHistory?.ok === true) {
+      sixFySourceValidation = new SixFiscalYearAwardSourceValidationService().run({ inventory: localAwardHistory });
+    }
     awards = await new Fy2026AwardedUniverseCoverageService().run();
     if (awards?.ok === true) {
       canonical = await new CanonicalAwardedContractorMasterService().run({ coverage: awards });
@@ -48,8 +54,17 @@ async function main() {
     }
   }
 
+  const compactSourceYears = sixFySourceValidation?.byYear
+    ? Object.fromEntries(Object.entries(sixFySourceValidation.byYear).map(([year, value]) => [year, {
+        primeReady: value.prime?.ready === true,
+        primeFiles: (value.prime?.selected || []).map(item => item.file),
+        subcontractReady: value.subcontract?.ready === true,
+        subcontractFiles: (value.subcontract?.selected || []).map(item => item.file)
+      }]))
+    : null;
+
   const compact = {
-    ok: result?.ok === true && localAwardHistory?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
+    ok: result?.ok === true && localAwardHistory?.ok === true && sixFySourceValidation?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
     status: taxonomy?.status || canonical?.status || result?.status || null,
     service: result?.service || null,
     mode: result?.mode || null,
@@ -65,6 +80,18 @@ async function main() {
       fiscalYears: localAwardHistory.fiscalYears ? Object.fromEntries(Object.entries(localAwardHistory.fiscalYears).map(([year, value]) => [year, { candidateCount: value.candidateCount }])) : null,
       nextRule: localAwardHistory.nextRule || null,
       safety: localAwardHistory.safety || null
+    } : null,
+    sixFySourceValidation: sixFySourceValidation ? {
+      ok: sixFySourceValidation.ok === true,
+      status: sixFySourceValidation.status || null,
+      inspectedCandidates: sixFySourceValidation.inspectedCandidates || 0,
+      usableCsvSources: sixFySourceValidation.usableCsvSources || 0,
+      readyForSixFiscalYearNormalization: sixFySourceValidation.readyForSixFiscalYearNormalization === true,
+      fiscalYears: compactSourceYears,
+      missingRequirements: sixFySourceValidation.missingRequirements || [],
+      sourceRules: sixFySourceValidation.sourceRules || null,
+      safety: sixFySourceValidation.safety || null,
+      artifacts: sixFySourceValidation.artifacts || null
     } : null,
     awardedCoverage: awards ? {
       ok: awards.ok === true,
@@ -97,7 +124,7 @@ async function main() {
     acceptance: result?.acceptance || null,
     outputs: result?.outputs || null,
     safety: result?.safety || null,
-    error: result?.error || awards?.error || canonical?.error || taxonomy?.error || null
+    error: result?.error || sixFySourceValidation?.error || awards?.error || canonical?.error || taxonomy?.error || null
   };
 
   console.log("MILES_REVENUE_UNIVERSE_RECONCILIATION_COMPACT");
