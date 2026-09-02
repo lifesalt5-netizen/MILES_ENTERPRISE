@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "purpose": "P1.3 governed State/SLED prospect qualification for enrichment. This configuration does not authorize campaign creation, lead upload, or sending.",
+  "source": "C:\\P2GC_Intelligence\\SAM_Registry\\SAM_PUBLIC_MONTHLY_V2_20260301\\OUT_FILTERED\\P2GC_STATE_EXPANSION_TARGETS_V2.csv",
+  "outputDirectory": "DATA/OUTBOUND/STATE_SLED",
+  "identityField": "UEI",
+  "required": {
+    "Entity_Status": ["A"],
+    "Country": ["USA", "US", "UNITED STATES"],
+    "validStateRequired": true
+  },
+  "wave1": {
+    "states": ["FL", "TX", "CA", "VA", "MD", "GA", "NY", "NC", "PA", "IL"],
+    "industries": ["IT_SERVICES", "CONSULTING", "BUSINESS_SUPPORT", "ENGINEERING", "TRAINING_EDUCATION_SERVICES"],
+    "marketPriority": ["TOP_MARKET"],
+    "consultingTier": ["Tier 1"],
+    "minimumLeadScore": 70,
+    "websitePreferred": true
+  },
+  "wave2": {
+    "industries": ["IT_SERVICES", "CONSULTING", "BUSINESS_SUPPORT", "ENGINEERING", "TRAINING_EDUCATION_SERVICES"],
+    "marketPriority": ["TOP_MARKET", "NORMAL"],
+    "consultingTier": ["Tier 1", "Tier 2"],
+    "minimumLeadScore": 65
+  },
+  "excludedIndustriesForInitialOutbound": [
+    "REAL_ESTATE_RENTAL",
+    "REPAIR_PERSONAL_SERVICES"
+  ],
+  "legacyFields": {
+    "ignoreAsQualificationAuthority": ["evan_base_qualified", "evan_segment"],
+    "reason": "The current State expansion source marks the entire population evan_base_qualified=NO and evan_segment=EXCLUDE, which conflicts with its State expansion targeting purpose. Preserve these fields for provenance but do not use them as the P1.3 eligibility gate."
+  },
+  "emailPolicy": {
+    "requireVerifiedEmailBeforeInstantlyUpload": true,
+    "sourceEmailField": "POC_Email",
+    "blankEmailDisposition": "ENRICHMENT_REQUIRED",
+    "unverifiedEmailDisposition": "VERIFICATION_REQUIRED"
+  },
+  "safety": {
+    "createInstantlyCampaigns": false,
+    "uploadInstantlyLeads": false,
+    "activateCampaigns": false,
+    "deleteCampaigns": false,
+    "note": "P1.3 produces authoritative candidate inventories first. Instantly mutation remains a later acceptance gate after deduplication, enrichment, verification, and campaign reconciliation."
+  }
+}
