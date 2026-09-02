@@ -1,7 +1,7 @@
 {
-  "id": "miles-deploy-sixfy-source-validation-20260901-032",
+  "id": "miles-sixfy-source-validation-canonical-20260901-033",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "REVENUE_UNIVERSE_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy and governed-restart Windows MILES on main at or beyond 463d40eada0ad25298be09a83835630e44b7ab15 containing PR #451. Preserve DATA, databases, queues/history, credentials, provider state, current outbound master, production ORION, local FY2021-FY2026 award-history sources and staged artifacts. Do not grant approvals, resume protected sends, mutate campaigns/providers, override suppression, modify current master or production ORION, delete history, change DNS/B12, acquire external source files, or use destructive Git recovery. Publish fresh runtime evidence after safe fast-forward and required process restart."
+  "note": "Execute the governed revenue-universe reconciliation on deployed main at or beyond 463d40eada0ad25298be09a83835630e44b7ab15. First inventory and validate the actual local FY2021-FY2026 prime and subcontract award-history sources on the P2GC Windows data roots. Report per fiscal year: selected validated prime files, selected validated subcontract files, whether each role is ready, and exact missing requirements. Prefer exact official annual sources, reject/penalize backups and ambiguous copies, collapse duplicate dated full snapshots to the newest valid source, and do not acquire external data in this run. Preserve missing-UEI rows for later secondary identity resolution; UNKNOWN must remain visible. Also re-prove the existing FY2026 canonical master/taxonomy acceptance (82,835 prime UEIs, 14,271 subcontract UEIs, 6,387 overlap, 90,719 union, zero missing canonical UEIs) but do not claim a six-FY union until FY2021-FY2025 sources are normalized and reconciled. No sends, campaign/provider mutation, suppression override, current-master mutation, production ORION mutation, approvals, queue/history deletion, DNS/B12 changes, source-file mutation, external acquisition, or destructive Git. Publish fresh evidence and artifacts."
 }
