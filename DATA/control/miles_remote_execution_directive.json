@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-fresh-generation-recovery-20260902-001",
+  "id": "miles-ionos-existing-recovery-verify-20260902-001",
   "enabled": true,
-  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
+  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_VERIFY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Schedule the existing audited one-shot control-owner recovery proof so the independent watchdog performs a controlled stop and fresh restart of miles-autonomous-coo after evidence is published. Purpose is to replace the pre-deploy COO generation with main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c. No arbitrary shell, destructive Git recovery, provider mutation, email deletion, SMTP send, DNS change, Instantly mutation, or B12 publish."
+  "note": "Read-only verification of the already-active control-owner recovery proof request. Do not schedule a second recovery and do not mutate providers. Report whether the existing proof completed, whether miles-autonomous-coo recovered online through the independent watchdog, and whether the GitHub bridge is fresh and healthy after recovery."
 }
