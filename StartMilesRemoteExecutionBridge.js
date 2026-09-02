@@ -35,6 +35,7 @@ const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
   REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']],
   FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']],
+  SIX_FY_AWARDED_UNIVERSE_NORMALIZE: ['node', ['SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js']],
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
   PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
   INFRASTRUCTURE_HEALTH_AUDIT: ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']],
