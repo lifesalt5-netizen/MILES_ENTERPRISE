@@ -48,24 +48,16 @@ jobs:
           if text.count(old) != 1:
               raise SystemExit('validate assertion anchor mismatch')
           test.write_text(text.replace(old, new, 1), encoding='utf-8')
-
-          workflow = Path('.github/workflows/revenue-universe-routing-validation.yml')
-          text = workflow.read_text(encoding='utf-8')
-          old = "          if (!bridge.includes(\"FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]\")) throw new Error('Governed FY2026 awarded-universe runtime job is not fixed-allowlisted.');\n"
-          new = old + "          if (!bridge.includes(\"SIX_FY_AWARDED_UNIVERSE_NORMALIZE: ['node', ['SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js']]\")) throw new Error('Governed six-FY normalization runtime job is not fixed-allowlisted.');\n"
-          if text.count(old) != 1:
-              raise SystemExit('static workflow anchor mismatch')
-          workflow.write_text(text.replace(old, new, 1), encoding='utf-8')
       - name: Verify bounded diff
         run: |
           git diff --check
           node --check StartMilesRemoteExecutionBridge.js
           node --check TESTS/remote_execution_bridge_safety.test.js
-          git diff -- StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js .github/workflows/revenue-universe-routing-validation.yml
+          git diff -- StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js
       - name: Commit patch
         run: |
           git config user.name "miles-ci-bot"
           git config user.email "miles-ci-bot@users.noreply.github.com"
-          git add StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js .github/workflows/revenue-universe-routing-validation.yml
+          git add StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js
           git commit -m "Allowlist six-FY awarded universe normalization"
           git push origin HEAD:feat/sixfy-normalizer-runtime-job-20260902
