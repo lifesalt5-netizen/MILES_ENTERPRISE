@@ -1,7 +1,7 @@
 {
-  "id": "miles-zero-cost-sender-revenue-acceptance-20260902-001",
+  "id": "miles-b12-historical-reconstruction-production-20260902-001",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "REVENUE_UNIVERSE_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run current production revenue acceptance after zero-cost 13-seat sender governance deploy. Read-only audits only: exact paid-seat Instantly connection gap, current placement/authentication, outbound continuity, reply/CRM/meeting readiness. No new Workspace licenses, no campaign activation, no prospect sends, no DNS changes."
+  "note": "Run current-main governed revenue-universe reconciliation with the newly merged B12 Sep 2025-Feb 2026 historical row reconstruction. Historical sources and current master are read-only; reconstruction/disposition outputs are staging-only. No prospect sends, provider/campaign mutation, suppression override, current-master mutation, or production ORION mutation. Return explicit B12 row/contact/disposition/source-error counts."
 }
