@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "name": "P2GC Award History Lookback Policy",
+  "purpose": "Ensure recent historical prime and subcontract awardees remain visible to the canonical contractor and revenue lifecycle even when they have no current-FY award activity or are absent from the current outbound contact master.",
+  "fiscalYearScope": {
+    "currentFiscalYear": 2026,
+    "priorFullFiscalYears": [2021, 2022, 2023, 2024, 2025],
+    "includedFiscalYears": [2021, 2022, 2023, 2024, 2025, 2026],
+    "currentFiscalYearMayBePartial": true
+  },
+  "awardRoles": ["PRIME", "SUB", "BOTH"],
+  "canonicalRule": {
+    "anyProvenAwardedUeiMustExistInCanonicalMaster": true,
+    "crossReferenceCurrentOutboundMaster": true,
+    "missingFromOutboundMasterDoesNotRemoveCompany": true,
+    "missingOrStaleContactCreatesEnrichmentState": true,
+    "preserveAwardHistoryByFiscalYear": true,
+    "preserveMostRecentAwardDate": true,
+    "preserveAwardRoleByFiscalYear": true,
+    "preservePrimeAndSubcontractEvidenceSeparately": true,
+    "dedupeCanonicalCompanyByUei": true
+  },
+  "recencyBands": [
+    {"id":"AWARD_CURRENT_FY","definition":"has proven award activity in FY2026"},
+    {"id":"AWARD_PRIOR_1Y","definition":"most recent proven award activity in FY2025"},
+    {"id":"AWARD_PRIOR_2Y","definition":"most recent proven award activity in FY2024"},
+    {"id":"AWARD_PRIOR_3Y","definition":"most recent proven award activity in FY2023"},
+    {"id":"AWARD_PRIOR_4Y","definition":"most recent proven award activity in FY2022"},
+    {"id":"AWARD_PRIOR_5Y","definition":"most recent proven award activity in FY2021"}
+  ],
+  "outboundRule": {
+    "canonicalPresenceDoesNotEqualCampaignReadiness": true,
+    "outboundRequiresVerifiedCurrentContact": true,
+    "suppressionMustBeChecked": true,
+    "segmentationRequiredBeforeCampaignAssignment": true,
+    "onePrimaryCampaignPerCompany": true
+  }
+}
