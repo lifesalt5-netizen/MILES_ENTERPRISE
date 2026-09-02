@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-post-watchdog-probe-20260902-001",
+  "id": "miles-ionos-final-cleanup-20260902-001",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Read-only probe after the already-active independent watchdog recovery request. Do not mutate mailbox content. Report current INBOX counts and routable counts and append IONOS_CONTINUOUS_HYGIENE_STATUS so we can prove whether miles-autonomous-coo has cut over to a fresh post-deploy generation."
+  "note": "Execute the existing governed IONOS inbox cleanup once to clear the remaining canonical routable messages after the fresh COO generation cutover. Use only the existing UID MOVE governance and post-verification. No deletes, EXPUNGE, SMTP, DNS, Instantly, or B12 mutation."
 }
