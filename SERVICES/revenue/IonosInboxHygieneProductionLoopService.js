@@ -26,6 +26,10 @@ function safeFolderFor(classification = {}, message = {}, clients = new Set()) {
   if (helpers.forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (helpers.billingNotice(message)) return 'MILES-BILLING';
 
+  // A verified delivery failure is more specific than generic automated/system
+  // mail evidence and must retain its dedicated lifecycle folder.
+  if (classification.category === CATEGORIES.BOUNCE_TECHNICAL) return 'MILES-BOUNCE';
+
   if (helpers.strongAutomatedOrBulkMail(message)) {
     if (helpers.systemNoise(message) || helpers.transactionalSystemNotice(message)) return 'MILES-SYSTEM';
     return 'MILES-JUNK';
@@ -132,7 +136,7 @@ class IonosInboxHygieneProductionLoopService {
         continue;
       }
       for (const idsBatch of chunk(ids, 200)) {
-        moves.push(await this.governed.moveUids(mailbox, idsBatch, folder));
+        moves.push(await this.governed.moveUidsForHygiene(mailbox, idsBatch, folder));
       }
     }
 
@@ -197,6 +201,10 @@ class IonosInboxHygieneProductionLoopService {
         safety: {
           deletesMessages: false,
           usesUidMoveOnly: true,
+          scopedAuthorization: 'IONOS_HYGIENE_UID_MOVE_ONLY',
+          globalWriteGatesNotRequired: true,
+          rehearsalModeBlocksScopedMoves: true,
+          autonomousExecuteFalseBlocksScopedMoves: true,
           uncertainMailRemainsInbox: true,
           activeClientMailRemainsInbox: true,
           directSentThreadRepliesRemainInbox: true,

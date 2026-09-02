@@ -21,6 +21,17 @@ function mutationAllowed() {
     envBool('MILES_IONOS_MAILBOX_MUTATIONS', false) === true;
 }
 
+// Continuous IONOS hygiene runs in the same process as other revenue sidecars.
+// Opening the global MILES write gates there would broaden authority to unrelated
+// systems. This narrowly-scoped capability authorizes only the non-destructive
+// IONOS folder CREATE + UID MOVE operations implemented below.
+function hygieneMutationAllowed() {
+  return envBool('MILES_REHEARSAL_MODE', false) === false &&
+    envBool('MILES_AUTONOMOUS_EXECUTE', true) === true &&
+    envBool('MILES_IONOS_HYGIENE_ENABLED', true) === true &&
+    envBool('MILES_IONOS_HYGIENE_EXECUTE', true) === true;
+}
+
 function connectAndRun({ email, password, commands = [], selectMailbox = null, readOnly = true }) {
   return new Promise((resolve, reject) => {
     if (!email || !password) return reject(new Error(`Missing IONOS credentials for ${email || 'unknown mailbox'}`));
@@ -101,6 +112,15 @@ async function ensureMailbox(mailbox, folder) {
   return { ok: true, folder, created: true };
 }
 
+async function ensureMailboxForHygiene(mailbox, folder) {
+  const names = await listMailboxes(mailbox);
+  const existing = names.find(name => name.toLowerCase() === folder.toLowerCase());
+  if (existing) return { ok: true, folder: existing, created: false };
+  if (!hygieneMutationAllowed()) return { ok: false, status: 'IONOS_HYGIENE_MUTATION_SCOPE_CLOSED', folder, mutationExecuted: false };
+  await connectAndRun({ ...mailbox, commands: [`CREATE ${quote(folder)}`] });
+  return { ok: true, folder, created: true };
+}
+
 async function moveUids(mailbox, uids = [], folder, sourceMailbox = 'INBOX') {
   const ids = [...new Set((uids || []).map(Number).filter(Number.isFinite))];
   if (!ids.length) return { ok: true, mutationExecuted: false, moved: 0, folder, sourceMailbox };
@@ -120,6 +140,41 @@ async function moveUids(mailbox, uids = [], folder, sourceMailbox = 'INBOX') {
     sourceMailbox,
     folder: ensured.folder,
     operation: 'UID_MOVE',
+    authorizationScope: 'GLOBAL_CONTROLLED_WRITE',
+    destructiveDeleteUsed: false
+  };
+}
+
+async function moveUidsForHygiene(mailbox, uids = [], folder, sourceMailbox = 'INBOX') {
+  const ids = [...new Set((uids || []).map(Number).filter(Number.isFinite))];
+  if (!ids.length) return { ok: true, mutationExecuted: false, moved: 0, folder, sourceMailbox, authorizationScope: 'IONOS_HYGIENE_UID_MOVE_ONLY' };
+  if (!hygieneMutationAllowed()) {
+    return {
+      ok: false,
+      status: 'IONOS_HYGIENE_MUTATION_SCOPE_CLOSED',
+      mutationExecuted: false,
+      moved: 0,
+      folder,
+      sourceMailbox,
+      authorizationScope: 'IONOS_HYGIENE_UID_MOVE_ONLY'
+    };
+  }
+  const ensured = await ensureMailboxForHygiene(mailbox, folder);
+  if (!ensured.ok) return { ...ensured, authorizationScope: 'IONOS_HYGIENE_UID_MOVE_ONLY' };
+  const result = await connectAndRun({
+    ...mailbox,
+    selectMailbox: sourceMailbox,
+    readOnly: false,
+    commands: [`UID MOVE ${ids.join(',')} ${quote(ensured.folder)}`]
+  });
+  return {
+    ok: result.ok === true,
+    mutationExecuted: result.ok === true,
+    moved: result.ok === true ? ids.length : 0,
+    sourceMailbox,
+    folder: ensured.folder,
+    operation: 'UID_MOVE',
+    authorizationScope: 'IONOS_HYGIENE_UID_MOVE_ONLY',
     destructiveDeleteUsed: false
   };
 }
@@ -128,7 +183,10 @@ module.exports = {
   mailboxConfigs: readonly.mailboxConfigs,
   listMailboxes,
   ensureMailbox,
+  ensureMailboxForHygiene,
   moveUids,
+  moveUidsForHygiene,
   mutationAllowed,
+  hygieneMutationAllowed,
   connectAndRun
 };

@@ -13,6 +13,7 @@ on:
       - 'SERVICES/BusinessWorkPlannerService.js'
       - 'SERVICES/revenue/RevenueUniverseReconciliationService.js'
       - 'SERVICES/revenue/IonosInboxCleanupService.js'
+      - 'SERVICES/revenue/IonosInboxHygieneProductionLoopService.js'
       - 'SERVICES/revenue/InstantlyLifecycleReconciler.js'
       - 'SERVICES/revenue/InstantlyLifecycleProofService.js'
       - 'SERVICES/revenue/InstantlySenderFailoverService.js'
@@ -52,6 +53,7 @@ on:
       - 'TESTS/Test_OperationalRemediationPack.js'
       - 'TESTS/Test_GroupedRemediationV2.js'
       - 'TESTS/Test_InstantlyGuardedReplySend.js'
+      - 'TESTS/Test_IonosInboxHygieneProductionLoopService.js'
       - 'TESTS/Test_SamQualifiedProspectFallbackService.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
       - 'TESTS/orion_contract_summary_derivation.test.js'
@@ -93,6 +95,7 @@ jobs:
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
           node --check SERVICES/revenue/IonosInboxCleanupService.js
+          node --check SERVICES/revenue/IonosInboxHygieneProductionLoopService.js
           node --check SERVICES/revenue/InstantlyLifecycleReconciler.js
           node --check SERVICES/revenue/InstantlyLifecycleProofService.js
           node --check SERVICES/revenue/InstantlySenderFailoverService.js
@@ -124,6 +127,7 @@ jobs:
           node --check TESTS/Test_OperationalRemediationPack.js
           node --check TESTS/Test_GroupedRemediationV2.js
           node --check TESTS/Test_InstantlyGuardedReplySend.js
+          node --check TESTS/Test_IonosInboxHygieneProductionLoopService.js
           node --check TESTS/Test_SamQualifiedProspectFallbackService.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
           node --check TESTS/orion_contract_summary_derivation.test.js
@@ -144,6 +148,7 @@ jobs:
           node TESTS/Test_OperationalRemediationPack.js
           node TESTS/Test_GroupedRemediationV2.js
           node TESTS/Test_InstantlyGuardedReplySend.js
+          node TESTS/Test_IonosInboxHygieneProductionLoopService.js
           node TESTS/Test_SamQualifiedProspectFallbackService.js
           node TESTS/Test_RevenueUniverseMissionRouting.js
           node TESTS/orion_contract_summary_derivation.test.js
