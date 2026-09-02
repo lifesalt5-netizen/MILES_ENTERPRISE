@@ -25,6 +25,8 @@ assert.deepStrictEqual(
 assert.strictEqual(mod.PROTECTED_PRIMARY_DOMAIN, 'pathways2gc.com');
 assert.strictEqual(mod.REQUIRED_AUTHORIZATION, 'AUTHORIZE_ZERO_COST_PAID_SENDER_GOOGLE_OAUTH');
 assert(src.includes("instantly.request('/oauth/google/init'"));
+assert(src.includes("instantly.request('/oauth/google/init', { method: 'POST', body: {} })"));
+assert(!src.includes("instantly.request('/oauth/google/init', { method: 'POST' })"));
 assert(src.includes('/oauth/session/status/'));
 assert(src.includes('newGoogleWorkspaceLicenseAuthorized: false'));
 assert(src.includes('aliasesCountAsIndependentSenders: false'));
