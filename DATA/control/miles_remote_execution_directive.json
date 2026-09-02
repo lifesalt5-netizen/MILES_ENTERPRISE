@@ -1,7 +1,7 @@
 {
-  "id": "miles-federal-source-readiness-postfix-20260902-001",
+  "id": "miles-oauth-json-body-fix-deploy-20260902-001",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run current production federal-source readiness after the deterministic official SAM monthly Public V2 HEAD fallback was merged and deployed. Read-only only. Confirm SAM Entity Registration Public V2 and Contract Opportunities official endpoints are reachable/resolved; do not download bulk data, mutate ORION, expose API keys, scrape authenticated pages, send email, or change provider/DNS state."
+  "note": "Deploy current main containing PR #468 OAuth init request-body correction. Governed supervised restart only. No arbitrary shell, no DNS mutation, no prospect sends, no campaign mutation, no new Workspace licenses."
 }
