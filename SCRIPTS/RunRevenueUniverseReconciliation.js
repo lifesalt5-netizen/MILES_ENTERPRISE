@@ -7,11 +7,12 @@ const CanonicalContractorTaxonomyOverlayService = require("../SERVICES/revenue/C
 const AwardHistoryLocalInventoryService = require("../SERVICES/revenue/AwardHistoryLocalInventoryService");
 const SixFiscalYearAwardSourceValidationService = require("../SERVICES/revenue/SixFiscalYearAwardSourceValidationService");
 const B12HistoricalUniverseDiscoveryService = require("../SERVICES/revenue/B12HistoricalUniverseDiscoveryService");
+const B12HistoricalUniverseReconstructionService = require("../SERVICES/revenue/B12HistoricalUniverseReconstructionService");
 
 const objective = [
   "Reconcile the full ORION contractor universe into the P2GC revenue lifecycle.",
   "Treat the current governed contact master as one outbound subset, not the total addressable market or canonical company master.",
-  "Discover the Sep 2025-Feb 2026 B12 historical campaign/contact evidence from the governed Windows data estate before row reconstruction or migration-loss claims.",
+  "Discover the Sep 2025-Feb 2026 B12 historical campaign/contact evidence from the governed Windows data estate, then reconstruct every parseable historical row into an explicit disposition without equating absence from the current master with migration loss.",
   "Inventory existing local FY2021-FY2026 prime and subcontract award history before any reacquisition; Git repository absence is not evidence that Windows data is missing.",
   "Validate the actual local FY2021-FY2026 source files by fiscal year and award role before normalization; prefer exact official annual files, reject ambiguous or backup copies, and do not acquire missing data during validation.",
   "For every contractor produce an evidence-backed commercial disposition and next-action state.",
@@ -40,6 +41,7 @@ async function main() {
   });
 
   let b12Discovery = null;
+  let b12Reconstruction = null;
   let localAwardHistory = null;
   let sixFySourceValidation = null;
   let awards = null;
@@ -47,6 +49,9 @@ async function main() {
   let taxonomy = null;
   if (result?.ok === true) {
     b12Discovery = new B12HistoricalUniverseDiscoveryService().discover();
+    if (b12Discovery?.ok === true) {
+      b12Reconstruction = await new B12HistoricalUniverseReconstructionService().run();
+    }
     localAwardHistory = new AwardHistoryLocalInventoryService().run();
     if (localAwardHistory?.ok === true) {
       sixFySourceValidation = new SixFiscalYearAwardSourceValidationService().run({ inventory: localAwardHistory });
@@ -68,8 +73,8 @@ async function main() {
     : null;
 
   const compact = {
-    ok: result?.ok === true && b12Discovery?.ok === true && localAwardHistory?.ok === true && sixFySourceValidation?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
-    status: taxonomy?.status || canonical?.status || result?.status || null,
+    ok: result?.ok === true && b12Discovery?.ok === true && b12Reconstruction?.ok === true && localAwardHistory?.ok === true && sixFySourceValidation?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
+    status: taxonomy?.status || canonical?.status || b12Reconstruction?.status || result?.status || null,
     service: result?.service || null,
     mode: result?.mode || null,
     completedAt: result?.completedAt || null,
@@ -89,6 +94,25 @@ async function main() {
       nextGate: b12Discovery.nextGate || null,
       outputs: b12Discovery.outputs || null,
       safety: b12Discovery.safety || null
+    } : null,
+    b12HistoricalReconstruction: b12Reconstruction ? {
+      ok: b12Reconstruction.ok === true,
+      status: b12Reconstruction.status || null,
+      historicalWindow: b12Reconstruction.historicalWindow || null,
+      sourceCoverage: b12Reconstruction.sourceCoverage ? {
+        discoveredHistoricalCandidateFiles: b12Reconstruction.sourceCoverage.discoveredHistoricalCandidateFiles ?? null,
+        discoveredParseableCandidateFiles: b12Reconstruction.sourceCoverage.discoveredParseableCandidateFiles ?? null,
+        selectedUniqueParseableFiles: b12Reconstruction.sourceCoverage.selectedUniqueParseableFiles ?? null,
+        skippedDuplicateArtifacts: b12Reconstruction.sourceCoverage.skippedDuplicateArtifacts ?? null,
+        sourceErrors: b12Reconstruction.sourceCoverage.sourceErrors || []
+      } : null,
+      currentMaster: b12Reconstruction.currentMaster || null,
+      suppressions: b12Reconstruction.suppressions || null,
+      historicalUniverse: b12Reconstruction.historicalUniverse || null,
+      truthRules: b12Reconstruction.truthRules || null,
+      nextGate: b12Reconstruction.nextGate || null,
+      outputs: b12Reconstruction.outputs || null,
+      safety: b12Reconstruction.safety || null
     } : null,
     localAwardHistory: localAwardHistory ? {
       ok: localAwardHistory.ok === true,
@@ -143,7 +167,7 @@ async function main() {
     acceptance: result?.acceptance || null,
     outputs: result?.outputs || null,
     safety: result?.safety || null,
-    error: result?.error || b12Discovery?.errors?.[0]?.error || sixFySourceValidation?.error || awards?.error || canonical?.error || taxonomy?.error || null
+    error: result?.error || b12Discovery?.errors?.[0]?.error || b12Reconstruction?.sourceCoverage?.sourceErrors?.[0]?.error || sixFySourceValidation?.error || awards?.error || canonical?.error || taxonomy?.error || null
   };
 
   console.log("MILES_REVENUE_UNIVERSE_RECONCILIATION_COMPACT");
