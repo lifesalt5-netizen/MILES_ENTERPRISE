@@ -1,0 +1,52 @@
+name: B12 Historical Reconstruction Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js'
+      - 'SERVICES/revenue/B12HistoricalUniverseReconstructionService.js'
+      - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
+      - 'TESTS/b12_historical_universe_reconstruction.test.js'
+      - '.github/workflows/b12-historical-reconstruction-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Syntax
+        run: |
+          node --check SERVICES/revenue/B12HistoricalUniverseReconstructionService.js
+          node --check SCRIPTS/RunRevenueUniverseReconciliation.js
+          node --check TESTS/b12_historical_universe_reconstruction.test.js
+      - name: Reconstruction truth regression
+        run: node TESTS/b12_historical_universe_reconstruction.test.js
+      - name: Static fail-closed safety contract
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const service = fs.readFileSync('SERVICES/revenue/B12HistoricalUniverseReconstructionService.js','utf8');
+          const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
+          for (const token of [
+            'UNKNOWN_INVESTIGATE','COMPANY_STILL_VALID_NEW_CONTACT_NEEDED','NEEDS_RE_ENRICHMENT',
+            'CURRENT_MASTER','HARD_BOUNCE','UNSUBSCRIBED','SUPPRESSED_FOR_VALID_REASON','INVALID_EMAIL',
+            'LEGITIMATE_DUPLICATE','absenceFromCurrentMasterDoesNotEqualLostDuringMigration: true',
+            'freeEmailDomainsNeverEstablishCompanyIdentity: true','historicalSourcesModified: false',
+            'currentMasterModified: false','providerMutation: false','campaignMutation: false','emailSent: false',
+            'suppressionOverridden: false','outputsStagingOnly: true'
+          ]) if (!service.includes(token)) throw new Error('Missing B12 reconstruction truth/safety token: ' + token);
+          if (service.includes("'LOST_DURING_MIGRATION', evidence:")) throw new Error('Service must not infer migration loss merely from absence.');
+          if (!runner.includes('B12HistoricalUniverseReconstructionService')) throw new Error('Governed revenue runner must execute B12 reconstruction after discovery.');
+          if (!runner.includes('b12HistoricalReconstruction')) throw new Error('Governed compact evidence must expose B12 reconstruction.');
+          console.log('B12_HISTORICAL_RECONSTRUCTION_STATIC_SAFETY=GREEN');
+          NODE
