@@ -25,10 +25,8 @@ function safeFolderFor(classification = {}, message = {}, clients = new Set()) {
   if (helpers.ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (helpers.forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (helpers.billingNotice(message)) return 'MILES-BILLING';
-
-  // A verified delivery failure is more specific than generic automated/system
-  // mail evidence and must retain its dedicated lifecycle folder.
   if (classification.category === CATEGORIES.BOUNCE_TECHNICAL) return 'MILES-BOUNCE';
+  if (helpers.knownColdOutreachMarker(message)) return 'MILES-JUNK';
 
   if (helpers.strongAutomatedOrBulkMail(message)) {
     if (helpers.systemNoise(message) || helpers.transactionalSystemNotice(message)) return 'MILES-SYSTEM';

@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const IonosInboxHygieneProductionLoopService = require('../SERVICES/revenue/IonosInboxHygieneProductionLoopService');
 const { safeFolderFor } = IonosInboxHygieneProductionLoopService;
+const cleanupHelpers = require('../SERVICES/revenue/IonosInboxCleanupService').helpers;
 const governedModule = require('../CONNECTORS/IONOS/imap_governed');
 const { CATEGORIES } = require('../SERVICES/revenue/ReplyIntelligenceService');
 
@@ -22,6 +23,7 @@ assert(source.includes('usesUidMoveOnly: true'));
 assert(source.includes('deletesMessages: false'));
 assert(source.includes("scopedAuthorization: 'IONOS_HYGIENE_UID_MOVE_ONLY'"));
 assert(source.includes('moveUidsForHygiene'));
+assert(source.includes('knownColdOutreachMarker'));
 assert(source.includes('globalWriteGatesNotRequired: true'));
 assert(source.includes('rehearsalModeBlocksScopedMoves: true'));
 assert(source.includes('autonomousExecuteFalseBlocksScopedMoves: true'));
@@ -74,6 +76,11 @@ assert.strictEqual(safeFolderFor(
   { from: 'Mail Delivery Subsystem <mailer-daemon@example.com>', subject: 'Mail delivery failed: returning message to sender' },
   clients
 ), 'MILES-BOUNCE');
+assert.strictEqual(cleanupHelpers.folderFor(
+  { category: CATEGORIES.BOUNCE_TECHNICAL, humanReply: false },
+  { from: 'Mail Delivery Subsystem <mailer-daemon@example.com>', subject: 'Mail delivery failed: returning message to sender' },
+  clients
+), 'MILES-BOUNCE', 'canonical routing must preserve the dedicated bounce lifecycle folder');
 assert.strictEqual(safeFolderFor(
   { category: CATEGORIES.AUTO_REPLY, humanReply: false },
   { from: 'employee@example.com', subject: 'Automatic reply: out of office' },
@@ -84,6 +91,11 @@ assert.strictEqual(safeFolderFor(
   { from: 'prospect@example.com', subject: 'Please remove me from your list' },
   clients
 ), 'MILES-CLOSED');
+assert.strictEqual(safeFolderFor(
+  { category: CATEGORIES.UNKNOWN, humanReply: true },
+  { from: 'Vendor <vendor@example.net>', subject: 'Kevin - do you need more leads? | 3A11CND Q913TWE', inReplyTo: '<thread@example.com>' },
+  clients
+), 'MILES-JUNK', 'known campaign marker must outrank generic reply-thread evidence');
 assert.strictEqual(safeFolderFor(
   { category: CATEGORIES.UNKNOWN, humanReply: true },
   { from: 'Unknown Human <human@example.net>', subject: 'Question about your services' },

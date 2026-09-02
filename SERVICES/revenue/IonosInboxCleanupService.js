@@ -91,16 +91,10 @@ function folderFor(classification = {}, message = {}, clients = new Set()) {
   if (ebuyNotice(message)) return 'MILES-GSA-EBUY';
   if (forwardedMilesNoise(message)) return 'MILES-FORWARDED';
   if (billingNotice(message)) return 'MILES-BILLING';
+  if (classification.category === CATEGORIES.BOUNCE_TECHNICAL) return 'MILES-BOUNCE';
 
-  // Known cold-outreach campaign markers are stronger evidence than generic
-  // References/In-Reply-To headers. Some unsolicited messages carry thread-like
-  // headers and were incorrectly retained as human replies in the executive Inbox.
   if (knownColdOutreachMarker(message)) return 'MILES-JUNK';
 
-  // Strong provider/header evidence of automation or bulk delivery must outrank
-  // generic reply-thread heuristics. This prevents newsletters, account alerts,
-  // promotions and generated notifications from occupying the executive Inbox
-  // merely because they carry References/In-Reply-To headers.
   if (strongAutomatedOrBulkMail(message)) {
     if (systemNoise(message) || transactionalSystemNotice(message)) return 'MILES-SYSTEM';
     return 'MILES-JUNK';
