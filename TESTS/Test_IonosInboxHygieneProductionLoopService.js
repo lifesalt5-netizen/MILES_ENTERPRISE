@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const IonosInboxHygieneProductionLoopService = require('../SERVICES/revenue/IonosInboxHygieneProductionLoopService');
 const { safeFolderFor } = IonosInboxHygieneProductionLoopService;
+const governedModule = require('../CONNECTORS/IONOS/imap_governed');
 const { CATEGORIES } = require('../SERVICES/revenue/ReplyIntelligenceService');
 
 const root = path.resolve(__dirname, '..');
@@ -18,14 +19,53 @@ assert(source.includes("setInterval(() => this.runOnce().catch(() => {}), this.i
 assert(source.includes('remainingHighConfidenceRoutableNoise'));
 assert(source.includes('uncertainMailRemainsInbox: true'));
 assert(source.includes('usesUidMoveOnly: true'));
-assert(source.includes('deletesMessages: false'));
+assert(source.includes("scopedAuthorization: 'IONOS_HYGIENE_UID_MOVE_ONLY'"));
+assert(source.includes('moveUidsForHygiene'));
+assert(source.includes('globalWriteGatesNotRequired: true'));
+assert(source.includes('rehearsalModeBlocksScopedMoves: true'));
+assert(source.includes('autonomousExecuteFalseBlocksScopedMoves: true'));
 assert(!/EXPUNGE|\\Deleted/i.test(source));
 assert(governed.includes('UID MOVE'));
+assert(governed.includes('hygieneMutationAllowed'));
+assert(governed.includes('IONOS_HYGIENE_UID_MOVE_ONLY'));
+assert(governed.includes("MILES_REHEARSAL_MODE"));
+assert(governed.includes("MILES_AUTONOMOUS_EXECUTE"));
 assert(!/EXPUNGE/i.test(governed));
 assert(autonomous.includes('IonosInboxHygieneProductionLoopService'));
 assert(autonomous.includes('ionosInboxHygiene.start()'));
 assert(autonomous.includes('ionosInboxHygiene.stop()'));
 assert(autonomous.includes('ionosInboxHygiene.runOnce()'));
+
+const envKeys = [
+  'MILES_REHEARSAL_MODE',
+  'MILES_AUTONOMOUS_EXECUTE',
+  'MILES_IONOS_HYGIENE_ENABLED',
+  'MILES_IONOS_HYGIENE_EXECUTE'
+];
+const priorEnv = Object.fromEntries(envKeys.map(key => [key, process.env[key]]));
+try {
+  process.env.MILES_REHEARSAL_MODE = 'false';
+  process.env.MILES_AUTONOMOUS_EXECUTE = 'true';
+  process.env.MILES_IONOS_HYGIENE_ENABLED = 'true';
+  process.env.MILES_IONOS_HYGIENE_EXECUTE = 'true';
+  assert.strictEqual(governedModule.hygieneMutationAllowed(), true, 'production hygiene scope should authorize UID moves');
+
+  process.env.MILES_REHEARSAL_MODE = 'true';
+  assert.strictEqual(governedModule.hygieneMutationAllowed(), false, 'rehearsal must block scoped moves');
+
+  process.env.MILES_REHEARSAL_MODE = 'false';
+  process.env.MILES_AUTONOMOUS_EXECUTE = 'false';
+  assert.strictEqual(governedModule.hygieneMutationAllowed(), false, 'autonomous execute=false must block scoped moves');
+
+  process.env.MILES_AUTONOMOUS_EXECUTE = 'true';
+  process.env.MILES_IONOS_HYGIENE_EXECUTE = 'false';
+  assert.strictEqual(governedModule.hygieneMutationAllowed(), false, 'IONOS hygiene execute=false must block scoped moves');
+} finally {
+  for (const key of envKeys) {
+    if (priorEnv[key] === undefined) delete process.env[key];
+    else process.env[key] = priorEnv[key];
+  }
+}
 
 const clients = new Set(['client@example.com']);
 assert.strictEqual(safeFolderFor(
