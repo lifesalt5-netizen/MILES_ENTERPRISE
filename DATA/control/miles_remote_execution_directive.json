@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-010",
+  "id": "miles-inbox-placement-create-fresh-20260902-011",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
+  "job": "INBOX_PLACEMENT_CREATE_FRESH",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Verify the final paid sender after Aden completed Google consent. Complete exact-account normal OAuth only if needed. Report connected and missing counts."
+  "note": "Create a fresh controlled inbox-placement test using the current connected sender inventory for final FULL-GO evidence. Do not purchase or upgrade any plan, send prospects, change DNS, or touch protected primary-domain outbound."
 }
