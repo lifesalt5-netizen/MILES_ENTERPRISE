@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-005",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-006",
   "enabled": true,
   "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the existing guarded OAuth batch now that the remaining paid Workspace accounts are signed into the Miles managed Chrome profile and the manual browser is closed. Complete only exact-account normal OAuth for missing paid senders. No new Workspace users or licenses, no aliases as capacity, no prospect sends, no campaign or DNS changes, and keep pathways2gc.com protected. Report exact connected accounts, remaining missing accounts, provider status, and recurring cost status."
+  "note": "Run the existing guarded OAuth batch after Ryan Brooks and Aden Park were refreshed in the Miles managed Chrome profile and the manual browser was closed. Complete only exact-account normal OAuth for any remaining paid senders. No new Workspace users or licenses, no aliases as capacity, no prospect sends, no campaign or DNS changes, and keep pathways2gc.com protected. Report exact connected accounts, remaining missing accounts, provider status, and recurring cost status."
 }
