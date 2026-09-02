@@ -48,19 +48,13 @@ jobs:
           if "  'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',\n" not in src:
               src = src.replace("  'REVENUE_ACCEPTANCE_SPRINT',\n", "  'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',\n  'REVENUE_ACCEPTANCE_SPRINT',\n", 1)
 
-          exacts = """
-assert.deepStrictEqual(bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH, ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]);
-assert.deepStrictEqual(bridge.JOBS.REVENUE_ACCEPTANCE_LATEST_PLACEMENT, ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]);
-"""
+          exacts = "assert.deepStrictEqual(bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH, ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]);\nassert.deepStrictEqual(bridge.JOBS.REVENUE_ACCEPTANCE_LATEST_PLACEMENT, ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]);\n"
           anchor = "assert.deepStrictEqual(bridge.JOBS.FEDERAL_SOURCE_READINESS_AUDIT, ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]);\n"
           if 'bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH' not in src:
               if anchor not in src: raise SystemExit('EXACT_ASSERT_ANCHOR_NOT_FOUND')
               src = src.replace(anchor, anchor + exacts, 1)
 
-          validates = """
-assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INBOX_PLACEMENT_CREATE_FRESH'}).ok, true);
-assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_LATEST_PLACEMENT'}).ok, true);
-"""
+          validates = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INBOX_PLACEMENT_CREATE_FRESH'}).ok, true);\nassert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_LATEST_PLACEMENT'}).ok, true);\n"
           vanchor = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FEDERAL_SOURCE_READINESS_AUDIT'}).ok, true);\n"
           if "job:'INBOX_PLACEMENT_CREATE_FRESH'" not in src:
               if vanchor not in src: raise SystemExit('VALIDATE_ASSERT_ANCHOR_NOT_FOUND')
