@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-004",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-005",
   "enabled": true,
   "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Kevin closed the manually opened Miles Chrome profile after attaching chris@pathwaysgsa.com to that managed profile. Re-open the persistent Miles Chrome profile and verify whether Chris persisted as an authenticated Google identity. Generate a fresh Instantly OAuth session and complete normal consent only if the exact intended email chris@pathwaysgsa.com is proven. Do not enter or read passwords, bypass MFA, create Workspace users/licenses, count aliases, send prospects, mutate campaigns, change DNS, or touch pathways2gc.com outbound. Report whether Chris becomes connected and list the remaining missing already-paid mailboxes."
+  "note": "Run the existing guarded OAuth batch now that the remaining paid Workspace accounts are signed into the Miles managed Chrome profile and the manual browser is closed. Complete only exact-account normal OAuth for missing paid senders. No new Workspace users or licenses, no aliases as capacity, no prospect sends, no campaign or DNS changes, and keep pathways2gc.com protected. Report exact connected accounts, remaining missing accounts, provider status, and recurring cost status."
 }
