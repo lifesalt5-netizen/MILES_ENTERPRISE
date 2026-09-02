@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-006",
+  "id": "miles-google-oauth-init-missing-production-20260902-007",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the existing guarded OAuth batch after Ryan Brooks and Aden Park were refreshed in the Miles managed Chrome profile and the manual browser was closed. Complete only exact-account normal OAuth for any remaining paid senders. No new Workspace users or licenses, no aliases as capacity, no prospect sends, no campaign or DNS changes, and keep pathways2gc.com protected. Report exact connected accounts, remaining missing accounts, provider status, and recurring cost status."
+  "note": "Generate fresh Instantly Google OAuth authorization sessions for the remaining missing already-paid senders only. Current missing senders are expected to be ryan@pathwaysgsa.com and aden@pathwaysgov.com. Do not create Workspace users or licenses, do not count aliases as capacity, do not send prospect email, mutate campaigns, change DNS, or touch pathways2gc.com outbound. Return the exact authorization URLs and intended emails so the required Google re-verification can be completed manually."
 }
