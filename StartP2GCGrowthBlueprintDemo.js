@@ -6,6 +6,7 @@ const path = require("path");
 const { URL } = require("url");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
+const ExecutiveBlueprintCanonicalTruthService = require("./SERVICES/demo/ExecutiveBlueprintCanonicalTruthService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
 const HistoricalProspectFallbackService = require("./SERVICES/demo/HistoricalProspectFallbackService");
@@ -19,6 +20,7 @@ const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
 const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
 const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
+const canonicalTruth = new ExecutiveBlueprintCanonicalTruthService({ rootDir: ROOT });
 const commercialPreview = new DemoCommercialPreviewService();
 const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
 const historicalFallback = new HistoricalProspectFallbackService({ rootDir: ROOT });
@@ -55,7 +57,7 @@ function readJsonBody(req, limitBytes = 2 * 1024 * 1024) {
     req.on("error", reject);
   });
 }
-function getModel(term, refresh = false) {
+async function getModel(term, refresh = false) {
   const k = key(term);
   if (!refresh && cache.has(k)) {
     const hit = cache.get(k);
@@ -79,9 +81,10 @@ function getModel(term, refresh = false) {
         ...baseModel,
         profile: {
           ...(baseModel.profile || {}),
-          cage: baseModel.profile?.cage || currentSam.profile?.cage || null,
+          cage: currentSam.profile?.cage || baseModel.profile?.cage || null,
           website: baseModel.profile?.website || currentSam.profile?.website || null,
-          samStatus: 'ACTIVE'
+          samStatus: 'ACTIVE',
+          samExpirationCurrent: currentSam.profile?.samExpirationCurrent === true || baseModel.profile?.samExpirationCurrent === true
         },
         currentState: {
           ...(baseModel.currentState || {}),
@@ -95,7 +98,9 @@ function getModel(term, refresh = false) {
     }
   }
 
-  const model = commercialPreview.apply(truthReconciler.reconcile(baseModel));
+  const reconciled = truthReconciler.reconcile(baseModel);
+  const canonical = await canonicalTruth.hydrate(reconciled, { refresh });
+  const model = commercialPreview.apply(canonical);
   if (model?.ok) {
     const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
     const record = { at:Date.now(), model };
@@ -104,7 +109,7 @@ function getModel(term, refresh = false) {
   return model?.ok ? { ...model, cache:{ hit:false, ttlMs:TTL } } : model;
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = url.pathname;
 
@@ -118,7 +123,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
@@ -133,7 +138,7 @@ const server = http.createServer((req, res) => {
     const term = String(url.searchParams.get("term") || "").trim();
     if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
     try {
-      const model = getModel(term, url.searchParams.get("refresh") === "1");
+      const model = await getModel(term, url.searchParams.get("refresh") === "1");
       return json(res, model?.ok ? 200 : 404, model);
     } catch (error) {
       return json(res, 500, { ok:false, status:"ASSESSMENT_FAILED", error:error.message });
@@ -154,7 +159,7 @@ const server = http.createServer((req, res) => {
     const type = String(url.searchParams.get("type") || "").trim();
     if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
     try {
-      const model = getModel(term, url.searchParams.get("refresh") === "1");
+      const model = await getModel(term, url.searchParams.get("refresh") === "1");
       if (!model?.ok) return json(res, 404, model);
       const result = focused.build(type, model);
       return json(res, result?.ok ? 200 : 400, result);
@@ -167,7 +172,7 @@ const server = http.createServer((req, res) => {
     const term = String(url.searchParams.get("term") || "").trim();
     if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED", message:"Enter company name, UEI, CAGE, or website." });
     try {
-      const model = getModel(term, url.searchParams.get("refresh") === "1");
+      const model = await getModel(term, url.searchParams.get("refresh") === "1");
       if (!model?.ok) return json(res, 404, model);
       return json(res, 200, teaming.fromBlueprint(model));
     } catch (error) {
@@ -180,7 +185,7 @@ const server = http.createServer((req, res) => {
     const format = String(url.searchParams.get("format") || "md").toLowerCase();
     if (!term) return json(res, 400, { ok:false, status:"TERM_REQUIRED" });
     try {
-      const model = getModel(term, false);
+      const model = await getModel(term, false);
       if (!model?.ok) return json(res, 404, model);
       const safe = String(model.profile?.companyName || model.profile?.uei || "prospect").replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,80);
       if (format === "json") return send(res, 200, "application/json; charset=utf-8", JSON.stringify(model, null, 2), { "Content-Disposition":`attachment; filename="P2GC_Growth_Blueprint_${safe}.json"` });
