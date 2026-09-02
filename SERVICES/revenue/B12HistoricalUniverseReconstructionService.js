@@ -21,6 +21,11 @@ const CAMPAIGN_ALIASES = ['campaign','campaignname','campaign_name','segment','s
 const SEND_DATE_ALIASES = ['senddate','send_date','sentdate','sent_date','createdat','created_at','date','timestamp'];
 const STATUS_ALIASES = ['status','contactstatus','contact_status','leadstatus','lead_status','deliverystatus','delivery_status'];
 const MAX_JSON_BYTES = 250 * 1024 * 1024;
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com','googlemail.com','outlook.com','hotmail.com','live.com','msn.com',
+  'yahoo.com','ymail.com','aol.com','icloud.com','me.com','mac.com','proton.me',
+  'protonmail.com','gmx.com','gmx.net','mail.com','zoho.com'
+]);
 
 function clean(value) { return value == null ? '' : String(value).trim(); }
 function normalizedHeader(value) { return clean(value).toLowerCase().replace(/[^a-z0-9]/g, ''); }
@@ -38,6 +43,7 @@ function normalizeDomain(value) {
   return text.replace(/[^a-z0-9.-]/g, '').replace(/^\.+|\.+$/g, '');
 }
 function domainFromEmail(email) { const value = normalizeEmail(email); return validEmail(value) ? value.split('@').pop() : ''; }
+function isBusinessDomain(value) { const domain = normalizeDomain(value); return Boolean(domain && domain.includes('.') && !FREE_EMAIL_DOMAINS.has(domain)); }
 function extractEmail(value) {
   const text = clean(value);
   if (!text) return '';
@@ -73,29 +79,30 @@ function rowToRecord(row = {}) {
   const uei = normalizeId(valueByAliases(row, UEI_ALIASES));
   const cage = normalizeId(valueByAliases(row, CAGE_ALIASES));
   const website = clean(valueByAliases(row, WEBSITE_ALIASES));
-  const domain = normalizeDomain(valueByAliases(row, DOMAIN_ALIASES)) || normalizeDomain(website) || domainFromEmail(email);
+  const explicitDomain = normalizeDomain(valueByAliases(row, DOMAIN_ALIASES)) || normalizeDomain(website);
+  const domain = explicitDomain || domainFromEmail(email);
   const state = normalizeState(valueByAliases(row, STATE_ALIASES));
   const phone = clean(valueByAliases(row, PHONE_ALIASES));
   const campaign = clean(valueByAliases(row, CAMPAIGN_ALIASES));
   const sendDate = clean(valueByAliases(row, SEND_DATE_ALIASES));
   const sourceStatus = clean(valueByAliases(row, STATUS_ALIASES));
   const companyNorm = normalizeCompany(company);
-  return { rawEmail, email, emailValid: validEmail(email), company, companyNorm, firstName, lastName, fullName, uei, cage, website, domain, state, phone, campaign, sendDate, sourceStatus };
+  return { rawEmail, email, emailValid: validEmail(email), company, companyNorm, firstName, lastName, fullName, uei, cage, website, domain, domainBusinessIdentityEligible: isBusinessDomain(domain), state, phone, campaign, sendDate, sourceStatus };
 }
 function companyIdentityKeys(record = {}) {
   const keys = [];
   if (record.uei) keys.push(`UEI:${record.uei}`);
   if (record.cage) keys.push(`CAGE:${record.cage}`);
-  if (record.domain) keys.push(`DOMAIN:${record.domain}`);
+  if (record.domain && isBusinessDomain(record.domain)) keys.push(`DOMAIN:${record.domain}`);
   if (record.companyNorm && record.state) keys.push(`NAME_STATE:${record.companyNorm}|${record.state}`);
   return keys;
 }
 function canonicalContactKey(record = {}, sourceFile = '', rowNumber = 0) {
   if (record.emailValid) return `EMAIL:${record.email}`;
   if (record.uei && record.fullName) return `UEI_NAME:${record.uei}|${normalizeCompany(record.fullName)}`;
-  if (record.domain && record.fullName) return `DOMAIN_NAME:${record.domain}|${normalizeCompany(record.fullName)}`;
+  if (record.domain && isBusinessDomain(record.domain) && record.fullName) return `DOMAIN_NAME:${record.domain}|${normalizeCompany(record.fullName)}`;
   if (record.uei) return `UEI:${record.uei}`;
-  if (record.domain && record.companyNorm) return `DOMAIN_COMPANY:${record.domain}|${record.companyNorm}`;
+  if (record.domain && isBusinessDomain(record.domain) && record.companyNorm) return `DOMAIN_COMPANY:${record.domain}|${record.companyNorm}`;
   return `ROW:${sha(`${sourceFile}|${rowNumber}|${JSON.stringify(record)}`)}`;
 }
 function suppressionDisposition(entry) {
@@ -115,7 +122,7 @@ function dispositionFor(record, master, suppressionEntry) {
   if (companyMatchKey) {
     if (!record.emailValid || !master.emails.has(record.email)) return { disposition: 'COMPANY_STILL_VALID_NEW_CONTACT_NEEDED', evidence: `CURRENT_MASTER_COMPANY_MATCH:${companyMatchKey}` };
   }
-  if (!record.emailValid && (record.uei || record.cage || record.domain || record.companyNorm)) return { disposition: 'NEEDS_RE_ENRICHMENT', evidence: 'COMPANY_EVIDENCE_PRESENT_WITHOUT_VALID_EMAIL' };
+  if (!record.emailValid && (record.uei || record.cage || (record.domain && isBusinessDomain(record.domain)) || record.companyNorm)) return { disposition: 'NEEDS_RE_ENRICHMENT', evidence: 'COMPANY_EVIDENCE_PRESENT_WITHOUT_VALID_EMAIL' };
   return { disposition: 'UNKNOWN_INVESTIGATE', evidence: 'NO_GOVERNED_REASON_YET_PROVES_REMOVAL_OR_CURRENT_MASTER_MATCH' };
 }
 function extractJsonRows(value) {
@@ -228,9 +235,9 @@ class B12HistoricalUniverseReconstructionService {
     const selectedFiles = [];
     const skippedDuplicateArtifacts = [];
     for (const item of historicalFiles) {
-      const hash = clean(item.sha256);
-      if (hash && duplicateHashes.has(hash)) { skippedDuplicateArtifacts.push(item.file); continue; }
-      if (hash) duplicateHashes.add(hash);
+      const hashValue = clean(item.sha256);
+      if (hashValue && duplicateHashes.has(hashValue)) { skippedDuplicateArtifacts.push(item.file); continue; }
+      if (hashValue) duplicateHashes.add(hashValue);
       selectedFiles.push(item);
     }
 
@@ -316,7 +323,7 @@ class B12HistoricalUniverseReconstructionService {
     }
     fs.writeFileSync(canonicalCsvPath, `${canonicalLines.join('\n')}\n`, 'utf8');
 
-    const unresolvedCanonical = (canonicalDispositionCounts.UNKNOWN_INVESTIGATE || 0);
+    const unresolvedCanonical = canonicalDispositionCounts.UNKNOWN_INVESTIGATE || 0;
     const result = {
       ok: sourceErrors.length === 0 && selectedFiles.length > 0,
       status: sourceErrors.length ? 'B12_RECONSTRUCTION_SOURCE_ERRORS' : selectedFiles.length ? 'B12_RECONSTRUCTION_COMPLETE_WITH_EXPLICIT_DISPOSITIONS' : 'B12_RECONSTRUCTION_NO_PARSEABLE_SOURCES',
@@ -352,6 +359,7 @@ class B12HistoricalUniverseReconstructionService {
       },
       truthRules: {
         absenceFromCurrentMasterDoesNotEqualLostDuringMigration: true,
+        freeEmailDomainsNeverEstablishCompanyIdentity: true,
         unknownIsNotZero: true,
         unsupportedOrUnprovenDispositionRemainsUnknownInvestigate: true,
         noHistoricalRowsSilentlyDropped: sourceErrors.length === 0,
@@ -380,4 +388,4 @@ class B12HistoricalUniverseReconstructionService {
 }
 
 module.exports = B12HistoricalUniverseReconstructionService;
-module.exports.helpers = { normalizedHeader, normalizeCompany, normalizeDomain, validEmail, extractEmail, rowToRecord, companyIdentityKeys, canonicalContactKey, suppressionDisposition, dispositionFor, extractJsonRows };
+module.exports.helpers = { normalizedHeader, normalizeCompany, normalizeDomain, validEmail, isBusinessDomain, extractEmail, rowToRecord, companyIdentityKeys, canonicalContactKey, suppressionDisposition, dispositionFor, extractJsonRows };
