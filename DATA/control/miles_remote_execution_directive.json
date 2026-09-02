@@ -1,7 +1,7 @@
 {
-  "id": "miles-inbox-placement-create-fresh-20260902-011",
+  "id": "miles-revenue-acceptance-current-senders-20260902-012",
   "enabled": true,
-  "job": "INBOX_PLACEMENT_CREATE_FRESH",
+  "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Create a fresh controlled inbox-placement test using the current connected sender inventory for final FULL-GO evidence. Do not purchase or upgrade any plan, send prospects, change DNS, or touch protected primary-domain outbound."
+  "note": "Run the safe read-only revenue acceptance to refresh current sender capacity, account health, DNS, operational continuity, and existing placement evidence. Do not purchase anything, send prospects, mutate campaigns, change DNS, or publish B12."
 }
