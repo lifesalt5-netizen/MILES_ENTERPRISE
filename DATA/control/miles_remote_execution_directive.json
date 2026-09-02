@@ -1,7 +1,7 @@
 {
-  "id": "miles-fy2026-awarded-universe-coverage-20260901-027",
+  "id": "miles-deploy-canonical-master-taxonomy-20260901-028",
   "enabled": true,
-  "job": "FY2026_AWARDED_UNIVERSE_COVERAGE",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed cap-safe FY2026 awarded-contractor coverage on deployed main at or beyond ec4967f4edde2741a36a562ed53018f6db21645e containing PR #448. Use validated read-only ORION FY2026 sidecar for exact prime UEIs and resolve its source date from explicit validated metadata or strict YYYYMMDD validated archive metadata fallback. Acquire or reuse official USAspending subawards only for 2025-10-01 through that identical source date. Allow the governed large-export generation wait to complete; do not fail merely at the old 30-minute ceiling. Require exact UEI-only prime/subcontract counts, exact overlap, exact deduped union, current-master in/missing counts, prime/sub in/missing separately, current master rows/unique UEIs, coverage/missing percentages, source integrity, aligned dates, and subaward rows below the 500000 transaction ceiling. Fail closed on source/date/schema/identity/extraction/aggregation/integrity errors. Staging/read-only only: no production ORION mutation, provider/campaign mutation, emails, suppression override, approvals, queue/history deletion, DNS/B12 changes or destructive Git. Publish fresh runtime evidence."
+  "note": "Deploy and governed-restart Windows MILES on main at or beyond 92a3caf29ce5be653b13d49ed6a3ea8dd7dab722 containing PR #449. Preserve DATA, databases, queues/history, credentials, provider state, current outbound master, production ORION, award-history source files and staged artifacts. Do not grant approvals, resume protected tasks, send email, mutate campaigns/providers, override suppression, change DNS/B12, delete history, or use destructive Git recovery. Publish fresh runtime evidence after safe fast-forward and required process restart."
 }
