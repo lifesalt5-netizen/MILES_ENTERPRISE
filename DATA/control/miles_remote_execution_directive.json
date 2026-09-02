@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-canonical-deploy-20260902-014",
+  "id": "miles-executive-blueprint-sam-opportunity-refresh-20260902-015",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "SAM_BULK_EXTRACT_ACQUIRE_STAGING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main merge 9bd8751e39e5036fd387f56a0dd6702baa28927b containing the universal Executive Government Growth Blueprint canonical-truth rebuild. Preserve fail-closed truth rules and existing safety boundaries. Do not mutate campaigns, DNS, provider billing, or customer data beyond the trusted deployment mechanism."
+  "note": "Refresh the governed official public SAM.gov entity and Contract Opportunities bulk staging used by the Executive Government Growth Blueprint current-opportunity matcher. Staging only; do not modify production ORION, credentials, campaigns, DNS, or customer data."
 }
