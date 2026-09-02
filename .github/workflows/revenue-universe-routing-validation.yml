@@ -8,8 +8,13 @@ on:
       - 'SERVICES/revenue/AwardedUniverseCoverageService.js'
       - 'SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js'
       - 'SERVICES/revenue/CanonicalAwardedContractorMasterService.js'
+      - 'SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js'
+      - 'SERVICES/revenue/MasterContractorTaxonomyEngine.js'
+      - 'SERVICES/revenue/AwardHistoryLocalInventoryService.js'
       - 'DATA/registry/OutboundRevenueSegmentModel.json'
       - 'DATA/registry/AwardedContractorSegmentOverlayModel.json'
+      - 'DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json'
+      - 'DATA/registry/AwardHistoryLookbackPolicy.json'
       - 'CORE/ExecutionActionContracts.js'
       - 'CONNECTORS/MILES/connector.js'
       - 'StartMilesRemoteExecutionBridge.js'
@@ -20,6 +25,8 @@ on:
       - 'TESTS/Test_AwardedUniverseCoverageIdentity.js'
       - 'TESTS/Test_Fy2026AwardedUniverseCoverageService.js'
       - 'TESTS/Test_CanonicalAwardedContractorMasterSegmentation.js'
+      - 'TESTS/Test_MasterContractorTaxonomyEngine.js'
+      - 'TESTS/Test_AwardHistoryLocalInventoryService.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -38,13 +45,16 @@ jobs:
           cache: 'npm'
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
-      - name: Syntax check
+      - name: Syntax and registry check
         run: |
           node --check SERVICES/BusinessWorkPlannerService.js
           node --check SERVICES/revenue/RevenueUniverseReconciliationService.js
           node --check SERVICES/revenue/AwardedUniverseCoverageService.js
           node --check SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js
           node --check SERVICES/revenue/CanonicalAwardedContractorMasterService.js
+          node --check SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js
+          node --check SERVICES/revenue/MasterContractorTaxonomyEngine.js
+          node --check SERVICES/revenue/AwardHistoryLocalInventoryService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
           node --check StartMilesRemoteExecutionBridge.js
@@ -55,8 +65,17 @@ jobs:
           node --check TESTS/Test_AwardedUniverseCoverageIdentity.js
           node --check TESTS/Test_Fy2026AwardedUniverseCoverageService.js
           node --check TESTS/Test_CanonicalAwardedContractorMasterSegmentation.js
+          node --check TESTS/Test_MasterContractorTaxonomyEngine.js
+          node --check TESTS/Test_AwardHistoryLocalInventoryService.js
           node --check TESTS/remote_execution_bridge_safety.test.js
-          node -e "JSON.parse(require('fs').readFileSync('DATA/registry/AwardedContractorSegmentOverlayModel.json','utf8'))"
+          node - <<'NODE'
+          const fs = require('fs');
+          for (const file of [
+            'DATA/registry/AwardedContractorSegmentOverlayModel.json',
+            'DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json',
+            'DATA/registry/AwardHistoryLookbackPolicy.json'
+          ]) JSON.parse(fs.readFileSync(file,'utf8'));
+          NODE
       - name: Revenue universe routing regression
         run: node TESTS/Test_RevenueUniverseMissionRouting.js
       - name: Duplicate identity accounting regression
@@ -67,9 +86,13 @@ jobs:
         run: node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
       - name: Canonical awarded master segmentation regression
         run: node TESTS/Test_CanonicalAwardedContractorMasterSegmentation.js
+      - name: Master contractor taxonomy regression
+        run: node TESTS/Test_MasterContractorTaxonomyEngine.js
+      - name: Local award-history inventory regression
+        run: node TESTS/Test_AwardHistoryLocalInventoryService.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
-      - name: Static safety assertions
+      - name: Static safety and architecture assertions
         run: |
           node - <<'NODE'
           const fs = require('fs');
@@ -77,71 +100,69 @@ jobs:
           const awarded = fs.readFileSync('SERVICES/revenue/AwardedUniverseCoverageService.js','utf8');
           const fyAwarded = fs.readFileSync('SERVICES/revenue/Fy2026AwardedUniverseCoverageService.js','utf8');
           const canonical = fs.readFileSync('SERVICES/revenue/CanonicalAwardedContractorMasterService.js','utf8');
+          const taxonomyOverlay = fs.readFileSync('SERVICES/revenue/CanonicalContractorTaxonomyOverlayService.js','utf8');
+          const taxonomyEngine = fs.readFileSync('SERVICES/revenue/MasterContractorTaxonomyEngine.js','utf8');
+          const localHistory = fs.readFileSync('SERVICES/revenue/AwardHistoryLocalInventoryService.js','utf8');
           const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
           const fyRunner = fs.readFileSync('SCRIPTS/RunFy2026AwardedUniverseCoverage.js','utf8');
           const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
-          const required = [
-            'productionOrionModified: false',
-            'providerMutation: false',
-            'campaignMutation: false',
-            'emailSent: false',
-            'suppressionOverridden: false',
-            'outputStagingOnly: true',
-            'DUPLICATE_MERGED_ENTITY',
-            'canonicalContractorIdentities: seenIdentityKeys.size'
-          ];
-          for (const token of required) {
-            if (!source.includes(token)) throw new Error('Missing safety/accounting assertion: ' + token);
+          const taxonomyRegistry = JSON.parse(fs.readFileSync('DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json','utf8'));
+          const lookback = JSON.parse(fs.readFileSync('DATA/registry/AwardHistoryLookbackPolicy.json','utf8'));
+
+          for (const token of [
+            'productionOrionModified: false', 'providerMutation: false', 'campaignMutation: false',
+            'emailSent: false', 'suppressionOverridden: false', 'outputStagingOnly: true',
+            'DUPLICATE_MERGED_ENTITY', 'canonicalContractorIdentities: seenIdentityKeys.size'
+          ]) if (!source.includes(token)) throw new Error('Missing safety/accounting assertion: ' + token);
+
+          for (const token of [
+            'exactUniquePrimeAwardedUeis','exactUniqueSubcontractAwardedUeis','exactUniqueAwardedUeisEitherRole',
+            'exactAwardedUeisInCurrentMaster','exactAwardedUeisMissingFromCurrentMaster','EXACT_COUNTS_USE_UEI_ONLY'
+          ]) if (!awarded.includes(token)) throw new Error('Missing exact awarded-universe assertion: ' + token);
+
+          for (const token of [
+            'ORION_VALIDATED_USASPENDING_FY2026_SIDECAR', "spending_level: ['subawards']", 'SUBAWARD_SOURCE_REACHED_500K_CAP',
+            'sourceDatesAligned: true','exactUniqueAwardedUeisEitherRole','currentMasterCoveragePercentOfAwardedUniverse',
+            'productionOrionModified: false','emailSent: false'
+          ]) if (!fyAwarded.includes(token)) throw new Error('Missing FY2026 exactness/safety assertion: ' + token);
+
+          for (const token of [
+            'canonicalRowsEqualAwardedUnion','zeroAwardedUeisMissingFromCanonicalMaster','CURRENT_SEGMENT_RETAINED',
+            'AWARDED_ROLE_FALLBACK_CREATED','CONTACT_ENRICHMENT_REQUIRED','OUTBOUND_READY',
+            'currentOutboundMasterModified: false','outboundReadyExportsRequireVerifiedUnsuppressedContact: true'
+          ]) if (!canonical.includes(token)) throw new Error('Missing canonical master assertion: ' + token);
+
+          for (const token of [
+            'taxonomyRowsEqualCanonicalRows','zeroCanonicalAccountsMissingTaxonomy','all_segment_tags_json',
+            'commercial_disposition','next_action','currentOutboundMasterModified: false','emailSent: false'
+          ]) if (!taxonomyOverlay.includes(token)) throw new Error('Missing taxonomy overlay assertion: ' + token);
+
+          for (const token of [
+            'lt_100k','100k_500k','500k_1m','1m_3m','3m_5m','5m_10m','10m_25m','25m_50m','50m_100m','100m_plus',
+            'AWARD_CURRENT_FY','AWARD_PRIOR_5Y','NO_PROVEN_AWARD_ROLE','UNKNOWN'
+          ]) if (!taxonomyEngine.includes(token)) throw new Error('Missing taxonomy engine classification: ' + token);
+
+          for (const token of ['D:\\\\P2GC_Intelligence','C:\\\\P2GC_Intelligence','readOnlyFilesystemScan: true','filesModified: false']) {
+            if (!localHistory.includes(token)) throw new Error('Missing local history inventory safeguard: ' + token);
           }
-          const awardRequired = [
-            'exactUniquePrimeAwardedUeis',
-            'exactUniqueSubcontractAwardedUeis',
-            'exactUniqueAwardedUeisEitherRole',
-            'exactAwardedUeisInCurrentMaster',
-            'exactAwardedUeisMissingFromCurrentMaster',
-            'EXACT_COUNTS_USE_UEI_ONLY'
-          ];
-          for (const token of awardRequired) {
-            if (!awarded.includes(token)) throw new Error('Missing exact awarded-universe assertion: ' + token);
-          }
-          const fyRequired = [
-            'ORION_VALIDATED_USASPENDING_FY2026_SIDECAR',
-            "spending_level: ['subawards']",
-            'SUBAWARD_SOURCE_REACHED_500K_CAP',
-            'sourceDatesAligned: true',
-            'exactUniqueAwardedUeisEitherRole',
-            'currentMasterCoveragePercentOfAwardedUniverse',
-            'productionOrionModified: false',
-            'emailSent: false'
-          ];
-          for (const token of fyRequired) {
-            if (!fyAwarded.includes(token)) throw new Error('Missing FY2026 exactness/safety assertion: ' + token);
-          }
-          const canonicalRequired = [
-            'canonicalRowsEqualAwardedUnion',
-            'zeroAwardedUeisMissingFromCanonicalMaster',
-            'CURRENT_SEGMENT_RETAINED',
-            'AWARDED_ROLE_FALLBACK_CREATED',
-            'CONTACT_ENRICHMENT_REQUIRED',
-            'OUTBOUND_READY',
-            'currentOutboundMasterModified: false',
-            'outboundReadyExportsRequireVerifiedUnsuppressedContact: true'
-          ];
-          for (const token of canonicalRequired) {
-            if (!canonical.includes(token)) throw new Error('Missing canonical master assertion: ' + token);
-          }
-          for (const text of [source, awarded, fyAwarded, canonical, runner, fyRunner]) {
+
+          if (taxonomyRegistry.architecture !== 'MULTI_DIMENSIONAL_NON_MUTUALLY_EXCLUSIVE') throw new Error('Master taxonomy must remain multi-dimensional.');
+          if (taxonomyRegistry.governingRules?.onePrimaryOutboundCampaignPerCompany !== true) throw new Error('One primary outbound campaign rule missing.');
+          if (taxonomyRegistry.governingRules?.unknownMustRemainDistinctFromZero !== true) throw new Error('UNKNOWN/zero distinction missing.');
+          if (!Array.isArray(taxonomyRegistry.dimensions) || taxonomyRegistry.dimensions.length < 30) throw new Error('Master taxonomy dimensions incomplete.');
+          if (lookback.sourceReusePolicy?.inventoryExistingLocalHistoryFirst !== true) throw new Error('Local history inventory-first rule missing.');
+          if (lookback.sourceReusePolicy?.acquireOnlyYearsMissingOrUnusableAfterInventory !== true) throw new Error('Missing-only acquisition rule missing.');
+          if (JSON.stringify(lookback.fiscalYearScope?.includedFiscalYears) !== JSON.stringify([2021,2022,2023,2024,2025,2026])) throw new Error('Six-FY lookback scope incorrect.');
+
+          for (const text of [source, awarded, fyAwarded, canonical, taxonomyOverlay, taxonomyEngine, localHistory, runner, fyRunner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
               throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
             }
           }
-          if (!runner.includes('CanonicalAwardedContractorMasterService')) throw new Error('Canonical master is not wired into revenue reconciliation.');
-          if (!runner.includes('Fy2026AwardedUniverseCoverageService')) throw new Error('Exact FY2026 coverage is not wired into revenue reconciliation.');
-          if (!bridge.includes("REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]")) {
-            throw new Error('Governed revenue universe runtime job is not fixed-allowlisted.');
+          for (const token of ['CanonicalAwardedContractorMasterService','CanonicalContractorTaxonomyOverlayService','AwardHistoryLocalInventoryService','Fy2026AwardedUniverseCoverageService']) {
+            if (!runner.includes(token)) throw new Error('Runtime runner missing component: ' + token);
           }
-          if (!bridge.includes("FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]")) {
-            throw new Error('Governed FY2026 awarded-universe runtime job is not fixed-allowlisted.');
-          }
+          if (!bridge.includes("REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]")) throw new Error('Governed revenue universe runtime job is not fixed-allowlisted.');
+          if (!bridge.includes("FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]")) throw new Error('Governed FY2026 awarded-universe runtime job is not fixed-allowlisted.');
           console.log('REVENUE_UNIVERSE_STATIC_SAFETY: GREEN');
           NODE
