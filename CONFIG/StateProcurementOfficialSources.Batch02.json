@@ -1,0 +1,120 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_02",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "CA",
+      "name": "California",
+      "status": "LOCAL_AWARD_DATA_PRESENT",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Cal eProcure",
+          "authority": "California Department of General Services, Procurement Division",
+          "url": "https://www.dgs.ca.gov/PD/Resources/Page-Content/Procurement-Division-Resources-List-Folder/Cal-eProcure-Portal-to-Access-Bid-Opportunities",
+          "purpose": "Business registration and access to state bidding/contracting resources",
+          "ingestionMode": "WEB_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "State Contract & Procurement Registration System (SCPRS)",
+          "authority": "California Department of General Services, Procurement Division",
+          "url": "https://www.dgs.ca.gov/PD/Resources/Page-Content/Procurement-Division-Resources-List-Folder/SCPRS-CSCR-Historical-Contracts-Data",
+          "purpose": "Current and historical state procurement/contract records",
+          "ingestionMode": "LOCAL_DATA_PRESENT_AND_WEB_QUERY_AVAILABLE"
+        }
+      ]
+    },
+    {
+      "code": "TX",
+      "name": "Texas",
+      "status": "LOCAL_AWARD_DATA_PRESENT",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Centralized Master Bidders List (CMBL)",
+          "authority": "Texas Comptroller of Public Accounts, Statewide Procurement Division",
+          "url": "https://comptroller.texas.gov/purchasing/vendor/cmbl/",
+          "purpose": "Master database of vendors used by Texas purchasing entities",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Texas DIR Contracts & Vendors",
+          "authority": "Texas Department of Information Resources",
+          "url": "https://dir.texas.gov/search-contracts-vendors",
+          "purpose": "Public search of IT contracts and contracted vendors",
+          "ingestionMode": "LOCAL_DATA_PRESENT_AND_PUBLIC_SEARCH"
+        },
+        {
+          "name": "Texas Statewide Contracts",
+          "authority": "Texas Comptroller of Public Accounts, Statewide Procurement Division",
+          "url": "https://comptroller.texas.gov/purchasing/contracts/",
+          "purpose": "Statewide contracts for commodities and services",
+          "ingestionMode": "WEB_QUERY_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "FL",
+      "name": "Florida",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "MyFloridaMarketPlace Vendor Information Portal",
+          "authority": "Florida Department of Management Services",
+          "url": "https://www.dms.myflorida.com/business_operations/state_purchasing/myfloridamarketplace/mfmp_vendors",
+          "purpose": "State vendor registration and vendor management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Florida Accountability Contract Tracking System (FACTS)",
+          "authority": "State of Florida",
+          "url": "https://facts.fldfs.com/",
+          "purpose": "Public contract and purchase order transparency",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "VA",
+      "name": "Virginia",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "eVA Supplier Search / Vendor Marketplace",
+          "authority": "Commonwealth of Virginia, eVA",
+          "url": "https://eva.virginia.gov/",
+          "purpose": "Supplier registration/search and procurement marketplace",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "eVA Procurement Marketplace",
+          "authority": "Commonwealth of Virginia, eVA",
+          "url": "https://eva.virginia.gov/",
+          "purpose": "Public procurement and award information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

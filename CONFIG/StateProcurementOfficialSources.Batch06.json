@@ -1,0 +1,120 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_06",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "ME",
+      "name": "Maine",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Maine Vendor Self-Service (VSS)",
+          "authority": "Maine Division of Procurement Services / Office of the State Controller",
+          "url": "https://www.maine.gov/osc/accounting/vendor-information/bidding-vendors",
+          "purpose": "Vendor registration, commodity/service profile, solicitation access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Maine Vendor Self-Service Awards",
+          "authority": "Maine Division of Procurement Services",
+          "url": "https://www.maine.gov/dafs/bbm/procurementservices/vendors/",
+          "purpose": "Browse pending and completed awards and state procurement activity",
+          "ingestionMode": "PUBLIC_SEARCH_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MD",
+      "name": "Maryland",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "eMaryland Marketplace Advantage (eMMA)",
+          "authority": "Maryland Office of State Procurement",
+          "url": "https://procurement.maryland.gov/",
+          "purpose": "State vendor registration and procurement marketplace",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "eMMA Public Contracts / Bid Results",
+          "authority": "Maryland Office of State Procurement",
+          "url": "https://procurement.maryland.gov/vendor-training-and-resources/",
+          "purpose": "Public contract browsing, award review, bid results and procurement records",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MA",
+      "name": "Massachusetts",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "COMMBUYS Vendor Registration",
+          "authority": "Massachusetts Operational Services Division",
+          "url": "https://www.mass.gov/how-to/commbuys-vendor-registration",
+          "purpose": "Commonwealth vendor registration and procurement profile",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "COMMBUYS Contract & Bid Search",
+          "authority": "Massachusetts Operational Services Division",
+          "url": "https://www.mass.gov/learn-about-commbuys-resources",
+          "purpose": "Public search of active contracts, bids, awards and purchase-order activity",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "MI",
+      "name": "Michigan",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "SIGMA Vendor Self-Service (SIGMA VSS)",
+          "authority": "Michigan Department of Technology, Management and Budget",
+          "url": "https://www.michigan.gov/dtmb/procurement/contractconnect/how-to-register",
+          "purpose": "State vendor registration and bid access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Michigan Contract List",
+          "authority": "Michigan Department of Technology, Management and Budget",
+          "url": "https://www.michigan.gov/dtmb/procurement/contractconnect/contract-list",
+          "purpose": "Public directory of active State of Michigan procurement contracts",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "SIGMA VSS Procurement Records",
+          "authority": "State of Michigan",
+          "url": "https://www.michigan.gov/dtmb/procurement/contractconnect/how-to-register",
+          "purpose": "Solicitation and vendor procurement activity",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

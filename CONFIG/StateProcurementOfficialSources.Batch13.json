@@ -1,0 +1,95 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_13",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "WI",
+      "name": "Wisconsin",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "STAR Supplier Portal",
+          "authority": "State of Wisconsin Department of Administration",
+          "url": "https://doa.wi.gov/Pages/StateEmployees/VendorInformation.aspx",
+          "purpose": "State supplier registration and vendor information",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Wisconsin Statewide Contracts",
+          "authority": "State of Wisconsin Department of Administration, State Bureau of Procurement",
+          "url": "https://vendornet.wi.gov/",
+          "purpose": "Public state procurement, contract, and award information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "WY",
+      "name": "Wyoming",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Wyoming Vendor Self Service",
+          "authority": "Wyoming State Auditor / State of Wyoming",
+          "url": "https://vendorportal.wyo.gov/",
+          "purpose": "State vendor registration and account management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Wyoming Procurement Office Contract Resources",
+          "authority": "Wyoming Department of Administration and Information, Procurement Services",
+          "url": "https://ai.wyo.gov/divisions/general-services/procurement",
+          "purpose": "State purchasing, contracts, and procurement resources",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "DC",
+      "name": "District of Columbia",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "PASS / DC Vendor Portal",
+          "authority": "District of Columbia Office of Contracting and Procurement",
+          "url": "https://ocp.dc.gov/page/vendor-registration",
+          "purpose": "District vendor registration and supplier management",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "DC Contract Awards",
+          "authority": "District of Columbia Office of Contracting and Procurement",
+          "url": "https://ocp.dc.gov/page/contract-awards",
+          "purpose": "Public District contract award information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "DC Transparency / Purchase Orders and Contracts",
+          "authority": "District of Columbia Government",
+          "url": "https://transparency.dc.gov/",
+          "purpose": "Public government spending and contract transparency",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

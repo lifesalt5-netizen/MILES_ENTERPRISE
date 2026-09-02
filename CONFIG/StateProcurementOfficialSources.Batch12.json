@@ -1,0 +1,120 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_12",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "UT",
+      "name": "Utah",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Utah Supplier Portal / Utah Public Procurement Place (U3P)",
+          "authority": "State of Utah Division of Purchasing and General Services",
+          "url": "https://purchasing.utah.gov/for-vendors/",
+          "purpose": "Vendor registration and access to Utah public procurement opportunities",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Utah State Contracts / U3P",
+          "authority": "State of Utah Division of Purchasing and General Services",
+          "url": "https://purchasing.utah.gov/current-state-contracts/",
+          "purpose": "Public state contract information and awarded contract resources",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "VT",
+      "name": "Vermont",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Vermont Vendor Portal / Supplier Registration",
+          "authority": "State of Vermont Buildings and General Services, Office of Purchasing and Contracting",
+          "url": "https://bgs.vermont.gov/purchasing-contracting/vendor-information",
+          "purpose": "Vendor registration and supplier information",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Vermont State Contracts",
+          "authority": "State of Vermont Buildings and General Services, Office of Purchasing and Contracting",
+          "url": "https://bgs.vermont.gov/purchasing-contracting/contract-info/current",
+          "purpose": "Current statewide contracts and awarded contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "WA",
+      "name": "Washington",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "WEBS Vendor Registration",
+          "authority": "Washington State Department of Enterprise Services",
+          "url": "https://des.wa.gov/services/contracting-purchasing/doing-business-state/webs",
+          "purpose": "Washington Electronic Business Solution vendor registration and procurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Washington State Contracts",
+          "authority": "Washington State Department of Enterprise Services",
+          "url": "https://apps.des.wa.gov/DESContracts/Home/ContractSummary",
+          "purpose": "Public statewide contract search and contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "WEBS Bid and Award Information",
+          "authority": "Washington State Department of Enterprise Services",
+          "url": "https://des.wa.gov/services/contracting-purchasing/doing-business-state/webs",
+          "purpose": "Procurement opportunity and award-related records within WEBS",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "WV",
+      "name": "West Virginia",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Vendor Self Service (VSS)",
+          "authority": "West Virginia Purchasing Division",
+          "url": "https://www.state.wv.us/admin/purchase/VendorReg.html",
+          "purpose": "State vendor registration and vendor account access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "West Virginia Statewide Contracts",
+          "authority": "West Virginia Purchasing Division",
+          "url": "https://www.state.wv.us/admin/purchase/swc/",
+          "purpose": "Public statewide contract listings and awarded contract information",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

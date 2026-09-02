@@ -1,0 +1,128 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_03",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "CO",
+      "name": "Colorado",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "MULTI_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Colorado Vendor Self Service (ColoradoVSS)",
+          "authority": "Colorado Office of the State Controller / CORE Operations",
+          "url": "https://vss.state.co.us/",
+          "purpose": "Vendor registration, vendor account management, solicitation discovery and response",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Colorado State Contract Management public database",
+          "authority": "Colorado Office of the State Controller",
+          "url": "https://osc.colorado.gov/",
+          "purpose": "Public searchable state contract records subject to statutory reporting requirements",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Colorado State Price Agreements",
+          "authority": "Colorado Department of Personnel & Administration / State Purchasing & Contracts Office",
+          "url": "https://www.colorado.gov/",
+          "purpose": "Active competitively awarded statewide price agreements and awarded vendors",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "CT",
+      "name": "Connecticut",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "CTsource Supplier Registration",
+          "authority": "Connecticut Department of Administrative Services, Procurement Division",
+          "url": "https://portal.ct.gov/das/procurement-programs-and-services",
+          "purpose": "Statewide supplier registration, profile management and procurement participation",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "CTsource State Contracting Portal",
+          "authority": "Connecticut Department of Administrative Services, Procurement Division",
+          "url": "https://portal.ct.gov/en/das/procurement/contracting/das-procurement-state-contracting-portal-for-contracts",
+          "purpose": "Searchable statewide repository for solicitations and resulting contracts/agreements",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "DE",
+      "name": "Delaware",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Delaware eSupplier Bidder/Supplier Registration",
+          "authority": "State of Delaware",
+          "url": "https://esupplier.erp.delaware.gov/psc/fn92pdesup/SUPPLIER/ERP/c/SUP_OB_MENU.AUC_BIDDER_REGISTR.GBL",
+          "purpose": "State supplier/payee registration and maintenance of the State vendor file",
+          "ingestionMode": "LOGIN_OR_FORM_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Delaware MyMarketplace",
+          "authority": "Delaware Government Support Services",
+          "url": "https://mymarketplace.delaware.gov/",
+          "purpose": "Central procurement portal with solicitations, current contract awards and contract resources",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "GA",
+      "name": "Georgia",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "GA@WORK Marketplace for Suppliers",
+          "authority": "Georgia Department of Administrative Services, State Purchasing Division",
+          "url": "https://doas.ga.gov/procurement-suppliers-swc-suppliers",
+          "purpose": "Supplier registration, bidding and contracts in Georgia's statewide procurement platform",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "GA@WORK Marketplace / Statewide Contract Index",
+          "authority": "Georgia Department of Administrative Services, State Purchasing Division",
+          "url": "https://doas.ga.gov/accessing-gawork-procurement-systems",
+          "purpose": "Awarded contracts, statewide contract suppliers and contract search",
+          "ingestionMode": "PUBLIC_OR_GUEST_SEARCH_DISCOVERY_REQUIRED"
+        },
+        {
+          "name": "Georgia Procurement Registry",
+          "authority": "Georgia Department of Administrative Services, State Purchasing Division",
+          "url": "https://doas.ga.gov/state-purchasing/bids-and-contracts",
+          "purpose": "Public procurement opportunity and award-related registry used by state and local government buyers",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "notes": "GA@WORK went live July 1, 2026 and replaced the prior PeopleSoft procurement environment for statewide supplier workflows."
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "service": "STATE_PROCUREMENT_OFFICIAL_SOURCE_REGISTRY_BATCH_11",
+  "version": 1,
+  "governingRules": {
+    "authoritativeSourcesOnly": true,
+    "vendorRegistrationIsNotAwardEvidence": true,
+    "preserveAwardAndVendorSourcesSeparately": true,
+    "doNotInferAwardHistoryFromRegistration": true,
+    "manualOrLoginOnlySourcesRemainDiscoverableButNotAutoIngestible": true
+  },
+  "jurisdictions": [
+    {
+      "code": "RI",
+      "name": "Rhode Island",
+      "status": "SOURCE_PARTIAL_REQUIRES_VALIDATION",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "SOURCE_DISCOVERY_REQUIRED",
+      "vendorSources": [
+        {
+          "name": "Rhode Island Division of Purchases Vendor Registration / OSP",
+          "authority": "State of Rhode Island, Division of Purchases",
+          "url": "https://purchasing.ri.gov/",
+          "purpose": "State vendor registration and procurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": []
+    },
+    {
+      "code": "SC",
+      "name": "South Carolina",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "South Carolina Enterprise Information System Supplier Portal / SCEIS",
+          "authority": "South Carolina State Fiscal Accountability Authority, Procurement Services",
+          "url": "https://procurement.sc.gov/",
+          "purpose": "Supplier registration and state procurement access",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "South Carolina Procurement Services State Contracts",
+          "authority": "South Carolina State Fiscal Accountability Authority, Procurement Services",
+          "url": "https://procurement.sc.gov/contracts/search",
+          "purpose": "Public state contract search and awarded supplier evidence",
+          "ingestionMode": "PUBLIC_SEARCH_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    },
+    {
+      "code": "SD",
+      "name": "South Dakota",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "South Dakota Vendor Self Service / Register to Bid",
+          "authority": "South Dakota Bureau of Administration, Office of Procurement Management",
+          "url": "https://boa.sd.gov/central-services/procurement-management/",
+          "purpose": "Official vendor registration, bidding, and procurement participation resources",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "South Dakota State Contracts and Notices of Award",
+          "authority": "South Dakota Bureau of Administration, Office of Procurement Management",
+          "url": "https://boa.sd.gov/central-services/procurement-management/procurement-management-contractsS.aspx",
+          "purpose": "Official state contract index linking Notices of Award, contract documents, effective dates, expiration dates, and status",
+          "ingestionMode": "PUBLIC_CONTRACT_INDEX_DOCUMENT_EXTRACTION_VALIDATION_REQUIRED"
+        }
+      ],
+      "notes": "The official contract index is updated daily and links Notice of Award documents. Production ingestion must validate vendor, award amount, and contract identifier extraction across linked PDF/Word/Excel documents."
+    },
+    {
+      "code": "TN",
+      "name": "Tennessee",
+      "status": "SOURCE_CONFIRMED_NOT_INGESTED",
+      "vendorRegistryStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "awardSourceStatus": "OFFICIAL_SOURCE_CONFIRMED",
+      "vendorSources": [
+        {
+          "name": "Tennessee Edison Supplier Portal",
+          "authority": "Tennessee Department of General Services, Central Procurement Office",
+          "url": "https://www.tn.gov/generalservices/procurement/central-procurement-office--cpo-/supplier-information.html",
+          "purpose": "Supplier registration and procurement participation",
+          "ingestionMode": "PUBLIC_OR_LOGIN_DEPENDENT_DISCOVERY_REQUIRED"
+        }
+      ],
+      "awardSources": [
+        {
+          "name": "Tennessee Central Procurement Office Statewide Contracts",
+          "authority": "Tennessee Department of General Services, Central Procurement Office",
+          "url": "https://www.tn.gov/generalservices/procurement/central-procurement-office--cpo-/statewide-contracts.html",
+          "purpose": "Public statewide contract information and supplier award evidence",
+          "ingestionMode": "WEB_QUERY_OR_EXPORT_DISCOVERY_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

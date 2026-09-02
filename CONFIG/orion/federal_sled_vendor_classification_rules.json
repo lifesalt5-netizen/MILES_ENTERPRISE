@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "effectiveDate": "2026-08-09",
+  "purpose": "Govern merged state-vendor and federal-award classification for ORION prospect segmentation.",
+  "federalTruth": {
+    "identityAuthority": "SAM.gov exact UEI reconciliation",
+    "awardSource": "USAspending.gov",
+    "primeAndSubcontractRequired": true,
+    "federalRevenueDefinition": "PRIME_AWARDED_REVENUE_PLUS_SUBCONTRACTED_REVENUE",
+    "awardCountDefinition": "DISTINCT_PRIME_AWARDS_PLUS_DISTINCT_SUBCONTRACT_AWARDS",
+    "zeroSalesRule": "Only classify zero federal sales after authoritative identity reconciliation and zero matching prime awards plus zero matching subcontract awards."
+  },
+  "sledTruth": {
+    "vendorRegistrationIsNotAward": true,
+    "confirmedAwardRequiredForSledRevenue": true,
+    "awardedStateVendorRole": "PRIME",
+    "preserveAllAwardStates": true,
+    "preserveStateRevenueAndAwardCounts": true
+  },
+  "segments": {
+    "FED_ONLY": "Confirmed federal prime and/or subcontract history with no confirmed SLED award history.",
+    "SLED_ONLY": "Confirmed SLED prime award history and authoritative zero federal prime/subcontract history.",
+    "FED_AND_SLED": "Confirmed federal prime/subcontract history and confirmed SLED award history.",
+    "STATE_VENDOR_ONLY": "Appears on one or more state vendor lists but has no confirmed state award history and authoritative zero federal history.",
+    "ZERO_GOVERNMENT_SALES": "No federal or SLED awards after authoritative checks and not merely a state vendor-list registration.",
+    "UNCONFIRMED": "Identity or federal award truth is not authoritative enough for final market classification."
+  },
+  "marketing": {
+    "primaryExpansionSegment": "SLED_ONLY",
+    "route": "SLED_TO_FEDERAL",
+    "requirements": [
+      "confirmed SLED prime award history",
+      "authoritative zero federal prime awards",
+      "authoritative zero federal subcontract awards",
+      "usable business email"
+    ],
+    "messagePremise": "The contractor has already demonstrated government performance at the state level; federal is the logical next growth market."
+  }
+}
