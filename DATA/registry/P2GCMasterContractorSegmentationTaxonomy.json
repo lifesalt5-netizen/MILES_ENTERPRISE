@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "P2GC Master Contractor Segmentation Taxonomy",
   "architecture": "MULTI_DIMENSIONAL_NON_MUTUALLY_EXCLUSIVE",
   "scope": "FULL_CANONICAL_CONTRACTOR_UNIVERSE",
@@ -13,7 +13,15 @@
     "unknownMustRemainDistinctFromZero": true,
     "everyMaterialClassificationRequiresEvidenceOrUnknown": true,
     "staleOrMissingContactCreatesEnrichmentWork": true,
-    "suppressionMustNotBeBypassed": true
+    "suppressionMustNotBeBypassed": true,
+    "awardHistoryLookbackIncludesCurrentFyPlusFivePriorFiscalYears": true,
+    "historicalAwardeeRemainsCanonicalEvenWithoutCurrentFyActivity": true
+  },
+  "awardHistoryWindow": {
+    "includedFiscalYears": [2021, 2022, 2023, 2024, 2025, 2026],
+    "currentFiscalYearMayBePartial": true,
+    "primeAndSubcontractEvidenceTrackedSeparately": true,
+    "canonicalIdentityKey": "UEI"
   },
   "commercialDispositions": [
     "CONTACT_NOW",
@@ -45,6 +53,8 @@
   "dimensions": [
     {"id":"government_market_status","cardinality":"MULTI","values":["FEDERAL_ACTIVE","FEDERAL_HISTORICAL","SLED_ACTIVE","LOCAL_ACTIVE","NEW_TO_GOVERNMENT","UNKNOWN"]},
     {"id":"award_history","cardinality":"MULTI","values":["CURRENT_FY_AWARDED","HISTORICAL_AWARDED","NO_PROVEN_AWARD","UNKNOWN"]},
+    {"id":"award_recency","cardinality":"ONE","values":["AWARD_CURRENT_FY","AWARD_PRIOR_1Y","AWARD_PRIOR_2Y","AWARD_PRIOR_3Y","AWARD_PRIOR_4Y","AWARD_PRIOR_5Y","NO_PROVEN_AWARD_IN_LOOKBACK","UNKNOWN"]},
+    {"id":"award_active_fiscal_years","cardinality":"MULTI","values":["FY2021","FY2022","FY2023","FY2024","FY2025","FY2026","NONE_PROVEN","UNKNOWN"]},
     {"id":"award_role","cardinality":"MULTI","values":["PRIME","SUB","BOTH","NO_PROVEN_AWARD_ROLE","UNKNOWN"]},
     {"id":"government_sales_band","cardinality":"ONE_PER_MEASUREMENT_WINDOW","controlledBy":"governmentSalesBands"},
     {"id":"business_size","cardinality":"MULTI","values":["SMALL_BUSINESS","OTHER_THAN_SMALL","MICRO","UNKNOWN"]},
@@ -90,6 +100,14 @@
   ],
   "requiredReasonField": "REASON_TO_CONTACT_NOW",
   "canonicalRecordSchema": [
-    "contractor_id","uei","cage","legal_name","dba_name","domain","website","active_status","government_market_status","award_history","award_role","prime_award_count","prime_award_value","subaward_count","subaward_value","total_government_sales","government_sales_band","business_size","socioeconomic_certifications","contract_vehicles","gsa_status","va_status","sled_status","agency_relationships","buyer_relationships","geography","industry_naics","capabilities","contract_type","procurement_channel","opportunity_maturity","capture_maturity","proposal_maturity","teaming_readiness","prime_readiness","subcontract_readiness","financial_capacity","sales_problem","trigger_signals","p2gc_service_fit","crm_lifecycle","lead_temperature","contact_channel_readiness","enrichment_state","suppression_state","historical_engagement","commercial_disposition","next_action","primary_outbound_segment","all_segment_tags","scores","reason_to_contact_now","evidence","source_freshness","updated_at"
+    "contractor_id","uei","cage","legal_name","dba_name","domain","website","active_status","government_market_status","award_history","award_recency","award_active_fiscal_years","award_role",
+    "fy2021_prime_award_count","fy2021_prime_award_value","fy2021_subaward_count","fy2021_subaward_value",
+    "fy2022_prime_award_count","fy2022_prime_award_value","fy2022_subaward_count","fy2022_subaward_value",
+    "fy2023_prime_award_count","fy2023_prime_award_value","fy2023_subaward_count","fy2023_subaward_value",
+    "fy2024_prime_award_count","fy2024_prime_award_value","fy2024_subaward_count","fy2024_subaward_value",
+    "fy2025_prime_award_count","fy2025_prime_award_value","fy2025_subaward_count","fy2025_subaward_value",
+    "fy2026_prime_award_count","fy2026_prime_award_value","fy2026_subaward_count","fy2026_subaward_value",
+    "prime_award_count","prime_award_value","subaward_count","subaward_value","total_government_sales","most_recent_award_fy","most_recent_award_date","government_sales_band",
+    "business_size","socioeconomic_certifications","contract_vehicles","gsa_status","va_status","sled_status","agency_relationships","buyer_relationships","geography","industry_naics","capabilities","contract_type","procurement_channel","opportunity_maturity","capture_maturity","proposal_maturity","teaming_readiness","prime_readiness","subcontract_readiness","financial_capacity","sales_problem","trigger_signals","p2gc_service_fit","crm_lifecycle","lead_temperature","contact_channel_readiness","enrichment_state","suppression_state","historical_engagement","commercial_disposition","next_action","primary_outbound_segment","all_segment_tags","scores","reason_to_contact_now","evidence","source_freshness","updated_at"
   ]
 }
