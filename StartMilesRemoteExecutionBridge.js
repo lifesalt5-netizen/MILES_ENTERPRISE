@@ -33,10 +33,12 @@ const STARTUP_SOURCE_DIGEST = sourceDigest();
 
 const JOBS = Object.freeze({
   REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],
+  REVENUE_ACCEPTANCE_LATEST_PLACEMENT: ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']],
   REVENUE_UNIVERSE_RECONCILIATION: ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']],
   FY2026_AWARDED_UNIVERSE_COVERAGE: ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']],
   SIX_FY_AWARDED_UNIVERSE_NORMALIZE: ['node', ['SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js']],
   INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],
+  INBOX_PLACEMENT_CREATE_FRESH: ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']],
   PRODUCTION_TRUTH_RECONCILIATION: ['node', ['SCRIPTS/ReconcileProductionTruth.js']],
   INFRASTRUCTURE_HEALTH_AUDIT: ['node', ['SCRIPTS/RunInfrastructureHealthAudit.js']],
   CONTROL_OWNER_WATCHDOG_INSTALL: ['powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', 'SCRIPTS/InstallMilesControlOwnerWatchdogWindows.ps1', '-Root', ROOT]],
