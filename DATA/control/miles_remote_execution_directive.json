@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-postdeploy-plan-20260902-003",
+  "id": "miles-ionos-routing-parity-deploy-20260902-001",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Read-only live verification after merge 9f5a84f7fc3a94e386b1d2b6ec7167a2538fe365. Run the existing IONOS inbox cleanup plan only to inspect mailbox state and publish IONOS_CONTINUOUS_HYGIENE_STATUS from the production artifact. Do not mutate folders or messages, send SMTP, change DNS or forwarding, mutate Instantly or B12, or alter campaign state. Historical all-folder reconciliation may remain RED; required proof is continuous hygiene status, execution flag, artifact freshness, per-account verification, and remainingHighConfidenceRoutableNoise."
+  "note": "Deploy main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c after all CI gates passed. Purpose: load the corrected continuous IONOS routing precedence and dedicated bounce routing, then recycle the supervised COO using the existing governed deployment path. No destructive Git recovery, no direct mailbox delete, no SMTP send, no DNS mutation, and no Instantly or B12 mutation requested by this directive."
 }
