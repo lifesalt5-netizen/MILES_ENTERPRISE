@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "name": "P2GC Awarded Contractor Account Segment Overlay",
+  "purpose": "Segment every prime/subcontract awardee at the company-account level while preserving one primary outbound campaign per company.",
+  "policy": {
+    "canonicalAccountRequiredForEveryAwardedUei": true,
+    "awardRoleAlwaysRetained": true,
+    "retainExistingPrimaryRevenueSegmentWhenProven": true,
+    "fallbackToAwardedAccountSegmentWhenNoExistingSegmentIsProven": true,
+    "missingContactCreatesEnrichmentStateNotCompanyRemoval": true,
+    "outboundPromotionRequiresVerifiedUnsuppressedContact": true,
+    "onePrimaryCampaignPerCompany": true,
+    "accountSegmentsAreNotAutomaticallyLiveCampaigns": true
+  },
+  "awardRoles": ["PRIME", "SUB", "BOTH"],
+  "salesTiers": [
+    {"id":"0_500k","minInclusive":0,"maxExclusive":500000},
+    {"id":"500k_3m","minInclusive":500000,"maxExclusive":3000000},
+    {"id":"3m_5m","minInclusive":3000000,"maxExclusive":5000000},
+    {"id":"5m_plus","minInclusive":5000000,"maxExclusive":null}
+  ],
+  "fallbackSegments": [
+    {"id":"awarded_prime_0_500k","role":"PRIME","tier":"0_500k"},
+    {"id":"awarded_prime_500k_3m","role":"PRIME","tier":"500k_3m"},
+    {"id":"awarded_prime_3m_5m","role":"PRIME","tier":"3m_5m"},
+    {"id":"awarded_prime_5m_plus","role":"PRIME","tier":"5m_plus"},
+    {"id":"awarded_sub_0_500k","role":"SUB","tier":"0_500k"},
+    {"id":"awarded_sub_500k_3m","role":"SUB","tier":"500k_3m"},
+    {"id":"awarded_sub_3m_5m","role":"SUB","tier":"3m_5m"},
+    {"id":"awarded_sub_5m_plus","role":"SUB","tier":"5m_plus"},
+    {"id":"awarded_both_0_500k","role":"BOTH","tier":"0_500k"},
+    {"id":"awarded_both_500k_3m","role":"BOTH","tier":"500k_3m"},
+    {"id":"awarded_both_3m_5m","role":"BOTH","tier":"3m_5m"},
+    {"id":"awarded_both_5m_plus","role":"BOTH","tier":"5m_plus"}
+  ],
+  "lifecycleStates": [
+    "OUTBOUND_READY",
+    "CONTACT_VERIFICATION_REQUIRED",
+    "CONTACT_ENRICHMENT_REQUIRED",
+    "IDENTITY_ENRICHMENT_REQUIRED",
+    "EXISTING_CLIENT",
+    "DO_NOT_PROSPECT"
+  ]
+}
