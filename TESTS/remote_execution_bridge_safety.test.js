@@ -29,6 +29,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING',
   'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN',
   'ORION_REFRESH_TARGET_SCHEMA_AUDIT',
+  'OUTBOUND_SENDER_CAPACITY_FULL_GO',
   'PRODUCTION_TRUTH_RECONCILIATION',
   'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',
   'REVENUE_ACCEPTANCE_SPRINT',
@@ -41,7 +42,8 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'SAM_PUBLIC_EMAIL_DISCOVERY',
   'SAM_QUALIFIED_UNIVERSE_BUILD',
   'SAM_SQLITE_EMAIL_RECOVERY',
-  'SIX_FY_AWARDED_UNIVERSE_NORMALIZE'
+  'SIX_FY_AWARDED_UNIVERSE_NORMALIZE',
+  'ZERO_COST_EXTERNAL_PLACEMENT_EXECUTE'
 ]);
 assert.deepStrictEqual(bridge.JOBS.REVENUE_UNIVERSE_RECONCILIATION, ['node', ['SCRIPTS/RunRevenueUniverseReconciliation.js']]);
 assert.deepStrictEqual(bridge.JOBS.FY2026_AWARDED_UNIVERSE_COVERAGE, ['node', ['SCRIPTS/RunFy2026AwardedUniverseCoverage.js']]);
@@ -74,6 +76,8 @@ assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_PLAN, ['node', ['SC
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_EXECUTE, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING, ['node', ['SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js', '--authorization', 'AUTHORIZE_ZERO_COST_PAID_SENDER_GOOGLE_OAUTH']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED, ['node', ['SCRIPTS/RunInstantlyGoogleOAuthBrowserGuarded.js', '--authorization', 'AUTHORIZE_EXISTING_AUTHENTICATED_GOOGLE_OAUTH_CONSENT']]);
+assert.deepStrictEqual(bridge.JOBS.OUTBOUND_SENDER_CAPACITY_FULL_GO, ['node', ['SCRIPTS/RunOutboundSenderCapacityFullGoGate.js']]);
+assert.deepStrictEqual(bridge.JOBS.ZERO_COST_EXTERNAL_PLACEMENT_EXECUTE, ['node', ['SCRIPTS/RunZeroCostExternalInboxPlacement.js', '--authorization', 'AUTHORIZE_ZERO_COST_EXTERNAL_PLACEMENT_TESTS']]);
 assert.strictEqual(bridge.CONTROL_BRANCH, 'miles-control');
 assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_execution_directive.json'));
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
@@ -108,6 +112,8 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'OUTBOUND_SENDER_CAPACITY_FULL_GO'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'ZERO_COST_EXTERNAL_PLACEMENT_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'SAM_PUBLIC_EMAIL_DISCOVERY'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
