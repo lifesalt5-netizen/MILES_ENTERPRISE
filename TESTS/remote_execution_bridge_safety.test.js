@@ -19,6 +19,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
   'INSTANTLY_LIFECYCLE_PROOF_PLAN',
   'INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING',
+  'INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED',
   'IONOS_INBOX_CLEANUP_EXECUTE',
   'IONOS_INBOX_CLEANUP_PLAN',
   'IONOS_SPAM_RESCUE_EXECUTE',
@@ -106,6 +107,7 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'SAM_PUBLIC_EMAIL_DISCOVERY'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
