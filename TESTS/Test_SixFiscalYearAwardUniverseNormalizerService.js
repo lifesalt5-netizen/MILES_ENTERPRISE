@@ -6,6 +6,48 @@ const os = require('os');
 const path = require('path');
 const Service = require('../SERVICES/revenue/SixFiscalYearAwardUniverseNormalizerService');
 
+class FakeDatabase {
+  constructor() { this.keys = new Set(); }
+  pragma() {}
+  exec() {}
+  close() {}
+  transaction(fn) { return (...args) => fn(...args); }
+  prepare(sql) {
+    const db = this;
+    if (sql.startsWith('INSERT OR IGNORE INTO award_keys(canonical_key, role, award_id) VALUES')) {
+      return { run(key, role, awardId) { db.keys.add(`${key}\t${role}\t${awardId}`); } };
+    }
+    if (sql.startsWith('INSERT OR IGNORE INTO award_keys(canonical_key, role, award_id) SELECT')) {
+      return { run(target, source) {
+        for (const value of [...db.keys]) {
+          const [key, role, awardId] = value.split('\t');
+          if (key === source) db.keys.add(`${target}\t${role}\t${awardId}`);
+        }
+      } };
+    }
+    if (sql.startsWith('DELETE FROM award_keys WHERE canonical_key = ?')) {
+      return { run(source) {
+        for (const value of [...db.keys]) if (value.split('\t')[0] === source) db.keys.delete(value);
+      } };
+    }
+    if (sql.startsWith('SELECT canonical_key, role, COUNT(*) AS c FROM award_keys GROUP BY')) {
+      return { iterate() {
+        const counts = new Map();
+        for (const value of db.keys) {
+          const [canonical_key, role] = value.split('\t');
+          const key = `${canonical_key}\t${role}`;
+          counts.set(key, (counts.get(key) || 0) + 1);
+        }
+        return [...counts.entries()].map(([key, c]) => {
+          const [canonical_key, role] = key.split('\t');
+          return { canonical_key, role, c };
+        });
+      } };
+    }
+    throw new Error(`UNSUPPORTED_FAKE_SQL:${sql}`);
+  }
+}
+
 (async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'miles-sixfy-normalize-'));
   const out = path.join(root, 'DATA', 'revenue_universe');
@@ -55,12 +97,11 @@ const Service = require('../SERVICES/revenue/SixFiscalYearAwardUniverseNormalize
   fs.writeFileSync(master, [
     'uei,company,cage,website',
     'UEI0001,Alpha LLC,CAGE1,alpha.com',
-    // Same company repeated as another contact row: secondary alias must remain usable, not become ambiguous.
     'UEI0001,Alpha LLC,CAGE1,alpha.com',
     'OTHER001,Other Co,CAGE9,other.com'
   ].join('\n') + '\n', 'utf8');
 
-  const service = new Service({ rootDir:root, outputDir:out, currentMasterPath:master });
+  const service = new Service({ rootDir:root, outputDir:out, currentMasterPath:master, Database:FakeDatabase });
   const result = await service.run({ sourceValidation:validation });
   assert.strictEqual(result.ok, true, JSON.stringify(result, null, 2));
   assert.strictEqual(result.status, 'SIX_FY_AWARDED_UNIVERSE_NORMALIZED');
@@ -87,7 +128,7 @@ const Service = require('../SERVICES/revenue/SixFiscalYearAwardUniverseNormalize
   blockedValidation.readyForSixFiscalYearNormalization = false;
   blockedValidation.missingRequirements = [{year:2021, role:'SUB', blocker:'NO_VALIDATED_LOCAL_SUB_SOURCE_FY2021'}];
   blockedValidation.byYear['2021'].subcontract.ready = false;
-  const blocked = await new Service({rootDir:root, outputDir:path.join(root,'blocked'), currentMasterPath:master}).run({sourceValidation:blockedValidation});
+  const blocked = await new Service({rootDir:root, outputDir:path.join(root,'blocked'), currentMasterPath:master, Database:FakeDatabase}).run({sourceValidation:blockedValidation});
   assert.strictEqual(blocked.ok, false);
   assert.strictEqual(blocked.status, 'SIX_FY_SOURCE_GAPS_BLOCK_NORMALIZATION');
   assert.strictEqual(blocked.missingRequirements[0].year, 2021);
