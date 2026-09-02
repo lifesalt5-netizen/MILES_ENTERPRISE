@@ -1,7 +1,7 @@
 {
-  "id": "miles-deploy-canonical-master-taxonomy-20260901-028",
+  "id": "miles-sixfy-local-history-canonical-inventory-20260901-029",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "REVENUE_UNIVERSE_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy and governed-restart Windows MILES on main at or beyond 92a3caf29ce5be653b13d49ed6a3ea8dd7dab722 containing PR #449. Preserve DATA, databases, queues/history, credentials, provider state, current outbound master, production ORION, award-history source files and staged artifacts. Do not grant approvals, resume protected tasks, send email, mutate campaigns/providers, override suppression, change DNS/B12, delete history, or use destructive Git recovery. Publish fresh runtime evidence after safe fast-forward and required process restart."
+  "note": "Execute the governed revenue-universe reconciliation on deployed main at or beyond 92a3caf29ce5be653b13d49ed6a3ea8dd7dab722. Binding sequence for this run: inventory every FY2021-FY2026 prime/subcontract award-history source actually present on local P2GC Windows data roots before any reacquisition; report fiscal-year candidate counts and exact reusable local source paths/provenance where available; rebuild the proven FY2026 exact UEI-deduped awarded universe; persist all FY2026 awarded UEIs into the canonical contractor master with PRIME/SUB/BOTH role; apply the multi-dimensional Master Contractor Segmentation Taxonomy; keep UNKNOWN distinct from zero; missing/stale contacts enter enrichment rather than disappearing; preserve current 26K as outbound/contact subset only. Do not claim a six-FY deduped union until the local FY2021-FY2025 sources are normalized and reconciled. No email sends, campaign activation, provider mutation, suppression override, current-master mutation, production ORION mutation, approvals, queue/history deletion, DNS/B12 changes, or destructive Git. Publish fresh evidence and artifacts."
 }
