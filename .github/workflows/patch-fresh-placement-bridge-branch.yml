@@ -1,0 +1,93 @@
+name: Patch Fresh Placement Bridge Branch
+
+on:
+  push:
+    branches:
+      - fix/fresh-placement-final-acceptance-20260902
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/fresh-placement-final-acceptance-20260902
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Patch exact placement bridge allowlist and safety contract
+        shell: python
+        run: |
+          from pathlib import Path
+
+          bridge = Path('StartMilesRemoteExecutionBridge.js')
+          text = bridge.read_text(encoding='utf-8')
+          audit = "  INBOX_PLACEMENT_AUDIT: ['node', ['SCRIPTS/AuditInstantlyInboxPlacement.js', '--test-id', '01a040ce-dbf7-7872-8938-f1501647af92']],\n"
+          create = "  INBOX_PLACEMENT_CREATE_FRESH: ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']],\n"
+          revenue = "  REVENUE_ACCEPTANCE_SPRINT: ['node', ['SCRIPTS/RunRevenueAcceptanceSprint.js']],\n"
+          latest = "  REVENUE_ACCEPTANCE_LATEST_PLACEMENT: ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']],\n"
+          if 'INBOX_PLACEMENT_CREATE_FRESH:' not in text:
+              if audit not in text: raise SystemExit('PLACEMENT_AUDIT_JOB_NEEDLE_NOT_FOUND')
+              text = text.replace(audit, audit + create, 1)
+          if 'REVENUE_ACCEPTANCE_LATEST_PLACEMENT:' not in text:
+              if revenue not in text: raise SystemExit('REVENUE_ACCEPTANCE_JOB_NEEDLE_NOT_FOUND')
+              text = text.replace(revenue, revenue + latest, 1)
+          bridge.write_text(text, encoding='utf-8')
+
+          test = Path('TESTS/remote_execution_bridge_safety.test.js')
+          src = test.read_text(encoding='utf-8')
+          if "  'INBOX_PLACEMENT_CREATE_FRESH',\n" not in src:
+              src = src.replace("  'INBOX_PLACEMENT_AUDIT',\n", "  'INBOX_PLACEMENT_AUDIT',\n  'INBOX_PLACEMENT_CREATE_FRESH',\n", 1)
+          if "  'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',\n" not in src:
+              src = src.replace("  'REVENUE_ACCEPTANCE_SPRINT',\n", "  'REVENUE_ACCEPTANCE_LATEST_PLACEMENT',\n  'REVENUE_ACCEPTANCE_SPRINT',\n", 1)
+
+          exacts = """
+assert.deepStrictEqual(bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH, ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]);
+assert.deepStrictEqual(bridge.JOBS.REVENUE_ACCEPTANCE_LATEST_PLACEMENT, ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]);
+"""
+          anchor = "assert.deepStrictEqual(bridge.JOBS.FEDERAL_SOURCE_READINESS_AUDIT, ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']]);\n"
+          if 'bridge.JOBS.INBOX_PLACEMENT_CREATE_FRESH' not in src:
+              if anchor not in src: raise SystemExit('EXACT_ASSERT_ANCHOR_NOT_FOUND')
+              src = src.replace(anchor, anchor + exacts, 1)
+
+          validates = """
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INBOX_PLACEMENT_CREATE_FRESH'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'REVENUE_ACCEPTANCE_LATEST_PLACEMENT'}).ok, true);
+"""
+          vanchor = "assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'FEDERAL_SOURCE_READINESS_AUDIT'}).ok, true);\n"
+          if "job:'INBOX_PLACEMENT_CREATE_FRESH'" not in src:
+              if vanchor not in src: raise SystemExit('VALIDATE_ASSERT_ANCHOR_NOT_FOUND')
+              src = src.replace(vanchor, vanchor + validates, 1)
+
+          old = "assert(!src.includes('CreateControlledInstantlyInboxPlacementTest'));"
+          replacement = "assert(src.includes(\"INBOX_PLACEMENT_CREATE_FRESH: ['node', ['SCRIPTS/CreateControlledInstantlyInboxPlacementTest.js', '--execute', '--force-new']]\"));\nassert(src.includes(\"REVENUE_ACCEPTANCE_LATEST_PLACEMENT: ['node', ['SCRIPTS/RunRevenueAcceptanceLatestPlacement.js']]\"));"
+          if old in src:
+              src = src.replace(old, replacement, 1)
+          elif 'INBOX_PLACEMENT_CREATE_FRESH:' not in src:
+              raise SystemExit('OLD_PLACEMENT_SAFETY_ASSERT_NOT_FOUND')
+
+          test.write_text(src, encoding='utf-8')
+      - name: Validate exact placement closeout
+        run: |
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check SCRIPTS/RunRevenueAcceptanceLatestPlacement.js
+          node TESTS/revenue_acceptance_latest_placement.test.js
+          node TESTS/remote_execution_bridge_safety.test.js
+      - name: Commit governed branch patch
+        run: |
+          if git diff --quiet; then
+            echo "Patch already present."
+            exit 0
+          fi
+          git config user.name "MILES GitHub Automation"
+          git config user.email "miles-github-automation@local.invalid"
+          git add StartMilesRemoteExecutionBridge.js TESTS/remote_execution_bridge_safety.test.js
+          git commit -m "Allow fresh placement and latest-evidence final acceptance jobs"
+          git push origin HEAD:fix/fresh-placement-final-acceptance-20260902
