@@ -1,0 +1,79 @@
+name: Patch USAspending Large Export Wait
+
+on:
+  push:
+    branches:
+      - fix/usaspending-large-export-wait-20260901
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/usaspending-large-export-wait-20260901
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
+      - name: Patch bounded large-export wait
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('SERVICES/UsaspendingAwardHistoryStagingService.js')
+          s = p.read_text()
+          old = "    this.maxWaitMs = Number(options.maxWaitMs || 1800000);\n"
+          new = "    this.maxWaitMs = Number(\n      options.maxWaitMs ||\n      process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS ||\n      10800000\n    );\n"
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif new not in s:
+              raise SystemExit('maxWaitMs anchor missing')
+          p.write_text(s)
+
+          t = Path('TESTS/Test_UsaspendingLargeExportWait.js')
+          t.write_text("""'use strict';
+const assert = require('assert');
+const Service = require('../SERVICES/UsaspendingAwardHistoryStagingService');
+
+const original = process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS;
+try {
+  delete process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS;
+  const defaults = new Service({ root: process.cwd(), fetch: async () => { throw new Error('unused'); } });
+  assert.strictEqual(defaults.maxWaitMs, 10800000, 'default wait must tolerate large official USAspending exports');
+
+  process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS = '14400000';
+  const envOverride = new Service({ root: process.cwd(), fetch: async () => { throw new Error('unused'); } });
+  assert.strictEqual(envOverride.maxWaitMs, 14400000, 'environment override must be honored');
+
+  const optionOverride = new Service({ root: process.cwd(), maxWaitMs: 12345, fetch: async () => { throw new Error('unused'); } });
+  assert.strictEqual(optionOverride.maxWaitMs, 12345, 'explicit option must remain highest priority');
+  assert.strictEqual(optionOverride.safety(true).operationalWritesAllowed, false);
+  assert.strictEqual(optionOverride.safety(true).emailsSent, false);
+  console.log('USASPENDING_LARGE_EXPORT_WAIT_TEST=GREEN');
+} finally {
+  if (original === undefined) delete process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS;
+  else process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS = original;
+}
+""")
+          PY
+      - name: Validate bounded repair
+        run: |
+          node --check SERVICES/UsaspendingAwardHistoryStagingService.js
+          node --check TESTS/Test_UsaspendingLargeExportWait.js
+          node TESTS/Test_UsaspendingLargeExportWait.js
+          node TESTS/Test_Fy2026AwardedUniverseCoverageService.js
+          node TESTS/remote_execution_bridge_safety.test.js
+          grep -F "USASPENDING_DOWNLOAD_MAX_WAIT_MS" SERVICES/UsaspendingAwardHistoryStagingService.js
+      - name: Commit bounded repair
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'MILES CI'
+          git config user.email 'miles-ci@local.invalid'
+          git add SERVICES/UsaspendingAwardHistoryStagingService.js TESTS/Test_UsaspendingLargeExportWait.js
+          git commit -m 'Allow large USAspending exports to finish safely'
+          git push origin HEAD:fix/usaspending-large-export-wait-20260901
