@@ -1,7 +1,7 @@
 {
-  "id": "miles-oauth-json-body-fix-deploy-20260902-001",
+  "id": "miles-zero-cost-oauth-missing-production-20260902-002",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main containing PR #468 OAuth init request-body correction. Governed supervised restart only. No arbitrary shell, no DNS mutation, no prospect sends, no campaign mutation, no new Workspace licenses."
+  "note": "Rerun after PR #468 production deploy. Use Instantly API key already in production .env; skip currently connected paid mailboxes and initialize official Google OAuth sessions only for the missing members of the fixed 13-paid-user allowlist. Return exact intended mailbox authorization URLs and expirations. No new Workspace licenses, aliases, passwords/tokens, campaign/lead/DNS mutation, prospect sends, or pathways2gc.com outbound."
 }
