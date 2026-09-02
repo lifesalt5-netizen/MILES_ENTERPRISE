@@ -1,0 +1,39 @@
+name: B12 Historical Universe Discovery Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js'
+      - 'SCRIPTS/RunB12HistoricalUniverseDiscovery.js'
+      - 'TESTS/Test_B12HistoricalUniverseDiscoveryService.js'
+      - '.github/workflows/b12-historical-universe-discovery-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
+          node --check SCRIPTS/RunB12HistoricalUniverseDiscovery.js
+          node --check TESTS/Test_B12HistoricalUniverseDiscoveryService.js
+      - name: B12 bounded discovery regression
+        run: node TESTS/Test_B12HistoricalUniverseDiscoveryService.js
+      - name: Static safety assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "READ_ONLY_EVIDENCE_DISCOVERY" SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
+          grep -q "historicalSourcesModified: false" SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
+          grep -q "currentMasterModified: false" SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
+          grep -q "emailSent: false" SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
+          grep -q "suppressionOverridden: false" SERVICES/revenue/B12HistoricalUniverseDiscoveryService.js
