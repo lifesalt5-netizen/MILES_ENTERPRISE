@@ -1,7 +1,7 @@
 {
-  "id": "miles-zero-cost-placement-deploy-20260902-013",
+  "id": "miles-executive-blueprint-canonical-deploy-20260902-014",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main with the zero-cost exact-sender placement runner and hard sender FULL-GO gate. Preserve current safety boundaries and do not add recurring cost."
+  "note": "Deploy current main merge 9bd8751e39e5036fd387f56a0dd6702baa28927b containing the universal Executive Government Growth Blueprint canonical-truth rebuild. Preserve fail-closed truth rules and existing safety boundaries. Do not mutate campaigns, DNS, provider billing, or customer data beyond the trusted deployment mechanism."
 }
