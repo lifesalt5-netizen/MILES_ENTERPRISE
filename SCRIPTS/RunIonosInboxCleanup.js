@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const fs = require('fs');
 const path = require('path');
 const IonosAllFolderReconciliationService = require('../SERVICES/revenue/IonosAllFolderReconciliationService');
 const IonosPitchJunkClassifier = require('../SERVICES/revenue/IonosPitchJunkClassifier');
@@ -72,6 +73,45 @@ function compactDiagnostics(result, execute) {
   };
 }
 
+function continuousHygieneStatus(root) {
+  const artifact = path.join(root, 'DATA', 'runtime', 'revenue', 'ionos_hygiene', 'ionos_inbox_hygiene_latest.json');
+  try {
+    const stat = fs.statSync(artifact);
+    const raw = JSON.parse(fs.readFileSync(artifact, 'utf8'));
+    const accounts = Array.isArray(raw.accounts) ? raw.accounts : [];
+    return {
+      available: true,
+      artifact,
+      artifactModifiedAt: stat.mtime.toISOString(),
+      artifactAgeSeconds: Math.max(0, Math.round((Date.now() - stat.mtimeMs) / 1000)),
+      generatedAt: raw.generatedAt || null,
+      ok: raw.ok === true,
+      status: raw.status || null,
+      enabled: raw.enabled === true,
+      execute: raw.execute === true,
+      totals: raw.totals || null,
+      errors: Array.isArray(raw.errors) ? raw.errors : [],
+      producer: raw.producer || null,
+      safety: raw.safety || null,
+      accounts: accounts.map(account => ({
+        account: account.account,
+        ok: account.ok === true,
+        scanned: Number(account.scanned || 0),
+        routedHighConfidenceNoise: Number(account.routedHighConfidenceNoise || 0),
+        keptUncertainOrActionable: Number(account.keptUncertainOrActionable || 0),
+        folders: account.folders || {},
+        verification: account.verification || null
+      }))
+    };
+  } catch (error) {
+    return {
+      available: false,
+      artifact,
+      error: error.message
+    };
+  }
+}
+
 async function main() {
   const root = path.resolve(process.env.MILES_ROOT || process.cwd());
   const execute = process.argv.includes('--execute');
@@ -83,6 +123,12 @@ async function main() {
   console.log(result.ok
     ? (execute ? 'IONOS_ALL_FOLDER_RECONCILIATION_EXECUTE_GREEN' : 'IONOS_ALL_FOLDER_RECONCILIATION_PLAN_GREEN')
     : (execute ? 'IONOS_ALL_FOLDER_RECONCILIATION_EXECUTE_RED' : 'IONOS_ALL_FOLDER_RECONCILIATION_PLAN_RED'));
+
+  // Read-only observability for the always-on production inbox hygiene loop.
+  // This intentionally appears at the very end so the remote evidence tail
+  // contains the live continuous-loop health even when historical all-folder
+  // reconciliation is RED for unrelated legacy filing decisions.
+  console.log(`IONOS_CONTINUOUS_HYGIENE_STATUS=${JSON.stringify(continuousHygieneStatus(root))}`);
   process.exitCode = result.ok ? 0 : 2;
 }
 
@@ -90,3 +136,9 @@ if (require.main === module) main().catch(error => {
   console.error(error && error.stack ? error.stack : error);
   process.exitCode = 1;
 });
+
+module.exports = {
+  configureExecutionGates,
+  compactDiagnostics,
+  continuousHygieneStatus
+};
