@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-routing-parity-verify-20260902-001",
+  "id": "miles-ionos-fresh-generation-recovery-20260902-001",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_PLAN",
+  "job": "CONTROL_OWNER_WATCHDOG_RECOVERY_PROOF_SCHEDULE",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Final read-only production verification after deploy of main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c. Inspect current IONOS mailbox state and publish IONOS_CONTINUOUS_HYGIENE_STATUS at the end. Do not mutate folders or messages. Required proof: current inbox counts and routable counts, continuous service ACTIVE with execute true, fresh artifact from the restarted miles-autonomous-coo generation, and remainingHighConfidenceRoutableNoise equal to zero."
+  "note": "Schedule the existing audited one-shot control-owner recovery proof so the independent watchdog performs a controlled stop and fresh restart of miles-autonomous-coo after evidence is published. Purpose is to replace the pre-deploy COO generation with main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c. No arbitrary shell, destructive Git recovery, provider mutation, email deletion, SMTP send, DNS change, Instantly mutation, or B12 publish."
 }
