@@ -1,0 +1,40 @@
+name: SAM Public Monthly Filename Probe Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/orion/FederalSourceReadinessAuditService.js'
+      - 'SERVICES/orion/SamEntityPublicBulkFilenameProbeFallbackService.js'
+      - 'SCRIPTS/AuditFederalSourceReadiness.js'
+      - 'TESTS/sam_entity_public_bulk_filename_probe_fallback.test.js'
+      - '.github/workflows/sam-public-monthly-filename-probe-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Syntax
+        run: |
+          node --check SERVICES/orion/SamEntityPublicBulkFilenameProbeFallbackService.js
+          node --check SCRIPTS/AuditFederalSourceReadiness.js
+          node --check TESTS/sam_entity_public_bulk_filename_probe_fallback.test.js
+      - name: Official monthly fallback regression
+        run: node TESTS/sam_entity_public_bulk_filename_probe_fallback.test.js
+      - name: Static source-authority and fail-closed contract
+        run: |
+          grep -q "OFFICIAL_HOST = 'sam.gov'" SERVICES/orion/SamEntityPublicBulkFilenameProbeFallbackService.js
+          grep -q "SAM_PUBLIC_UTF-8_MONTHLY_V2_" SERVICES/orion/SamEntityPublicBulkFilenameProbeFallbackService.js
+          grep -q "OFFICIAL_SAM_MONTHLY_FILENAME_HEAD_PROBE" SERVICES/orion/SamEntityPublicBulkFilenameProbeFallbackService.js
+          grep -q "process.exitCode = result?.ok === true ? 0 : 2" SCRIPTS/AuditFederalSourceReadiness.js
+          grep -q "productionDatabaseModified" SERVICES/orion/FederalSourceReadinessAuditService.js
