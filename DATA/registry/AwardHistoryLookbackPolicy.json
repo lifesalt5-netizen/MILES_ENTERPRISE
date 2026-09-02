@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "P2GC Award History Lookback Policy",
   "purpose": "Ensure recent historical prime and subcontract awardees remain visible to the canonical contractor and revenue lifecycle even when they have no current-FY award activity or are absent from the current outbound contact master.",
   "fiscalYearScope": {
@@ -7,6 +7,15 @@
     "priorFullFiscalYears": [2021, 2022, 2023, 2024, 2025],
     "includedFiscalYears": [2021, 2022, 2023, 2024, 2025, 2026],
     "currentFiscalYearMayBePartial": true
+  },
+  "sourceReusePolicy": {
+    "inventoryExistingLocalHistoryFirst": true,
+    "searchWindowsDataEstateNotJustGitRepository": true,
+    "reuseValidatedExistingArtifactsByFiscalYear": true,
+    "validateSourceProvenanceAndIntegrityBeforeReuse": true,
+    "acquireOnlyYearsMissingOrUnusableAfterInventory": true,
+    "doNotRedownloadValidatedExistingHistory": true,
+    "doNotAssumeGitRepositoryAbsenceMeansLocalDataAbsence": true
   },
   "awardRoles": ["PRIME", "SUB", "BOTH"],
   "canonicalRule": {
