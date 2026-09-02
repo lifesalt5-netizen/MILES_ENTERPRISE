@@ -6,10 +6,12 @@ const CanonicalAwardedContractorMasterService = require("../SERVICES/revenue/Can
 const CanonicalContractorTaxonomyOverlayService = require("../SERVICES/revenue/CanonicalContractorTaxonomyOverlayService");
 const AwardHistoryLocalInventoryService = require("../SERVICES/revenue/AwardHistoryLocalInventoryService");
 const SixFiscalYearAwardSourceValidationService = require("../SERVICES/revenue/SixFiscalYearAwardSourceValidationService");
+const B12HistoricalUniverseDiscoveryService = require("../SERVICES/revenue/B12HistoricalUniverseDiscoveryService");
 
 const objective = [
   "Reconcile the full ORION contractor universe into the P2GC revenue lifecycle.",
   "Treat the current governed contact master as one outbound subset, not the total addressable market or canonical company master.",
+  "Discover the Sep 2025-Feb 2026 B12 historical campaign/contact evidence from the governed Windows data estate before row reconstruction or migration-loss claims.",
   "Inventory existing local FY2021-FY2026 prime and subcontract award history before any reacquisition; Git repository absence is not evidence that Windows data is missing.",
   "Validate the actual local FY2021-FY2026 source files by fiscal year and award role before normalization; prefer exact official annual files, reject ambiguous or backup copies, and do not acquire missing data during validation.",
   "For every contractor produce an evidence-backed commercial disposition and next-action state.",
@@ -20,7 +22,7 @@ const objective = [
   "Retain a proven existing GSA, VA, SAM, certification, SBS, expiring, or SLED primary outbound segment where available; otherwise assign a governed awarded-role/value fallback segment.",
   "Missing or stale contacts must enter verification or enrichment states, not cause the company to disappear.",
   "Only verified unsuppressed contacts may appear in outbound-ready segment exports.",
-  "Do not send email, activate campaigns, mutate providers, override suppression, modify the current outbound master, or modify production ORION."
+  "Do not send email, activate campaigns, mutate providers, override suppression, modify historical B12 sources, modify the current outbound master, or modify production ORION."
 ].join(" ");
 
 async function main() {
@@ -37,12 +39,14 @@ async function main() {
     }
   });
 
+  let b12Discovery = null;
   let localAwardHistory = null;
   let sixFySourceValidation = null;
   let awards = null;
   let canonical = null;
   let taxonomy = null;
   if (result?.ok === true) {
+    b12Discovery = new B12HistoricalUniverseDiscoveryService().discover();
     localAwardHistory = new AwardHistoryLocalInventoryService().run();
     if (localAwardHistory?.ok === true) {
       sixFySourceValidation = new SixFiscalYearAwardSourceValidationService().run({ inventory: localAwardHistory });
@@ -64,13 +68,28 @@ async function main() {
     : null;
 
   const compact = {
-    ok: result?.ok === true && localAwardHistory?.ok === true && sixFySourceValidation?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
+    ok: result?.ok === true && b12Discovery?.ok === true && localAwardHistory?.ok === true && sixFySourceValidation?.ok === true && awards?.ok === true && canonical?.ok === true && taxonomy?.ok === true,
     status: taxonomy?.status || canonical?.status || result?.status || null,
     service: result?.service || null,
     mode: result?.mode || null,
     completedAt: result?.completedAt || null,
     universe: result?.universe || null,
     immediateAnswers: result?.immediateAnswers || null,
+    b12HistoricalDiscovery: b12Discovery ? {
+      ok: b12Discovery.ok === true,
+      status: b12Discovery.status || null,
+      historicalWindow: b12Discovery.historicalWindow || null,
+      scanRoots: b12Discovery.scope?.scanRoots || [],
+      filesVisited: b12Discovery.scope?.filesVisited ?? null,
+      directoriesVisited: b12Discovery.scope?.directoriesVisited ?? null,
+      registryReferencedSources: b12Discovery.registry?.referencedSourceCount ?? null,
+      inventory: b12Discovery.inventory || null,
+      duplicateArtifactHashGroups: b12Discovery.duplicateArtifacts?.length || 0,
+      errors: (b12Discovery.errors || []).slice(0, 25),
+      nextGate: b12Discovery.nextGate || null,
+      outputs: b12Discovery.outputs || null,
+      safety: b12Discovery.safety || null
+    } : null,
     localAwardHistory: localAwardHistory ? {
       ok: localAwardHistory.ok === true,
       status: localAwardHistory.status || null,
@@ -124,7 +143,7 @@ async function main() {
     acceptance: result?.acceptance || null,
     outputs: result?.outputs || null,
     safety: result?.safety || null,
-    error: result?.error || sixFySourceValidation?.error || awards?.error || canonical?.error || taxonomy?.error || null
+    error: result?.error || b12Discovery?.errors?.[0]?.error || sixFySourceValidation?.error || awards?.error || canonical?.error || taxonomy?.error || null
   };
 
   console.log("MILES_REVENUE_UNIVERSE_RECONCILIATION_COMPACT");
