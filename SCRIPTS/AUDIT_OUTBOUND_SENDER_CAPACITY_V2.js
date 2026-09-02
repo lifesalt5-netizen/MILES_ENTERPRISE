@@ -95,6 +95,30 @@ function loadPlacementGovernance() {
   };
 }
 
+function loadExternalPlacementGovernance() {
+  const file = path.join(root, 'DATA', 'runtime', 'revenue', 'deliverability', 'external_inbox_placement_latest.json');
+  const report = readJson(file);
+  const reportAgeHours = ageHours(report?.generatedAt);
+  const fresh = reportAgeHours !== null && reportAgeHours >= 0 && reportAgeHours <= PLACEMENT_EVIDENCE_MAX_AGE_HOURS;
+  const senderMap = new Map();
+  if (fresh && Array.isArray(report?.senders)) {
+    for (const sender of report.senders) {
+      const email = String(sender?.sender || '').trim().toLowerCase();
+      if (email) senderMap.set(email, sender);
+    }
+  }
+  return {
+    file,
+    exists: Boolean(report),
+    generatedAt: report?.generatedAt || null,
+    ageHours: reportAgeHours,
+    fresh,
+    source: report?.source || null,
+    status: report?.status || null,
+    senderMap
+  };
+}
+
 async function main() {
   const response = await instantly.execute(
     { action: 'listAccounts', payload: { limit: 100 } },
@@ -104,6 +128,7 @@ async function main() {
   if (!accounts.length) throw new Error('INSTANTLY_ACCOUNT_INVENTORY_EMPTY_OR_UNPARSEABLE');
 
   const placement = loadPlacementGovernance();
+  const externalPlacement = loadExternalPlacementGovernance();
   const byDomain = Object.fromEntries(OUTREACH_DOMAINS.map(domain => [domain, []]));
   const protectedAccounts = [];
   const otherDomains = {};
@@ -114,15 +139,28 @@ async function main() {
     if (!email.includes('@')) continue;
     const domain = email.split('@').pop();
     const providerOk = providerUsable(account);
-    const placementEvidence = placement.senderMap.get(email) || null;
+    const instantlyPlacementEvidence = placement.senderMap.get(email) || null;
+    const externalPlacementEvidence = externalPlacement.senderMap.get(email) || null;
+    const placementEvidence = externalPlacement.fresh && externalPlacementEvidence
+      ? externalPlacementEvidence
+      : placement.fresh && instantlyPlacementEvidence
+        ? instantlyPlacementEvidence
+        : null;
     const placementStatus = placementEvidence?.status || 'UNVERIFIED';
-    const governedUsable = providerOk && placement.fresh && placementStatus === 'ACTIVE';
+    const placementEvidenceFresh = Boolean(placementEvidence);
+    const placementSource = externalPlacement.fresh && externalPlacementEvidence
+      ? (externalPlacement.source || 'EXTERNAL_PLACEMENT')
+      : placement.fresh && instantlyPlacementEvidence
+        ? 'INSTANTLY_API_V2_INBOX_PLACEMENT'
+        : null;
+    const governedUsable = providerOk && placementEvidenceFresh && placementStatus === 'ACTIVE';
     const row = {
       email,
       status: statusOf(account),
       providerUsable: providerOk,
       placementStatus,
-      placementEvidenceFresh: placement.fresh,
+      placementEvidenceFresh,
+      placementSource,
       governedUsable
     };
     observedByEmail.set(email, row);
@@ -185,15 +223,26 @@ async function main() {
     instantlyAction: 'listAccounts',
     accountsObserved: accounts.length,
     placementGovernance: {
-      file: path.relative(root, placement.file),
-      exists: placement.exists,
-      generatedAt: placement.generatedAt,
-      ageHours: placement.ageHours,
-      fresh: placement.fresh,
+      instantly: {
+        file: path.relative(root, placement.file),
+        exists: placement.exists,
+        generatedAt: placement.generatedAt,
+        ageHours: placement.ageHours,
+        fresh: placement.fresh,
+        truth: placement.truth,
+        verificationStatus: placement.verificationStatus
+      },
+      external: {
+        file: path.relative(root, externalPlacement.file),
+        exists: externalPlacement.exists,
+        generatedAt: externalPlacement.generatedAt,
+        ageHours: externalPlacement.ageHours,
+        fresh: externalPlacement.fresh,
+        source: externalPlacement.source,
+        status: externalPlacement.status
+      },
       maxAgeHours: PLACEMENT_EVIDENCE_MAX_AGE_HOURS,
-      truth: placement.truth,
-      verificationStatus: placement.verificationStatus,
-      rule: 'Governed usable requires provider-usable account plus fresh sender placement status ACTIVE. WATCH or UNVERIFIED senders contribute zero governed capacity.'
+      rule: 'Governed usable requires provider-usable account plus fresh exact-sender placement status ACTIVE. Fresh external seed evidence may supply placement truth when the Instantly test quota is exhausted; WATCH or UNVERIFIED still contributes zero governed capacity.'
     },
     protectedPrimaryDomain: PROTECTED_PRIMARY_DOMAIN,
     protectedPrimaryDomainObservedInInstantly: protectedAccounts,
@@ -248,7 +297,8 @@ async function main() {
   console.log('MILES OUTBOUND SENDER CAPACITY AUDIT V2 - READ ONLY');
   console.log('============================================================');
   console.log(`Instantly accounts observed: ${accounts.length}`);
-  console.log(`Placement evidence fresh: ${placement.fresh}`);
+  console.log(`Placement evidence fresh: ${placement.fresh || externalPlacement.fresh}`);
+  console.log(`External placement evidence fresh: ${externalPlacement.fresh}`);
   for (const d of domains) {
     const z = d.zeroCostPaidSeatTarget;
     console.log(`${d.domain}: providerUsable=${d.providerUsableMailboxes} governedUsable=${d.usableMailboxes} capacity=${d.governedCapacityAt25PerUsableMailbox}/day paidTarget=${z.targetCount} connected=${z.connectedCount} governedPaid=${z.governedUsableCount} missingPaid=${z.missingFromInstantlyCount}`);
@@ -276,4 +326,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { providerUsable, ageHours, ZERO_COST_PAID_SEAT_TARGET, ZERO_COST_TARGET_MAILBOXES };
+module.exports = { providerUsable, ageHours, ZERO_COST_PAID_SEAT_TARGET, ZERO_COST_TARGET_MAILBOXES, loadExternalPlacementGovernance };

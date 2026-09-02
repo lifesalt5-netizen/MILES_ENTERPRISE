@@ -59,6 +59,7 @@ const JOBS = Object.freeze({
   ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireOrionOfficialSourceToStaging.js']],
   ORION_OFFICIAL_ARCHIVE_INSPECTION: ['node', ['SCRIPTS/InspectOrionOfficialArchives.js']],
   ORION_REFRESH_TARGET_SCHEMA_AUDIT: ['node', ['SCRIPTS/AuditOrionRefreshTargetSchema.js']],
+  OUTBOUND_SENDER_CAPACITY_FULL_GO: ['node', ['SCRIPTS/RunOutboundSenderCapacityFullGoGate.js']],
   ORION_CONTRACT_SIDECAR_BUILD: ['node', ['SCRIPTS/BuildOrionContractSidecar.js']],
   FEDERAL_SOURCE_READINESS_AUDIT: ['node', ['SCRIPTS/AuditFederalSourceReadiness.js']],
   SAM_BULK_EXTRACT_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireSamBulkExtractsToStaging.js']],
@@ -68,7 +69,8 @@ const JOBS = Object.freeze({
   SAM_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmails.js']],
   SAM_SQLITE_EMAIL_RECOVERY: ['node', ['SCRIPTS/RecoverSamQualifiedEmailsFromSqlite.js']],
   SAM_CURRENT_SEND_COLLISION_AUDIT: ['node', ['SCRIPTS/AuditSamCurrentSendCollisions.js']],
-  SAM_PUBLIC_EMAIL_DISCOVERY: ['node', ['SCRIPTS/DiscoverSamPublicEmails.js']]
+  SAM_PUBLIC_EMAIL_DISCOVERY: ['node', ['SCRIPTS/DiscoverSamPublicEmails.js']],
+  ZERO_COST_EXTERNAL_PLACEMENT_EXECUTE: ['node', ['SCRIPTS/RunZeroCostExternalInboxPlacement.js', '--authorization', 'AUTHORIZE_ZERO_COST_EXTERNAL_PLACEMENT_TESTS']]
 });
 
 function readState() {
