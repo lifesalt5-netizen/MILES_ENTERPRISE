@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-init-missing-production-20260902-007",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-008",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Generate fresh Instantly Google OAuth authorization sessions for the remaining missing already-paid senders only. Current missing senders are expected to be ryan@pathwaysgsa.com and aden@pathwaysgov.com. Do not create Workspace users or licenses, do not count aliases as capacity, do not send prospect email, mutate campaigns, change DNS, or touch pathways2gc.com outbound. Return the exact authorization URLs and intended emails so the required Google re-verification can be completed manually."
+  "note": "Verify provider state after Ryan and Aden completed their fresh Google consent. If either remains missing and the exact intended Google identity is already authenticated, complete the normal exact-account OAuth flow. Do not create Workspace users or licenses, count aliases as capacity, send prospect email, mutate campaigns, change DNS, or use pathways2gc.com for cold outbound. Report exact connected and missing paid senders plus recurring cost status."
 }
