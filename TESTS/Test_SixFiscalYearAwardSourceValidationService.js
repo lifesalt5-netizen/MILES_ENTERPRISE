@@ -71,7 +71,7 @@ for (const year of [2021,2022,2023,2024,2025,2026]) {
   assert(y.prime.selected[0].file.includes(`${year}1231`));
   assert(!y.prime.selected[0].file.toLowerCase().includes('backup'));
   assert.strictEqual(y.subcontract.selected.length, 1);
-  assert.strictEqual(y.subcontract.selected[0].schema.hasUeiColumn, true);
+  assert.strictEqual(y.subcontract.selected[0].schema.identity.hasUeiColumn, true);
 }
 assert.strictEqual(result.safety.acquisitionTriggered, false);
 assert.strictEqual(result.safety.sourceFilesModified, false);
