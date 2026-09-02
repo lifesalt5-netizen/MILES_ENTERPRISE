@@ -132,7 +132,7 @@ class IonosInboxHygieneProductionLoopService {
         continue;
       }
       for (const idsBatch of chunk(ids, 200)) {
-        moves.push(await this.governed.moveUids(mailbox, idsBatch, folder));
+        moves.push(await this.governed.moveUidsForHygiene(mailbox, idsBatch, folder));
       }
     }
 
@@ -197,6 +197,10 @@ class IonosInboxHygieneProductionLoopService {
         safety: {
           deletesMessages: false,
           usesUidMoveOnly: true,
+          scopedAuthorization: 'IONOS_HYGIENE_UID_MOVE_ONLY',
+          globalWriteGatesNotRequired: true,
+          rehearsalModeBlocksScopedMoves: true,
+          autonomousExecuteFalseBlocksScopedMoves: true,
           uncertainMailRemainsInbox: true,
           activeClientMailRemainsInbox: true,
           directSentThreadRepliesRemainInbox: true,
