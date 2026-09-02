@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { once } = require('events');
 const csv = require('csv-parser');
 
 const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
@@ -347,6 +348,9 @@ class SixFiscalYearAwardUniverseNormalizerService {
       for (const item of batch) insertAwardKey.run(item.key, item.role, item.awardId);
     });
     const awardBuffer = [];
+    const flushAwardBuffer = () => {
+      if (awardBuffer.length) transaction(awardBuffer.splice(0, awardBuffer.length));
+    };
     try {
       for await (const row of fs.createReadStream(file).pipe(csv())) {
         rows += 1;
@@ -360,17 +364,19 @@ class SixFiscalYearAwardUniverseNormalizerService {
           this.stats.rowsWithoutDefensibleSecondaryIdentity += 1;
           continue;
         }
+        // Persist buffered fallback award IDs before an exact UEI can absorb the
+        // fallback account. That guarantees mergeAccounts can move every prior
+        // award key and leaves no orphan canonical_key entries behind.
+        if (fields.uei) flushAwardBuffer();
         const account = this.resolveAccount(fields, { file, role, year, row: rows }, db);
         this.applyAward(account, fields, { file, role, year }, { run: (key, awardRole, awardId) => {
           awardBuffer.push({ key, role: awardRole, awardId });
-          if (awardBuffer.length >= 5000) {
-            transaction(awardBuffer.splice(0, awardBuffer.length));
-          }
+          if (awardBuffer.length >= 5000) flushAwardBuffer();
         }});
         accepted += 1;
         this.stats.sourceRowsAccepted += 1;
       }
-      if (awardBuffer.length) transaction(awardBuffer.splice(0, awardBuffer.length));
+      flushAwardBuffer();
       return { file, role, year, rowsRead: rows, rowsAccepted: accepted, ok: true };
     } catch (error) {
       const failure = { file, role, year, rowsRead: rows, rowsAccepted: accepted, ok: false, error: String(error?.message || error) };
@@ -388,10 +394,10 @@ class SixFiscalYearAwardUniverseNormalizerService {
       nameAddressMap: new Map()
     };
     if (!fs.existsSync(this.currentMasterPath)) return { ...result, missing: true };
-    function addUnique(map, alias, rowId) {
-      if (!alias) return;
-      if (!map.has(alias)) map.set(alias, rowId);
-      else if (map.get(alias) !== rowId) map.set(alias, null);
+    function addUnique(map, alias, ownerKey) {
+      if (!alias || !ownerKey) return;
+      if (!map.has(alias)) map.set(alias, ownerKey);
+      else if (map.get(alias) !== ownerKey) map.set(alias, null);
     }
     let rowId = 0;
     for await (const row of fs.createReadStream(this.currentMasterPath).pipe(csv())) {
@@ -403,9 +409,20 @@ class SixFiscalYearAwardUniverseNormalizerService {
       const domain = normDomain(aliasValue(row, MASTER.domain));
       const address = normAddress(aliasValue(row, MASTER.address));
       if (uei) result.ueiSet.add(uei);
-      if (cage) addUnique(result.cageMap, `CAGE:${cage}`, rowId);
-      if (name && domain) addUnique(result.nameDomainMap, `NAME_DOMAIN:${name}|${domain}`, rowId);
-      if (name && address) addUnique(result.nameAddressMap, `NAME_ADDRESS:${name}|${address}`, rowId);
+      // Multiple contact rows for one company must not make a company-level
+      // alias ambiguous. Use the durable company identity as alias owner.
+      const ownerKey = uei
+        ? `UEI:${uei}`
+        : cage
+          ? `CAGE:${cage}`
+          : name && domain
+            ? `NAME_DOMAIN:${name}|${domain}`
+            : name && address
+              ? `NAME_ADDRESS:${name}|${address}`
+              : `ROW:${rowId}`;
+      if (cage) addUnique(result.cageMap, `CAGE:${cage}`, ownerKey);
+      if (name && domain) addUnique(result.nameDomainMap, `NAME_DOMAIN:${name}|${domain}`, ownerKey);
+      if (name && address) addUnique(result.nameAddressMap, `NAME_ADDRESS:${name}|${address}`, ownerKey);
     }
     return result;
   }
@@ -466,17 +483,20 @@ class SixFiscalYearAwardUniverseNormalizerService {
     };
   }
 
-  writeCsv(rows) {
+  async writeCsv(rows) {
     const headers = [
       'canonical_key','uei','cage','company_name','domain','identity_confidence','identity_methods','award_role',
       'first_award_fy','last_award_fy','first_award_date','last_award_date','prime_award_years','sub_award_years',
       'prime_award_count','sub_award_count','prime_evidence_rows','sub_evidence_rows','prime_dollars','sub_dollars',
       'total_awarded_dollars','award_trend','active_recently','current_master_match','source_files'
     ];
-    const stream = fs.createWriteStream(this.csvPath, 'utf8');
-    stream.write(headers.join(',') + '\n');
-    for (const row of rows) stream.write(headers.map(key => csvEscape(row[key])).join(',') + '\n');
+    const stream = fs.createWriteStream(this.csvPath, { encoding: 'utf8' });
+    if (!stream.write(headers.join(',') + '\n')) await once(stream, 'drain');
+    for (const row of rows) {
+      if (!stream.write(headers.map(key => csvEscape(row[key])).join(',') + '\n')) await once(stream, 'drain');
+    }
     stream.end();
+    await once(stream, 'finish');
   }
 
   async run(options = {}) {
@@ -527,7 +547,7 @@ class SixFiscalYearAwardUniverseNormalizerService {
       if (master.missing) throw new Error(`CURRENT_MASTER_NOT_FOUND:${this.currentMasterPath}`);
       const coverage = this.assignMasterCoverage(master);
       const rows = [...this.accounts.values()].map(account => this.finalizeAccount(account, uniqueAwardCounts));
-      this.writeCsv(rows);
+      await this.writeCsv(rows);
 
       const prime = rows.filter(row => row.award_role === 'PRIME' || row.award_role === 'BOTH').length;
       const sub = rows.filter(row => row.award_role === 'SUB' || row.award_role === 'BOTH').length;
