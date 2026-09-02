@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-deploy-20260902-001",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main containing merged PR #469 guarded Miles Google OAuth browser capability. Governed supervised restart only. No arbitrary shell, no password entry, no MFA bypass, no cookie/token exposure, no Workspace user/license creation, no prospect sends, no campaign mutation, no DNS mutation."
+  "note": "Generate fresh OAuth sessions for the currently missing members of the fixed 13 already-paid independent Workspace mailbox allowlist and let Miles use only already-authenticated Google identities in his persistent Chrome profile to complete Instantly OAuth. Require exact intended-email identity and Instantly client proof before consent. Stop and report any mailbox requiring login/password/MFA. Never type passwords, bypass MFA/security challenges, expose cookies/tokens, create Workspace users/licenses, touch pathways2gc.com outbound, send prospects, mutate campaigns, or change DNS."
 }
