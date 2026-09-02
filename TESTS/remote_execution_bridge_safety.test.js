@@ -72,6 +72,7 @@ assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_EXECUTE, ['node', ['SCRIPTS
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_PLAN, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_EXECUTE, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING, ['node', ['SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js', '--authorization', 'AUTHORIZE_ZERO_COST_PAID_SENDER_GOOGLE_OAUTH']]);
+assert.deepStrictEqual(bridge.JOBS.INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED, ['node', ['SCRIPTS/RunInstantlyGoogleOAuthBrowserGuarded.js', '--authorization', 'AUTHORIZE_EXISTING_AUTHENTICATED_GOOGLE_OAUTH_CONSENT']]);
 assert.strictEqual(bridge.CONTROL_BRANCH, 'miles-control');
 assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_execution_directive.json'));
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
