@@ -94,7 +94,11 @@ class UsaspendingAwardHistoryStagingService {
     this.pollIntervalMs = Number(
       options.pollIntervalMs || 10000
     );
-    this.maxWaitMs = Number(options.maxWaitMs || 1800000);
+    this.maxWaitMs = Number(
+      options.maxWaitMs ||
+      process.env.USASPENDING_DOWNLOAD_MAX_WAIT_MS ||
+      10800000
+    );
   }
 
   safety(externalReads = false) {
