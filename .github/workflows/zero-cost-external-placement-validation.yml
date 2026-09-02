@@ -1,0 +1,48 @@
+name: Zero-Cost External Inbox Placement Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/RunZeroCostExternalInboxPlacement.js'
+      - 'SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js'
+      - 'StartMilesRemoteExecutionBridge.js'
+      - 'TESTS/zero_cost_external_inbox_placement.test.js'
+      - 'TESTS/remote_execution_bridge_safety.test.js'
+      - '.github/workflows/zero-cost-external-placement-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Syntax
+        run: |
+          node --check SCRIPTS/RunZeroCostExternalInboxPlacement.js
+          node --check SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js
+          node --check StartMilesRemoteExecutionBridge.js
+          node --check TESTS/zero_cost_external_inbox_placement.test.js
+          node --check TESTS/remote_execution_bridge_safety.test.js
+      - name: External placement fail-closed regression
+        run: node TESTS/zero_cost_external_inbox_placement.test.js
+      - name: Sender full-go fail-closed regression
+        run: node TESTS/outbound_sender_capacity_full_go_gate.test.js
+      - name: Fixed bridge allowlist regression
+        run: node TESTS/remote_execution_bridge_safety.test.js
+      - name: Static safety contract
+        run: |
+          grep -q "const TEST_RECIPIENT = 'find@myips.io'" SCRIPTS/RunZeroCostExternalInboxPlacement.js
+          grep -q "EXACT_EXTERNAL_PLACEMENT_AUTHORIZATION_REQUIRED" SCRIPTS/RunZeroCostExternalInboxPlacement.js
+          grep -q "prospectSend: false" SCRIPTS/RunZeroCostExternalInboxPlacement.js
+          grep -q "newWorkspaceLicensesPurchased: false" SCRIPTS/RunZeroCostExternalInboxPlacement.js
+          grep -q "ZERO_COST_EXTERNAL_PLACEMENT_EXECUTE" StartMilesRemoteExecutionBridge.js
+          grep -q "OUTBOUND_SENDER_CAPACITY_FULL_GO" StartMilesRemoteExecutionBridge.js
