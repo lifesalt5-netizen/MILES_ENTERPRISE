@@ -62,7 +62,7 @@ async function initMissing(authorization) {
 
   for (const intendedEmail of missing) {
     try {
-      const session = await instantly.request('/oauth/google/init', { method: 'POST' });
+      const session = await instantly.request('/oauth/google/init', { method: 'POST', body: {} });
       if (!session?.session_id || !session?.auth_url || !session?.expires_at) {
         throw new Error('INSTANTLY_GOOGLE_OAUTH_INIT_RESPONSE_INVALID');
       }

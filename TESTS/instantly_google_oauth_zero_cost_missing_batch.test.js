@@ -11,6 +11,8 @@ assert.strictEqual(single.ZERO_COST_PAID_TARGETS.length, 13);
 assert.strictEqual(new Set(single.ZERO_COST_PAID_TARGETS).size, 13);
 assert(single.ZERO_COST_PAID_TARGETS.every(email => !email.endsWith('@pathways2gc.com')));
 assert(src.includes("instantly.request('/oauth/google/init'"));
+assert(src.includes("instantly.request('/oauth/google/init', { method: 'POST', body: {} })"));
+assert(!src.includes("instantly.request('/oauth/google/init', { method: 'POST' })"));
 assert(src.includes('EXACT_ZERO_COST_OAUTH_AUTHORIZATION_REQUIRED'));
 assert(src.includes('ZERO_COST_OAUTH_USER_CONSENT_REQUIRED'));
 assert(src.includes('newGoogleWorkspaceLicenseAuthorized: false'));
