@@ -1,7 +1,7 @@
 {
-  "id": "miles-b12-revenue-universe-production-20260902-001",
+  "id": "miles-zero-cost-sender-deploy-20260902-001",
   "enabled": true,
-  "job": "REVENUE_UNIVERSE_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run current-main governed revenue-universe reconciliation including the newly integrated B12 Sep 2025-Feb 2026 historical source discovery. Read-only/staging-only for historical evidence and contractor data. No prospect sends, no campaign/provider mutation, no suppression override, no current-master mutation, no production ORION mutation."
+  "note": "Deploy current main including PR 458 zero-cost 13-seat sender-capacity full-go gate. No new Google Workspace licenses authorized. No arbitrary shell, DNS mutation, campaign activation, or prospect sends."
 }
