@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-routing-parity-deploy-20260902-001",
+  "id": "miles-ionos-routing-parity-verify-20260902-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c after all CI gates passed. Purpose: load the corrected continuous IONOS routing precedence and dedicated bounce routing, then recycle the supervised COO using the existing governed deployment path. No destructive Git recovery, no direct mailbox delete, no SMTP send, no DNS mutation, and no Instantly or B12 mutation requested by this directive."
+  "note": "Final read-only production verification after deploy of main commit 94d283685f8fb3b4937dcfeab2beee04143fa99c. Inspect current IONOS mailbox state and publish IONOS_CONTINUOUS_HYGIENE_STATUS at the end. Do not mutate folders or messages. Required proof: current inbox counts and routable counts, continuous service ACTIVE with execute true, fresh artifact from the restarted miles-autonomous-coo generation, and remainingHighConfidenceRoutableNoise equal to zero."
 }
