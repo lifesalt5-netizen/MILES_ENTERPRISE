@@ -19,6 +19,7 @@ assert(source.includes("setInterval(() => this.runOnce().catch(() => {}), this.i
 assert(source.includes('remainingHighConfidenceRoutableNoise'));
 assert(source.includes('uncertainMailRemainsInbox: true'));
 assert(source.includes('usesUidMoveOnly: true'));
+assert(source.includes('deletesMessages: false'));
 assert(source.includes("scopedAuthorization: 'IONOS_HYGIENE_UID_MOVE_ONLY'"));
 assert(source.includes('moveUidsForHygiene'));
 assert(source.includes('globalWriteGatesNotRequired: true'));
