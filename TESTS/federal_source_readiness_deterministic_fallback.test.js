@@ -9,7 +9,8 @@ const svc = fs.readFileSync(path.join(__dirname, '..', 'SERVICES', 'orion', 'Fed
 const runner = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AuditFederalSourceReadiness.js'), 'utf8');
 
 const names = Sam.candidateEntityNames(new Date('2026-09-02T20:00:00Z'), 8);
-assert.strictEqual(names[0], 'SAM_PUBLIC_UTF-8_MONTHLY_V2_20260906.ZIP' === names[0] ? names[0] : 'SAM_PUBLIC_UTF-8_MONTHLY_V2_20260802.ZIP');
+assert.strictEqual(names[0], 'SAM_PUBLIC_UTF-8_MONTHLY_V2_20260802.ZIP');
+assert(names.includes('SAM_PUBLIC_UTF-8_MONTHLY_V2_20260705.ZIP'));
 assert(names.every(name => /^SAM_PUBLIC_UTF-8_MONTHLY_V2_\d{8}\.ZIP$/.test(name)));
 assert(svc.includes('DETERMINISTIC_FIRST_SUNDAY_OFFICIAL_DOWNLOAD_HEAD_FALLBACK'));
 assert(svc.includes("method: 'HEAD'"));
