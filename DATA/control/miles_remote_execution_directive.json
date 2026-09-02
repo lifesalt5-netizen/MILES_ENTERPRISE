@@ -1,7 +1,8 @@
 {
-  "id": "miles-ionos-postdeploy-plan-20260902-001",
+  "id": "miles-ionos-postdeploy-plan-20260902-002",
   "enabled": true,
   "job": "IONOS_INBOX_CLEANUP_PLAN",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Post-deploy read-only verification of live IONOS inbox state after the merged continuous hygiene fix and control-owner recycle. Plan only: inspect info@pathways2gc.com and kevin@pathways2gc.com, classify/routable high-confidence inbox noise, and report counts/routes. Do not mutate folders or messages, send SMTP, change DNS/forwarding, mutate Instantly/B12, or alter campaign state."
+  "note": "Read-only live verification after merge 9f5a84f7fc3a94e386b1d2b6ec7167a2538fe365. Run the existing IONOS inbox cleanup plan only to inspect mailbox state and, at the end, publish IONOS_CONTINUOUS_HYGIENE_STATUS from the production artifact. Do not mutate folders/messages, send SMTP, change DNS/forwarding, mutate Instantly/B12, or alter campaign state. Historical all-folder reconciliation may remain RED; the required proof is the continuous hygiene status, execution flag, artifact freshness, per-account verification, and remainingHighConfidenceRoutableNoise.
+"
 }
