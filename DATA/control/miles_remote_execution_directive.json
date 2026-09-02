@@ -1,7 +1,7 @@
 {
-  "id": "miles-fy2026-awarded-universe-coverage-20260901-025",
+  "id": "miles-deploy-usaspending-large-export-wait-20260901-026",
   "enabled": true,
-  "job": "FY2026_AWARDED_UNIVERSE_COVERAGE",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed cap-safe FY2026 awarded-contractor coverage on deployed main at or beyond ff7ea08362d9ce64f3b333c99e12adbdf609b832. Use validated read-only ORION FY2026 sidecar for exact prime UEIs and resolve its source date from explicit validated metadata or strict YYYYMMDD validated archive metadata fallback. Acquire/reuse official USAspending subawards only for 2025-10-01 through that same source date. Require exact UEI-only prime/sub counts, overlap, deduped union, current-master in/missing counts, prime/sub in/missing, current master rows/unique UEIs, coverage/missing percentages, source integrity and subaward transaction count below 500000. Fail closed on source/date/schema/identity/extraction/aggregation/integrity errors. Staging/read-only only: no production ORION mutation, provider/campaign mutation, emails, suppression override, approvals, queue/history deletion, DNS/B12 changes or destructive Git. Publish fresh evidence."
+  "note": "Fast-forward Windows production to main at or beyond ec4967f4edde2741a36a562ed53018f6db21645e containing PR #448. Restart only governed MILES components required by the deployment contract and preserve the supervised bridge. The change only extends the governed USAspending export-generation wait while preserving official-host validation, request timeout, ZIP validation, staging-only safety and all operational-write gates. Preserve production ORION, runtime/data/queues/history/secrets/provider state. No campaign activation, email sends, suppression override, approvals, DNS/B12 changes, destructive Git, production database reset or unrelated mutation. Publish fresh runtime evidence."
 }
