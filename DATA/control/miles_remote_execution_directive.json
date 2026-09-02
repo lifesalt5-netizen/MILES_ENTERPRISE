@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-008",
+  "id": "miles-google-oauth-init-missing-production-20260902-009",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Verify provider state after Ryan and Aden completed their fresh Google consent. If either remains missing and the exact intended Google identity is already authenticated, complete the normal exact-account OAuth flow. Do not create Workspace users or licenses, count aliases as capacity, send prospect email, mutate campaigns, change DNS, or use pathways2gc.com for cold outbound. Report exact connected and missing paid senders plus recurring cost status."
+  "note": "Create a fresh OAuth session for the remaining missing paid sender and report the authorization URL and current connected count."
 }
