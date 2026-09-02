@@ -1,7 +1,7 @@
 {
-  "id": "miles-zero-cost-oauth-missing-production-20260902-002",
+  "id": "miles-google-workspace-access-audit-20260902-001",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun after PR #468 production deploy. Use Instantly API key already in production .env; skip currently connected paid mailboxes and initialize official Google OAuth sessions only for the missing members of the fixed 13-paid-user allowlist. Return exact intended mailbox authorization URLs and expirations. No new Workspace licenses, aliases, passwords/tokens, campaign/lead/DNS mutation, prospect sends, or pathways2gc.com outbound."
+  "note": "Verify the live production host's current Google Workspace / Google account access and credential readiness before requiring Kevin to perform Instantly Google OAuth consent manually. Read-only only. Report whether production has usable Google Workspace credentials, an executable Google Workspace provider, and any existing authenticated browser/session path capable of completing user OAuth consent for the seven already-paid mailboxes. Do not expose secrets, passwords, tokens, cookies, or session material; do not create users/licenses, send email, mutate campaigns, DNS, or providers."
 }
