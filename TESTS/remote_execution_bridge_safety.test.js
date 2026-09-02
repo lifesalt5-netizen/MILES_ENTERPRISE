@@ -17,6 +17,7 @@ assert.deepStrictEqual(Object.keys(bridge.JOBS).sort(), [
   'INFRASTRUCTURE_HEALTH_AUDIT',
   'INSTANTLY_LIFECYCLE_PROOF_EXECUTE',
   'INSTANTLY_LIFECYCLE_PROOF_PLAN',
+  'INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING',
   'IONOS_INBOX_CLEANUP_EXECUTE',
   'IONOS_INBOX_CLEANUP_PLAN',
   'IONOS_SPAM_RESCUE_EXECUTE',
@@ -66,6 +67,7 @@ assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_PLAN, ['node', ['SCRIPTS/Ru
 assert.deepStrictEqual(bridge.JOBS.IONOS_SPAM_RESCUE_EXECUTE, ['node', ['SCRIPTS/RunIonosSpamRescue.js', '--execute']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_PLAN, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js']]);
 assert.deepStrictEqual(bridge.JOBS.INSTANTLY_LIFECYCLE_PROOF_EXECUTE, ['node', ['SCRIPTS/RunInstantlyLifecycleProof.js', '--execute']]);
+assert.deepStrictEqual(bridge.JOBS.INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING, ['node', ['SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js', '--authorization', 'AUTHORIZE_ZERO_COST_PAID_SENDER_GOOGLE_OAUTH']]);
 assert.strictEqual(bridge.CONTROL_BRANCH, 'miles-control');
 assert(bridge.DIRECTIVE_URL.includes('/miles-control/DATA/control/miles_remote_execution_directive.json'));
 assert.strictEqual(bridge.EVIDENCE_BRANCH, 'miles-runtime-evidence');
@@ -96,6 +98,7 @@ assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'IONOS_SPAM_RESCUE_EXECUTE'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_LIFECYCLE_PROOF_EXECUTE'}).ok, true);
+assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'SAM_PUBLIC_EMAIL_DISCOVERY'}).ok, true);
 assert.strictEqual(bridge.validateDirective({id:'x',enabled:true,job:'POWERSHELL'}).ok, false);
