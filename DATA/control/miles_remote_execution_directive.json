@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-init-missing-production-20260902-009",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-010",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Create a fresh OAuth session for the remaining missing paid sender and report the authorization URL and current connected count."
+  "note": "Verify the final paid sender after Aden completed Google consent. Complete exact-account normal OAuth only if needed. Report connected and missing counts."
 }
