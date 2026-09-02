@@ -79,12 +79,22 @@ function hash(file) {
     assert.strictEqual(result.historicalUniverse.provenLostDuringMigration, 0);
     assert.strictEqual(result.historicalUniverse.excludedWithoutValidReason, 0);
     assert.strictEqual(result.truthRules.absenceFromCurrentMasterDoesNotEqualLostDuringMigration, true);
+    assert.strictEqual(result.truthRules.freeEmailDomainsNeverEstablishCompanyIdentity, true);
     assert.strictEqual(result.truthRules.noHistoricalRowsSilentlyDropped, true);
     assert(fs.existsSync(result.outputs.report));
     assert(fs.existsSync(result.outputs.canonicalContactsCsv));
     assert(fs.existsSync(result.outputs.rowDispositionsCsv));
 
-    const helper = B12HistoricalUniverseReconstructionService.helpers || require('../SERVICES/revenue/B12HistoricalUniverseReconstructionService').helpers;
+    const helper = require('../SERVICES/revenue/B12HistoricalUniverseReconstructionService').helpers;
+    assert.strictEqual(helper.isBusinessDomain('gmail.com'), false);
+    assert.strictEqual(helper.isBusinessDomain('outlook.com'), false);
+    assert.strictEqual(helper.isBusinessDomain('acme.com'), true);
+    const gmailRecord = helper.rowToRecord({ email: 'owner@gmail.com', company: 'Unrelated LLC', state: 'FL' });
+    assert(!helper.companyIdentityKeys(gmailRecord).includes('DOMAIN:gmail.com'));
+    assert.strictEqual(
+      helper.dispositionFor(gmailRecord, { emails: new Set(), companyKeys: new Set(['DOMAIN:gmail.com']) }, null).disposition,
+      'UNKNOWN_INVESTIGATE'
+    );
     assert.strictEqual(helper.dispositionFor({ rawEmail:'orphan@unknown.com', email:'orphan@unknown.com', emailValid:true, uei:'', cage:'', domain:'unknown.com', companyNorm:'unknown', state:'FL' }, { emails:new Set(), companyKeys:new Set() }, null).disposition, 'UNKNOWN_INVESTIGATE');
 
     console.log('B12_HISTORICAL_UNIVERSE_RECONSTRUCTION_TEST=PASS');
