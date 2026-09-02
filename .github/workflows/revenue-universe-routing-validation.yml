@@ -12,6 +12,7 @@ on:
       - 'SERVICES/revenue/MasterContractorTaxonomyEngine.js'
       - 'SERVICES/revenue/AwardHistoryLocalInventoryService.js'
       - 'SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js'
+      - 'SERVICES/revenue/SixFiscalYearAwardUniverseNormalizerService.js'
       - 'DATA/registry/OutboundRevenueSegmentModel.json'
       - 'DATA/registry/AwardedContractorSegmentOverlayModel.json'
       - 'DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json'
@@ -21,6 +22,7 @@ on:
       - 'StartMilesRemoteExecutionBridge.js'
       - 'SCRIPTS/RunRevenueUniverseReconciliation.js'
       - 'SCRIPTS/RunFy2026AwardedUniverseCoverage.js'
+      - 'SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js'
       - 'TESTS/Test_RevenueUniverseMissionRouting.js'
       - 'TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js'
       - 'TESTS/Test_AwardedUniverseCoverageIdentity.js'
@@ -29,6 +31,7 @@ on:
       - 'TESTS/Test_MasterContractorTaxonomyEngine.js'
       - 'TESTS/Test_AwardHistoryLocalInventoryService.js'
       - 'TESTS/Test_SixFiscalYearAwardSourceValidationService.js'
+      - 'TESTS/Test_SixFiscalYearAwardUniverseNormalizerService.js'
       - 'TESTS/remote_execution_bridge_safety.test.js'
       - '.github/workflows/revenue-universe-routing-validation.yml'
   workflow_dispatch:
@@ -58,11 +61,13 @@ jobs:
           node --check SERVICES/revenue/MasterContractorTaxonomyEngine.js
           node --check SERVICES/revenue/AwardHistoryLocalInventoryService.js
           node --check SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js
+          node --check SERVICES/revenue/SixFiscalYearAwardUniverseNormalizerService.js
           node --check CORE/ExecutionActionContracts.js
           node --check CONNECTORS/MILES/connector.js
           node --check StartMilesRemoteExecutionBridge.js
           node --check SCRIPTS/RunRevenueUniverseReconciliation.js
           node --check SCRIPTS/RunFy2026AwardedUniverseCoverage.js
+          node --check SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js
           node --check TESTS/Test_RevenueUniverseMissionRouting.js
           node --check TESTS/Test_RevenueUniverseDuplicateIdentityAccounting.js
           node --check TESTS/Test_AwardedUniverseCoverageIdentity.js
@@ -71,6 +76,7 @@ jobs:
           node --check TESTS/Test_MasterContractorTaxonomyEngine.js
           node --check TESTS/Test_AwardHistoryLocalInventoryService.js
           node --check TESTS/Test_SixFiscalYearAwardSourceValidationService.js
+          node --check TESTS/Test_SixFiscalYearAwardUniverseNormalizerService.js
           node --check TESTS/remote_execution_bridge_safety.test.js
           node - <<'NODE'
           const fs = require('fs');
@@ -96,6 +102,8 @@ jobs:
         run: node TESTS/Test_AwardHistoryLocalInventoryService.js
       - name: Six-FY local award source validation regression
         run: node TESTS/Test_SixFiscalYearAwardSourceValidationService.js
+      - name: Six-FY awarded universe normalization regression
+        run: node TESTS/Test_SixFiscalYearAwardUniverseNormalizerService.js
       - name: Remote bridge allowlist regression
         run: node TESTS/remote_execution_bridge_safety.test.js
       - name: Static safety and architecture assertions
@@ -110,8 +118,10 @@ jobs:
           const taxonomyEngine = fs.readFileSync('SERVICES/revenue/MasterContractorTaxonomyEngine.js','utf8');
           const localHistory = fs.readFileSync('SERVICES/revenue/AwardHistoryLocalInventoryService.js','utf8');
           const sixFySources = fs.readFileSync('SERVICES/revenue/SixFiscalYearAwardSourceValidationService.js','utf8');
+          const sixFyNormalizer = fs.readFileSync('SERVICES/revenue/SixFiscalYearAwardUniverseNormalizerService.js','utf8');
           const runner = fs.readFileSync('SCRIPTS/RunRevenueUniverseReconciliation.js','utf8');
           const fyRunner = fs.readFileSync('SCRIPTS/RunFy2026AwardedUniverseCoverage.js','utf8');
+          const sixFyRunner = fs.readFileSync('SCRIPTS/RunSixFiscalYearAwardUniverseNormalization.js','utf8');
           const bridge = fs.readFileSync('StartMilesRemoteExecutionBridge.js','utf8');
           const taxonomyRegistry = JSON.parse(fs.readFileSync('DATA/registry/P2GCMasterContractorSegmentationTaxonomy.json','utf8'));
           const lookback = JSON.parse(fs.readFileSync('DATA/registry/AwardHistoryLookbackPolicy.json','utf8'));
@@ -161,6 +171,18 @@ jobs:
             'unknownIdentityMustRemainVisible: true','acquisitionTriggered: false'
           ]) if (!sixFySources.includes(token)) throw new Error('Missing six-FY source-validation contract: ' + token);
 
+          for (const token of [
+            'SIX_FY_SOURCE_GAPS_BLOCK_NORMALIZATION','SIX_FY_AWARDED_UNIVERSE_NORMALIZED',
+            'UNKNOWN_IDENTITY_KEY','SECONDARY_MATCH_TO_UEI','historicalAwardedUniverseCoveragePercent',
+            'uniqueFy21Fy26PrimeWinners','uniqueFy21Fy26SubcontractWinners','uniqueAppearingInBoth','dedupedAwardedUniverse',
+            'firstAwardFy','lastAwardFy','primeYears','subYears','trajectory(account)',
+            'currentMasterModified: false','productionOrionModified: false','campaignMutation: false','emailSent: false'
+          ]) if (!sixFyNormalizer.includes(token)) throw new Error('Missing six-FY normalization contract: ' + token);
+
+          for (const token of ['readyForSixFiscalYearNormalization','missingRequirements','MILES_SIX_FY_AWARDED_UNIVERSE_NORMALIZATION_FINAL']) {
+            if (!sixFyRunner.includes(token)) throw new Error('Six-FY runner missing governing output: ' + token);
+          }
+
           if (taxonomyRegistry.architecture !== 'MULTI_DIMENSIONAL_NON_MUTUALLY_EXCLUSIVE') throw new Error('Master taxonomy must remain multi-dimensional.');
           if (taxonomyRegistry.governingRules?.onePrimaryOutboundCampaignPerCompany !== true) throw new Error('One primary outbound campaign rule missing.');
           if (taxonomyRegistry.governingRules?.unknownMustRemainDistinctFromZero !== true) throw new Error('UNKNOWN/zero distinction missing.');
@@ -169,7 +191,7 @@ jobs:
           if (lookback.sourceReusePolicy?.acquireOnlyYearsMissingOrUnusableAfterInventory !== true) throw new Error('Missing-only acquisition rule missing.');
           if (JSON.stringify(lookback.fiscalYearScope?.includedFiscalYears) !== JSON.stringify([2021,2022,2023,2024,2025,2026])) throw new Error('Six-FY lookback scope incorrect.');
 
-          for (const text of [source, awarded, fyAwarded, canonical, taxonomyOverlay, taxonomyEngine, localHistory, sixFySources, runner, fyRunner]) {
+          for (const text of [source, awarded, fyAwarded, canonical, taxonomyOverlay, taxonomyEngine, localHistory, sixFySources, sixFyNormalizer, runner, fyRunner, sixFyRunner]) {
             if (text.includes('uploadLeads(') || text.includes('activateCampaign(') || text.includes('sendEmail(')) {
               throw new Error('Revenue universe reconciliation must not contain live-send/activation calls.');
             }
