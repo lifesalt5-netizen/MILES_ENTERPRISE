@@ -194,9 +194,13 @@ class B12HistoricalUniverseDiscoveryService {
       try { stats = fs.statSync(file); } catch (error) { errors.push({ file, error: String(error.message || error) }); return; }
       if (!stats.isFile()) return;
 
-      const key = process.platform === 'win32' ? path.resolve(file).toLowerCase() : path.resolve(file);
+      const resolvedFile = path.resolve(file);
+      const resolvedSourceRoot = path.resolve(sourceRoot);
+      const key = process.platform === 'win32' ? resolvedFile.toLowerCase() : resolvedFile;
       const registryItem = registryByPath.get(key) || null;
       const isCurrentMaster = currentMasterSet.has(key);
+      const relativeToSourceRoot = path.relative(resolvedSourceRoot, resolvedFile);
+      const b12PathEvidence = /b12/i.test(relativeToSourceRoot);
       const hints = pathHintScore(file);
       const header = headerEvidence(file, extension);
       const mtimeInPeriod = withinPeriod(stats.mtimeMs);
@@ -204,7 +208,7 @@ class B12HistoricalUniverseDiscoveryService {
       const nameDateEvidence = dateEvidenceFromName(file);
       const periodEvidence = mtimeInPeriod || birthtimeInPeriod || nameDateEvidence;
       const contactEvidence = header.score >= 2;
-      const relevant = Boolean(registryItem || (hints >= 1 && contactEvidence) || (periodEvidence && contactEvidence) || /b12/i.test(file));
+      const relevant = Boolean(registryItem || (hints >= 1 && contactEvidence) || (periodEvidence && contactEvidence) || b12PathEvidence);
       if (!relevant && !isCurrentMaster) return;
 
       let digest = null;
@@ -217,8 +221,8 @@ class B12HistoricalUniverseDiscoveryService {
       }
 
       const record = {
-        file: path.resolve(file),
-        sourceRoot: path.resolve(sourceRoot),
+        file: resolvedFile,
+        sourceRoot: resolvedSourceRoot,
         source,
         extension,
         bytes: stats.size,
@@ -227,6 +231,7 @@ class B12HistoricalUniverseDiscoveryService {
         mtimeInHistoricalWindow: mtimeInPeriod,
         createdInHistoricalWindow: birthtimeInPeriod,
         dateEvidenceInFileName: nameDateEvidence,
+        b12PathEvidence,
         pathHintScore: hints,
         contactHeaderEvidence: header.fields,
         contactHeaderScore: header.score,
@@ -243,7 +248,7 @@ class B12HistoricalUniverseDiscoveryService {
           ? 'REGISTERED_MARKETING_SOURCE'
           : isCurrentMaster
             ? 'CURRENT_MASTER_CONTROL'
-            : /b12/i.test(file)
+            : b12PathEvidence
               ? 'B12_PATH_OR_FILENAME'
               : periodEvidence && contactEvidence
                 ? 'HISTORICAL_WINDOW_PLUS_CONTACT_SCHEMA'
@@ -284,7 +289,7 @@ class B12HistoricalUniverseDiscoveryService {
     const files = [...found.values()].sort((a, b) => a.file.localeCompare(b.file));
     const historicalCandidates = files.filter(item => !item.currentMaster);
     const controls = files.filter(item => item.currentMaster);
-    const periodCandidates = historicalCandidates.filter(item => item.mtimeInHistoricalWindow || item.createdInHistoricalWindow || item.dateEvidenceInFileName || /b12/i.test(item.file));
+    const periodCandidates = historicalCandidates.filter(item => item.mtimeInHistoricalWindow || item.createdInHistoricalWindow || item.dateEvidenceInFileName || item.b12PathEvidence);
     const parseableCandidates = historicalCandidates.filter(item => item.parseableNow);
     const metadataOnlyCandidates = historicalCandidates.filter(item => item.metadataOnly);
     const duplicateFileHashes = new Map();
@@ -355,7 +360,7 @@ class B12HistoricalUniverseDiscoveryService {
     const csvPath = path.join(this.outputDir, 'latest_b12_historical_source_inventory.csv');
     const columns = [
       'file', 'sourceRoot', 'source', 'extension', 'bytes', 'modifiedAt', 'createdAt',
-      'mtimeInHistoricalWindow', 'createdInHistoricalWindow', 'dateEvidenceInFileName',
+      'mtimeInHistoricalWindow', 'createdInHistoricalWindow', 'dateEvidenceInFileName', 'b12PathEvidence',
       'pathHintScore', 'contactHeaderScore', 'contactHeaderEvidence', 'parseableNow', 'metadataOnly',
       'registryReferenced', 'registryName', 'registryCategory', 'registryReportedRows', 'currentMaster',
       'discoveryReason', 'sha256', 'hashStatus'
