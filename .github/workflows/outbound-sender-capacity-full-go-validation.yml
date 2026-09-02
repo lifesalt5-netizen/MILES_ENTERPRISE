@@ -1,0 +1,41 @@
+name: Outbound Sender Capacity Full-Go Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js'
+      - 'SCRIPTS/RunOutboundSenderCapacityFullGoGate.js'
+      - 'TESTS/outbound_sender_capacity_full_go_gate.test.js'
+      - '.github/workflows/outbound-sender-capacity-full-go-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Syntax
+        run: |
+          node --check SCRIPTS/AUDIT_OUTBOUND_SENDER_CAPACITY_V2.js
+          node --check SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          node --check TESTS/outbound_sender_capacity_full_go_gate.test.js
+      - name: Fail-closed parsing regression
+        run: node TESTS/outbound_sender_capacity_full_go_gate.test.js
+      - name: Static acceptance contract
+        run: |
+          grep -q "parsed.marker === 'YES'" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "parsed.target === 13" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "parsed.connected === 13" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "parsed.governedActive === 13" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "process.exitCode = green ? 0 : 2" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "newWorkspaceLicenses: 0" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
+          grep -q "aliasesCount: 0" SCRIPTS/RunOutboundSenderCapacityFullGoGate.js
