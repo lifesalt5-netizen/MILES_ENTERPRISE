@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-workspace-access-audit-20260902-001",
+  "id": "miles-google-oauth-browser-guarded-deploy-20260902-001",
   "enabled": true,
-  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Verify the live production host's current Google Workspace / Google account access and credential readiness before requiring Kevin to perform Instantly Google OAuth consent manually. Read-only only. Report whether production has usable Google Workspace credentials, an executable Google Workspace provider, and any existing authenticated browser/session path capable of completing user OAuth consent for the seven already-paid mailboxes. Do not expose secrets, passwords, tokens, cookies, or session material; do not create users/licenses, send email, mutate campaigns, DNS, or providers."
+  "note": "Deploy current main containing merged PR #469 guarded Miles Google OAuth browser capability. Governed supervised restart only. No arbitrary shell, no password entry, no MFA bypass, no cookie/token exposure, no Workspace user/license creation, no prospect sends, no campaign mutation, no DNS mutation."
 }
