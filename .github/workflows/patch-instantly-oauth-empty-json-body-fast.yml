@@ -1,0 +1,51 @@
+name: Patch Instantly OAuth Empty JSON Body Fast
+
+on:
+  push:
+    branches:
+      - fix/instantly-oauth-empty-json-body-20260902
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/instantly-oauth-empty-json-body-20260902
+          fetch-depth: 0
+      - name: Patch exact OAuth init calls and tests
+        shell: python
+        run: |
+          from pathlib import Path
+          old = "instantly.request('/oauth/google/init', { method: 'POST' })"
+          new = "instantly.request('/oauth/google/init', { method: 'POST', body: {} })"
+          for name in ['SCRIPTS/RunInstantlyGoogleOAuthZeroCostSender.js','SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js']:
+              p = Path(name)
+              text = p.read_text(encoding='utf-8')
+              if new not in text:
+                  if old not in text: raise SystemExit(f'NEEDLE_NOT_FOUND:{name}')
+                  text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8')
+          assertion = "assert(src.includes(\"instantly.request('/oauth/google/init', { method: 'POST', body: {} })\"));\nassert(!src.includes(\"instantly.request('/oauth/google/init', { method: 'POST' })\"));\n"
+          for name in ['TESTS/instantly_google_oauth_zero_cost_sender.test.js','TESTS/instantly_google_oauth_zero_cost_missing_batch.test.js']:
+              p = Path(name)
+              text = p.read_text(encoding='utf-8')
+              if 'body: {}' not in text:
+                  anchor = "assert(src.includes(\"instantly.request('/oauth/google/init'\"));\n"
+                  if anchor not in text: raise SystemExit(f'TEST_ANCHOR_NOT_FOUND:{name}')
+                  text = text.replace(anchor, anchor + assertion, 1)
+              p.write_text(text, encoding='utf-8')
+      - name: Syntax check and commit
+        run: |
+          node --check SCRIPTS/RunInstantlyGoogleOAuthZeroCostSender.js
+          node --check SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js
+          git config user.name "MILES GitHub Automation"
+          git config user.email "miles-github-automation@local.invalid"
+          git add SCRIPTS/RunInstantlyGoogleOAuthZeroCostSender.js SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js TESTS/instantly_google_oauth_zero_cost_sender.test.js TESTS/instantly_google_oauth_zero_cost_missing_batch.test.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Send explicit empty JSON body for Instantly OAuth init"
+          git push origin HEAD:fix/instantly-oauth-empty-json-body-20260902
