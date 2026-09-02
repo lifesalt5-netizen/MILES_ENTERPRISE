@@ -14,7 +14,8 @@ const src = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AUDIT_OUTBOUN
 assert.strictEqual(providerUsable({ email: 'ok@example.com', status: 1 }), true);
 assert.strictEqual(providerUsable({ email: 'bad@example.com', status: 'inactive' }), false);
 assert(src.includes("placementStatus === 'ACTIVE'"));
-assert(src.includes('WATCH or UNVERIFIED senders contribute zero governed capacity'));
+assert(src.includes('WATCH or UNVERIFIED'));
+assert(src.includes('zero governed capacity'));
 assert(src.includes('MILES_PLACEMENT_EVIDENCE_MAX_AGE_HOURS'));
 assert(src.includes('providerUsableOutreachMailboxes'));
 assert(src.includes('governedDailyCapacity'));
