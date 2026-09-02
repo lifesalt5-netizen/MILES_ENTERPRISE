@@ -5,7 +5,10 @@ const path = require('path');
 
 function clean(value) { return value == null ? '' : String(value).trim(); }
 function n(value) {
-  const parsed = Number(String(value == null ? '' : value).replace(/[$,]/g, '').trim());
+  if (value == null) return null;
+  const text = String(value).replace(/[$,]/g, '').trim();
+  if (!text) return null;
+  const parsed = Number(text);
   return Number.isFinite(parsed) ? parsed : null;
 }
 function salesBand(value) {
