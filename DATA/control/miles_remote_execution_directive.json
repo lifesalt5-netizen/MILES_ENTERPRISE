@@ -1,7 +1,7 @@
 {
-  "id": "miles-zero-cost-oauth-missing-production-20260902-001",
+  "id": "miles-federal-source-readiness-postfix-20260902-001",
   "enabled": true,
-  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Use the Instantly API key already present in production .env. Audit the hard 13-mailbox already-paid Workspace allowlist, skip accounts already connected to Instantly, and initialize official Google OAuth sessions only for missing paid independent users. Do not create Workspace users/licenses, count aliases, expose passwords/tokens, send prospects, mutate campaigns, or touch pathways2gc.com outbound. Return exact intended mailbox consent URLs and expirations."
+  "note": "Run current production federal-source readiness after the deterministic official SAM monthly Public V2 HEAD fallback was merged and deployed. Read-only only. Confirm SAM Entity Registration Public V2 and Contract Opportunities official endpoints are reachable/resolved; do not download bulk data, mutate ORION, expose API keys, scrape authenticated pages, send email, or change provider/DNS state."
 }
