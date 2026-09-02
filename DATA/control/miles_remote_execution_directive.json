@@ -1,7 +1,7 @@
 {
-  "id": "miles-closeout-current-main-deploy-20260902-001",
+  "id": "miles-zero-cost-oauth-missing-production-20260902-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main after merged B12 reconstruction, SAM readiness fallback, zero-cost sender OAuth batch, fail-closed 13-seat gate, and fresh placement final-acceptance changes. Restart only governed supervised services. No arbitrary shell, no DNS mutation, no prospect sends, no new Workspace licenses."
+  "note": "Use the Instantly API key already present in production .env. Audit the hard 13-mailbox already-paid Workspace allowlist, skip accounts already connected to Instantly, and initialize official Google OAuth sessions only for missing paid independent users. Do not create Workspace users/licenses, count aliases, expose passwords/tokens, send prospects, mutate campaigns, or touch pathways2gc.com outbound. Return exact intended mailbox consent URLs and expirations."
 }
