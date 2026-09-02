@@ -1,7 +1,7 @@
 {
-  "id": "miles-revenue-acceptance-current-senders-20260902-012",
+  "id": "miles-zero-cost-placement-deploy-20260902-013",
   "enabled": true,
-  "job": "REVENUE_ACCEPTANCE_SPRINT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the safe read-only revenue acceptance to refresh current sender capacity, account health, DNS, operational continuity, and existing placement evidence. Do not purchase anything, send prospects, mutate campaigns, change DNS, or publish B12."
+  "note": "Deploy current main with the zero-cost exact-sender placement runner and hard sender FULL-GO gate. Preserve current safety boundaries and do not add recurring cost."
 }
