@@ -1,7 +1,7 @@
 {
-  "id": "miles-zero-cost-sender-deploy-20260902-001",
+  "id": "miles-zero-cost-sender-revenue-acceptance-20260902-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "REVENUE_ACCEPTANCE_SPRINT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main including PR 458 zero-cost 13-seat sender-capacity full-go gate. No new Google Workspace licenses authorized. No arbitrary shell, DNS mutation, campaign activation, or prospect sends."
+  "note": "Run current production revenue acceptance after zero-cost 13-seat sender governance deploy. Read-only audits only: exact paid-seat Instantly connection gap, current placement/authentication, outbound continuity, reply/CRM/meeting readiness. No new Workspace licenses, no campaign activation, no prospect sends, no DNS changes."
 }
