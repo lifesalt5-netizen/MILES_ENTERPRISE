@@ -5,6 +5,7 @@ const DemoCommercialPreviewService = require("../SERVICES/demo/DemoCommercialPre
 const service = new DemoCommercialPreviewService({ opportunities:2, recompetes:2, primePartners:2, buyers:2, competitors:3, vehicles:2 });
 const model = {
   ok:true,
+  currentState:{activeContracts:2,activeContractsStatus:'CONFIRMED_CURRENT_PERFORMANCE_PERIOD_FROM_USASPENDING_DATES',activeContractsLabel:'Prime awards in current performance period'},
   revenue:{current:{federal:100000}},
   competitors:{records:[
     {company:"Prime A",federalRevenue:1000000,agencies:["VA"],confidence:"MODELED_CANDIDATE"},
@@ -27,6 +28,10 @@ assert.strictEqual(out.commercialPreview.primePartners.lockedCount,2);
 assert.strictEqual(out.commercialPreview.buyers.lockedCount,1);
 assert.strictEqual(out.commercialPreview.competitors.lockedCount,1);
 assert.strictEqual(out.commercialPreview.vehicles.lockedCount,1);
+assert.strictEqual(out.currentState.activeContracts,null,'client view must not relabel performance-period award count as active contracts');
+assert.strictEqual(out.currentState.activeContractsStatus,'NOT_DERIVED_FROM_AWARD_COUNT');
+assert.strictEqual(out.currentState.currentPerformancePrimeAwardCount,2);
+assert.strictEqual(out.currentState.currentPerformancePrimeAwardCountStatus,'CONFIRMED_FROM_USASPENDING_PERFORMANCE_DATES');
 
 const noFake = service.apply({ok:true,competitors:{records:[]},primePartners:{records:[]},buyerIntelligence:{records:[]},opportunities:{liveAndForecast:[{title:"Only"}],recompetes:[]},vehicles:{current:[]},revenue:{current:{federal:null}}});
 assert.strictEqual(noFake.commercialPreview.opportunities.lockedCount,0);

@@ -53,8 +53,21 @@ class DemoCommercialPreviewService {
       }));
   }
 
+  enforceClientTruthBoundary(model) {
+    if (!model?.currentState) return;
+    if (model.currentState.activeContractsStatus === 'CONFIRMED_CURRENT_PERFORMANCE_PERIOD_FROM_USASPENDING_DATES') {
+      model.currentState.currentPerformancePrimeAwardCount = model.currentState.activeContracts;
+      model.currentState.currentPerformancePrimeAwardCountStatus = 'CONFIRMED_FROM_USASPENDING_PERFORMANCE_DATES';
+      model.currentState.activeContracts = null;
+      model.currentState.activeContractsStatus = 'NOT_DERIVED_FROM_AWARD_COUNT';
+      model.currentState.activeContractsLabel = 'Active federal contracts';
+    }
+  }
+
   apply(model) {
     if (!model?.ok) return model;
+
+    this.enforceClientTruthBoundary(model);
 
     const primeRecords = this.derivePrimeCandidates(model);
     if (!arr(model?.primePartners?.records).length && primeRecords.length) {
@@ -69,6 +82,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts.",
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
       primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),

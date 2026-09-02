@@ -1,0 +1,53 @@
+name: Executive Blueprint Canonical Truth Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js'
+      - 'SERVICES/demo/CurrentGsaHolderTruthService.js'
+      - 'SERVICES/demo/CurrentPublicOpportunityMatchService.js'
+      - 'SERVICES/demo/public/index.html'
+      - 'SERVICES/demo/public/app.js'
+      - 'StartP2GCGrowthBlueprintDemo.js'
+      - 'TESTS/executive_blueprint_canonical_truth.test.js'
+      - '.github/workflows/executive-blueprint-canonical-truth-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Syntax checks
+        run: |
+          node --check SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
+          node --check SERVICES/demo/CurrentGsaHolderTruthService.js
+          node --check SERVICES/demo/CurrentPublicOpportunityMatchService.js
+          node --check SERVICES/demo/public/app.js
+          node --check StartP2GCGrowthBlueprintDemo.js
+          node --check TESTS/executive_blueprint_canonical_truth.test.js
+      - name: Canonical truth regressions
+        run: node TESTS/executive_blueprint_canonical_truth.test.js
+      - name: No fake-zero or unconditional first-award regressions
+        run: |
+          ! grep -q 'Number(value)||0' SERVICES/demo/public/app.js
+          grep -q 'MODELED_REVENUE_WITHHELD_PENDING_STRUCTURED_EVIDENCE' SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
+          grep -q 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY' SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
+          grep -q 'EVIDENCE_COMPLETION_PATHWAY' SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
+          grep -q 'GSA_ACTIVATION_PATHWAY' SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
+          grep -q 'Federal Award & Contract History' SERVICES/demo/public/index.html
+      - name: Shared-path contract
+        run: |
+          grep -q 'ExecutiveBlueprintCanonicalTruthService' StartP2GCGrowthBlueprintDemo.js
+          grep -q 'await canonicalTruth.hydrate' StartP2GCGrowthBlueprintDemo.js
+          grep -q 'CURRENT_GSA_MAS_HOLDER_CONFIRMED' SERVICES/demo/CurrentGsaHolderTruthService.js
+          grep -q 'SAM.gov Public Contract Opportunities' SERVICES/demo/CurrentPublicOpportunityMatchService.js
