@@ -1,7 +1,7 @@
 {
-  "id": "miles-google-oauth-browser-guarded-production-20260902-001",
+  "id": "miles-google-oauth-browser-guarded-production-20260902-002",
   "enabled": true,
   "job": "INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Generate fresh OAuth sessions for the currently missing members of the fixed 13 already-paid independent Workspace mailbox allowlist and let Miles use only already-authenticated Google identities in his persistent Chrome profile to complete Instantly OAuth. Require exact intended-email identity and Instantly client proof before consent. Stop and report any mailbox requiring login/password/MFA. Never type passwords, bypass MFA/security challenges, expose cookies/tokens, create Workspace users/licenses, touch pathways2gc.com outbound, send prospects, mutate campaigns, or change DNS."
+  "note": "Re-run the guarded Instantly Google OAuth browser flow after Chris was signed into the current Chrome session. Verify whether chris@pathwaysgsa.com is now visible as an authenticated Google identity in Miles' persistent automation profile. Complete only the normal OAuth consent if the exact intended email is already authenticated. Do not enter credentials, create users or licenses, send email, change campaigns, or change DNS. Report the status of every remaining mailbox."
 }
