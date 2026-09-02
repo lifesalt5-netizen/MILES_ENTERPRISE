@@ -1,7 +1,7 @@
 {
-  "id": "miles-ionos-final-cleanup-20260902-001",
+  "id": "miles-full-go-production-truth-20260902-001",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Execute the existing governed IONOS inbox cleanup once to clear the remaining canonical routable messages after the fresh COO generation cutover. Use only the existing UID MOVE governance and post-verification. No deletes, EXPUNGE, SMTP, DNS, Instantly, or B12 mutation."
+  "note": "Run the existing governed production-truth reconciliation to identify current production blockers to P2GC/MILES ALL_SYSTEMS_GO after today's fixes. Audit/reconcile only; do not send prospect mail, mutate DNS, publish B12, or perform destructive Git recovery."
 }
