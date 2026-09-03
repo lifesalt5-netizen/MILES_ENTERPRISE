@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const csv = require('csv-parser');
+const SamOpportunityNaicsIndexService = require('./SamOpportunityNaicsIndexService');
 
 function clean(v) { return String(v == null ? '' : v).trim(); }
 function norm(v) { return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
@@ -73,9 +73,11 @@ class CurrentPublicOpportunityMatchService {
     this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, '..', '..'));
     this.maxAgeHours = Math.max(1, Number(options.maxAgeHours || process.env.MILES_OPPORTUNITY_EVIDENCE_MAX_AGE_HOURS || 48));
     this.now = options.now ? new Date(options.now) : null;
+    this.index = options.indexService || new SamOpportunityNaicsIndexService({ rootDir:this.rootDir });
   }
 
   async match(model = {}, options = {}) {
+    const started = Date.now();
     const now = options.now ? new Date(options.now) : (this.now || new Date());
     const asOf = now.toISOString().slice(0, 10);
     const source = sourceFileFromReport(this.rootDir);
@@ -118,65 +120,58 @@ class CurrentPublicOpportunityMatchService {
     }
 
     const limit = Math.max(1, Math.min(Number(options.limit || 30), 100));
+    const indexed = await this.index.rowsForNaics(source.file, [...naicsSet]);
     const candidates = [];
-    let scanned = 0;
     let naicsMatched = 0;
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(source.file)
-        .pipe(csv({ mapHeaders: ({ header: h }) => header(h) }))
-        .on('data', row => {
-          scanned += 1;
-          const naics = clean(first(row, ['naicsCode','naics','primaryNaics'])).replace(/\D/g,'');
-          if (!naicsSet.has(naics)) return;
-          naicsMatched += 1;
-          const active = boolish(first(row,['active','isActive']));
-          if (active === false) return;
-          const dueDate = dateOnly(first(row,['responseDeadLine','responseDeadline','dueDate','closeDate']));
-          const archiveDate = dateOnly(first(row,['archiveDate']));
-          if (dueDate && dueDate < asOf) return;
-          if (!dueDate && archiveDate && archiveDate < asOf) return;
-          const stage = stageOf(row);
-          const title = clean(first(row,['title','opportunityTitle','solicitationTitle']));
-          if (!title) return;
-          const noticeId = first(row,['noticeId','id']);
-          const setAside = first(row,['setAside','setAsideDescription','typeOfSetAsideDescription']);
-          const setAsideFit = compatibleSetAside(setAside, model?.profile || {});
-          const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source'];
-          if (setAsideFit.reason) reasons.push(setAsideFit.reason);
-          let fitScore = 70 + setAsideFit.score;
-          if (dueDate) fitScore += 5;
-          if (['RFI','SOURCES_SOUGHT','PRESOLICITATION','OPEN'].includes(stage)) fitScore += 5;
-          fitScore = Math.max(0, Math.min(100, fitScore));
-          candidates.push({
-            id:noticeId || first(row,['solicitationNumber','solicitation']) || null,
-            noticeId:noticeId || null,
-            solicitationNumber:first(row,['solicitationNumber','solicitation','sol']) || null,
-            title,
-            market:'FEDERAL',
-            stage,
-            status:active === true ? 'ACTIVE' : 'CURRENT_SOURCE_RECORD',
-            agency:first(row,['departmentIndAgency','department','agency']) || null,
-            office:first(row,['office','subTier','subtier']) || null,
-            naics,
-            psc:first(row,['classificationCode','psc','pscCode']) || null,
-            setAside:setAside || null,
-            postedDate:dateOnly(first(row,['postedDate','publishDate'])),
-            dueDate,
-            estimatedValue:number(first(row,['awardAmount','awardValue','estimatedValue'])),
-            source:'SAM.gov Public Contract Opportunities',
-            sourceUrl:sourceUrl(row, noticeId),
-            sourceAccess:'PUBLIC',
-            qualification:reasons.join('; '),
-            fitReasons:reasons,
-            fitScore,
-            confidence:'CURRENT_PUBLIC_SOURCE_NAICS_ALIGNED_CANDIDATE',
-            freshnessAt:source.generatedAt,
-            live:true
-          });
-        })
-        .on('error', reject)
-        .on('end', resolve);
-    });
+    for (const row of indexed.rows) {
+      const naics = clean(first(row, ['naicsCode','naics','primaryNaics'])).replace(/\D/g,'');
+      if (!naicsSet.has(naics)) continue;
+      naicsMatched += 1;
+      const active = boolish(first(row,['active','isActive']));
+      if (active === false) continue;
+      const dueDate = dateOnly(first(row,['responseDeadLine','responseDeadline','dueDate','closeDate']));
+      const archiveDate = dateOnly(first(row,['archiveDate']));
+      if (dueDate && dueDate < asOf) continue;
+      if (!dueDate && archiveDate && archiveDate < asOf) continue;
+      const stage = stageOf(row);
+      const title = clean(first(row,['title','opportunityTitle','solicitationTitle']));
+      if (!title) continue;
+      const noticeId = first(row,['noticeId','id']);
+      const setAside = first(row,['setAside','setAsideDescription','typeOfSetAsideDescription']);
+      const setAsideFit = compatibleSetAside(setAside, model?.profile || {});
+      const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source'];
+      if (setAsideFit.reason) reasons.push(setAsideFit.reason);
+      let fitScore = 70 + setAsideFit.score;
+      if (dueDate) fitScore += 5;
+      if (['RFI','SOURCES_SOUGHT','PRESOLICITATION','OPEN'].includes(stage)) fitScore += 5;
+      fitScore = Math.max(0, Math.min(100, fitScore));
+      candidates.push({
+        id:noticeId || first(row,['solicitationNumber','solicitation']) || null,
+        noticeId:noticeId || null,
+        solicitationNumber:first(row,['solicitationNumber','solicitation','sol']) || null,
+        title,
+        market:'FEDERAL',
+        stage,
+        status:active === true ? 'ACTIVE' : 'CURRENT_SOURCE_RECORD',
+        agency:first(row,['departmentIndAgency','department','agency']) || null,
+        office:first(row,['office','subTier','subtier']) || null,
+        naics,
+        psc:first(row,['classificationCode','psc','pscCode']) || null,
+        setAside:setAside || null,
+        postedDate:dateOnly(first(row,['postedDate','publishDate'])),
+        dueDate,
+        estimatedValue:number(first(row,['awardAmount','awardValue','estimatedValue'])),
+        source:'SAM.gov Public Contract Opportunities',
+        sourceUrl:sourceUrl(row, noticeId),
+        sourceAccess:'PUBLIC',
+        qualification:reasons.join('; '),
+        fitReasons:reasons,
+        fitScore,
+        confidence:'CURRENT_PUBLIC_SOURCE_NAICS_ALIGNED_CANDIDATE',
+        freshnessAt:source.generatedAt,
+        live:true
+      });
+    }
 
     const deduped = new Map();
     for (const row of candidates) {
@@ -193,7 +188,18 @@ class CurrentPublicOpportunityMatchService {
       status:records.length ? 'CURRENT_PUBLIC_OPPORTUNITY_CANDIDATES_AVAILABLE' : 'NO_CURRENT_PUBLIC_NAICS_MATCHES_FOUND',
       generatedAt:new Date().toISOString(),
       source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', reportPath:source.reportPath, file:source.file, sourceUrl:source.sourceUrl, generatedAt:source.generatedAt, fresh:true, ageHours:age, maxAgeHours:this.maxAgeHours },
-      match:{ asOfDate:asOf, prospectNaics:[...naicsSet], rowsScanned:scanned, exactNaicsRows:naicsMatched, candidatesBeforeDedupe:candidates.length, returned:records.length, rule:'Exact prospect NAICS plus freshness, open-date and access checks. This is candidate matching, not automatic bid qualification.' },
+      match:{
+        asOfDate:asOf,
+        prospectNaics:[...naicsSet],
+        rowsScanned:indexed.rows.length,
+        exactNaicsRows:naicsMatched,
+        candidatesBeforeDedupe:candidates.length,
+        returned:records.length,
+        lookupMs:indexed.lookupMs,
+        totalMatchMs:Date.now()-started,
+        indexKind:indexed.cacheKind,
+        rule:'Exact prospect NAICS plus freshness, open-date and access checks. This is candidate matching, not automatic bid qualification.'
+      },
       records,
       blockers:[],
       safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false, restrictedPortalAccess:false }
