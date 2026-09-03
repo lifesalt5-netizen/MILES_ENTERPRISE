@@ -2,27 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-
-function clean(value) { return String(value == null ? '' : value).trim(); }
-function splitCamel(value) { return clean(value).replace(/([a-z0-9])([A-Z])/g, '$1 $2'); }
-function normalize(value) { return splitCamel(value).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
-function canonical(value) {
-  const suffixes = new Set(['LLC','INC','INCORPORATED','CORP','CORPORATION','COMPANY','CO','LTD','LIMITED','LP','LLP','PLLC']);
-  const tokens = normalize(value).split(' ').filter(Boolean);
-  let changed = true;
-  while (tokens.length && changed) {
-    changed = false;
-    if (suffixes.has(tokens[tokens.length - 1])) { tokens.pop(); changed = true; continue; }
-    for (let width = Math.min(4, tokens.length); width >= 2; width -= 1) {
-      const tail = tokens.slice(-width);
-      if (tail.every(token => token.length === 1) && suffixes.has(tail.join(''))) {
-        tokens.splice(tokens.length - width, width); changed = true; break;
-      }
-    }
-  }
-  return tokens.join(' ');
-}
-function canonicalCompact(value) { return canonical(value).replace(/\s+/g, ''); }
+const identity = require('./CompanyIdentityCanonicalizer');
+const { clean, canonicalCompact } = identity;
 
 class HistoricalRecipientNameIndexService {
   constructor(options = {}) {
@@ -45,7 +26,7 @@ class HistoricalRecipientNameIndexService {
   readIndex(source) {
     try {
       const parsed = JSON.parse(fs.readFileSync(this.indexPath, 'utf8').replace(/^\uFEFF/, ''));
-      if (parsed?.version !== 1) return null;
+      if (parsed?.version !== 2) return null;
       if (path.resolve(parsed.database || '') !== path.resolve(source.database || '')) return null;
       if (Number(parsed.databaseMtimeMs || 0) !== Number(source.databaseMtimeMs || 0)) return null;
       if (Number(parsed.databaseSize || 0) !== Number(source.databaseSize || 0)) return null;
@@ -80,7 +61,8 @@ class HistoricalRecipientNameIndexService {
         });
       }
       const result = {
-        version:1,
+        version:2,
+        normalizationPolicy:'COMPANY_IDENTITY_CANONICALIZER_V1',
         generatedAt:new Date().toISOString(),
         database:source.database,
         databaseMtimeMs:source.databaseMtimeMs,
@@ -100,7 +82,7 @@ class HistoricalRecipientNameIndexService {
   ensureIndex() {
     const source = this.sourceStatus();
     if (!source.usable) return { ok:false, status:source.reason, source };
-    if (this.memory && path.resolve(this.memory.database || '') === path.resolve(source.database) && Number(this.memory.databaseMtimeMs) === Number(source.databaseMtimeMs) && Number(this.memory.databaseSize) === Number(source.databaseSize)) return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_MEMORY', index:this.memory, source };
+    if (this.memory && this.memory.version === 2 && path.resolve(this.memory.database || '') === path.resolve(source.database) && Number(this.memory.databaseMtimeMs) === Number(source.databaseMtimeMs) && Number(this.memory.databaseSize) === Number(source.databaseSize)) return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_MEMORY', index:this.memory, source };
     const existing = this.readIndex(source);
     if (existing) { this.memory = existing; return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_CURRENT', index:existing, source }; }
     const built = this.buildIndex(source);
@@ -124,4 +106,4 @@ class HistoricalRecipientNameIndexService {
 }
 
 module.exports = HistoricalRecipientNameIndexService;
-module.exports.helpers = { clean, splitCamel, normalize, canonical, canonicalCompact };
+module.exports.helpers = identity;
