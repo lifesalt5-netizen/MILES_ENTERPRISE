@@ -20,23 +20,32 @@ function windowsPortOwner(port){
   const ps=`$c=Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if($c){$p=Get-CimInstance Win32_Process -Filter \"ProcessId=$($c.OwningProcess)\" -ErrorAction SilentlyContinue; [pscustomobject]@{port=${port};pid=$c.OwningProcess;process=$p.Name;executablePath=$p.ExecutablePath;commandLine=$p.CommandLine} | ConvertTo-Json -Compress}`;
   const r=run('powershell.exe',['-NoProfile','-NonInteractive','-Command',ps],15000);return{...r,json:parseJson(r.stdout)};
 }
+function windowsRunPyCandidates(){
+  if(process.platform!=='win32')return{ok:false,status:'WINDOWS_ONLY',paths:[]};
+  const base=path.dirname(ROOT).replace(/'/g,"''");
+  const ps=`Get-ChildItem -LiteralPath '${base}' -Filter run.py -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 25 -ExpandProperty FullName | ConvertTo-Json -Compress`;
+  const r=run('powershell.exe',['-NoProfile','-NonInteractive','-Command',ps],30000);
+  const parsed=parseJson(r.stdout);const paths=Array.isArray(parsed)?parsed:(typeof parsed==='string'?[parsed]:[]);
+  return{...r,paths};
+}
 function safeToken(v,max=120){return String(v||'UNKNOWN').replace(/[\r\n|]/g,' ').replace(/\s+/g,' ').slice(0,max);}
 function scriptTag(commandLine){const text=String(commandLine||'');const matches=[...text.matchAll(/(?:^|[\s"'])([^\s"']+\.py)(?=$|[\s"'])/ig)];const file=matches.length?matches[matches.length-1][1]:'';return String(file?path.basename(file):'UNKNOWN_SCRIPT').replace(/[^A-Za-z0-9_.-]/g,'_').toUpperCase();}
+function pathTag(v){return safeToken(v,180).replace(/\\/g,'~').replace(/\s/g,'_');}
 
 async function main(){
   const publicBase=String(process.env.P2GC_PUBLIC_REVIEW_BASE_URL||process.env.P2GC_REVIEW_PUBLIC_BASE_URL||'').trim();
   const tailscaleWhere=where('tailscale');const tailscaleExeWhere=process.platform==='win32'?where('tailscale.exe'):tailscaleWhere;const cli=tailscaleWhere.ok?'tailscale':tailscaleExeWhere.ok?'tailscale.exe':null;
   const status=cli?run(cli,['status','--json'],20000):{ok:false,status:'TAILSCALE_NOT_FOUND'};const serve=cli?run(cli,['serve','status','--json'],20000):{ok:false,status:'TAILSCALE_NOT_FOUND'};const funnel=cli?run(cli,['funnel','status','--json'],20000):{ok:false,status:'TAILSCALE_NOT_FOUND'};
   const backend=await request(PORT,'/review/P2GC-FGR-INGRESS-PROBE');const backendAdmin=await request(PORT,'/api/admin/review/health');
-  const gateway={port:FUNNEL_GATEWAY_PORT,owner:windowsPortOwner(FUNNEL_GATEWAY_PORT),root:await request(FUNNEL_GATEWAY_PORT,'/'),health:await request(FUNNEL_GATEWAY_PORT,'/api/health'),reviewProbe:await request(FUNNEL_GATEWAY_PORT,'/review/P2GC-FGR-INGRESS-PROBE'),reviewHealth:await request(FUNNEL_GATEWAY_PORT,'/api/review/health'),adminProbe:await request(FUNNEL_GATEWAY_PORT,'/api/admin/review/health')};
+  const gateway={port:FUNNEL_GATEWAY_PORT,owner:windowsPortOwner(FUNNEL_GATEWAY_PORT),runPyCandidates:windowsRunPyCandidates(),root:await request(FUNNEL_GATEWAY_PORT,'/'),health:await request(FUNNEL_GATEWAY_PORT,'/api/health'),reviewProbe:await request(FUNNEL_GATEWAY_PORT,'/review/P2GC-FGR-INGRESS-PROBE'),reviewHealth:await request(FUNNEL_GATEWAY_PORT,'/api/review/health'),adminProbe:await request(FUNNEL_GATEWAY_PORT,'/api/admin/review/health')};
   const statusJson=parseJson(status.stdout);const serveJson=parseJson(serve.stdout);const funnelJson=parseJson(funnel.stdout);const publicHttpsConfigured=/^https:\/\//i.test(publicBase);const funnelText=`${funnel.stdout||''} ${funnel.stderr||''}`;const serveText=`${serve.stdout||''} ${serve.stderr||''}`;const funnelActive=funnel.ok&&(/https:\/\//i.test(funnelText)||Boolean(funnelJson&&Object.keys(funnelJson).length));const serveActive=serve.ok&&(/https:\/\//i.test(serveText)||Boolean(serveJson&&Object.keys(serveJson).length));
   const gatewayAlreadyRoutesReview=gateway.reviewProbe.statusCode===200&&gateway.reviewProbe.reviewMarker===true;const adminNotExposed=gateway.adminProbe.statusCode===403||gateway.adminProbe.statusCode===404||gateway.adminProbe.ok===false;const localAdminReady=backendAdmin.statusCode===200&&backendAdmin.json?.status==='P2GC_REVIEW_ADMIN_PRIVATE_READY'&&backendAdmin.json?.loopbackOnly===true;const ownerName=String(gateway.owner?.json?.process||'UNKNOWN').replace(/[^A-Za-z0-9_.-]/g,'_').toUpperCase();
-  const commandLine=safeToken(gateway.owner?.json?.commandLine,220);const gatewayScript=scriptTag(gateway.owner?.json?.commandLine);
+  const commandLine=safeToken(gateway.owner?.json?.commandLine,220);const gatewayScript=scriptTag(gateway.owner?.json?.commandLine);const candidates=gateway.runPyCandidates?.paths||[];const candidateTag=candidates.length===1?pathTag(candidates[0]):`CANDIDATES_${candidates.length}`;
   let conclusion='NO_PUBLIC_INGRESS_PROVEN';
   if(publicHttpsConfigured) conclusion='PUBLIC_HTTPS_BASE_CONFIGURED';
-  else if(gatewayAlreadyRoutesReview&&funnelActive) conclusion=`FUNNEL_${ownerName}_${gatewayScript}_ROUTES_REVIEW_ADMIN_${adminNotExposed?'BLOCKED':'EXPOSED'}`;
-  else if(funnelActive) conclusion=`FUNNEL_${ownerName}_${gatewayScript}_REVIEW_NOT_ROUTED_ADMIN_${adminNotExposed?'BLOCKED':'EXPOSED'}_LOCAL_ADMIN_${localAdminReady?'READY':'NOT_READY'}`;
-  else if(serveActive) conclusion=`TAILSCALE_SERVE_PRESENT_PRIVATE_ONLY_LOCAL_ADMIN_${localAdminReady?'READY':'NOT_READY'}`;
+  else if(gatewayAlreadyRoutesReview&&funnelActive) conclusion=`FUNNEL_${ownerName}_${gatewayScript}_ROUTES_REVIEW_ADMIN_${adminNotExposed?'BLOCKED':'EXPOSED'}_${candidateTag}`;
+  else if(funnelActive) conclusion=`FUNNEL_${ownerName}_${gatewayScript}_REVIEW_NOT_ROUTED_ADMIN_${adminNotExposed?'BLOCKED':'EXPOSED'}_LOCAL_ADMIN_${localAdminReady?'READY':'NOT_READY'}_${candidateTag}`;
+  else if(serveActive) conclusion=`TAILSCALE_SERVE_PRESENT_PRIVATE_ONLY_LOCAL_ADMIN_${localAdminReady?'READY':'NOT_READY'}_${candidateTag}`;
   const result={ok:true,service:'P2GC_REVIEW_PUBLIC_INGRESS_AUDIT',observedAt:new Date().toISOString(),publicBaseUrl:{configured:Boolean(publicBase),https:publicHttpsConfigured,value:publicBase||null},backend,backendAdmin:{...backendAdmin,privateReady:localAdminReady},gateway:{...gateway,alreadyRoutesReview:gatewayAlreadyRoutesReview,adminNotExposed,ownerName,gatewayScript,commandLineCompact:commandLine},tailscale:{cliAvailable:Boolean(cli),path:tailscaleWhere.stdout||tailscaleExeWhere.stdout||null,status:{ok:status.ok,json:statusJson,stdout:statusJson?null:status.stdout,stderr:status.stderr},serve:{ok:serve.ok,active:serveActive,json:serveJson,stdout:serveJson?null:serve.stdout,stderr:serve.stderr},funnel:{ok:funnel.ok,active:funnelActive,json:funnelJson,stdout:funnelJson?null:funnel.stdout,stderr:funnel.stderr}},conclusion,safety:{readOnly:true,networkChanged:false,dnsChanged:false,funnelChanged:false,serveChanged:false,publicExposureCreated:false}};
   fs.mkdirSync(path.dirname(OUT),{recursive:true});fs.writeFileSync(OUT,JSON.stringify(result,null,2),'utf8');console.log(JSON.stringify(result,null,2));
 }
