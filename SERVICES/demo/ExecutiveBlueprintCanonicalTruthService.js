@@ -360,18 +360,21 @@ class ExecutiveBlueprintCanonicalTruthService {
     };
     const critical = ['identity','sam','awardHistory','gsaCurrent','currentPublicOpportunities'];
     const blockers = critical.filter(k=>coverage[k]!==true).map(k=>`CANONICAL_SOURCE_COVERAGE_${k.toUpperCase()}_NOT_GREEN`);
+    const fullyReconciled = conflicts.length===0 && blockers.length===0;
+    const clientSafe = conflicts.length===0;
     model.truthIntegrity = {
       ...existing,
-      status:conflicts.length || blockers.length ? 'CONFLICTED_OR_COVERAGE_REVIEW_REQUIRED' : 'CANONICAL_CURRENT_TRUTH_RECONCILED',
-      clientSafe:conflicts.length===0 && blockers.length===0,
+      status:conflicts.length ? 'TRUTH_CONFLICT_REVIEW_REQUIRED' : (blockers.length ? 'CANONICAL_COVERAGE_GAPS_EXPLICIT' : 'CANONICAL_CURRENT_TRUTH_RECONCILED'),
+      clientSafe,
+      fullyReconciled,
       conflicts,
       blockers,
       sourceCoverage:coverage,
       warnings:uniq([...(existing.warnings||[]), ...list(gsa?.limitations), ...list(opportunity?.blockers), ...(aggregate?.ok===true?[]:[aggregate?.status].filter(Boolean))]),
-      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER']),
+      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER','EXPLICIT_COVERAGE_GAP_IS_CLIENT_SAFE_WHEN_NO_CONFLICT_OR_FABRICATION']),
       reconciledAt:new Date().toISOString()
     };
-    model.status=model.truthIntegrity.clientSafe?'DEMO_READY':'DEMO_REVIEW_REQUIRED';
+    model.status=fullyReconciled?'DEMO_READY':(clientSafe?'DEMO_READY_WITH_EXPLICIT_COVERAGE_GAPS':'DEMO_REVIEW_REQUIRED');
   }
 
   async hydrate(model = {}, options = {}) {
@@ -405,7 +408,7 @@ class ExecutiveBlueprintCanonicalTruthService {
       currentGsa:{ status:gsa?.status||null, holder:gsa?.holder??null, source:gsa?.source||null },
       currentOpportunities:{ status:opportunity?.status||null, source:opportunity?.source||null, returned:list(opportunity?.records).length },
       federalObligations:{ status:aggregate?.status||null, source:aggregate?.source||null },
-      rule:'Every material fact is hydrated from the best current authoritative evidence available. Missing source coverage fails closed to REVIEW_REQUIRED rather than fabricating zero/none.'
+      rule:'Every material fact is hydrated from the best current authoritative evidence available. Missing source coverage remains explicit UNKNOWN/unavailable; conflicts or fabrication fail closed to review.'
     };
     return out;
   }
