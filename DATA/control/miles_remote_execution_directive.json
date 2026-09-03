@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-client-truth-boundary-redeploy-20260903-011",
+  "id": "miles-p2gc-full-demo-fix-redeploy-20260903-012",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main including restricted-set-aside eligibility guard and demo client truth-boundary regression test. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
+  "note": "Deploy latest main including client truth-boundary sanitation, restricted-set-aside eligibility guard, regression coverage, and source-fingerprint-based historical recipient index reuse. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
 }
