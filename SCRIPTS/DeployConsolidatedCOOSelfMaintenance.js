@@ -9,7 +9,8 @@ const ROOT = path.resolve(__dirname, '..');
 const REQUIRED_PM2_APPS = [
   'miles-worker',
   'miles-autonomous-coo',
-  'miles-command-center'
+  'miles-command-center',
+  'p2gc-growth-demo'
 ];
 const REMOTE_BRIDGE_SUPERVISED = ['1', 'true', 'yes', 'y', 'on']
   .includes(String(process.env.MILES_BRIDGE_SUPERVISED || '').trim().toLowerCase());
@@ -59,6 +60,29 @@ function verifySourceMarkers() {
       if (!text.includes(marker)) fail(`Required consolidated marker missing from ${rel}: ${marker}`);
     }
   }
+}
+
+function latestModifiedMs(candidate) {
+  if (!fs.existsSync(candidate)) return 0;
+  const stat = fs.statSync(candidate);
+  if (stat.isFile()) return stat.mtimeMs;
+  if (!stat.isDirectory()) return 0;
+  let latest = stat.mtimeMs;
+  for (const entry of fs.readdirSync(candidate, { withFileTypes:true })) {
+    const child = path.join(candidate, entry.name);
+    if (entry.isDirectory()) latest = Math.max(latest, latestModifiedMs(child));
+    else if (entry.isFile() && /\.(js|json|html|css)$/i.test(entry.name)) latest = Math.max(latest, fs.statSync(child).mtimeMs);
+  }
+  return latest;
+}
+
+function latestP2gcSourceMs() {
+  return Math.max(
+    latestModifiedMs(path.join(ROOT, 'StartP2GCGrowthBlueprintDemo.js')),
+    latestModifiedMs(path.join(ROOT, 'SERVICES', 'demo')),
+    latestModifiedMs(path.join(ROOT, 'SERVICES', 'teaming', 'P2GCPrimeSubTeamingService.js')),
+    latestModifiedMs(path.join(ROOT, 'SERVICES', 'proposal', 'P2GCProposalCommandService.js'))
+  );
 }
 
 function powershellExe() {
@@ -225,10 +249,11 @@ async function main() {
   try { list = pm2List(); }
   catch (error) { fail('Could not read PM2 state before maintenance.', error.message); }
   const byName = verifyRuntimeOwners(list, beforePid);
+  const p2gc = byName.get('p2gc-growth-demo');
+  const p2gcStartedAt = Number(p2gc?.pm2_env?.pm_uptime || 0);
+  const p2gcSourceMs = latestP2gcSourceMs();
+  const restartP2gc = Boolean(p2gc && p2gcSourceMs > p2gcStartedAt);
 
-  // Run MILES' bounded self-maintenance directly from the newly deployed source.
-  // It may cancel only proven stale false approvals or approvals whose source is terminal.
-  // It never grants approvals, resumes tasks, or deletes queue records.
   let maintenance;
   try {
     const selfMaintenance = require('../SERVICES/SelfMaintenanceService');
@@ -257,16 +282,12 @@ async function main() {
     fail('Self-maintenance reported an unsafe runtime mutation.');
   }
 
-  // Reload worker + Command Center immediately. When this helper is launched by
-  // the supervised remote bridge, restarting miles-autonomous-coo here would
-  // kill the bridge before it can persist completion/evidence and the same
-  // directive would be picked up again. In that mode, schedule the autonomous
-  // COO restart only after this helper exits and the bridge has recorded result.
   restartKnownApp(byName.get('miles-worker'));
   if (!REMOTE_BRIDGE_SUPERVISED) {
     restartKnownApp(byName.get('miles-autonomous-coo'));
   }
   restartKnownApp(byName.get('miles-command-center'));
+  if (restartP2gc) restartKnownApp(p2gc);
 
   const dashboard = await waitForDashboard();
   const afterPid = listenerPid(8787);
@@ -284,6 +305,9 @@ async function main() {
   console.log(`PORT_8787_PID_AFTER=${afterPid || 'UNKNOWN'}`);
   console.log(`REMOTE_BRIDGE_SUPERVISED=${REMOTE_BRIDGE_SUPERVISED}`);
   console.log(`AUTONOMOUS_COO_RESTART_MODE=${autonomousRestart.mode}`);
+  console.log(`P2GC_SOURCE_MODIFIED_AT_MS=${p2gcSourceMs}`);
+  console.log(`P2GC_PROCESS_STARTED_AT_MS=${p2gcStartedAt}`);
+  console.log(`P2GC_RESTART_REQUIRED=${restartP2gc}`);
   console.log('APPROVALS_GRANTED_BY_MAINTENANCE=0');
   console.log('TASKS_RESUMED_BY_MAINTENANCE=0');
   console.log('TASKS_DELETED_BY_MAINTENANCE=0');
