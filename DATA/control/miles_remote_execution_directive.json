@@ -1,7 +1,7 @@
 {
-  "id": "miles-orion-fast-post-refresh-validation-deploy-20260902-021",
+  "id": "miles-p2gc-delune-latency-diagnostic-20260903-001",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main merge 7190d5004ecf64965eea56b2b3435c9c237db4d3 containing the fast evidence-aware ORION post-refresh validator. Preserve read-only sidecar validation and fail-closed evidence rules. No campaign, DNS, billing, credential, or customer-data mutation."
+  "note": "Run the current main federal source readiness audit with the embedded read-only P2GC DeLune latency diagnostic. Measure ORION base resolution, SAM fallback, historical fallback, current SAM by UEI, USAspending award history, GSA current-holder truth, SAM public opportunity matching, current obligation aggregate, and full canonical hydrate. No campaign, DNS, billing, credential, customer-data, production-database, or external write mutations. Publish runtime evidence back to the miles-runtime-evidence branch."
 }
