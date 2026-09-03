@@ -6,8 +6,10 @@ on:
   pull_request:
     paths:
       - 'SCRIPTS/AuditOrionSidecarBuildState.js'
+      - 'SCRIPTS/ValidateOrionPostRefresh.js'
       - 'SCRIPTS/ReconcileProductionTruth.js'
       - 'TESTS/orion_sidecar_build_state_audit.test.js'
+      - 'TESTS/orion_post_refresh_validation.test.js'
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -16,6 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - run: npm install --ignore-scripts --no-audit --no-fund
       - run: node --check SCRIPTS/AuditOrionSidecarBuildState.js
+      - run: node --check SCRIPTS/ValidateOrionPostRefresh.js
       - run: node --check SCRIPTS/ReconcileProductionTruth.js
       - run: node TESTS/orion_sidecar_build_state_audit.test.js
+      - run: node TESTS/orion_post_refresh_validation.test.js
