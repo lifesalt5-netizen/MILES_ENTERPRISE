@@ -8,8 +8,7 @@ const gmail = require('../CONNECTORS/GOOGLE/gmail');
 const TARGET_EVENT_TYPE_UUID = String(process.env.MILES_P2GC_CALENDLY_EVENT_TYPE_UUID || 'f3d1c97c-717f-4d20-aca6-18771349fb4d').trim();
 const TARGET_EVENT_NAME = /FEDERAL\s+STRATEGY\s+CALL.*PATHWAYS\s+2\s+GOV(?:ERNMENT|'?T)?\s+CONTRACTING/i;
 const SENDER = String(process.env.MILES_P2GC_MEETING_SENDER || 'kevin@pathways2gc.com').trim().toLowerCase();
-const CONFIRMATION_LOOKBACK_MINUTES = Math.max(2, Number(process.env.MILES_P2GC_CONFIRMATION_LOOKBACK_MINUTES || 10));
-const REMINDER_WINDOW_MINUTES = Math.max(5, Number(process.env.MILES_P2GC_24H_REMINDER_WINDOW_MINUTES || 20));
+const REMINDER_WINDOW_MINUTES = Math.max(5, Number(process.env.MILES_P2GC_24H_REMINDER_WINDOW_MINUTES || 10));
 
 function clean(v){ return String(v == null ? '' : v).trim(); }
 function eventUuid(uri){ const m=clean(uri).match(/\/event_types\/([^/?#]+)/i); return m ? m[1] : null; }
@@ -30,7 +29,7 @@ class P2GCCalendlyReminderGuardService {
 
   readState(){
     try { return JSON.parse(fs.readFileSync(this.stateFile,'utf8').replace(/^\uFEFF/,'')); }
-    catch { return { version:1, records:{} }; }
+    catch { return { version:2, records:{} }; }
   }
   writeJsonAtomic(file,value){
     fs.mkdirSync(path.dirname(file),{recursive:true});
@@ -56,30 +55,10 @@ class P2GCCalendlyReminderGuardService {
       return new Intl.DateTimeFormat('en-US',{ timeZone:'America/New_York', weekday:'long', month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', timeZoneName:'short' }).format(new Date(startTime));
     }
   }
-  confirmationMessage(event,invitee){
-    const when=this.formatWhen(event.start_time,invitee?.timezone);
-    return {
-      subject:"Confirmed: Federal Strategy Call — Pathways 2 Government Contracting",
-      text:[
-        `Hi ${clean(invitee?.name)||'there'},`,
-        '',
-        'Your Federal Strategy Call with Pathways 2 Government Contracting is confirmed.',
-        '',
-        `Scheduled for: ${when}`,
-        clean(invitee?.reschedule_url) ? `Reschedule: ${invitee.reschedule_url}` : null,
-        clean(invitee?.cancel_url) ? `Cancel: ${invitee.cancel_url}` : null,
-        '',
-        'Kevin will be prepared to discuss your federal growth priorities and next steps.',
-        '',
-        'Kevin Chace',
-        'Pathways 2 Government Contracting'
-      ].filter(v=>v!==null).join('\n')
-    };
-  }
   reminderMessage(event,invitee){
     const when=this.formatWhen(event.start_time,invitee?.timezone);
     return {
-      subject:"Reminder: Federal Strategy Call tomorrow — Pathways 2 Government Contracting",
+      subject:'Reminder: Federal Strategy Call tomorrow — Pathways 2 Government Contracting',
       text:[
         `Hi ${clean(invitee?.name)||'there'},`,
         '',
@@ -97,8 +76,8 @@ class P2GCCalendlyReminderGuardService {
     };
   }
 
-  async send(kind,event,invitee){
-    const message=kind==='confirmation' ? this.confirmationMessage(event,invitee) : this.reminderMessage(event,invitee);
+  async sendReminder(event,invitee){
+    const message=this.reminderMessage(event,invitee);
     return this.gmail.sendEmail({ account:SENDER, from:SENDER, replyTo:SENDER, to:invitee.email, subject:message.subject, text:message.text });
   }
 
@@ -106,7 +85,7 @@ class P2GCCalendlyReminderGuardService {
     const now=this.now();
     const nowIso=now.toISOString();
     const state=this.readState();
-    state.version=1;
+    state.version=2;
     state.records=state.records && typeof state.records==='object' ? state.records : {};
     const actions=[];
     const failures=[];
@@ -142,31 +121,24 @@ class P2GCCalendlyReminderGuardService {
         const key=this.recordKey(event,invitee);
         const record=state.records[key] || { eventUri:event.uri, eventType:event.event_type, inviteeEmail:invitee.email, inviteeName:invitee.name||null, firstSeenAt:nowIso };
         const createdAt=isValidDate(invitee.created_at) ? invitee.created_at : record.firstSeenAt;
-        const createdAgeMinutes=Math.max(0,-minutesBetween(createdAt,nowIso));
         const untilStartMinutes=minutesBetween(event.start_time,nowIso);
 
-        if(!record.confirmationSentAt && createdAgeMinutes<=CONFIRMATION_LOOKBACK_MINUTES){
-          try {
-            const sent=await this.send('confirmation',event,invitee);
-            record.confirmationSentAt=sent.sentAt||nowIso;
-            record.confirmationMessageId=sent.messageId||null;
-            actions.push({type:'IMMEDIATE_CONFIRMATION_SENT',event:event.name,invitee:invitee.email,startTime:event.start_time,messageId:sent.messageId||null});
-          } catch(error){ failures.push(`CONFIRMATION_SEND:${invitee.email}:${error.message}`); }
-        } else if(!record.confirmationSentAt && !record.confirmationExistingBookingSkippedAt && createdAgeMinutes>CONFIRMATION_LOOKBACK_MINUTES){
-          record.confirmationExistingBookingSkippedAt=nowIso;
-          record.confirmationExistingBookingReason='BOOKING_PREDATES_GUARD_LOOKBACK';
+        // Calendly itself owns the immediate booking confirmation/calendar invitation. MILES
+        // records that provider responsibility instead of sending a second immediate email.
+        if(!record.immediateConfirmationProvider){
+          record.immediateConfirmationProvider='CALENDLY_NATIVE_BOOKING_CONFIRMATION';
+          record.immediateConfirmationObservedFromBookingAt=createdAt;
         }
 
         const bookedInside24h = isValidDate(createdAt) && minutesBetween(event.start_time,createdAt) < 24*60;
         const in24hWindow = untilStartMinutes>0 && untilStartMinutes <= 24*60 && untilStartMinutes >= (24*60-REMINDER_WINDOW_MINUTES);
-        const lateCatchup = untilStartMinutes>0 && untilStartMinutes < (24*60-REMINDER_WINDOW_MINUTES) && !bookedInside24h;
-        if(!record.reminder24hSentAt && (in24hWindow || lateCatchup)){
+        if(!record.reminder24hSentAt && in24hWindow){
           try {
-            const sent=await this.send('reminder',event,invitee);
+            const sent=await this.sendReminder(event,invitee);
             record.reminder24hSentAt=sent.sentAt||nowIso;
             record.reminder24hMessageId=sent.messageId||null;
-            record.reminder24hMode=in24hWindow?'ON_TIME_WINDOW':'LATE_CATCHUP_AFTER_DOWNTIME';
-            actions.push({type:'REMINDER_24H_SENT',event:event.name,invitee:invitee.email,startTime:event.start_time,mode:record.reminder24hMode,messageId:sent.messageId||null});
+            record.reminder24hMode='ON_TIME_WINDOW';
+            actions.push({type:'REMINDER_24H_SENT',event:event.name,invitee:invitee.email,startTime:event.start_time,messageId:sent.messageId||null});
           } catch(error){ failures.push(`REMINDER24_SEND:${invitee.email}:${error.message}`); }
         } else if(!record.reminder24hSentAt && bookedInside24h && !record.reminder24hNotApplicableAt){
           record.reminder24hNotApplicableAt=nowIso;
@@ -192,7 +164,12 @@ class P2GCCalendlyReminderGuardService {
       targetEventCount:targets.length,
       sender:SENDER,
       cadenceTargetSeconds:60,
-      policy:{ immediateConfirmation:true, reminder24HoursBefore:true, duplicateSuppression:true, bookedInside24Hours:'IMMEDIATE_CONFIRMATION_ONLY_BECAUSE_A_24H_REMINDER_IS_NO_LONGER_TEMPORALLY_POSSIBLE' },
+      policy:{
+        immediateConfirmation:{ provider:'CALENDLY_NATIVE_BOOKING_CONFIRMATION', duplicateP2GCEmailSuppressed:true },
+        reminder24HoursBefore:{ provider:'MILES_GMAIL_FALLBACK', sender:SENDER, windowMinutes:REMINDER_WINDOW_MINUTES },
+        duplicateSuppression:true,
+        bookedInside24Hours:'CALENDLY_IMMEDIATE_CONFIRMATION_ONLY_BECAUSE_A_24H_REMINDER_IS_NO_LONGER_TEMPORALLY_POSSIBLE'
+      },
       actions,
       failures
     };
@@ -202,4 +179,4 @@ class P2GCCalendlyReminderGuardService {
 }
 
 module.exports=P2GCCalendlyReminderGuardService;
-module.exports.constants={TARGET_EVENT_TYPE_UUID,SENDER,CONFIRMATION_LOOKBACK_MINUTES,REMINDER_WINDOW_MINUTES};
+module.exports.constants={TARGET_EVENT_TYPE_UUID,SENDER,REMINDER_WINDOW_MINUTES};
