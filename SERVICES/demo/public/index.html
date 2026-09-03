@@ -153,5 +153,150 @@
     </div>
   </main>
   <script src="/app.js"></script>
+  <script>
+    (() => {
+      const normUx = value => String(value == null ? "" : value).toUpperCase().replace(/[^A-Z0-9]+/g," ").replace(/\s+/g," ").trim();
+      const listUx = value => Array.isArray(value) ? value.filter(Boolean) : [];
+
+      function capabilityFromNaics(value) {
+        const code=String(value||"").replace(/\D/g,"");
+        if(code.length<2) return null;
+        const sector=Number(code.slice(0,2));
+        if(sector===11) return "Agriculture / Natural Resources";
+        if(sector>=31&&sector<=33) return "Food / Manufacturing";
+        if(sector===42) return "Wholesale / Distribution";
+        if(sector===48||sector===49) return "Transportation / Warehousing";
+        if(sector===51||sector===54) return "IT / Professional Services";
+        if(sector===56) return "Administrative / Facilities Services";
+        if(sector===61) return "Training / Education";
+        if(sector===62) return "Healthcare";
+        if(sector===23) return "Construction";
+        return `NAICS ${code.slice(0,2)} sector`;
+      }
+
+      function capabilityCluster(row, name) {
+        const candidates=[row?.naics,row?.naicsCode,row?.primaryNaics,...listUx(row?.matchedNaics),...listUx(row?.evidence?.matchedNaics)];
+        for(const candidate of candidates){
+          const label=capabilityFromNaics(candidate);
+          if(label) return label;
+        }
+        const text=normUx([row?.title,row?.company,row?.basis,row?.qualification].filter(Boolean).join(" "));
+        if(/SOFTWARE|CYBER|CLOUD|DATA|COMPUTER|INFORMATION TECHNOLOGY|IT SERVICE|SYSTEM INTEGRATION/.test(text)) return "IT / Professional Services";
+        if(/AGRICULT|FOOD|FRUIT|VEGETABLE|COMMODIT|BEAN|PRODUCE/.test(text)) return "Agriculture / Food";
+        if(/WAREHOUS|DISTRIBUT|LOGISTIC|TRANSPORT|SUPPLY CHAIN/.test(text)) return "Distribution / Logistics";
+        if(/TRAINING|EDUCATION|LEARNING|INSTRUCTION/.test(text)) return "Training / Education";
+        if(name==="buyers" && row?.agency) return `Buyer: ${row.agency}`;
+        if(row?.agency) return `Agency: ${row.agency}`;
+        return "Other validated alignment";
+      }
+
+      function semanticKey(row,name) {
+        if(name==="opportunities"||name==="recompetes") return normUx(`${row?.agency||""}|${row?.title||""}|${row?.dueDate||row?.endDate||""}|${row?.naics||""}`);
+        if(name==="primePartners"||name==="competitors") return normUx(row?.uei||row?.company||"");
+        if(name==="buyers") return normUx(`${row?.agency||""}|${row?.buyer||row?.office||""}`);
+        return normUx(row?.id||row?.contractNumber||JSON.stringify(row));
+      }
+
+      function uniqueRecords(records,name) {
+        const map=new Map();
+        for(const row of listUx(records)){
+          const key=semanticKey(row,name);
+          if(!key) continue;
+          const prior=map.get(key);
+          if(!prior || Number(row?.fitScore||0)>Number(prior?.fitScore||0)) map.set(key,row);
+        }
+        return [...map.values()];
+      }
+
+      function balancedPreview(records,name) {
+        const source=uniqueRecords(records,name);
+        const maxByName={opportunities:6,primePartners:6,recompetes:4,buyers:4,competitors:4,vehicles:2};
+        const limit=Math.min(source.length,maxByName[name]||4);
+        if(!limit) return [];
+        const grouped=new Map();
+        for(const row of source){
+          const cluster=capabilityCluster(row,name);
+          if(!grouped.has(cluster)) grouped.set(cluster,[]);
+          grouped.get(cluster).push(row);
+        }
+        const groups=[...grouped.values()].sort((a,b)=>Number(b[0]?.fitScore||0)-Number(a[0]?.fitScore||0)||b.length-a.length);
+        const selected=[];
+        let round=0;
+        while(selected.length<limit){
+          let added=false;
+          for(const group of groups){
+            if(group[round] && selected.length<limit){ selected.push(group[round]); added=true; }
+          }
+          if(!added) break;
+          round+=1;
+        }
+        return selected;
+      }
+
+      preview = function(name,fallbackRecords=[]) {
+        const original=current?.commercialPreview?.[name]||{};
+        const source=listUx(fallbackRecords).length?fallbackRecords:listUx(original.visible);
+        const deduped=uniqueRecords(source,name);
+        const visible=balancedPreview(deduped,name);
+        return { ...original, visible, visibleCount:visible.length, totalKnown:deduped.length, lockedCount:Math.max(0,deduped.length-visible.length), capabilityBalanced:true };
+      };
+
+      proofLine = function(name) {
+        const t=current?.commercialPreview?.totals?.[name]||{};
+        const fallback=name==="opportunities"?current?.opportunities?.liveAndForecast:name==="recompetes"?current?.opportunities?.recompetes:name==="primePartners"?current?.primePartners?.records:name==="buyers"?current?.buyerIntelligence?.records:name==="competitors"?current?.competitors?.records:name==="vehicles"?current?.vehicles?.current:[];
+        const p=preview(name,fallback||[]);
+        if(!p) return "";
+        const total=Number(p.totalKnown||0);
+        const pieces=[`${total.toLocaleString()} identified`,`${Number(p.visibleCount||0).toLocaleString()} representative results shown`,`${Number(p.lockedCount||0).toLocaleString()} locked`];
+        const knownCount=Math.min(total,Number(t.knownValueCount||0));
+        const unknownCount=Math.max(0,total-knownCount);
+        if(knownCount>0) pieces.splice(1,0,`${money(t.knownValue)} known value across ${knownCount.toLocaleString()} valued record${knownCount===1?"":"s"}`);
+        if((name==="opportunities"||name==="recompetes")&&unknownCount>0) pieces.splice(2,0,`${unknownCount.toLocaleString()} value${unknownCount===1?"":"s"} not disclosed`);
+        if(Number(t.agencies||0)>0) pieces.splice(1,0,`${Number(t.agencies).toLocaleString()} agencies`);
+        return `<div class="unlock-note"><strong>${esc(pieces.join(" • "))}</strong><span>Visible records are capability-balanced where the evidence supports multiple business lines; locked identities/details are available in the applicable P2GC engagement.</span></div>`;
+      };
+
+      renderAwards = function(a) {
+        const summary=a?.summary||{};
+        $("awardStatus").textContent=a?.status||"UNAVAILABLE";
+        $("awardSummary").innerHTML=[
+          ["Distinct Federal Awards",summary.awardCount],["Prime Awards",summary.primeAwardCount],["Subcontract Awards",summary.subcontractAwardCount],
+          ["Reported Prime Award Value",summary.primeAwardedRevenue==null?"Unavailable":money(summary.primeAwardedRevenue)],
+          ["Reported Subcontract Award Value",summary.subcontractedRevenue==null?"Unavailable":money(summary.subcontractedRevenue)],
+          ["Prime Awards in Current Performance Period",summary.activePrimeAwardCount]
+        ].map(([label,value])=>`<div class="metric"><span>${esc(label)}</span><strong>${esc(value==null?"Unavailable":value)}</strong></div>`).join("");
+        const records=[...(a?.primeAwards||[]),...(a?.subcontracts||[])];
+        const row=x=>`<tr><td>${esc(x.role||"—")}</td><td>${esc(x.awardId||"—")}</td><td>${esc(x.awardingAgency||"Unavailable")}</td><td>${money(x.amount)}</td><td>${esc([x.startDate,x.endDate].filter(Boolean).join(" → ")||x.actionDate||"Unavailable")}</td></tr>`;
+        if(records.length){
+          const first=records.slice(0,5), rest=records.slice(5);
+          const head=`<thead><tr><th>Role</th><th>Award</th><th>Agency</th><th>Value</th><th>Period / Date</th></tr></thead>`;
+          const initial=`<table>${head}<tbody>${first.map(row).join("")}</tbody></table>`;
+          const expandable=rest.length?`<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">View all ${records.length.toLocaleString()} confirmed award records (${rest.length.toLocaleString()} more)</summary><div class="table-wrap" style="margin-top:10px"><table>${head}<tbody>${rest.map(row).join("")}</tbody></table></div></details>`:"";
+          $("awardHistory").innerHTML=`${initial}${expandable}`;
+        } else {
+          $("awardHistory").innerHTML=unavailable(a?.truthClass==="CONFIRMED"?"Authoritative lookup confirmed no federal prime/subcontract award history for this identity.":"Authoritative award history is not currently available; no zero-award claim is made.");
+        }
+        $("awardDisclosure").textContent=`${summary.awardedValueDefinition||"Award values are shown separately from realized federal obligations/sales evidence."} Award history is public company evidence and is not paywalled in this preview.`;
+      };
+
+      renderPrimes = function(p0) {
+        const p=preview("primePartners",p0.records||[]);
+        const visible=listUx(p.visible);
+        $("primes").innerHTML=proofLine("primePartners")+rows(visible,x=>{
+          const matched=listUx(x.matchedNaics||x.evidence?.matchedNaics);
+          const cluster=capabilityCluster(x,"primePartners");
+          return `<div class="partner"><strong>${esc(x.company)}</strong><span>${esc(x.partnerStatus||x.confidence||"MODELED CANDIDATE")}</span><span>Capability alignment: ${esc(cluster)}${matched.length?` • NAICS ${esc(matched.slice(0,5).join(", "))}`:""}</span><span>Fit: ${x.fitScore==null?"Validation required":`${esc(x.fitScore)}/100`}</span><span>Vehicle: ${esc(x.vehicle||"Not yet confirmed")}</span><span>Federal obligations: ${money(x.federalRevenue)}</span><span>Shared agencies: ${esc((x.agencies||[]).join(", ")||"Not yet confirmed")}</span><small>${esc(x.basis||"")}</small></div>`;
+        })+locked(p.lockedCount,"Additional capability-aligned teaming partner")+unlockNote(p.lockedCount)+`<h3>Teaming Strategy</h3>${bullets(p0.strategy||[])}`;
+      };
+
+      renderSubs = function(s) {
+        const source=uniqueRecords(s.records||[],"subcontracting");
+        const visible=balancedPreview(source,"subcontracting").slice(0,4);
+        const lockedCount=Math.max(0,source.length-visible.length);
+        const totalLine=source.length?`<div class="unlock-note"><strong>${source.length.toLocaleString()} confirmed teaming signal${source.length===1?"":"s"} identified • ${visible.length.toLocaleString()} representative result${visible.length===1?"":"s"} shown • ${lockedCount.toLocaleString()} locked</strong><span>Visible signals are diversified where capability evidence supports it.</span></div>`:"";
+        $("subcontracting").innerHTML=`${statusPill(s.status)}${totalLine}${rows(visible,x=>`<div class="opportunity"><strong>${esc(x.title||x.company||"Teaming signal")}</strong><span>${esc(capabilityCluster(x,"subcontracting"))}</span><span>${esc(x.source||"")}</span></div>`)}${locked(lockedCount,"Additional teaming signal")}${unlockNote(lockedCount)}<h3>Recommended Partner Actions</h3>${bullets(s.strategy||[])}`;
+      };
+    })();
+  </script>
 </body>
 </html>
