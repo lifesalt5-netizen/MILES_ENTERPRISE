@@ -19,7 +19,10 @@ const Lifecycle=require('../SERVICES/revenue/P2GCFederalGrowthReviewLifecycleSer
       currentSamRegistration:{authority:'SAM.gov',retrievedAt:'2026-09-03T19:50:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
       awardHistory:{authority:'USAspending',retrievedAt:'2026-09-03T19:51:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
       currentGsaHolderTruth:{authority:'GSA eLibrary',retrievedAt:'2026-09-03T19:52:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
-      currentPublicOpportunities:{authority:'SAM.gov opportunities',retrievedAt:'2026-09-03T19:53:00Z',confidence:'HIGH',verificationState:'CONFIRMED'}
+      currentPublicOpportunities:{authority:'SAM.gov opportunities',retrievedAt:'2026-09-03T19:53:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
+      recompeteSignals:{authority:'ORION recompete evidence',retrievedAt:'2026-09-03T19:54:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
+      primeSubIntelligence:{authority:'P2GC prime/sub intelligence',retrievedAt:'2026-09-03T19:55:00Z',confidence:'HIGH',verificationState:'CONFIRMED'},
+      truthIntegrity:{authority:'P2GC canonical evidence reconciliation',retrievedAt:'2026-09-03T20:00:00Z',confidence:'HIGH',verificationState:'CONFIRMED'}
     },
     awardHistory:{totalAwards:12,totalPrimeAwardValue:2400000,records:Array(12).fill({})},
     vehicles:{count:1,records:[{vehicleFamily:'GSA MAS',contractNumber:'47QTCA00D0000'}]},
@@ -44,5 +47,18 @@ const Lifecycle=require('../SERVICES/revenue/P2GCFederalGrowthReviewLifecycleSer
   assert.strictEqual(review.security.downloadable,false);
   assert(review.findings.every(f=>f.source&&f.freshness&&f.confidence&&f.verificationState));
   assert(!review.presentation.script.includes('full opportunity list'));
+
+  const missingOpportunityFreshness=JSON.parse(JSON.stringify(model));
+  delete missingOpportunityFreshness.evidence.currentPublicOpportunities.retrievedAt;
+  const gatedFindings=builder.buildFindings(missingOpportunityFreshness);
+  assert(!gatedFindings.some(f=>f.section==='OPPORTUNITY_ENVIRONMENT'),'missing source freshness must omit material opportunity finding');
+  assert(gatedFindings.every(f=>f.freshness!=='2026-09-03T20:00:00Z'||f.section==='P2GC_DIAGNOSIS'||f.section==='RECOMMENDED_P2GC_PATHWAY'),'canonical reconciliation time must not be substituted as source freshness');
+
+  const missingTruthFreshness=JSON.parse(JSON.stringify(model));
+  delete missingTruthFreshness.truthIntegrity.checkedAt;
+  const lifecycle2=new Lifecycle({rootDir:path.resolve(__dirname,'..'),stateDir:path.join(temp,'reviews2'),contract});
+  const builder2=new Builder({rootDir:path.resolve(__dirname,'..'),lifecycle:lifecycle2,fetchAssessment:async()=>missingTruthFreshness});
+  await assert.rejects(()=>builder2.createFromAssessment({term:'Example Federal LLC',recipientEmail:'buyer@example.com'}),/CANONICAL_TRUTH_FRESHNESS_REQUIRED/);
+
   console.log('P2GC_FEDERAL_GROWTH_REVIEW_BUILDER_GREEN');
 })().catch(error=>{console.error(error);process.exit(2);});
