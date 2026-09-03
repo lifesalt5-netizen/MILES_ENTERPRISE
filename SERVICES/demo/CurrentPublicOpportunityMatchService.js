@@ -49,23 +49,86 @@ function sourceFileFromReport(rootDir) {
   };
 }
 function ageHours(iso, nowMs = Date.now()) { const ms = Date.parse(iso || ''); return Number.isFinite(ms) ? (nowMs - ms) / 3600000 : null; }
-function tokenizeSetAside(v) { return norm(v).split(' ').filter(Boolean); }
 function compatibleSetAside(text, profile) {
   const t = norm(text);
   if (!t) return { score:0, reason:null };
   const certs = norm(list(profile?.certifications).join(' '));
-  if (/TOTAL SMALL BUSINESS|SMALL BUSINESS SET ASIDE|SMALL BUSINESS/.test(t)) return { score:8, reason:'Small-business set-aside signal' };
   const checks = [
-    ['WOSB', /WOMEN OWNED SMALL BUSINESS|\bWOSB\b/],
-    ['EDWOSB', /ECONOMICALLY DISADVANTAGED WOMEN OWNED|\bEDWOSB\b/],
     ['SDVOSB', /SERVICE DISABLED VETERAN|\bSDVOSB\b/],
+    ['EDWOSB', /ECONOMICALLY DISADVANTAGED WOMEN OWNED|\bEDWOSB\b/],
+    ['WOSB', /WOMEN OWNED SMALL BUSINESS|\bWOSB\b/],
     ['8(A)', /\b8 A\b|8\(A\)/],
     ['HUBZONE', /HUBZONE/]
   ];
   for (const [cert, re] of checks) {
-    if (re.test(t)) return certs.includes(cert) ? { score:12, reason:`${cert} set-aside aligns with identified certification` } : { score:-18, reason:`${cert} set-aside requires certification validation` };
+    if (re.test(t)) return certs.includes(cert) ? { score:12, reason:`${cert} set-aside aligns with identified certification` } : { score:-25, reason:`${cert} set-aside requires current certification validation`, eligibilityBlocked:true };
   }
+  if (/TOTAL SMALL BUSINESS|SMALL BUSINESS SET ASIDE|SMALL BUSINESS/.test(t)) return { score:8, reason:'Small-business set-aside signal' };
   return { score:0, reason:`Set-aside: ${clean(text)}` };
+}
+
+function scopeClass(title, naics) {
+  const text = norm(title);
+  if (/SIGN LANGUAGE|INTERPRET|INTERPRETER|TRANSLAT|LANGUAGE SERVICE/.test(text)) return 'LANGUAGE_INTERPRETATION';
+  if (/GENERATOR|ELECTRICAL|HVAC|PLUMB|MECHANICAL REPAIR|EQUIPMENT REPAIR|PREVENTIVE MAINTENANCE|MAINTENANCE AND REPAIR/.test(text)) return 'SPECIALIZED_MAINTENANCE';
+  if (/SOFTWARE|DATABASE|COMPUTER|CYBER|NETWORK|INFORMATION TECHNOLOGY|\bIT\b|SYSTEMS?|APPLICATION|DATA (?:SYSTEM|PLATFORM|ANALYT)/.test(text)) return 'IT_TECHNOLOGY';
+  if (/WAREHOUS|DISTRIBUT|FREIGHT|LOGISTIC|TRANSPORT|DELIVERY/.test(text)) return 'TRANSPORT_LOGISTICS';
+  if (/FRUIT|VEGETABLE|FOOD|PRODUCE|BEAN|GRAIN|AGRICULT|COMMODIT/.test(text)) return 'AGRICULTURE_FOOD';
+  if (/TRAINING|SEMINAR|LEARNING|INSTRUCTION|EDUCATION/.test(text)) return 'TRAINING_EDUCATION';
+  if (/CONSULT|PROGRAM MANAGEMENT|MANAGEMENT SUPPORT|PROFESSIONAL SERVICES|HUMAN RESOURCES|COMMUNICATION/.test(text)) return 'PROFESSIONAL_SERVICES';
+  const code=clean(naics).replace(/\D/g,'');
+  if (/^5415|^51/.test(code)) return 'IT_TECHNOLOGY';
+  if (/^48|^49/.test(code)) return 'TRANSPORT_LOGISTICS';
+  if (/^11|^311|^4244|^4245/.test(code)) return 'AGRICULTURE_FOOD';
+  if (/^611/.test(code)) return 'TRAINING_EDUCATION';
+  if (/^5416/.test(code)) return 'PROFESSIONAL_SERVICES';
+  if (/^5612/.test(code)) return 'FACILITIES_SUPPORT_GENERAL';
+  return 'OTHER';
+}
+
+function capabilityEvidence(model) {
+  const awards=list(model?.awardHistory?.primeAwards);
+  const awardText=norm(awards.map(row=>row?.description).filter(Boolean).join(' | '));
+  const gsaText=norm(list(model?.profile?.gsaContracts).map(row=>JSON.stringify(row)).join(' | '));
+  const websiteText=norm([model?.profile?.website, model?.profile?.description, model?.profile?.capabilities].filter(Boolean).join(' | '));
+  return { awardText, gsaText, websiteText, awardCount:awards.length };
+}
+
+function capabilityAssessment(title, naics, model) {
+  const cls=scopeClass(title, naics);
+  const ev=capabilityEvidence(model);
+  const profileNaics=new Set(list(model?.profile?.naicsCodes).map(x=>clean(x).replace(/\D/g,'')).filter(Boolean));
+  const exactNaics=profileNaics.has(clean(naics).replace(/\D/g,''));
+  const proven=(regex)=>regex.test(ev.awardText) || regex.test(ev.gsaText) || regex.test(ev.websiteText);
+  let supported=false;
+  let basis=null;
+  if (cls==='IT_TECHNOLOGY' && (proven(/54151S|SOFTWARE|DATABASE|COMPUTER|CYBER|NETWORK|INFORMATION TECHNOLOGY|SYSTEM/) || /5415/.test(ev.gsaText))) {
+    supported=true; basis='Current GSA/contract capability evidence supports IT or systems work';
+  } else if (cls==='AGRICULTURE_FOOD' && proven(/FRUIT|VEGETABLE|FOOD|PRODUCE|BEAN|GRAIN|AGRICULT|COMMODIT/)) {
+    supported=true; basis='Authoritative award/capability history supports agriculture or food-supply work';
+  } else if (cls==='TRANSPORT_LOGISTICS' && proven(/WAREHOUS|DISTRIBUT|FREIGHT|LOGISTIC|TRANSPORT|DELIVERY/)) {
+    supported=true; basis='Award/capability evidence supports logistics, warehousing or distribution work';
+  } else if (cls==='TRAINING_EDUCATION' && proven(/611430|TRAINING|SEMINAR|LEARNING|INSTRUCTION|EDUCATION/)) {
+    supported=true; basis='Current GSA/contract capability evidence supports training or education work';
+  } else if (cls==='PROFESSIONAL_SERVICES' && proven(/541612|CONSULT|PROFESSIONAL SERVICES|HUMAN RESOURCES|MANAGEMENT/)) {
+    supported=true; basis='Current GSA/contract capability evidence supports professional-services work';
+  }
+
+  if (supported) return { status:'DEMONSTRATED_CAPABILITY_SUPPORTED', directFit:true, score:20, reason:basis, scopeClass:cls };
+
+  if (cls==='SPECIALIZED_MAINTENANCE') {
+    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-30, reason:'Specialized maintenance/repair scope is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
+  }
+  if (cls==='LANGUAGE_INTERPRETATION') {
+    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-35, reason:'Interpretation/language-service capability is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
+  }
+  if (cls==='FACILITIES_SUPPORT_GENERAL') {
+    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-20, reason:'Broad facilities-support NAICS overlap does not prove the specific technical scope; validate capability before pursuit.', scopeClass:cls };
+  }
+  if (exactNaics) {
+    return { status:'PROFILE_CAPABILITY_MATCH_VALIDATION_REQUIRED', directFit:false, score:-8, reason:'Exact registered NAICS supports candidate discovery, but direct capability still requires scope or past-performance validation.', scopeClass:cls };
+  }
+  return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-15, reason:'Current evidence does not yet prove direct performance capability for this scope.', scopeClass:cls };
 }
 
 class CurrentPublicOpportunityMatchService {
@@ -139,11 +202,14 @@ class CurrentPublicOpportunityMatchService {
       const noticeId = first(row,['noticeId','id']);
       const setAside = first(row,['setAside','setAsideDescription','typeOfSetAsideDescription']);
       const setAsideFit = compatibleSetAside(setAside, model?.profile || {});
-      const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source'];
+      const capability = capabilityAssessment(title, naics, model);
+      const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source', capability.reason];
       if (setAsideFit.reason) reasons.push(setAsideFit.reason);
-      let fitScore = 70 + setAsideFit.score;
+      let fitScore = 45 + capability.score + setAsideFit.score;
       if (dueDate) fitScore += 5;
       if (['RFI','SOURCES_SOUGHT','PRESOLICITATION','OPEN'].includes(stage)) fitScore += 5;
+      if (!capability.directFit) fitScore=Math.min(fitScore,59);
+      if (setAsideFit.eligibilityBlocked) fitScore=Math.min(fitScore,49);
       fitScore = Math.max(0, Math.min(100, fitScore));
       candidates.push({
         id:noticeId || first(row,['solicitationNumber','solicitation']) || null,
@@ -164,10 +230,14 @@ class CurrentPublicOpportunityMatchService {
         source:'SAM.gov Public Contract Opportunities',
         sourceUrl:sourceUrl(row, noticeId),
         sourceAccess:'PUBLIC',
-        qualification:reasons.join('; '),
-        fitReasons:reasons,
+        qualification:reasons.filter(Boolean).join('; '),
+        fitReasons:reasons.filter(Boolean),
         fitScore,
-        confidence:'CURRENT_PUBLIC_SOURCE_NAICS_ALIGNED_CANDIDATE',
+        capabilityStatus:capability.status,
+        capabilityClass:capability.scopeClass,
+        directPursuitCapabilitySupported:capability.directFit,
+        eligibilityStatus:setAsideFit.eligibilityBlocked ? 'SET_ASIDE_ELIGIBILITY_NOT_CONFIRMED' : null,
+        confidence:capability.directFit ? 'CURRENT_PUBLIC_SOURCE_WITH_DEMONSTRATED_CAPABILITY_SUPPORT' : 'CURRENT_PUBLIC_SOURCE_NAICS_CANDIDATE_CAPABILITY_VALIDATION_REQUIRED',
         freshnessAt:source.generatedAt,
         live:true
       });
@@ -175,7 +245,7 @@ class CurrentPublicOpportunityMatchService {
 
     const deduped = new Map();
     for (const row of candidates) {
-      const key = clean(row.noticeId || row.solicitationNumber) || norm(`${row.agency}|${row.title}|${row.dueDate}`);
+      const key = norm(`${row.agency}|${row.title}|${row.naics}|${row.dueDate}`) || clean(row.noticeId || row.solicitationNumber);
       const current = deduped.get(key);
       if (!current || row.fitScore > current.fitScore) deduped.set(key, row);
     }
@@ -195,10 +265,12 @@ class CurrentPublicOpportunityMatchService {
         exactNaicsRows:naicsMatched,
         candidatesBeforeDedupe:candidates.length,
         returned:records.length,
+        directCapabilitySupported:records.filter(row=>row.directPursuitCapabilitySupported===true).length,
+        capabilityValidationRequired:records.filter(row=>row.directPursuitCapabilitySupported!==true).length,
         lookupMs:indexed.lookupMs,
         totalMatchMs:Date.now()-started,
         indexKind:indexed.cacheKind,
-        rule:'Exact prospect NAICS plus freshness, open-date and access checks. This is candidate matching, not automatic bid qualification.'
+        rule:'Exact NAICS discovers candidates only. Direct-fit support additionally requires demonstrated capability evidence from current GSA scope, authoritative award history, or other current capability evidence. Specialized scope and set-aside eligibility fail closed when not proven.'
       },
       records,
       blockers:[],
@@ -211,3 +283,5 @@ module.exports = CurrentPublicOpportunityMatchService;
 module.exports.stageOf = stageOf;
 module.exports.sourceFileFromReport = sourceFileFromReport;
 module.exports.compatibleSetAside = compatibleSetAside;
+module.exports.scopeClass = scopeClass;
+module.exports.capabilityAssessment = capabilityAssessment;
