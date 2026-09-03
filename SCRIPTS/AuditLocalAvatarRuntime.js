@@ -21,13 +21,7 @@ function main(){
   const pythonCmd=process.platform==='win32'?(where('python').ok?'python':(where('py').ok?'py':null)):(where('python3').ok?'python3':null);
   let python={ok:false,status:'PYTHON_NOT_FOUND'};
   if(pythonCmd){
-    const code=[
-      "import json,importlib.util,platform",
-      "mods=['torch','onnxruntime','cv2','numpy','PIL','soundfile','librosa']",
-      "o={'python':platform.python_version(),'modules':{m:bool(importlib.util.find_spec(m)) for m in mods}}",
-      "try:\n import torch\n o['torch_version']=torch.__version__\n o['cuda_available']=bool(torch.cuda.is_available())\n o['cuda_device']=torch.cuda.get_device_name(0) if torch.cuda.is_available() else None\n o['cuda_device_count']=torch.cuda.device_count()\nexcept Exception as e:o['torch_error']=str(e)",
-      "print(json.dumps(o))"
-    ].join(';');
+    const code=`import json, importlib.util, platform\nmods=['torch','onnxruntime','cv2','numpy','PIL','soundfile','librosa']\no={'python':platform.python_version(),'modules':{m:bool(importlib.util.find_spec(m)) for m in mods}}\ntry:\n import torch\n o['torch_version']=torch.__version__\n o['cuda_available']=bool(torch.cuda.is_available())\n o['cuda_device']=torch.cuda.get_device_name(0) if torch.cuda.is_available() else None\n o['cuda_device_count']=torch.cuda.device_count()\nexcept Exception as e:\n o['torch_error']=str(e)\nprint(json.dumps(o))`;
     python=run(pythonCmd,['-c',code],30000);
     if(python.ok){try{python.parsed=JSON.parse(python.stdout);}catch{}}
   }
@@ -44,6 +38,8 @@ function main(){
     recommendation:{
       localTalkingAvatarCandidate:Boolean(ffmpeg.ok&&pythonCmd&&(gpu.ok||python.parsed?.modules?.onnxruntime||python.parsed?.modules?.torch)),
       gpuAcceleratedCandidate:Boolean(ffmpeg.ok&&gpu.ok&&python.parsed?.cuda_available),
+      cpuOnlyCandidate:Boolean(pythonCmd&&(python.parsed?.modules?.onnxruntime||python.parsed?.modules?.torch)),
+      needsFfmpegInstall:!ffmpeg.ok,
       needsModelInstall:true,
       paidSubscriptionRequired:false
     },
