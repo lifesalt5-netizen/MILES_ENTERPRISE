@@ -127,14 +127,16 @@ function consolidateAgencyAlignment(model) {
     grouped.set(key, current);
   }
   const rows = [...grouped.values()].sort((a,b)=>b.historicalAwardValue-a.historicalAwardValue || b.awardCount-a.awardCount);
-  const maxValue = Math.max(...rows.map(x=>x.historicalAwardValue),1);
-  const maxAwards = Math.max(...rows.map(x=>x.awardCount),1);
+  const totalValue = Math.max(rows.reduce((sum,row)=>sum+Math.max(0,Number(row.historicalAwardValue||0)),0),1);
+  const totalAwards = Math.max(rows.reduce((sum,row)=>sum+Math.max(0,Number(row.awardCount||0)),0),1);
   model.agencyAlignment = {
-    status:'CONFIRMED_USASPENDING_HISTORICAL_ALIGNMENT',
+    status:'CONFIRMED_USASPENDING_HISTORICAL_CONCENTRATION',
+    metricLabel:'Historical award concentration',
     agencies:rows.slice(0,10).map(row=>({
       ...row,
-      fitScore:Math.round(((row.historicalAwardValue/maxValue)*0.7 + (row.awardCount/maxAwards)*0.3)*100),
-      basis:'Confirmed USAspending award history aggregated by agency for this UEI',
+      fitScore:null,
+      historicalConcentrationPct:Math.round(((row.historicalAwardValue/totalValue)*0.7 + (row.awardCount/totalAwards)*0.3)*100),
+      basis:'Confirmed USAspending historical award concentration aggregated by agency for this UEI; this is not a modeled future-fit score.',
       confidence:'CONFIRMED_HISTORICAL_BUYER'
     }))
   };
@@ -150,9 +152,10 @@ function scrubRecommendations(model) {
   const reject = text => {
     const t = clean(text);
     if (!revenueModeled && /revenue leakage|modeled (potential )?revenue|commercial pain point.*\$/i.test(t)) return true;
-    if (hasCurrentGsa && /primary growth driver:\s*vehicle gap|vehicle gap contractor|missing vehicle|no contract vehicle/i.test(t)) return true;
+    if (hasCurrentGsa && /primary growth driver:\s*vehicle gap|vehicle gap contractor|missing vehicle|no contract vehicle|multiple vehicle coverage|activate and expand contract vehicle coverage|expand contract vehicle coverage and activate existing schedules?|activate existing schedules?|close vehicle and agency access gaps/i.test(t)) return true;
     if (!recompetes.length && /prioriti[sz]e .*recompete|recompete\/incumbent|incumbent-displacement signal/i.test(t)) return true;
     if (!samActive && /sam entity appears active|sam active|registration expiration is current|optimi[sz]e sam profile/i.test(t)) return true;
+    if (model?.profile?.cage && /cage present|cage.*missing/i.test(t)) return true;
     return false;
   };
   for (const key of ['immediate','vehicle','agency','partner','opportunity','growth']) recommendations[key] = arr(recommendations[key]).filter(item=>!reject(item));
@@ -160,6 +163,10 @@ function scrubRecommendations(model) {
   if (model?.primePartners) model.primePartners.strategy = arr(model.primePartners.strategy).filter(item=>!reject(item));
   if (model?.subcontracting) model.subcontracting.strategy = arr(model.subcontracting.strategy).filter(item=>!reject(item));
   if (model?.gaps) model.gaps.items = arr(model.gaps.items).filter(item=>!reject(item));
+  if (hasCurrentGsa) {
+    recommendations.vehicle = uniq([...arr(recommendations.vehicle),'Optimize utilization of the confirmed current GSA MAS against validated demand and awarded SIN/category scope.']);
+    if (model?.vehicles) model.vehicles.recommendations = uniq([...arr(model.vehicles.recommendations),'Optimize utilization of the confirmed current GSA MAS against validated demand and awarded SIN/category scope.']);
+  }
 }
 
 function normalizeUnknownRevenue(model) {
@@ -176,14 +183,10 @@ function enforceEvidenceBackedReadiness(model) {
   const readiness = model?.readiness;
   if (!readiness?.categories) return;
   const categories = { ...readiness.categories };
-  for (const key of ['marketing','positioning']) {
-    const category = categories[key];
-    const checks = arr(category?.checks);
-    const canonicalEvidence = checks.length > 0 && checks.some(check => clean(check?.label));
-    if (!canonicalEvidence) delete categories[key];
-  }
+  delete categories.marketing;
+  delete categories.positioning;
   const scored = Object.values(categories).map(category=>num(category?.score)).filter(score=>score!=null);
-  model.readiness = { ...readiness, categories, overall:scored.length ? Math.round(scored.reduce((sum,score)=>sum+score,0)/scored.length) : null, methodology:'Evidence-weighted readiness score using only categories with explicit current checks. Unsupported inherited marketing or positioning scores are withheld rather than treated as verified.' };
+  model.readiness = { ...readiness, categories, overall:scored.length ? Math.round(scored.reduce((sum,score)=>sum+score,0)/scored.length) : null, methodology:'Evidence-weighted readiness score using only current registrations/vehicle evidence and authoritative award/buyer evidence. Unsupported inherited marketing or positioning scores are withheld rather than treated as verified.' };
 }
 
 function reconcileExplicitUnknownSafety(model) {
@@ -199,6 +202,17 @@ function reconcileExplicitUnknownSafety(model) {
   model.status='DEMO_READY_WITH_EXPLICIT_SAM_UNKNOWN';
   model.evidence=model.evidence||{};
   model.evidence.truthIntegrity=model.truthIntegrity;
+}
+
+function protectEstablishedAwardeePathway(model) {
+  const awardCount = num(model?.awardHistory?.summary?.awardCount ?? model?.currentState?.awardCount);
+  if (awardCount == null || awardCount <= 0) return;
+  if (!/FIRST[_ -]?ORDER|FIRST[_ -]?AWARD|GSA_ACTIVATION_PATHWAY/i.test(`${model?.pathway?.type||''} ${model?.pathway?.title||''}`)) return;
+  model.pathway = {
+    type:'FEDERAL_GROWTH_PATHWAY',
+    title:'Federal Growth Pathway™',
+    steps:['Validate current award and buyer concentration','Optimize utilization of current contract vehicles','Expand into adjacent aligned agencies/buyers','Build prime and teaming relationships','Match current qualified opportunities to demonstrated capability','Strengthen recompete and incumbent-displacement positioning where validated signals exist','Increase sustainable federal obligations']
+  };
 }
 
 function sumKnown(records, field) {
@@ -284,6 +298,7 @@ class DemoCommercialPreviewService {
     applySetAsideEligibility(model);
     consolidateAgencyAlignment(model);
     scrubRecommendations(model);
+    protectEstablishedAwardeePathway(model);
     enforceEvidenceBackedReadiness(model);
     reconcileExplicitUnknownSafety(model);
   }
@@ -301,7 +316,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode:"PROOF_THEN_UNLOCK",
       rule:"Reveal a capability-balanced sample of evidence-backed forward-looking records. Lock only known additional records; never invent hidden inventory. Historical awards remain fully accessible and are not paywalled.",
-      truthBoundary:"USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed. Semantic duplicates are collapsed before preview counts are calculated.",
+      truthBoundary:"USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed. Semantic duplicates are collapsed before preview counts are calculated. Historical agency metrics are presented as historical concentration, never as future-fit percentages.",
       totals:buildProofTotals(model),
       opportunities: balancedPreview(opportunities, this.previewLimits.opportunities, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.qualification||''}`)),
       recompetes: balancedPreview(model?.opportunities?.recompetes, this.previewLimits.recompetes, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.agency||''}`)),
@@ -316,4 +331,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { capabilityGroup, semanticOpportunityKey, dedupeOpportunities, balancedPreview, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, reconcileExplicitUnknownSafety, buildProofTotals };
+module.exports.helpers = { capabilityGroup, semanticOpportunityKey, dedupeOpportunities, balancedPreview, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, reconcileExplicitUnknownSafety, protectEstablishedAwardeePathway, buildProofTotals };
