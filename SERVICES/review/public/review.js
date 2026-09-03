@@ -30,10 +30,10 @@ function render(review,watermark){
   const findings=review.findings||[];$('findings').innerHTML=findings.map(f=>`<article class="finding"><h3>${esc(f.title)}</h3><p>${esc(f.finding)}</p><p><strong>WHAT IT MEANS</strong><br>${esc(f.whatItMeans)}</p><p><strong>WHY IT MATTERS</strong><br>${esc(f.whyItMatters)}</p><p><strong>BUSINESS IMPACT</strong><br>${esc(f.businessImpact)}</p><p><strong>HOW P2GC ADDRESSES IT</strong><br>${esc(f.howP2GCAddressesIt)}</p></article>`).join('')||'<p>No representative findings are available yet.</p>';
   if(review.lockedFindingCount>0){$('locked').hidden=false;$('locked').textContent=`${review.lockedFindingCount} additional finding${review.lockedFindingCount===1?'':'s'} are reserved for the deeper paid engagement.`;}
   $('priorities').innerHTML=(review.priorityOptions||[]).map(p=>`<button class="priority" data-id="${esc(p.id)}">${esc(p.label)}</button>`).join('');document.querySelectorAll('.priority').forEach(btn=>btn.addEventListener('click',()=>{selectedPriority=btn.dataset.id;document.querySelectorAll('.priority').forEach(x=>x.classList.toggle('active',x===btn));}));
-  if(review.video?.status==='READY') setupVideo();else $('videoPending').hidden=false;
+  if(review.video?.playable===true) setupVideo();else $('videoPending').hidden=false;
 }
 async function setupVideo(){
-  try{const result=await api('video-token',{method:'POST',body:'{}'});const v=$('video');v.hidden=false;$('videoPending').hidden=true;v.dataset.token=result.token;if(result.streamUrl)v.src=result.streamUrl;attachVideoTelemetry(v);}catch{ $('videoPending').hidden=false; }
+  try{const result=await api('video-token',{method:'POST',body:'{}'});if(!result.streamUrl)throw new Error('VIDEO_STREAM_NOT_READY');const v=$('video');v.hidden=false;$('videoPending').hidden=true;v.dataset.token=result.token;v.src=result.streamUrl;attachVideoTelemetry(v);}catch{ $('videoPending').hidden=false; }
 }
 function event(type,value=null,metadata=null){return api('event',{method:'POST',body:JSON.stringify({type,value,metadata})}).catch(()=>null);}
 function once(type,value){if(fired.has(type))return;fired.add(type);event(type,value);}
