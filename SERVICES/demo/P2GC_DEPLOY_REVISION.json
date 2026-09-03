@@ -1,11 +1,12 @@
 {
-  "revision": "2026-09-03-delune-truth-capability-048",
-  "purpose": "Force governed P2GC product restart after canonical truth, capability qualification, focused opportunity propagation, semantic dedupe and client UI fixes.",
+  "revision": "2026-09-03-opportunity-qualification-gap-054",
+  "purpose": "Force governed P2GC product restart after discovery-vs-qualification tiers and near-fit gap-closure intelligence were wired into live opportunity matching.",
   "requiredCommits": [
-    "9138a0b486a9c873570d3c3dfc764839588a79f2",
-    "38cbb9c06123ef63adddcbb6aa7d6af5d42654b9",
-    "4c1daa972f2bb2138c7dff001af5e65a01889fd4",
-    "4fe6ac667b550417812b179a29b258a109c44769",
-    "961f318e6e2fd08ee7665981c8fe1de164ffad00"
+    "460ddf25d25ce4a18444d2d3b591572fb195f290",
+    "5f7e1e19aa876dd4c459537beac16a0ac944ccba",
+    "99a4e98162f593be5d27658a6492649b55d205e1",
+    "b0b401b9a0fe6fc299fbc1ab83ba59663a113564",
+    "45b78fa37647749f1558fc03b98a97cccb4f1533",
+    "779b566e47796a8599919bf9dad4b7181cd7b4bd"
   ]
 }
