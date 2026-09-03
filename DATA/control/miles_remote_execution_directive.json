@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-evidence-first-live-acceptance-20260903-057",
+  "id": "miles-p2gc-strict-qualification-deploy-20260903-058",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run read-only live acceptance on the evidence-first qualification build. Confirm DeLune canonical truth remains green and opportunity qualification now sees authoritative award descriptions plus current GSA scope before scoring. Report proofTotals opportunity breakdown (directFitSupported, nearFitGapClosable, teamingPathSupported, capabilityValidationRequired, notRecommendedDirectPursuit, recommendationEligible) and representative records with qualificationTier/missingRequirements/gapClosureOptions. Expected semantics, not hardcoded counts: legitimate demonstrated agriculture/logistics/IT work may become direct-fit supported; specialized maintenance/language work without evidence remains blocked/near-fit/not-recommended; set-aside eligibility remains fail-closed. Run five-company regression and browser/UI acceptance."
+  "note": "Deploy the latest P2GC revision and restart p2gc-growth-demo plus the 8787 gateway. Preserve the new rule that preliminary capability support is separate from full solicitation qualification, along with prior DeLune, Kebros, award-history, vehicle, set-aside and recommendation-integrity safeguards."
 }
