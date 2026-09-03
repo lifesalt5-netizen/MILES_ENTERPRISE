@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-live-production-truth-20260902-016",
+  "id": "miles-executive-blueprint-acceptance-speed-deploy-20260902-017",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the production truth reconciliation after the canonical Executive Government Growth Blueprint deployment and SAM opportunity staging refresh. Restart p2gc-growth-demo if the deployed source is newer, then run live prospect acceptance including Sera Brynn LLC and the standard demo companies. Continue fail-closed truth rules; no campaign, DNS, billing, credential, or customer-data mutation."
+  "note": "Deploy current main merge 465d8e82b56de364c18611e9a7cb24f2d4b18a25 including the single-refresh live demo acceptance fix. Preserve canonical truth, fail-closed evidence rules, and existing safety boundaries. Do not mutate campaigns, DNS, billing, credentials, or customer data."
 }
