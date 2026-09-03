@@ -55,6 +55,44 @@ function parseCode(line) {
   return m ? Number(m[1]) : null;
 }
 
+function createResponseBuffer() {
+  const waiters = [];
+  const completed = [];
+  let currentLines = [];
+
+  function settle(response) {
+    const waiter = waiters.shift();
+    if (!waiter) {
+      completed.push(response);
+      return;
+    }
+    if (response.code >= 200 && response.code < 400) waiter.resolve(response);
+    else waiter.reject(new Error(`IONOS_SMTP_${response.code}: ${response.lines.join(' | ')}`));
+  }
+
+  function pushLine(line) {
+    if (!line) return;
+    currentLines.push(line);
+    const code = parseCode(line);
+    if (code && /^\d{3} /.test(line)) {
+      const response = { code, lines: currentLines.slice() };
+      currentLines = [];
+      settle(response);
+    }
+  }
+
+  function read() {
+    if (completed.length) {
+      const response = completed.shift();
+      if (response.code >= 200 && response.code < 400) return Promise.resolve(response);
+      return Promise.reject(new Error(`IONOS_SMTP_${response.code}: ${response.lines.join(' | ')}`));
+    }
+    return new Promise((resolve, reject) => waiters.push({ resolve, reject }));
+  }
+
+  return { pushLine, read, pendingCompleted: () => completed.length, pendingWaiters: () => waiters.length };
+}
+
 function sendEmail(options = {}) {
   return new Promise((resolve, reject) => {
     const account = kevinMailbox();
@@ -72,7 +110,7 @@ function sendEmail(options = {}) {
     socket.setTimeout(TIMEOUT_MS);
 
     let buffer = '';
-    const queue = [];
+    const responses = createResponseBuffer();
     let closed = false;
 
     function finish(error, result) {
@@ -82,29 +120,14 @@ function sendEmail(options = {}) {
       if (error) reject(error); else resolve(result);
     }
 
-    function readResponse() {
-      return new Promise((res, rej) => queue.push({ res, rej, lines: [] }));
-    }
-
     function processLines() {
       const parts = buffer.split(/\r\n/);
       buffer = parts.pop() || '';
-      for (const line of parts) {
-        if (!line) continue;
-        const current = queue[0];
-        if (!current) continue;
-        current.lines.push(line);
-        const code = parseCode(line);
-        if (code && /^\d{3} /.test(line)) {
-          queue.shift();
-          if (code >= 200 && code < 400) current.res({ code, lines: current.lines.slice() });
-          else current.rej(new Error(`IONOS_SMTP_${code}: ${current.lines.join(' | ')}`));
-        }
-      }
+      for (const line of parts) responses.pushLine(line);
     }
 
     async function command(value) {
-      const p = readResponse();
+      const p = responses.read();
       socket.write(`${value}\r\n`);
       return p;
     }
@@ -115,7 +138,7 @@ function sendEmail(options = {}) {
 
     socket.on('secureConnect', async () => {
       try {
-        await readResponse(); // server greeting
+        await responses.read(); // server greeting; safe even if it arrived before secureConnect handler queued this read
         await command(`EHLO ${process.env.IONOS_SMTP_EHLO || 'pathways2gc.com'}`);
         await command('AUTH LOGIN');
         await command(b64(account.email));
@@ -124,7 +147,7 @@ function sendEmail(options = {}) {
         for (const recipient of recipients) await command(`RCPT TO:<${recipient}>`);
         await command('DATA');
         const message = dotStuff(buildMessage({ from: account.email, to: recipients, replyTo: options.replyTo || account.email, subject, text }));
-        const dataResponse = readResponse();
+        const dataResponse = responses.read();
         socket.write(`${message}\r\n.\r\n`);
         const accepted = await dataResponse;
         try { await command('QUIT'); } catch (_) {}
@@ -159,4 +182,4 @@ async function healthCheck() {
   };
 }
 
-module.exports = { HOST, PORT, KEVIN_EMAIL, kevinMailbox, buildMessage, sendEmail, healthCheck };
+module.exports = { HOST, PORT, KEVIN_EMAIL, kevinMailbox, buildMessage, createResponseBuffer, sendEmail, healthCheck };
