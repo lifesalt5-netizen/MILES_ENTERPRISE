@@ -83,7 +83,7 @@ class P2GCFederalGrowthReviewHttpController {
     const exp=Math.min(sessionExp,reviewExp);
     const token=this.access.signPayload({iss:this.access.issuer,kind:'REVIEW_SESSION',reviewId:record.reviewId,recipientEmail:email,sessionId:session.sessionId,iat:now,nbf:now-5,exp,jti:crypto.randomUUID()});
     const maxAge=Math.max(60,exp-now);
-    return `${this.cookieName}=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Strict; Path=/review; Max-Age=${maxAge}`;
+    return `${this.cookieName}=${encodeURIComponent(token)}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
   }
 
   async handle(req,res,url){
@@ -164,7 +164,7 @@ class P2GCFederalGrowthReviewHttpController {
       }
       if(req.method==='POST' && action==='close-session'){
         this.access.closeSession(reviewId,session.authenticatedEmail,session.sessionId);
-        safeJson(res,200,{ok:true,status:'SESSION_CLOSED'}, {...this.securityHeaders(),'Set-Cookie':`${this.cookieName}=; HttpOnly; Secure; SameSite=Strict; Path=/review; Max-Age=0`});return true;
+        safeJson(res,200,{ok:true,status:'SESSION_CLOSED'}, {...this.securityHeaders(),'Set-Cookie':`${this.cookieName}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`});return true;
       }
       safeJson(res,405,{ok:false,status:'METHOD_NOT_ALLOWED'},this.securityHeaders());return true;
     }catch(error){
