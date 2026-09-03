@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sam-public-bulk-acquire-20260903-029",
+  "id": "miles-p2gc-delune-sam-public-schema-audit-20260903-030",
   "enabled": true,
-  "job": "SAM_BULK_EXTRACT_ACQUIRE_STAGING",
+  "job": "SAM_BULK_SCHEMA_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Acquire/stage the current official SAM.gov public Entity Registration and Contract Opportunities bulk extracts using the governed staging service. Purpose: remove DeLune current-SAM/CAGE dependence on the invalid targeted API credential and enable authoritative public-bulk identity resolution. Do not modify production databases or credentials; publish evidence."
+  "note": "Inspect the staged current official SAM.gov public Entity Registration bulk extract schema and report fields/structure needed for authoritative DeLune identity resolution by UEI WDCVJGELGBB5, including legal business name, CAGE, registration status/expiration, NAICS and business type/certification indicators where present. Read-only; no production writes or credential changes."
 }
