@@ -114,7 +114,7 @@ function renderCompetitors(c) {
 }
 function renderPrimes(p0) {
   const p=preview("primePartners",p0.records||[]);
-  $("primes").innerHTML=proofLine("primePartners")+rows(p.visible||[],x=>`<div class="partner"><strong>${esc(x.company)}</strong><span>${esc(x.partnerStatus||x.confidence||"MODELED CANDIDATE")}</span><span>Vehicle: ${esc(x.vehicle||"Not yet confirmed")}</span><span>Federal revenue: ${money(x.federalRevenue)}</span><span>Agencies: ${esc((x.agencies||[]).join(", ")||"Not yet confirmed")}</span></div>`)+locked(p.lockedCount,"Additional teaming partner")+unlockNote(p.lockedCount)+`<h3>Teaming Strategy</h3>${bullets(p0.strategy||[])}`;
+  $("primes").innerHTML=proofLine("primePartners")+rows(p.visible||[],x=>`<div class="partner"><strong>${esc(x.company)}</strong><span>${esc(x.partnerStatus||x.confidence||"MODELED CANDIDATE")}</span><span>Fit: ${x.fitScore==null?"Validation required":`${esc(x.fitScore)}/100`}</span><span>Vehicle: ${esc(x.vehicle||"Not yet confirmed")}</span><span>Federal obligations: ${money(x.federalRevenue)}</span><span>Shared agencies: ${esc((x.agencies||[]).join(", ")||"Not yet confirmed")}</span><small>${esc(x.basis||"")}</small></div>`)+locked(p.lockedCount,"Additional teaming partner")+unlockNote(p.lockedCount)+`<h3>Teaming Strategy</h3>${bullets(p0.strategy||[])}`;
 }
 function renderSubs(s) {
   $("subcontracting").innerHTML=`${statusPill(s.status)}${rows(s.records||[],x=>`<div class="opportunity"><strong>${esc(x.title)}</strong><span>${esc(x.source||"")}</span></div>`)}<h3>Recommended Partner Actions</h3>${bullets(s.strategy||[])}`;
@@ -142,9 +142,82 @@ function renderOpportunities(o) {
 }
 function renderPathway(p){$("pathwayTitle").textContent=p.title||"Evidence Completion Pathway™";$("pathway").innerHTML=(p.steps||[]).map((x,i)=>`<div class="path-step"><b>Step ${i+1}</b><span>${esc(x)}</span></div>`).join('<div class="arrow">↓</div>');}
 function renderRecommendations(r){const groups=[["Immediate Actions",r.immediate],["Vehicle Strategy",r.vehicle],["Agency Strategy",r.agency],["Prime / Partner Strategy",r.partner],["Opportunity Strategy",r.opportunity],["Growth Strategy",r.growth]];$("recommendations").innerHTML=groups.map(([title,items])=>`<div class="rec-group"><h3>${esc(title)}</h3>${bullets(items||[])}</div>`).join("");}
+
+function renderSalesStory(m){
+  const p=m.profile||{}, s=m.currentState||{}, totals=m.commercialPreview?.totals||{};
+  const awards=Number(m.awardHistory?.summary?.awardCount||0);
+  const currentOblig=m.revenue?.current?.federal;
+  const buyerTotal=Number(totals.buyers?.total||0), agencyTotal=Number(totals.buyers?.agencies||0);
+  const oppTotal=Number(totals.opportunities?.total||0), primeTotal=Number(totals.primePartners?.total||0);
+  const recompeteTotal=Number(totals.recompetes?.total||0), recompeteValue=Number(totals.recompetes?.knownValue||0);
+  const currentGsa=p.gsaHolderVerified===true || /CURRENT GSA MAS HOLDER/i.test(String(p.gsaStatus||""));
+  const samUnknown=s.samRegistration==null;
+  const blockedOpps=(m.opportunities?.liveAndForecast||[]).filter(x=>x.directPursuitEligible===false).length;
+  const readiness=m.readiness?.overall;
+
+  const position=[];
+  if(awards>0) position.push(`Established federal contractor with ${awards.toLocaleString()} confirmed federal award records in authoritative history.`);
+  if(currentGsa) position.push('Current GSA MAS access is confirmed.');
+  if(currentOblig!=null && Number(currentOblig)>0) position.push(`The governed current measurement window shows ${money(currentOblig)} in federal obligations.`);
+  if(oppTotal||recompeteTotal||primeTotal) position.push(`Current intelligence contains ${oppTotal} matched public opportunity candidates, ${recompeteTotal} recompete signals, and ${primeTotal} evidence-backed modeled prime/team candidates.`);
+  if(samUnknown) position.push('Current SAM status remains unverified in the governed source set and is not inferred from other sources.');
+  $("executivePosition").innerHTML=position.length?`<p>${position.map(esc).join(' ')}</p>`:unavailable('The current evidence set is not sufficient for an executive position statement.');
+
+  const strengths=[];
+  if(currentGsa) strengths.push('Current GSA MAS access confirmed from current GSA evidence.');
+  if(awards>0) strengths.push(`${awards.toLocaleString()} federal award records confirmed in authoritative award history.`);
+  if(currentOblig!=null && Number(currentOblig)>0) strengths.push(`${money(currentOblig)} in current measurement-window federal obligations.`);
+  if(buyerTotal>0) strengths.push(`${buyerTotal} buyer records across ${agencyTotal} confirmed agenc${agencyTotal===1?'y':'ies'}.`);
+  if(oppTotal>0) strengths.push(`${oppTotal} current public opportunity candidates identified for qualification.`);
+  if(recompeteTotal>0) strengths.push(`${recompeteTotal} recompete signals${recompeteValue>0?` with ${money(recompeteValue)} in known contract value`:''}.`);
+  if(primeTotal>0) strengths.push(`${primeTotal} evidence-backed modeled prime/team candidates available for validation.`);
+  $("strengths").innerHTML=bullets(strengths);
+
+  const primary=currentGsa
+    ? 'The evidence does not support a generic vehicle-access problem. Current GSA MAS access is confirmed; the growth question is which opportunities, recompetes, buyers and prime relationships deserve qualification and pursuit.'
+    : ((p.contractVehicles||[]).length ? 'Current vehicle access exists; the priority is validating utilization, buyer alignment and opportunity fit.' : 'Current vehicle/access position requires validation before P2GC recommends an access strategy.');
+  const secondary=samUnknown
+    ? 'SAM registration, CAGE and certification coverage are not fully verified in the current governed source set, so the demo keeps those facts unknown rather than inferring them.'
+    : ((m.gaps?.items||[])[0]||'No secondary issue is asserted without current evidence.');
+  const growth=`The visible market contains ${oppTotal} current opportunity candidates, ${recompeteTotal} recompete signals and ${primeTotal} modeled prime/team candidates. These are qualification inputs, not automatic bid or relationship claims.`;
+  const risk=blockedOpps>0
+    ? `${blockedOpps} current opportunity candidate${blockedOpps===1?'':'s'} require set-aside eligibility verification before direct pursuit.`
+    : 'Modeled opportunity and partner signals still require validation before external pursuit or outreach.';
+  const readinessText=readiness==null?'Readiness is withheld where the evidence is incomplete.':`Current evidence-backed readiness score is ${readiness}/100; only categories with explicit current checks are scored.`;
+  $("diagnosis").innerHTML=[['Primary Issue',primary],['Secondary Issue',secondary],['Growth Opportunity',growth],['Immediate Risk',risk],['Readiness',readinessText]].map(([label,value])=>`<div class="metric"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
+
+  const nothing=[];
+  if(oppTotal) nothing.push(`${oppTotal} current opportunity candidates remain unqualified beyond the representative preview.`);
+  if(primeTotal) nothing.push(`${primeTotal} modeled prime/team candidates remain unvalidated for contract, capability-whitespace and contact fit.`);
+  if(recompeteTotal) nothing.push(`${recompeteTotal} recompete signals remain to be prioritized against value, timing and fit.`);
+  if(samUnknown) nothing.push('SAM/CAGE/certification coverage remains unresolved in the current governed source set.');
+  nothing.push('The company remains more reactive to individual opportunities instead of working from a prioritized execution roadmap.');
+  $("trajectoryNow").innerHTML=bullets(nothing);
+
+  const withP2gc=[
+    `Qualify the full ${oppTotal} current-opportunity inventory against scope, set-aside, vehicle and buyer fit.`,
+    `Validate and rank ${primeTotal} modeled prime/team candidates and identify lawful SBLO/teaming contacts where available.`,
+    `${recompeteTotal?`Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` representing ${money(recompeteValue)} in known value`:''}.`:'Build a validated recompete-monitoring lane where evidence supports it.'}`,
+    `Prioritize ${buyerTotal} buyer records across ${agencyTotal} agencies using confirmed history and current demand.`,
+    currentGsa?'Map current GSA MAS scope to the highest-value qualified demand and buyer paths.':'Validate the acquisition-vehicle/access path before recommending vehicle investment.',
+    'Build the paid capture, partner and execution roadmap with owners, deadlines and measurable milestones.'
+  ];
+  $("trajectoryP2gc").innerHTML=bullets(withP2gc);
+
+  const paid=[
+    `Qualify all ${oppTotal} current opportunity candidates; values remain undisclosed where the public source does not publish a positive amount.`,
+    `Validate and rank all ${primeTotal} evidence-backed modeled prime/team candidates.`,
+    `Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` with ${money(recompeteValue)} in known contract value`:''}.`,
+    `Prioritize buyers and agency expansion using the ${buyerTotal} confirmed buyer records across ${agencyTotal} agencies.`,
+    currentGsa?'Build the GSA utilization and buyer-access strategy from the confirmed current MAS position.':'Complete vehicle/access validation.',
+    'Deliver the complete capture, teaming and execution roadmap rather than exposing the full playbook in the preview.'
+  ];
+  $("paidNextStep").innerHTML=`<p>We have enough evidence to confirm a meaningful federal position and identify a measurable pipeline of opportunity, recompete and teaming candidates. The next step is to validate the complete federal position, prioritize the highest-value paths, and build the execution roadmap.</p>${bullets(paid)}`;
+}
+
 function render(m){
   current=m;
-  renderProfile(m.profile||{});renderReadiness(m.readiness||{});renderState(m);renderRevenue(m.revenue||{});renderAwards(m.awardHistory||{});renderVehicles(m.vehicles||{});renderAgencies(m.agencyAlignment||{});renderCompetitors(m.competitors||{});renderPrimes(m.primePartners||{});renderSubs(m.subcontracting||{});renderBuyers(m.buyerIntelligence||{});renderOpportunities(m.opportunities||{});renderPathway(m.pathway||{});renderRecommendations(m.recommendations||{});
+  renderProfile(m.profile||{});renderSalesStory(m);renderReadiness(m.readiness||{});renderState(m);renderRevenue(m.revenue||{});renderAwards(m.awardHistory||{});renderVehicles(m.vehicles||{});renderAgencies(m.agencyAlignment||{});renderCompetitors(m.competitors||{});renderPrimes(m.primePartners||{});renderSubs(m.subcontracting||{});renderBuyers(m.buyerIntelligence||{});renderOpportunities(m.opportunities||{});renderPathway(m.pathway||{});renderRecommendations(m.recommendations||{});
   $("generatedAt").textContent=`Generated ${new Date(m.generatedAt).toLocaleString()} • ${m.status||""}`;
   $("welcome").classList.add("hidden");$("report").classList.remove("hidden");$("refresh").disabled=false;$("print").disabled=false;$("download").disabled=false;
 }
