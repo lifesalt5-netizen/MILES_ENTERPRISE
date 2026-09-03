@@ -131,6 +131,48 @@ function capabilityAssessment(title, naics, model) {
   return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-15, reason:'Current evidence does not yet prove direct performance capability for this scope.', scopeClass:cls };
 }
 
+function qualificationTier(capability, setAsideFit) {
+  const cls = clean(capability?.scopeClass);
+  if (capability?.directFit === true && setAsideFit?.eligibilityBlocked === true) {
+    return {
+      code:'TEAMING_PATH_SUPPORTED',
+      directPursuit:false,
+      teamingCandidate:true,
+      recommendationEligible:true,
+      allowedAction:'EVALUATE_TEAMING_OR_ACCESS_PATH',
+      reason:'Demonstrated capability supports the scope, but current direct-pursuit eligibility/access is not confirmed.'
+    };
+  }
+  if (capability?.directFit === true) {
+    return {
+      code:'DIRECT_FIT_SUPPORTED',
+      directPursuit:true,
+      teamingCandidate:false,
+      recommendationEligible:true,
+      allowedAction:'DIRECT_PURSUIT_QUALIFICATION',
+      reason:'Demonstrated capability evidence supports the scope and no current eligibility blocker is identified.'
+    };
+  }
+  if (['SPECIALIZED_MAINTENANCE','LANGUAGE_INTERPRETATION'].includes(cls)) {
+    return {
+      code:'NOT_RECOMMENDED_DIRECT_PURSUIT',
+      directPursuit:false,
+      teamingCandidate:false,
+      recommendationEligible:false,
+      allowedAction:'DO_NOT_RECOMMEND_DIRECT_PURSUIT_WITHOUT_NEW_EVIDENCE',
+      reason:'The current evidence does not support direct performance of this specialized scope.'
+    };
+  }
+  return {
+    code:'CAPABILITY_VALIDATION_REQUIRED',
+    directPursuit:false,
+    teamingCandidate:false,
+    recommendationEligible:false,
+    allowedAction:'VALIDATE_CAPABILITY_BEFORE_RECOMMENDATION',
+    reason:'NAICS or profile overlap discovered the candidate, but demonstrated capability has not yet been proven.'
+  };
+}
+
 class CurrentPublicOpportunityMatchService {
   constructor(options = {}) {
     this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, '..', '..'));
@@ -203,13 +245,15 @@ class CurrentPublicOpportunityMatchService {
       const setAside = first(row,['setAside','setAsideDescription','typeOfSetAsideDescription']);
       const setAsideFit = compatibleSetAside(setAside, model?.profile || {});
       const capability = capabilityAssessment(title, naics, model);
-      const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source', capability.reason];
+      const tier = qualificationTier(capability, setAsideFit);
+      const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source', capability.reason, tier.reason];
       if (setAsideFit.reason) reasons.push(setAsideFit.reason);
       let fitScore = 45 + capability.score + setAsideFit.score;
       if (dueDate) fitScore += 5;
       if (['RFI','SOURCES_SOUGHT','PRESOLICITATION','OPEN'].includes(stage)) fitScore += 5;
       if (!capability.directFit) fitScore=Math.min(fitScore,59);
       if (setAsideFit.eligibilityBlocked) fitScore=Math.min(fitScore,49);
+      if (tier.code === 'NOT_RECOMMENDED_DIRECT_PURSUIT') fitScore=Math.min(fitScore,39);
       fitScore = Math.max(0, Math.min(100, fitScore));
       candidates.push({
         id:noticeId || first(row,['solicitationNumber','solicitation']) || null,
@@ -237,6 +281,10 @@ class CurrentPublicOpportunityMatchService {
         capabilityClass:capability.scopeClass,
         directPursuitCapabilitySupported:capability.directFit,
         eligibilityStatus:setAsideFit.eligibilityBlocked ? 'SET_ASIDE_ELIGIBILITY_NOT_CONFIRMED' : null,
+        qualificationTier:tier.code,
+        recommendationEligible:tier.recommendationEligible,
+        allowedAction:tier.allowedAction,
+        teamingPathCandidate:tier.teamingCandidate,
         confidence:capability.directFit ? 'CURRENT_PUBLIC_SOURCE_WITH_DEMONSTRATED_CAPABILITY_SUPPORT' : 'CURRENT_PUBLIC_SOURCE_NAICS_CANDIDATE_CAPABILITY_VALIDATION_REQUIRED',
         freshnessAt:source.generatedAt,
         live:true
@@ -253,6 +301,16 @@ class CurrentPublicOpportunityMatchService {
       .sort((a,b) => (b.fitScore-a.fitScore) || clean(a.dueDate || '9999-12-31').localeCompare(clean(b.dueDate || '9999-12-31')))
       .slice(0, limit);
 
+    const qualification = {
+      discovered:records.length,
+      directFitSupported:records.filter(row=>row.qualificationTier==='DIRECT_FIT_SUPPORTED').length,
+      teamingPathSupported:records.filter(row=>row.qualificationTier==='TEAMING_PATH_SUPPORTED').length,
+      capabilityValidationRequired:records.filter(row=>row.qualificationTier==='CAPABILITY_VALIDATION_REQUIRED').length,
+      notRecommendedDirectPursuit:records.filter(row=>row.qualificationTier==='NOT_RECOMMENDED_DIRECT_PURSUIT').length,
+      recommendationEligible:records.filter(row=>row.recommendationEligible===true).length,
+      rule:'Discovery is not qualification. NAICS/keywords may discover a candidate; P2GC/ORION recommends direct pursuit, teaming/access, recompete, or missed-revenue action only after demonstrated capability and applicable eligibility/access evidence support that action.'
+    };
+
     return {
       ok:true,
       status:records.length ? 'CURRENT_PUBLIC_OPPORTUNITY_CANDIDATES_AVAILABLE' : 'NO_CURRENT_PUBLIC_NAICS_MATCHES_FOUND',
@@ -267,11 +325,13 @@ class CurrentPublicOpportunityMatchService {
         returned:records.length,
         directCapabilitySupported:records.filter(row=>row.directPursuitCapabilitySupported===true).length,
         capabilityValidationRequired:records.filter(row=>row.directPursuitCapabilitySupported!==true).length,
+        qualification,
         lookupMs:indexed.lookupMs,
         totalMatchMs:Date.now()-started,
         indexKind:indexed.cacheKind,
         rule:'Exact NAICS discovers candidates only. Direct-fit support additionally requires demonstrated capability evidence from current GSA scope, authoritative award history, or other current capability evidence. Specialized scope and set-aside eligibility fail closed when not proven.'
       },
+      qualification,
       records,
       blockers:[],
       safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false, restrictedPortalAccess:false }
@@ -285,3 +345,4 @@ module.exports.sourceFileFromReport = sourceFileFromReport;
 module.exports.compatibleSetAside = compatibleSetAside;
 module.exports.scopeClass = scopeClass;
 module.exports.capabilityAssessment = capabilityAssessment;
+module.exports.qualificationTier = qualificationTier;
