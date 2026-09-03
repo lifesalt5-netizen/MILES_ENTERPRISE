@@ -3,11 +3,11 @@
 const fs = require('fs');
 const path = require('path');
 const calendly = require('../CONNECTORS/CALENDLY/connector');
-const gmail = require('../CONNECTORS/GOOGLE/gmail');
+const ionosSmtp = require('../CONNECTORS/IONOS/smtp_governed');
 
 const TARGET_EVENT_TYPE_UUID = String(process.env.MILES_P2GC_CALENDLY_EVENT_TYPE_UUID || 'f3d1c97c-717f-4d20-aca6-18771349fb4d').trim();
 const TARGET_EVENT_NAME = /FEDERAL\s+STRATEGY\s+CALL.*PATHWAYS\s+2\s+GOV(?:ERNMENT|'?T)?\s+CONTRACTING/i;
-const SENDER = String(process.env.MILES_P2GC_MEETING_SENDER || 'kevin@pathways2gc.com').trim().toLowerCase();
+const SENDER = String(process.env.MILES_P2GC_MEETING_SENDER || process.env.IONOS_KEVIN_EMAIL || 'kevin@pathways2gc.com').trim().toLowerCase();
 const REMINDER_WINDOW_MINUTES = Math.max(5, Number(process.env.MILES_P2GC_24H_REMINDER_WINDOW_MINUTES || 10));
 
 function clean(v){ return String(v == null ? '' : v).trim(); }
@@ -24,12 +24,12 @@ class P2GCCalendlyReminderGuardService {
     this.evidenceFile=path.join(this.rootDir,'DATA','operational_acceptance','latest_p2gc_calendly_reminder_guard.json');
     this.now=typeof options.now==='function' ? options.now : () => new Date();
     this.calendly=options.calendly || calendly;
-    this.gmail=options.gmail || gmail;
+    this.mailer=options.mailer || ionosSmtp;
   }
 
   readState(){
     try { return JSON.parse(fs.readFileSync(this.stateFile,'utf8').replace(/^\uFEFF/,'')); }
-    catch { return { version:2, records:{} }; }
+    catch { return { version:3, records:{} }; }
   }
   writeJsonAtomic(file,value){
     fs.mkdirSync(path.dirname(file),{recursive:true});
@@ -77,15 +77,16 @@ class P2GCCalendlyReminderGuardService {
   }
 
   async sendReminder(event,invitee){
+    if (SENDER !== ionosSmtp.KEVIN_EMAIL) throw new Error('P2GC_REMINDER_SENDER_MUST_BE_IONOS_KEVIN');
     const message=this.reminderMessage(event,invitee);
-    return this.gmail.sendEmail({ account:SENDER, from:SENDER, replyTo:SENDER, to:invitee.email, subject:message.subject, text:message.text });
+    return this.mailer.sendEmail({ from:SENDER, replyTo:SENDER, to:invitee.email, subject:message.subject, text:message.text });
   }
 
   async runOnce(){
     const now=this.now();
     const nowIso=now.toISOString();
     const state=this.readState();
-    state.version=2;
+    state.version=3;
     state.records=state.records && typeof state.records==='object' ? state.records : {};
     const actions=[];
     const failures=[];
@@ -123,8 +124,6 @@ class P2GCCalendlyReminderGuardService {
         const createdAt=isValidDate(invitee.created_at) ? invitee.created_at : record.firstSeenAt;
         const untilStartMinutes=minutesBetween(event.start_time,nowIso);
 
-        // Calendly itself owns the immediate booking confirmation/calendar invitation. MILES
-        // records that provider responsibility instead of sending a second immediate email.
         if(!record.immediateConfirmationProvider){
           record.immediateConfirmationProvider='CALENDLY_NATIVE_BOOKING_CONFIRMATION';
           record.immediateConfirmationObservedFromBookingAt=createdAt;
@@ -138,7 +137,7 @@ class P2GCCalendlyReminderGuardService {
             record.reminder24hSentAt=sent.sentAt||nowIso;
             record.reminder24hMessageId=sent.messageId||null;
             record.reminder24hMode='ON_TIME_WINDOW';
-            actions.push({type:'REMINDER_24H_SENT',event:event.name,invitee:invitee.email,startTime:event.start_time,messageId:sent.messageId||null});
+            actions.push({type:'REMINDER_24H_SENT',event:event.name,invitee:invitee.email,startTime:event.start_time,provider:'IONOS_SMTP',messageId:sent.messageId||null});
           } catch(error){ failures.push(`REMINDER24_SEND:${invitee.email}:${error.message}`); }
         } else if(!record.reminder24hSentAt && bookedInside24h && !record.reminder24hNotApplicableAt){
           record.reminder24hNotApplicableAt=nowIso;
@@ -154,6 +153,7 @@ class P2GCCalendlyReminderGuardService {
 
     state.lastRunAt=nowIso;
     state.sender=SENDER;
+    state.mailProvider='IONOS_SMTP';
     state.targetEventTypeUuid=TARGET_EVENT_TYPE_UUID;
     this.writeState(state);
     const result={
@@ -166,7 +166,7 @@ class P2GCCalendlyReminderGuardService {
       cadenceTargetSeconds:60,
       policy:{
         immediateConfirmation:{ provider:'CALENDLY_NATIVE_BOOKING_CONFIRMATION', duplicateP2GCEmailSuppressed:true },
-        reminder24HoursBefore:{ provider:'MILES_GMAIL_FALLBACK', sender:SENDER, windowMinutes:REMINDER_WINDOW_MINUTES },
+        reminder24HoursBefore:{ provider:'MILES_IONOS_SMTP', sender:SENDER, windowMinutes:REMINDER_WINDOW_MINUTES },
         duplicateSuppression:true,
         bookedInside24Hours:'CALENDLY_IMMEDIATE_CONFIRMATION_ONLY_BECAUSE_A_24H_REMINDER_IS_NO_LONGER_TEMPORALLY_POSSIBLE'
       },
