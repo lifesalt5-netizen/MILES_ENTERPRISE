@@ -12,7 +12,23 @@ function compact(value) { return normalize(value).replace(/\s+/g, ''); }
 function canonical(value) {
   const suffixes = new Set(['LLC','INC','INCORPORATED','CORP','CORPORATION','COMPANY','CO','LTD','LIMITED','LP','LLP','PLLC']);
   const tokens = normalize(value).split(' ').filter(Boolean);
-  while (tokens.length && suffixes.has(tokens[tokens.length - 1])) tokens.pop();
+  let changed = true;
+  while (tokens.length && changed) {
+    changed = false;
+    if (suffixes.has(tokens[tokens.length - 1])) {
+      tokens.pop();
+      changed = true;
+      continue;
+    }
+    for (let width = Math.min(4, tokens.length); width >= 2; width -= 1) {
+      const tail = tokens.slice(-width);
+      if (tail.every(token => token.length === 1) && suffixes.has(tail.join(''))) {
+        tokens.splice(tokens.length - width, width);
+        changed = true;
+        break;
+      }
+    }
+  }
   return tokens.join(' ');
 }
 function canonicalCompact(value) { return canonical(value).replace(/\s+/g, ''); }
