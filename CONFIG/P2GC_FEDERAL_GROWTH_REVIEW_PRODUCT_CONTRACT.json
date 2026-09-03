@@ -1,0 +1,196 @@
+{
+  "version": "2026-09-03.1",
+  "product": {
+    "publicHubName": "Federal Growth Academy",
+    "personalizedReviewName": "Personalized Federal Growth Review",
+    "primaryCta": "Get Your Free Personalized Federal Growth Review",
+    "primaryAdvisorRole": "P2GC Federal Growth Advisor",
+    "targetRuntimeMinutes": { "min": 6, "max": 10 },
+    "reviewHost": "P2GC_PLATFORM"
+  },
+  "greenDefinition": {
+    "mode": "END_TO_END_ONLY",
+    "requiredStages": [
+      "PROSPECT_INTAKE",
+      "COMPANY_RESOLUTION",
+      "VERIFIED_INTELLIGENCE",
+      "ACCURATE_FINDINGS",
+      "PERSONALIZED_SCRIPT",
+      "PROFESSIONAL_AI_DEMO",
+      "KEVIN_APPROVAL",
+      "SECURE_SEND_FROM_KEVIN",
+      "AUTHORIZED_ACCESS",
+      "PLAYBACK_TRACKING",
+      "QUESTION_CAPTURE",
+      "SCHEDULING",
+      "KEVIN_CLOSE_BRIEF",
+      "PACKAGE_PROPOSAL_PAYMENT_HANDOFF",
+      "REVENUE_ATTRIBUTION"
+    ],
+    "partialTechnicalSuccessIsGreen": false
+  },
+  "security": {
+    "private": true,
+    "authenticated": true,
+    "noIndex": true,
+    "downloadable": false,
+    "defaultExpirationHours": 72,
+    "allowedExpirationHours": [48, 72],
+    "recipientBinding": ["APPROVED_EMAIL", "APPROVED_COMPANY_DOMAIN"],
+    "outsideForwardingGrantsAccess": false,
+    "sameCompanyColleagueAccess": "AUTHORIZATION_REQUIRED",
+    "videoDelivery": "SIGNED_SHORT_LIVED_TOKEN",
+    "directMediaFileExposure": false,
+    "dynamicWatermark": ["RECIPIENT", "COMPANY"],
+    "concurrentSessionLimitRequired": true,
+    "suspiciousAccessDetectionRequired": true,
+    "screenRecordingClaim": "DETER_AND_TRACE_NOT_IMPOSSIBLE",
+    "serverSideOnly": [
+      "ORION_LOGIC",
+      "MILES_LOGIC",
+      "PROMPTS",
+      "SCORING_LOGIC",
+      "FULL_DATASETS",
+      "MATCHING_LOGIC",
+      "PRIVATE_INTERNAL_APIS"
+    ],
+    "internalNetworkProtection": "TAILSCALE_OR_EQUIVALENT",
+    "prospectSpecialSoftwareRequired": false
+  },
+  "dataTruthRules": {
+    "unknownEqualsZero": false,
+    "stalePresentedAsCurrent": false,
+    "expiredOpportunityPresentedAsActive": false,
+    "distinguishPrimeVsSubAwards": true,
+    "distinguishVehicleOwnershipVsPerformance": true,
+    "fabricatedClaimsAllowed": false,
+    "guaranteedAwardsOrRevenueAllowed": false,
+    "materialFindingInternalMetadata": ["SOURCE", "FRESHNESS", "CONFIDENCE", "VERIFICATION_STATE"]
+  },
+  "personalizedReview": {
+    "explanationRequirements": ["FINDING", "WHAT_IT_MEANS", "WHY_IT_MATTERS", "BUSINESS_IMPACT", "HOW_P2GC_ADDRESSES_IT"],
+    "dynamicSections": [
+      "CURRENT_GOVERNMENT_POSITION",
+      "WHAT_IS_WORKING",
+      "AWARD_REVENUE_POSITION",
+      "AGENCY_POSITION",
+      "VEHICLE_GSA_VA_POSITION",
+      "PRIME_SUB_POSITION",
+      "CERTIFICATION_POSITION",
+      "OPPORTUNITY_ENVIRONMENT",
+      "RECOMPETE_REVENUE_EXPOSURE",
+      "POSITION_VS_MARKET",
+      "FEDERAL_GROWTH_GAPS",
+      "P2GC_DIAGNOSIS",
+      "RECOMMENDED_P2GC_PATHWAY",
+      "NEXT_STEP"
+    ],
+    "freeReviewBoundary": {
+      "representativeFindings": true,
+      "lockedAdditionalValueIndicators": true,
+      "withhold": [
+        "COMPLETE_BUYER_LISTS",
+        "FULL_OPPORTUNITY_LISTS",
+        "ALL_PRIME_SUB_TARGETS",
+        "DETAILED_CAPTURE_PLAN",
+        "COMPLETE_OUTREACH_STRATEGY",
+        "PRICING_STRATEGY",
+        "FULL_30_60_90_IMPLEMENTATION"
+      ]
+    }
+  },
+  "engagementTracking": [
+    "SEND",
+    "DELIVERY",
+    "AUTHENTICATED_REVIEW_ACCESS",
+    "VIDEO_START",
+    "VIDEO_25",
+    "VIDEO_50",
+    "VIDEO_75",
+    "VIDEO_90",
+    "VIDEO_COMPLETE",
+    "REPEAT_VISIT",
+    "CTA_CLICK",
+    "QUESTION_SUBMITTED",
+    "SCHEDULING_OPENED",
+    "MEETING_BOOKED",
+    "PROPOSAL_CREATED",
+    "PROPOSAL_SENT",
+    "CLOSE",
+    "PAYMENT",
+    "REVENUE_ATTRIBUTION"
+  ],
+  "salesScoring": {
+    "separateScoresRequired": ["FIT_SCORE", "INTENT_SCORE"],
+    "combinedScore": "SALES_PRIORITY",
+    "fitInputs": "ORION_COMPANY_INTELLIGENCE",
+    "intentInputs": "ENGAGEMENT_BEHAVIOR",
+    "doNotCollapseFitAndIntent": true
+  },
+  "postReview": {
+    "meaningfulCompletionThresholdPct": 75,
+    "meetingLengthMinutes": { "min": 15, "max": 20 },
+    "meetingDeadlineBusinessDays": 2,
+    "useRealCalendarAvailability": true,
+    "captureQuestionsBeforeCall": true,
+    "priorityQuestion": "What would you most like to address first?",
+    "priorityOptionsSource": "ACTUAL_COMPANY_FINDINGS",
+    "prepareKevinCloseBriefAutomatically": true
+  },
+  "automationScope": [
+    "RESEARCH",
+    "DIAGNOSIS",
+    "SCRIPT_GENERATION",
+    "AI_VIDEO_GENERATION",
+    "SECURE_REVIEW_PAGE",
+    "EMAIL_DRAFT_SEND",
+    "ENGAGEMENT_TRACKING",
+    "CONTEXTUAL_FOLLOW_UP",
+    "SCHEDULING",
+    "QUESTION_CAPTURE",
+    "KEVIN_CLOSE_BRIEF",
+    "PROPOSAL_DRAFT",
+    "ATTRIBUTION"
+  ],
+  "kevinApprovalScope": [
+    "PERSONALIZED_RELEASES_INITIAL_PHASE",
+    "UNUSUAL_PRICING",
+    "FINAL_QUESTIONS",
+    "NEGOTIATION",
+    "CLOSING"
+  ],
+  "publicContent": {
+    "avatars": { "min": 4, "max": 6, "recurring": true, "specialtyBased": true },
+    "guidedJourneys": ["NEW_ENTRANTS", "GSA", "ESTABLISHED_CONTRACTORS", "PRIME_SUB"],
+    "cornerstones": [
+      "SAM",
+      "GSA_NO_SALES",
+      "VEHICLE_ACTIVATION",
+      "AGENCY_TARGETING",
+      "RFP_TIMING",
+      "RECOMPETES",
+      "PRIME_SUB_STRATEGY",
+      "CERTIFICATIONS",
+      "PROPOSAL_WIN_ISSUES",
+      "P2GC_DIAGNOSIS",
+      "FEDERAL_PATHWAY_VALIDATION"
+    ],
+    "recurringSeries": "Federal Growth Signal",
+    "reuseChannels": ["WEBSITE", "LINKEDIN", "EMAIL", "NURTURE", "DEMO_MODULES", "SHORT_CLIPS", "TRANSCRIPTS", "ARTICLES", "CAROUSELS", "CHECKLISTS"],
+    "assetRegistryRequired": true,
+    "freshnessRulesRequired": true,
+    "abTestingRequired": true,
+    "revenueAttributionRequired": true,
+    "optimizationGoal": ["MEETINGS", "CLOSES", "REVENUE"]
+  },
+  "crmExceptions": {
+    "DELUNE_GADDAFI": {
+      "status": "NO-CONTACT / RESCHEDULE REQUESTED",
+      "prospectRejection": false,
+      "note": "Kevin manually cancelled after calling and receiving no answer, then sent a reschedule email."
+    }
+  },
+  "emailSecurityNotes": {
+    "IONOS_EMAIL_ADMINISTRATOR_NOTICE": "PHISHING_DELETED"
+  }
+}
