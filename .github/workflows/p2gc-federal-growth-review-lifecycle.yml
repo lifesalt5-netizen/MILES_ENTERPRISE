@@ -4,18 +4,24 @@ on:
   push:
     paths:
       - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'CONNECTORS/IONOS/smtp_governed.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
+      - 'TESTS/p2gc_federal_growth_review_verification.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
   pull_request:
     paths:
       - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'CONNECTORS/IONOS/smtp_governed.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
+      - 'TESTS/p2gc_federal_growth_review_verification.test.js'
 
 jobs:
   lifecycle-contract:
@@ -30,9 +36,15 @@ jobs:
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js
       - name: Syntax check secure access service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js
+      - name: Syntax check recipient verification service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js
+      - name: Syntax check governed IONOS sender
+        run: node --check CONNECTORS/IONOS/smtp_governed.js
       - name: Verify product contract JSON
         run: node -e "const c=require('./CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'); if(c.greenDefinition.partialTechnicalSuccessIsGreen!==false) process.exit(2); if(!c.greenDefinition.requiredStages.includes('REVENUE_ATTRIBUTION')) process.exit(2); if(c.security.downloadable!==false) process.exit(2); console.log('P2GC_PRODUCT_CONTRACT_GREEN')"
       - name: Run lifecycle regression
         run: node TESTS/p2gc_federal_growth_review_lifecycle.test.js
       - name: Run secure access regression
         run: node TESTS/p2gc_federal_growth_review_access.test.js
+      - name: Run recipient verification regression
+        run: node TESTS/p2gc_federal_growth_review_verification.test.js
