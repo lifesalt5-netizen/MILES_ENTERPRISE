@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sales-preview-proof-20260903-022",
+  "id": "miles-p2gc-delune-proof-value-semantics-deploy-20260903-023",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the live DeLune acceptance and capture exact prospect-facing commercial preview totals and visibility: current opportunities count and defensible known value, prime/team candidate count, recompete count/value, buyer and agency counts, competitors, vehicles, shown versus locked counts, and top sample records. Preserve GREEN truth rules and read-only safety."
+  "note": "Deploy latest main fixing paid-unlock monetary proof semantics so missing/blank/zero-like opportunity or recompete values are treated as undisclosed unless a positive known value is present. Preserve evidence-backed prime discovery and all prior DeLune GREEN truth/performance safeguards. Restart p2gc-growth-demo when source is newer and publish evidence."
 }
