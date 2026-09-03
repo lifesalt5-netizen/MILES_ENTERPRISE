@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-google-vids-editor-avatar-audit-20260904-071",
+  "id": "miles-p2gc-google-vids-editor-avatar-audit-20260904-072",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment and Google Vids editor avatar eligibility proof. Use an already-authenticated Pathways Workspace session. A blank test Vids draft may be created only if required to enter the editor. Do not generate an avatar/video, share content, change subscriptions/accounts, send email, or incur a paid action."
+  "note": "Rerun the governed Federal Growth Review deployment with the improved Google Vids editor avatar proof. Follow the real Start a new video / Blank video flow on an already-authenticated Pathways Workspace session. Do not generate an avatar/video, share content, change subscriptions/accounts, send email, or incur a paid action."
 }
