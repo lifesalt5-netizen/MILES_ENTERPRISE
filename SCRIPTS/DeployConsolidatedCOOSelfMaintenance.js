@@ -9,7 +9,8 @@ const ROOT = path.resolve(__dirname, '..');
 const REQUIRED_PM2_APPS = [
   'miles-worker',
   'miles-autonomous-coo',
-  'miles-command-center'
+  'miles-command-center',
+  'p2gc-growth-demo'
 ];
 const REMOTE_BRIDGE_SUPERVISED = ['1', 'true', 'yes', 'y', 'on']
   .includes(String(process.env.MILES_BRIDGE_SUPERVISED || '').trim().toLowerCase());
@@ -207,6 +208,25 @@ async function waitForDashboard() {
   throw lastError || new Error('Command Center did not recover within 45 seconds.');
 }
 
+async function waitForGrowthDemo() {
+  const deadline = Date.now() + 45000;
+  let lastError = null;
+  while (Date.now() < deadline) {
+    try {
+      const health = await getJson('http://127.0.0.1:8791/api/health');
+      const capabilities = Array.isArray(health?.capabilities) ? health.capabilities : [];
+      if (health?.ok === true && health?.service === 'P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO' && capabilities.includes('truth_reconciliation')) {
+        return health;
+      }
+      lastError = new Error(`Growth demo health did not prove current canonical runtime: ok=${health?.ok}`);
+    } catch (error) {
+      lastError = error;
+    }
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
+  throw lastError || new Error('P2GC growth demo did not recover within 45 seconds.');
+}
+
 function approvalCount(operations) {
   const pending = new Set(['AWAITING_APPROVAL', 'AWAITING_CEO_APPROVAL', 'WAITING_FOR_CEO_APPROVAL']);
   return Array.isArray(operations)
@@ -226,9 +246,6 @@ async function main() {
   catch (error) { fail('Could not read PM2 state before maintenance.', error.message); }
   const byName = verifyRuntimeOwners(list, beforePid);
 
-  // Run MILES' bounded self-maintenance directly from the newly deployed source.
-  // It may cancel only proven stale false approvals or approvals whose source is terminal.
-  // It never grants approvals, resumes tasks, or deletes queue records.
   let maintenance;
   try {
     const selfMaintenance = require('../SERVICES/SelfMaintenanceService');
@@ -257,18 +274,20 @@ async function main() {
     fail('Self-maintenance reported an unsafe runtime mutation.');
   }
 
-  // Reload worker + Command Center immediately. When this helper is launched by
-  // the supervised remote bridge, restarting miles-autonomous-coo here would
-  // kill the bridge before it can persist completion/evidence and the same
-  // directive would be picked up again. In that mode, schedule the autonomous
-  // COO restart only after this helper exits and the bridge has recorded result.
+  // Reload all independently served production surfaces that consume deployed code.
+  // In bridge-supervised mode the autonomous COO itself is restarted by its owner
+  // only after remote completion evidence is persisted, avoiding directive replay.
   restartKnownApp(byName.get('miles-worker'));
   if (!REMOTE_BRIDGE_SUPERVISED) {
     restartKnownApp(byName.get('miles-autonomous-coo'));
   }
   restartKnownApp(byName.get('miles-command-center'));
+  restartKnownApp(byName.get('p2gc-growth-demo'));
 
-  const dashboard = await waitForDashboard();
+  const [dashboard, growthDemoHealth] = await Promise.all([
+    waitForDashboard(),
+    waitForGrowthDemo()
+  ]);
   const afterPid = listenerPid(8787);
 
   const autonomousRestart = REMOTE_BRIDGE_SUPERVISED
@@ -280,6 +299,8 @@ async function main() {
   console.log(`RUNTIME_APPROVALS_UNTOUCHED=${maintenance?.approvalReconciliation?.untouchedCount ?? 'UNKNOWN'}`);
   console.log(`CANONICAL_APPROVALS_AFTER=${approvalCount(dashboard.operations) ?? 'UNKNOWN'}`);
   console.log(`WORKER_RUNTIME_AWAITING_APPROVAL_AFTER=${dashboard.taskQueue?.awaitingApproval ?? 'UNKNOWN'}`);
+  console.log(`P2GC_GROWTH_DEMO_HEALTH_AFTER=${growthDemoHealth?.ok === true ? 'GREEN' : 'RED'}`);
+  console.log(`P2GC_GROWTH_DEMO_SERVICE_AFTER=${growthDemoHealth?.service || 'UNKNOWN'}`);
   console.log(`PORT_8787_PID_BEFORE=${beforePid}`);
   console.log(`PORT_8787_PID_AFTER=${afterPid || 'UNKNOWN'}`);
   console.log(`REMOTE_BRIDGE_SUPERVISED=${REMOTE_BRIDGE_SUPERVISED}`);
