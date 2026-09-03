@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-prime-discovery-deploy-20260903-020",
+  "id": "miles-p2gc-delune-prime-discovery-acceptance-20260903-021",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing read-only evidence-backed prime/team candidate discovery from the validated FY2026 sidecar. Preserve explicit MODELED/VALIDATION_REQUIRED semantics, no invented relationships or contacts, exact proof totals, and all previously green DeLune truth/performance safeguards. Restart p2gc-growth-demo when source is newer and publish evidence."
+  "note": "Run the combined live DeLune acceptance after evidence-backed prime candidate discovery deployment. Confirm prior GREEN truth/performance remains intact and verify prime/team candidates are evidence-backed modeled candidates only, contacts are not invented, proof totals remain exact, and live assessment/opportunity/vehicle/recompete/teaming endpoints remain client-safe. Read-only."
 }
