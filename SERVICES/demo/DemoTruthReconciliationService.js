@@ -1,5 +1,13 @@
 "use strict";
 
+// Runtime policy: canonical company evidence (award history + current vehicle truth) must
+// hydrate before opportunity qualification. This patch is installed here because this
+// reconciliation module loads before the canonical service in both the live server and
+// the governed readiness audit, keeping both execution paths on the same semantics.
+const CanonicalBase = require('./ExecutiveBlueprintCanonicalTruthService');
+const EvidenceFirstCanonical = require('./EvidenceFirstExecutiveBlueprintCanonicalTruthService');
+CanonicalBase.prototype.hydrate = EvidenceFirstCanonical.prototype.hydrate;
+
 function clean(value) { return String(value == null ? "" : value).trim(); }
 function list(value) { return Array.isArray(value) ? value.filter(Boolean) : []; }
 function uniq(values) { return [...new Set((values || []).map(clean).filter(Boolean))]; }
@@ -116,7 +124,8 @@ class DemoTruthReconciliationService {
         "AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT",
         "NO_EXISTING_VEHICLE_ADVICE_WITHOUT_VEHICLE_EVIDENCE",
         "NO_BUYER_CONCENTRATION_CLAIM_WITHOUT_BUYER_HISTORY",
-        "CONFLICTED_REVENUE_BLOCKS_REVENUE_MODEL"
+        "CONFLICTED_REVENUE_BLOCKS_REVENUE_MODEL",
+        "COMPANY_EVIDENCE_HYDRATES_BEFORE_OPPORTUNITY_QUALIFICATION"
       ],
       reconciledAt: new Date().toISOString()
     };
