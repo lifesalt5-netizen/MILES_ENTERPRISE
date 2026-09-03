@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - 'SCRIPTS/DeployP2GCFederalGrowthReviewFunnelPaths.js'
+      - 'SCRIPTS/DeployP2GCFederalGrowthReview.js'
       - '.github/workflows/p2gc-federal-growth-review-funnel-paths.yml'
   pull_request:
     paths:
       - 'SCRIPTS/DeployP2GCFederalGrowthReviewFunnelPaths.js'
+      - 'SCRIPTS/DeployP2GCFederalGrowthReview.js'
       - '.github/workflows/p2gc-federal-growth-review-funnel-paths.yml'
 
 jobs:
@@ -21,17 +23,22 @@ jobs:
           node-version: '20'
       - name: Syntax check transactional Funnel router
         run: node --check SCRIPTS/DeployP2GCFederalGrowthReviewFunnelPaths.js
+      - name: Syntax check governed review deployment
+        run: node --check SCRIPTS/DeployP2GCFederalGrowthReview.js
       - name: Verify prospect-only routing safety contract
         run: |
           node - <<'NODE'
           const fs=require('fs');
-          const s=fs.readFileSync('SCRIPTS/DeployP2GCFederalGrowthReviewFunnelPaths.js','utf8');
-          const must=["{path:'/review'","{path:'/api/review'","--set-path=${entry.path}","'off'","P2GC_REVIEW_FUNNEL_PATHS_ROLLED_BACK","P2GC_PUBLIC_REVIEW_BASE_URL"];
-          for(const x of must) if(!s.includes(x)) throw new Error('MISSING_SAFETY_MARKER:'+x);
-          if(/funnel['\",\s]+reset|['\"]reset['\"]/.test(s)) throw new Error('FUNNEL_RESET_FORBIDDEN');
-          if(/set-path[^\n]*api\/admin/i.test(s)) throw new Error('ADMIN_ROUTE_MOUNT_FORBIDDEN');
-          if(!s.includes("adminBlocked")) throw new Error('ADMIN_BLOCK_ACCEPTANCE_REQUIRED');
-          if(!s.includes("rootPreserved")) throw new Error('EXISTING_ROOT_ACCEPTANCE_REQUIRED');
-          if(!s.includes("writeEnv(originalEnv)")) throw new Error('ENV_ROLLBACK_REQUIRED');
+          const r=fs.readFileSync('SCRIPTS/DeployP2GCFederalGrowthReviewFunnelPaths.js','utf8');
+          const d=fs.readFileSync('SCRIPTS/DeployP2GCFederalGrowthReview.js','utf8');
+          const must=["{path:'/review'","{path:'/api/review'","--set-path=${e.path}","'off'","P2GC_REVIEW_FUNNEL_PATHS_ROLLED_BACK","P2GC_PUBLIC_REVIEW_BASE_URL"];
+          for(const x of must) if(!r.includes(x)) throw new Error('MISSING_SAFETY_MARKER:'+x);
+          if(/funnel['\",\s]+reset|['\"]reset['\"]/.test(r)) throw new Error('FUNNEL_RESET_FORBIDDEN');
+          if(/set-path[^\n]*api\/admin/i.test(r)) throw new Error('ADMIN_ROUTE_MOUNT_FORBIDDEN');
+          if(!r.includes('adminBlocked')) throw new Error('ADMIN_BLOCK_ACCEPTANCE_REQUIRED');
+          if(!r.includes('rootPreserved')) throw new Error('EXISTING_ROOT_ACCEPTANCE_REQUIRED');
+          if(!r.includes('writeEnv(originalEnv)')) throw new Error('ENV_ROLLBACK_REQUIRED');
+          if(!d.includes("DeployP2GCFederalGrowthReviewFunnelPaths.js")) throw new Error('GOVERNED_DEPLOY_MUST_INVOKE_ROUTER');
+          if(!d.includes('P2GC_REVIEW_PUBLIC_INGRESS_POST_DEPLOY_NOT_GREEN')) throw new Error('POST_DEPLOY_INGRESS_GATE_REQUIRED');
           console.log('P2GC_FUNNEL_ROUTER_SAFETY_GREEN');
           NODE
