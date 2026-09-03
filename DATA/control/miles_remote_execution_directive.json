@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-funnel-runpy-path-audit-20260904-079",
+  "id": "miles-p2gc-funnel-parentchain-audit-20260904-080",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the strengthened read-only ingress audit to locate the full run.py gateway candidate path under the P2GC host directories. Preserve public admin blocking. Do not mutate Funnel/Serve/DNS/networking, send email, or generate video content."
+  "note": "Run the strengthened read-only Funnel gateway trace. Report the python run.py process parent chain and search P2GC parent, USERPROFILE, ProgramData, and TEMP for run.py candidates. Preserve public admin blocking. Do not mutate networking, gateway files, subscriptions, email, or video content."
 }
