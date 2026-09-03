@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sam-neutral-identity-build-20260903-032",
+  "id": "miles-p2gc-delune-sam-complete-final-acceptance-20260903-033",
   "enabled": true,
-  "job": "SAM_QUALIFIED_UNIVERSE_BUILD",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Build both the neutral all-public SAM identity index and the separate marketing-qualified SAM universe from the staged official August 2026 SAM public entity extract. Validate SQLite integrity and preserve staging-only/no-production-write safety. This is required to resolve DeLune current SAM identity and CAGE independently of the invalid targeted API key."
+  "note": "Run complete final DeLune end-to-end acceptance using the newly built neutral official SAM public identity index. Require DeLune name resolution, exact UEI continuity, current SAM status and CAGE from SAM_PUBLIC_ENTITY_REGISTRATION_BULK_V2 when present, certifications remaining unverified unless separately proven, authoritative award/GSA/opportunity/recompete/buyer/prime truth, exact proof totals, live browser sales-story assets, JS syntax, responsive and print CSS, healthy endpoints, and no contradictions or false zeros. The targeted SAM API 401 may be reported diagnostically but must not be required because public bulk identity is now authoritative. Read-only acceptance; publish evidence."
 }
