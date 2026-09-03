@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-acceptance-speed-deploy-20260902-017",
+  "id": "miles-executive-blueprint-live-production-truth-rerun-20260902-018",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main merge 465d8e82b56de364c18611e9a7cb24f2d4b18a25 including the single-refresh live demo acceptance fix. Preserve canonical truth, fail-closed evidence rules, and existing safety boundaries. Do not mutate campaigns, DNS, billing, credentials, or customer data."
+  "note": "Rerun production truth reconciliation after deploying main merge 465d8e82b56de364c18611e9a7cb24f2d4b18a25 with one canonical refresh per company. Restart p2gc-growth-demo if current source is newer and run live acceptance including Sera Brynn LLC. Preserve fail-closed truth rules; no campaign, DNS, billing, credential, or customer-data mutation."
 }
