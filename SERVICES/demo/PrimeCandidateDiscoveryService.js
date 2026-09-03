@@ -27,7 +27,7 @@ class PrimeCandidateDiscoveryService{
     const source=this.sourceStatus();
     if(!source.usable)return {ok:false,status:'PRIME_DISCOVERY_SIDECAR_UNAVAILABLE',records:[],source};
     const prospectUei=clean(model?.profile?.uei).toUpperCase();
-    const naics=uniq(list(model?.profile?.naicsCodes).map(x=>clean(x).replace(/\D/g,'')).filter(x=>x.length>=5)).slice(0,8);
+    const naics=uniq(list(model?.profile?.naicsCodes).map(x=>clean(x).replace(/\D/g,'')).filter(x=>x.length>=5)).slice(0,20);
     const agencies=uniq([
       ...list(model?.buyerIntelligence?.records).map(x=>x?.agency),
       ...list(model?.agencyAlignment?.agencies).map(x=>x?.agency)
@@ -74,6 +74,7 @@ class PrimeCandidateDiscoveryService{
       const summaryStmt=db.prepare('SELECT federal_obligations, award_count FROM orion_contractor_fy2026_summary WHERE uei=?');
       const nameStmt=db.prepare(`SELECT recipient_name FROM orion_award_refresh_fy2026 WHERE uei=? AND COALESCE(recipient_name,'')<>'' ORDER BY ABS(obligation) DESC LIMIT 1`);
       const naicsStmt=naics.length?db.prepare(`SELECT COUNT(*) AS n FROM orion_award_refresh_fy2026 WHERE uei=? AND naics_code IN (${naics.map(()=>'?').join(',')})`):null;
+      const naicsBreakdownStmt=naics.length?db.prepare(`SELECT naics_code, COUNT(*) AS n, SUM(ABS(obligation)) AS obligations FROM orion_award_refresh_fy2026 WHERE uei=? AND naics_code IN (${naics.map(()=>'?').join(',')}) GROUP BY naics_code ORDER BY obligations DESC, n DESC`):null;
       const result=[];
       for(const row of candidates){
         const uei=clean(row.uei).toUpperCase();
@@ -84,6 +85,8 @@ class PrimeCandidateDiscoveryService{
         const name=clean(nameStmt.get(uei)?.recipient_name);
         if(!name)continue;
         const sameNaicsAwards=naicsStmt?Number(naicsStmt.get(uei,...naics)?.n||0):0;
+        const matchedNaicsRows=naicsBreakdownStmt?naicsBreakdownStmt.all(uei,...naics):[];
+        const matchedNaics=matchedNaicsRows.map(x=>clean(x.naics_code)).filter(Boolean);
         const sharedAgencies=uniq(clean(row.shared_agencies).split(',')).filter(Boolean);
         const scaleSignal=prospectFederal<=0||federal>prospectFederal;
         const evidenceSignals=(sharedAgencies.length?1:0)+(sameNaicsAwards>0?1:0)+(scaleSignal?1:0);
@@ -98,10 +101,12 @@ class PrimeCandidateDiscoveryService{
           agencies:sharedAgencies,
           fitScore:score,
           sameNaicsAwardCount:sameNaicsAwards,
-          basis:`Validated FY2026 prime-award evidence: ${sharedAgencies.length?`${sharedAgencies.length} shared buyer agenc${sharedAgencies.length===1?'y':'ies'}`:'buyer overlap unavailable'}${sameNaicsAwards?`; ${sameNaicsAwards} award${sameNaicsAwards===1?'':'s'} in prospect NAICS`:''}${scaleSignal?'; larger current federal obligation scale':''}.`,
+          matchedNaics,
+          matchedNaicsEvidence:matchedNaicsRows.map(x=>({naics:clean(x.naics_code),awardCount:Number(x.n||0),federalObligations:Math.abs(num(x.obligations)||0)})),
+          basis:`Validated FY2026 prime-award evidence: ${sharedAgencies.length?`${sharedAgencies.length} shared buyer agenc${sharedAgencies.length===1?'y':'ies'}`:'buyer overlap unavailable'}${sameNaicsAwards?`; ${sameNaicsAwards} award${sameNaicsAwards===1?'':'s'} in prospect NAICS${matchedNaics.length?` (${matchedNaics.join(', ')})`:''}`:''}${scaleSignal?'; larger current federal obligation scale':''}.`,
           confidence:'MODELED_CANDIDATE_VALIDATED_AWARD_INPUTS',
           partnerStatus:'MODELED_PRIME_TEAMING_CANDIDATE',
-          evidence:{authority:'USAspending.gov validated FY2026 sidecar',sharedAgencies,sameNaicsAwardCount:sameNaicsAwards,federalObligations:federal,sourceReport:source.reportPath},
+          evidence:{authority:'USAspending.gov validated FY2026 sidecar',sharedAgencies,sameNaicsAwardCount:sameNaicsAwards,matchedNaics,federalObligations:federal,sourceReport:source.reportPath},
           disclosure:'Candidate is evidence-backed for prime/team research, not a confirmed existing subcontracting relationship. Validate current contract, vehicle, capability whitespace and SBLO contact before outreach.'
         });
       }
