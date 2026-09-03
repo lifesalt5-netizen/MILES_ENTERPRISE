@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-live-qualification-gap-acceptance-20260903-055",
+  "id": "miles-p2gc-evidence-first-qualification-deploy-20260903-056",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run read-only live acceptance on the fresh P2GC qualification-gap build. For DeLune and Kebros, report opportunity qualification counts and sample records including qualificationTier, allowedAction, recommendationEligible, nearFit, materialGapCount, missingRequirements, and gapClosureOptions. Required rule: discovered candidates are not qualified pursuits; near-fit one-gap records remain visible with explicit closure path; validation-required/not-recommended records cannot be represented as missed revenue or direct pursuit. Also confirm prior DeLune truth remains green and Kebros remains protected from MAS-non-holder => no-vehicle inference while broader vehicle discovery is still incomplete."
+  "note": "Deploy main revision 40166d898fa855b33cfb33c0be4a91ec9e9e2da1 and all commits listed in SERVICES/demo/P2GC_DEPLOY_REVISION.json. Critical rule: authoritative company evidence must hydrate before opportunity qualification. Run evidence_first_opportunity_qualification.test.js plus the existing capability/gap tests. Restart p2gc-growth-demo and unified 8787 gateway. After restart, preserve all DeLune/Kebros truth safeguards, award-history expansion, set-aside fail-closed behavior, semantic dedupe and vehicle-scope semantics. Do not integrate FederalVehicleInventoryService yet; its parser remains isolated pending validation."
 }
