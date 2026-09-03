@@ -119,6 +119,25 @@ function normalizeUnknownRevenue(model) {
   }
 }
 
+function enforceEvidenceBackedReadiness(model) {
+  const readiness = model?.readiness;
+  if (!readiness?.categories) return;
+  const categories = { ...readiness.categories };
+  for (const key of ['marketing','positioning']) {
+    const category = categories[key];
+    const checks = arr(category?.checks);
+    const canonicalEvidence = checks.length > 0 && checks.some(check => clean(check?.label));
+    if (!canonicalEvidence) delete categories[key];
+  }
+  const scored = Object.values(categories).map(category=>num(category?.score)).filter(score=>score!=null);
+  model.readiness = {
+    ...readiness,
+    categories,
+    overall:scored.length ? Math.round(scored.reduce((sum,score)=>sum+score,0)/scored.length) : null,
+    methodology:'Evidence-weighted readiness score using only categories with explicit current checks. Unsupported inherited marketing or positioning scores are withheld rather than treated as verified.'
+  };
+}
+
 class DemoCommercialPreviewService {
   constructor(options = {}) {
     this.previewLimits = {
@@ -179,6 +198,7 @@ class DemoCommercialPreviewService {
     applySetAsideEligibility(model);
     consolidateAgencyAlignment(model);
     scrubRecommendations(model);
+    enforceEvidenceBackedReadiness(model);
   }
 
   apply(model) {
@@ -199,7 +219,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Stale or contradicted recommendations are suppressed after canonical truth hydration.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration.",
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
       primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),
@@ -213,4 +233,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue };
+module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness };
