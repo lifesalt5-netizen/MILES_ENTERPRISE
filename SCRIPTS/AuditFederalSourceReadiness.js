@@ -10,6 +10,7 @@ const HistoricalProspectFallbackService=require('../SERVICES/demo/HistoricalPros
 const DemoTruthReconciliationService=require('../SERVICES/demo/DemoTruthReconciliationService');
 const ExecutiveBlueprintCanonicalTruthService=require('../SERVICES/demo/ExecutiveBlueprintCanonicalTruthService');
 const LiveAcceptance=require('./AuditLiveP2GCDemoAcceptance');
+const UiAcceptance=require('./AuditP2GCDemoUiSurface');
 
 function elapsed(start){return Date.now()-start;}
 function compactModel(model){return {ok:model?.ok===true,status:model?.status||null,company:model?.profile?.companyName||model?.company?.company||null,uei:model?.profile?.uei||model?.company?.uei||null,cage:model?.profile?.cage||null};}
@@ -134,8 +135,10 @@ async function main(){
   const p2gc=await diagnoseP2GC(rootDir,term);
   const live=await runLiveAcceptance(term);
   const salesPreview=await runSalesPreview(term);
-  console.log(JSON.stringify({ok:federal?.ok===true&&p2gc?.ok===true&&live?.ok===true&&salesPreview?.ok===true,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',federalSourceReadiness:federal,p2gcDemoLatency:p2gc,p2gcLiveAcceptance:live,p2gcSalesPreview:salesPreview},null,2));
-  process.exitCode=0;
+  const ui=await UiAcceptance.auditUiSurface();
+  const ok=federal?.ok===true&&p2gc?.ok===true&&live?.ok===true&&salesPreview?.ok===true&&ui?.ok===true;
+  console.log(JSON.stringify({ok,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_END_TO_END_ACCEPTANCE',federalSourceReadiness:federal,p2gcDemoLatency:p2gc,p2gcLiveAcceptance:live,p2gcSalesPreview:salesPreview,p2gcUiSurface:ui},null,2));
+  process.exitCode=ok?0:2;
 }
-if(require.main===module)main().catch(e=>{console.error(JSON.stringify({ok:false,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',error:e.message,stack:e.stack},null,2));process.exitCode=2;});
+if(require.main===module)main().catch(e=>{console.error(JSON.stringify({ok:false,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_END_TO_END_ACCEPTANCE',error:e.message,stack:e.stack},null,2));process.exitCode=2;});
 module.exports={diagnoseP2GC,runLiveAcceptance,runSalesPreview};
