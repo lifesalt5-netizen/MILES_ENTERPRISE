@@ -41,20 +41,22 @@ class P2GCFederalGrowthReviewBuilderService {
     const explicit=model?.evidence?.[key]||null;
     return {
       source:clean(explicit?.authority||explicit?.source||explicit?.sourceName||fallback.source||'P2GC_CANONICAL_CURRENT_TRUTH'),
-      freshness:clean(explicit?.retrievedAt||explicit?.generatedAt||explicit?.asOfDate||fallback.freshness||model?.truthIntegrity?.checkedAt||freshNow()),
+      freshness:clean(explicit?.retrievedAt||explicit?.generatedAt||explicit?.asOfDate||fallback.freshness||''),
       confidence:clean(explicit?.confidence||fallback.confidence||'HIGH'),
       verificationState:clean(explicit?.verificationState||fallback.verificationState||'CONFIRMED')
     };
   }
 
   add(findings,section,title,finding,whatItMeans,whyItMatters,businessImpact,howP2GCAddressesIt,evidence,extra={}){
-    if(!clean(title)||!clean(finding))return;
+    if(!clean(title)||!clean(finding))return false;
+    if(!evidence||!clean(evidence.source)||!clean(evidence.freshness)||!clean(evidence.confidence)||!clean(evidence.verificationState))return false;
     findings.push({
       id:`finding-${findings.length+1}`,
       section,title,finding,whatItMeans,whyItMatters,businessImpact,howP2GCAddressesIt,
       source:evidence.source,freshness:evidence.freshness,confidence:evidence.confidence,verificationState:evidence.verificationState,
       material:true,freePreviewVisibility:extra.freePreviewVisibility||'REPRESENTATIVE',active:extra.active,expired:extra.expired
     });
+    return true;
   }
 
   buildFindings(model){
@@ -124,6 +126,8 @@ class P2GCFederalGrowthReviewBuilderService {
     const model=await this.fetchAssessment(term,input.refresh===true);
     const companyName=clean(model?.profile?.companyName||model?.company?.company);
     if(!companyName)throw new Error('CANONICAL_COMPANY_NAME_UNAVAILABLE');
+    const truthCheckedAt=clean(model?.truthIntegrity?.checkedAt);
+    if(!truthCheckedAt)throw new Error('CANONICAL_TRUTH_FRESHNESS_REQUIRED');
     const findings=this.buildFindings(model);
     if(!findings.length)throw new Error('NO_VERIFIED_REVIEW_FINDINGS_AVAILABLE');
     let review=this.lifecycle.createReview({
@@ -132,10 +136,10 @@ class P2GCFederalGrowthReviewBuilderService {
       expirationHours:input.expirationHours||72
     });
     this.lifecycle.completeStage(review.reviewId,'PROSPECT_INTAKE',{source:'P2GC_REVIEW_INTAKE',freshness:freshNow(),confidence:'HIGH',verificationState:'CONFIRMED'});
-    this.lifecycle.completeStage(review.reviewId,'COMPANY_RESOLUTION',{source:'P2GC_CANONICAL_ASSESSMENT',freshness:freshNow(),confidence:'HIGH',verificationState:'CONFIRMED',notes:`Resolved to ${companyName}${model.profile?.uei?` / ${model.profile.uei}`:''}`});
-    this.lifecycle.completeStage(review.reviewId,'VERIFIED_INTELLIGENCE',{source:'P2GC_CANONICAL_CURRENT_TRUTH',freshness:freshNow(),confidence:'HIGH',verificationState:clean(model.truthIntegrity?.status||'CONFIRMED')});
+    this.lifecycle.completeStage(review.reviewId,'COMPANY_RESOLUTION',{source:'P2GC_CANONICAL_ASSESSMENT',freshness:truthCheckedAt,confidence:'HIGH',verificationState:'CONFIRMED',notes:`Resolved to ${companyName}${model.profile?.uei?` / ${model.profile.uei}`:''}`});
+    this.lifecycle.completeStage(review.reviewId,'VERIFIED_INTELLIGENCE',{source:'P2GC_CANONICAL_CURRENT_TRUTH',freshness:truthCheckedAt,confidence:'HIGH',verificationState:clean(model.truthIntegrity?.status||'CONFIRMED')});
     for(const finding of findings)this.lifecycle.addFinding(review.reviewId,finding);
-    this.lifecycle.completeStage(review.reviewId,'ACCURATE_FINDINGS',{source:'P2GC_REVIEW_BUILDER',freshness:freshNow(),confidence:'HIGH',verificationState:'CONFIRMED',notes:`${findings.length} material findings`});
+    this.lifecycle.completeStage(review.reviewId,'ACCURATE_FINDINGS',{source:'P2GC_REVIEW_BUILDER',freshness:freshNow(),confidence:'HIGH',verificationState:'CONFIRMED',notes:`${findings.length} material findings with source-specific freshness`});
     review=this.lifecycle.read(review.reviewId);
     const script=this.scriptService.build({company:review.company,findings:review.findings});
     review.presentation={
