@@ -3,12 +3,14 @@
 require('dotenv').config();
 const fs=require('fs');
 const path=require('path');
+const {execFileSync}=require('child_process');
 const calendly=require('../CONNECTORS/CALENDLY/connector');
 const gmail=require('../CONNECTORS/GOOGLE/gmail');
 const accountManager=require('../CONNECTORS/GOOGLE/account_manager');
 
 const ROOT=path.resolve(__dirname,'..');
 const OUT_FILE=path.join(ROOT,'DATA','operational_acceptance','latest_p2gc_calendly_reminder_acceptance.json');
+const NATIVE_OUT=path.join(ROOT,'DATA','operational_acceptance','latest_p2gc_calendly_native_reminder_acceptance.json');
 const TARGET_URI=String(process.env.MILES_P2GC_CALENDLY_URL||'https://calendly.com/kevin-pathways2gc/30min').replace(/\/$/,'');
 const TARGET_UUID=String(process.env.MILES_P2GC_CALENDLY_EVENT_TYPE_UUID||'f3d1c97c-717f-4d20-aca6-18771349fb4d').trim();
 const TARGET_NAME=/FEDERAL\s+STRATEGY\s+CALL.*PATHWAYS\s+2\s+GOV(?:ERNMENT|'?T)?\s+CONTRACTING/i;
@@ -17,6 +19,18 @@ const SENDER=String(process.env.MILES_P2GC_MEETING_SENDER||'kevin@pathways2gc.co
 function clean(v){return String(v==null?'':v).trim();}
 function write(payload){fs.mkdirSync(path.dirname(OUT_FILE),{recursive:true});fs.writeFileSync(OUT_FILE,JSON.stringify(payload,null,2),'utf8');console.log(JSON.stringify(payload,null,2));return payload;}
 function eventUuid(uri){const m=clean(uri).match(/\/event_types\/([^/?#]+)/i);return m?m[1]:null;}
+function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch{return null;}}
+
+function tryNativeCalendlyConfiguration(){
+  const script=path.join(ROOT,'SCRIPTS','ConfigureP2GCCalendlyReminderViaGoogleSession.js');
+  if(!fs.existsSync(script)) return {ok:false,status:'NATIVE_CALENDLY_CONFIGURATION_SCRIPT_MISSING'};
+  try{
+    execFileSync(process.execPath,[script],{cwd:ROOT,env:process.env,encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','pipe'],timeout:90000});
+  }catch(error){
+    return readJson(NATIVE_OUT)||{ok:false,status:'NATIVE_CALENDLY_CONFIGURATION_FAILED',error:String(error?.stderr||error?.stdout||error?.message||error)};
+  }
+  return readJson(NATIVE_OUT)||{ok:false,status:'NATIVE_CALENDLY_CONFIGURATION_EVIDENCE_MISSING'};
+}
 
 async function main(){
   const checkedAt=new Date().toISOString();
@@ -38,42 +52,54 @@ async function main(){
   const matches=events.filter(e=>eventUuid(e?.uri)===TARGET_UUID||TARGET_NAME.test(clean(e?.name))||clean(e?.scheduling_uri).replace(/\/$/,'')===TARGET_URI);
   if(matches.length!==1){process.exitCode=2;return write({ok:false,status:'AUTHORIZED_P2GC_EVENT_TYPE_NOT_UNIQUELY_RESOLVED',matchCount:matches.length,activeEventTypes:events.map(e=>({name:e.name,uri:e.uri,scheduling_uri:e.scheduling_uri||null})),checkedAt});}
 
-  const senderHealth=await gmail.healthCheckSender(SENDER);
-  if(senderHealth?.ok!==true){
-    const availableAccounts=await accountManager.healthCheckAccounts().catch(()=>[]);
-    process.exitCode=2;
+  const native=tryNativeCalendlyConfiguration();
+  if(native?.ok===true && native?.verified?.immediateConfirmation===true && native?.verified?.reminder24HoursBefore===true){
     return write({
-      ok:false,
-      status:'P2GC_REMINDER_SENDER_NOT_READY',
+      ok:true,
+      status:'P2GC_CALENDLY_REMINDER_POLICY_GREEN',
+      targetSchedulingUri:TARGET_URI,
       calendlyUser:{email:user.email||null,uri:user.uri},
-      eventType:{name:matches[0].name,uri:matches[0].uri},
-      senderHealth,
-      availableGoogleAccounts:availableAccounts.map(a=>({email:a.email||null,accountKey:a.accountKey,status:a.status,error:a.error||null})),
+      eventType:{name:matches[0].name,uri:matches[0].uri,scheduling_uri:matches[0].scheduling_uri||null},
+      policy:{immediateConfirmation:{enabled:true,provider:'CALENDLY_NATIVE'},reminder24HoursBefore:{enabled:true,provider:'CALENDLY_NATIVE'},duplicateSuppression:true},
+      verified:{immediateConfirmation:true,reminder24HoursBefore:true,nativeCalendly:true},
+      nativeConfiguration:native,
       checkedAt
     });
   }
 
+  const senderHealth=await gmail.healthCheckSender(SENDER);
   const workerFile=path.join(ROOT,'WORKERS','revenueWorker.js');
   const guardFile=path.join(ROOT,'SERVICES','P2GCCalendlyReminderGuardService.js');
   const workerText=fs.existsSync(workerFile)?fs.readFileSync(workerFile,'utf8'):'';
   const guardText=fs.existsSync(guardFile)?fs.readFileSync(guardFile,'utf8'):'';
   const wiringOk=/P2GCCalendlyReminderGuardService/.test(workerText)&&/60000/.test(workerText)&&/REMINDER_24H_SENT/.test(guardText)&&/duplicateSuppression:true/.test(guardText);
-  if(!wiringOk){process.exitCode=2;return write({ok:false,status:'P2GC_REMINDER_GUARD_WIRING_NOT_VERIFIED',senderHealth,checkedAt});}
 
+  if(senderHealth?.ok===true && wiringOk){
+    return write({
+      ok:true,
+      status:'P2GC_CALENDLY_REMINDER_POLICY_GREEN',
+      targetSchedulingUri:TARGET_URI,
+      calendlyUser:{email:user.email||null,uri:user.uri},
+      eventType:{name:matches[0].name,uri:matches[0].uri,scheduling_uri:matches[0].scheduling_uri||null},
+      policy:{immediateConfirmation:{enabled:true,provider:'CALENDLY_NATIVE_BOOKING_CONFIRMATION'},reminder24HoursBefore:{enabled:true,provider:'MILES_GMAIL_GUARD',sender:SENDER},duplicateSuppression:true,guardCadenceSeconds:60},
+      verified:{immediateConfirmation:true,reminder24HoursBefore:true,senderReady:true,workerWiring:true},
+      nativeConfiguration:native,
+      senderHealth,
+      checkedAt
+    });
+  }
+
+  const availableAccounts=await accountManager.healthCheckAccounts().catch(()=>[]);
+  process.exitCode=2;
   return write({
-    ok:true,
-    status:'P2GC_CALENDLY_REMINDER_POLICY_GREEN',
-    targetSchedulingUri:TARGET_URI,
+    ok:false,
+    status:'P2GC_CALENDLY_REMINDER_POLICY_BLOCKED',
     calendlyUser:{email:user.email||null,uri:user.uri},
-    eventType:{name:matches[0].name,uri:matches[0].uri,scheduling_uri:matches[0].scheduling_uri||null},
-    policy:{
-      immediateConfirmation:{enabled:true,provider:'CALENDLY_NATIVE_BOOKING_CONFIRMATION'},
-      reminder24HoursBefore:{enabled:true,provider:'MILES_GMAIL_GUARD',sender:SENDER},
-      duplicateSuppression:true,
-      guardCadenceSeconds:60
-    },
-    verified:{immediateConfirmation:true,reminder24HoursBefore:true,senderReady:true,workerWiring:true},
+    eventType:{name:matches[0].name,uri:matches[0].uri},
+    nativeConfiguration:native,
     senderHealth,
+    workerWiring:wiringOk,
+    availableGoogleAccounts:availableAccounts.map(a=>({email:a.email||null,accountKey:a.accountKey,status:a.status,error:a.error||null})),
     checkedAt
   });
 }
