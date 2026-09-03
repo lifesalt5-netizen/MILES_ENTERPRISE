@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-canonical-probe-deploy-20260902-019",
+  "id": "miles-executive-blueprint-live-production-truth-final-20260902-020",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main merge 12773a0a0246ada5fef736a9537f1e9c1e1a7263 containing the live canonical Sera Brynn detail probe and production-sized live acceptance timeout contract. Preserve canonical truth and fail-closed evidence rules. No campaign, DNS, billing, credential, or customer-data mutation."
+  "note": "Run final post-deploy production truth reconciliation on main merge 12773a0a0246ada5fef736a9537f1e9c1e1a7263. Restart p2gc-growth-demo if source is newer. Execute the five-company live acceptance and canonical Sera Brynn detail probe using production-sized timeouts. Fail closed on missing or conflicting evidence. No campaign, DNS, billing, credential, or customer-data mutation."
 }
