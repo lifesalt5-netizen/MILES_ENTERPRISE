@@ -15,6 +15,7 @@ const DEMO_SOURCE_FILES = Object.freeze([
   'StartP2GCGrowthBlueprintDemo.js',
   'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
   'SERVICES/demo/DemoTruthReconciliationService.js',
+  'SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js',
   'SERVICES/demo/DemoCommercialPreviewService.js',
   'SERVICES/demo/DemoUnifiedOpportunityService.js',
   'SERVICES/demo/P2GCFocusedIntelligenceService.js',
@@ -180,9 +181,45 @@ function validateAssessment(body, failures) {
   if (integrity && integrity.clientSafe !== true) addFailure(failures, 'TRUTH_INTEGRITY_NOT_CLIENT_SAFE', integrity.status || 'UNKNOWN');
   if (arr(integrity?.conflicts).length) addFailure(failures, 'TRUTH_CONFLICTS_PRESENT', arr(integrity.conflicts).join(','));
   if (!body?.evidence?.truthIntegrity) addFailure(failures, 'TRUTH_PROVENANCE_MISSING');
-  if (body?.currentState?.activeContracts != null) addFailure(failures, 'ACTIVE_CONTRACTS_UNVERIFIED_NON_NULL');
-  if (body?.currentState?.activeContractsStatus && body.currentState.activeContractsStatus !== 'NOT_DERIVED_FROM_AWARD_COUNT') {
-    addFailure(failures, 'ACTIVE_CONTRACT_STATUS_UNEXPECTED', body.currentState.activeContractsStatus);
+
+  const state = body?.currentState || {};
+  const awardHistory = body?.awardHistory || {};
+  const active = state.activeContracts;
+  const activeStatus = text(state.activeContractsStatus);
+  if (active != null) {
+    const n = Number(active);
+    if (!Number.isInteger(n) || n < 0) addFailure(failures, 'ACTIVE_CONTRACT_COUNT_INVALID', String(active));
+    if (activeStatus !== 'CONFIRMED_CURRENT_PERFORMANCE_PERIOD_FROM_USASPENDING_DATES') {
+      addFailure(failures, 'ACTIVE_CONTRACTS_NON_NULL_WITHOUT_AUTHORITATIVE_STATUS', activeStatus || 'EMPTY');
+    }
+    if (awardHistory.truthClass !== 'CONFIRMED') addFailure(failures, 'ACTIVE_CONTRACTS_WITHOUT_CONFIRMED_AWARD_HISTORY');
+    if (arr(awardHistory.activePrimeAwards).length !== n) addFailure(failures, 'ACTIVE_CONTRACT_COUNT_DOES_NOT_MATCH_ACTIVE_AWARD_ROWS', `${n}:${arr(awardHistory.activePrimeAwards).length}`);
+  } else if (activeStatus && !['NOT_DERIVED_FROM_AWARD_COUNT','UNVERIFIED'].includes(activeStatus)) {
+    addFailure(failures, 'NULL_ACTIVE_CONTRACT_STATUS_UNEXPECTED', activeStatus);
+  }
+
+  const federal = state.federalSales;
+  const federalStatus = text(state.federalSalesStatus || body?.revenue?.current?.federalStatus);
+  if (federal === 0) {
+    if (federalStatus !== 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY') {
+      addFailure(failures, 'FEDERAL_ZERO_WITHOUT_AUTHORITATIVE_ZERO_CLASSIFICATION', federalStatus || 'EMPTY');
+    }
+    if (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0) {
+      addFailure(failures, 'FEDERAL_ZERO_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
+    }
+  }
+
+  if (body?.pathway?.type === 'FIRST_AWARD_PATHWAY') {
+    if (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0) {
+      addFailure(failures, 'FIRST_AWARD_PATHWAY_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
+    }
+  }
+
+  const coverage = integrity?.sourceCoverage;
+  if (coverage) {
+    for (const required of ['identity','sam','awardHistory','gsaCurrent','currentPublicOpportunities']) {
+      if (coverage[required] !== true) addFailure(failures, 'CANONICAL_SOURCE_COVERAGE_NOT_GREEN', required);
+    }
   }
 }
 
@@ -253,9 +290,6 @@ async function auditCompany(term) {
   if (!assessment.ok) addFailure(failures, 'ASSESSMENT_HTTP_FAILURE', `${assessment.statusCode || 'ERR'}:${assessment.error || assessment.raw || ''}`);
   else validateAssessment(assessment.body, failures);
 
-  // The assessment refresh above is the one canonical source refresh for this company.
-  // Every focused view below must prove it can render the same fresh cached model without
-  // rescanning official source extracts or independently rebuilding contradictory truth.
   const opportunities = await requestJson(`/api/intelligence?term=${encoded}&type=opportunities`);
   if (!opportunities.ok) addFailure(failures, 'OPPORTUNITY_HTTP_FAILURE', `${opportunities.statusCode || 'ERR'}:${opportunities.error || opportunities.raw || ''}`);
   else validateOpportunities(opportunities.body, failures);
