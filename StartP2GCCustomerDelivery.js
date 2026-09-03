@@ -1,5 +1,6 @@
 "use strict";
 
+require("dotenv").config();
 const http = require("http");
 const { URL } = require("url");
 const service = require("./SERVICES/customer/P2GCCustomerDeliveryService");
