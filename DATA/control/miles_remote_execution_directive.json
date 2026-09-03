@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-explicit-coverage-safety-deploy-20260903-036",
+  "id": "miles-p2gc-five-company-systemic-regression-rerun-20260903-037",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing systemic demo truth fixes: distinguish client-safe explicit coverage gaps from actual truth conflicts, preserve unknown rather than false zero/none, and accept governed zero-obligation measurement windows without misclassifying them as zero award history. Preserve DeLune neutral SAM identity, in-flight dedupe, sales proof and browser safeguards. Fast-forward only, restart affected runtime when source is newer, publish evidence."
+  "note": "Rerun the complete DeLune and five-company systemic acceptance after explicit coverage-gap/client-safety and governed zero-obligation-window semantics were corrected. Require no truth conflicts, no fabricated zero/none, explicit blockers for any unavailable source coverage, DeLune alias continuity, browser/UI acceptance, and assessment/opportunity/vehicle/recompete/teaming correctness for DeLune Corporation, Dreamers Inc., GO Logistics Courier Services LLC, Integrated Technology Partners Corporation, and Sera Brynn LLC. Read-only; publish evidence."
 }
