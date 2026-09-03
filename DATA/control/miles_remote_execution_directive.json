@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-post-index-audit-20260903-016",
+  "id": "miles-p2gc-delune-proof-totals-ui-deploy-20260903-017",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the current read-only DeLune P2GC diagnostic against the live latest source. Verify historical recipient index reuse, indexed exact-UEI detail-query timing, canonical hydration, current GSA, public opportunities, and identity. Publish runtime evidence only; no production mutations."
+  "note": "Deploy latest main containing visible paid-unlock proof totals on the Growth Blueprint UI plus the current client-safe truth, readiness and performance fixes. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
 }
