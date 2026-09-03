@@ -3,7 +3,6 @@
 const crypto=require('crypto');
 const Lifecycle=require('./P2GCFederalGrowthReviewLifecycleService');
 const Access=require('./P2GCFederalGrowthReviewAccessService');
-const ionos=require('../../CONNECTORS/IONOS/smtp_governed');
 
 function clean(v){return String(v==null?'':v).trim();}
 function baseUrl(v){return clean(v).replace(/\/$/,'');}
@@ -13,8 +12,14 @@ class P2GCFederalGrowthReviewReleaseService {
     this.rootDir=options.rootDir||process.env.MILES_ROOT||process.cwd();
     this.lifecycle=options.lifecycle||new Lifecycle({rootDir:this.rootDir});
     this.access=options.access||new Access(options.accessOptions||{});
-    this.sender=options.sender||ionos;
+    this.sender=options.sender||null;
     this.publicBaseUrl=baseUrl(options.publicBaseUrl||process.env.P2GC_PUBLIC_REVIEW_BASE_URL||'');
+  }
+
+  getSender(){
+    if(this.sender)return this.sender;
+    this.sender=require('../../CONNECTORS/IONOS/smtp_governed');
+    return this.sender;
   }
 
   requireReview(reviewId){const r=this.lifecycle.read(reviewId);if(!r)throw new Error('REVIEW_NOT_FOUND');return r;}
@@ -76,7 +81,7 @@ class P2GCFederalGrowthReviewReleaseService {
     if(record.release?.sentAt)throw new Error('REVIEW_ALREADY_SENT');
     const linkResult=options.secureLink?{link:options.secureLink,secureLinkId:options.secureLinkId||crypto.randomUUID()}:this.createSecureLink(reviewId,options);
     const draft=this.emailDraft(reviewId,linkResult.link);
-    const sent=await this.sender.sendEmail(draft);
+    const sent=await this.getSender().sendEmail(draft);
     if(sent?.ok!==true)throw new Error(`IONOS_REVIEW_SEND_FAILED:${sent?.status||'UNKNOWN'}`);
     record=this.lifecycle.markSent(reviewId,{sentFrom:'kevin@pathways2gc.com',secureLinkId:linkResult.secureLinkId});
     record.release.smtpAcceptedAt=sent.sentAt||new Date().toISOString();record.release.smtpMessageId=sent.messageId||null;record.release.deliveryVerificationState='SMTP_ACCEPTED_NOT_DELIVERY_CONFIRMED';
