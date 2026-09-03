@@ -8,12 +8,16 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/review/public/**'
       - 'StartP2GCCustomerDelivery.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
+      - 'TESTS/p2gc_federal_growth_review_script.test.js'
+      - 'TESTS/p2gc_federal_growth_review_builder.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
   pull_request:
     paths:
@@ -22,12 +26,16 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/review/public/**'
       - 'StartP2GCCustomerDelivery.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
+      - 'TESTS/p2gc_federal_growth_review_script.test.js'
+      - 'TESTS/p2gc_federal_growth_review_builder.test.js'
 
 jobs:
   lifecycle-contract:
@@ -44,6 +52,10 @@ jobs:
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js
       - name: Syntax check recipient verification service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js
+      - name: Syntax check script service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js
+      - name: Syntax check builder service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js
       - name: Syntax check review HTTP controller
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js
       - name: Syntax check customer delivery runtime
@@ -60,3 +72,7 @@ jobs:
         run: node TESTS/p2gc_federal_growth_review_access.test.js
       - name: Run recipient verification regression
         run: node TESTS/p2gc_federal_growth_review_verification.test.js
+      - name: Run personalized script regression
+        run: node TESTS/p2gc_federal_growth_review_script.test.js
+      - name: Run automatic review builder regression
+        run: node TESTS/p2gc_federal_growth_review_builder.test.js
