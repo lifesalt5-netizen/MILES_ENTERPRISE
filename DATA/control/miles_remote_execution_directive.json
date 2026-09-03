@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-warm-identity-validation-20260903-009",
+  "id": "miles-p2gc-client-truth-boundary-deploy-20260903-010",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the read-only P2GC DeLune diagnostic after shared identity canonicalization deployment. Verify the historical recipient name index is reused rather than rebuilt, confirm DeLune resolves to UEI WDCVJGELGBB5 across formatting variants, and report current source/hydration timings. No external writes or production data mutation."
+  "note": "Deploy latest main containing final client-facing truth-boundary fixes: suppress unsupported revenue leakage, stale vehicle-gap/SAM/recompete recommendations, convert unproven state/local/commercial zero values to unknown, deduplicate opportunities, and consolidate agency alignment by agency. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
 }
