@@ -35,7 +35,7 @@ const Lifecycle=require('../SERVICES/revenue/P2GCFederalGrowthReviewLifecycleSer
   assert.strictEqual(result.company.name,'Example Federal LLC');
   assert(result.findingCount>=6);
   assert(result.runtime.estimatedMinutes>0);
-  assert.strictEqual(result.nextRequiredStage,'PROFESSIONAL_AI_PRESENTATION');
+  assert.strictEqual(result.nextRequiredStage,'PROFESSIONAL_AI_DEMO');
   const review=lifecycle.read(result.reviewId);
   for(const stage of ['PROSPECT_INTAKE','COMPANY_RESOLUTION','VERIFIED_INTELLIGENCE','ACCURATE_FINDINGS','PERSONALIZED_SCRIPT']) assert.strictEqual(review.stageState[stage].status,'COMPLETE',stage);
   assert.strictEqual(review.stageState.PROFESSIONAL_AI_DEMO.status,'PENDING');
