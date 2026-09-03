@@ -46,7 +46,8 @@ function dedupeEntities(rows) {
 function dedupeOpportunity(rows) {
   const map = new Map();
   for (const row of list(rows)) {
-    const key = clean(row?.noticeId || row?.id || row?.solicitationNumber) || norm(`${row?.agency}|${row?.title}|${row?.dueDate}`);
+    const semantic = norm(`${row?.agency}|${row?.title}|${row?.naics}|${row?.dueDate}`);
+    const key = semantic || clean(row?.noticeId || row?.id || row?.solicitationNumber).toUpperCase();
     if (!key) continue;
     const current = map.get(key);
     if (!current || (num(row?.fitScore) || 0) > (num(current?.fitScore) || 0)) map.set(key,row);
@@ -128,16 +129,28 @@ class ExecutiveBlueprintCanonicalTruthService {
 
   buildAgencyAlignment(buyers) {
     if (!buyers.length) return { status:'UNAVAILABLE', agencies:[] };
-    const maxAmount = Math.max(...buyers.map(x=>Number(x.historicalAwardValue || 0)),1);
-    const maxAwards = Math.max(...buyers.map(x=>Number(x.awardCount || 0)),1);
+    const grouped = new Map();
+    for (const row of buyers) {
+      const agency = clean(row?.agency) || 'Agency unavailable';
+      const key = norm(agency);
+      const current = grouped.get(key) || { agency, historicalAwardValue:0, awardCount:0 };
+      current.historicalAwardValue += Number(row?.historicalAwardValue || 0);
+      current.awardCount += Number(row?.awardCount || 0);
+      grouped.set(key,current);
+    }
+    const rows=[...grouped.values()].sort((a,b)=>b.historicalAwardValue-a.historicalAwardValue || b.awardCount-a.awardCount);
+    const totalAmount=Math.max(rows.reduce((sum,row)=>sum+Math.max(0,Number(row.historicalAwardValue||0)),0),1);
+    const totalAwards=Math.max(rows.reduce((sum,row)=>sum+Math.max(0,Number(row.awardCount||0)),0),1);
     return {
-      status:'CONFIRMED_USASPENDING_HISTORICAL_ALIGNMENT',
-      agencies:buyers.slice(0,10).map(row => ({
+      status:'CONFIRMED_USASPENDING_HISTORICAL_CONCENTRATION',
+      metricLabel:'Historical award concentration',
+      agencies:rows.slice(0,10).map(row => ({
         agency:row.agency,
-        fitScore:Math.round(((Number(row.historicalAwardValue||0)/maxAmount)*0.7 + (Number(row.awardCount||0)/maxAwards)*0.3)*100),
+        fitScore:null,
+        historicalConcentrationPct:Math.round((((Number(row.historicalAwardValue||0)/totalAmount)*0.7)+((Number(row.awardCount||0)/totalAwards)*0.3))*100),
         historicalAwardValue:row.historicalAwardValue,
         awardCount:row.awardCount,
-        basis:'Confirmed USAspending award history for this UEI',
+        basis:'Confirmed USAspending historical award concentration aggregated by agency for this UEI; this is not a modeled future-fit score.',
         confidence:'CONFIRMED_HISTORICAL_BUYER'
       }))
     };
@@ -289,16 +302,17 @@ class ExecutiveBlueprintCanonicalTruthService {
   recomputeReadiness(model) {
     const p=model.profile||{}, s=model.currentState||{}, r=model.recommendations||{};
     const awards = num(s.awardCount);
-    const federal = num(s.federalSales);
+    const activeAwards = num(s.activeContracts);
     const buyers = list(model.buyerIntelligence?.records);
     const vehicles = list(p.contractVehicles);
     const certs = list(p.certifications);
     const samActive = /^ACTIVE$/i.test(clean(p.samStatus));
+    const gsaDetails = list(p.gsaContracts);
     const categories = {
       eligibility:scoreCategory('Eligibility',[
         {label:'Primary NAICS identified',pass:list(p.naicsCodes).length>0,weight:30},
         {label:'Small-business status identified',pass:Boolean(p.smallBusinessStatus),weight:20},
-        {label:'SAM entity appears active',pass:samActive,weight:30},
+        {label:'SAM entity active',pass:samActive,weight:30},
         {label:'Socioeconomic certification evidence',pass:certs.length>0,weight:20}
       ]),
       registrations:scoreCategory('Registrations',[
@@ -308,36 +322,36 @@ class ExecutiveBlueprintCanonicalTruthService {
         {label:'Registration expiration is current',pass:Boolean(p.samExpirationCurrent),weight:10}
       ]),
       contractVehicles:scoreCategory('Contract Vehicles',[
-        {label:'At least one current contract vehicle confirmed',pass:vehicles.length>0,weight:55},
-        {label:'Multiple vehicle coverage',pass:vehicles.length>1,weight:20},
-        {label:'Vehicle strategy exists',pass:list(r.vehicle).length>0,weight:25}
+        {label:'At least one current contract vehicle confirmed',pass:vehicles.length>0,weight:65},
+        {label:'Current vehicle contract/category evidence available',pass:gsaDetails.length>0,weight:20},
+        {label:'Evidence-backed vehicle optimization strategy exists',pass:list(r.vehicle).length>0,weight:15}
       ]),
-      marketing:model.readiness?.categories?.marketing || scoreCategory('Marketing',[]),
       pastPerformance:scoreCategory('Past Performance',[
-        {label:'Current federal obligation evidence recorded',pass:federal!=null && federal>0,weight:40},
-        {label:'Federal awards recorded',pass:awards!=null && awards>0,weight:30},
+        {label:'Authoritative federal award history recorded',pass:awards!=null && awards>0,weight:40},
+        {label:'Current performance-period award evidence recorded',pass:activeAwards!=null && activeAwards>0,weight:30},
         {label:'Agency/buyer history recorded',pass:buyers.length>0,weight:30}
       ]),
-      positioning:model.readiness?.categories?.positioning || scoreCategory('Positioning',[]),
       relationships:scoreCategory('Relationships',[
-        {label:'At least one agency/buyer relationship signal',pass:buyers.length>0,weight:45},
-        {label:'Three or more buyer relationships',pass:buyers.length>=3,weight:25},
-        {label:'Partner strategy identified',pass:list(r.partner).length>0,weight:20},
-        {label:'Current opportunity/recompete signals',pass:list(model.opportunities?.liveAndForecast).length+list(model.opportunities?.recompetes).length>0,weight:10}
+        {label:'At least one confirmed agency/buyer relationship',pass:buyers.length>0,weight:60},
+        {label:'Three or more confirmed buyer relationships',pass:buyers.length>=3,weight:40}
       ])
     };
     const scores=Object.values(categories).map(x=>x.score);
-    model.readiness={ categories, overall:Math.round(scores.reduce((a,b)=>a+b,0)/scores.length), methodology:'Evidence-weighted readiness model using reconciled current SAM/GSA, authoritative award history, buyer history and current opportunity evidence. Unknown is not scored as zero evidence.' };
+    model.readiness={ categories, overall:Math.round(scores.reduce((a,b)=>a+b,0)/scores.length), methodology:'Evidence-weighted readiness model using only reconciled current registrations/vehicle evidence and authoritative award/buyer history. Unsupported inherited marketing or positioning scores are withheld. Missing current-obligation measurement metadata does not erase proven past performance.' };
   }
 
   rebuildGapsAndPathway(model, award, gsa) {
     model.gaps = model.gaps || {items:[]};
     let gaps = list(model.gaps.items);
     if (award?.ok === true) {
-      if (Number(award?.summary?.awardCount || 0)>0) gaps=removeMatching(gaps,[/Federal awards recorded/i,/agency\/buyer history recorded/i,/at least one agency\/buyer relationship/i]);
+      if (Number(award?.summary?.awardCount || 0)>0) gaps=removeMatching(gaps,[/Federal awards recorded/i,/agency\/buyer history recorded/i,/at least one agency\/buyer relationship/i,/past performance/i]);
       if (model.revenue?.current?.federal != null) gaps=removeMatching(gaps,[/Federal revenue recorded/i]);
     }
-    if (gsa?.ok === true && gsa.holder === true) gaps=removeMatching(gaps,[/At least one contract vehicle identified/i,/GSA.*not identified/i,/vehicle gap/i]);
+    if (model.profile?.cage) gaps=removeMatching(gaps,[/CAGE present/i,/CAGE.*missing/i]);
+    if (/^ACTIVE$/i.test(clean(model.profile?.samStatus))) gaps=removeMatching(gaps,[/SAM entity appears active/i,/SAM active/i,/SAM.*missing/i]);
+    if (gsa?.ok === true && gsa.holder === true) {
+      gaps=removeMatching(gaps,[/At least one contract vehicle identified/i,/GSA.*not identified/i,/vehicle gap/i,/multiple vehicle coverage/i,/activate and expand contract vehicle coverage/i,/activate existing schedule/i]);
+    }
     if (list(model.opportunities?.liveAndForecast).length) gaps=removeMatching(gaps,[/opportunity.*signal/i]);
     model.gaps.items=uniq(gaps);
     model.gaps.status=model.gaps.items.length?'GAPS_IDENTIFIED':'NO_GAPS_IDENTIFIED_FROM_CURRENT_EVIDENCE';
@@ -345,10 +359,10 @@ class ExecutiveBlueprintCanonicalTruthService {
     const awardCount = award?.ok === true ? Number(award?.summary?.awardCount || 0) : null;
     const currentFederal = num(model.revenue?.current?.federal);
     const currentGsa = gsa?.ok === true && gsa.holder === true;
-    if (currentGsa && (!currentFederal || currentFederal <= 0)) {
+    if ((awardCount!=null && awardCount>0) || (currentFederal!=null && currentFederal>0)) {
+      model.pathway={ type:'FEDERAL_GROWTH_PATHWAY', title:'Federal Growth Pathway™', steps:['Validate current award and buyer concentration','Optimize utilization of current contract vehicles','Expand into adjacent aligned agencies/buyers','Build prime and teaming relationships','Match current qualified opportunities to demonstrated capability','Strengthen recompete and incumbent-displacement positioning where validated signals exist','Increase sustainable federal obligations'] };
+    } else if (currentGsa) {
       model.pathway={ type:'GSA_ACTIVATION_PATHWAY', title:'GSA Activation & First-Order Pathway™', steps:['Confirm current MAS contract/SIN/category positioning','Map current agency demand to awarded GSA scope','Prioritize current public opportunities and buyer signals','Build prime/sub teaming around access gaps','Pursue the first qualified GSA order or federal task award','Measure obligations and buyer traction','Expand utilization across validated agencies'] };
-    } else if ((awardCount!=null && awardCount>0) || (currentFederal!=null && currentFederal>0)) {
-      model.pathway={ type:'FEDERAL_GROWTH_PATHWAY', title:'Federal Growth Pathway™', steps:['Validate current award and buyer concentration','Optimize current contract vehicles','Expand into adjacent aligned agencies/buyers','Build prime and teaming relationships','Match current qualified opportunities','Strengthen recompete and incumbent-displacement positioning','Increase sustainable federal obligations'] };
     } else if (award?.ok === true && award?.dataQuality?.zeroAwardClassificationPermitted === true && awardCount===0) {
       model.pathway={ type:'FIRST_AWARD_PATHWAY', title:'First Award Pathway™', steps:['Validate registrations','Optimize SAM profile','Complete/activate eligible certifications','Identify best-fit agencies and buyers','Build usable past-performance strategy','Pursue subcontracting and teaming opportunities','Pursue the first qualified award'] };
     } else {
@@ -384,7 +398,7 @@ class ExecutiveBlueprintCanonicalTruthService {
       blockers,
       sourceCoverage:coverage,
       warnings:uniq([...(existing.warnings||[]), ...list(gsa?.limitations), ...list(opportunity?.blockers), ...aggregateWarnings]),
-      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER','EXPLICIT_COVERAGE_GAP_IS_CLIENT_SAFE_WHEN_NO_CONFLICT_OR_FABRICATION','CURRENT_OBLIGATION_TOTAL_REQUIRES_EXPLICIT_MEASUREMENT_WINDOW']),
+      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER','EXPLICIT_COVERAGE_GAP_IS_CLIENT_SAFE_WHEN_NO_CONFLICT_OR_FABRICATION','CURRENT_OBLIGATION_TOTAL_REQUIRES_EXPLICIT_MEASUREMENT_WINDOW','PAST_PERFORMANCE_IS_NOT_ERASED_BY_MISSING_CURRENT_OBLIGATION_WINDOW','MULTIPLE_VEHICLES_ARE_NOT_A_GENERIC_REQUIREMENT']),
       reconciledAt:new Date().toISOString()
     };
     model.status=fullyReconciled?'DEMO_READY':(clientSafe?'DEMO_READY_WITH_EXPLICIT_COVERAGE_GAPS':'DEMO_REVIEW_REQUIRED');
