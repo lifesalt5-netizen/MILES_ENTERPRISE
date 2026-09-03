@@ -138,6 +138,34 @@ function enforceEvidenceBackedReadiness(model) {
   };
 }
 
+function sumKnown(records, field) {
+  let total = 0;
+  let known = 0;
+  for (const row of arr(records)) {
+    const value = num(row?.[field]);
+    if (value == null) continue;
+    total += value;
+    known += 1;
+  }
+  return { total, known };
+}
+
+function buildProofTotals(model) {
+  const opportunities = arr(model?.opportunities?.liveAndForecast);
+  const oppValue = sumKnown(opportunities, 'estimatedValue');
+  const recompetes = arr(model?.opportunities?.recompetes);
+  const recompeteValue = sumKnown(recompetes, 'value');
+  const buyers = arr(model?.buyerIntelligence?.records);
+  return {
+    opportunities:{ total:opportunities.length, knownValue:oppValue.total, knownValueCount:oppValue.known, unknownValueCount:Math.max(0,opportunities.length-oppValue.known) },
+    primePartners:{ total:arr(model?.primePartners?.records).length },
+    recompetes:{ total:recompetes.length, knownValue:recompeteValue.total, knownValueCount:recompeteValue.known, unknownValueCount:Math.max(0,recompetes.length-recompeteValue.known) },
+    buyers:{ total:buyers.length, agencies:new Set(buyers.map(x=>norm(x?.agency)).filter(Boolean)).size },
+    competitors:{ total:arr(model?.competitors?.records).length },
+    vehicles:{ total:arr(model?.vehicles?.current).length }
+  };
+}
+
 class DemoCommercialPreviewService {
   constructor(options = {}) {
     this.previewLimits = {
@@ -220,6 +248,7 @@ class DemoCommercialPreviewService {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
       truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration.",
+      totals:buildProofTotals(model),
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
       primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),
@@ -233,4 +262,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness };
+module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, buildProofTotals };
