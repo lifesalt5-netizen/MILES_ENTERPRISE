@@ -161,10 +161,20 @@ function main() {
   if (demoAcceptance.stdout) process.stdout.write(tail(demoAcceptance.stdout, 24000));
   if (demoAcceptance.stderr) process.stderr.write(tail(demoAcceptance.stderr, 5000));
 
-  if (!coreRun.ok || !demoAcceptance.ok) {
+  console.log('\n============================================================');
+  console.log('LIVE CANONICAL COMPANY DETAIL PROBE');
+  console.log('============================================================');
+  const demoProbe = runNode('ProbeLiveDemoCanonicalCompany.js', [], 180000);
+  if (demoProbe.stdout) process.stdout.write(tail(demoProbe.stdout, 30000));
+  if (demoProbe.stderr) process.stderr.write(tail(demoProbe.stderr, 5000));
+
+  if (!coreRun.ok || !demoAcceptance.ok || !demoProbe.ok) {
     if (!coreRun.ok) console.error(`PRODUCTION_TRUTH_CORE_EXIT_${coreRun.exitCode}`);
     if (!demoAcceptance.ok) console.error(`LIVE_DEMO_ACCEPTANCE_EXIT_${demoAcceptance.exitCode}`);
-    process.exitCode = demoAcceptance.ok ? (coreRun.exitCode || 1) : (demoAcceptance.exitCode || 2);
+    if (!demoProbe.ok) console.error(`LIVE_CANONICAL_COMPANY_PROBE_EXIT_${demoProbe.exitCode}`);
+    if (!demoAcceptance.ok) process.exitCode = demoAcceptance.exitCode || 2;
+    else if (!demoProbe.ok) process.exitCode = demoProbe.exitCode || 3;
+    else process.exitCode = coreRun.exitCode || 1;
   } else {
     process.exitCode = 0;
   }
