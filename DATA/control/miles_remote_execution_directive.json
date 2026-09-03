@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-funnel-gateway-launch-correlation-audit-20260904-082",
+  "id": "miles-p2gc-prospect-funnel-cutover-20260904-083",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment with the strengthened read-only Funnel gateway candidate audit. Correlate run.py candidates against the live port 8779 process and parent command lines to identify the actual gateway file. Preserve public admin blocking. Do not mutate Funnel/Serve/DNS/networking, gateway files, subscriptions, email, or generate video content."
+  "note": "Execute the governed Personalized Federal Growth Review production cutover. Add only persistent Tailscale Funnel path handlers for /review and /api/review to the private 127.0.0.1:8792 review service. Preserve the existing root route and keep /api/admin/review blocked. Verify public HTTPS review page, noindex/no-store headers, review health, root preservation, and admin blocking. Persist P2GC_PUBLIC_REVIEW_BASE_URL only after acceptance. Automatically roll back only the added paths and env change if any acceptance check fails. Do not reset Funnel, alter DNS, send email, or generate video content."
 }
