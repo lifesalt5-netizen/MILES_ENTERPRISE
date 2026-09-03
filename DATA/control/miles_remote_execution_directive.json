@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sam-neutral-identity-deploy-20260903-031",
+  "id": "miles-p2gc-delune-sam-neutral-identity-build-20260903-032",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "SAM_QUALIFIED_UNIVERSE_BUILD",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing the neutral all-public SAM identity index builder/resolver, separation of SAM identity from marketing lead qualification, current-SAM merge by exact UEI, and in-flight model-build deduplication. Preserve all previously GREEN DeLune truth, sales-story, proof-total and UI acceptance safeguards. Fast-forward only, restart p2gc-growth-demo when source is newer, publish evidence."
+  "note": "Build both the neutral all-public SAM identity index and the separate marketing-qualified SAM universe from the staged official August 2026 SAM public entity extract. Validate SQLite integrity and preserve staging-only/no-production-write safety. This is required to resolve DeLune current SAM identity and CAGE independently of the invalid targeted API key."
 }
