@@ -14,6 +14,7 @@ on:
       - 'SERVICES/revenue/P2GCGoogleVidsSegmentPlannerService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewCloseBriefService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewCommercialHandoffService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewRevenueAttributionService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAdminController.js'
       - 'SERVICES/review/public/**'
@@ -27,6 +28,7 @@ on:
       - 'TESTS/p2gc_google_vids_segment_planner.test.js'
       - 'TESTS/p2gc_federal_growth_review_close_brief.test.js'
       - 'TESTS/p2gc_federal_growth_review_commercial_handoff.test.js'
+      - 'TESTS/p2gc_federal_growth_review_revenue_attribution.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
       - 'TESTS/ionos_smtp_response_buffer.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
@@ -43,6 +45,7 @@ on:
       - 'SERVICES/revenue/P2GCGoogleVidsSegmentPlannerService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewCloseBriefService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewCommercialHandoffService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewRevenueAttributionService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAdminController.js'
       - 'SERVICES/review/public/**'
@@ -56,6 +59,7 @@ on:
       - 'TESTS/p2gc_google_vids_segment_planner.test.js'
       - 'TESTS/p2gc_federal_growth_review_close_brief.test.js'
       - 'TESTS/p2gc_federal_growth_review_commercial_handoff.test.js'
+      - 'TESTS/p2gc_federal_growth_review_revenue_attribution.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
       - 'TESTS/ionos_smtp_response_buffer.test.js'
 
@@ -86,6 +90,8 @@ jobs:
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewCloseBriefService.js
       - name: Syntax check commercial handoff service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewCommercialHandoffService.js
+      - name: Syntax check revenue attribution service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewRevenueAttributionService.js
       - name: Syntax check review HTTP controller
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js
       - name: Syntax check private admin controller
@@ -116,6 +122,8 @@ jobs:
         run: node TESTS/p2gc_federal_growth_review_close_brief.test.js
       - name: Run commercial handoff regression
         run: node TESTS/p2gc_federal_growth_review_commercial_handoff.test.js
+      - name: Run revenue attribution regression
+        run: node TESTS/p2gc_federal_growth_review_revenue_attribution.test.js
       - name: Run private admin control regression
         run: node TESTS/p2gc_federal_growth_review_admin.test.js
       - name: Run IONOS SMTP response buffer regression
