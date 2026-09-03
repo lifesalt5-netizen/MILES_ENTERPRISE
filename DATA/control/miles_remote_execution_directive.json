@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-google-vids-eligibility-audit-20260904-068",
+  "id": "miles-p2gc-google-vids-multisession-audit-20260904-069",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the existing governed Federal Growth Review deployment and its new read-only Google Vids eligibility diagnostic. Do not generate a video, change subscriptions, alter Google accounts, or send email. Report active Pathways Google account health and whether Google Vids / AI avatar access is visible in the existing authenticated browser environment."
+  "note": "Run the governed Federal Growth Review deployment and the read-only multi-session Google Vids eligibility audit. Inspect existing authenticated Google session slots for Pathways Workspace identities and AI-avatar visibility. Do not generate video, create content, change subscriptions/accounts, or send email."
 }
