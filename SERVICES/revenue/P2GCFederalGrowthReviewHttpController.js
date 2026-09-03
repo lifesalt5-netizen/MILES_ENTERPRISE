@@ -84,7 +84,7 @@ class P2GCFederalGrowthReviewHttpController {
       assets,
       senderHealth,
       securityHeadersReady,
-      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false,protectedRangeStreaming:true},
+      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false,protectedRangeStreaming:true,activeSessionRequired:true},
       checkedAt:new Date().toISOString()
     };
   }
@@ -102,6 +102,8 @@ class P2GCFederalGrowthReviewHttpController {
     if(!record) return {ok:false,reason:'REVIEW_NOT_FOUND'};
     if(record.security?.revokedAt) return {ok:false,reason:'REVIEW_REVOKED'};
     if(Date.now()>=Date.parse(record.expiresAt||0)) return {ok:false,reason:'REVIEW_EXPIRED'};
+    const active=this.access.validateSession(reviewId,verified.payload.recipientEmail,verified.payload.sessionId);
+    if(!active.ok) return active;
     return {ok:true,record,payload:verified.payload,authenticatedEmail:verified.payload.recipientEmail,sessionId:verified.payload.sessionId};
   }
 
