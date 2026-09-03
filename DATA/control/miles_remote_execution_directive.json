@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-post-resolver-diagnostic-20260903-005",
+  "id": "miles-p2gc-historical-index-deploy-20260903-006",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the updated read-only P2GC DeLune diagnostic on the newly restarted live source. Prove canonical name resolution to UEI/CAGE, then measure USAspending award history, current GSA holder truth, current public opportunity matching, current obligation aggregate, and canonical hydrate. No external writes or production data mutations. Publish evidence to miles-runtime-evidence."
+  "note": "Deploy latest main containing the persistent historical recipient canonical-name index, live P2GC historical identity wiring, and updated diagnostic. Fast-forward only. Restart p2gc-growth-demo only when source is newer. Preserve governed safety and publish evidence. No campaign, DNS, billing, credential, customer-data, or production-database mutation."
 }
