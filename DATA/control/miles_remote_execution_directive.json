@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-provider-route-and-vids-audit-20260904-070",
+  "id": "miles-p2gc-google-vids-editor-avatar-audit-20260904-071",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment with read-only Primary Inbox Coverage and Google Vids eligibility diagnostics. Determine the actual provider route for info@pathways2gc.com and inspect existing authenticated Pathways Google sessions for Vids/AI-avatar visibility. Do not generate video, create content, change subscriptions/accounts, or send email."
+  "note": "Run the governed Federal Growth Review deployment and Google Vids editor avatar eligibility proof. Use an already-authenticated Pathways Workspace session. A blank test Vids draft may be created only if required to enter the editor. Do not generate an avatar/video, share content, change subscriptions/accounts, send email, or incur a paid action."
 }
