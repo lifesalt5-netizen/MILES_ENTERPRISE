@@ -10,133 +10,25 @@ const ROOT=path.resolve(__dirname,'..');
 const ENV_FILE=path.join(ROOT,'.env');
 const APP='p2gc-customer-delivery';
 const PORT=Number(process.env.P2GC_CUSTOMER_PORT||8792);
-
-function fail(message,details=''){
-  console.error(`P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY_RED: ${message}`);
-  if(details) console.error(details);
-  process.exit(2);
-}
+function fail(message,details=''){console.error(`P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY_RED: ${message}`);if(details)console.error(details);process.exit(2);}
 function readEnvText(){try{return fs.readFileSync(ENV_FILE,'utf8');}catch{return '';}}
 function envValue(text,key){const m=String(text||'').match(new RegExp(`^${key}=([^\\r\\n]*)$`,'m'));return m?String(m[1]||'').trim().replace(/^['"]|['"]$/g,''):'';}
-function ensureTokenSecret(){
-  let text=readEnvText();
-  let value=String(process.env.P2GC_REVIEW_TOKEN_SECRET||'').trim()||envValue(text,'P2GC_REVIEW_TOKEN_SECRET');
-  if(value.length>=32){process.env.P2GC_REVIEW_TOKEN_SECRET=value;return {created:false,length:value.length};}
-  value=crypto.randomBytes(48).toString('base64url');
-  const prefix=text && !/\r?\n$/.test(text)?'\r\n':'';
-  fs.appendFileSync(ENV_FILE,`${prefix}P2GC_REVIEW_TOKEN_SECRET=${value}\r\n`,'utf8');
-  process.env.P2GC_REVIEW_TOKEN_SECRET=value;
-  return {created:true,length:value.length};
-}
-function verifyRequiredFiles(){
-  const required=[
-    'StartP2GCCustomerDelivery.js',
-    'CONNECTORS/IONOS/smtp_governed.js',
-    'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js',
-    'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js',
-    'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js',
-    'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js',
-    'SERVICES/review/public/review.html',
-    'SERVICES/review/public/review.js',
-    'SERVICES/review/public/review.css',
-    'SCRIPTS/AuditGoogleVidsEligibility.js',
-    'SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js',
-    'SCRIPTS/AuditPrimaryInboxCoverage.js'
-  ];
-  const missing=required.filter(rel=>!fs.existsSync(path.join(ROOT,rel)));
-  if(missing.length) fail('Required review files missing.',missing.join(','));
-}
-function runPm2(args,options={}){
-  if(process.platform==='win32'){
-    const shell=process.env.ComSpec||'cmd.exe';
-    return execFileSync(shell,['/d','/s','/c','pm2.cmd',...args],{cwd:ROOT,encoding:'utf8',windowsHide:true,...options});
-  }
-  return execFileSync('pm2',args,{cwd:ROOT,encoding:'utf8',...options});
-}
-function verifyPm2App(){
-  const list=JSON.parse(runPm2(['jlist'],{stdio:['ignore','pipe','pipe']}));
-  const item=list.find(x=>String(x?.name||x?.pm2_env?.name||'')===APP);
-  if(!item) fail(`${APP} not found in PM2.`);
-  if(String(item?.pm2_env?.status||'').toLowerCase()!=='online') fail(`${APP} is not online before restart.`);
-  return item;
-}
-function request(pathname,timeoutMs=10000){
-  return new Promise((resolve,reject)=>{
-    const req=http.get({host:'127.0.0.1',port:PORT,path:pathname,timeout:timeoutMs},res=>{
-      const chunks=[];res.on('data',c=>chunks.push(c));res.on('end',()=>resolve({statusCode:res.statusCode,headers:res.headers,body:Buffer.concat(chunks).toString('utf8')}));
-    });
-    req.on('timeout',()=>req.destroy(new Error('timeout')));req.on('error',reject);
-  });
-}
-async function waitForReviewHealth(){
-  const deadline=Date.now()+45000;let last=null;
-  while(Date.now()<deadline){
-    try{
-      const r=await request('/api/review/health',8000);
-      let body=null;try{body=JSON.parse(r.body);}catch{}
-      if(r.statusCode===200&&body?.ok===true)return {response:r,body};
-      last=new Error(`health status=${r.statusCode} body=${r.body.slice(0,500)}`);
-    }catch(error){last=error;}
-    await new Promise(resolve=>setTimeout(resolve,1500));
-  }
-  throw last||new Error('review health timeout');
-}
-async function verifySurface(){
-  const page=await request('/review/P2GC-FGR-SECURITY-PROBE');
-  if(page.statusCode!==200) fail('Secure review page did not return HTTP 200.',String(page.statusCode));
-  if(!/noindex/i.test(String(page.headers['x-robots-tag']||''))) fail('Secure review page missing noindex header.');
-  if(!/no-store/i.test(String(page.headers['cache-control']||''))) fail('Secure review page missing no-store header.');
-  if(!/Personalized Federal Growth Review/i.test(page.body)) fail('Secure review page content marker missing.');
-  return {statusCode:page.statusCode,xRobotsTag:page.headers['x-robots-tag']||null,cacheControl:page.headers['cache-control']||null};
-}
-function runJsonAudit(relativeScript,timeout=120000){
-  const script=path.join(ROOT,relativeScript);
-  const run=spawnSync(process.execPath,[script],{cwd:ROOT,encoding:'utf8',windowsHide:true,timeout});
-  const raw=String(run.stdout||'');
-  const jsonStart=raw.indexOf('{');
-  let parsed=null;
-  if(jsonStart>=0){ try{parsed=JSON.parse(raw.slice(jsonStart));}catch{} }
-  return {ok:run.status===0&&parsed?.ok===true,exitCode:run.status,result:parsed,stdout:parsed?null:raw.slice(-8000),stderr:String(run.stderr||'').slice(-4000)};
-}
+function ensureTokenSecret(){let text=readEnvText();let value=String(process.env.P2GC_REVIEW_TOKEN_SECRET||'').trim()||envValue(text,'P2GC_REVIEW_TOKEN_SECRET');if(value.length>=32){process.env.P2GC_REVIEW_TOKEN_SECRET=value;return{created:false,length:value.length};}value=crypto.randomBytes(48).toString('base64url');const prefix=text&&!/\r?\n$/.test(text)?'\r\n':'';fs.appendFileSync(ENV_FILE,`${prefix}P2GC_REVIEW_TOKEN_SECRET=${value}\r\n`,'utf8');process.env.P2GC_REVIEW_TOKEN_SECRET=value;return{created:true,length:value.length};}
+function verifyRequiredFiles(){const required=['StartP2GCCustomerDelivery.js','CONNECTORS/IONOS/smtp_governed.js','SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js','SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js','SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js','SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js','SERVICES/review/public/review.html','SERVICES/review/public/review.js','SERVICES/review/public/review.css','SCRIPTS/AuditGoogleVidsEligibility.js','SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js','SCRIPTS/AuditPrimaryInboxCoverage.js','SCRIPTS/AuditLocalAvatarRuntime.js'];const missing=required.filter(rel=>!fs.existsSync(path.join(ROOT,rel)));if(missing.length)fail('Required review files missing.',missing.join(','));}
+function runPm2(args,options={}){if(process.platform==='win32'){const shell=process.env.ComSpec||'cmd.exe';return execFileSync(shell,['/d','/s','/c','pm2.cmd',...args],{cwd:ROOT,encoding:'utf8',windowsHide:true,...options});}return execFileSync('pm2',args,{cwd:ROOT,encoding:'utf8',...options});}
+function verifyPm2App(){const list=JSON.parse(runPm2(['jlist'],{stdio:['ignore','pipe','pipe']}));const item=list.find(x=>String(x?.name||x?.pm2_env?.name||'')===APP);if(!item)fail(`${APP} not found in PM2.`);if(String(item?.pm2_env?.status||'').toLowerCase()!=='online')fail(`${APP} is not online before restart.`);return item;}
+function request(pathname,timeoutMs=10000){return new Promise((resolve,reject)=>{const req=http.get({host:'127.0.0.1',port:PORT,path:pathname,timeout:timeoutMs},res=>{const chunks=[];res.on('data',c=>chunks.push(c));res.on('end',()=>resolve({statusCode:res.statusCode,headers:res.headers,body:Buffer.concat(chunks).toString('utf8')}));});req.on('timeout',()=>req.destroy(new Error('timeout')));req.on('error',reject);});}
+async function waitForReviewHealth(){const deadline=Date.now()+45000;let last=null;while(Date.now()<deadline){try{const r=await request('/api/review/health',8000);let body=null;try{body=JSON.parse(r.body);}catch{}if(r.statusCode===200&&body?.ok===true)return{response:r,body};last=new Error(`health status=${r.statusCode} body=${r.body.slice(0,500)}`);}catch(error){last=error;}await new Promise(resolve=>setTimeout(resolve,1500));}throw last||new Error('review health timeout');}
+async function verifySurface(){const page=await request('/review/P2GC-FGR-SECURITY-PROBE');if(page.statusCode!==200)fail('Secure review page did not return HTTP 200.',String(page.statusCode));if(!/noindex/i.test(String(page.headers['x-robots-tag']||'')))fail('Secure review page missing noindex header.');if(!/no-store/i.test(String(page.headers['cache-control']||'')))fail('Secure review page missing no-store header.');if(!/Personalized Federal Growth Review/i.test(page.body))fail('Secure review page content marker missing.');return{statusCode:page.statusCode,xRobotsTag:page.headers['x-robots-tag']||null,cacheControl:page.headers['cache-control']||null};}
+function runJsonAudit(relativeScript,timeout=120000){const script=path.join(ROOT,relativeScript);const run=spawnSync(process.execPath,[script],{cwd:ROOT,encoding:'utf8',windowsHide:true,timeout});const raw=String(run.stdout||'');const jsonStart=raw.indexOf('{');let parsed=null;if(jsonStart>=0){try{parsed=JSON.parse(raw.slice(jsonStart));}catch{}}return{ok:run.status===0&&parsed?.ok===true,exitCode:run.status,result:parsed,stdout:parsed?null:raw.slice(-8000),stderr:String(run.stderr||'').slice(-4000)};}
 async function main(){
-  if(process.platform!=='win32') fail('Deployment helper is intended for the Windows MILES production host only.');
-  verifyRequiredFiles();
-  const secret=ensureTokenSecret();
-  const envText=readEnvText();
-  const ionosPasswordConfigured=Boolean(String(process.env.IONOS_KEVIN_PASSWORD||'').trim()||envValue(envText,'IONOS_KEVIN_PASSWORD'));
-  if(!ionosPasswordConfigured) fail('IONOS_KEVIN_PASSWORD is not configured; refusing to mark secure review delivery ready.');
-  verifyPm2App();
-  console.log(`RESTARTING_PM2_APP=${APP}`);
-  runPm2(['restart',APP,'--update-env'],{stdio:'inherit'});
-  const health=await waitForReviewHealth();
-  const surface=await verifySurface();
-  const inboxAudit=runJsonAudit('SCRIPTS/AuditPrimaryInboxCoverage.js',120000);
-  const vidsAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEligibility.js',180000);
-  const editorAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js',180000);
-  const infoRoute=inboxAudit.result?.requiredInboxes?.find(x=>String(x.email||'').toLowerCase()==='info@pathways2gc.com')||null;
-  console.log(`P2GC_REVIEW_TOKEN_SECRET_CREATED=${secret.created}`);
-  console.log(`P2GC_REVIEW_TOKEN_SECRET_READY=${secret.length>=32}`);
-  console.log(`P2GC_REVIEW_IONOS_SMTP_READY=${health.body?.senderHealth?.ok===true}`);
-  console.log(`P2GC_REVIEW_ASSETS_READY=${Object.values(health.body?.assets||{}).every(Boolean)}`);
-  console.log(`P2GC_REVIEW_SECURITY_HEADERS_READY=${health.body?.securityHeadersReady===true}`);
-  console.log(`P2GC_REVIEW_PAGE_HTTP=${surface.statusCode}`);
-  console.log(`P2GC_REVIEW_X_ROBOTS_TAG=${surface.xRobotsTag}`);
-  console.log(`P2GC_REVIEW_CACHE_CONTROL=${surface.cacheControl}`);
-  console.log(`PRIMARY_INBOX_AUDIT_OK=${inboxAudit.ok}`);
-  console.log(`INFO_PATHWAYS2GC_PROVIDER_ROUTE=${infoRoute?.route||'UNKNOWN'}`);
-  console.log(`INFO_PATHWAYS2GC_REGISTERED_GMAIL=${infoRoute?.registeredGmailAccount===true}`);
-  console.log(`INFO_PATHWAYS2GC_IONOS_READABLE=${infoRoute?.ionosReadable===true}`);
-  if(inboxAudit.result) console.log(`PRIMARY_INBOX_AUDIT_RESULT=${JSON.stringify(inboxAudit.result)}`);
-  console.log(`GOOGLE_VIDS_ELIGIBILITY_AUDIT_OK=${vidsAudit.ok}`);
-  console.log(`GOOGLE_VIDS_ELIGIBILITY_STATUS=${vidsAudit.result?.status||vidsAudit.result?.browser?.status||'UNKNOWN'}`);
-  if(vidsAudit.result) console.log(`GOOGLE_VIDS_ELIGIBILITY_RESULT=${JSON.stringify(vidsAudit.result)}`);
-  console.log(`GOOGLE_VIDS_EDITOR_AUDIT_OK=${editorAudit.ok}`);
-  console.log(`GOOGLE_VIDS_EDITOR_STATUS=${editorAudit.result?.status||'UNKNOWN'}`);
-  console.log(`GOOGLE_VIDS_EDITOR_ACCOUNT=${editorAudit.result?.selected?.email||'UNKNOWN'}`);
-  console.log(`GOOGLE_VIDS_EDITOR_AVATAR_VISIBLE=${editorAudit.result?.editor?.avatarVisible===true}`);
-  if(editorAudit.result) console.log(`GOOGLE_VIDS_EDITOR_RESULT=${JSON.stringify(editorAudit.result)}`);
-  else if(editorAudit.stderr||editorAudit.stdout) console.log(`GOOGLE_VIDS_EDITOR_DIAGNOSTIC=${JSON.stringify({stdout:editorAudit.stdout,stderr:editorAudit.stderr,exitCode:editorAudit.exitCode})}`);
+  if(process.platform!=='win32')fail('Deployment helper is intended for the Windows MILES production host only.');verifyRequiredFiles();const secret=ensureTokenSecret();const envText=readEnvText();const ionosPasswordConfigured=Boolean(String(process.env.IONOS_KEVIN_PASSWORD||'').trim()||envValue(envText,'IONOS_KEVIN_PASSWORD'));if(!ionosPasswordConfigured)fail('IONOS_KEVIN_PASSWORD is not configured; refusing to mark secure review delivery ready.');verifyPm2App();console.log(`RESTARTING_PM2_APP=${APP}`);runPm2(['restart',APP,'--update-env'],{stdio:'inherit'});const health=await waitForReviewHealth();const surface=await verifySurface();
+  const inboxAudit=runJsonAudit('SCRIPTS/AuditPrimaryInboxCoverage.js',120000);const vidsAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEligibility.js',180000);const editorAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js',180000);const localAvatarAudit=runJsonAudit('SCRIPTS/AuditLocalAvatarRuntime.js',90000);const infoRoute=inboxAudit.result?.requiredInboxes?.find(x=>String(x.email||'').toLowerCase()==='info@pathways2gc.com')||null;
+  console.log(`P2GC_REVIEW_TOKEN_SECRET_CREATED=${secret.created}`);console.log(`P2GC_REVIEW_TOKEN_SECRET_READY=${secret.length>=32}`);console.log(`P2GC_REVIEW_IONOS_SMTP_READY=${health.body?.senderHealth?.ok===true}`);console.log(`P2GC_REVIEW_ASSETS_READY=${Object.values(health.body?.assets||{}).every(Boolean)}`);console.log(`P2GC_REVIEW_SECURITY_HEADERS_READY=${health.body?.securityHeadersReady===true}`);console.log(`P2GC_REVIEW_PAGE_HTTP=${surface.statusCode}`);console.log(`P2GC_REVIEW_X_ROBOTS_TAG=${surface.xRobotsTag}`);console.log(`P2GC_REVIEW_CACHE_CONTROL=${surface.cacheControl}`);
+  console.log(`PRIMARY_INBOX_AUDIT_OK=${inboxAudit.ok}`);console.log(`INFO_PATHWAYS2GC_PROVIDER_ROUTE=${infoRoute?.route||'UNKNOWN'}`);console.log(`INFO_PATHWAYS2GC_REGISTERED_GMAIL=${infoRoute?.registeredGmailAccount===true}`);console.log(`INFO_PATHWAYS2GC_IONOS_READABLE=${infoRoute?.ionosReadable===true}`);if(inboxAudit.result)console.log(`PRIMARY_INBOX_AUDIT_RESULT=${JSON.stringify(inboxAudit.result)}`);
+  console.log(`GOOGLE_VIDS_ELIGIBILITY_AUDIT_OK=${vidsAudit.ok}`);console.log(`GOOGLE_VIDS_ELIGIBILITY_STATUS=${vidsAudit.result?.status||vidsAudit.result?.browser?.status||'UNKNOWN'}`);if(vidsAudit.result)console.log(`GOOGLE_VIDS_ELIGIBILITY_RESULT=${JSON.stringify(vidsAudit.result)}`);
+  console.log(`GOOGLE_VIDS_EDITOR_AUDIT_OK=${editorAudit.ok}`);console.log(`GOOGLE_VIDS_EDITOR_STATUS=${editorAudit.result?.status||'UNKNOWN'}`);console.log(`GOOGLE_VIDS_EDITOR_ACCOUNT=${editorAudit.result?.selected?.email||'UNKNOWN'}`);console.log(`GOOGLE_VIDS_EDITOR_AVATAR_VISIBLE=${editorAudit.result?.editor?.avatarVisible===true}`);if(editorAudit.result)console.log(`GOOGLE_VIDS_EDITOR_RESULT=${JSON.stringify(editorAudit.result)}`);else if(editorAudit.stderr||editorAudit.stdout)console.log(`GOOGLE_VIDS_EDITOR_DIAGNOSTIC=${JSON.stringify({stdout:editorAudit.stdout,stderr:editorAudit.stderr,exitCode:editorAudit.exitCode})}`);
+  console.log(`LOCAL_AVATAR_RUNTIME_AUDIT_OK=${localAvatarAudit.ok}`);console.log(`LOCAL_AVATAR_RUNTIME_CANDIDATE=${localAvatarAudit.result?.recommendation?.localTalkingAvatarCandidate===true}`);console.log(`LOCAL_AVATAR_GPU_CANDIDATE=${localAvatarAudit.result?.recommendation?.gpuAcceleratedCandidate===true}`);if(localAvatarAudit.result)console.log(`LOCAL_AVATAR_RUNTIME_RESULT=${JSON.stringify(localAvatarAudit.result)}`);else if(localAvatarAudit.stderr||localAvatarAudit.stdout)console.log(`LOCAL_AVATAR_RUNTIME_DIAGNOSTIC=${JSON.stringify({stdout:localAvatarAudit.stdout,stderr:localAvatarAudit.stderr,exitCode:localAvatarAudit.exitCode})}`);
   console.log('P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY_GREEN');
 }
-
 main().catch(error=>fail(error.message,error.stack));
