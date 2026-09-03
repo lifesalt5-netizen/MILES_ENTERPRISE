@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sales-story-deploy-20260903-026",
+  "id": "miles-p2gc-delune-ui-gate-deploy-20260903-027",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing the DeLune prospect-facing sales-story UI conversion on top of the already GREEN truth/performance baseline: Executive Position, What Is Working, Current Position, Gaps, Market Opportunity, P2GC Diagnosis, representative evidence-backed opportunities/partners, Recommended P2GC Pathway, If Nothing Changes vs With P2GC, and Federal Pathway Validation paid next step. Preserve all explicit-unknown, proof-total, set-aside, GSA, award, opportunity, recompete, buyer and prime/team truth safeguards. Fast-forward only, restart p2gc-growth-demo when source is newer, publish evidence."
+  "note": "Deploy latest main containing the live P2GC browser-surface acceptance audit and combined end-to-end gate. Preserve the already deployed DeLune sales-story UI and all GREEN truth/performance safeguards. Fast-forward only; publish evidence."
 }
