@@ -41,8 +41,9 @@ class CurrentGsaHolderTruthService {
       if (exact.length) return { matchedBy:'UEI', records:exact };
     }
     if (targetName) {
-      const exact = rows.filter(row => norm(row?.legalBusinessName) === targetName);
-      if (exact.length) return { matchedBy:'LEGAL_NAME', records:exact };
+      const exact = rows.filter(row => [row?.legalBusinessName,row?.vendorName,row?.dbaName,row?.contractorName]
+        .some(value => norm(value) === targetName));
+      if (exact.length) return { matchedBy:'LEGAL_OR_DBA_NAME', records:exact };
     }
     return { matchedBy:null, records:[] };
   }
@@ -50,9 +51,12 @@ class CurrentGsaHolderTruthService {
   normalizedRecords(rows, sourceStatus) {
     return rows.map(row => ({
       authority:'GSA eLibrary',
+      vehicleFamily:'GSA_MULTIPLE_AWARD_SCHEDULE',
+      scheduleNumber:'MAS',
       sourceUrl:row.sourceUrl || this.live.eLibraryUrl || GsaHolderSnapshotService.ELIBRARY_MAS_CSV,
       contractNumber:row.contractNumber || null,
       legalBusinessName:row.legalBusinessName || null,
+      dbaName:row.dbaName || null,
       uei:row.uei || null,
       closedForNewAwards:row.closedForNewAwards || null,
       city:row.city || null,
@@ -71,15 +75,18 @@ class CurrentGsaHolderTruthService {
     const response = await this.live.requestText(this.live.eLibraryUrl);
     const parsed = this.live.parseELibrary(response.text);
     const match = this.matchRows(parsed.contracts || [], uei, companyName);
+    const holder = match.records.length > 0;
     return {
       ok:true,
-      status:match.records.length ? 'CURRENT_GSA_MAS_HOLDER_CONFIRMED' : 'CURRENT_GSA_MAS_NON_HOLDER_CONFIRMED',
+      status:holder ? 'CURRENT_GSA_MAS_HOLDER_CONFIRMED' : 'CURRENT_GSA_MAS_NON_HOLDER_CONFIRMED',
       generatedAt:new Date().toISOString(),
-      holder:match.records.length > 0,
+      holder,
+      masHolder:holder,
       matchedBy:match.matchedBy,
       records:this.normalizedRecords(match.records, 'LIVE_GSA_ELIBRARY'),
-      source:{ authority:'GSA eLibrary', url:this.live.eLibraryUrl, sourceDate:response.sourceDate || null, retrievedAt:new Date().toISOString(), fresh:true, currentHolderAuthority:true },
-      limitations:[],
+      sourceScope:'MAS_ONLY',
+      source:{ authority:'GSA eLibrary', url:this.live.eLibraryUrl, sourceDate:response.sourceDate || null, retrievedAt:new Date().toISOString(), fresh:true, currentHolderAuthority:true, scheduleScope:'MAS_ONLY' },
+      limitations:holder ? [] : ['MAS roster was checked. A MAS non-holder result is not evidence that the entity holds no other GSA, VA/FSS, GWAC, BPA, IDIQ, or agency vehicle.'],
       safety:{ readOnly:true, officialPublicSourceRead:true, productionDatabaseModified:false }
     };
   }
@@ -91,29 +98,35 @@ class CurrentGsaHolderTruthService {
     const nowMs = (this.now || new Date()).getTime();
     const age = ageHours(generatedAt, nowMs);
     if (!execution || age == null || age < 0 || age > this.maxStagingAgeHours) {
-      return { ok:false, status:'CURRENT_GSA_STAGING_UNAVAILABLE_OR_STALE', generatedAt:new Date().toISOString(), holder:null, records:[], source:{ executionPath, generatedAt, ageHours:age, maxAgeHours:this.maxStagingAgeHours, fresh:false } };
+      return { ok:false, status:'CURRENT_GSA_STAGING_UNAVAILABLE_OR_STALE', generatedAt:new Date().toISOString(), holder:null, masHolder:null, records:[], sourceScope:'MAS_ONLY', source:{ executionPath, generatedAt, ageHours:age, maxAgeHours:this.maxStagingAgeHours, fresh:false, scheduleScope:'MAS_ONLY' } };
     }
     const manifestPath = execution?.outputPaths?.holderManifest || execution?.results?.gsaHolderRefresh?.manifestPath || null;
     const manifest = manifestPath ? readJson(manifestPath) : null;
     const holderArtifact = (manifest?.artifacts || []).find(a => /gsa_current_mas_holders\.jsonl$/i.test(path.basename(a?.filePath || '')));
     const holderPath = holderArtifact?.filePath || null;
     if (!holderPath || !fs.existsSync(holderPath)) {
-      return { ok:false, status:'CURRENT_GSA_HOLDER_ARTIFACT_UNAVAILABLE', generatedAt:new Date().toISOString(), holder:null, records:[], source:{ executionPath, manifestPath, holderPath, generatedAt, ageHours:age, fresh:true } };
+      return { ok:false, status:'CURRENT_GSA_HOLDER_ARTIFACT_UNAVAILABLE', generatedAt:new Date().toISOString(), holder:null, masHolder:null, records:[], sourceScope:'MAS_ONLY', source:{ executionPath, manifestPath, holderPath, generatedAt, ageHours:age, fresh:true, scheduleScope:'MAS_ONLY' } };
     }
     const rows = await findJsonl(holderPath, row => {
       const targetUei = norm(uei), targetName = norm(companyName);
-      return (targetUei && norm(row?.uei) === targetUei) || (!targetUei && targetName && norm(row?.legalBusinessName) === targetName);
+      return (targetUei && norm(row?.uei) === targetUei) || (targetName && [row?.legalBusinessName,row?.vendorName,row?.dbaName,row?.contractorName].some(value => norm(value) === targetName));
     });
     const match = this.matchRows(rows, uei, companyName);
+    const holder = match.records.length > 0;
     return {
       ok:true,
-      status:match.records.length ? 'CURRENT_GSA_MAS_HOLDER_CONFIRMED_FROM_FRESH_STAGING' : 'CURRENT_GSA_MAS_NON_HOLDER_CONFIRMED_FROM_FRESH_STAGING',
+      status:holder ? 'CURRENT_GSA_MAS_HOLDER_CONFIRMED_FROM_FRESH_STAGING' : 'CURRENT_GSA_MAS_NON_HOLDER_CONFIRMED_FROM_FRESH_STAGING',
       generatedAt:new Date().toISOString(),
-      holder:match.records.length > 0,
+      holder,
+      masHolder:holder,
       matchedBy:match.matchedBy,
       records:this.normalizedRecords(match.records, 'FRESH_GSA_ELIBRARY_STAGING'),
-      source:{ authority:'GSA eLibrary staged snapshot', executionPath, manifestPath, holderPath, generatedAt, ageHours:age, maxAgeHours:this.maxStagingAgeHours, fresh:true, currentHolderAuthority:true },
-      limitations:['Live GSA eLibrary read was unavailable; fresh governed eLibrary staging evidence was used.'],
+      sourceScope:'MAS_ONLY',
+      source:{ authority:'GSA eLibrary staged snapshot', executionPath, manifestPath, holderPath, generatedAt, ageHours:age, maxAgeHours:this.maxStagingAgeHours, fresh:true, currentHolderAuthority:true, scheduleScope:'MAS_ONLY' },
+      limitations:[
+        'Live GSA eLibrary MAS read was unavailable; fresh governed MAS staging evidence was used.',
+        ...(holder ? [] : ['MAS roster was checked. A MAS non-holder result is not evidence that the entity holds no other GSA, VA/FSS, GWAC, BPA, IDIQ, or agency vehicle.'])
+      ],
       safety:{ readOnly:true, officialPublicSourceRead:false, productionDatabaseModified:false }
     };
   }
@@ -126,18 +139,20 @@ class CurrentGsaHolderTruthService {
     }
     const staged = await this.stagedLookup(uei, companyName);
     if (staged.ok) {
-      staged.limitations = [...(staged.limitations || []), ...(liveError ? [`Live GSA eLibrary lookup failed: ${liveError}`] : [])];
+      staged.limitations = [...(staged.limitations || []), ...(liveError ? [`Live GSA eLibrary MAS lookup failed: ${liveError}`] : [])];
       return staged;
     }
     return {
       ok:false,
-      status:'CURRENT_GSA_HOLDER_TRUTH_UNAVAILABLE',
+      status:'CURRENT_GSA_MAS_TRUTH_UNAVAILABLE',
       generatedAt:new Date().toISOString(),
       holder:null,
+      masHolder:null,
       matchedBy:null,
       records:[],
+      sourceScope:'MAS_ONLY',
       source:staged.source || null,
-      limitations:[...(liveError ? [`Live GSA eLibrary lookup failed: ${liveError}`] : []), staged.status],
+      limitations:[...(liveError ? [`Live GSA eLibrary MAS lookup failed: ${liveError}`] : []), staged.status, 'No claim is made about non-MAS GSA/VA/FSS or other acquisition vehicles.'],
       safety:{ readOnly:true, productionDatabaseModified:false }
     };
   }
