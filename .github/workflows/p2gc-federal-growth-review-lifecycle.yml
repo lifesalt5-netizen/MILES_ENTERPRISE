@@ -22,6 +22,7 @@ on:
       - 'TESTS/p2gc_federal_growth_review_builder.test.js'
       - 'TESTS/p2gc_federal_growth_review_video_provider.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
+      - 'TESTS/ionos_smtp_response_buffer.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
   pull_request:
     paths:
@@ -44,6 +45,7 @@ on:
       - 'TESTS/p2gc_federal_growth_review_builder.test.js'
       - 'TESTS/p2gc_federal_growth_review_video_provider.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
+      - 'TESTS/ionos_smtp_response_buffer.test.js'
 
 jobs:
   lifecycle-contract:
@@ -92,3 +94,5 @@ jobs:
         run: node TESTS/p2gc_federal_growth_review_video_provider.test.js
       - name: Run private admin control regression
         run: node TESTS/p2gc_federal_growth_review_admin.test.js
+      - name: Run IONOS SMTP response buffer regression
+        run: node TESTS/ionos_smtp_response_buffer.test.js
