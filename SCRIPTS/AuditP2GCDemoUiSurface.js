@@ -23,16 +23,47 @@ function requestText(pathname) {
   });
 }
 
+async function requestJson(pathname){
+  const response=await requestText(pathname);
+  if(!response.ok)return {...response,json:null};
+  try{return {...response,json:JSON.parse(response.body)};}catch(error){return {...response,ok:false,json:null,error:`JSON_PARSE_FAILED:${error.message}`};}
+}
+
 function containsAll(text, markers) {
   return markers.filter(marker => !String(text || '').includes(marker));
 }
 
+async function auditIdentityAliases(){
+  const name=await requestJson('/api/assessment?term=DeLune%20Corporation');
+  const failures=[];
+  if(!name.ok||!name.json?.ok)return{ok:false,status:'P2GC_IDENTITY_ALIAS_ACCEPTANCE_RED',failures:[`NAME_LOOKUP_FAILED:${name.statusCode||'ERR'}:${name.error||''}`],aliases:{}};
+  const canonical={company:name.json.profile?.companyName||null,uei:name.json.profile?.uei||null,cage:name.json.profile?.cage||null,samStatus:name.json.profile?.samStatus||null,samEvidence:name.json.evidence?.currentSamRegistration?.authority||null};
+  if(!canonical.uei)failures.push('NAME_LOOKUP_UEI_MISSING');
+  if(!canonical.cage)failures.push('NAME_LOOKUP_CAGE_MISSING');
+  const aliases={name:canonical};
+  for(const [kind,value] of [['uei',canonical.uei],['cage',canonical.cage]]){
+    if(!value)continue;
+    const response=await requestJson(`/api/assessment?term=${encodeURIComponent(value)}`);
+    if(!response.ok||!response.json?.ok){failures.push(`${kind.toUpperCase()}_LOOKUP_FAILED:${response.statusCode||'ERR'}:${response.error||''}`);continue;}
+    const observed={company:response.json.profile?.companyName||null,uei:response.json.profile?.uei||null,cage:response.json.profile?.cage||null,samStatus:response.json.profile?.samStatus||null,samEvidence:response.json.evidence?.currentSamRegistration?.authority||null};
+    aliases[kind]=observed;
+    if(String(observed.uei||'').toUpperCase()!==String(canonical.uei||'').toUpperCase())failures.push(`${kind.toUpperCase()}_UEI_MISMATCH`);
+    if(String(observed.cage||'').toUpperCase()!==String(canonical.cage||'').toUpperCase())failures.push(`${kind.toUpperCase()}_CAGE_MISMATCH`);
+    if(String(observed.company||'').toUpperCase()!==String(canonical.company||'').toUpperCase())failures.push(`${kind.toUpperCase()}_COMPANY_MISMATCH`);
+    if(observed.samStatus!==canonical.samStatus)failures.push(`${kind.toUpperCase()}_SAM_STATUS_MISMATCH`);
+    if(observed.samEvidence!==canonical.samEvidence)failures.push(`${kind.toUpperCase()}_SAM_EVIDENCE_MISMATCH`);
+  }
+  if(canonical.samEvidence!=='SAM_PUBLIC_ENTITY_REGISTRATION_BULK_V2')failures.push(`SAM_EVIDENCE_AUTHORITY_UNEXPECTED:${canonical.samEvidence||'EMPTY'}`);
+  return{ok:failures.length===0,status:failures.length===0?'P2GC_IDENTITY_ALIAS_ACCEPTANCE_GREEN':'P2GC_IDENTITY_ALIAS_ACCEPTANCE_RED',failures,aliases};
+}
+
 async function auditUiSurface() {
-  const [html, app, css] = await Promise.all([requestText('/demo'), requestText('/app.js'), requestText('/styles.css')]);
+  const [html, app, css, identityAliases] = await Promise.all([requestText('/demo'), requestText('/app.js'), requestText('/styles.css'), auditIdentityAliases()]);
   const failures=[];
   if (!html.ok) failures.push(`DEMO_HTML_HTTP_FAILURE:${html.statusCode||'ERR'}:${html.error||''}`);
   if (!app.ok) failures.push(`APP_JS_HTTP_FAILURE:${app.statusCode||'ERR'}:${app.error||''}`);
   if (!css.ok) failures.push(`STYLES_HTTP_FAILURE:${css.statusCode||'ERR'}:${css.error||''}`);
+  if(!identityAliases.ok)failures.push(...identityAliases.failures.map(x=>`IDENTITY_ALIAS:${x}`));
 
   const requiredIds=['id="executivePosition"','id="strengths"','id="currentState"','id="gaps"','id="revenueCards"','id="awardHistory"','id="vehicles"','id="agencies"','id="primes"','id="subcontracting"','id="buyers"','id="opportunities"','id="recompetes"','id="diagnosis"','id="pathway"','id="trajectoryNow"','id="trajectoryP2gc"','id="recommendations"','id="paidNextStep"'];
   for (const marker of containsAll(html.body, requiredIds)) failures.push(`HTML_REQUIRED_SURFACE_MISSING:${marker}`);
@@ -53,10 +84,11 @@ async function auditUiSurface() {
     status: failures.length===0 ? 'P2GC_UI_SURFACE_ACCEPTANCE_GREEN' : 'P2GC_UI_SURFACE_ACCEPTANCE_RED',
     baseUrl:BASE_URL,
     failures,
+    identityAliases,
     assets:{ htmlBytes:Buffer.byteLength(html.body||''), appBytes:Buffer.byteLength(app.body||''), cssBytes:Buffer.byteLength(css.body||'') },
-    checks:{ salesStorySections:true, rendererPresent:true, javascriptSyntax:true, responsiveCss:true, printCss:true }
+    checks:{ salesStorySections:true, rendererPresent:true, javascriptSyntax:true, responsiveCss:true, printCss:true, identityAliasContinuity:true }
   };
 }
 
 if (require.main===module) auditUiSurface().then(result=>{console.log(JSON.stringify(result,null,2));process.exitCode=result.ok?0:2;}).catch(error=>{console.error(error.stack||error.message);process.exitCode=2;});
-module.exports={auditUiSurface,requestText};
+module.exports={auditUiSurface,auditIdentityAliases,requestText,requestJson};
