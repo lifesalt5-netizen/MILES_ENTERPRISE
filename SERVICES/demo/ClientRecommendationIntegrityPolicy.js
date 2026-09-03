@@ -38,6 +38,31 @@ function rejectRecommendation(text,model){
   return false;
 }
 
+function applyQualificationBoundary(model){
+  const q=model?.opportunities?.qualification;
+  const rows=arr(model?.opportunities?.liveAndForecast);
+  if(!q && !rows.length) return;
+  const strict={
+    discovered:Number(q?.discovered ?? rows.length),
+    fullyQualifiedDirectPursuit:Number(q?.fullyQualifiedDirectPursuit ?? rows.filter(x=>x.directPursuitQualified===true).length),
+    preliminaryCapabilitySupported:Number(q?.preliminaryCapabilitySupported ?? rows.filter(x=>x.preliminaryCapabilitySupported===true && x.directPursuitQualified!==true).length),
+    preliminaryTeamingPath:Number(q?.preliminaryTeamingPath ?? rows.filter(x=>x.qualificationTier==='PRELIMINARY_TEAMING_PATH_REQUIREMENT_VALIDATION_REQUIRED').length),
+    nearFitGapClosable:Number(q?.nearFitGapClosable ?? rows.filter(x=>x.nearFit===true).length),
+    capabilityValidationRequired:Number(q?.capabilityValidationRequired ?? rows.filter(x=>x.qualificationTier==='CAPABILITY_VALIDATION_REQUIRED').length),
+    solicitationRequirementValidationRequired:Number(q?.solicitationRequirementValidationRequired ?? rows.filter(x=>x.qualificationTier==='SOLICITATION_REQUIREMENT_VALIDATION_REQUIRED').length),
+    notRecommendedDirectPursuit:Number(q?.notRecommendedDirectPursuit ?? rows.filter(x=>x.qualificationTier==='NOT_RECOMMENDED_DIRECT_PURSUIT').length),
+    recommendationEligible:Number(q?.recommendationEligible ?? rows.filter(x=>x.recommendationEligible===true).length),
+    directFitSupported:Number(q?.fullyQualifiedDirectPursuit ?? rows.filter(x=>x.directPursuitQualified===true).length),
+    teamingPathSupported:0,
+    rule:'Only solicitation-requirement-validated records count as fully qualified/direct-fit. Preliminary capability support remains visible as a separate discovery state.'
+  };
+  model.opportunities=model.opportunities||{};
+  model.opportunities.qualification=strict;
+  if(model?.commercialPreview?.totals?.opportunities){
+    Object.assign(model.commercialPreview.totals.opportunities,strict);
+  }
+}
+
 function apply(model){
   if(!model || model.ok!==true) return model;
   const recommendations=model.recommendations||{};
@@ -58,6 +83,7 @@ function apply(model){
   }
 
   model.recommendations=recommendations;
+  applyQualificationBoundary(model);
   model.evidence=model.evidence||{};
   model.evidence.recommendationIntegrity={
     status:'CANONICAL_RECOMMENDATION_INTEGRITY_ENFORCED',
@@ -65,10 +91,11 @@ function apply(model){
       'RECOMPETE_RECOMMENDATION_COUNT_MUST_EQUAL_CANONICAL_SIGNAL_COUNT',
       'MAS_NON_HOLDER_DOES_NOT_PROVE_NO_OTHER_VEHICLE',
       'GENERIC_VEHICLE_GAP_LANGUAGE_REQUIRES_BROADER_VEHICLE_TRUTH',
-      'REVENUE_LEAKAGE_MESSAGING_REQUIRES_STRUCTURED_PROVENANCE_CONFIRMED_MODEL'
+      'REVENUE_LEAKAGE_MESSAGING_REQUIRES_STRUCTURED_PROVENANCE_CONFIRMED_MODEL',
+      'PRELIMINARY_CAPABILITY_SUPPORT_IS_NOT_FULL_SOLICITATION_QUALIFICATION'
     ]
   };
   return model;
 }
 
-module.exports={apply,rejectRecommendation,recompeteCountFromText,hasVerifiedCurrentVehicle,masNonHolderOnly,structuredRevenueModelConfirmed};
+module.exports={apply,rejectRecommendation,recompeteCountFromText,hasVerifiedCurrentVehicle,masNonHolderOnly,structuredRevenueModelConfirmed,applyQualificationBoundary};
