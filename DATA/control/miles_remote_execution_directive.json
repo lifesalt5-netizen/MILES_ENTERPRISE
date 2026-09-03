@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-calendly-reminder-sender-diagnosis-20260903-065",
+  "id": "miles-p2gc-calendly-native-reminder-verify-20260903-066",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the P2GC Calendly reminder acceptance again. If kevin@pathways2gc.com is not authenticated, report the Calendly account email and all healthy Google accounts available to MILES. Make no unrelated changes."
+  "note": "Run the P2GC reminder acceptance. First attempt native Calendly configuration by using only an already-authenticated kevin@pathways2gc.com Google session in the existing browser profile; do not enter credentials. If native 24-hour reminders cannot be verified, evaluate the existing MILES Gmail fallback and report the exact blocker. No unrelated changes."
 }
