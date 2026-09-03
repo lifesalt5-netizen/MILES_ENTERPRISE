@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-canonical-identity-deploy-20260903-002",
+  "id": "miles-p2gc-canonical-identity-deploy-20260903-003",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy current main containing the shared P2GC canonical SAM name resolver and live demo wiring. Fast-forward only, preserve governed safety, restart the managed P2GC demo stack through the existing deployment path, and publish runtime evidence. No campaign, DNS, billing, credential, customer-data, or production-database mutation."
+  "note": "Deploy latest current main including canonical SAM name resolution, dotted corporate suffix normalization, DeLune identity regression coverage, and updated read-only P2GC diagnostics. Fast-forward only and restart the governed managed stack. No campaign, DNS, billing, credential, customer-data, or production-database mutation. Publish evidence to miles-runtime-evidence."
 }
