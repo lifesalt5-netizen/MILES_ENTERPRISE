@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-calendly-reminders-20260903-060",
+  "id": "miles-p2gc-calendly-reminders-20260903-061",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Apply the approved P2GC Calendly reminder policy request from DATA/control/p2gc_calendly_reminder_policy.json. For https://calendly.com/kevin-pathways2gc/30min, verify an immediate invitee confirmation is enabled and a 24-hour-before invitee reminder is enabled. Make no unrelated Calendly changes. The deploy must fail closed unless both are verified GREEN."
+  "note": "Retry the approved P2GC Calendly reminder policy after exact event-name authorization was added. Target only the active Federal Strategy Call - Pathways 2 Gov't Contracting event. Verify immediate invitee confirmation and the 24-hour-before invitee reminder. Make no unrelated Calendly changes and fail closed unless both verify GREEN."
 }
