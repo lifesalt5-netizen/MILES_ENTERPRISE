@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-sam-opportunity-refresh-20260902-015",
+  "id": "miles-executive-blueprint-live-production-truth-20260902-016",
   "enabled": true,
-  "job": "SAM_BULK_EXTRACT_ACQUIRE_STAGING",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Refresh the governed official public SAM.gov entity and Contract Opportunities bulk staging used by the Executive Government Growth Blueprint current-opportunity matcher. Staging only; do not modify production ORION, credentials, campaigns, DNS, or customer data."
+  "note": "Run the production truth reconciliation after the canonical Executive Government Growth Blueprint deployment and SAM opportunity staging refresh. Restart p2gc-growth-demo if the deployed source is newer, then run live prospect acceptance including Sera Brynn LLC and the standard demo companies. Continue fail-closed truth rules; no campaign, DNS, billing, credential, or customer-data mutation."
 }
