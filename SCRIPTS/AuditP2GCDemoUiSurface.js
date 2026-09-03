@@ -3,6 +3,7 @@
 const http = require('http');
 const https = require('https');
 const { URL } = require('url');
+const LiveAcceptance = require('./AuditLiveP2GCDemoAcceptance');
 
 const BASE_URL = String(process.env.P2GC_LIVE_DEMO_BASE_URL || 'http://127.0.0.1:8791').replace(/\/$/, '');
 const TIMEOUT_MS = Math.max(3000, Number(process.env.P2GC_UI_AUDIT_TIMEOUT_MS || 15000));
@@ -57,6 +58,15 @@ async function auditIdentityAliases(){
   return{ok:failures.length===0,status:failures.length===0?'P2GC_IDENTITY_ALIAS_ACCEPTANCE_GREEN':'P2GC_IDENTITY_ALIAS_ACCEPTANCE_RED',failures,aliases};
 }
 
+async function auditRegressionMatrix(){
+  const results=[];
+  for(const company of LiveAcceptance.DEFAULT_COMPANIES){
+    results.push(await LiveAcceptance.auditCompany(company));
+  }
+  const failed=results.filter(x=>!x.ok);
+  return{ok:failed.length===0,status:failed.length===0?'P2GC_FIVE_COMPANY_REGRESSION_GREEN':'P2GC_FIVE_COMPANY_REGRESSION_RED',companyCount:results.length,passedCompanyCount:results.length-failed.length,failedCompanyCount:failed.length,results};
+}
+
 async function auditUiSurface() {
   const [html, app, css, identityAliases] = await Promise.all([requestText('/demo'), requestText('/app.js'), requestText('/styles.css'), auditIdentityAliases()]);
   const failures=[];
@@ -79,16 +89,20 @@ async function auditUiSurface() {
   if (!/max-width|grid-template-columns/i.test(css.body || '')) failures.push('RESPONSIVE_LAYOUT_RULE_MISSING');
   if (!/no-print|@media\s+print/i.test(css.body || '')) failures.push('PRINT_SURFACE_RULE_MISSING');
 
+  const regression=await auditRegressionMatrix();
+  if(!regression.ok){for(const row of regression.results.filter(x=>!x.ok))failures.push(`FIVE_COMPANY_REGRESSION:${row.requestedTerm}:${row.failures.join(',')}`);}
+
   return {
     ok: failures.length===0,
     status: failures.length===0 ? 'P2GC_UI_SURFACE_ACCEPTANCE_GREEN' : 'P2GC_UI_SURFACE_ACCEPTANCE_RED',
     baseUrl:BASE_URL,
     failures,
     identityAliases,
+    regression,
     assets:{ htmlBytes:Buffer.byteLength(html.body||''), appBytes:Buffer.byteLength(app.body||''), cssBytes:Buffer.byteLength(css.body||'') },
-    checks:{ salesStorySections:true, rendererPresent:true, javascriptSyntax:true, responsiveCss:true, printCss:true, identityAliasContinuity:true }
+    checks:{ salesStorySections:true, rendererPresent:true, javascriptSyntax:true, responsiveCss:true, printCss:true, identityAliasContinuity:true, fiveCompanyRegression:true }
   };
 }
 
 if (require.main===module) auditUiSurface().then(result=>{console.log(JSON.stringify(result,null,2));process.exitCode=result.ok?0:2;}).catch(error=>{console.error(error.stack||error.message);process.exitCode=2;});
-module.exports={auditUiSurface,auditIdentityAliases,requestText,requestJson};
+module.exports={auditUiSurface,auditIdentityAliases,auditRegressionMatrix,requestText,requestJson};
