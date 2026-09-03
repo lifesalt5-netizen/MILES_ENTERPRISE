@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-evidence-first-qualification-deploy-20260903-056",
+  "id": "miles-p2gc-evidence-first-live-acceptance-20260903-057",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main revision 40166d898fa855b33cfb33c0be4a91ec9e9e2da1 and all commits listed in SERVICES/demo/P2GC_DEPLOY_REVISION.json. Critical rule: authoritative company evidence must hydrate before opportunity qualification. Run evidence_first_opportunity_qualification.test.js plus the existing capability/gap tests. Restart p2gc-growth-demo and unified 8787 gateway. After restart, preserve all DeLune/Kebros truth safeguards, award-history expansion, set-aside fail-closed behavior, semantic dedupe and vehicle-scope semantics. Do not integrate FederalVehicleInventoryService yet; its parser remains isolated pending validation."
+  "note": "Run read-only live acceptance on the evidence-first qualification build. Confirm DeLune canonical truth remains green and opportunity qualification now sees authoritative award descriptions plus current GSA scope before scoring. Report proofTotals opportunity breakdown (directFitSupported, nearFitGapClosable, teamingPathSupported, capabilityValidationRequired, notRecommendedDirectPursuit, recommendationEligible) and representative records with qualificationTier/missingRequirements/gapClosureOptions. Expected semantics, not hardcoded counts: legitimate demonstrated agriculture/logistics/IT work may become direct-fit supported; specialized maintenance/language work without evidence remains blocked/near-fit/not-recommended; set-aside eligibility remains fail-closed. Run five-company regression and browser/UI acceptance."
 }
