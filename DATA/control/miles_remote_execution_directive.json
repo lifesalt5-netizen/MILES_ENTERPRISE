@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-focused-opportunity-truth-deploy-20260903-047",
+  "id": "miles-p2gc-focused-opportunity-marked-restart-20260903-048",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main including DemoUnifiedOpportunityService capability/eligibility truth propagation and semantic dedupe. Focused /opportunities must preserve capabilityStatus, capabilityClass, directPursuitCapabilitySupported, directPursuitEligible, eligibilityStatus/blocker, set-aside and qualification from canonical current opportunity records. Semantic duplicate notice/version records must collapse before focused totals. Restart p2gc-growth-demo because demo source is newer and restart unified 8787 gateway as governed."
+  "note": "Deploy main revision marker 2026-09-03-delune-truth-capability-048 and require governed restart of p2gc-growth-demo plus unified 8787 gateway. This revision includes focused opportunity capability/eligibility propagation and semantic dedupe. Publish evidence showing a fresh p2gc-growth-demo PID/uptime before acceptance."
 }
