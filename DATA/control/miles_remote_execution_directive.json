@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-proof-totals-deploy-20260903-015",
+  "id": "miles-p2gc-delune-post-index-audit-20260903-016",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing DeLune client-safe truth boundary, evidence-backed readiness filtering, defensible paid-unlock proof totals, restricted-set-aside eligibility guard, and indexed exact-UEI historical detail queries. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
+  "note": "Run the current read-only DeLune P2GC diagnostic against the live latest source. Verify historical recipient index reuse, indexed exact-UEI detail-query timing, canonical hydration, current GSA, public opportunities, and identity. Publish runtime evidence only; no production mutations."
 }
