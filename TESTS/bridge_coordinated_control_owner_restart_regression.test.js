@@ -24,6 +24,12 @@ assert(deploy.includes("mode: 'SUPERVISOR_AFTER_REMOTE_EVIDENCE'"));
 assert(!deploy.includes("mode: 'DELAYED_AFTER_REMOTE_EVIDENCE'"));
 assert(deploy.includes("restartKnownApp(byName.get('miles-worker'))"));
 assert(deploy.includes("restartKnownApp(byName.get('miles-command-center'))"));
+assert(deploy.includes("restartKnownApp(byName.get('p2gc-growth-demo'))"));
+assert(deploy.includes("'p2gc-growth-demo'"));
+assert(deploy.includes('async function waitForGrowthDemo()'));
+assert(deploy.includes("getJson('http://127.0.0.1:8791/api/health')"));
+assert(deploy.includes("capabilities.includes('truth_reconciliation')"));
+assert(deploy.includes('P2GC_GROWTH_DEMO_HEALTH_AFTER='));
 assert(deploy.includes("if (!REMOTE_BRIDGE_SUPERVISED)"));
 
 console.log('BRIDGE_COORDINATED_CONTROL_OWNER_RESTART_REGRESSION_PASS');
