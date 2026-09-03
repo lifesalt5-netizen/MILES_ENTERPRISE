@@ -1,0 +1,34 @@
+name: P2GC Federal Growth Review Release Controls
+
+on:
+  push:
+    paths:
+      - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'CONNECTORS/IONOS/smtp_governed.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js'
+      - 'TESTS/p2gc_federal_growth_review_release.test.js'
+      - '.github/workflows/p2gc-federal-growth-review-release-controls.yml'
+  pull_request:
+    paths:
+      - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'CONNECTORS/IONOS/smtp_governed.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js'
+      - 'TESTS/p2gc_federal_growth_review_release.test.js'
+
+jobs:
+  release-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check release service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js
+      - name: Run Kevin release-control regression
+        run: node TESTS/p2gc_federal_growth_review_release.test.js
