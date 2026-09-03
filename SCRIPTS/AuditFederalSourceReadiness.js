@@ -94,14 +94,44 @@ async function runLiveAcceptance(term){
   return {ok:runtime?.ok===true&&result?.ok===true,status:runtime?.ok===true&&result?.ok===true?'LIVE_DELUNE_ACCEPTANCE_GREEN':'LIVE_DELUNE_ACCEPTANCE_RED',runtime,result};
 }
 
+async function runSalesPreview(term){
+  const response=await LiveAcceptance.requestJson(`/api/assessment?term=${encodeURIComponent(term)}`);
+  if(!response?.ok||!response?.body?.ok)return {ok:false,status:'SALES_PREVIEW_ASSESSMENT_UNAVAILABLE',error:response?.error||response?.raw||null};
+  const m=response.body;
+  const p=m.commercialPreview||{};
+  return {
+    ok:true,
+    status:'SALES_PREVIEW_PROOF_TOTALS_AVAILABLE',
+    company:m.profile?.companyName||null,
+    uei:m.profile?.uei||null,
+    cage:m.profile?.cage||null,
+    samStatus:m.profile?.samStatus||null,
+    gsaStatus:m.profile?.gsaStatus||null,
+    readinessOverall:m.readiness?.overall??null,
+    truthStatus:m.truthIntegrity?.status||null,
+    proofTotals:p.totals||null,
+    visibility:{
+      opportunities:{shown:p.opportunities?.visibleCount??null,locked:p.opportunities?.lockedCount??null},
+      primePartners:{shown:p.primePartners?.visibleCount??null,locked:p.primePartners?.lockedCount??null},
+      recompetes:{shown:p.recompetes?.visibleCount??null,locked:p.recompetes?.lockedCount??null},
+      buyers:{shown:p.buyers?.visibleCount??null,locked:p.buyers?.lockedCount??null},
+      competitors:{shown:p.competitors?.visibleCount??null,locked:p.competitors?.lockedCount??null},
+      vehicles:{shown:p.vehicles?.visibleCount??null,locked:p.vehicles?.lockedCount??null}
+    },
+    topPrimeCandidates:(m.primePartners?.records||[]).slice(0,3).map(x=>({company:x.company,uei:x.uei,fitScore:x.fitScore??null,confidence:x.confidence||null,basis:x.basis||null})),
+    topOpportunities:(m.opportunities?.liveAndForecast||[]).slice(0,3).map(x=>({title:x.title,agency:x.agency,estimatedValue:x.estimatedValue??null,setAside:x.setAside||null,fitScore:x.fitScore??null,directPursuitEligible:x.directPursuitEligible??null,eligibilityBlocker:x.eligibilityBlocker||null}))
+  };
+}
+
 async function main(){
   const rootDir=path.resolve(process.argv[2]||process.env.MILES_ROOT||path.resolve(__dirname,'..'));
   const term=process.env.P2GC_DIAGNOSTIC_TERM||'DeLune Corporation';
   const federal=await new Service({rootDir}).run();
   const p2gc=await diagnoseP2GC(rootDir,term);
   const live=await runLiveAcceptance(term);
-  console.log(JSON.stringify({ok:federal?.ok===true&&p2gc?.ok===true&&live?.ok===true,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',federalSourceReadiness:federal,p2gcDemoLatency:p2gc,p2gcLiveAcceptance:live},null,2));
+  const salesPreview=await runSalesPreview(term);
+  console.log(JSON.stringify({ok:federal?.ok===true&&p2gc?.ok===true&&live?.ok===true&&salesPreview?.ok===true,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',federalSourceReadiness:federal,p2gcDemoLatency:p2gc,p2gcLiveAcceptance:live,p2gcSalesPreview:salesPreview},null,2));
   process.exitCode=0;
 }
 if(require.main===module)main().catch(e=>{console.error(JSON.stringify({ok:false,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',error:e.message,stack:e.stack},null,2));process.exitCode=2;});
-module.exports={diagnoseP2GC,runLiveAcceptance};
+module.exports={diagnoseP2GC,runLiveAcceptance,runSalesPreview};
