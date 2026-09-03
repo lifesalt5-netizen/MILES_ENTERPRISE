@@ -9,6 +9,7 @@ const accountManager = require('../CONNECTORS/GOOGLE/account_manager');
 const ROOT = path.resolve(__dirname, '..');
 const PROFILE_DIR = path.join(ROOT, 'DATA', 'browser', 'profiles', 'miles-chrome');
 const OUT = path.join(ROOT, 'DATA', 'operational_acceptance', 'latest_google_vids_eligibility_audit.json');
+const PRIMARY_TARGET_EMAIL = String(process.env.P2GC_GOOGLE_VIDS_PRIMARY_ACCOUNT || 'info@pathways2gc.com').trim().toLowerCase();
 
 function lower(v){ return String(v == null ? '' : v).toLowerCase(); }
 function hasAny(text, terms){ const t=lower(text); return terms.some(x=>t.includes(lower(x))); }
@@ -47,15 +48,26 @@ async function main(){
   const pathwaysSessions=active.filter(s=>/@pathways/i.test(String(s.accountHint||'')));
   const avatarSessions=active.filter(s=>s.avatarVisible===true);
   const pathwaysAvatarSessions=pathwaysSessions.filter(s=>s.avatarVisible===true);
+  const primarySession=sessions.find(s=>lower(s.accountHint)===PRIMARY_TARGET_EMAIL)||null;
+  const primaryAccess=Boolean(primarySession?.vidsVisible&&!primarySession?.signInRequired&&!primarySession?.accessBlocked);
+  const primaryAvatar=Boolean(primaryAccess&&primarySession?.avatarVisible);
   const result={
     ok:active.length>0,
     service:'GOOGLE_VIDS_ELIGIBILITY_AUDIT',
     observedAt:new Date().toISOString(),
+    primaryTarget:{
+      email:PRIMARY_TARGET_EMAIL,
+      found:Boolean(primarySession),
+      slot:primarySession?.slot??null,
+      vidsAccess:primaryAccess,
+      aiAvatarVisible:primaryAvatar,
+      status:primarySession?.status||'PRIMARY_TARGET_SESSION_NOT_FOUND'
+    },
     accounts:accounts.map(a=>({email:a.email||null,accountKey:a.accountKey||null,status:a.status||null,error:a.error||null})),
     pathwaysAccounts:pathwaysAccounts.map(a=>({email:a.email,status:a.status})),
     browserSessions:sessions,
     summary:{activeVidsSessions:active.length,pathwaysVidsSessions:pathwaysSessions.length,avatarVisibleSessions:avatarSessions.length,pathwaysAvatarVisibleSessions:pathwaysAvatarSessions.length,pathwaysSessionEmails:[...new Set(pathwaysSessions.map(s=>s.accountHint).filter(Boolean))]},
-    status:pathwaysAvatarSessions.length?'PATHWAYS_GOOGLE_VIDS_AI_AVATAR_PROVEN':pathwaysSessions.length?'PATHWAYS_GOOGLE_VIDS_ACCESS_PROVEN_AVATAR_NOT_PROVEN':avatarSessions.length?'GOOGLE_VIDS_AI_AVATAR_PROVEN_NON_PATHWAYS_SESSION':'GOOGLE_VIDS_ACCESS_PROVEN_AVATAR_NOT_PROVEN',
+    status:primaryAvatar?'PRIMARY_INFO_PATHWAYS2GC_AI_AVATAR_PROVEN':primaryAccess?'PRIMARY_INFO_PATHWAYS2GC_VIDS_ACCESS_PROVEN_AVATAR_NOT_PROVEN':pathwaysAvatarSessions.length?'PATHWAYS_GOOGLE_VIDS_AI_AVATAR_PROVEN':pathwaysSessions.length?'PATHWAYS_GOOGLE_VIDS_ACCESS_PROVEN_AVATAR_NOT_PROVEN':avatarSessions.length?'GOOGLE_VIDS_AI_AVATAR_PROVEN_NON_PATHWAYS_SESSION':'GOOGLE_VIDS_ACCESS_PROVEN_AVATAR_NOT_PROVEN',
     safety:{readOnly:true,videoGenerated:false,subscriptionChanged:false,accountChanged:false,emailSent:false}
   };
   fs.mkdirSync(path.dirname(OUT),{recursive:true});
