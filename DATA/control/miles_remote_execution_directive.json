@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-funnel-gateway-fingerprint-audit-20260904-081",
+  "id": "miles-p2gc-funnel-gateway-launch-correlation-audit-20260904-082",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment with the read-only Funnel gateway candidate fingerprint audit. Identify the strongest run.py candidate for the live port 8779 gateway using content markers and file metadata. Preserve public admin blocking. Do not mutate Funnel/Serve/DNS/networking, gateway files, subscriptions, email, or generate video content."
+  "note": "Run the governed Federal Growth Review deployment with the strengthened read-only Funnel gateway candidate audit. Correlate run.py candidates against the live port 8779 process and parent command lines to identify the actual gateway file. Preserve public admin blocking. Do not mutate Funnel/Serve/DNS/networking, gateway files, subscriptions, email, or generate video content."
 }
