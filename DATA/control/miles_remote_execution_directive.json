@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-targeted-sam-probe-20260903-025",
+  "id": "miles-p2gc-delune-sales-story-deploy-20260903-026",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run current live DeLune acceptance and sales-preview proof plus the read-only targeted SAM entity lookup by resolved UEI WDCVJGELGBB5 using the existing authoritative SAM API path. Report legal business name, CAGE, registration status, registration expiration and source if available. Do not alter the live demo from this probe; preserve current GREEN baseline."
+  "note": "Deploy latest main containing the DeLune prospect-facing sales-story UI conversion on top of the already GREEN truth/performance baseline: Executive Position, What Is Working, Current Position, Gaps, Market Opportunity, P2GC Diagnosis, representative evidence-backed opportunities/partners, Recommended P2GC Pathway, If Nothing Changes vs With P2GC, and Federal Pathway Validation paid next step. Preserve all explicit-unknown, proof-total, set-aside, GSA, award, opportunity, recompete, buyer and prime/team truth safeguards. Fast-forward only, restart p2gc-growth-demo when source is newer, publish evidence."
 }
