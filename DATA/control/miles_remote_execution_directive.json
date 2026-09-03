@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-live-production-truth-rerun-20260902-018",
+  "id": "miles-executive-blueprint-canonical-probe-deploy-20260902-019",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun production truth reconciliation after deploying main merge 465d8e82b56de364c18611e9a7cb24f2d4b18a25 with one canonical refresh per company. Restart p2gc-growth-demo if current source is newer and run live acceptance including Sera Brynn LLC. Preserve fail-closed truth rules; no campaign, DNS, billing, credential, or customer-data mutation."
+  "note": "Deploy current main merge 12773a0a0246ada5fef736a9537f1e9c1e1a7263 containing the live canonical Sera Brynn detail probe and production-sized live acceptance timeout contract. Preserve canonical truth and fail-closed evidence rules. No campaign, DNS, billing, credential, or customer-data mutation."
 }
