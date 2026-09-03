@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-five-company-systemic-regression-20260903-035",
+  "id": "miles-p2gc-explicit-coverage-safety-deploy-20260903-036",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the full P2GC end-to-end gate including DeLune name/UEI/CAGE identity continuity and the five-company systemic regression matrix for DeLune Corporation, Dreamers Inc., GO Logistics Courier Services LLC, Integrated Technology Partners Corporation, and Sera Brynn LLC. Require every company to pass assessment, opportunity, vehicle, recompete and teaming semantics without false zeros, stale cross-company data, invented contacts/certifications, or unsupported vehicle/SAM claims. Also require browser sales-story assets, JavaScript, responsive/print CSS, exact proof semantics and current runtime. Read-only; publish evidence."
+  "note": "Deploy latest main containing systemic demo truth fixes: distinguish client-safe explicit coverage gaps from actual truth conflicts, preserve unknown rather than false zero/none, and accept governed zero-obligation measurement windows without misclassifying them as zero award history. Preserve DeLune neutral SAM identity, in-flight dedupe, sales proof and browser safeguards. Fast-forward only, restart affected runtime when source is newer, publish evidence."
 }
