@@ -18,6 +18,36 @@ async function accountHint(page){
   return [...aria.map(emailFrom)].find(Boolean)||null;
 }
 
+async function clickableSnapshot(page){
+  return page.locator('button,a,[role="button"],[role="menuitem"]').evaluateAll(nodes=>nodes.map(n=>({
+    tag:n.tagName,
+    text:(n.innerText||n.textContent||'').trim().replace(/\s+/g,' ').slice(0,180),
+    aria:n.getAttribute('aria-label'),
+    href:n.getAttribute('href'),
+    role:n.getAttribute('role')
+  })).filter(x=>x.text||x.aria).slice(0,250)).catch(()=>[]);
+}
+
+async function clickFirstVisible(page,patterns){
+  for(const pattern of patterns){
+    const candidates=[
+      page.getByRole('button',{name:pattern}).first(),
+      page.getByRole('link',{name:pattern}).first(),
+      page.getByRole('menuitem',{name:pattern}).first(),
+      page.locator('button,a,[role="button"],[role="menuitem"]').filter({hasText:pattern}).first()
+    ];
+    for(const candidate of candidates){
+      try{
+        if(await candidate.count()&&await candidate.isVisible({timeout:1500})){
+          await candidate.click({timeout:10000});
+          return true;
+        }
+      }catch{}
+    }
+  }
+  return false;
+}
+
 async function main(){
   let context;
   const result={
@@ -26,6 +56,7 @@ async function main(){
     observedAt:new Date().toISOString(),
     selected:null,
     editor:null,
+    navigation:{},
     safety:{blankDraftMayBeCreated:true,avatarGenerated:false,videoGenerated:false,shared:false,emailSent:false,subscriptionChanged:false,paidAction:false}
   };
   try{
@@ -47,25 +78,33 @@ async function main(){
       result.selected=selected;
       await page.goto(`https://docs.google.com/videos/u/${selected.slot}/`,{waitUntil:'domcontentloaded',timeout:60000});
       await page.waitForTimeout(2500);
-      const start=page.getByText(/Start a new video|Create a new video|New video/i).first();
-      if(await start.count()===0){
-        result.status='VIDS_START_CONTROL_NOT_FOUND';
-      }else{
-        await start.click({timeout:15000});
+      result.navigation.before=await clickableSnapshot(page);
+      const clickedStart=await clickFirstVisible(page,[/Start a new video/i,/Create a new video/i,/New video/i,/Create new/i]);
+      result.navigation.clickedStart=clickedStart;
+      await page.waitForTimeout(1800);
+      result.navigation.afterStart=await clickableSnapshot(page);
+      const bodyAfterStart=await page.locator('body').innerText({timeout:10000}).catch(()=>'');
+      let clickedBlank=false;
+      if(hasAny(bodyAfterStart,['Blank video','Blank','Create blank'])){
+        clickedBlank=await clickFirstVisible(page,[/^Blank video$/i,/^Blank$/i,/Create blank/i]);
         await page.waitForTimeout(7000);
-        const url=page.url();
-        const title=await page.title().catch(()=>'');
-        const body=await page.locator('body').innerText({timeout:15000}).catch(()=>'');
-        const labels=await page.locator('[aria-label]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('aria-label')).filter(Boolean).slice(0,250)).catch(()=>[]);
-        const combined=[body,...labels].join('\n');
-        const editorVisible=/presentation\/d\/|videos\/d\//i.test(url)||hasAny(combined,['Scene','Timeline','Insert','Generate','Record']);
-        const avatarVisible=hasAny(combined,['AI avatar','AI avatars','Avatars','Generate avatar','Avatar']);
-        const generateVisible=hasAny(combined,['Generate','Generate with AI','Help me create']);
-        const accessBlocked=hasAny(combined,['You don’t have access','not available for your account','contact your administrator']);
-        result.editor={url,title,editorVisible,avatarVisible,generateVisible,accessBlocked,textPreview:body.slice(0,5000),matchingLabels:labels.filter(x=>/avatar|generate|insert|ai/i.test(x)).slice(0,80)};
-        result.ok=editorVisible&&!accessBlocked;
-        result.status=accessBlocked?'EDITOR_ACCESS_BLOCKED':avatarVisible?'PATHWAYS_GOOGLE_VIDS_AI_AVATAR_PROVEN':'PATHWAYS_GOOGLE_VIDS_EDITOR_PROVEN_AVATAR_NOT_VISIBLE';
+      }else if(clickedStart){
+        await page.waitForTimeout(6000);
       }
+      result.navigation.clickedBlank=clickedBlank;
+      const url=page.url();
+      const title=await page.title().catch(()=>'');
+      const body=await page.locator('body').innerText({timeout:15000}).catch(()=>'');
+      const labels=await page.locator('[aria-label]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('aria-label')).filter(Boolean).slice(0,350)).catch(()=>[]);
+      const clickables=await clickableSnapshot(page);
+      const combined=[body,...labels,...clickables.flatMap(x=>[x.text,x.aria])].join('\n');
+      const editorVisible=/\/videos\/d\/|\/presentation\/d\//i.test(url)||hasAny(combined,['Scene','Timeline','Insert media','Add scene','Record yourself','Voiceover']);
+      const avatarVisible=hasAny(combined,['AI avatar','AI avatars','Generate avatar','Avatar']);
+      const generateVisible=hasAny(combined,['Generate','Generate with AI','Help me create']);
+      const accessBlocked=hasAny(combined,['You don’t have access','not available for your account','contact your administrator']);
+      result.editor={url,title,editorVisible,avatarVisible,generateVisible,accessBlocked,textPreview:body.slice(0,6000),matchingLabels:labels.filter(x=>/avatar|generate|insert|ai|voice|scene/i.test(x)).slice(0,120),matchingControls:clickables.filter(x=>/avatar|generate|insert|ai|voice|scene|blank/i.test(`${x.text} ${x.aria}`)).slice(0,120)};
+      result.ok=editorVisible&&!accessBlocked;
+      result.status=accessBlocked?'EDITOR_ACCESS_BLOCKED':avatarVisible?'PATHWAYS_GOOGLE_VIDS_AI_AVATAR_PROVEN':editorVisible?'PATHWAYS_GOOGLE_VIDS_EDITOR_PROVEN_AVATAR_NOT_VISIBLE':'VIDS_EDITOR_NOT_REACHED';
     }
   }catch(error){result.status='EDITOR_AUDIT_ERROR';result.error=error.message;}
   finally{try{await context?.close();}catch{}}
