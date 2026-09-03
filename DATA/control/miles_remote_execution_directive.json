@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-full-demo-fix-redeploy-20260903-012",
+  "id": "miles-p2gc-delune-post-truth-boundary-audit-20260903-013",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main including client truth-boundary sanitation, restricted-set-aside eligibility guard, regression coverage, and source-fingerprint-based historical recipient index reuse. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
+  "note": "Run the updated read-only DeLune diagnostic against the latest live source. Verify historical recipient index status/timing, canonical truth hydration, current GSA and opportunity timing, and identity resolution. Confirm no production mutations and publish evidence."
 }
