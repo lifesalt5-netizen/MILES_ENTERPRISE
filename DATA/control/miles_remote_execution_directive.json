@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-final-truth-capability-deploy-20260903-044",
+  "id": "miles-p2gc-marked-revision-restart-20260903-045",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main P2GC demo fixes end-to-end. Required changes include: canonical readiness suppresses inherited Marketing/Positioning; past performance uses authoritative award/current-period/buyer evidence; current GSA holder is not penalized for generic multiple-vehicle coverage; CAGE-present cannot remain a gap; stale activate/expand schedule language is removed and replaced by GSA utilization/optimization; established awardees cannot enter First-Order/First-Award pathway solely because current obligation measurement metadata is unavailable; agency percentages are historical concentration, not modeled future alignment; opportunity matcher treats exact NAICS as candidate discovery only and requires demonstrated scope/capability evidence for direct-fit support, with specialized maintenance/language/facilities scopes failing closed to CAPABILITY_VALIDATION_REQUIRED; semantic duplicate opportunities collapse; served demo UI labels capability supported vs validation required; award history remains fully expandable and not paywalled. Restart p2gc-growth-demo and unified 8787 gateway as governed deploy requires. Preserve read-only truth rules and publish runtime evidence."
+  "note": "Deploy main revision containing SERVICES/demo/P2GC_DEPLOY_REVISION.json revision 2026-09-03-delune-truth-capability-045. This marker exists specifically so the governed source-freshness detector must recognize P2GC source newer than the current p2gc-growth-demo PM2 start time and restart the product service. Restart the unified 8787 gateway as normal. Do not declare success unless p2gc-growth-demo restart is evidenced."
 }
