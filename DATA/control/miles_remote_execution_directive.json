@@ -1,7 +1,7 @@
 {
-  "id": "miles-executive-blueprint-live-production-truth-final-20260902-020",
+  "id": "miles-orion-fast-post-refresh-validation-deploy-20260902-021",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run final post-deploy production truth reconciliation on main merge 12773a0a0246ada5fef736a9537f1e9c1e1a7263. Restart p2gc-growth-demo if source is newer. Execute the five-company live acceptance and canonical Sera Brynn detail probe using production-sized timeouts. Fail closed on missing or conflicting evidence. No campaign, DNS, billing, credential, or customer-data mutation."
+  "note": "Deploy current main merge 7190d5004ecf64965eea56b2b3435c9c237db4d3 containing the fast evidence-aware ORION post-refresh validator. Preserve read-only sidecar validation and fail-closed evidence rules. No campaign, DNS, billing, credential, or customer-data mutation."
 }
