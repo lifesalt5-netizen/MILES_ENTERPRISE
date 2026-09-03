@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const SamOpportunityNaicsIndexService = require('./SamOpportunityNaicsIndexService');
+const OpportunityQualificationGapService = require('./OpportunityQualificationGapService');
 
 function clean(v) { return String(v == null ? '' : v).trim(); }
 function norm(v) { return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
@@ -115,62 +116,19 @@ function capabilityAssessment(title, naics, model) {
   }
 
   if (supported) return { status:'DEMONSTRATED_CAPABILITY_SUPPORTED', directFit:true, score:20, reason:basis, scopeClass:cls };
-
-  if (cls==='SPECIALIZED_MAINTENANCE') {
-    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-30, reason:'Specialized maintenance/repair scope is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
-  }
-  if (cls==='LANGUAGE_INTERPRETATION') {
-    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-35, reason:'Interpretation/language-service capability is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
-  }
-  if (cls==='FACILITIES_SUPPORT_GENERAL') {
-    return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-20, reason:'Broad facilities-support NAICS overlap does not prove the specific technical scope; validate capability before pursuit.', scopeClass:cls };
-  }
-  if (exactNaics) {
-    return { status:'PROFILE_CAPABILITY_MATCH_VALIDATION_REQUIRED', directFit:false, score:-8, reason:'Exact registered NAICS supports candidate discovery, but direct capability still requires scope or past-performance validation.', scopeClass:cls };
-  }
+  if (cls==='SPECIALIZED_MAINTENANCE') return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-30, reason:'Specialized maintenance/repair scope is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
+  if (cls==='LANGUAGE_INTERPRETATION') return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-35, reason:'Interpretation/language-service capability is not proven by current award or GSA capability evidence; NAICS overlap alone is insufficient.', scopeClass:cls };
+  if (cls==='FACILITIES_SUPPORT_GENERAL') return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-20, reason:'Broad facilities-support NAICS overlap does not prove the specific technical scope; validate capability before pursuit.', scopeClass:cls };
+  if (exactNaics) return { status:'PROFILE_CAPABILITY_MATCH_VALIDATION_REQUIRED', directFit:false, score:-8, reason:'Exact registered NAICS supports candidate discovery, but direct capability still requires scope or past-performance validation.', scopeClass:cls };
   return { status:'CAPABILITY_VALIDATION_REQUIRED', directFit:false, score:-15, reason:'Current evidence does not yet prove direct performance capability for this scope.', scopeClass:cls };
 }
 
 function qualificationTier(capability, setAsideFit) {
   const cls = clean(capability?.scopeClass);
-  if (capability?.directFit === true && setAsideFit?.eligibilityBlocked === true) {
-    return {
-      code:'TEAMING_PATH_SUPPORTED',
-      directPursuit:false,
-      teamingCandidate:true,
-      recommendationEligible:true,
-      allowedAction:'EVALUATE_TEAMING_OR_ACCESS_PATH',
-      reason:'Demonstrated capability supports the scope, but current direct-pursuit eligibility/access is not confirmed.'
-    };
-  }
-  if (capability?.directFit === true) {
-    return {
-      code:'DIRECT_FIT_SUPPORTED',
-      directPursuit:true,
-      teamingCandidate:false,
-      recommendationEligible:true,
-      allowedAction:'DIRECT_PURSUIT_QUALIFICATION',
-      reason:'Demonstrated capability evidence supports the scope and no current eligibility blocker is identified.'
-    };
-  }
-  if (['SPECIALIZED_MAINTENANCE','LANGUAGE_INTERPRETATION'].includes(cls)) {
-    return {
-      code:'NOT_RECOMMENDED_DIRECT_PURSUIT',
-      directPursuit:false,
-      teamingCandidate:false,
-      recommendationEligible:false,
-      allowedAction:'DO_NOT_RECOMMEND_DIRECT_PURSUIT_WITHOUT_NEW_EVIDENCE',
-      reason:'The current evidence does not support direct performance of this specialized scope.'
-    };
-  }
-  return {
-    code:'CAPABILITY_VALIDATION_REQUIRED',
-    directPursuit:false,
-    teamingCandidate:false,
-    recommendationEligible:false,
-    allowedAction:'VALIDATE_CAPABILITY_BEFORE_RECOMMENDATION',
-    reason:'NAICS or profile overlap discovered the candidate, but demonstrated capability has not yet been proven.'
-  };
+  if (capability?.directFit === true && setAsideFit?.eligibilityBlocked === true) return { code:'TEAMING_PATH_SUPPORTED', directPursuit:false, teamingCandidate:true, recommendationEligible:true, allowedAction:'EVALUATE_TEAMING_OR_ACCESS_PATH', reason:'Demonstrated capability supports the scope, but current direct-pursuit eligibility/access is not confirmed.' };
+  if (capability?.directFit === true) return { code:'DIRECT_FIT_SUPPORTED', directPursuit:true, teamingCandidate:false, recommendationEligible:true, allowedAction:'DIRECT_PURSUIT_QUALIFICATION', reason:'Demonstrated capability evidence supports the scope and no current eligibility blocker is identified.' };
+  if (['SPECIALIZED_MAINTENANCE','LANGUAGE_INTERPRETATION'].includes(cls)) return { code:'NOT_RECOMMENDED_DIRECT_PURSUIT', directPursuit:false, teamingCandidate:false, recommendationEligible:false, allowedAction:'DO_NOT_RECOMMEND_DIRECT_PURSUIT_WITHOUT_NEW_EVIDENCE', reason:'The current evidence does not support direct performance of this specialized scope.' };
+  return { code:'CAPABILITY_VALIDATION_REQUIRED', directPursuit:false, teamingCandidate:false, recommendationEligible:false, allowedAction:'VALIDATE_CAPABILITY_BEFORE_RECOMMENDATION', reason:'NAICS or profile overlap discovered the candidate, but demonstrated capability has not yet been proven.' };
 }
 
 class CurrentPublicOpportunityMatchService {
@@ -190,39 +148,9 @@ class CurrentPublicOpportunityMatchService {
     const fresh = age != null && age >= 0 && age <= this.maxAgeHours;
     const naicsSet = new Set(list(model?.profile?.naicsCodes).map(x => clean(x).replace(/\D/g,'')).filter(x => x.length >= 5));
 
-    if (!source.report?.ok || !source.file || !fs.existsSync(source.file)) {
-      return {
-        ok:false,
-        status:'CURRENT_PUBLIC_OPPORTUNITY_SOURCE_UNAVAILABLE',
-        generatedAt:new Date().toISOString(),
-        source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', reportPath:source.reportPath, file:source.file, sourceUrl:source.sourceUrl, fresh:false, ageHours:age },
-        records:[],
-        blockers:['SAM_PUBLIC_OPPORTUNITY_BULK_EXTRACT_NOT_AVAILABLE'],
-        safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false }
-      };
-    }
-    if (!fresh) {
-      return {
-        ok:false,
-        status:'CURRENT_PUBLIC_OPPORTUNITY_SOURCE_STALE',
-        generatedAt:new Date().toISOString(),
-        source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', reportPath:source.reportPath, file:source.file, sourceUrl:source.sourceUrl, generatedAt:source.generatedAt, fresh:false, ageHours:age, maxAgeHours:this.maxAgeHours },
-        records:[],
-        blockers:['SAM_PUBLIC_OPPORTUNITY_BULK_EXTRACT_STALE'],
-        safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false }
-      };
-    }
-    if (!naicsSet.size) {
-      return {
-        ok:false,
-        status:'PROSPECT_NAICS_REQUIRED_FOR_CURRENT_OPPORTUNITY_MATCH',
-        generatedAt:new Date().toISOString(),
-        source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', file:source.file, sourceUrl:source.sourceUrl, generatedAt:source.generatedAt, fresh:true, ageHours:age },
-        records:[],
-        blockers:['PROSPECT_NAICS_UNAVAILABLE'],
-        safety:{ readOnly:true }
-      };
-    }
+    if (!source.report?.ok || !source.file || !fs.existsSync(source.file)) return { ok:false, status:'CURRENT_PUBLIC_OPPORTUNITY_SOURCE_UNAVAILABLE', generatedAt:new Date().toISOString(), source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', reportPath:source.reportPath, file:source.file, sourceUrl:source.sourceUrl, fresh:false, ageHours:age }, records:[], blockers:['SAM_PUBLIC_OPPORTUNITY_BULK_EXTRACT_NOT_AVAILABLE'], safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false } };
+    if (!fresh) return { ok:false, status:'CURRENT_PUBLIC_OPPORTUNITY_SOURCE_STALE', generatedAt:new Date().toISOString(), source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', reportPath:source.reportPath, file:source.file, sourceUrl:source.sourceUrl, generatedAt:source.generatedAt, fresh:false, ageHours:age, maxAgeHours:this.maxAgeHours }, records:[], blockers:['SAM_PUBLIC_OPPORTUNITY_BULK_EXTRACT_STALE'], safety:{ readOnly:true, authenticatedScraping:false, loginAutomation:false } };
+    if (!naicsSet.size) return { ok:false, status:'PROSPECT_NAICS_REQUIRED_FOR_CURRENT_OPPORTUNITY_MATCH', generatedAt:new Date().toISOString(), source:{ authority:'SAM.gov Public Contract Opportunities bulk extract', file:source.file, sourceUrl:source.sourceUrl, generatedAt:source.generatedAt, fresh:true, ageHours:age }, records:[], blockers:['PROSPECT_NAICS_UNAVAILABLE'], safety:{ readOnly:true } };
 
     const limit = Math.max(1, Math.min(Number(options.limit || 30), 100));
     const indexed = await this.index.rowsForNaics(source.file, [...naicsSet]);
@@ -246,6 +174,7 @@ class CurrentPublicOpportunityMatchService {
       const setAsideFit = compatibleSetAside(setAside, model?.profile || {});
       const capability = capabilityAssessment(title, naics, model);
       const tier = qualificationTier(capability, setAsideFit);
+      const gapAnalysis = OpportunityQualificationGapService.analyze({ title, capability, setAsideFit, vehicleAccessBlocked:false });
       const reasons = [`Exact prospect NAICS ${naics} match`, 'Current public SAM.gov opportunity source', capability.reason, tier.reason];
       if (setAsideFit.reason) reasons.push(setAsideFit.reason);
       let fitScore = 45 + capability.score + setAsideFit.score;
@@ -285,6 +214,12 @@ class CurrentPublicOpportunityMatchService {
         recommendationEligible:tier.recommendationEligible,
         allowedAction:tier.allowedAction,
         teamingPathCandidate:tier.teamingCandidate,
+        qualificationGapState:gapAnalysis.state,
+        nearFit:gapAnalysis.nearFit,
+        materialGapCount:gapAnalysis.materialGapCount,
+        missingRequirements:gapAnalysis.missingRequirements,
+        qualificationGaps:gapAnalysis.gaps,
+        gapClosureOptions:gapAnalysis.closureOptions,
         confidence:capability.directFit ? 'CURRENT_PUBLIC_SOURCE_WITH_DEMONSTRATED_CAPABILITY_SUPPORT' : 'CURRENT_PUBLIC_SOURCE_NAICS_CANDIDATE_CAPABILITY_VALIDATION_REQUIRED',
         freshnessAt:source.generatedAt,
         live:true
@@ -305,10 +240,11 @@ class CurrentPublicOpportunityMatchService {
       discovered:records.length,
       directFitSupported:records.filter(row=>row.qualificationTier==='DIRECT_FIT_SUPPORTED').length,
       teamingPathSupported:records.filter(row=>row.qualificationTier==='TEAMING_PATH_SUPPORTED').length,
+      nearFitGapClosable:records.filter(row=>row.nearFit===true).length,
       capabilityValidationRequired:records.filter(row=>row.qualificationTier==='CAPABILITY_VALIDATION_REQUIRED').length,
       notRecommendedDirectPursuit:records.filter(row=>row.qualificationTier==='NOT_RECOMMENDED_DIRECT_PURSUIT').length,
       recommendationEligible:records.filter(row=>row.recommendationEligible===true).length,
-      rule:'Discovery is not qualification. NAICS/keywords may discover a candidate; P2GC/ORION recommends direct pursuit, teaming/access, recompete, or missed-revenue action only after demonstrated capability and applicable eligibility/access evidence support that action.'
+      rule:'Discovery is not qualification. ORION preserves near-fit candidates when a discrete capability, eligibility, or access gap may be closable and states the missing requirement plus closure options.'
     };
 
     return {
@@ -329,7 +265,7 @@ class CurrentPublicOpportunityMatchService {
         lookupMs:indexed.lookupMs,
         totalMatchMs:Date.now()-started,
         indexKind:indexed.cacheKind,
-        rule:'Exact NAICS discovers candidates only. Direct-fit support additionally requires demonstrated capability evidence from current GSA scope, authoritative award history, or other current capability evidence. Specialized scope and set-aside eligibility fail closed when not proven.'
+        rule:'Exact NAICS discovers candidates only. Full qualification requires solicitation-specific requirement validation against authoritative company evidence.'
       },
       qualification,
       records,
