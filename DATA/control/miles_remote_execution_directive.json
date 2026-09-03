@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-final-preacceptance-deploy-20260903-018",
+  "id": "miles-p2gc-delune-live-final-acceptance-20260903-019",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing indexed DeLune identity/performance fixes, visible paid-unlock proof totals, explicit-unknown client-safety handling, hardened set-aside and recommendation truth boundaries, and the integrated live acceptance gate. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
+  "note": "Run the combined current federal readiness, P2GC latency diagnostic, and live DeLune endpoint acceptance against the latest deployed source. Require client-safe truth, defensible paid proof totals, no duplicate opportunities, no false non-federal zeros, no stale vehicle-gap/revenue-leakage/recompete recommendations, restricted set-aside eligibility fail-closed, explicit SAM unknown handling, and healthy assessment/opportunity/vehicle/recompete/teaming endpoints. Read-only; publish evidence only."
 }
