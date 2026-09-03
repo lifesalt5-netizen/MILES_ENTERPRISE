@@ -1,0 +1,30 @@
+name: P2GC Federal Growth Review Lifecycle
+
+on:
+  push:
+    paths:
+      - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
+      - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
+  pull_request:
+    paths:
+      - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
+
+jobs:
+  lifecycle-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check lifecycle service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js
+      - name: Verify product contract JSON
+        run: node -e "const c=require('./CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'); if(c.greenDefinition.partialTechnicalSuccessIsGreen!==false) process.exit(2); if(!c.greenDefinition.requiredStages.includes('REVENUE_ATTRIBUTION')) process.exit(2); console.log('P2GC_PRODUCT_CONTRACT_GREEN')"
+      - name: Run lifecycle regression
+        run: node TESTS/p2gc_federal_growth_review_lifecycle.test.js
