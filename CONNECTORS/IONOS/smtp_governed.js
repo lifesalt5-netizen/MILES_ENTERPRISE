@@ -1,7 +1,7 @@
 'use strict';
 
 const tls = require('tls');
-require('dotenv').config();
+try { require('dotenv').config({ quiet: true }); } catch (_) {}
 
 const HOST = process.env.IONOS_SMTP_HOST || 'smtp.ionos.com';
 const PORT = Number(process.env.IONOS_SMTP_PORT || 465);
@@ -138,7 +138,7 @@ function sendEmail(options = {}) {
 
     socket.on('secureConnect', async () => {
       try {
-        await responses.read(); // server greeting; safe even if it arrived before secureConnect handler queued this read
+        await responses.read();
         await command(`EHLO ${process.env.IONOS_SMTP_EHLO || 'pathways2gc.com'}`);
         await command('AUTH LOGIN');
         await command(b64(account.email));
