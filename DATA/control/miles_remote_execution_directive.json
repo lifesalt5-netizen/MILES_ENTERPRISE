@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-video-readiness-compact-audit-20260904-075",
+  "id": "miles-p2gc-admin-mount-ingress-isolation-audit-20260904-076",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment after compact readiness logging and hardened Google Vids editor navigation. Report only concise Google Vids avatar readiness, local CPU/GPU/FFmpeg readiness, and secure public ingress status. A blank Vids draft may be created if needed. Do not generate avatar/video content, share anything, install packages/models, expose networking, change subscriptions/accounts, send email, or incur a paid action."
+  "note": "Deploy the CI-green private Kevin Federal Growth Review admin controller mount and rerun governed readiness. Prove local admin health is loopback-only, identify the existing Tailscale Funnel gateway process on port 8779, confirm whether review routes are present, and confirm admin routes are not publicly exposed. Do not send email, generate avatar/video content, install packages/models, change subscriptions/accounts, or mutate Funnel/Serve/DNS/networking."
 }
