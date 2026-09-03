@@ -248,12 +248,23 @@
         if(!p) return "";
         const total=Number(p.totalKnown||0);
         const pieces=[`${total.toLocaleString()} identified`,`${Number(p.visibleCount||0).toLocaleString()} representative results shown`,`${Number(p.lockedCount||0).toLocaleString()} locked`];
+        if(name==="opportunities"){
+          const q=[
+            [t.directFitSupported,"direct-fit supported"],
+            [t.nearFitGapClosable,"near-fit gap-closable"],
+            [t.teamingPathSupported,"teaming/access path"],
+            [t.capabilityValidationRequired,"validation required"],
+            [t.notRecommendedDirectPursuit,"not recommended for direct pursuit"]
+          ].filter(([n])=>Number(n||0)>0).map(([n,label])=>`${Number(n).toLocaleString()} ${label}`);
+          if(q.length) pieces.splice(1,0,...q);
+        }
         const knownCount=Math.min(total,Number(t.knownValueCount||0));
         const unknownCount=Math.max(0,total-knownCount);
         if(knownCount>0) pieces.splice(1,0,`${money(t.knownValue)} known value across ${knownCount.toLocaleString()} valued record${knownCount===1?"":"s"}`);
         if((name==="opportunities"||name==="recompetes")&&unknownCount>0) pieces.splice(2,0,`${unknownCount.toLocaleString()} value${unknownCount===1?"":"s"} not disclosed`);
         if(Number(t.agencies||0)>0) pieces.splice(1,0,`${Number(t.agencies).toLocaleString()} agencies`);
-        return `<div class="unlock-note"><strong>${esc(pieces.join(" • "))}</strong><span>Visible records are capability-balanced where the evidence supports multiple business lines; locked identities/details are available in the applicable P2GC engagement.</span></div>`;
+        const note=name==="opportunities"?"ORION discovers broadly, then separates direct-fit, near-fit, teaming/access, validation-required and not-recommended records. Near-fit records state the missing requirement and how it may be closed.":"Visible records are capability-balanced where the evidence supports multiple business lines; locked identities/details are available in the applicable P2GC engagement.";
+        return `<div class="unlock-note"><strong>${esc(pieces.join(" • "))}</strong><span>${esc(note)}</span></div>`;
       };
 
       renderAwards = function(a) {
@@ -291,11 +302,16 @@
       opportunityCard = function(x) {
         const href=safeUrl(x.sourceUrl);
         const source=href?`<a href="${esc(href)}" target="_blank" rel="noopener">${esc(x.source||"Source")}</a>`:esc(x.source||"Source unavailable");
+        const tier=x.qualificationTier||null;
         const capabilitySupported=x.directPursuitCapabilitySupported===true || x.capabilityStatus==="DEMONSTRATED_CAPABILITY_SUPPORTED";
-        const capabilityLabel=capabilitySupported?"CAPABILITY SUPPORTED":"CAPABILITY VALIDATION REQUIRED";
+        const capabilityLabel=tier==="DIRECT_FIT_SUPPORTED"?"DIRECT FIT SUPPORTED":tier==="TEAMING_PATH_SUPPORTED"?"TEAMING / ACCESS PATH":x.nearFit===true?"NEAR FIT — GAP CLOSABLE":tier==="NOT_RECOMMENDED_DIRECT_PURSUIT"?"NOT RECOMMENDED — DIRECT PURSUIT":capabilitySupported?"CAPABILITY SUPPORTED":"CAPABILITY VALIDATION REQUIRED";
         const meta=[x.agency,x.stage,x.naics?`NAICS ${x.naics}`:null,x.setAside,x.dueDate?`Due ${x.dueDate}`:null,x.fitScore!=null?`Fit ${x.fitScore}/100`:null].filter(Boolean).join(" • ");
         const blocker=x.eligibilityBlocker?`<small><strong>Eligibility:</strong> ${esc(x.eligibilityBlocker)}</small>`:"";
-        return `<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(meta)}</span><span>${statusPill(capabilityLabel)} ${source}</span><small>${esc(x.qualification||"")}</small>${blocker}</div>`;
+        const missing=listUx(x.missingRequirements);
+        const closure=listUx(x.gapClosureOptions);
+        const gap=missing.length?`<small><strong>Missing requirement${missing.length===1?"":"s"}:</strong> ${esc(missing.join("; "))}</small>`:"";
+        const closureHtml=closure.length?`<small><strong>How to close the gap:</strong> ${esc(closure.slice(0,3).join(" • "))}</small>`:"";
+        return `<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(meta)}</span><span>${statusPill(capabilityLabel)} ${source}</span><small>${esc(x.qualification||"")}</small>${gap}${closureHtml}${blocker}</div>`;
       };
 
       renderPrimes = function(p0) {
