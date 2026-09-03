@@ -8,6 +8,19 @@ const CanonicalBase = require('./ExecutiveBlueprintCanonicalTruthService');
 const EvidenceFirstCanonical = require('./EvidenceFirstExecutiveBlueprintCanonicalTruthService');
 CanonicalBase.prototype.hydrate = EvidenceFirstCanonical.prototype.hydrate;
 
+// Client-facing recommendations get a second integrity boundary after the commercial
+// preview is assembled. This prevents legacy persona/revenue/recompete/vehicle language
+// from contradicting canonical truth even when an upstream legacy assessment emitted it.
+const DemoCommercialPreviewService = require('./DemoCommercialPreviewService');
+const ClientRecommendationIntegrityPolicy = require('./ClientRecommendationIntegrityPolicy');
+if (!DemoCommercialPreviewService.prototype.__p2gcRecommendationIntegrityInstalled) {
+  const originalCommercialApply = DemoCommercialPreviewService.prototype.apply;
+  DemoCommercialPreviewService.prototype.apply = function applyWithRecommendationIntegrity(model) {
+    return ClientRecommendationIntegrityPolicy.apply(originalCommercialApply.call(this, model));
+  };
+  Object.defineProperty(DemoCommercialPreviewService.prototype, '__p2gcRecommendationIntegrityInstalled', { value:true, enumerable:false });
+}
+
 function clean(value) { return String(value == null ? "" : value).trim(); }
 function list(value) { return Array.isArray(value) ? value.filter(Boolean) : []; }
 function uniq(values) { return [...new Set((values || []).map(clean).filter(Boolean))]; }
@@ -125,7 +138,8 @@ class DemoTruthReconciliationService {
         "NO_EXISTING_VEHICLE_ADVICE_WITHOUT_VEHICLE_EVIDENCE",
         "NO_BUYER_CONCENTRATION_CLAIM_WITHOUT_BUYER_HISTORY",
         "CONFLICTED_REVENUE_BLOCKS_REVENUE_MODEL",
-        "COMPANY_EVIDENCE_HYDRATES_BEFORE_OPPORTUNITY_QUALIFICATION"
+        "COMPANY_EVIDENCE_HYDRATES_BEFORE_OPPORTUNITY_QUALIFICATION",
+        "CLIENT_RECOMMENDATIONS_MUST_MATCH_CANONICAL_COUNTS_AND_VEHICLE_TRUTH"
       ],
       reconciledAt: new Date().toISOString()
     };
