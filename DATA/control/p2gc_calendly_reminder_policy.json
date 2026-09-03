@@ -1,6 +1,6 @@
 {
   "id": "p2gc-calendly-reminders-20260903-002",
-  "enabled": true,
+  "enabled": false,
   "targetSchedulingUri": "https://calendly.com/kevin-pathways2gc/30min",
   "policy": {
     "immediateConfirmation": true,
@@ -9,5 +9,8 @@
   "requestedBy": "CEO_VIA_CHATGPT",
   "requestedAt": "2026-09-03T15:08:00-04:00",
   "implementation": "CALENDLY_NATIVE_CONFIRMATION_PLUS_MILES_24H_GMAIL_GUARD",
-  "sender": "kevin@pathways2gc.com"
+  "sender": "kevin@pathways2gc.com",
+  "status": "AWAITING_ONE_TIME_KEVIN_GOOGLE_BROWSER_AUTH",
+  "blocker": "Miles Chrome profile does not currently contain an authenticated kevin@pathways2gc.com Google session, and the MILES Google account manager has no OAuth token for that account.",
+  "safety": "Disabled so unrelated governed deployments are not blocked while authentication is pending."
 }
