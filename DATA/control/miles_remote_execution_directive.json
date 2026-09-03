@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-strict-qualification-live-acceptance-20260903-059",
+  "id": "miles-p2gc-calendly-reminders-20260903-060",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run live acceptance on the strict qualification build. Confirm DeLune remains canonical/truth green and that preliminary capability-supported records are not counted as fully qualified direct pursuits until solicitation-specific requirements are validated. Report qualification counts and representative records, then run the five-company regression and browser/UI gate."
+  "note": "Apply the approved P2GC Calendly reminder policy request from DATA/control/p2gc_calendly_reminder_policy.json. For https://calendly.com/kevin-pathways2gc/30min, verify an immediate invitee confirmation is enabled and a 24-hour-before invitee reminder is enabled. Make no unrelated Calendly changes. The deploy must fail closed unless both are verified GREEN."
 }
