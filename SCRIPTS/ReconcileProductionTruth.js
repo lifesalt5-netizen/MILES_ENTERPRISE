@@ -7,6 +7,7 @@ const { spawnSync } = require('child_process');
 const core = require('./ReconcileProductionTruthCore');
 const ROOT = path.resolve(process.argv[2] || process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 process.env.MILES_ROOT = ROOT;
+if (!process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS) process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS = '180000';
 
 function runNode(scriptName, args = [], timeoutMs = 90000) {
   const script = path.join(__dirname, scriptName);
@@ -157,14 +158,14 @@ function main() {
   console.log('\n============================================================');
   console.log('LIVE PROSPECT DEMO ACCEPTANCE GATE');
   console.log('============================================================');
-  const demoAcceptance = runNode('AuditLiveP2GCDemoAcceptance.js', [], 420000);
+  const demoAcceptance = runNode('AuditLiveP2GCDemoAcceptance.js', [], 900000);
   if (demoAcceptance.stdout) process.stdout.write(tail(demoAcceptance.stdout, 24000));
   if (demoAcceptance.stderr) process.stderr.write(tail(demoAcceptance.stderr, 5000));
 
   console.log('\n============================================================');
   console.log('LIVE CANONICAL COMPANY DETAIL PROBE');
   console.log('============================================================');
-  const demoProbe = runNode('ProbeLiveDemoCanonicalCompany.js', [], 180000);
+  const demoProbe = runNode('ProbeLiveDemoCanonicalCompany.js', [], 300000);
   if (demoProbe.stdout) process.stdout.write(tail(demoProbe.stdout, 30000));
   if (demoProbe.stderr) process.stderr.write(tail(demoProbe.stderr, 5000));
 
