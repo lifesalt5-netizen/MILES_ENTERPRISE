@@ -1,5 +1,7 @@
 "use strict";
 
+const PrimeCandidateDiscoveryService = require('./PrimeCandidateDiscoveryService');
+
 function num(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
@@ -197,6 +199,7 @@ class DemoCommercialPreviewService {
       competitors: Number(options.competitors || 3),
       vehicles: Number(options.vehicles || 2)
     };
+    this.primeDiscovery = options.primeDiscoveryService || new PrimeCandidateDiscoveryService({ rootDir:options.rootDir });
   }
 
   preview(records, limit) {
@@ -213,6 +216,18 @@ class DemoCommercialPreviewService {
   derivePrimeCandidates(model) {
     const existing = arr(model?.primePartners?.records);
     if (existing.length) return existing;
+
+    try {
+      const discovered=this.primeDiscovery.discover(model,{limit:20});
+      if(discovered?.ok&&arr(discovered.records).length){
+        model.evidence=model.evidence||{};
+        model.evidence.primeCandidateDiscovery={status:discovered.status,source:discovered.source,safety:discovered.safety};
+        return discovered.records;
+      }
+    } catch(error) {
+      model.evidence=model.evidence||{};
+      model.evidence.primeCandidateDiscovery={status:'PRIME_DISCOVERY_FAILED_CLOSED',error:String(error?.message||error)};
+    }
 
     const prospectRevenue = num(model?.revenue?.current?.federal);
     return arr(model?.competitors?.records)
@@ -262,14 +277,14 @@ class DemoCommercialPreviewService {
         ...(model.primePartners || {}),
         status: "MODELED_PRIME_TEAMING_CANDIDATES_AVAILABLE",
         records: primeRecords,
-        disclosure: "Prime/team candidates are modeled from ORION peer intelligence where stronger direct teaming evidence is incomplete. Validate before external reliance."
+        disclosure: "Prime/team candidates are evidence-backed modeled candidates from validated federal award/buyer history where direct teaming evidence is incomplete. Validate current vehicle, capability whitespace and SBLO/contact evidence before outreach."
       };
     }
 
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships.",
       totals:buildProofTotals(model),
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
