@@ -12,15 +12,71 @@ function uniq(values) { return [...new Set(arr(values).filter(Boolean))]; }
 function clean(value) { return String(value == null ? '' : value).trim(); }
 function norm(value) { return clean(value).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
 
+function capabilityGroup(naics, text = '') {
+  const code = clean(naics).replace(/\D/g,'');
+  const t = norm(text);
+  if (/^11/.test(code) || /AGRICULT|FARM|FOOD|PRODUCE|FRUIT|VEGETABLE|BEAN|GRAIN/.test(t)) return 'AGRICULTURE_FOOD';
+  if (/^42|^44|^45/.test(code) || /WHOLESALE|DISTRIBUT|SUPPLY|COMMODIT/.test(t)) return 'WHOLESALE_DISTRIBUTION';
+  if (/^48|^49/.test(code) || /TRANSPORT|LOGISTIC|WAREHOUS|DELIVERY|FREIGHT/.test(t)) return 'TRANSPORT_LOGISTICS';
+  if (/^51|^5415/.test(code) || /SOFTWARE|INFORMATION TECHNOLOGY|\bIT\b|CYBER|DATA|COMPUT|NETWORK|SYSTEM/.test(t)) return 'IT_TECHNOLOGY';
+  if (/^5416|^5413|^5417|^5419/.test(code) || /CONSULT|PROFESSIONAL|ENGINEER|RESEARCH|MANAGEMENT/.test(t)) return 'PROFESSIONAL_SERVICES';
+  if (/^61/.test(code) || /TRAIN|EDUCAT|INSTRUCTION|LEARNING/.test(t)) return 'TRAINING_EDUCATION';
+  if (/^62/.test(code) || /HEALTH|MEDICAL|CLINIC|HOSPITAL/.test(t)) return 'HEALTHCARE';
+  if (/^23/.test(code) || /CONSTRUCT|BUILD|FACILIT|RENOVAT/.test(t)) return 'CONSTRUCTION_FACILITIES';
+  if (/^31|^32|^33/.test(code) || /MANUFACTUR|FABRICAT|EQUIPMENT/.test(t)) return 'MANUFACTURING';
+  return code ? `NAICS_${code.slice(0,2)}` : 'OTHER';
+}
+
+function semanticOpportunityKey(row) {
+  const semantic = norm(`${row?.agency}|${row?.title}|${row?.naics}|${row?.dueDate}`);
+  if (semantic) return semantic;
+  return clean(row?.solicitationNumber || row?.noticeId || row?.id).toUpperCase();
+}
+
 function dedupeOpportunities(records) {
   const map = new Map();
   for (const row of arr(records)) {
-    const key = clean(row?.noticeId || row?.id || row?.solicitationNumber).toUpperCase() || norm(`${row?.agency}|${row?.title}|${row?.dueDate}`);
+    const key = semanticOpportunityKey(row);
     if (!key) continue;
     const current = map.get(key);
     if (!current || (num(row?.fitScore) || 0) > (num(current?.fitScore) || 0)) map.set(key, row);
   }
   return [...map.values()];
+}
+
+function balancedPreview(records, limit, groupFn) {
+  const source = arr(records);
+  const max = Math.max(0, Number(limit || 0));
+  if (!max || !source.length) return { totalKnown:source.length, visibleCount:0, lockedCount:source.length, visible:[], capabilityGroups:[] };
+  const buckets = new Map();
+  for (const row of source) {
+    const group = clean(groupFn ? groupFn(row) : 'OTHER') || 'OTHER';
+    if (!buckets.has(group)) buckets.set(group, []);
+    buckets.get(group).push(row);
+  }
+  for (const rows of buckets.values()) rows.sort((a,b)=>(num(b?.fitScore)||0)-(num(a?.fitScore)||0));
+  const visible=[];
+  const groups=[...buckets.keys()];
+  let round=0;
+  while (visible.length < max) {
+    let added=false;
+    for (const group of groups) {
+      const row=buckets.get(group)?.[round];
+      if (!row) continue;
+      visible.push(row);
+      added=true;
+      if (visible.length >= max) break;
+    }
+    if (!added) break;
+    round += 1;
+  }
+  return {
+    totalKnown: source.length,
+    visibleCount: visible.length,
+    lockedCount: Math.max(0, source.length-visible.length),
+    visible,
+    capabilityGroups: uniq(visible.map(groupFn || (()=>'OTHER')))
+  };
 }
 
 function applySetAsideEligibility(model) {
@@ -91,7 +147,6 @@ function scrubRecommendations(model) {
   const revenueModeled = model?.revenue?.opportunity?.modeledPotentialFederalRevenue != null || model?.revenue?.opportunity?.modeledGrowthOpportunity != null;
   const recompetes = arr(model?.opportunities?.recompetes);
   const samActive = model?.currentState?.samRegistration === true || /^ACTIVE$/i.test(clean(model?.profile?.samStatus));
-
   const reject = text => {
     const t = clean(text);
     if (!revenueModeled && /revenue leakage|modeled (potential )?revenue|commercial pain point.*\$/i.test(t)) return true;
@@ -100,10 +155,7 @@ function scrubRecommendations(model) {
     if (!samActive && /sam entity appears active|sam active|registration expiration is current|optimi[sz]e sam profile/i.test(t)) return true;
     return false;
   };
-
-  for (const key of ['immediate','vehicle','agency','partner','opportunity','growth']) {
-    recommendations[key] = arr(recommendations[key]).filter(item=>!reject(item));
-  }
+  for (const key of ['immediate','vehicle','agency','partner','opportunity','growth']) recommendations[key] = arr(recommendations[key]).filter(item=>!reject(item));
   if (model?.vehicles) model.vehicles.recommendations = arr(model.vehicles.recommendations).filter(item=>!reject(item));
   if (model?.primePartners) model.primePartners.strategy = arr(model.primePartners.strategy).filter(item=>!reject(item));
   if (model?.subcontracting) model.subcontracting.strategy = arr(model.subcontracting.strategy).filter(item=>!reject(item));
@@ -117,9 +169,7 @@ function normalizeUnknownRevenue(model) {
     const status = clean(current[`${field}Status`] || model?.currentState?.[`${field}SalesStatus`]);
     if (current[field] === 0 && !/CONFIRMED|AUTHORITATIVE|ZERO_PERMITTED/i.test(status)) current[field] = null;
   }
-  if (model?.currentState?.stateLocalSales === 0 && !/CONFIRMED|AUTHORITATIVE|ZERO_PERMITTED/i.test(clean(model.currentState.stateLocalSalesStatus))) {
-    model.currentState.stateLocalSales = null;
-  }
+  if (model?.currentState?.stateLocalSales === 0 && !/CONFIRMED|AUTHORITATIVE|ZERO_PERMITTED/i.test(clean(model.currentState.stateLocalSalesStatus))) model.currentState.stateLocalSales = null;
 }
 
 function enforceEvidenceBackedReadiness(model) {
@@ -133,12 +183,7 @@ function enforceEvidenceBackedReadiness(model) {
     if (!canonicalEvidence) delete categories[key];
   }
   const scored = Object.values(categories).map(category=>num(category?.score)).filter(score=>score!=null);
-  model.readiness = {
-    ...readiness,
-    categories,
-    overall:scored.length ? Math.round(scored.reduce((sum,score)=>sum+score,0)/scored.length) : null,
-    methodology:'Evidence-weighted readiness score using only categories with explicit current checks. Unsupported inherited marketing or positioning scores are withheld rather than treated as verified.'
-  };
+  model.readiness = { ...readiness, categories, overall:scored.length ? Math.round(scored.reduce((sum,score)=>sum+score,0)/scored.length) : null, methodology:'Evidence-weighted readiness score using only categories with explicit current checks. Unsupported inherited marketing or positioning scores are withheld rather than treated as verified.' };
 }
 
 function reconcileExplicitUnknownSafety(model) {
@@ -150,13 +195,7 @@ function reconcileExplicitUnknownSafety(model) {
   if (!samUnknown || conflicts.length) return;
   const nonSamBlockers=blockers.filter(x=>clean(x)!=='CANONICAL_SOURCE_COVERAGE_SAM_NOT_GREEN');
   if (nonSamBlockers.length) return;
-  model.truthIntegrity={
-    ...integrity,
-    clientSafe:true,
-    status:'CANONICAL_CURRENT_TRUTH_RECONCILED_WITH_EXPLICIT_SAM_UNKNOWN',
-    blockers:[],
-    warnings:uniq([...(integrity.warnings||[]),'Current SAM status is explicitly UNKNOWN/UNVERIFIED and is not inferred from other sources.'])
-  };
+  model.truthIntegrity={ ...integrity, clientSafe:true, status:'CANONICAL_CURRENT_TRUTH_RECONCILED_WITH_EXPLICIT_SAM_UNKNOWN', blockers:[], warnings:uniq([...(integrity.warnings||[]),'Current SAM status is explicitly UNKNOWN/UNVERIFIED and is not inferred from other sources.']) };
   model.status='DEMO_READY_WITH_EXPLICIT_SAM_UNKNOWN';
   model.evidence=model.evidence||{};
   model.evidence.truthIntegrity=model.truthIntegrity;
@@ -193,10 +232,10 @@ function buildProofTotals(model) {
 class DemoCommercialPreviewService {
   constructor(options = {}) {
     this.previewLimits = {
-      opportunities: Number(options.opportunities || 2),
-      recompetes: Number(options.recompetes || 2),
-      primePartners: Number(options.primePartners || 2),
-      buyers: Number(options.buyers || 2),
+      opportunities: Number(options.opportunities || 6),
+      recompetes: Number(options.recompetes || 4),
+      primePartners: Number(options.primePartners || 6),
+      buyers: Number(options.buyers || 3),
       competitors: Number(options.competitors || 3),
       vehicles: Number(options.vehicles || 2)
     };
@@ -206,18 +245,12 @@ class DemoCommercialPreviewService {
   preview(records, limit) {
     const source = arr(records);
     const visible = source.slice(0, Math.max(0, limit));
-    return {
-      totalKnown: source.length,
-      visibleCount: visible.length,
-      lockedCount: Math.max(0, source.length - visible.length),
-      visible
-    };
+    return { totalKnown:source.length, visibleCount:visible.length, lockedCount:Math.max(0,source.length-visible.length), visible };
   }
 
   derivePrimeCandidates(model) {
     const existing = arr(model?.primePartners?.records);
     if (existing.length) return existing;
-
     try {
       const discovered=this.primeDiscovery.discover(model,{limit:20});
       if(discovered?.ok&&arr(discovered.records).length){
@@ -229,24 +262,12 @@ class DemoCommercialPreviewService {
       model.evidence=model.evidence||{};
       model.evidence.primeCandidateDiscovery={status:'PRIME_DISCOVERY_FAILED_CLOSED',error:String(error?.message||error)};
     }
-
     const prospectRevenue = num(model?.revenue?.current?.federal);
     return arr(model?.competitors?.records)
       .filter(row => row && row.company)
       .filter(row => prospectRevenue == null || num(row.federalRevenue) == null || num(row.federalRevenue) > prospectRevenue)
       .slice(0, 5)
-      .map(row => ({
-        company: row.company,
-        uei: row.uei || null,
-        vehicle: row.vehicle || null,
-        federalRevenue: num(row.federalRevenue),
-        awardCount: num(row.awardCount),
-        agencies: uniq(row.agencies),
-        basis: row.basis || "ORION market-peer model",
-        confidence: row.confidence || "MODELED_CANDIDATE",
-        partnerStatus: "MODELED_PRIME_TEAMING_CANDIDATE",
-        disclosure: "Candidate inferred from federal scale and market-peer alignment. Validate current vehicle, agency, contract and contact evidence before outreach."
-      }));
+      .map(row => ({ company:row.company, uei:row.uei||null, vehicle:row.vehicle||null, federalRevenue:num(row.federalRevenue), awardCount:num(row.awardCount), agencies:uniq(row.agencies), basis:row.basis||"ORION market-peer model", confidence:row.confidence||"MODELED_CANDIDATE", partnerStatus:"MODELED_PRIME_TEAMING_CANDIDATE", disclosure:"Candidate inferred from federal scale and market-peer alignment. Validate current vehicle, agency, contract and contact evidence before outreach." }));
   }
 
   enforceClientTruthBoundary(model) {
@@ -269,35 +290,30 @@ class DemoCommercialPreviewService {
 
   apply(model) {
     if (!model?.ok) return model;
-
     this.enforceClientTruthBoundary(model);
-
     const primeRecords = this.derivePrimeCandidates(model);
     if (!arr(model?.primePartners?.records).length && primeRecords.length) {
-      model.primePartners = {
-        ...(model.primePartners || {}),
-        status: "MODELED_PRIME_TEAMING_CANDIDATES_AVAILABLE",
-        records: primeRecords,
-        disclosure: "Prime/team candidates are evidence-backed modeled candidates from validated federal award/buyer history where direct teaming evidence is incomplete. Validate current vehicle, capability whitespace and SBLO/contact evidence before outreach."
-      };
+      model.primePartners = { ...(model.primePartners || {}), status:"MODELED_PRIME_TEAMING_CANDIDATES_AVAILABLE", records:primeRecords, disclosure:"Prime/team candidates are evidence-backed modeled candidates from validated federal award/buyer history where direct teaming evidence is incomplete. Validate current vehicle, capability whitespace and SBLO/contact evidence before outreach." };
     }
-
+    const opportunities = arr(model?.opportunities?.liveAndForecast);
+    const primePartners = arr(model?.primePartners?.records);
+    const buyers = arr(model?.buyerIntelligence?.records);
     model.commercialPreview = {
-      mode: "PROOF_THEN_UNLOCK",
-      rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed.",
+      mode:"PROOF_THEN_UNLOCK",
+      rule:"Reveal a capability-balanced sample of evidence-backed forward-looking records. Lock only known additional records; never invent hidden inventory. Historical awards remain fully accessible and are not paywalled.",
+      truthBoundary:"USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed. Semantic duplicates are collapsed before preview counts are calculated.",
       totals:buildProofTotals(model),
-      opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
-      recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
-      primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),
-      buyers: this.preview(model?.buyerIntelligence?.records, this.previewLimits.buyers),
+      opportunities: balancedPreview(opportunities, this.previewLimits.opportunities, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.qualification||''}`)),
+      recompetes: balancedPreview(model?.opportunities?.recompetes, this.previewLimits.recompetes, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.agency||''}`)),
+      primePartners: balancedPreview(primePartners, this.previewLimits.primePartners, row=>capabilityGroup(arr(row?.matchedNaics)[0], `${row?.basis||''} ${row?.company||''}`)),
+      buyers: balancedPreview(buyers, this.previewLimits.buyers, row=>norm(row?.agency)||'OTHER'),
       competitors: this.preview(model?.competitors?.records, this.previewLimits.competitors),
       vehicles: this.preview(model?.vehicles?.current, this.previewLimits.vehicles),
-      cta: "Unlock the full company-specific growth intelligence with P2GC."
+      cta:"Unlock the full company-specific growth intelligence with P2GC."
     };
     return model;
   }
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, reconcileExplicitUnknownSafety, buildProofTotals };
+module.exports.helpers = { capabilityGroup, semanticOpportunityKey, dedupeOpportunities, balancedPreview, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, reconcileExplicitUnknownSafety, buildProofTotals };
