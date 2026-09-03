@@ -43,7 +43,7 @@ async function main(){
     if(!selected){result.status='NO_PATHWAYS_VIDS_SESSION_FOUND';}
     else{
       result.selected=selected;
-      await page.goto(`https://vids.new/?authuser=${selected.slot}`,{waitUntil:'domcontentloaded',timeout:60000});await page.waitForTimeout(7000);
+      await page.goto('https://vids.new',{waitUntil:'domcontentloaded',timeout:60000});await page.waitForTimeout(7000);
       let state=await inspect(page);
       if(!state.accessBlocked&&!state.startMenuVisible&&!state.editorVisible){
         result.navigation.fallbackUsed=true;
