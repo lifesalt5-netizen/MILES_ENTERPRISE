@@ -5,6 +5,7 @@ const fs=require('fs');
 const path=require('path');
 const calendly=require('../CONNECTORS/CALENDLY/connector');
 const gmail=require('../CONNECTORS/GOOGLE/gmail');
+const accountManager=require('../CONNECTORS/GOOGLE/account_manager');
 
 const ROOT=path.resolve(__dirname,'..');
 const OUT_FILE=path.join(ROOT,'DATA','operational_acceptance','latest_p2gc_calendly_reminder_acceptance.json');
@@ -38,7 +39,19 @@ async function main(){
   if(matches.length!==1){process.exitCode=2;return write({ok:false,status:'AUTHORIZED_P2GC_EVENT_TYPE_NOT_UNIQUELY_RESOLVED',matchCount:matches.length,activeEventTypes:events.map(e=>({name:e.name,uri:e.uri,scheduling_uri:e.scheduling_uri||null})),checkedAt});}
 
   const senderHealth=await gmail.healthCheckSender(SENDER);
-  if(senderHealth?.ok!==true){process.exitCode=2;return write({ok:false,status:'P2GC_REMINDER_SENDER_NOT_READY',eventType:{name:matches[0].name,uri:matches[0].uri},senderHealth,checkedAt});}
+  if(senderHealth?.ok!==true){
+    const availableAccounts=await accountManager.healthCheckAccounts().catch(()=>[]);
+    process.exitCode=2;
+    return write({
+      ok:false,
+      status:'P2GC_REMINDER_SENDER_NOT_READY',
+      calendlyUser:{email:user.email||null,uri:user.uri},
+      eventType:{name:matches[0].name,uri:matches[0].uri},
+      senderHealth,
+      availableGoogleAccounts:availableAccounts.map(a=>({email:a.email||null,accountKey:a.accountKey,status:a.status,error:a.error||null})),
+      checkedAt
+    });
+  }
 
   const workerFile=path.join(ROOT,'WORKERS','revenueWorker.js');
   const guardFile=path.join(ROOT,'SERVICES','P2GCCalendlyReminderGuardService.js');
@@ -51,6 +64,7 @@ async function main(){
     ok:true,
     status:'P2GC_CALENDLY_REMINDER_POLICY_GREEN',
     targetSchedulingUri:TARGET_URI,
+    calendlyUser:{email:user.email||null,uri:user.uri},
     eventType:{name:matches[0].name,uri:matches[0].uri,scheduling_uri:matches[0].scheduling_uri||null},
     policy:{
       immediateConfirmation:{enabled:true,provider:'CALENDLY_NATIVE_BOOKING_CONFIRMATION'},
