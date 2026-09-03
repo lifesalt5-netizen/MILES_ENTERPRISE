@@ -23,8 +23,10 @@ on:
       - "SERVICES/demo/**"
       - "SERVICES/teaming/**"
       - "SCRIPTS/AuditLiveP2GCDemoAcceptance.js"
+      - "SCRIPTS/ProbeLiveDemoCanonicalCompany.js"
       - "SCRIPTS/ReconcileProductionTruth.js"
       - "TESTS/Test_LiveP2GCDemoAcceptance.js"
+      - "TESTS/live_demo_canonical_company_probe.test.js"
       - "TESTS/Test_SamQualifiedProspectFallbackService.js"
       - "TESTS/full_product_functional_acceptance_test.js"
       - "TESTS/reply_intelligence_production_loop_test.js"
@@ -73,8 +75,10 @@ jobs:
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check RUN_REPLACEMENT_CONTACT_BACKFILL.js
           node --check SCRIPTS/AuditLiveP2GCDemoAcceptance.js
+          node --check SCRIPTS/ProbeLiveDemoCanonicalCompany.js
           node --check SCRIPTS/ReconcileProductionTruth.js
           node --check TESTS/Test_LiveP2GCDemoAcceptance.js
+          node --check TESTS/live_demo_canonical_company_probe.test.js
           node --check TESTS/Test_SamQualifiedProspectFallbackService.js
           node --check TESTS/full_product_functional_acceptance_test.js
           node --check TESTS/reply_intelligence_production_loop_test.js
@@ -92,6 +96,9 @@ jobs:
 
       - name: Live demo acceptance regression
         run: node TESTS/Test_LiveP2GCDemoAcceptance.js
+
+      - name: Live canonical company detail probe regression
+        run: node TESTS/live_demo_canonical_company_probe.test.js
 
       - name: Reply intelligence semantic acceptance
         run: |

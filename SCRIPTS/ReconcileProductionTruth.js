@@ -7,6 +7,7 @@ const { spawnSync } = require('child_process');
 const core = require('./ReconcileProductionTruthCore');
 const ROOT = path.resolve(process.argv[2] || process.env.MILES_ROOT || path.resolve(__dirname, '..'));
 process.env.MILES_ROOT = ROOT;
+if (!process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS) process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS = '180000';
 
 function runNode(scriptName, args = [], timeoutMs = 90000) {
   const script = path.join(__dirname, scriptName);
@@ -157,14 +158,24 @@ function main() {
   console.log('\n============================================================');
   console.log('LIVE PROSPECT DEMO ACCEPTANCE GATE');
   console.log('============================================================');
-  const demoAcceptance = runNode('AuditLiveP2GCDemoAcceptance.js', [], 420000);
+  const demoAcceptance = runNode('AuditLiveP2GCDemoAcceptance.js', [], 900000);
   if (demoAcceptance.stdout) process.stdout.write(tail(demoAcceptance.stdout, 24000));
   if (demoAcceptance.stderr) process.stderr.write(tail(demoAcceptance.stderr, 5000));
 
-  if (!coreRun.ok || !demoAcceptance.ok) {
+  console.log('\n============================================================');
+  console.log('LIVE CANONICAL COMPANY DETAIL PROBE');
+  console.log('============================================================');
+  const demoProbe = runNode('ProbeLiveDemoCanonicalCompany.js', [], 300000);
+  if (demoProbe.stdout) process.stdout.write(tail(demoProbe.stdout, 30000));
+  if (demoProbe.stderr) process.stderr.write(tail(demoProbe.stderr, 5000));
+
+  if (!coreRun.ok || !demoAcceptance.ok || !demoProbe.ok) {
     if (!coreRun.ok) console.error(`PRODUCTION_TRUTH_CORE_EXIT_${coreRun.exitCode}`);
     if (!demoAcceptance.ok) console.error(`LIVE_DEMO_ACCEPTANCE_EXIT_${demoAcceptance.exitCode}`);
-    process.exitCode = demoAcceptance.ok ? (coreRun.exitCode || 1) : (demoAcceptance.exitCode || 2);
+    if (!demoProbe.ok) console.error(`LIVE_CANONICAL_COMPANY_PROBE_EXIT_${demoProbe.exitCode}`);
+    if (!demoAcceptance.ok) process.exitCode = demoAcceptance.exitCode || 2;
+    else if (!demoProbe.ok) process.exitCode = demoProbe.exitCode || 3;
+    else process.exitCode = coreRun.exitCode || 1;
   } else {
     process.exitCode = 0;
   }
