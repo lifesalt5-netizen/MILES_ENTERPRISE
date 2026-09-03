@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-near-fit-gap-wired-20260903-053",
+  "id": "miles-p2gc-qualification-gap-restart-20260903-054",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main commits 45b78fa37647749f1558fc03b98a97cccb4f1533 and 779b566e47796a8599919bf9dad4b7181cd7b4bd plus prior qualification/gap commits. Required behavior: every live opportunity record must carry qualificationTier, allowedAction, recommendationEligible, qualificationGapState, nearFit, materialGapCount, missingRequirements, qualificationGaps, and gapClosureOptions. Discovery is not qualification. Preserve near-fit candidates when exactly one material gap exists and identify how it may be closed through internal capability verification, personnel/licensing, subcontracting, teaming, eligibility validation, or vehicle/access path as applicable. Do not call near-fit or validation-required opportunities missed revenue or direct-pursuit qualified. Run current_public_opportunity_capability_gate.test.js, opportunity_qualification_gap_service.test.js, and opportunity_near_fit_gap_integration.test.js. Restart p2gc-growth-demo and unified 8787 gateway if source is newer. After deploy, run governed live acceptance and report DeLune and Kebros qualification-count output. Preserve all prior SAM/GSA/vehicle truth safeguards."
+  "note": "Deploy main commit cb7505e84d4ff88b0526df1ee84114b63e9dccfc and all required commits listed in SERVICES/demo/P2GC_DEPLOY_REVISION.json. Force governed restart of p2gc-growth-demo and unified 8787 gateway because the live server must load the new opportunity qualification and near-fit gap fields. After restart, run the three qualification/gap regression tests and preserve all prior DeLune/Kebros truth, vehicle-scope, SAM, GSA and opportunity eligibility safeguards."
 }
