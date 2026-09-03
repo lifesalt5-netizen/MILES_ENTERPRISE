@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-google-vids-multisession-audit-20260904-069",
+  "id": "miles-p2gc-provider-route-and-vids-audit-20260904-070",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment and the read-only multi-session Google Vids eligibility audit. Inspect existing authenticated Google session slots for Pathways Workspace identities and AI-avatar visibility. Do not generate video, create content, change subscriptions/accounts, or send email."
+  "note": "Run the governed Federal Growth Review deployment with read-only Primary Inbox Coverage and Google Vids eligibility diagnostics. Determine the actual provider route for info@pathways2gc.com and inspect existing authenticated Pathways Google sessions for Vids/AI-avatar visibility. Do not generate video, create content, change subscriptions/accounts, or send email."
 }
