@@ -4,7 +4,7 @@ const fs=require('fs');
 const path=require('path');
 const crypto=require('crypto');
 const http=require('http');
-const {execFileSync}=require('child_process');
+const {execFileSync,spawnSync}=require('child_process');
 
 const ROOT=path.resolve(__dirname,'..');
 const ENV_FILE=path.join(ROOT,'.env');
@@ -38,7 +38,8 @@ function verifyRequiredFiles(){
     'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js',
     'SERVICES/review/public/review.html',
     'SERVICES/review/public/review.js',
-    'SERVICES/review/public/review.css'
+    'SERVICES/review/public/review.css',
+    'SCRIPTS/AuditGoogleVidsEligibility.js'
   ];
   const missing=required.filter(rel=>!fs.existsSync(path.join(ROOT,rel)));
   if(missing.length) fail('Required review files missing.',missing.join(','));
@@ -86,6 +87,19 @@ async function verifySurface(){
   if(!/Personalized Federal Growth Review/i.test(page.body)) fail('Secure review page content marker missing.');
   return {statusCode:page.statusCode,xRobotsTag:page.headers['x-robots-tag']||null,cacheControl:page.headers['cache-control']||null};
 }
+function runGoogleVidsAudit(){
+  const script=path.join(ROOT,'SCRIPTS','AuditGoogleVidsEligibility.js');
+  const run=spawnSync(process.execPath,[script],{cwd:ROOT,encoding:'utf8',windowsHide:true,timeout:120000});
+  let parsed=null;
+  try{parsed=JSON.parse(String(run.stdout||'').trim());}catch{}
+  return {
+    ok:run.status===0&&parsed?.ok===true,
+    exitCode:run.status,
+    result:parsed,
+    stdout:parsed?null:String(run.stdout||'').slice(-6000),
+    stderr:String(run.stderr||'').slice(-4000)
+  };
+}
 async function main(){
   if(process.platform!=='win32') fail('Deployment helper is intended for the Windows MILES production host only.');
   verifyRequiredFiles();
@@ -98,6 +112,7 @@ async function main(){
   runPm2(['restart',APP,'--update-env'],{stdio:'inherit'});
   const health=await waitForReviewHealth();
   const surface=await verifySurface();
+  const vidsAudit=runGoogleVidsAudit();
   console.log(`P2GC_REVIEW_TOKEN_SECRET_CREATED=${secret.created}`);
   console.log(`P2GC_REVIEW_TOKEN_SECRET_READY=${secret.length>=32}`);
   console.log(`P2GC_REVIEW_IONOS_SMTP_READY=${health.body?.senderHealth?.ok===true}`);
@@ -106,6 +121,11 @@ async function main(){
   console.log(`P2GC_REVIEW_PAGE_HTTP=${surface.statusCode}`);
   console.log(`P2GC_REVIEW_X_ROBOTS_TAG=${surface.xRobotsTag}`);
   console.log(`P2GC_REVIEW_CACHE_CONTROL=${surface.cacheControl}`);
+  console.log(`GOOGLE_VIDS_ELIGIBILITY_AUDIT_OK=${vidsAudit.ok}`);
+  console.log(`GOOGLE_VIDS_ELIGIBILITY_STATUS=${vidsAudit.result?.browser?.status||'UNKNOWN'}`);
+  console.log(`GOOGLE_VIDS_PATHWAYS_ACCOUNTS=${vidsAudit.result?.pathwaysAccounts?.length??'UNKNOWN'}`);
+  if(vidsAudit.result) console.log(`GOOGLE_VIDS_ELIGIBILITY_RESULT=${JSON.stringify(vidsAudit.result)}`);
+  else if(vidsAudit.stderr||vidsAudit.stdout) console.log(`GOOGLE_VIDS_ELIGIBILITY_DIAGNOSTIC=${JSON.stringify({stdout:vidsAudit.stdout,stderr:vidsAudit.stderr,exitCode:vidsAudit.exitCode})}`);
   console.log('P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY_GREEN');
 }
 
