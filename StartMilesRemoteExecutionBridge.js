@@ -54,6 +54,7 @@ const JOBS = Object.freeze({
   INSTANTLY_ZERO_COST_OAUTH_INIT_MISSING: ['node', ['SCRIPTS/RunInstantlyGoogleOAuthZeroCostMissingBatch.js', '--authorization', 'AUTHORIZE_ZERO_COST_PAID_SENDER_GOOGLE_OAUTH']],
   INSTANTLY_ZERO_COST_OAUTH_BROWSER_GUARDED: ['node', ['SCRIPTS/RunInstantlyGoogleOAuthBrowserGuarded.js', '--authorization', 'AUTHORIZE_EXISTING_AUTHENTICATED_GOOGLE_OAUTH_CONSENT']],
   COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY: ['node', ['SCRIPTS/DeployConsolidatedCOOSelfMaintenance.js']],
+  P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY: ['node', ['SCRIPTS/DeployP2GCFederalGrowthReview.js']],
   COO_RUNTIME_APPROVAL_AUDIT: ['node', ['SCRIPTS/AuditRuntimeApprovalBacklog.js']],
   ORION_OFFICIAL_SOURCE_ACQUISITION_PLAN: ['node', ['SCRIPTS/PlanOrionOfficialSourceAcquisition.js']],
   ORION_OFFICIAL_SOURCE_ACQUIRE_STAGING: ['node', ['SCRIPTS/AcquireOrionOfficialSourceToStaging.js']],
