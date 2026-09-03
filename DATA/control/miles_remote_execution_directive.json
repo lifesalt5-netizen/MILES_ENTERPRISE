@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-marked-revision-restart-20260903-045",
+  "id": "miles-p2gc-delune-live-truth-capability-audit-20260903-046",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main revision containing SERVICES/demo/P2GC_DEPLOY_REVISION.json revision 2026-09-03-delune-truth-capability-045. This marker exists specifically so the governed source-freshness detector must recognize P2GC source newer than the current p2gc-growth-demo PM2 start time and restart the product service. Restart the unified 8787 gateway as normal. Do not declare success unless p2gc-growth-demo restart is evidenced."
+  "note": "Run the complete read-only federal/P2GC live acceptance against the just-restarted build. Validate DeLune name/UEI/CAGE identity, SAM ACTIVE, current GSA MAS, award history, current 8787/8791 demo endpoints, opportunity capability classifications, semantic dedupe, set-aside fail-closed behavior, readiness categories, gaps, pathway, recommendations, agency-history semantics, proof totals, focused opportunities/vehicles/recompetes/teaming routes, and systemic regression companies. Report exact failures rather than weakening assertions."
 }
