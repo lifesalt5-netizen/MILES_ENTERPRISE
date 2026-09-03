@@ -8,6 +8,9 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
+      - 'SERVICES/review/public/**'
+      - 'StartP2GCCustomerDelivery.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
@@ -19,6 +22,9 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
+      - 'SERVICES/review/public/**'
+      - 'StartP2GCCustomerDelivery.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
       - 'TESTS/p2gc_federal_growth_review_access.test.js'
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
@@ -38,6 +44,12 @@ jobs:
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js
       - name: Syntax check recipient verification service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js
+      - name: Syntax check review HTTP controller
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js
+      - name: Syntax check customer delivery runtime
+        run: node --check StartP2GCCustomerDelivery.js
+      - name: Syntax check review client
+        run: node --check SERVICES/review/public/review.js
       - name: Syntax check governed IONOS sender
         run: node --check CONNECTORS/IONOS/smtp_governed.js
       - name: Verify product contract JSON
