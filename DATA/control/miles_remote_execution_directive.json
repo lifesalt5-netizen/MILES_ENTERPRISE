@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-google-vids-and-local-avatar-audit-20260904-073",
+  "id": "miles-p2gc-vids-new-local-runtime-ingress-audit-20260904-074",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the governed Federal Growth Review deployment with the improved Google Vids editor proof that follows a newly opened editor tab/window, plus the read-only local avatar runtime capability audit. A blank Vids test draft may be created if required. Do not generate an avatar/video, share content, install packages/models, change subscriptions/accounts, send email, or incur a paid action."
+  "note": "Run the governed Federal Growth Review deployment using the official vids.new entry point for Google Vids AI-avatar eligibility, the corrected read-only local avatar runtime audit, and the read-only public ingress audit. A blank Vids test draft may be created if required. Do not generate avatar/video content, share anything, install packages/models, expose networking, change subscriptions/accounts, send email, or incur a paid action."
 }
