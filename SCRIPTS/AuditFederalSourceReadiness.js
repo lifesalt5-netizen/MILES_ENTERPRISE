@@ -14,6 +14,7 @@ const LiveAcceptance=require('./AuditLiveP2GCDemoAcceptance');
 function elapsed(start){return Date.now()-start;}
 function compactModel(model){return {ok:model?.ok===true,status:model?.status||null,company:model?.profile?.companyName||model?.company?.company||null,uei:model?.profile?.uei||model?.company?.uei||null,cage:model?.profile?.cage||null};}
 function compactIdentity(result){return {ok:result?.ok===true,status:result?.status||null,legalName:result?.legalName||null,uei:result?.uei||null,cage:result?.cage||null,matchedBy:result?.matchedBy||null,candidateCount:result?.candidateCount??null,indexStatus:result?.indexStatus||null};}
+function compactSamIdentity(result){return {ok:result?.ok===true,status:result?.status||null,legalBusinessName:result?.legalBusinessName||null,uei:result?.uei||null,cageCode:result?.cageCode||null,registrationStatus:result?.registrationStatus||null,samRegistered:result?.samRegistered??null,registrationExpirationDate:result?.registrationExpirationDate||null,source:result?.source||null,error:result?.error||null};}
 function compactSource(result){return {ok:result?.ok===true,status:result?.status||null,error:result?.error||null};}
 async function timedAsync(fn){const t=Date.now();try{const result=await fn();return {ms:elapsed(t),result};}catch(error){return {ms:elapsed(t),error:String(error?.stack||error?.message||error)};}}
 function timedSync(fn){const t=Date.now();try{const result=fn();return {ms:elapsed(t),result};}catch(error){return {ms:elapsed(t),error:String(error?.stack||error?.message||error)};}}
@@ -49,6 +50,8 @@ async function diagnoseP2GC(rootDir,term='DeLune Corporation'){
     const uei=String(model?.profile?.uei||'').trim();
     let currentSam={ms:0,result:null};
     if(uei) currentSam=timedSync(()=>sam.build(uei));
+    let targetedSam={ms:0,result:null};
+    if(uei) targetedSam=await timedAsync(()=>canonical.awardHistory.resolveSamIdentity(uei));
     const reconciled=model?.ok?reconciler.reconcile(model):model;
     let sources={};
     let hydrate={ms:0,result:null};
@@ -76,11 +79,12 @@ async function diagnoseP2GC(rootDir,term='DeLune Corporation'){
       historicalIndexedModel:{ms:historicalIndexedModel.ms,...compactModel(historicalIndexedModel.result),error:historicalIndexedModel.error||null},
       historicalWildcardFallback:{ms:historicalWildcard.ms,...compactModel(historicalWildcard.result),error:historicalWildcard.error||null},
       currentSamByUei:{ms:currentSam.ms,...compactModel(currentSam.result),error:currentSam.error||null},
+      targetedSamEntityByUei:{ms:targetedSam.ms,...compactSamIdentity(targetedSam.result),error:targetedSam.error||targetedSam.result?.error||null},
       canonicalSources:sources,
       canonicalHydrate:{ms:hydrate.ms,...compactModel(hydrate.result),truthStatus:hydrate.result?.truthIntegrity?.status||null,error:hydrate.error||null}
     };
     const flat=[
-      ['BASE_ORION',stages.baseOrion.ms],['SAM_FALLBACK_REQUESTED_TERM',stages.samFallbackByRequestedTerm.ms],['CANONICAL_SAM_NAME_RESOLVER',stages.canonicalSamNameResolver.ms],['SAM_FALLBACK_CANONICAL_UEI',stages.samFallbackByCanonicalUei.ms],['HISTORICAL_NAME_INDEX',stages.historicalNameIndex.ms],['HISTORICAL_INDEXED_MODEL',stages.historicalIndexedModel.ms],['HISTORICAL_WILDCARD_FALLBACK',stages.historicalWildcardFallback.ms],['CURRENT_SAM_BY_UEI',stages.currentSamByUei.ms],
+      ['BASE_ORION',stages.baseOrion.ms],['SAM_FALLBACK_REQUESTED_TERM',stages.samFallbackByRequestedTerm.ms],['CANONICAL_SAM_NAME_RESOLVER',stages.canonicalSamNameResolver.ms],['SAM_FALLBACK_CANONICAL_UEI',stages.samFallbackByCanonicalUei.ms],['HISTORICAL_NAME_INDEX',stages.historicalNameIndex.ms],['HISTORICAL_INDEXED_MODEL',stages.historicalIndexedModel.ms],['HISTORICAL_WILDCARD_FALLBACK',stages.historicalWildcardFallback.ms],['CURRENT_SAM_BY_UEI',stages.currentSamByUei.ms],['TARGETED_SAM_ENTITY_BY_UEI',stages.targetedSamEntityByUei.ms],
       ...Object.entries(stages.canonicalSources).map(([k,v])=>[k.toUpperCase(),v.ms]),['CANONICAL_HYDRATE',stages.canonicalHydrate.ms]
     ].filter(([,ms])=>Number.isFinite(ms));
     flat.sort((a,b)=>b[1]-a[1]);
