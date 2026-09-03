@@ -1,6 +1,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const probe = require('../SCRIPTS/ProbeLiveDemoCanonicalCompany');
 
 const model = {
@@ -105,5 +107,10 @@ activeLeak.currentState.activeContractsStatus = 'CONFIRMED_CURRENT_PERFORMANCE_P
 const badBoundary = probe.summarize(activeLeak);
 assert.strictEqual(badBoundary.ok, false);
 assert(badBoundary.acceptanceFailures.includes('CLIENT_ACTIVE_CONTRACT_FIELD_MUST_REMAIN_UNCLAIMED'));
+
+const reconciliationSource = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'ReconcileProductionTruth.js'), 'utf8');
+assert(reconciliationSource.includes("P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS = '180000'"));
+assert(reconciliationSource.includes("runNode('AuditLiveP2GCDemoAcceptance.js', [], 900000)"));
+assert(reconciliationSource.includes("runNode('ProbeLiveDemoCanonicalCompany.js', [], 300000)"));
 
 console.log('LIVE_DEMO_CANONICAL_COMPANY_PROBE_TEST=GREEN');
