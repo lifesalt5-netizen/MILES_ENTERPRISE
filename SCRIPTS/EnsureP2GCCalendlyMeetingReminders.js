@@ -10,6 +10,7 @@ const OUT_DIR = path.join(ROOT, 'DATA', 'operational_acceptance');
 const OUT_FILE = path.join(OUT_DIR, 'latest_p2gc_calendly_reminder_acceptance.json');
 const TARGET_SCHEDULING_URI = String(process.env.MILES_P2GC_CALENDLY_URL || 'https://calendly.com/kevin-pathways2gc/30min').replace(/\/$/, '');
 const EXECUTE = process.argv.includes('--execute');
+const AUTHORIZED_P2GC_EVENT_NAME = /FEDERAL\s+STRATEGY\s+CALL\s+PATHWAYS\s+2\s+GOV(?:ERNMENT|'?T)?\s+CONTRACTING/i;
 
 function clean(v) { return String(v == null ? '' : v).trim(); }
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
@@ -40,9 +41,11 @@ async function findTargetEventType() {
   if (!user) throw new Error('CALENDLY_USER_URI_UNAVAILABLE');
   const body = await calendlyGet('/event_types', { user, active:true, count:100, sort:'name:asc' });
   const events = Array.isArray(body?.collection) ? body.collection : [];
+  const authorizedNameMatches = events.filter(x => AUTHORIZED_P2GC_EVENT_NAME.test(clean(x?.name).replace(/[^A-Za-z0-9']+/g, ' ')));
   const target = events.find(x => clean(x?.scheduling_uri).replace(/\/$/,'') === TARGET_SCHEDULING_URI)
-    || events.find(x => clean(x?.scheduling_uri).replace(/\/$/,'').endsWith('/30min'));
-  return { user, events, target };
+    || events.find(x => clean(x?.scheduling_uri).replace(/\/$/,'').endsWith('/30min'))
+    || (authorizedNameMatches.length === 1 ? authorizedNameMatches[0] : null);
+  return { user, events, target, authorizedNameMatches };
 }
 async function textSnapshot(page) {
   return clean(await page.locator('body').innerText({ timeout:15000 }).catch(() => '')).slice(0,12000);
@@ -105,7 +108,8 @@ async function main() {
   catch (error) { return fail('CALENDLY_API_DISCOVERY_FAILED', { error:error.message }); }
   if (!discovery.target) {
     return fail('P2GC_CALENDLY_EVENT_TYPE_NOT_FOUND', {
-      activeEventTypes:discovery.events.map(x => ({ name:x.name, scheduling_uri:x.scheduling_uri, uri:x.uri }))
+      activeEventTypes:discovery.events.map(x => ({ name:x.name, scheduling_uri:x.scheduling_uri, uri:x.uri })),
+      authorizedNameMatchCount:discovery.authorizedNameMatches?.length || 0
     });
   }
 
@@ -143,8 +147,6 @@ async function main() {
     const reminder24Before = has24HourReminder(text);
     const changes = [];
 
-    // Calendly's standard booking confirmation/calendar invitation is the immediate notification.
-    // We do not disable or replace an existing confirmation method; we only fail closed if none is visible.
     if (!immediateBefore) {
       if (!EXECUTE) {
         return fail('IMMEDIATE_CONFIRMATION_NOT_VERIFIED', { eventType:{ name:discovery.target.name, scheduling_uri:discovery.target.scheduling_uri }, openedUrl, bodyPreview:text.slice(0,5000) });
