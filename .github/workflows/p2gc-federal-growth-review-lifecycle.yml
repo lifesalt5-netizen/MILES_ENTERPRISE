@@ -5,13 +5,17 @@ on:
     paths:
       - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
+      - 'TESTS/p2gc_federal_growth_review_access.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
   pull_request:
     paths:
       - 'CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'TESTS/p2gc_federal_growth_review_lifecycle.test.js'
+      - 'TESTS/p2gc_federal_growth_review_access.test.js'
 
 jobs:
   lifecycle-contract:
@@ -24,7 +28,11 @@ jobs:
           node-version: '20'
       - name: Syntax check lifecycle service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewLifecycleService.js
+      - name: Syntax check secure access service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js
       - name: Verify product contract JSON
-        run: node -e "const c=require('./CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'); if(c.greenDefinition.partialTechnicalSuccessIsGreen!==false) process.exit(2); if(!c.greenDefinition.requiredStages.includes('REVENUE_ATTRIBUTION')) process.exit(2); console.log('P2GC_PRODUCT_CONTRACT_GREEN')"
+        run: node -e "const c=require('./CONFIG/P2GC_FEDERAL_GROWTH_REVIEW_PRODUCT_CONTRACT.json'); if(c.greenDefinition.partialTechnicalSuccessIsGreen!==false) process.exit(2); if(!c.greenDefinition.requiredStages.includes('REVENUE_ATTRIBUTION')) process.exit(2); if(c.security.downloadable!==false) process.exit(2); console.log('P2GC_PRODUCT_CONTRACT_GREEN')"
       - name: Run lifecycle regression
         run: node TESTS/p2gc_federal_growth_review_lifecycle.test.js
+      - name: Run secure access regression
+        run: node TESTS/p2gc_federal_growth_review_access.test.js
