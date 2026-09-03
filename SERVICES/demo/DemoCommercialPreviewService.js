@@ -20,6 +20,41 @@ function dedupeOpportunities(records) {
   return [...map.values()];
 }
 
+function applySetAsideEligibility(model) {
+  if (!model?.opportunities) return;
+  const certText = norm([
+    ...arr(model?.profile?.certifications),
+    ...arr(model?.currentState?.certifications),
+    model?.profile?.smallBusinessStatus,
+    model?.currentState?.smallBusinessStatus
+  ].filter(Boolean).join(' '));
+  const checks = [
+    { name:'SDVOSB', setAside:/SERVICE DISABLED VETERAN|\bSDVOSB\b/, cert:/SERVICE DISABLED VETERAN|\bSDVOSB\b/ },
+    { name:'EDWOSB', setAside:/ECONOMICALLY DISADVANTAGED WOMEN OWNED|\bEDWOSB\b/, cert:/ECONOMICALLY DISADVANTAGED WOMEN OWNED|\bEDWOSB\b/ },
+    { name:'WOSB', setAside:/WOMEN OWNED SMALL BUSINESS|\bWOSB\b/, cert:/WOMEN OWNED SMALL BUSINESS|\bWOSB\b/ },
+    { name:'8(a)', setAside:/\b8\s*A\b|8\(A\)/, cert:/\b8\s*A\b|8\(A\)/ },
+    { name:'HUBZone', setAside:/HUBZONE/, cert:/HUBZONE/ }
+  ];
+  model.opportunities.liveAndForecast = arr(model.opportunities.liveAndForecast).map(row => {
+    const setAside = norm(row?.setAside);
+    if (!setAside) return row;
+    for (const check of checks) {
+      if (!check.setAside.test(setAside)) continue;
+      if (check.cert.test(certText)) return { ...row, directPursuitEligible:true, eligibilityStatus:`${check.name.toUpperCase().replace(/[^A-Z0-9]+/g,'_')}_ELIGIBILITY_CONFIRMED_FROM_PROFILE` };
+      return {
+        ...row,
+        directPursuitEligible:false,
+        eligibilityStatus:'SET_ASIDE_ELIGIBILITY_NOT_CONFIRMED',
+        eligibilityBlocker:`${check.name} set-aside requires current certification evidence before direct pursuit.`,
+        fitScore:Math.min(num(row?.fitScore) == null ? 49 : num(row.fitScore),49),
+        qualification:[clean(row?.qualification), `${check.name} direct-pursuit eligibility is not confirmed; teaming may still be evaluated separately.`].filter(Boolean).join('; '),
+        confidence:'CURRENT_PUBLIC_SOURCE_MATCH_WITH_ELIGIBILITY_BLOCKER'
+      };
+    }
+    return row;
+  });
+}
+
 function consolidateAgencyAlignment(model) {
   const buyers = arr(model?.buyerIntelligence?.records);
   if (!buyers.length) return;
@@ -141,6 +176,7 @@ class DemoCommercialPreviewService {
     }
     normalizeUnknownRevenue(model);
     if (model?.opportunities) model.opportunities.liveAndForecast = dedupeOpportunities(model.opportunities.liveAndForecast);
+    applySetAsideEligibility(model);
     consolidateAgencyAlignment(model);
     scrubRecommendations(model);
   }
@@ -163,7 +199,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Stale or contradicted recommendations are suppressed after canonical truth hydration.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Stale or contradicted recommendations are suppressed after canonical truth hydration.",
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
       primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),
@@ -177,4 +213,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { dedupeOpportunities, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue };
+module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue };
