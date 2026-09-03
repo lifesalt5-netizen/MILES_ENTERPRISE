@@ -233,8 +233,20 @@ function buildProofTotals(model) {
   const recompetes = arr(model?.opportunities?.recompetes);
   const recompeteValue = sumKnown(recompetes, 'value');
   const buyers = arr(model?.buyerIntelligence?.records);
+  const qualification = model?.opportunities?.qualification || model?.opportunityQualification || null;
   return {
-    opportunities:{ total:opportunities.length, knownValue:oppValue.total, knownValueCount:oppValue.known, unknownValueCount:Math.max(0,opportunities.length-oppValue.known) },
+    opportunities:{
+      total:opportunities.length,
+      knownValue:oppValue.total,
+      knownValueCount:oppValue.known,
+      unknownValueCount:Math.max(0,opportunities.length-oppValue.known),
+      directFitSupported:Number(qualification?.directFitSupported ?? opportunities.filter(x=>x.qualificationTier==='DIRECT_FIT_SUPPORTED').length),
+      teamingPathSupported:Number(qualification?.teamingPathSupported ?? opportunities.filter(x=>x.qualificationTier==='TEAMING_PATH_SUPPORTED').length),
+      nearFitGapClosable:Number(qualification?.nearFitGapClosable ?? opportunities.filter(x=>x.nearFit===true).length),
+      capabilityValidationRequired:Number(qualification?.capabilityValidationRequired ?? opportunities.filter(x=>x.qualificationTier==='CAPABILITY_VALIDATION_REQUIRED').length),
+      notRecommendedDirectPursuit:Number(qualification?.notRecommendedDirectPursuit ?? opportunities.filter(x=>x.qualificationTier==='NOT_RECOMMENDED_DIRECT_PURSUIT').length),
+      recommendationEligible:Number(qualification?.recommendationEligible ?? opportunities.filter(x=>x.recommendationEligible===true).length)
+    },
     primePartners:{ total:arr(model?.primePartners?.records).length },
     recompetes:{ total:recompetes.length, knownValue:recompeteValue.total, knownValueCount:recompeteValue.known, unknownValueCount:Math.max(0,recompetes.length-recompeteValue.known) },
     buyers:{ total:buyers.length, agencies:new Set(buyers.map(x=>norm(x?.agency)).filter(Boolean)).size },
@@ -316,7 +328,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode:"PROOF_THEN_UNLOCK",
       rule:"Reveal a capability-balanced sample of evidence-backed forward-looking records. Lock only known additional records; never invent hidden inventory. Historical awards remain fully accessible and are not paywalled.",
-      truthBoundary:"USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed. Semantic duplicates are collapsed before preview counts are calculated. Historical agency metrics are presented as historical concentration, never as future-fit percentages.",
+      truthBoundary:"Discovery is not qualification. Opportunity totals distinguish direct-fit, near-fit, teaming/access, validation-required and not-recommended records. Near-fit records must state the missing requirement and closure path and cannot be represented as missed revenue or direct-pursuit qualified. USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed. Semantic duplicates are collapsed before preview counts are calculated. Historical agency metrics are presented as historical concentration, never as future-fit percentages.",
       totals:buildProofTotals(model),
       opportunities: balancedPreview(opportunities, this.previewLimits.opportunities, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.qualification||''}`)),
       recompetes: balancedPreview(model?.opportunities?.recompetes, this.previewLimits.recompetes, row=>capabilityGroup(row?.naics, `${row?.title||''} ${row?.agency||''}`)),
