@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-federal-growth-review-deploy-20260903-067",
+  "id": "miles-p2gc-google-vids-eligibility-audit-20260904-068",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy the secure Personalized Federal Growth Review delivery surface. Do not send email. Verify strong review-token secret, Kevin IONOS SMTP configuration, review assets, noindex/no-store security headers, and restart only p2gc-customer-delivery. Fail closed unless /api/review/health and the secure review page are GREEN."
+  "note": "Run the existing governed Federal Growth Review deployment and its new read-only Google Vids eligibility diagnostic. Do not generate a video, change subscriptions, alter Google accounts, or send email. Report active Pathways Google account health and whether Google Vids / AI avatar access is visible in the existing authenticated browser environment."
 }
