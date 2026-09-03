@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-focused-opportunity-marked-restart-20260903-048",
+  "id": "miles-p2gc-final-end-to-end-acceptance-20260903-049",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main revision marker 2026-09-03-delune-truth-capability-048 and require governed restart of p2gc-growth-demo plus unified 8787 gateway. This revision includes focused opportunity capability/eligibility propagation and semantic dedupe. Publish evidence showing a fresh p2gc-growth-demo PID/uptime before acceptance."
+  "note": "Final read-only P2GC acceptance after revision 048. Require DeLune identity/SAM/GSA/award truth green; readiness with no inherited Marketing/Positioning; no CAGE-present or multiple-vehicle generic gaps; no activate-existing-schedule language; established awardee Federal Growth Pathway; historical agency concentration semantics; opportunity capability/eligibility fields preserved through focused service; semantic duplicates collapsed; restricted set-aside fail-closed; public focused routes healthy; and five-company systemic regression green. If GO Logistics still times out, report it as a performance failure and do not weaken timeout semantics."
 }
