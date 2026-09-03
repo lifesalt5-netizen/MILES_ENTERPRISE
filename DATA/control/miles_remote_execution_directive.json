@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-funnel-gateway-commandline-audit-20260904-077",
+  "id": "miles-p2gc-funnel-gateway-scriptname-audit-20260904-078",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun the governed Federal Growth Review readiness audit with the strengthened read-only ingress inspection. Identify the exact Python gateway command line/source behind port 8779 and preserve the existing admin isolation. Do not mutate Funnel/Serve/DNS/networking, send email, or generate video content."
+  "note": "Run the strengthened read-only ingress audit and report the exact Python .py gateway script name behind Funnel port 8779. Preserve public admin blocking. Do not mutate Funnel/Serve/DNS/networking, send email, or generate video content."
 }
