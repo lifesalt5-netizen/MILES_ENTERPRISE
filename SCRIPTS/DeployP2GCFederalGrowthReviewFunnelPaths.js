@@ -12,7 +12,17 @@ const HTTPS_PORT=443;
 const BACKEND='http://127.0.0.1:8792';
 const MOUNTS=[{path:'/review',target:`${BACKEND}/review`},{path:'/api/review',target:`${BACKEND}/api/review`}];
 function run(cmd,args=[],timeout=30000){const r=spawnSync(cmd,args,{cwd:ROOT,encoding:'utf8',windowsHide:true,timeout});return{ok:r.status===0,status:r.status,stdout:String(r.stdout||'').trim(),stderr:String(r.stderr||'').trim(),error:r.error?.message||null};}
-function tailscale(args,timeout=30000){for(const cmd of(process.platform==='win32'?['tailscale.exe','tailscale']:['tailscale'])){const r=run(cmd,args,timeout);if(r.ok||!r.error)return{...r,command:cmd};}return{ok:false,status:-1,stdout:'',stderr:'TAILSCALE_CLI_NOT_FOUND'};}
+function resolveTailscale(){
+  if(process.platform==='win32'){
+    const shell=process.env.ComSpec||'cmd.exe';
+    for(const name of['tailscale.exe','tailscale']){const w=run(shell,['/d','/s','/c','where',name],10000);if(w.ok){const hit=w.stdout.split(/\r?\n/).map(x=>x.trim()).find(x=>x&&fs.existsSync(x));if(hit)return hit;}}
+    for(const p of['C:\\Program Files\\Tailscale\\tailscale.exe','C:\\Program Files (x86)\\Tailscale\\tailscale.exe'])if(fs.existsSync(p))return p;
+    return null;
+  }
+  const w=run('which',['tailscale'],10000);return w.ok?w.stdout.split(/\r?\n/)[0].trim():null;
+}
+let TAILSCALE_CLI=null;
+function tailscale(args,timeout=30000){TAILSCALE_CLI=TAILSCALE_CLI||resolveTailscale();if(!TAILSCALE_CLI)return{ok:false,status:-1,stdout:'',stderr:'TAILSCALE_CLI_NOT_FOUND'};return{...run(TAILSCALE_CLI,args,timeout),command:TAILSCALE_CLI};}
 function fail(message,detail){const e=new Error(message);e.detail=detail;throw e;}
 function urls(text){return[...new Set((String(text||'').match(/https:\/\/[A-Za-z0-9.-]+(?::\d+)?/g)||[]).map(x=>x.replace(/\/$/,'')))];}
 function status(){const r=tailscale(['funnel','status','--json'],30000);if(!r.ok)fail('TAILSCALE_FUNNEL_STATUS_FAILED',r.stderr||r.stdout);return r;}
@@ -31,12 +41,12 @@ async function main(){
   const originalEnv=readEnv();let envChanged=false;const applied=[];
   try{
     const existing=presentMounts(before.stdout);
-    if(existing.length===MOUNTS.length){const accepted=await verify(base,rootBefore);if(!accepted.ok)fail('EXISTING_P2GC_REVIEW_FUNNEL_PATHS_NOT_GREEN',JSON.stringify(accepted));setEnvValue('P2GC_PUBLIC_REVIEW_BASE_URL',base);envChanged=true;restartCustomerDelivery();console.log(JSON.stringify({ok:true,status:'P2GC_REVIEW_FUNNEL_PATHS_ALREADY_GREEN',publicBaseUrl:base,acceptance:accepted.checks,safety:{rootReset:false,adminRouteMounted:false,existingRoutesReused:true}},null,2));return;}
+    if(existing.length===MOUNTS.length){const accepted=await verify(base,rootBefore);if(!accepted.ok)fail('EXISTING_P2GC_REVIEW_FUNNEL_PATHS_NOT_GREEN',JSON.stringify(accepted));setEnvValue('P2GC_PUBLIC_REVIEW_BASE_URL',base);envChanged=true;restartCustomerDelivery();console.log(JSON.stringify({ok:true,status:'P2GC_REVIEW_FUNNEL_PATHS_ALREADY_GREEN',publicBaseUrl:base,tailscaleCli:TAILSCALE_CLI,acceptance:accepted.checks,safety:{rootReset:false,adminRouteMounted:false,existingRoutesReused:true}},null,2));return;}
     if(existing.length)fail('PARTIAL_P2GC_REVIEW_FUNNEL_PATH_CONFIG_REFUSING_OVERWRITE',existing.map(x=>x.path).join(','));
     for(const e of MOUNTS){mount(e);applied.push(e);}await new Promise(r=>setTimeout(r,2500));
     const acceptance=await verify(base,rootBefore);if(!acceptance.ok)fail('P2GC_REVIEW_FUNNEL_ACCEPTANCE_FAILED',JSON.stringify(acceptance));setEnvValue('P2GC_PUBLIC_REVIEW_BASE_URL',base);envChanged=true;restartCustomerDelivery();await new Promise(r=>setTimeout(r,1800));
     const postRestart=await verify(base,rootBefore);if(!postRestart.ok)fail('P2GC_REVIEW_FUNNEL_POST_RESTART_ACCEPTANCE_FAILED',JSON.stringify(postRestart));
-    console.log(JSON.stringify({ok:true,status:'P2GC_REVIEW_FUNNEL_PATHS_GREEN',publicBaseUrl:base,mounts:MOUNTS,acceptance:postRestart.checks,safety:{rootReset:false,adminRouteMounted:false,onlyProspectPathsAdded:true,rollbackArmed:true}},null,2));
-  }catch(error){if(envChanged){writeEnv(originalEnv);delete process.env.P2GC_PUBLIC_REVIEW_BASE_URL;try{restartCustomerDelivery();}catch{}}const rollback=applied.slice().reverse().map(e=>({path:e.path,result:unmount(e)}));console.error(JSON.stringify({ok:false,status:'P2GC_REVIEW_FUNNEL_PATHS_ROLLED_BACK',error:error.message,detail:error.detail||null,envRestored:envChanged,rollback:rollback.map(x=>({path:x.path,ok:x.result.ok,status:x.result.status,stderr:x.result.stderr}))},null,2));process.exitCode=2;}
+    console.log(JSON.stringify({ok:true,status:'P2GC_REVIEW_FUNNEL_PATHS_GREEN',publicBaseUrl:base,tailscaleCli:TAILSCALE_CLI,mounts:MOUNTS,acceptance:postRestart.checks,safety:{rootReset:false,adminRouteMounted:false,onlyProspectPathsAdded:true,rollbackArmed:true}},null,2));
+  }catch(error){if(envChanged){writeEnv(originalEnv);delete process.env.P2GC_PUBLIC_REVIEW_BASE_URL;try{restartCustomerDelivery();}catch{}}const rollback=applied.slice().reverse().map(e=>({path:e.path,result:unmount(e)}));console.error(JSON.stringify({ok:false,status:'P2GC_REVIEW_FUNNEL_PATHS_ROLLED_BACK',error:error.message,detail:error.detail||null,tailscaleCli:TAILSCALE_CLI,envRestored:envChanged,rollback:rollback.map(x=>({path:x.path,ok:x.result.ok,status:x.result.status,stderr:x.result.stderr}))},null,2));process.exitCode=2;}
 }
 main().catch(e=>{console.error(e.stack||e.message);process.exitCode=2;});
