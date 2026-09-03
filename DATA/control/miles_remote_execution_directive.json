@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-calendly-native-reminder-verify-20260903-066",
+  "id": "miles-p2gc-federal-growth-review-deploy-20260903-067",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the P2GC reminder acceptance. First attempt native Calendly configuration by using only an already-authenticated kevin@pathways2gc.com Google session in the existing browser profile; do not enter credentials. If native 24-hour reminders cannot be verified, evaluate the existing MILES Gmail fallback and report the exact blocker. No unrelated changes."
+  "note": "Deploy the secure Personalized Federal Growth Review delivery surface. Do not send email. Verify strong review-token secret, Kevin IONOS SMTP configuration, review assets, noindex/no-store security headers, and restart only p2gc-customer-delivery. Fail closed unless /api/review/health and the secure review page are GREEN."
 }
