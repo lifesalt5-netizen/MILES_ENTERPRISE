@@ -2,6 +2,7 @@
 
 const reviewId=location.pathname.split('/').filter(Boolean).pop();
 const accessToken=new URLSearchParams(location.search).get('access')||'';
+const calendlyUrl='https://calendly.com/kevin-pathways2gc/30min';
 let current=null;let selectedPriority=null;let fired=new Set();
 const $=id=>document.getElementById(id);
 
@@ -38,6 +39,6 @@ function event(type,value=null,metadata=null){return api('event',{method:'POST',
 function once(type,value){if(fired.has(type))return;fired.add(type);event(type,value);}
 function attachVideoTelemetry(v){v.addEventListener('play',()=>once('VIDEO_START',0));v.addEventListener('timeupdate',()=>{if(!v.duration)return;const p=(v.currentTime/v.duration)*100;if(p>=25)once('VIDEO_25',25);if(p>=50)once('VIDEO_50',50);if(p>=75)once('VIDEO_75',75);if(p>=90)once('VIDEO_90',90);});v.addEventListener('ended',()=>once('VIDEO_COMPLETE',100));}
 async function submitQuestion(){const question=$('question').value.trim();if(!question)return msg('questionMessage','Enter a question first.');try{await api('question',{method:'POST',body:JSON.stringify({question,priorityOptionId:selectedPriority})});msg('questionMessage','Your question was saved for Kevin.');$('question').value='';}catch(error){msg('questionMessage',error.message);}}
-function schedule(){event('CTA_CLICK',1,{cta:'REVIEW_YOUR_FINDINGS_WITH_KEVIN'});event('SCHEDULING_OPENED',1);location.href='/schedule';}
+async function schedule(){await event('CTA_CLICK',1,{cta:'REVIEW_YOUR_FINDINGS_WITH_KEVIN'});await event('SCHEDULING_OPENED',1);location.href=calendlyUrl;}
 async function restore(){try{const result=await api('state',{method:'GET'});render(result.review,result.watermark);$('verify').hidden=true;$('review').hidden=false;}catch{}}
 $('sendCode').addEventListener('click',sendCode);$('verifyCode').addEventListener('click',verifyCode);$('submitQuestion').addEventListener('click',submitQuestion);$('schedule').addEventListener('click',schedule);restore();
