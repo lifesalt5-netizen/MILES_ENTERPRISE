@@ -10,6 +10,7 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewVideoProviderService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAdminController.js'
       - 'SERVICES/review/public/**'
@@ -19,6 +20,7 @@ on:
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
       - 'TESTS/p2gc_federal_growth_review_script.test.js'
       - 'TESTS/p2gc_federal_growth_review_builder.test.js'
+      - 'TESTS/p2gc_federal_growth_review_video_provider.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
       - '.github/workflows/p2gc-federal-growth-review-lifecycle.yml'
   pull_request:
@@ -30,6 +32,7 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewVerificationService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewVideoProviderService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAdminController.js'
       - 'SERVICES/review/public/**'
@@ -39,6 +42,7 @@ on:
       - 'TESTS/p2gc_federal_growth_review_verification.test.js'
       - 'TESTS/p2gc_federal_growth_review_script.test.js'
       - 'TESTS/p2gc_federal_growth_review_builder.test.js'
+      - 'TESTS/p2gc_federal_growth_review_video_provider.test.js'
       - 'TESTS/p2gc_federal_growth_review_admin.test.js'
 
 jobs:
@@ -60,6 +64,8 @@ jobs:
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewScriptService.js
       - name: Syntax check builder service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewBuilderService.js
+      - name: Syntax check video provider service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewVideoProviderService.js
       - name: Syntax check review HTTP controller
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js
       - name: Syntax check private admin controller
@@ -82,5 +88,7 @@ jobs:
         run: node TESTS/p2gc_federal_growth_review_script.test.js
       - name: Run automatic review builder regression
         run: node TESTS/p2gc_federal_growth_review_builder.test.js
+      - name: Run video provider regression
+        run: node TESTS/p2gc_federal_growth_review_video_provider.test.js
       - name: Run private admin control regression
         run: node TESTS/p2gc_federal_growth_review_admin.test.js
