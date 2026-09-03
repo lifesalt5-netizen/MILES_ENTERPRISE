@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-post-truth-boundary-audit-20260903-013",
+  "id": "miles-p2gc-delune-indexed-uei-deploy-20260903-014",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the updated read-only DeLune diagnostic against the latest live source. Verify historical recipient index status/timing, canonical truth hydration, current GSA and opportunity timing, and identity resolution. Confirm no production mutations and publish evidence."
+  "note": "Deploy latest main containing indexed exact-UEI historical detail queries for the P2GC Growth Blueprint demo. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
 }
