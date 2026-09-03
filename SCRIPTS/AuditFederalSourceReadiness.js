@@ -1,5 +1,6 @@
 'use strict';
 const path=require('path');
+process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS=process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS||'60000';
 const Service=require('../SERVICES/orion/FederalSourceReadinessAuditServiceV2');
 const ExecutiveGrowthBlueprintDemoService=require('../SERVICES/demo/ExecutiveGrowthBlueprintDemoService');
 const SamQualifiedProspectFallbackService=require('../SERVICES/demo/SamQualifiedProspectFallbackService');
@@ -8,6 +9,7 @@ const HistoricalRecipientNameIndexService=require('../SERVICES/demo/HistoricalRe
 const HistoricalProspectFallbackService=require('../SERVICES/demo/HistoricalProspectFallbackService');
 const DemoTruthReconciliationService=require('../SERVICES/demo/DemoTruthReconciliationService');
 const ExecutiveBlueprintCanonicalTruthService=require('../SERVICES/demo/ExecutiveBlueprintCanonicalTruthService');
+const LiveAcceptance=require('./AuditLiveP2GCDemoAcceptance');
 
 function elapsed(start){return Date.now()-start;}
 function compactModel(model){return {ok:model?.ok===true,status:model?.status||null,company:model?.profile?.companyName||model?.company?.company||null,uei:model?.profile?.uei||model?.company?.uei||null,cage:model?.profile?.cage||null};}
@@ -86,12 +88,20 @@ async function diagnoseP2GC(rootDir,term='DeLune Corporation'){
   }finally{try{sam.close();}catch{} try{nameResolver.close();}catch{} try{historical.close?.();}catch{}}
 }
 
+async function runLiveAcceptance(term){
+  const runtime=await LiveAcceptance.ensureDemoCurrent();
+  const result=runtime?.ok===true?await LiveAcceptance.auditCompany(term):{requestedTerm:term,ok:false,failures:[`DEMO_RUNTIME_NOT_CURRENT:${runtime?.status||runtime?.reason||'UNKNOWN'}`]};
+  return {ok:runtime?.ok===true&&result?.ok===true,status:runtime?.ok===true&&result?.ok===true?'LIVE_DELUNE_ACCEPTANCE_GREEN':'LIVE_DELUNE_ACCEPTANCE_RED',runtime,result};
+}
+
 async function main(){
   const rootDir=path.resolve(process.argv[2]||process.env.MILES_ROOT||path.resolve(__dirname,'..'));
+  const term=process.env.P2GC_DIAGNOSTIC_TERM||'DeLune Corporation';
   const federal=await new Service({rootDir}).run();
-  const p2gc=await diagnoseP2GC(rootDir,process.env.P2GC_DIAGNOSTIC_TERM||'DeLune Corporation');
-  console.log(JSON.stringify({ok:federal?.ok===true&&p2gc?.ok===true,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LATENCY',federalSourceReadiness:federal,p2gcDemoLatency:p2gc},null,2));
+  const p2gc=await diagnoseP2GC(rootDir,term);
+  const live=await runLiveAcceptance(term);
+  console.log(JSON.stringify({ok:federal?.ok===true&&p2gc?.ok===true&&live?.ok===true,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',federalSourceReadiness:federal,p2gcDemoLatency:p2gc,p2gcLiveAcceptance:live},null,2));
   process.exitCode=0;
 }
-if(require.main===module)main().catch(e=>{console.error(JSON.stringify({ok:false,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LATENCY',error:e.message,stack:e.stack},null,2));process.exitCode=2;});
-module.exports={diagnoseP2GC};
+if(require.main===module)main().catch(e=>{console.error(JSON.stringify({ok:false,service:'FEDERAL_SOURCE_READINESS_AUDIT_WITH_P2GC_LIVE_ACCEPTANCE',error:e.message,stack:e.stack},null,2));process.exitCode=2;});
+module.exports={diagnoseP2GC,runLiveAcceptance};
