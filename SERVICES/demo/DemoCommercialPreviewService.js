@@ -138,6 +138,27 @@ function enforceEvidenceBackedReadiness(model) {
   };
 }
 
+function reconcileExplicitUnknownSafety(model) {
+  const integrity=model?.truthIntegrity;
+  if (!integrity) return;
+  const blockers=arr(integrity.blockers);
+  const conflicts=arr(integrity.conflicts);
+  const samUnknown=integrity?.sourceCoverage?.sam!==true && model?.currentState?.samRegistration==null && /UNVERIFIED|UNKNOWN|NOT CONFIRMED/i.test(clean(model?.profile?.samStatus));
+  if (!samUnknown || conflicts.length) return;
+  const nonSamBlockers=blockers.filter(x=>clean(x)!=='CANONICAL_SOURCE_COVERAGE_SAM_NOT_GREEN');
+  if (nonSamBlockers.length) return;
+  model.truthIntegrity={
+    ...integrity,
+    clientSafe:true,
+    status:'CANONICAL_CURRENT_TRUTH_RECONCILED_WITH_EXPLICIT_SAM_UNKNOWN',
+    blockers:[],
+    warnings:uniq([...(integrity.warnings||[]),'Current SAM status is explicitly UNKNOWN/UNVERIFIED and is not inferred from other sources.'])
+  };
+  model.status='DEMO_READY_WITH_EXPLICIT_SAM_UNKNOWN';
+  model.evidence=model.evidence||{};
+  model.evidence.truthIntegrity=model.truthIntegrity;
+}
+
 function sumKnown(records, field) {
   let total = 0;
   let known = 0;
@@ -227,6 +248,7 @@ class DemoCommercialPreviewService {
     consolidateAgencyAlignment(model);
     scrubRecommendations(model);
     enforceEvidenceBackedReadiness(model);
+    reconcileExplicitUnknownSafety(model);
   }
 
   apply(model) {
@@ -247,7 +269,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made.",
       totals:buildProofTotals(model),
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
@@ -262,4 +284,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
-module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, buildProofTotals };
+module.exports.helpers = { dedupeOpportunities, applySetAsideEligibility, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue, enforceEvidenceBackedReadiness, reconcileExplicitUnknownSafety, buildProofTotals };
