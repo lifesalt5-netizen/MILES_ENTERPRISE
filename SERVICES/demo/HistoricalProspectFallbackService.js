@@ -98,14 +98,14 @@ class HistoricalProspectFallbackService {
     if (!db) return { summary: null, buyers: [], recompetes: [], naicsCodes: [] };
     const key = clean(uei).toUpperCase();
     const summary = db.prepare(`SELECT uei, federal_obligations, award_count, latest_action_date, refreshed_at
-      FROM orion_contractor_fy2026_summary WHERE UPPER(uei)=?`).get(key) || null;
+      FROM orion_contractor_fy2026_summary WHERE uei=?`).get(key) || null;
     const buyers = db.prepare(`SELECT buyer_name, agency, award_count, spend, refreshed_at
-      FROM orion_buyer_fy2026_summary WHERE UPPER(uei)=? ORDER BY spend DESC, award_count DESC LIMIT 10`).all(key);
+      FROM orion_buyer_fy2026_summary WHERE uei=? ORDER BY spend DESC, award_count DESC LIMIT 10`).all(key);
     const recompetes = db.prepare(`SELECT award_key, title, agency, recompete_date, value, refreshed_at
-      FROM orion_recompete_fy2026 WHERE UPPER(uei)=? ORDER BY recompete_date ASC LIMIT 25`).all(key);
+      FROM orion_recompete_fy2026 WHERE uei=? ORDER BY recompete_date ASC LIMIT 25`).all(key);
     const naicsCodes = db.prepare(`SELECT naics_code, COUNT(*) AS n
       FROM orion_award_refresh_fy2026
-      WHERE UPPER(uei)=? AND COALESCE(naics_code,'')<>''
+      WHERE uei=? AND COALESCE(naics_code,'')<>''
       GROUP BY naics_code ORDER BY n DESC LIMIT 8`).all(key).map(row => clean(row.naics_code)).filter(Boolean);
     return { summary, buyers, recompetes, naicsCodes: uniq(naicsCodes) };
   }
