@@ -2,6 +2,7 @@
 
 const Builder=require('./P2GCFederalGrowthReviewBuilderService');
 const Release=require('./P2GCFederalGrowthReviewReleaseService');
+const VideoProvider=require('./P2GCFederalGrowthReviewVideoProviderService');
 
 function json(res,status,body){const text=JSON.stringify(body,null,2);res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow, noarchive, nosnippet','Content-Length':Buffer.byteLength(text)});res.end(text);}
 function clean(v){return String(v==null?'':v).trim();}
@@ -14,6 +15,7 @@ class P2GCFederalGrowthReviewAdminController{
     this.builder=options.builder||new Builder({rootDir:this.rootDir});
     this.release=options.release||new Release({rootDir:this.rootDir});
     this.lifecycle=this.release.lifecycle;
+    this.videoProvider=options.videoProvider||new VideoProvider({rootDir:this.rootDir,lifecycle:this.lifecycle});
   }
 
   authorized(req){
@@ -27,7 +29,10 @@ class P2GCFederalGrowthReviewAdminController{
     if(!this.authorized(req)){json(res,403,{ok:false,status:'ADMIN_REVIEW_LOOPBACK_ONLY'});return true;}
     try{
       if(req.method==='GET'&&url.pathname==='/api/admin/review/health'){
-        json(res,200,{ok:true,status:'P2GC_REVIEW_ADMIN_PRIVATE_READY',loopbackOnly:true,externalSendRequires:'KEVIN_APPROVED_SEND'});return true;
+        json(res,200,{ok:true,status:'P2GC_REVIEW_ADMIN_PRIVATE_READY',loopbackOnly:true,externalSendRequires:'KEVIN_APPROVED_SEND',videoProviderGate:true});return true;
+      }
+      if(req.method==='GET'&&url.pathname==='/api/admin/review/video-readiness'){
+        const provider=this.videoProvider.selectProvider();json(res,200,{ok:true,status:'P2GC_REVIEW_VIDEO_PROVIDER_READINESS',provider,sendPerformed:false,videoGenerated:false});return true;
       }
       if(req.method==='GET'&&url.pathname==='/api/admin/review/status'){
         const reviewId=clean(url.searchParams.get('reviewId'));const record=this.lifecycle.read(reviewId);if(!record){json(res,404,{ok:false,status:'REVIEW_NOT_FOUND'});return true;}
@@ -39,6 +44,12 @@ class P2GCFederalGrowthReviewAdminController{
         const out=await this.builder.createFromAssessment(body);json(res,200,out);return true;
       }
       const reviewId=clean(body.reviewId);if(!reviewId){json(res,400,{ok:false,status:'REVIEW_ID_REQUIRED'});return true;}
+      if(url.pathname==='/api/admin/review/video-prepare'){
+        const out=this.videoProvider.prepareReview(reviewId);json(res,out.ok?200:409,{...out,videoGenerated:false});return true;
+      }
+      if(url.pathname==='/api/admin/review/video-ready'){
+        const out=this.videoProvider.markVideoReady(reviewId,{provider:body.provider,mediaId:body.mediaId,durationSeconds:body.durationSeconds});json(res,200,out);return true;
+      }
       if(url.pathname==='/api/admin/review/decision'){
         const record=this.release.applyDecision(reviewId,body.decision,body.notes);json(res,200,{ok:true,status:'KEVIN_REVIEW_DECISION_RECORDED',reviewId,decision:record.release?.decision,state:record.status,approvedByKevin:record.release?.approvedByKevin===true});return true;
       }
