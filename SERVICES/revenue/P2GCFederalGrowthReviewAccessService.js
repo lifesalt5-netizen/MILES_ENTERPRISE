@@ -120,6 +120,21 @@ class P2GCFederalGrowthReviewAccessService {
     return { ok: true, session: { ...session, expiresAtMs: undefined } };
   }
 
+  validateSession(reviewId, authenticatedEmail, sessionId) {
+    const rid = clean(reviewId);
+    const email = clean(authenticatedEmail).toLowerCase();
+    const sid = clean(sessionId);
+    if (!rid || !email || !sid) return { ok: false, reason: 'SESSION_CONTEXT_REQUIRED' };
+    const key = `${rid}::${email}`;
+    const sessions = this.sessionStore.get(key) || [];
+    const found = sessions.find(s => s.sessionId === sid);
+    if (!found) return { ok: false, reason: 'SESSION_NOT_ACTIVE' };
+    if (found.closedAt) return { ok: false, reason: 'SESSION_CLOSED' };
+    if (Number(found.expiresAtMs || 0) <= Date.now()) return { ok: false, reason: 'SESSION_EXPIRED' };
+    if (found.reviewId !== rid || found.authenticatedEmail !== email) return { ok: false, reason: 'SESSION_BINDING_MISMATCH' };
+    return { ok: true, session: { ...found, expiresAtMs: undefined } };
+  }
+
   closeSession(reviewId, authenticatedEmail, sessionId) {
     const key = `${clean(reviewId)}::${clean(authenticatedEmail).toLowerCase()}`;
     const sessions = this.sessionStore.get(key) || [];
