@@ -15,6 +15,10 @@ function num(v) { if (v === null || v === undefined || clean(v) === '') return n
 function readJson(file) { try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; } }
 function ageHours(iso, nowMs = Date.now()) { const ms = Date.parse(iso || ''); return Number.isFinite(ms) ? (nowMs - ms) / 3600000 : null; }
 function dateOnly(v) { const d = new Date(v || 0); return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0,10); }
+function measurementWindowKnown(aggregate) {
+  const window=aggregate?.source?.measurementWindow;
+  return Boolean(window && clean(window.startDate) && clean(window.endDate));
+}
 function scoreCategory(label, checks) {
   const total = checks.reduce((sum, x) => sum + x.weight, 0) || 1;
   const earned = checks.reduce((sum, x) => sum + (x.pass ? x.weight : 0), 0);
@@ -218,14 +222,15 @@ class ExecutiveBlueprintCanonicalTruthService {
     state.agencyRelationships = uniq(buyers.map(x=>x.agency));
     state.agencyRelationshipsStatus = buyers.length ? 'CONFIRMED_FROM_AWARD_HISTORY' : 'CONFIRMED_NONE_IN_AWARD_HISTORY';
 
-    if (aggregate?.ok === true && aggregate?.row) {
+    const windowKnown=measurementWindowKnown(aggregate);
+    if (aggregate?.ok === true && aggregate?.row && windowKnown) {
       const total = num(aggregate.row.totalFederalObligations);
       revenue.current.federal = total;
       state.federalSales = total;
       state.federalSalesStatus = 'CONFIRMED_USASPENDING_OBLIGATIONS_MEASUREMENT_WINDOW';
       revenue.current.federalStatus = 'CONFIRMED_USASPENDING_OBLIGATIONS_MEASUREMENT_WINDOW';
       revenue.current.federalDefinition = 'Prime plus subcontract federal obligations in the governed current measurement window';
-      revenue.current.measurementWindow = aggregate.source?.measurementWindow || null;
+      revenue.current.measurementWindow = aggregate.source.measurementWindow;
       revenue.current.primeFederalObligations = num(aggregate.row.primeFederalObligations);
       revenue.current.subawardObligations = num(aggregate.row.subawardObligations);
       revenue.current.source = aggregate.source;
@@ -235,12 +240,16 @@ class ExecutiveBlueprintCanonicalTruthService {
       state.federalSalesStatus = 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY';
       revenue.current.federalStatus = 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY';
       revenue.current.federalDefinition = 'Authoritative USAspending/SAM identity reconciliation found zero prime and subcontract awards.';
+      revenue.current.measurementWindow = null;
     } else {
       revenue.current.federal = null;
       state.federalSales = null;
-      state.federalSalesStatus = 'CURRENT_OBLIGATION_TOTAL_UNAVAILABLE_HISTORICAL_AWARDS_EXIST';
-      revenue.current.federalStatus = 'CURRENT_OBLIGATION_TOTAL_UNAVAILABLE_HISTORICAL_AWARDS_EXIST';
-      revenue.current.federalDefinition = 'Historical award evidence exists, but current obligation total is not fresh enough to represent as sales.';
+      state.federalSalesStatus = aggregate?.ok === true && aggregate?.row && !windowKnown ? 'CURRENT_OBLIGATION_TOTAL_UNAVAILABLE_MEASUREMENT_WINDOW_METADATA_MISSING' : 'CURRENT_OBLIGATION_TOTAL_UNAVAILABLE_HISTORICAL_AWARDS_EXIST';
+      revenue.current.federalStatus = state.federalSalesStatus;
+      revenue.current.federalDefinition = aggregate?.ok === true && aggregate?.row && !windowKnown
+        ? 'An obligation aggregate row exists, but the governed measurement-window dates are unavailable; the value is withheld rather than represented as current sales.'
+        : 'Historical award evidence exists, but current obligation total is not fresh enough to represent as sales.';
+      revenue.current.measurementWindow = null;
     }
 
     revenue.opportunity = {
@@ -350,18 +359,22 @@ class ExecutiveBlueprintCanonicalTruthService {
   finalIntegrity(model, award, gsa, opportunity, aggregate) {
     const existing = model.truthIntegrity || {};
     const conflicts = uniq(existing.conflicts || []);
+    const aggregateWindowKnown=measurementWindowKnown(aggregate);
     const coverage = {
       identity:Boolean(model.profile?.uei),
       sam:/^ACTIVE$|^INACTIVE$/i.test(clean(model.profile?.samStatus)),
       awardHistory:award?.ok === true && award?.dataQuality?.zeroAwardClassificationPermitted === true,
       gsaCurrent:gsa?.ok === true,
       currentPublicOpportunities:opportunity?.ok === true && opportunity?.source?.fresh === true,
-      currentObligationAggregate:aggregate?.ok === true
+      currentObligationAggregate:aggregate?.ok === true && aggregateWindowKnown
     };
     const critical = ['identity','sam','awardHistory','gsaCurrent','currentPublicOpportunities'];
     const blockers = critical.filter(k=>coverage[k]!==true).map(k=>`CANONICAL_SOURCE_COVERAGE_${k.toUpperCase()}_NOT_GREEN`);
     const fullyReconciled = conflicts.length===0 && blockers.length===0;
     const clientSafe = conflicts.length===0;
+    const aggregateWarnings=[];
+    if(aggregate?.ok===true && aggregate?.row && !aggregateWindowKnown) aggregateWarnings.push('CURRENT_OBLIGATION_MEASUREMENT_WINDOW_METADATA_UNAVAILABLE');
+    else if(aggregate?.ok!==true && aggregate?.status) aggregateWarnings.push(aggregate.status);
     model.truthIntegrity = {
       ...existing,
       status:conflicts.length ? 'TRUTH_CONFLICT_REVIEW_REQUIRED' : (blockers.length ? 'CANONICAL_COVERAGE_GAPS_EXPLICIT' : 'CANONICAL_CURRENT_TRUTH_RECONCILED'),
@@ -370,8 +383,8 @@ class ExecutiveBlueprintCanonicalTruthService {
       conflicts,
       blockers,
       sourceCoverage:coverage,
-      warnings:uniq([...(existing.warnings||[]), ...list(gsa?.limitations), ...list(opportunity?.blockers), ...(aggregate?.ok===true?[]:[aggregate?.status].filter(Boolean))]),
-      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER','EXPLICIT_COVERAGE_GAP_IS_CLIENT_SAFE_WHEN_NO_CONFLICT_OR_FABRICATION']),
+      warnings:uniq([...(existing.warnings||[]), ...list(gsa?.limitations), ...list(opportunity?.blockers), ...aggregateWarnings]),
+      rules:uniq([...(existing.rules||[]),'UNKNOWN_IS_NOT_ZERO_OR_NONE','AWARD_COUNT_IS_NOT_ACTIVE_CONTRACT_COUNT','GSA_STATUS_REQUIRES_CURRENT_GSA_ELIBRARY_TRUTH','LIVE_OPPORTUNITIES_REQUIRE_FRESH_PUBLIC_SOURCE','MODELED_REVENUE_REQUIRES_STRUCTURED_PROVENANCE','GENERIC_ZERO_AWARD_RECOMPETE_SIGNALS_DO_NOT_RENDER','EXPLICIT_COVERAGE_GAP_IS_CLIENT_SAFE_WHEN_NO_CONFLICT_OR_FABRICATION','CURRENT_OBLIGATION_TOTAL_REQUIRES_EXPLICIT_MEASUREMENT_WINDOW']),
       reconciledAt:new Date().toISOString()
     };
     model.status=fullyReconciled?'DEMO_READY':(clientSafe?'DEMO_READY_WITH_EXPLICIT_COVERAGE_GAPS':'DEMO_REVIEW_REQUIRED');
@@ -407,7 +420,7 @@ class ExecutiveBlueprintCanonicalTruthService {
       awardHistory:{ status:award?.status||null, source:award?.source||null, authoritativeZeroPermitted:award?.dataQuality?.zeroAwardClassificationPermitted===true },
       currentGsa:{ status:gsa?.status||null, holder:gsa?.holder??null, source:gsa?.source||null },
       currentOpportunities:{ status:opportunity?.status||null, source:opportunity?.source||null, returned:list(opportunity?.records).length },
-      federalObligations:{ status:aggregate?.status||null, source:aggregate?.source||null },
+      federalObligations:{ status:aggregate?.status||null, source:aggregate?.source||null, measurementWindowKnown:measurementWindowKnown(aggregate) },
       rule:'Every material fact is hydrated from the best current authoritative evidence available. Missing source coverage remains explicit UNKNOWN/unavailable; conflicts or fabrication fail closed to review.'
     };
     return out;
@@ -418,3 +431,4 @@ module.exports = ExecutiveBlueprintCanonicalTruthService;
 module.exports.dedupeEntities = dedupeEntities;
 module.exports.dedupeOpportunity = dedupeOpportunity;
 module.exports.findJsonlExact = findJsonlExact;
+module.exports.measurementWindowKnown = measurementWindowKnown;
