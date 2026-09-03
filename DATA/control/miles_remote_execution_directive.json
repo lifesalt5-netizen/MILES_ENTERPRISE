@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-calendly-reminder-guard-verify-20260903-064",
+  "id": "miles-p2gc-calendly-reminder-sender-diagnosis-20260903-065",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Verify and deploy the approved P2GC meeting notification policy. Require the exact Federal Strategy Call event type, healthy Calendly API access, healthy kevin@pathways2gc.com Gmail sender authentication, Calendly native immediate confirmation, MILES 24-hour reminder guard, 60-second guard cadence, and duplicate suppression. Fail closed unless all checks are GREEN."
+  "note": "Run the P2GC Calendly reminder acceptance again. If kevin@pathways2gc.com is not authenticated, report the Calendly account email and all healthy Google accounts available to MILES. Make no unrelated changes."
 }
