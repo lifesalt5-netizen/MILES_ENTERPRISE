@@ -8,6 +8,7 @@ const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGr
 const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
 const ExecutiveBlueprintCanonicalTruthService = require("./SERVICES/demo/ExecutiveBlueprintCanonicalTruthService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
+const SamPublicEntityIdentityService = require("./SERVICES/demo/SamPublicEntityIdentityService");
 const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
 const SamQualifiedProspectNameResolver = require("./SERVICES/demo/SamQualifiedProspectNameResolver");
 const HistoricalRecipientNameIndexService = require("./SERVICES/demo/HistoricalRecipientNameIndexService");
@@ -24,6 +25,7 @@ const service = new ExecutiveGrowthBlueprintDemoService();
 const truthReconciler = new DemoTruthReconciliationService();
 const canonicalTruth = new ExecutiveBlueprintCanonicalTruthService({ rootDir: ROOT });
 const commercialPreview = new DemoCommercialPreviewService();
+const samPublicIdentity = new SamPublicEntityIdentityService({ rootDir: ROOT });
 const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
 const samNameResolver = new SamQualifiedProspectNameResolver({ rootDir: ROOT });
 const historicalNameIndex = new HistoricalRecipientNameIndexService({ rootDir: ROOT });
@@ -33,6 +35,7 @@ const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
 const proposalCommand = new P2GCProposalCommandService();
 const cache = new Map();
+const inflight = new Map();
 const TTL = Math.max(1000, Number(process.env.P2GC_GROWTH_DEMO_CACHE_MS || 300000));
 
 function send(res, status, type, body, extra = {}) {
@@ -61,89 +64,122 @@ function readJsonBody(req, limitBytes = 2 * 1024 * 1024) {
     req.on("error", reject);
   });
 }
-async function getModel(term, refresh = false) {
-  const k = key(term);
-  if (!refresh && cache.has(k)) {
-    const hit = cache.get(k);
-    if (Date.now() - hit.at < TTL) return { ...hit.model, cache:{ hit:true, ttlMs:TTL } };
-    cache.delete(k);
-  }
 
+function mergePublicSamIdentity(baseModel, identity) {
+  if (!baseModel?.ok || !identity?.ok) return baseModel;
+  const resolvedUei = String(baseModel.profile?.uei || '').trim().toUpperCase();
+  const samUei = String(identity.uei || '').trim().toUpperCase();
+  if (!resolvedUei || !samUei || resolvedUei !== samUei) return baseModel;
+  return {
+    ...baseModel,
+    profile: {
+      ...(baseModel.profile || {}),
+      companyName: identity.legalBusinessName || baseModel.profile?.companyName || null,
+      uei: identity.uei || baseModel.profile?.uei || null,
+      cage: identity.cage || baseModel.profile?.cage || null,
+      headquarters: baseModel.profile?.headquarters || identity.headquarters || null,
+      website: baseModel.profile?.website || identity.website || null,
+      naicsCodes: Array.from(new Set([...(baseModel.profile?.naicsCodes || []), ...(identity.naicsCodes || [])].filter(Boolean))),
+      samStatus: identity.samStatus || 'UNVERIFIED',
+      samExpirationCurrent: identity.samExpirationCurrent
+    },
+    currentState: {
+      ...(baseModel.currentState || {}),
+      samRegistration: identity.samRegistration
+    },
+    evidence: {
+      ...(baseModel.evidence || {}),
+      currentSamRegistration: identity.source || null
+    }
+  };
+}
+
+async function buildModel(term, refresh = false) {
   let baseModel = service.build(term);
   if (!baseModel?.ok && baseModel?.status === "CONTRACTOR_NOT_FOUND") {
-    let fallback = samFallback.build(term);
-    let canonicalIdentity = null;
-    if (!fallback?.ok) {
-      canonicalIdentity = samNameResolver.resolve(term);
-      if (canonicalIdentity?.ok && canonicalIdentity.uei) fallback = samFallback.build(canonicalIdentity.uei);
-    }
-    if (fallback?.ok) {
-      baseModel = {
-        ...fallback,
-        evidence: {
-          ...(fallback.evidence || {}),
-          canonicalNameResolution: canonicalIdentity?.ok ? {
-            authority: 'SAM_PUBLIC_BULK_QUALIFIED_UNIVERSE',
-            matchedBy: canonicalIdentity.matchedBy,
-            requestedTerm: term,
-            legalName: canonicalIdentity.legalName,
-            uei: canonicalIdentity.uei,
-            cage: canonicalIdentity.cage || null
-          } : null
-        }
-      };
+    const publicIdentity = samPublicIdentity.resolve(term);
+    if (publicIdentity?.ok) {
+      baseModel = samPublicIdentity.toDemoModel(term, publicIdentity);
     } else {
-      const historicalIdentity = historicalNameIndex.resolve(term);
-      if (historicalIdentity?.ok && historicalIdentity.row) {
-        baseModel = historicalFallback.historicalModel(
-          term,
-          { ok:true, row:historicalIdentity.row, matchedBy:historicalIdentity.matchedBy },
-          historicalFallback.sourceStatus()
-        );
+      let fallback = samFallback.build(term);
+      let canonicalIdentity = null;
+      if (!fallback?.ok) {
+        canonicalIdentity = samNameResolver.resolve(term);
+        if (canonicalIdentity?.ok && canonicalIdentity.uei) fallback = samFallback.build(canonicalIdentity.uei);
+      }
+      if (fallback?.ok) {
         baseModel = {
-          ...baseModel,
+          ...fallback,
           evidence: {
-            ...(baseModel.evidence || {}),
-            canonicalHistoricalNameResolution: {
-              authority: 'USA_SPENDING_OFFICIAL_FY2026_VALIDATED_SIDECAR',
-              matchedBy: historicalIdentity.matchedBy,
+            ...(fallback.evidence || {}),
+            canonicalNameResolution: canonicalIdentity?.ok ? {
+              authority: 'SAM_PUBLIC_BULK_QUALIFIED_UNIVERSE',
+              matchedBy: canonicalIdentity.matchedBy,
               requestedTerm: term,
-              legalName: historicalIdentity.legalName,
-              uei: historicalIdentity.uei,
-              indexStatus: historicalIdentity.indexStatus,
-              indexGeneratedAt: historicalIdentity.indexGeneratedAt
-            }
+              legalName: canonicalIdentity.legalName,
+              uei: canonicalIdentity.uei,
+              cage: canonicalIdentity.cage || null
+            } : null
           }
         };
       } else {
-        baseModel = historicalFallback.build(term, { samFallback: fallback, canonicalIdentity, historicalIdentity, orionFailure: baseModel });
+        const historicalIdentity = historicalNameIndex.resolve(term);
+        if (historicalIdentity?.ok && historicalIdentity.row) {
+          baseModel = historicalFallback.historicalModel(
+            term,
+            { ok:true, row:historicalIdentity.row, matchedBy:historicalIdentity.matchedBy },
+            historicalFallback.sourceStatus()
+          );
+          baseModel = {
+            ...baseModel,
+            evidence: {
+              ...(baseModel.evidence || {}),
+              canonicalHistoricalNameResolution: {
+                authority: 'USA_SPENDING_OFFICIAL_FY2026_VALIDATED_SIDECAR',
+                matchedBy: historicalIdentity.matchedBy,
+                requestedTerm: term,
+                legalName: historicalIdentity.legalName,
+                uei: historicalIdentity.uei,
+                indexStatus: historicalIdentity.indexStatus,
+                indexGeneratedAt: historicalIdentity.indexGeneratedAt
+              }
+            }
+          };
+        } else {
+          baseModel = historicalFallback.build(term, { samFallback: fallback, canonicalIdentity, historicalIdentity, orionFailure: baseModel });
+        }
       }
     }
   }
 
   if (baseModel?.ok && baseModel.profile?.uei) {
-    const currentSam = samFallback.build(baseModel.profile.uei);
-    const resolvedUei = String(baseModel.profile.uei || '').trim().toUpperCase();
-    const samUei = String(currentSam?.profile?.uei || '').trim().toUpperCase();
-    if (currentSam?.ok === true && resolvedUei && samUei === resolvedUei) {
-      baseModel = {
-        ...baseModel,
-        profile: {
-          ...(baseModel.profile || {}),
-          cage: currentSam.profile?.cage || baseModel.profile?.cage || null,
-          website: baseModel.profile?.website || currentSam.profile?.website || null,
-          samStatus: 'ACTIVE',
-          samExpirationCurrent: currentSam.profile?.samExpirationCurrent === true || baseModel.profile?.samExpirationCurrent === true
-        },
-        currentState: {
-          ...(baseModel.currentState || {}),
-          samRegistration: true
-        },
-        evidence: {
-          ...(baseModel.evidence || {}),
-          currentSamRegistration: currentSam.evidence?.identity || null
-        }
-      };
+    const currentPublicSam = samPublicIdentity.resolve(baseModel.profile.uei);
+    if (currentPublicSam?.ok) {
+      baseModel = mergePublicSamIdentity(baseModel, currentPublicSam);
+    } else {
+      const currentSam = samFallback.build(baseModel.profile.uei);
+      const resolvedUei = String(baseModel.profile.uei || '').trim().toUpperCase();
+      const samUei = String(currentSam?.profile?.uei || '').trim().toUpperCase();
+      if (currentSam?.ok === true && resolvedUei && samUei === resolvedUei) {
+        baseModel = {
+          ...baseModel,
+          profile: {
+            ...(baseModel.profile || {}),
+            cage: currentSam.profile?.cage || baseModel.profile?.cage || null,
+            website: baseModel.profile?.website || currentSam.profile?.website || null,
+            samStatus: currentSam.profile?.samStatus || 'ACTIVE',
+            samExpirationCurrent: currentSam.profile?.samExpirationCurrent === true || baseModel.profile?.samExpirationCurrent === true
+          },
+          currentState: {
+            ...(baseModel.currentState || {}),
+            samRegistration: currentSam.currentState?.samRegistration === false ? false : true
+          },
+          evidence: {
+            ...(baseModel.evidence || {}),
+            currentSamRegistration: currentSam.evidence?.identity || null
+          }
+        };
+      }
     }
   }
 
@@ -153,9 +189,22 @@ async function getModel(term, refresh = false) {
   if (model?.ok) {
     const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
     const record = { at:Date.now(), model };
-    aliases.forEach(alias => cache.set(alias, record));
+    aliases.forEach(alias => cache.set(key(alias), record));
   }
   return model?.ok ? { ...model, cache:{ hit:false, ttlMs:TTL } } : model;
+}
+
+async function getModel(term, refresh = false) {
+  const k = key(term);
+  if (!refresh && cache.has(k)) {
+    const hit = cache.get(k);
+    if (Date.now() - hit.at < TTL) return { ...hit.model, cache:{ hit:true, ttlMs:TTL } };
+    cache.delete(k);
+  }
+  if (inflight.has(k)) return inflight.get(k);
+  const promise = buildModel(term, refresh).finally(() => inflight.delete(k));
+  inflight.set(k, promise);
+  return promise;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -172,7 +221,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","canonical_sam_name_resolution","canonical_historical_name_index","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_public_entity_identity","sam_qualified_identity_fallback","canonical_sam_name_resolution","canonical_historical_name_index","inflight_model_dedupe","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
