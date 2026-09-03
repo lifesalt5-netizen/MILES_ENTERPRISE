@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-proof-value-final-audit-20260903-024",
+  "id": "miles-p2gc-delune-targeted-sam-probe-20260903-025",
   "enabled": true,
   "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run final live DeLune acceptance and sales-preview proof after monetary unknown-semantics deployment. Require GREEN live acceptance, 20 evidence-backed modeled prime/team candidates if still supported, exact shown/locked counts, opportunity dollar totals only for positive known values, undisclosed counts for missing values, and no regression in truth/performance. Read-only."
+  "note": "Run current live DeLune acceptance and sales-preview proof plus the read-only targeted SAM entity lookup by resolved UEI WDCVJGELGBB5 using the existing authoritative SAM API path. Report legal business name, CAGE, registration status, registration expiration and source if available. Do not alter the live demo from this probe; preserve current GREEN baseline."
 }
