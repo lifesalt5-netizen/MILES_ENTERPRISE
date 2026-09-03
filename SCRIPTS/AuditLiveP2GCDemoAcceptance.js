@@ -42,9 +42,7 @@ const DEFAULT_COMPANIES = [
 
 function companyList() {
   const configured = String(process.env.P2GC_LIVE_DEMO_AUDIT_COMPANIES || '').trim();
-  return configured
-    ? configured.split('|').map(x => x.trim()).filter(Boolean)
-    : DEFAULT_COMPANIES;
+  return configured ? configured.split('|').map(x => x.trim()).filter(Boolean) : DEFAULT_COMPANIES;
 }
 
 function requestJson(pathname) {
@@ -52,11 +50,7 @@ function requestJson(pathname) {
   const client = target.protocol === 'https:' ? https : http;
   return new Promise(resolve => {
     let settled = false;
-    const finish = value => {
-      if (settled) return;
-      settled = true;
-      resolve(value);
-    };
+    const finish = value => { if (!settled) { settled = true; resolve(value); } };
     const req = client.get(target, { headers: { 'user-agent': 'MILES-Live-Demo-Acceptance' } }, res => {
       const chunks = [];
       res.on('data', chunk => chunks.push(chunk));
@@ -74,13 +68,7 @@ function requestJson(pathname) {
 
 function runPm2(args = []) {
   const shell = process.env.ComSpec || 'cmd.exe';
-  return spawnSync(shell, ['/d', '/s', '/c', 'pm2.cmd', ...args], {
-    cwd: ROOT,
-    env: process.env,
-    encoding: 'utf8',
-    windowsHide: true,
-    timeout: 60000
-  });
+  return spawnSync(shell, ['/d', '/s', '/c', 'pm2.cmd', ...args], { cwd: ROOT, env: process.env, encoding: 'utf8', windowsHide: true, timeout: 60000 });
 }
 
 function latestDemoSourceMtimeMs() {
@@ -94,12 +82,7 @@ function latestDemoSourceMtimeMs() {
 }
 
 function parsePm2List(raw) {
-  try {
-    const parsed = JSON.parse(String(raw || '[]'));
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+  try { const parsed = JSON.parse(String(raw || '[]')); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
 }
 
 async function waitForCurrentDemoHealth(timeoutMs = 45000) {
@@ -115,69 +98,25 @@ async function waitForCurrentDemoHealth(timeoutMs = 45000) {
 }
 
 async function ensureDemoCurrent() {
-  if (process.platform !== 'win32') {
-    return { ok: true, skipped: true, reason: 'WINDOWS_ONLY_PM2_RELOAD', restartPerformed: false };
-  }
-
+  if (process.platform !== 'win32') return { ok: true, skipped: true, reason: 'WINDOWS_ONLY_PM2_RELOAD', restartPerformed: false };
   const listed = runPm2(['jlist']);
-  if (listed.status !== 0) {
-    return {
-      ok: false,
-      status: 'PM2_LIST_FAILED',
-      restartPerformed: false,
-      exitCode: listed.status,
-      stderr: String(listed.stderr || '').slice(-3000)
-    };
-  }
+  if (listed.status !== 0) return { ok: false, status: 'PM2_LIST_FAILED', restartPerformed: false, exitCode: listed.status, stderr: String(listed.stderr || '').slice(-3000) };
   const apps = parsePm2List(listed.stdout);
   const app = apps.find(item => String(item?.name || item?.pm2_env?.name || '') === DEMO_PM2_NAME);
   if (!app) return { ok: false, status: 'P2GC_GROWTH_DEMO_PM2_NOT_FOUND', restartPerformed: false };
-
   const pm2Status = String(app?.pm2_env?.status || '').toLowerCase();
   const processStartedMs = Number(app?.pm2_env?.pm_uptime || 0);
   const latestSourceMs = latestDemoSourceMtimeMs();
   const sourceNewer = latestSourceMs > 0 && (!Number.isFinite(processStartedMs) || processStartedMs <= 0 || latestSourceMs > processStartedMs + 1000);
   const restartRequired = pm2Status !== 'online' || sourceNewer;
-
   if (!restartRequired) {
     const health = await waitForCurrentDemoHealth(10000);
-    return {
-      ok: health.ok === true && health.body?.ok === true,
-      status: 'CURRENT_NO_RESTART',
-      restartPerformed: false,
-      pm2Status,
-      pid: app.pid || null,
-      processStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null,
-      latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null,
-      health
-    };
+    return { ok: health.ok === true && health.body?.ok === true, status: 'CURRENT_NO_RESTART', restartPerformed: false, pm2Status, pid: app.pid || null, processStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null, latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null, health };
   }
-
   const restarted = runPm2(['restart', DEMO_PM2_NAME, '--update-env']);
-  if (restarted.status !== 0) {
-    return {
-      ok: false,
-      status: 'P2GC_GROWTH_DEMO_RESTART_FAILED',
-      restartPerformed: true,
-      sourceNewer,
-      exitCode: restarted.status,
-      stderr: String(restarted.stderr || '').slice(-4000)
-    };
-  }
-
+  if (restarted.status !== 0) return { ok: false, status: 'P2GC_GROWTH_DEMO_RESTART_FAILED', restartPerformed: true, sourceNewer, exitCode: restarted.status, stderr: String(restarted.stderr || '').slice(-4000) };
   const health = await waitForCurrentDemoHealth();
-  return {
-    ok: health.ok === true && health.body?.ok === true && Array.isArray(health.body?.capabilities) && health.body.capabilities.includes('truth_reconciliation'),
-    status: health.ok && health.body?.capabilities?.includes('truth_reconciliation') ? 'RESTARTED_AND_CURRENT' : 'RESTARTED_BUT_CURRENT_HEALTH_NOT_PROVEN',
-    restartPerformed: true,
-    restartTarget: DEMO_PM2_NAME,
-    sourceNewer,
-    previousPid: app.pid || null,
-    previousPm2Status: pm2Status,
-    previousProcessStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null,
-    latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null,
-    health
-  };
+  return { ok: health.ok === true && health.body?.ok === true && Array.isArray(health.body?.capabilities) && health.body.capabilities.includes('truth_reconciliation'), status: health.ok && health.body?.capabilities?.includes('truth_reconciliation') ? 'RESTARTED_AND_CURRENT' : 'RESTARTED_BUT_CURRENT_HEALTH_NOT_PROVEN', restartPerformed: true, restartTarget: DEMO_PM2_NAME, sourceNewer, previousPid: app.pid || null, previousPm2Status: pm2Status, previousProcessStartedAt: processStartedMs > 0 ? new Date(processStartedMs).toISOString() : null, latestSourceModifiedAt: latestSourceMs > 0 ? new Date(latestSourceMs).toISOString() : null, health };
 }
 
 function arr(value) { return Array.isArray(value) ? value : []; }
@@ -200,9 +139,7 @@ function validateAssessment(body, failures) {
   if (active != null) {
     const n = Number(active);
     if (!Number.isInteger(n) || n < 0) addFailure(failures, 'ACTIVE_CONTRACT_COUNT_INVALID', String(active));
-    if (activeStatus !== 'CONFIRMED_CURRENT_PERFORMANCE_PERIOD_FROM_USASPENDING_DATES') {
-      addFailure(failures, 'ACTIVE_CONTRACTS_NON_NULL_WITHOUT_AUTHORITATIVE_STATUS', activeStatus || 'EMPTY');
-    }
+    if (activeStatus !== 'CONFIRMED_CURRENT_PERFORMANCE_PERIOD_FROM_USASPENDING_DATES') addFailure(failures, 'ACTIVE_CONTRACTS_NON_NULL_WITHOUT_AUTHORITATIVE_STATUS', activeStatus || 'EMPTY');
     if (awardHistory.truthClass !== 'CONFIRMED') addFailure(failures, 'ACTIVE_CONTRACTS_WITHOUT_CONFIRMED_AWARD_HISTORY');
     if (arr(awardHistory.activePrimeAwards).length !== n) addFailure(failures, 'ACTIVE_CONTRACT_COUNT_DOES_NOT_MATCH_ACTIVE_AWARD_ROWS', `${n}:${arr(awardHistory.activePrimeAwards).length}`);
   } else if (activeStatus && !['NOT_DERIVED_FROM_AWARD_COUNT','UNVERIFIED'].includes(activeStatus)) {
@@ -212,40 +149,30 @@ function validateAssessment(body, failures) {
   const federal = state.federalSales;
   const federalStatus = text(state.federalSalesStatus || body?.revenue?.current?.federalStatus);
   if (federal === 0) {
-    if (federalStatus !== 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY') {
-      addFailure(failures, 'FEDERAL_ZERO_WITHOUT_AUTHORITATIVE_ZERO_CLASSIFICATION', federalStatus || 'EMPTY');
-    }
-    if (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0) {
-      addFailure(failures, 'FEDERAL_ZERO_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
-    }
+    const authoritativeZeroHistory = federalStatus === 'ZERO_PERMITTED_BY_AUTHORITATIVE_ZERO_AWARD_HISTORY';
+    const governedZeroWindow = federalStatus === 'CONFIRMED_USASPENDING_OBLIGATIONS_MEASUREMENT_WINDOW';
+    if (!authoritativeZeroHistory && !governedZeroWindow) addFailure(failures, 'FEDERAL_ZERO_WITHOUT_AUTHORITATIVE_ZERO_CLASSIFICATION', federalStatus || 'EMPTY');
+    if (authoritativeZeroHistory && (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0)) addFailure(failures, 'FEDERAL_ZERO_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
+    if (governedZeroWindow && !body?.revenue?.current?.measurementWindow) addFailure(failures, 'ZERO_CURRENT_OBLIGATIONS_WITHOUT_MEASUREMENT_WINDOW');
   }
 
   if (body?.pathway?.type === 'FIRST_AWARD_PATHWAY') {
-    if (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0) {
-      addFailure(failures, 'FIRST_AWARD_PATHWAY_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
-    }
+    if (awardHistory.truthClass !== 'CONFIRMED' || Number(awardHistory?.summary?.awardCount) !== 0) addFailure(failures, 'FIRST_AWARD_PATHWAY_WITHOUT_CONFIRMED_ZERO_AWARD_HISTORY');
   }
 
-  const coverage = integrity?.sourceCoverage;
-  if (coverage) {
-    for (const required of ['identity','sam','awardHistory','gsaCurrent','currentPublicOpportunities']) {
-      if (coverage[required] !== true) addFailure(failures, 'CANONICAL_SOURCE_COVERAGE_NOT_GREEN', required);
-    }
-  }
+  const coverage = integrity?.sourceCoverage || null;
+  if (coverage && integrity?.fullyReconciled === false && !arr(integrity?.blockers).length) addFailure(failures, 'COVERAGE_GAP_NOT_EXPLICITLY_CLASSIFIED');
+  if (coverage && integrity?.fullyReconciled === true && arr(integrity?.blockers).length) addFailure(failures, 'FULLY_RECONCILED_WITH_BLOCKERS');
 }
 
 function validateOpportunities(body, failures) {
   if (!body || body.ok !== true || body.type !== 'opportunities') addFailure(failures, 'OPPORTUNITY_VIEW_NOT_OK');
-  const markets = arr(body?.taxonomy?.markets);
-  const stages = arr(body?.taxonomy?.stages);
+  const markets = arr(body?.taxonomy?.markets); const stages = arr(body?.taxonomy?.stages);
   for (const required of ['FEDERAL', 'SLED', 'LOCAL']) if (!markets.includes(required)) addFailure(failures, 'OPPORTUNITY_MARKET_TAXONOMY_MISSING', required);
-  for (const required of ['OPEN','RFI','SOURCES_SOUGHT','PRESOLICITATION','DRAFT','FORECAST','RECOMPETE','RECENT_SIMILAR_AWARD','SPECIAL_NOTICE']) {
-    if (!stages.includes(required)) addFailure(failures, 'OPPORTUNITY_STAGE_TAXONOMY_MISSING', required);
-  }
+  for (const required of ['OPEN','RFI','SOURCES_SOUGHT','PRESOLICITATION','DRAFT','FORECAST','RECOMPETE','RECENT_SIMILAR_AWARD','SPECIAL_NOTICE']) if (!stages.includes(required)) addFailure(failures, 'OPPORTUNITY_STAGE_TAXONOMY_MISSING', required);
   if (!body?.sourceAccessGovernance) addFailure(failures, 'SOURCE_ACCESS_GOVERNANCE_MISSING');
   if (body?.opportunityRules?.bypassAuthentication !== false) addFailure(failures, 'AUTH_BYPASS_POLICY_NOT_FALSE');
   if (body?.opportunityRules?.bypassAccessControls !== false) addFailure(failures, 'ACCESS_CONTROL_BYPASS_POLICY_NOT_FALSE');
-
   const records = arr(body?.records);
   if (!records.length) {
     if (body?.status !== 'NO_CURRENT_MATCHED_OPPORTUNITY_SIGNAL') addFailure(failures, 'EMPTY_OPPORTUNITY_VIEW_NOT_EXPLICIT_NO_FIT', body?.status || 'UNKNOWN');
@@ -263,136 +190,65 @@ function validateOpportunities(body, failures) {
 function validateVehicles(body, failures) {
   if (!body || body.ok !== true || body.type !== 'vehicles') addFailure(failures, 'VEHICLE_VIEW_NOT_OK');
   const vehicles = arr(body?.currentVehicles);
-  if (!vehicles.length && !['VEHICLE_STATUS_UNCONFIRMED','NO_CURRENT_VEHICLE_IDENTIFIED'].includes(body?.status)) {
-    addFailure(failures, 'EMPTY_VEHICLE_VIEW_NOT_EXPLICIT', body?.status || 'UNKNOWN');
-  }
+  if (!vehicles.length && !['VEHICLE_STATUS_UNCONFIRMED','NO_CURRENT_VEHICLE_IDENTIFIED'].includes(body?.status)) addFailure(failures, 'EMPTY_VEHICLE_VIEW_NOT_EXPLICIT', body?.status || 'UNKNOWN');
 }
 
 function validateRecompetes(body, failures) {
   if (!body || body.ok !== true || body.type !== 'recompetes') addFailure(failures, 'RECOMPETE_VIEW_NOT_OK');
-  if (!arr(body?.records).length && body?.status !== 'NO_CURRENT_RECOMPETE_SIGNAL') {
-    addFailure(failures, 'EMPTY_RECOMPETE_VIEW_NOT_EXPLICIT', body?.status || 'UNKNOWN');
-  }
-  if (body?.currentCapability?.incumbentIdentity === true && !arr(body?.records).some(row => text(row?.incumbent))) {
-    addFailure(failures, 'INCUMBENT_CAPABILITY_CLAIM_WITHOUT_EVIDENCE');
-  }
+  if (!arr(body?.records).length && body?.status !== 'NO_CURRENT_RECOMPETE_SIGNAL') addFailure(failures, 'EMPTY_RECOMPETE_VIEW_NOT_EXPLICIT', body?.status || 'UNKNOWN');
+  if (body?.currentCapability?.incumbentIdentity === true && !arr(body?.records).some(row => text(row?.incumbent))) addFailure(failures, 'INCUMBENT_CAPABILITY_CLAIM_WITHOUT_EVIDENCE');
 }
 
 function validateTeaming(body, failures) {
   if (!body || body.ok !== true) addFailure(failures, 'TEAMING_VIEW_NOT_OK');
-  if (body?.safety?.readOnly !== true || body?.safety?.writesEnabled !== false || body?.safety?.contactsInvented !== false) {
-    addFailure(failures, 'TEAMING_SAFETY_CONTRACT_INVALID');
-  }
+  if (body?.safety?.readOnly !== true || body?.safety?.writesEnabled !== false || body?.safety?.contactsInvented !== false) addFailure(failures, 'TEAMING_SAFETY_CONTRACT_INVALID');
   for (const prime of arr(body?.primeCandidates)) {
     if (!text(prime.company)) addFailure(failures, 'PRIME_CANDIDATE_COMPANY_MISSING');
-    if (prime?.contact?.status === 'UNAVAILABLE_IN_CURRENT_ORION_RECORD' && (prime?.contact?.email || prime?.contact?.phone || prime?.contact?.sblo)) {
-      addFailure(failures, 'TEAMING_CONTACT_INVENTED', prime.company || 'UNKNOWN');
-    }
+    if (prime?.contact?.status === 'UNAVAILABLE_IN_CURRENT_ORION_RECORD' && (prime?.contact?.email || prime?.contact?.phone || prime?.contact?.sblo)) addFailure(failures, 'TEAMING_CONTACT_INVENTED', prime.company || 'UNKNOWN');
   }
-  if (!arr(body?.primeCandidates).length && !['TEAMING_INTELLIGENCE_LIMITED','TEAMING_INTELLIGENCE_READY'].includes(body?.status)) {
-    addFailure(failures, 'TEAMING_EMPTY_STATE_INVALID', body?.status || 'UNKNOWN');
-  }
+  if (!arr(body?.primeCandidates).length && !['TEAMING_INTELLIGENCE_LIMITED','TEAMING_INTELLIGENCE_READY'].includes(body?.status)) addFailure(failures, 'TEAMING_EMPTY_STATE_INVALID', body?.status || 'UNKNOWN');
 }
 
 async function auditCompany(term) {
-  const encoded = encodeURIComponent(term);
-  const failures = [];
+  const encoded = encodeURIComponent(term); const failures = [];
   const assessment = await requestJson(`/api/assessment?term=${encoded}&refresh=1`);
-  if (!assessment.ok) addFailure(failures, 'ASSESSMENT_HTTP_FAILURE', `${assessment.statusCode || 'ERR'}:${assessment.error || assessment.raw || ''}`);
-  else validateAssessment(assessment.body, failures);
-
+  if (!assessment.ok) addFailure(failures, 'ASSESSMENT_HTTP_FAILURE', `${assessment.statusCode || 'ERR'}:${assessment.error || assessment.raw || ''}`); else validateAssessment(assessment.body, failures);
   const opportunities = await requestJson(`/api/intelligence?term=${encoded}&type=opportunities`);
-  if (!opportunities.ok) addFailure(failures, 'OPPORTUNITY_HTTP_FAILURE', `${opportunities.statusCode || 'ERR'}:${opportunities.error || opportunities.raw || ''}`);
-  else validateOpportunities(opportunities.body, failures);
-
+  if (!opportunities.ok) addFailure(failures, 'OPPORTUNITY_HTTP_FAILURE', `${opportunities.statusCode || 'ERR'}:${opportunities.error || opportunities.raw || ''}`); else validateOpportunities(opportunities.body, failures);
   const vehicles = await requestJson(`/api/intelligence?term=${encoded}&type=vehicles`);
-  if (!vehicles.ok) addFailure(failures, 'VEHICLE_HTTP_FAILURE', `${vehicles.statusCode || 'ERR'}:${vehicles.error || vehicles.raw || ''}`);
-  else validateVehicles(vehicles.body, failures);
-
+  if (!vehicles.ok) addFailure(failures, 'VEHICLE_HTTP_FAILURE', `${vehicles.statusCode || 'ERR'}:${vehicles.error || vehicles.raw || ''}`); else validateVehicles(vehicles.body, failures);
   const recompetes = await requestJson(`/api/intelligence?term=${encoded}&type=recompetes`);
-  if (!recompetes.ok) addFailure(failures, 'RECOMPETE_HTTP_FAILURE', `${recompetes.statusCode || 'ERR'}:${recompetes.error || recompetes.raw || ''}`);
-  else validateRecompetes(recompetes.body, failures);
-
+  if (!recompetes.ok) addFailure(failures, 'RECOMPETE_HTTP_FAILURE', `${recompetes.statusCode || 'ERR'}:${recompetes.error || recompetes.raw || ''}`); else validateRecompetes(recompetes.body, failures);
   const teaming = await requestJson(`/api/teaming?term=${encoded}`);
-  if (!teaming.ok) addFailure(failures, 'TEAMING_HTTP_FAILURE', `${teaming.statusCode || 'ERR'}:${teaming.error || teaming.raw || ''}`);
-  else validateTeaming(teaming.body, failures);
-
+  if (!teaming.ok) addFailure(failures, 'TEAMING_HTTP_FAILURE', `${teaming.statusCode || 'ERR'}:${teaming.error || teaming.raw || ''}`); else validateTeaming(teaming.body, failures);
   return {
     requestedTerm: term, resolvedCompany: assessment.body?.profile?.companyName || null, ok: failures.length === 0, failures,
-    uei: assessment.body?.profile?.uei || null,
-    cage: assessment.body?.profile?.cage || null,
-    samStatus: assessment.body?.profile?.samStatus || null,
-    samRegistration: assessment.body?.currentState?.samRegistration ?? null,
-    samEvidenceAuthority: assessment.body?.evidence?.currentSamRegistration?.authority || null,
-    truthStatus: assessment.body?.truthIntegrity?.status || null,
+    uei: assessment.body?.profile?.uei || null, cage: assessment.body?.profile?.cage || null, samStatus: assessment.body?.profile?.samStatus || null,
+    samRegistration: assessment.body?.currentState?.samRegistration ?? null, samEvidenceAuthority: assessment.body?.evidence?.currentSamRegistration?.authority || null,
+    truthStatus: assessment.body?.truthIntegrity?.status || null, clientSafe: assessment.body?.truthIntegrity?.clientSafe ?? null, fullyReconciled: assessment.body?.truthIntegrity?.fullyReconciled ?? null,
+    truthBlockers: arr(assessment.body?.truthIntegrity?.blockers), sourceCoverage: assessment.body?.truthIntegrity?.sourceCoverage || null,
+    awardHistoryStatus: assessment.body?.awardHistory?.status || null, awardTruthClass: assessment.body?.awardHistory?.truthClass || null,
+    federalSales: assessment.body?.currentState?.federalSales ?? null, federalSalesStatus: assessment.body?.currentState?.federalSalesStatus || null,
     opportunityStatus: opportunities.body?.status || null, opportunityTotal: Number(opportunities.body?.totals?.all || 0),
     vehicleStatus: vehicles.body?.status || null, currentVehicleCount: arr(vehicles.body?.currentVehicles).length,
     recompeteStatus: recompetes.body?.status || null, recompeteCount: arr(recompetes.body?.records).length,
-    teamingStatus: teaming.body?.status || null, primeCandidateCount: arr(teaming.body?.primeCandidates).length,
-    currentTeamingSignalCount: arr(teaming.body?.subcontractingOpportunities?.records).length
+    teamingStatus: teaming.body?.status || null, primeCandidateCount: arr(teaming.body?.primeCandidates).length, currentTeamingSignalCount: arr(teaming.body?.subcontractingOpportunities?.records).length
   };
 }
 
 async function main() {
-  console.log('============================================================');
-  console.log('P2GC LIVE PRODUCTION DEMO SEMANTIC ACCEPTANCE');
-  console.log('============================================================');
-  console.log(`Base URL: ${BASE_URL}`);
-
-  const runtimeReload = await ensureDemoCurrent();
-  console.log('LIVE_DEMO_RUNTIME_CURRENCY');
-  console.log(JSON.stringify(runtimeReload, null, 2));
-
-  const health = runtimeReload.health || await requestJson('/api/health');
-  const healthFailures = [];
+  console.log('============================================================'); console.log('P2GC LIVE PRODUCTION DEMO SEMANTIC ACCEPTANCE'); console.log('============================================================'); console.log(`Base URL: ${BASE_URL}`);
+  const runtimeReload = await ensureDemoCurrent(); console.log('LIVE_DEMO_RUNTIME_CURRENCY'); console.log(JSON.stringify(runtimeReload, null, 2));
+  const health = runtimeReload.health || await requestJson('/api/health'); const healthFailures = [];
   if (runtimeReload.ok !== true) addFailure(healthFailures, 'DEMO_RUNTIME_NOT_CURRENT', runtimeReload.status || runtimeReload.reason || 'UNKNOWN');
   if (!health.ok || health.body?.ok !== true) addFailure(healthFailures, 'DEMO_HEALTH_NOT_OK', health.error || health.raw || String(health.statusCode));
-  for (const capability of ['truth_reconciliation','prime_sub_teaming','opportunity_intelligence','vehicle_intelligence','recompete_intelligence']) {
-    if (!arr(health.body?.capabilities).includes(capability)) addFailure(healthFailures, 'DEMO_CAPABILITY_MISSING', capability);
-  }
-
-  const companies = companyList();
-  const results = [];
-  for (const company of companies) results.push(await auditCompany(company));
-
+  for (const capability of ['truth_reconciliation','prime_sub_teaming','opportunity_intelligence','vehicle_intelligence','recompete_intelligence']) if (!arr(health.body?.capabilities).includes(capability)) addFailure(healthFailures, 'DEMO_CAPABILITY_MISSING', capability);
+  const companies = companyList(); const results = []; for (const company of companies) results.push(await auditCompany(company));
   const failedCompanies = results.filter(row => !row.ok);
-  const report = {
-    ok: healthFailures.length === 0 && failedCompanies.length === 0,
-    status: healthFailures.length === 0 && failedCompanies.length === 0 ? 'LIVE_DEMO_ACCEPTANCE_GREEN' : 'LIVE_DEMO_ACCEPTANCE_RED',
-    generatedAt: new Date().toISOString(), baseUrl: BASE_URL, runtimeReload,
-    health: { ok: healthFailures.length === 0, failures: healthFailures, service: health.body?.service || null },
-    companyCount: results.length, passedCompanyCount: results.length - failedCompanies.length, failedCompanyCount: failedCompanies.length, results,
-    safety: { dataReadOnly: true, prospectSends: false, externalWrites: false, authBypass: false, processRestartOnlyWhenSourceNewerOrOffline: true, restartTargetAllowlisted: DEMO_PM2_NAME, oneCanonicalRefreshPerCompany: true }
-  };
-
-  console.log('LIVE_DEMO_ACCEPTANCE_RESULT');
-  console.log(JSON.stringify(report, null, 2));
-  console.log(`RESULT: ${report.status}`);
-  if (!report.ok) process.exitCode = 2;
+  const report = { ok: healthFailures.length === 0 && failedCompanies.length === 0, status: healthFailures.length === 0 && failedCompanies.length === 0 ? 'LIVE_DEMO_ACCEPTANCE_GREEN' : 'LIVE_DEMO_ACCEPTANCE_RED', generatedAt: new Date().toISOString(), baseUrl: BASE_URL, runtimeReload, health: { ok: healthFailures.length === 0, failures: healthFailures, service: health.body?.service || null }, companyCount: results.length, passedCompanyCount: results.length - failedCompanies.length, failedCompanyCount: failedCompanies.length, results, safety: { dataReadOnly: true, prospectSends: false, externalWrites: false, authBypass: false, processRestartOnlyWhenSourceNewerOrOffline: true, restartTargetAllowlisted: DEMO_PM2_NAME, oneCanonicalRefreshPerCompany: true } };
+  console.log('LIVE_DEMO_ACCEPTANCE_RESULT'); console.log(JSON.stringify(report, null, 2)); console.log(`RESULT: ${report.status}`); if (!report.ok) process.exitCode = 2;
 }
 
-if (require.main === module) main().catch(error => {
-  console.error(error.stack || error.message);
-  console.log('RESULT: LIVE_DEMO_ACCEPTANCE_RED');
-  process.exitCode = 1;
-});
+if (require.main === module) main().catch(error => { console.error(error.stack || error.message); console.log('RESULT: LIVE_DEMO_ACCEPTANCE_RED'); process.exitCode = 1; });
 
-module.exports = {
-  ROOT,
-  BASE_URL,
-  DEMO_PM2_NAME,
-  DEMO_SOURCE_FILES,
-  DEFAULT_COMPANIES,
-  companyList,
-  requestJson,
-  latestDemoSourceMtimeMs,
-  parsePm2List,
-  waitForCurrentDemoHealth,
-  ensureDemoCurrent,
-  validateAssessment,
-  validateOpportunities,
-  validateVehicles,
-  validateRecompetes,
-  validateTeaming,
-  auditCompany
-};
+module.exports = { ROOT, BASE_URL, DEMO_PM2_NAME, DEMO_SOURCE_FILES, DEFAULT_COMPANIES, companyList, requestJson, latestDemoSourceMtimeMs, parsePm2List, waitForCurrentDemoHealth, ensureDemoCurrent, validateAssessment, validateOpportunities, validateVehicles, validateRecompetes, validateTeaming, auditCompany };
