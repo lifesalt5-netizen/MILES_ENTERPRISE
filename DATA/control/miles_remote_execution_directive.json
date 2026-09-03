@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-end-to-end-final-acceptance-20260903-028",
+  "id": "miles-p2gc-delune-sam-public-bulk-acquire-20260903-029",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "SAM_BULK_EXTRACT_ACQUIRE_STAGING",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the complete DeLune end-to-end acceptance after sales-story UI deployment: federal-source readiness, latency, live assessment/opportunity/vehicle/recompete/teaming endpoint semantics, commercial proof totals, prime/team readiness, live served HTML/app.js/styles browser-surface presence, JavaScript syntax compilation, responsive CSS and print CSS. Require no semantic regression, no false zero, no invented SAM/CAGE/certification/contact claims, exact shown/locked counts, and explicit SAM unknown while the current credential remains invalid. Read-only; publish evidence."
+  "note": "Acquire/stage the current official SAM.gov public Entity Registration and Contract Opportunities bulk extracts using the governed staging service. Purpose: remove DeLune current-SAM/CAGE dependence on the invalid targeted API credential and enable authoritative public-bulk identity resolution. Do not modify production databases or credentials; publish evidence."
 }
