@@ -154,6 +154,9 @@ function renderSalesStory(m){
   const samUnknown=s.samRegistration==null;
   const blockedOpps=(m.opportunities?.liveAndForecast||[]).filter(x=>x.directPursuitEligible===false).length;
   const readiness=m.readiness?.overall;
+  const fullyReconciled=m.truthIntegrity?.fullyReconciled===true;
+  const coverageBlockers=(m.truthIntegrity?.blockers||[]).length;
+  const verifiedFederalPosition=awards>0 || currentGsa || (currentOblig!=null && Number(currentOblig)>0) || buyerTotal>0;
 
   const position=[];
   if(awards>0) position.push(`Established federal contractor with ${awards.toLocaleString()} confirmed federal award records in authoritative history.`);
@@ -161,6 +164,7 @@ function renderSalesStory(m){
   if(currentOblig!=null && Number(currentOblig)>0) position.push(`The governed current measurement window shows ${money(currentOblig)} in federal obligations.`);
   if(oppTotal||recompeteTotal||primeTotal) position.push(`Current intelligence contains ${oppTotal} matched public opportunity candidates, ${recompeteTotal} recompete signals, and ${primeTotal} evidence-backed modeled prime/team candidates.`);
   if(samUnknown) position.push('Current SAM status remains unverified in the governed source set and is not inferred from other sources.');
+  if(!fullyReconciled && coverageBlockers>0) position.push('Some authoritative source coverage is still incomplete; those facts remain explicitly unavailable rather than inferred.');
   $("executivePosition").innerHTML=position.length?`<p>${position.map(esc).join(' ')}</p>`:unavailable('The current evidence set is not sufficient for an executive position statement.');
 
   const strengths=[];
@@ -182,7 +186,7 @@ function renderSalesStory(m){
   const growth=`The visible market contains ${oppTotal} current opportunity candidates, ${recompeteTotal} recompete signals and ${primeTotal} modeled prime/team candidates. These are qualification inputs, not automatic bid or relationship claims.`;
   const risk=blockedOpps>0
     ? `${blockedOpps} current opportunity candidate${blockedOpps===1?'':'s'} require set-aside eligibility verification before direct pursuit.`
-    : 'Modeled opportunity and partner signals still require validation before external pursuit or outreach.';
+    : (!fullyReconciled?'Incomplete authoritative coverage must be resolved before relying on unavailable facts.':'Modeled opportunity and partner signals still require validation before external pursuit or outreach.');
   const readinessText=readiness==null?'Readiness is withheld where the evidence is incomplete.':`Current evidence-backed readiness score is ${readiness}/100; only categories with explicit current checks are scored.`;
   $("diagnosis").innerHTML=[['Primary Issue',primary],['Secondary Issue',secondary],['Growth Opportunity',growth],['Immediate Risk',risk],['Readiness',readinessText]].map(([label,value])=>`<div class="metric"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
 
@@ -191,28 +195,32 @@ function renderSalesStory(m){
   if(primeTotal) nothing.push(`${primeTotal} modeled prime/team candidates remain unvalidated for contract, capability-whitespace and contact fit.`);
   if(recompeteTotal) nothing.push(`${recompeteTotal} recompete signals remain to be prioritized against value, timing and fit.`);
   if(samUnknown) nothing.push('SAM/CAGE/certification coverage remains unresolved in the current governed source set.');
-  nothing.push('The company remains more reactive to individual opportunities instead of working from a prioritized execution roadmap.');
+  if(!fullyReconciled) nothing.push('Authoritative coverage gaps remain unresolved, so unavailable facts cannot yet support pursuit decisions.');
+  nothing.push('Without a validated execution roadmap, the available signals remain unprioritized for action.');
   $("trajectoryNow").innerHTML=bullets(nothing);
 
-  const withP2gc=[
-    `Qualify the full ${oppTotal} current-opportunity inventory against scope, set-aside, vehicle and buyer fit.`,
-    `Validate and rank ${primeTotal} modeled prime/team candidates and identify lawful SBLO/teaming contacts where available.`,
-    `${recompeteTotal?`Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` representing ${money(recompeteValue)} in known value`:''}.`:'Build a validated recompete-monitoring lane where evidence supports it.'}`,
-    `Prioritize ${buyerTotal} buyer records across ${agencyTotal} agencies using confirmed history and current demand.`,
-    currentGsa?'Map current GSA MAS scope to the highest-value qualified demand and buyer paths.':'Validate the acquisition-vehicle/access path before recommending vehicle investment.',
-    'Build the paid capture, partner and execution roadmap with owners, deadlines and measurable milestones.'
-  ];
+  const withP2gc=[];
+  if(!fullyReconciled) withP2gc.push('Resolve the authoritative identity, registration, award, vehicle and opportunity coverage gaps before making unsupported pursuit assumptions.');
+  if(oppTotal) withP2gc.push(`Qualify the full ${oppTotal} current-opportunity inventory against scope, set-aside, vehicle and buyer fit.`);
+  if(primeTotal) withP2gc.push(`Validate and rank ${primeTotal} modeled prime/team candidates and identify lawful SBLO/teaming contacts where available.`);
+  if(recompeteTotal) withP2gc.push(`Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` representing ${money(recompeteValue)} in known value`:''}.`);
+  if(buyerTotal) withP2gc.push(`Prioritize ${buyerTotal} buyer records across ${agencyTotal} agencies using confirmed history and current demand.`);
+  withP2gc.push(currentGsa?'Map current GSA MAS scope to the highest-value qualified demand and buyer paths.':'Validate the acquisition-vehicle/access path before recommending vehicle investment.');
+  withP2gc.push('Build the paid capture, partner and execution roadmap with owners, deadlines and measurable milestones.');
   $("trajectoryP2gc").innerHTML=bullets(withP2gc);
 
-  const paid=[
-    `Qualify all ${oppTotal} current opportunity candidates; values remain undisclosed where the public source does not publish a positive amount.`,
-    `Validate and rank all ${primeTotal} evidence-backed modeled prime/team candidates.`,
-    `Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` with ${money(recompeteValue)} in known contract value`:''}.`,
-    `Prioritize buyers and agency expansion using the ${buyerTotal} confirmed buyer records across ${agencyTotal} agencies.`,
-    currentGsa?'Build the GSA utilization and buyer-access strategy from the confirmed current MAS position.':'Complete vehicle/access validation.',
-    'Deliver the complete capture, teaming and execution roadmap rather than exposing the full playbook in the preview.'
-  ];
-  $("paidNextStep").innerHTML=`<p>We have enough evidence to confirm a meaningful federal position and identify a measurable pipeline of opportunity, recompete and teaming candidates. The next step is to validate the complete federal position, prioritize the highest-value paths, and build the execution roadmap.</p>${bullets(paid)}`;
+  const paid=[];
+  if(!fullyReconciled) paid.push('Resolve each explicit authoritative coverage gap and document the source/provenance for the resulting fact.');
+  if(oppTotal) paid.push(`Qualify all ${oppTotal} current opportunity candidates; values remain undisclosed where the public source does not publish a positive amount.`);
+  if(primeTotal) paid.push(`Validate and rank all ${primeTotal} evidence-backed modeled prime/team candidates.`);
+  if(recompeteTotal) paid.push(`Prioritize ${recompeteTotal} recompete signals${recompeteValue>0?` with ${money(recompeteValue)} in known contract value`:''}.`);
+  if(buyerTotal) paid.push(`Prioritize buyers and agency expansion using the ${buyerTotal} confirmed buyer records across ${agencyTotal} agencies.`);
+  paid.push(currentGsa?'Build the GSA utilization and buyer-access strategy from the confirmed current MAS position.':'Complete vehicle/access validation before recommending an investment or pursuit path.');
+  paid.push('Deliver the complete capture, teaming and execution roadmap rather than exposing the full playbook in the preview.');
+  const paidIntro=verifiedFederalPosition
+    ? 'The current evidence confirms a meaningful federal position and provides concrete inputs for prioritization. The next step is to validate the complete position, rank the highest-value paths, and build the execution roadmap.'
+    : 'The current public evidence is not sufficient to confirm a complete federal position. Federal Pathway Validation™ is the next step to resolve the missing authoritative facts first, then determine the correct market-entry, vehicle, teaming and pursuit path.';
+  $("paidNextStep").innerHTML=`<p>${esc(paidIntro)}</p>${bullets(paid)}`;
 }
 
 function render(m){
