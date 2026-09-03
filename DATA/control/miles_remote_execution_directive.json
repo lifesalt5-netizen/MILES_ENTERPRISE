@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-capability-balanced-preview-deploy-20260903-040",
+  "id": "miles-p2gc-capability-balanced-preview-audit-20260903-041",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest P2GC demo changes: public award history must remain fully accessible through compact expandable history while totals stay visible; paid preview samples must be capability-balanced across validated NAICS/business lines for opportunities, primes/team candidates, buyers/related intelligence where evidence supports multiple lines; preserve all truth/fail-closed rules and restart p2gc-growth-demo when source is newer."
+  "note": "Run fresh DeLune and five-company P2GC acceptance after capability-balanced preview and expandable award-history deployment. Verify DeLune award history is not paywalled, totals remain visible, first rows compact with expandable full confirmed history, opportunity visible sample spans multiple validated NAICS/capability clusters where current matched inventory supports them, prime/team visible sample includes matched NAICS/capability evidence and spans multiple supported lines where available, buyers remain diversified, proof totals remain accurate, duplicate semantic opportunities are suppressed, and all prior truth/fail-closed/browser/API gates remain GREEN. Read-only; publish evidence."
 }
