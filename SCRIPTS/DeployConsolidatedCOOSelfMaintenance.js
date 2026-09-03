@@ -18,6 +18,8 @@ const AUTONOMOUS_RESTART_DELAY_MS = Math.max(
   15000,
   Number(process.env.MILES_COO_DEPLOY_AUTONOMOUS_RESTART_DELAY_MS || 20000)
 );
+const CALENDLY_REMINDER_REQUEST = path.join(ROOT, 'DATA', 'control', 'p2gc_calendly_reminder_policy.json');
+const CALENDLY_REMINDER_STATE = path.join(ROOT, 'DATA', 'runtime', 'p2gc_calendly_reminder_policy_state.json');
 
 function fail(message, details = null) {
   console.error(`COO_CONSOLIDATED_DEPLOY_RED: ${message}`);
@@ -238,6 +240,61 @@ function approvalCount(operations) {
     : null;
 }
 
+function readJsonFile(file, fallback = null) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); }
+  catch { return fallback; }
+}
+
+function enforceCalendlyReminderPolicyIfRequested() {
+  const request = readJsonFile(CALENDLY_REMINDER_REQUEST, null);
+  if (!request || request.enabled !== true || !request.id) return { requested:false, status:'NO_ACTIVE_REQUEST' };
+  const state = readJsonFile(CALENDLY_REMINDER_STATE, {});
+  if (state?.lastSuccessfulRequestId === request.id) {
+    console.log(`CALENDLY_REMINDER_POLICY_ALREADY_APPLIED=${request.id}`);
+    return { requested:true, applied:false, status:'ALREADY_APPLIED', requestId:request.id };
+  }
+  const policy = request.policy || {};
+  const hours = Array.isArray(policy.reminderHoursBefore) ? policy.reminderHoursBefore.map(Number) : [];
+  if (policy.immediateConfirmation !== true || hours.length !== 1 || hours[0] !== 24) {
+    fail('Calendly reminder policy request is outside the approved scope.');
+  }
+  const script = path.join(ROOT, 'SCRIPTS', 'EnsureP2GCCalendlyMeetingReminders.js');
+  if (!fs.existsSync(script)) fail('Calendly reminder enforcement script is missing.');
+  const env = {
+    ...process.env,
+    MILES_P2GC_CALENDLY_URL: String(request.targetSchedulingUri || 'https://calendly.com/kevin-pathways2gc/30min')
+  };
+  let stdout;
+  try {
+    stdout = execFileSync(process.execPath, [script, '--execute'], {
+      cwd: ROOT,
+      env,
+      encoding:'utf8',
+      windowsHide:true,
+      stdio:['ignore','pipe','pipe'],
+      timeout:120000
+    });
+  } catch (error) {
+    fail('Calendly reminder enforcement failed.', String(error?.stderr || error?.stdout || error?.message || error));
+  }
+  const evidence = readJsonFile(path.join(ROOT, 'DATA', 'operational_acceptance', 'latest_p2gc_calendly_reminder_acceptance.json'), null);
+  if (!evidence?.ok || evidence?.verified?.immediateConfirmation !== true || evidence?.verified?.reminder24HoursBefore !== true) {
+    fail('Calendly reminder enforcement did not return GREEN evidence.', stdout || JSON.stringify(evidence));
+  }
+  fs.mkdirSync(path.dirname(CALENDLY_REMINDER_STATE), { recursive:true });
+  fs.writeFileSync(CALENDLY_REMINDER_STATE, JSON.stringify({
+    lastSuccessfulRequestId:request.id,
+    targetSchedulingUri:request.targetSchedulingUri,
+    policy:request.policy,
+    appliedAt:new Date().toISOString(),
+    evidenceStatus:evidence.status
+  }, null, 2), 'utf8');
+  console.log(`CALENDLY_REMINDER_POLICY_APPLIED=${request.id}`);
+  console.log('CALENDLY_IMMEDIATE_CONFIRMATION_VERIFIED=true');
+  console.log('CALENDLY_24_HOUR_REMINDER_VERIFIED=true');
+  return { requested:true, applied:true, status:'GREEN', requestId:request.id };
+}
+
 async function main() {
   if (process.platform !== 'win32') fail('This deployment helper is intended for the Windows MILES production host only.');
   verifySourceMarkers();
@@ -282,6 +339,8 @@ async function main() {
     fail('Self-maintenance reported an unsafe runtime mutation.');
   }
 
+  const calendlyPolicy = enforceCalendlyReminderPolicyIfRequested();
+
   restartKnownApp(byName.get('miles-worker'));
   if (!REMOTE_BRIDGE_SUPERVISED) {
     restartKnownApp(byName.get('miles-autonomous-coo'));
@@ -308,6 +367,7 @@ async function main() {
   console.log(`P2GC_SOURCE_MODIFIED_AT_MS=${p2gcSourceMs}`);
   console.log(`P2GC_PROCESS_STARTED_AT_MS=${p2gcStartedAt}`);
   console.log(`P2GC_RESTART_REQUIRED=${restartP2gc}`);
+  console.log(`CALENDLY_REMINDER_POLICY_STATUS=${calendlyPolicy.status}`);
   console.log('APPROVALS_GRANTED_BY_MAINTENANCE=0');
   console.log('TASKS_RESUMED_BY_MAINTENANCE=0');
   console.log('TASKS_DELETED_BY_MAINTENANCE=0');
