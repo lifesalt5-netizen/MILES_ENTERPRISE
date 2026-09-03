@@ -1,0 +1,35 @@
+name: P2GC Federal Growth Review Media Stream
+
+on:
+  push:
+    paths:
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewMediaService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
+      - 'TESTS/p2gc_federal_growth_review_media_stream.test.js'
+      - '.github/workflows/p2gc-federal-growth-review-media-stream.yml'
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewMediaService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
+      - 'SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js'
+      - 'TESTS/p2gc_federal_growth_review_media_stream.test.js'
+      - '.github/workflows/p2gc-federal-growth-review-media-stream.yml'
+
+jobs:
+  signed-media-stream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check media service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewMediaService.js
+      - name: Syntax check secure access service
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js
+      - name: Syntax check review HTTP controller
+        run: node --check SERVICES/revenue/P2GCFederalGrowthReviewHttpController.js
+      - name: Run signed media stream regression
+        run: node TESTS/p2gc_federal_growth_review_media_stream.test.js
