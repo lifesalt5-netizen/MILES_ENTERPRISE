@@ -33,7 +33,7 @@ function render(review,watermark){
   if(review.video?.playable===true) setupVideo();else $('videoPending').hidden=false;
 }
 async function setupVideo(){
-  try{const result=await api('video-token',{method:'POST',body:'{}'});if(!result.streamUrl)throw new Error('VIDEO_STREAM_NOT_READY');const v=$('video');v.hidden=false;$('videoPending').hidden=true;v.dataset.token=result.token;v.src=result.streamUrl;attachVideoTelemetry(v);}catch{ $('videoPending').hidden=false; }
+  try{const result=await api('video-token',{method:'POST',body:'{}'});if(!result.streamUrl)throw new Error('VIDEO_STREAM_NOT_READY');const v=$('video');v.hidden=false;$('videoPending').hidden=true;v.src=result.streamUrl;attachVideoTelemetry(v);}catch{ $('videoPending').hidden=false; }
 }
 function event(type,value=null,metadata=null){return api('event',{method:'POST',body:JSON.stringify({type,value,metadata})}).catch(()=>null);}
 function once(type,value){if(fired.has(type))return;fired.add(type);event(type,value);}
