@@ -27,6 +27,16 @@ function locked(count, label) {
 function unlockNote(count) {
   return count ? `<div class="unlock-note"><strong>${count} additional verified/modeled result${count===1?"":"s"} available.</strong><span>${esc(current?.commercialPreview?.cta||"Unlock the full company-specific growth intelligence with P2GC.")}</span></div>` : "";
 }
+function proofLine(name) {
+  const t=current?.commercialPreview?.totals?.[name];
+  const p=current?.commercialPreview?.[name];
+  if(!t||!p) return "";
+  const pieces=[`${Number(t.total||0).toLocaleString()} identified`,`${Number(p.visibleCount||0).toLocaleString()} shown`,`${Number(p.lockedCount||0).toLocaleString()} locked`];
+  if(Number(t.knownValueCount||0)>0) pieces.splice(1,0,`${money(t.knownValue)} known value across ${Number(t.knownValueCount).toLocaleString()} valued record${Number(t.knownValueCount)===1?"":"s"}`);
+  if(Number(t.unknownValueCount||0)>0) pieces.splice(2,0,`${Number(t.unknownValueCount).toLocaleString()} value${Number(t.unknownValueCount)===1?"":"s"} not disclosed`);
+  if(Number(t.agencies||0)>0) pieces.splice(1,0,`${Number(t.agencies).toLocaleString()} agencies`);
+  return `<div class="unlock-note"><strong>${esc(pieces.join(" • "))}</strong><span>Totals describe known underlying records; locked identities/details are available in the applicable P2GC engagement.</span></div>`;
+}
 function evidenceList(values, status) {
   const items=(values||[]).filter(Boolean);
   if(items.length) return items.join(", ");
@@ -47,9 +57,9 @@ function renderProfile(p) {
   $("profileMeta").innerHTML = fields.map(([label,value])=>`<div><span>${esc(label)}</span><strong>${esc(value == null || value === "" ? "Unavailable" : value)}</strong></div>`).join("");
 }
 function renderReadiness(r) {
-  $("overallScore").textContent = `${r.overall}/100`;
+  $("overallScore").textContent = r.overall==null ? "Unavailable" : `${r.overall}/100`;
   $("scoreMethod").textContent = r.methodology || "";
-  $("readinessGrid").innerHTML = Object.values(r.categories||{}).map(c=>`<article class="score-card"><div class="score-card-head"><strong>${esc(c.label)}</strong><b>${c.score}%</b></div><div class="bar"><span style="width:${Math.max(0,Math.min(100,c.score))}%"></span></div><details><summary>Why this score</summary><div class="evidence good"><b>Evidence:</b>${(c.evidence||[]).length?`<ul>${c.evidence.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:" None identified"}</div><div class="evidence miss"><b>Missing:</b>${(c.missing||[]).length?`<ul>${c.missing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:" None"}</div></details></article>`).join("");
+  $("readinessGrid").innerHTML = Object.values(r.categories||{}).map(c=>`<article class="score-card"><div class="score-card-head"><strong>${esc(c.label)}</strong><b>${c.score==null?"Unavailable":`${esc(c.score)}%`}</b></div><div class="bar"><span style="width:${c.score==null?0:Math.max(0,Math.min(100,c.score))}%"></span></div><details><summary>Why this score</summary><div class="evidence good"><b>Evidence:</b>${(c.evidence||[]).length?`<ul>${c.evidence.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:" None identified"}</div><div class="evidence miss"><b>Missing:</b>${(c.missing||[]).length?`<ul>${c.missing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:" None"}</div></details></article>`).join("");
 }
 function renderState(m) {
   const s=m.currentState||{};
@@ -92,42 +102,43 @@ function renderAwards(a) {
 function renderVehicles(v) {
   const p=preview("vehicles",v.current||[]);
   const details=(v.details||[]).map(x=>`<div class="partner"><strong>${esc(x.contractNumber||"GSA MAS contract")}</strong><span>Current option end: ${esc(x.currentOptionPeriodEndDate||"Unavailable")}</span><span>Ultimate end: ${esc(x.ultimateContractEndDate||"Unavailable")}</span><span>Categories: ${esc((x.categories||[]).join(", ")||"Unavailable")}</span><span>Socioeconomic: ${esc(x.socioEconomicIndicators||"Unavailable")}</span></div>`).join("");
-  $("vehicles").innerHTML=`<h3>Current Vehicles</h3>${bullets(p.visible||[])}${details}${locked(p.lockedCount,"Additional vehicle intelligence")}${unlockNote(p.lockedCount)}<h3>Optimization / Missing Vehicle Actions</h3>${bullets(v.recommendations||[])}`;
+  $("vehicles").innerHTML=`${proofLine("vehicles")}<h3>Current Vehicles</h3>${bullets(p.visible||[])}${details}${locked(p.lockedCount,"Additional vehicle intelligence")}${unlockNote(p.lockedCount)}<h3>Optimization / Missing Vehicle Actions</h3>${bullets(v.recommendations||[])}`;
 }
 function renderAgencies(a) {
   $("agencies").innerHTML=(a.agencies||[]).length?a.agencies.map(x=>`<div class="agency-row"><div><strong>${esc(x.agency)}</strong><span>${esc(x.basis||"")}</span></div><b>${esc(x.fitScore)}%</b></div>`).join(""):unavailable("No confirmed agency alignment is available from current award/buyer evidence.");
 }
 function renderCompetitors(c) {
   const p=preview("competitors",c.records||[]);
-  $("competitors").innerHTML=(p.visible||[]).length?`<table><thead><tr><th>Company</th><th>Federal Revenue</th><th>Awards</th><th>Vehicle</th><th>Agencies</th></tr></thead><tbody>${p.visible.map(x=>`<tr><td>${esc(x.company)}</td><td>${money(x.federalRevenue)}</td><td>${esc(x.awardCount??"—")}</td><td>${esc(x.vehicle||"Unavailable")}</td><td>${esc((x.agencies||[]).join(", ")||"Unavailable")}</td></tr>`).join("")}</tbody></table>${locked(p.lockedCount,"Additional competitor intelligence")}${unlockNote(p.lockedCount)}`:unavailable("No defensible competitor candidates were identified from the current ORION peer model.");
+  $("competitors").innerHTML=proofLine("competitors")+((p.visible||[]).length?`<table><thead><tr><th>Company</th><th>Federal Revenue</th><th>Awards</th><th>Vehicle</th><th>Agencies</th></tr></thead><tbody>${p.visible.map(x=>`<tr><td>${esc(x.company)}</td><td>${money(x.federalRevenue)}</td><td>${esc(x.awardCount??"—")}</td><td>${esc(x.vehicle||"Unavailable")}</td><td>${esc((x.agencies||[]).join(", ")||"Unavailable")}</td></tr>`).join("")}</tbody></table>${locked(p.lockedCount,"Additional competitor intelligence")}${unlockNote(p.lockedCount)}`:unavailable("No defensible competitor candidates were identified from the current ORION peer model."));
   $("competitorDisclosure").textContent=c.disclosure||"";
 }
 function renderPrimes(p0) {
   const p=preview("primePartners",p0.records||[]);
-  $("primes").innerHTML=rows(p.visible||[],x=>`<div class="partner"><strong>${esc(x.company)}</strong><span>${esc(x.partnerStatus||x.confidence||"MODELED CANDIDATE")}</span><span>Vehicle: ${esc(x.vehicle||"Not yet confirmed")}</span><span>Federal revenue: ${money(x.federalRevenue)}</span><span>Agencies: ${esc((x.agencies||[]).join(", ")||"Not yet confirmed")}</span></div>`)+locked(p.lockedCount,"Additional teaming partner")+unlockNote(p.lockedCount)+`<h3>Teaming Strategy</h3>${bullets(p0.strategy||[])}`;
+  $("primes").innerHTML=proofLine("primePartners")+rows(p.visible||[],x=>`<div class="partner"><strong>${esc(x.company)}</strong><span>${esc(x.partnerStatus||x.confidence||"MODELED CANDIDATE")}</span><span>Vehicle: ${esc(x.vehicle||"Not yet confirmed")}</span><span>Federal revenue: ${money(x.federalRevenue)}</span><span>Agencies: ${esc((x.agencies||[]).join(", ")||"Not yet confirmed")}</span></div>`)+locked(p.lockedCount,"Additional teaming partner")+unlockNote(p.lockedCount)+`<h3>Teaming Strategy</h3>${bullets(p0.strategy||[])}`;
 }
 function renderSubs(s) {
   $("subcontracting").innerHTML=`${statusPill(s.status)}${rows(s.records||[],x=>`<div class="opportunity"><strong>${esc(x.title)}</strong><span>${esc(x.source||"")}</span></div>`)}<h3>Recommended Partner Actions</h3>${bullets(s.strategy||[])}`;
 }
 function renderBuyers(b) {
   const p=preview("buyers",b.records||[]);
-  $("buyers").innerHTML=(p.visible||[]).length?`<table><thead><tr><th>Agency</th><th>Buyer / Office</th><th>Historical Award Value</th><th>Awards</th></tr></thead><tbody>${p.visible.map(x=>`<tr><td>${esc(x.agency||"Unavailable")}</td><td>${esc(x.buyer||"Unavailable")}</td><td>${money(x.historicalAwardValue??x.spend)}</td><td>${esc(x.awardCount??"—")}</td></tr>`).join("")}</tbody></table>${locked(p.lockedCount,"Additional buyer intelligence")}${unlockNote(p.lockedCount)}`:unavailable(b?.status&&/CONFIRMED_NO/.test(b.status)?"Authoritative award history produced no buyer records.":"No confirmed buyer history is currently available.");
+  $("buyers").innerHTML=proofLine("buyers")+((p.visible||[]).length?`<table><thead><tr><th>Agency</th><th>Buyer / Office</th><th>Historical Award Value</th><th>Awards</th></tr></thead><tbody>${p.visible.map(x=>`<tr><td>${esc(x.agency||"Unavailable")}</td><td>${esc(x.buyer||"Unavailable")}</td><td>${money(x.historicalAwardValue??x.spend)}</td><td>${esc(x.awardCount??"—")}</td></tr>`).join("")}</tbody></table>${locked(p.lockedCount,"Additional buyer intelligence")}${unlockNote(p.lockedCount)}`:unavailable(b?.status&&/CONFIRMED_NO/.test(b.status)?"Authoritative award history produced no buyer records.":"No confirmed buyer history is currently available."));
 }
 function opportunityCard(x) {
   const href=safeUrl(x.sourceUrl);
   const source=href?`<a href="${esc(href)}" target="_blank" rel="noopener">${esc(x.source||"Source")}</a>`:esc(x.source||"Source unavailable");
   const meta=[x.agency,x.stage,x.naics?`NAICS ${x.naics}`:null,x.setAside,x.dueDate?`Due ${x.dueDate}`:null,x.fitScore!=null?`Fit ${x.fitScore}/100`:null].filter(Boolean).join(" • ");
-  return `<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(meta)}</span><span>${source}</span><small>${esc(x.qualification||"")}</small></div>`;
+  const blocker=x.eligibilityBlocker?`<small><strong>Eligibility:</strong> ${esc(x.eligibilityBlocker)}</small>`:"";
+  return `<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(meta)}</span><span>${source}</span><small>${esc(x.qualification||"")}</small>${blocker}</div>`;
 }
 function renderOpportunities(o) {
   const live=preview("opportunities",o.liveAndForecast||[]), recomp=preview("recompetes",o.recompetes||[]);
   if((live.visible||[]).length) {
-    $("opportunities").innerHTML=(live.visible||[]).map(opportunityCard).join("")+locked(live.lockedCount,"Additional matched opportunity")+unlockNote(live.lockedCount);
+    $("opportunities").innerHTML=proofLine("opportunities")+(live.visible||[]).map(opportunityCard).join("")+locked(live.lockedCount,"Additional matched opportunity")+unlockNote(live.lockedCount);
   } else {
     const coverage=o.sourceCoverage||{};
-    $("opportunities").innerHTML=unavailable(coverage.fresh===false?`Current public opportunity coverage is not fresh/available (${coverage.status||"source unavailable"}); the demo will not pretend there are zero matches.`:"No current qualified public opportunity candidate matched the available evidence.");
+    $("opportunities").innerHTML=proofLine("opportunities")+unavailable(coverage.fresh===false?`Current public opportunity coverage is not fresh/available (${coverage.status||"source unavailable"}); the demo will not pretend there are zero matches.`:"No current qualified public opportunity candidate matched the available evidence.");
   }
-  $("recompetes").innerHTML=(recomp.visible||[]).length?(recomp.visible||[]).map(x=>`<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(x.agency||"Agency unavailable")}${x.date?` • ${esc(x.date)}`:""}${x.value?` • ${money(x.value)}`:""}</span><small>${esc(x.qualification||"")}</small></div>`).join("")+locked(recomp.lockedCount,"Additional recompete signal")+unlockNote(recomp.lockedCount):unavailable("No validated current recompete signal is available. Generic zero-award monitoring placeholders are suppressed.");
+  $("recompetes").innerHTML=proofLine("recompetes")+((recomp.visible||[]).length?(recomp.visible||[]).map(x=>`<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(x.agency||"Agency unavailable")}${x.date?` • ${esc(x.date)}`:""}${x.value?` • ${money(x.value)}`:""}</span><small>${esc(x.qualification||"")}</small></div>`).join("")+locked(recomp.lockedCount,"Additional recompete signal")+unlockNote(recomp.lockedCount):unavailable("No validated current recompete signal is available. Generic zero-award monitoring placeholders are suppressed."));
 }
 function renderPathway(p){$("pathwayTitle").textContent=p.title||"Evidence Completion Pathway™";$("pathway").innerHTML=(p.steps||[]).map((x,i)=>`<div class="path-step"><b>Step ${i+1}</b><span>${esc(x)}</span></div>`).join('<div class="arrow">↓</div>');}
 function renderRecommendations(r){const groups=[["Immediate Actions",r.immediate],["Vehicle Strategy",r.vehicle],["Agency Strategy",r.agency],["Prime / Partner Strategy",r.partner],["Opportunity Strategy",r.opportunity],["Growth Strategy",r.growth]];$("recommendations").innerHTML=groups.map(([title,items])=>`<div class="rec-group"><h3>${esc(title)}</h3>${bullets(items||[])}</div>`).join("");}
