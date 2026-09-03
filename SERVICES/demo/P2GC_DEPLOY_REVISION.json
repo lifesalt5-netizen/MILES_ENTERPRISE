@@ -1,7 +1,9 @@
 {
-  "revision": "2026-09-03-evidence-first-opportunity-qualification-056",
-  "purpose": "Force governed P2GC restart after company award/GSA evidence was ordered before opportunity qualification and qualification counts/near-fit closure were exposed in the client preview.",
+  "revision": "2026-09-03-strict-solicitation-qualification-058",
+  "purpose": "Force governed P2GC restart after preliminary capability support was separated from full solicitation-qualified direct pursuit and downstream proof totals were constrained to the same rule.",
   "requiredCommits": [
+    "8470d00f75d429306f126c3c53c0ee19c3a8a92d",
+    "1d62deba39a8dca874b18a74d8a889025fa5c95e",
     "68e26e0baefae2b3fead2130e87680cd93393b27",
     "0df713c65f2918c11978ca63a7220060dfeaf1f9",
     "45b78fa37647749f1558fc03b98a97cccb4f1533",
