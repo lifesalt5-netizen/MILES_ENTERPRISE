@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const Lifecycle = require('./P2GCFederalGrowthReviewLifecycleService');
 const Access = require('./P2GCFederalGrowthReviewAccessService');
 const Verification = require('./P2GCFederalGrowthReviewVerificationService');
+const Media = require('./P2GCFederalGrowthReviewMediaService');
 
 function clean(v){ return String(v == null ? '' : v).trim(); }
 function parseCookies(header=''){
@@ -56,6 +57,7 @@ class P2GCFederalGrowthReviewHttpController {
     this.lifecycle=options.lifecycle||new Lifecycle({rootDir:this.rootDir});
     this.access=options.access||new Access(options.accessOptions||{});
     this.verification=options.verification||new Verification(options.verificationOptions||{});
+    this.media=options.media||new Media({rootDir:this.rootDir,access:this.access});
     this.publicDir=options.publicDir||path.join(this.rootDir,'SERVICES','review','public');
     this.cookieName='p2gc_review_session';
   }
@@ -82,7 +84,7 @@ class P2GCFederalGrowthReviewHttpController {
       assets,
       senderHealth,
       securityHeadersReady,
-      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false},
+      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false,protectedRangeStreaming:true},
       checkedAt:new Date().toISOString()
     };
   }
@@ -137,6 +139,16 @@ class P2GCFederalGrowthReviewHttpController {
       res.writeHead(200,{...this.securityHeaders(),'Content-Type':'text/css; charset=utf-8'});res.end(fs.readFileSync(file));return true;
     }
 
+    const streamMatch=pathname.match(/^\/api\/review\/([A-Za-z0-9._-]+)\/video-stream$/);
+    if(req.method==='GET' && streamMatch){
+      const reviewId=streamMatch[1];const session=this.sessionContext(req,reviewId);
+      if(!session.ok){safeJson(res,401,{ok:false,status:session.reason},this.securityHeaders());return true;}
+      const mediaId=clean(session.record.presentation?.mediaId);const token=clean(url.searchParams.get('token'));
+      if(!mediaId||session.record.presentation?.videoStatus!=='READY'||session.record.presentation?.streamingReady!==true||!token){safeJson(res,409,{ok:false,status:'VIDEO_NOT_PLAYABLE'},this.securityHeaders());return true;}
+      this.media.stream(req,res,{reviewId,authenticatedEmail:session.authenticatedEmail,sessionId:session.sessionId,mediaId,token});
+      return true;
+    }
+
     const api=pathname.match(/^\/api\/review\/([A-Za-z0-9._-]+)\/(request-code|verify|state|video-token|event|question|close-session)$/);
     if(!api) return false;
     const reviewId=api[1]; const action=api[2];
@@ -177,9 +189,10 @@ class P2GCFederalGrowthReviewHttpController {
       }
       if(req.method==='POST' && action==='video-token'){
         const mediaId=clean(session.record.presentation?.mediaId);
-        if(!mediaId||session.record.presentation?.videoStatus!=='READY'||session.record.presentation?.streamingReady!==true){safeJson(res,409,{ok:false,status:'VIDEO_NOT_PLAYABLE',writtenReviewFallback:true},this.securityHeaders());return true;}
+        if(!mediaId||session.record.presentation?.videoStatus!=='READY'||session.record.presentation?.streamingReady!==true||!this.media.exists(mediaId)){safeJson(res,409,{ok:false,status:'VIDEO_NOT_PLAYABLE',writtenReviewFallback:true},this.securityHeaders());return true;}
         const token=this.access.createVideoToken(session.record,session.authenticatedEmail,session.sessionId,mediaId);
-        safeJson(res,200,{ok:true,status:'SIGNED_VIDEO_TOKEN_ISSUED',token,expiresInSeconds:this.access.videoTokenTtlSeconds},this.securityHeaders());return true;
+        const streamUrl=`/api/review/${encodeURIComponent(reviewId)}/video-stream?token=${encodeURIComponent(token)}`;
+        safeJson(res,200,{ok:true,status:'SIGNED_VIDEO_TOKEN_ISSUED',token,expiresInSeconds:this.access.videoTokenTtlSeconds,streamUrl},this.securityHeaders());return true;
       }
       if(req.method==='POST' && action==='event'){
         const body=await readBody(req);
