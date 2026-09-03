@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-live-truth-capability-audit-20260903-046",
+  "id": "miles-p2gc-focused-opportunity-truth-deploy-20260903-047",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the complete read-only federal/P2GC live acceptance against the just-restarted build. Validate DeLune name/UEI/CAGE identity, SAM ACTIVE, current GSA MAS, award history, current 8787/8791 demo endpoints, opportunity capability classifications, semantic dedupe, set-aside fail-closed behavior, readiness categories, gaps, pathway, recommendations, agency-history semantics, proof totals, focused opportunities/vehicles/recompetes/teaming routes, and systemic regression companies. Report exact failures rather than weakening assertions."
+  "note": "Deploy latest main including DemoUnifiedOpportunityService capability/eligibility truth propagation and semantic dedupe. Focused /opportunities must preserve capabilityStatus, capabilityClass, directPursuitCapabilitySupported, directPursuitEligible, eligibilityStatus/blocker, set-aside and qualification from canonical current opportunity records. Semantic duplicate notice/version records must collapse before focused totals. Restart p2gc-growth-demo because demo source is newer and restart unified 8787 gateway as governed."
 }
