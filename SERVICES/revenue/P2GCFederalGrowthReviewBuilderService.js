@@ -58,7 +58,7 @@ class P2GCFederalGrowthReviewBuilderService {
   }
 
   buildFindings(model){
-    const f=[];const profile=model.profile||{};const current=model.currentState||{};const proof=model.commercialPreview?.totals||{};
+    const f=[];const profile=model.profile||{};const proof=model.commercialPreview?.totals||{};
     const samEvidence=this.evidence(model,'currentSamRegistration',{source:'SAM.gov current registration'});
     if(clean(profile.samStatus)){
       this.add(f,'CURRENT_GOVERNMENT_POSITION','SAM registration position',`${profile.companyName||'The company'} is shown with SAM status ${profile.samStatus}${profile.uei?` and UEI ${profile.uei}`:''}.`,'This establishes the current registration baseline used for federal-market analysis.','Registration is a prerequisite for many federal actions, but registration by itself is not evidence of contract performance.','A current registration supports pursuit readiness; any registration gap can stop otherwise viable pursuits.','P2GC uses the verified registration state as one input to determine what federal actions are actually available.',samEvidence);
@@ -156,7 +156,7 @@ class P2GCFederalGrowthReviewBuilderService {
       ok:true,status:'P2GC_PERSONALIZED_FEDERAL_GROWTH_REVIEW_DRAFT_READY',reviewId:review.reviewId,company:review.company,recipient:review.recipient,expiresAt:review.expiresAt,
       findingCount:review.findings.length,priorityOptions:review.priorityOptions,runtime:review.presentation?.runtime,advisorRole:review.presentation?.advisorRole,
       truthStatus:model.truthIntegrity?.status||null,sourceAssessment:{uei:model.profile?.uei||null,cage:model.profile?.cage||null,readiness:model.readiness?.overall??null},
-      nextRequiredStage:'PROFESSIONAL_AI_PRESENTATION',green:false
+      nextRequiredStage:'PROFESSIONAL_AI_DEMO',green:false
     };
   }
 }
