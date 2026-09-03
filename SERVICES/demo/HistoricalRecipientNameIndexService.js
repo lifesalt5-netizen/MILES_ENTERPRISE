@@ -5,6 +5,29 @@ const path = require('path');
 const identity = require('./CompanyIdentityCanonicalizer');
 const { clean, canonicalCompact } = identity;
 
+function sourceFingerprint(report, database, stat) {
+  const sha = clean(report?.source?.sha256).toUpperCase();
+  const validation = report?.validation || {};
+  if (sha) {
+    return [
+      'SOURCE_SHA256', sha,
+      Number(validation.awardRows || 0),
+      Number(validation.summaryRows || 0),
+      Number(validation.buyerRows || 0),
+      Number(validation.recompeteRows || 0),
+      clean(report?.source?.updatedDate)
+    ].join('|');
+  }
+  return [
+    'DB_FALLBACK',
+    path.resolve(database || ''),
+    Number(stat?.size || 0),
+    Number(stat?.mtimeMs || 0),
+    Number(validation.awardRows || 0),
+    Number(validation.summaryRows || 0)
+  ].join('|');
+}
+
 class HistoricalRecipientNameIndexService {
   constructor(options = {}) {
     this.rootDir = path.resolve(options.rootDir || process.env.MILES_ROOT || process.cwd());
@@ -20,16 +43,24 @@ class HistoricalRecipientNameIndexService {
     const database = report?.sidecarDb ? path.resolve(report.sidecarDb) : null;
     const usable = Boolean(report?.ok === true && report?.validation?.ok === true && report?.validation?.integrity === 'ok' && report?.safety?.sidecarOnly === true && report?.safety?.productionDatabaseModified === false && database && fs.existsSync(database));
     const stat = usable ? fs.statSync(database) : null;
-    return { usable, database:usable ? database : null, databaseMtimeMs:stat?.mtimeMs || null, databaseSize:stat?.size || null, reportPath:this.reportPath, reason:usable ? null : 'ORION_VALIDATED_SIDECAR_NOT_USABLE' };
+    return {
+      usable,
+      database:usable ? database : null,
+      databaseMtimeMs:stat?.mtimeMs || null,
+      databaseSize:stat?.size || null,
+      sourceFingerprint:usable ? sourceFingerprint(report, database, stat) : null,
+      sourceSha256:clean(report?.source?.sha256).toUpperCase() || null,
+      validation:usable ? report?.validation || null : null,
+      reportPath:this.reportPath,
+      reason:usable ? null : 'ORION_VALIDATED_SIDECAR_NOT_USABLE'
+    };
   }
 
   readIndex(source) {
     try {
       const parsed = JSON.parse(fs.readFileSync(this.indexPath, 'utf8').replace(/^\uFEFF/, ''));
-      if (parsed?.version !== 2) return null;
-      if (path.resolve(parsed.database || '') !== path.resolve(source.database || '')) return null;
-      if (Number(parsed.databaseMtimeMs || 0) !== Number(source.databaseMtimeMs || 0)) return null;
-      if (Number(parsed.databaseSize || 0) !== Number(source.databaseSize || 0)) return null;
+      if (parsed?.version !== 3) return null;
+      if (!parsed.sourceFingerprint || parsed.sourceFingerprint !== source.sourceFingerprint) return null;
       if (!parsed.byCanonicalCompact || typeof parsed.byCanonicalCompact !== 'object') return null;
       return parsed;
     } catch { return null; }
@@ -61,12 +92,16 @@ class HistoricalRecipientNameIndexService {
         });
       }
       const result = {
-        version:2,
+        version:3,
         normalizationPolicy:'COMPANY_IDENTITY_CANONICALIZER_V1',
+        invalidationPolicy:'SOURCE_ARCHIVE_FINGERPRINT_V1',
         generatedAt:new Date().toISOString(),
+        sourceFingerprint:source.sourceFingerprint,
+        sourceSha256:source.sourceSha256,
         database:source.database,
         databaseMtimeMs:source.databaseMtimeMs,
         databaseSize:source.databaseSize,
+        validation:source.validation,
         canonicalNameCount:Object.keys(byCanonicalCompact).length,
         byCanonicalCompact
       };
@@ -82,7 +117,9 @@ class HistoricalRecipientNameIndexService {
   ensureIndex() {
     const source = this.sourceStatus();
     if (!source.usable) return { ok:false, status:source.reason, source };
-    if (this.memory && this.memory.version === 2 && path.resolve(this.memory.database || '') === path.resolve(source.database) && Number(this.memory.databaseMtimeMs) === Number(source.databaseMtimeMs) && Number(this.memory.databaseSize) === Number(source.databaseSize)) return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_MEMORY', index:this.memory, source };
+    if (this.memory && this.memory.version === 3 && this.memory.sourceFingerprint === source.sourceFingerprint) {
+      return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_MEMORY', index:this.memory, source };
+    }
     const existing = this.readIndex(source);
     if (existing) { this.memory = existing; return { ok:true, status:'HISTORICAL_RECIPIENT_INDEX_CURRENT', index:existing, source }; }
     const built = this.buildIndex(source);
@@ -99,7 +136,7 @@ class HistoricalRecipientNameIndexService {
     const byUei = new Map();
     for (const row of rows) if (row.uei) byUei.set(row.uei, row);
     const unique = [...byUei.values()];
-    if (unique.length === 1) return { ok:true, status:'HISTORICAL_IDENTITY_RESOLVED_BY_INDEX', matchedBy:'USA_SPENDING_RECIPIENT_CANONICAL_COMPACT_INDEX', requestedTerm, canonicalCompact:key, row:unique[0], uei:unique[0].uei, legalName:unique[0].recipient_name, indexStatus:prepared.status, indexGeneratedAt:prepared.index.generatedAt };
+    if (unique.length === 1) return { ok:true, status:'HISTORICAL_IDENTITY_RESOLVED_BY_INDEX', matchedBy:'USA_SPENDING_RECIPIENT_CANONICAL_COMPACT_INDEX', requestedTerm, canonicalCompact:key, row:unique[0], uei:unique[0].uei, legalName:unique[0].recipient_name, indexStatus:prepared.status, indexGeneratedAt:prepared.index.generatedAt, sourceFingerprint:prepared.index.sourceFingerprint };
     if (unique.length > 1) return { ok:false, status:'HISTORICAL_IDENTITY_AMBIGUOUS', requestedTerm, canonicalCompact:key, candidateCount:unique.length, candidates:unique, indexStatus:prepared.status };
     return { ok:false, status:'HISTORICAL_IDENTITY_NOT_FOUND', requestedTerm, canonicalCompact:key, candidateCount:0, indexStatus:prepared.status };
   }
@@ -107,3 +144,4 @@ class HistoricalRecipientNameIndexService {
 
 module.exports = HistoricalRecipientNameIndexService;
 module.exports.helpers = identity;
+module.exports.sourceFingerprint = sourceFingerprint;
