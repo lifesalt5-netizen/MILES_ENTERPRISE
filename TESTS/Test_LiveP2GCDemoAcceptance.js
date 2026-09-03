@@ -1,6 +1,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const audit = require('../SCRIPTS/AuditLiveP2GCDemoAcceptance');
 
 function goodAssessment() {
@@ -61,6 +63,14 @@ async function main() {
   assert.strictEqual(typeof audit.latestDemoSourceMtimeMs, 'function');
   assert.deepStrictEqual(audit.parsePm2List('[{"name":"p2gc-growth-demo"}]'), [{ name: 'p2gc-growth-demo' }]);
   assert.deepStrictEqual(audit.parsePm2List('not-json'), []);
+
+  const source = fs.readFileSync(path.join(__dirname, '..', 'SCRIPTS', 'AuditLiveP2GCDemoAcceptance.js'), 'utf8');
+  assert(source.includes('/api/assessment?term=${encoded}&refresh=1'), 'Each company must perform one explicit canonical refresh');
+  assert(!source.includes('type=opportunities&refresh=1'), 'Opportunity view must reuse the freshly cached company model');
+  assert(!source.includes('type=vehicles&refresh=1'), 'Vehicle view must reuse the freshly cached company model');
+  assert(!source.includes('type=recompetes&refresh=1'), 'Recompete view must reuse the freshly cached company model');
+  assert(!source.includes('/api/teaming?term=${encoded}&refresh=1'), 'Teaming view must reuse the freshly cached company model');
+
   if (process.platform !== 'win32') {
     const currency = await audit.ensureDemoCurrent();
     assert.equal(currency.ok, true);

@@ -253,19 +253,22 @@ async function auditCompany(term) {
   if (!assessment.ok) addFailure(failures, 'ASSESSMENT_HTTP_FAILURE', `${assessment.statusCode || 'ERR'}:${assessment.error || assessment.raw || ''}`);
   else validateAssessment(assessment.body, failures);
 
-  const opportunities = await requestJson(`/api/intelligence?term=${encoded}&type=opportunities&refresh=1`);
+  // The assessment refresh above is the one canonical source refresh for this company.
+  // Every focused view below must prove it can render the same fresh cached model without
+  // rescanning official source extracts or independently rebuilding contradictory truth.
+  const opportunities = await requestJson(`/api/intelligence?term=${encoded}&type=opportunities`);
   if (!opportunities.ok) addFailure(failures, 'OPPORTUNITY_HTTP_FAILURE', `${opportunities.statusCode || 'ERR'}:${opportunities.error || opportunities.raw || ''}`);
   else validateOpportunities(opportunities.body, failures);
 
-  const vehicles = await requestJson(`/api/intelligence?term=${encoded}&type=vehicles&refresh=1`);
+  const vehicles = await requestJson(`/api/intelligence?term=${encoded}&type=vehicles`);
   if (!vehicles.ok) addFailure(failures, 'VEHICLE_HTTP_FAILURE', `${vehicles.statusCode || 'ERR'}:${vehicles.error || vehicles.raw || ''}`);
   else validateVehicles(vehicles.body, failures);
 
-  const recompetes = await requestJson(`/api/intelligence?term=${encoded}&type=recompetes&refresh=1`);
+  const recompetes = await requestJson(`/api/intelligence?term=${encoded}&type=recompetes`);
   if (!recompetes.ok) addFailure(failures, 'RECOMPETE_HTTP_FAILURE', `${recompetes.statusCode || 'ERR'}:${recompetes.error || recompetes.raw || ''}`);
   else validateRecompetes(recompetes.body, failures);
 
-  const teaming = await requestJson(`/api/teaming?term=${encoded}&refresh=1`);
+  const teaming = await requestJson(`/api/teaming?term=${encoded}`);
   if (!teaming.ok) addFailure(failures, 'TEAMING_HTTP_FAILURE', `${teaming.statusCode || 'ERR'}:${teaming.error || teaming.raw || ''}`);
   else validateTeaming(teaming.body, failures);
 
@@ -327,7 +330,8 @@ async function main() {
       externalWrites: false,
       authBypass: false,
       processRestartOnlyWhenSourceNewerOrOffline: true,
-      restartTargetAllowlisted: DEMO_PM2_NAME
+      restartTargetAllowlisted: DEMO_PM2_NAME,
+      oneCanonicalRefreshPerCompany: true
     }
   };
 
