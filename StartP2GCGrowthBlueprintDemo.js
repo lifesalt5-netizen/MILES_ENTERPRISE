@@ -9,6 +9,7 @@ const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconci
 const ExecutiveBlueprintCanonicalTruthService = require("./SERVICES/demo/ExecutiveBlueprintCanonicalTruthService");
 const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
 const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
+const SamQualifiedProspectNameResolver = require("./SERVICES/demo/SamQualifiedProspectNameResolver");
 const HistoricalProspectFallbackService = require("./SERVICES/demo/HistoricalProspectFallbackService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
@@ -23,6 +24,7 @@ const truthReconciler = new DemoTruthReconciliationService();
 const canonicalTruth = new ExecutiveBlueprintCanonicalTruthService({ rootDir: ROOT });
 const commercialPreview = new DemoCommercialPreviewService();
 const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
+const samNameResolver = new SamQualifiedProspectNameResolver({ rootDir: ROOT });
 const historicalFallback = new HistoricalProspectFallbackService({ rootDir: ROOT });
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
@@ -67,9 +69,30 @@ async function getModel(term, refresh = false) {
 
   let baseModel = service.build(term);
   if (!baseModel?.ok && baseModel?.status === "CONTRACTOR_NOT_FOUND") {
-    const fallback = samFallback.build(term);
-    if (fallback?.ok) baseModel = fallback;
-    else baseModel = historicalFallback.build(term, { samFallback: fallback, orionFailure: baseModel });
+    let fallback = samFallback.build(term);
+    let canonicalIdentity = null;
+    if (!fallback?.ok) {
+      canonicalIdentity = samNameResolver.resolve(term);
+      if (canonicalIdentity?.ok && canonicalIdentity.uei) fallback = samFallback.build(canonicalIdentity.uei);
+    }
+    if (fallback?.ok) {
+      baseModel = {
+        ...fallback,
+        evidence: {
+          ...(fallback.evidence || {}),
+          canonicalNameResolution: canonicalIdentity?.ok ? {
+            authority: 'SAM_PUBLIC_BULK_QUALIFIED_UNIVERSE',
+            matchedBy: canonicalIdentity.matchedBy,
+            requestedTerm: term,
+            legalName: canonicalIdentity.legalName,
+            uei: canonicalIdentity.uei,
+            cage: canonicalIdentity.cage || null
+          } : null
+        }
+      };
+    } else {
+      baseModel = historicalFallback.build(term, { samFallback: fallback, canonicalIdentity, orionFailure: baseModel });
+    }
   }
 
   if (baseModel?.ok && baseModel.profile?.uei) {
@@ -123,7 +146,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_qualified_identity_fallback","canonical_sam_name_resolution","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
