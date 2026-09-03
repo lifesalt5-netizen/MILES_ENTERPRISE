@@ -1,7 +1,6 @@
 'use strict';
 
 const crypto = require('crypto');
-const ionos = require('../../CONNECTORS/IONOS/smtp_governed');
 
 function clean(v){ return String(v == null ? '' : v).trim(); }
 function email(v){ return clean(v).toLowerCase(); }
@@ -9,7 +8,7 @@ function hash(value, salt){ return crypto.createHash('sha256').update(`${salt}:$
 
 class P2GCFederalGrowthReviewVerificationService {
   constructor(options = {}) {
-    this.sender = options.sender || ionos;
+    this.sender = options.sender || require('../../CONNECTORS/IONOS/smtp_governed');
     this.ttlMs = Math.max(2 * 60 * 1000, Number(options.ttlMs || 10 * 60 * 1000));
     this.maxAttempts = Math.max(2, Number(options.maxAttempts || 5));
     this.store = options.store || new Map();
@@ -37,7 +36,7 @@ class P2GCFederalGrowthReviewVerificationService {
       return { ok:false, reason:'OUTSIDE_ORGANIZATION_ACCESS_DENIED' };
     }
     if (reviewRecord?.security?.revokedAt) return { ok:false, reason:'REVIEW_REVOKED' };
-    if (Date.now() >= Date.parse(reviewRecord?.expiresAt || 0)) return { ok:false, reason:'REVIEW_EXPIRED' };
+    if (this.now() >= Date.parse(reviewRecord?.expiresAt || 0)) return { ok:false, reason:'REVIEW_EXPIRED' };
 
     const code = this.createCode();
     const salt = crypto.randomBytes(16).toString('hex');
