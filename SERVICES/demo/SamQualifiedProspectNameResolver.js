@@ -2,36 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-
-function clean(value) { return String(value == null ? '' : value).trim(); }
-function splitCamel(value) { return clean(value).replace(/([a-z0-9])([A-Z])/g, '$1 $2'); }
-function normalize(value) {
-  return splitCamel(value).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
-}
-function compact(value) { return normalize(value).replace(/\s+/g, ''); }
-function canonical(value) {
-  const suffixes = new Set(['LLC','INC','INCORPORATED','CORP','CORPORATION','COMPANY','CO','LTD','LIMITED','LP','LLP','PLLC']);
-  const tokens = normalize(value).split(' ').filter(Boolean);
-  let changed = true;
-  while (tokens.length && changed) {
-    changed = false;
-    if (suffixes.has(tokens[tokens.length - 1])) {
-      tokens.pop();
-      changed = true;
-      continue;
-    }
-    for (let width = Math.min(4, tokens.length); width >= 2; width -= 1) {
-      const tail = tokens.slice(-width);
-      if (tail.every(token => token.length === 1) && suffixes.has(tail.join(''))) {
-        tokens.splice(tokens.length - width, width);
-        changed = true;
-        break;
-      }
-    }
-  }
-  return tokens.join(' ');
-}
-function canonicalCompact(value) { return canonical(value).replace(/\s+/g, ''); }
+const identity = require('./CompanyIdentityCanonicalizer');
+const { clean, normalize, compact, canonical, canonicalCompact } = identity;
 
 class SamQualifiedProspectNameResolver {
   constructor(options = {}) {
@@ -73,17 +45,27 @@ class SamQualifiedProspectNameResolver {
     const targetCompact = canonicalCompact(requestedTerm);
     if (!targetCompact) return { ok:false, status:'SAM_IDENTITY_NOT_FOUND', requestedTerm, source };
 
-    const compactSql = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(UPPER(COALESCE(legal_name,'')),' ',''),'.',''),'-',''),',',''),'&','AND'),'''','')";
-    const dbaCompactSql = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(UPPER(COALESCE(dba,'')),' ',''),'.',''),'-',''),',',''),'&','AND'),'''','')";
+    const sqlCompact = column => `REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(UPPER(COALESCE(${column},'')),' ',''),'.',''),'-',''),',',''),'&','AND'),'''',''),'/',''),'(',''),')',''),'_','')`;
+    const compactSql = sqlCompact('legal_name');
+    const dbaCompactSql = sqlCompact('dba');
+    const targetCandidates = [targetCompact, compact(requestedTerm)].filter(Boolean);
     const rows = db.prepare(`
       SELECT uei, cage, legal_name, dba, website, primary_naics, naics_codes,
              registration_expiration_date, last_update_date, source_file, source_date
       FROM sam_qualified_companies
-      WHERE ${compactSql} LIKE ? OR ${dbaCompactSql} LIKE ?
-      LIMIT 100
-    `).all(`%${targetCompact}%`, `%${targetCompact}%`);
+      WHERE ${compactSql} LIKE ? OR ${dbaCompactSql} LIKE ? OR ${compactSql} LIKE ? OR ${dbaCompactSql} LIKE ?
+      LIMIT 150
+    `).all(
+      `%${targetCandidates[0] || targetCompact}%`, `%${targetCandidates[0] || targetCompact}%`,
+      `%${targetCandidates[1] || targetCompact}%`, `%${targetCandidates[1] || targetCompact}%`
+    );
 
-    const exact = rows.filter(row => canonicalCompact(row.legal_name) === targetCompact || canonicalCompact(row.dba) === targetCompact || canonical(row.legal_name) === targetCanonical || canonical(row.dba) === targetCanonical);
+    const exact = rows.filter(row =>
+      canonicalCompact(row.legal_name) === targetCompact ||
+      canonicalCompact(row.dba) === targetCompact ||
+      canonical(row.legal_name) === targetCanonical ||
+      canonical(row.dba) === targetCanonical
+    );
     const byUei = new Map();
     for (const row of exact) {
       const uei = clean(row.uei).toUpperCase();
@@ -102,4 +84,4 @@ class SamQualifiedProspectNameResolver {
 }
 
 module.exports = SamQualifiedProspectNameResolver;
-module.exports.helpers = { clean, splitCamel, normalize, compact, canonical, canonicalCompact };
+module.exports.helpers = identity;
