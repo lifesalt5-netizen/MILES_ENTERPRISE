@@ -40,6 +40,7 @@ function verifyRequiredFiles(){
     'SERVICES/review/public/review.js',
     'SERVICES/review/public/review.css',
     'SCRIPTS/AuditGoogleVidsEligibility.js',
+    'SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js',
     'SCRIPTS/AuditPrimaryInboxCoverage.js'
   ];
   const missing=required.filter(rel=>!fs.existsSync(path.join(ROOT,rel)));
@@ -111,6 +112,7 @@ async function main(){
   const surface=await verifySurface();
   const inboxAudit=runJsonAudit('SCRIPTS/AuditPrimaryInboxCoverage.js',120000);
   const vidsAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEligibility.js',180000);
+  const editorAudit=runJsonAudit('SCRIPTS/AuditGoogleVidsEditorAvatarEligibility.js',180000);
   const infoRoute=inboxAudit.result?.requiredInboxes?.find(x=>String(x.email||'').toLowerCase()==='info@pathways2gc.com')||null;
   console.log(`P2GC_REVIEW_TOKEN_SECRET_CREATED=${secret.created}`);
   console.log(`P2GC_REVIEW_TOKEN_SECRET_READY=${secret.length>=32}`);
@@ -125,14 +127,15 @@ async function main(){
   console.log(`INFO_PATHWAYS2GC_REGISTERED_GMAIL=${infoRoute?.registeredGmailAccount===true}`);
   console.log(`INFO_PATHWAYS2GC_IONOS_READABLE=${infoRoute?.ionosReadable===true}`);
   if(inboxAudit.result) console.log(`PRIMARY_INBOX_AUDIT_RESULT=${JSON.stringify(inboxAudit.result)}`);
-  else if(inboxAudit.stderr||inboxAudit.stdout) console.log(`PRIMARY_INBOX_AUDIT_DIAGNOSTIC=${JSON.stringify({stdout:inboxAudit.stdout,stderr:inboxAudit.stderr,exitCode:inboxAudit.exitCode})}`);
   console.log(`GOOGLE_VIDS_ELIGIBILITY_AUDIT_OK=${vidsAudit.ok}`);
   console.log(`GOOGLE_VIDS_ELIGIBILITY_STATUS=${vidsAudit.result?.status||vidsAudit.result?.browser?.status||'UNKNOWN'}`);
-  console.log(`GOOGLE_VIDS_PATHWAYS_ACCOUNTS=${vidsAudit.result?.pathwaysAccounts?.length??'UNKNOWN'}`);
-  console.log(`GOOGLE_VIDS_PRIMARY_TARGET=${vidsAudit.result?.summary?.primaryTarget?.email||'UNKNOWN'}`);
-  console.log(`GOOGLE_VIDS_PRIMARY_TARGET_STATUS=${vidsAudit.result?.summary?.primaryTarget?.status||'UNKNOWN'}`);
   if(vidsAudit.result) console.log(`GOOGLE_VIDS_ELIGIBILITY_RESULT=${JSON.stringify(vidsAudit.result)}`);
-  else if(vidsAudit.stderr||vidsAudit.stdout) console.log(`GOOGLE_VIDS_ELIGIBILITY_DIAGNOSTIC=${JSON.stringify({stdout:vidsAudit.stdout,stderr:vidsAudit.stderr,exitCode:vidsAudit.exitCode})}`);
+  console.log(`GOOGLE_VIDS_EDITOR_AUDIT_OK=${editorAudit.ok}`);
+  console.log(`GOOGLE_VIDS_EDITOR_STATUS=${editorAudit.result?.status||'UNKNOWN'}`);
+  console.log(`GOOGLE_VIDS_EDITOR_ACCOUNT=${editorAudit.result?.selected?.email||'UNKNOWN'}`);
+  console.log(`GOOGLE_VIDS_EDITOR_AVATAR_VISIBLE=${editorAudit.result?.editor?.avatarVisible===true}`);
+  if(editorAudit.result) console.log(`GOOGLE_VIDS_EDITOR_RESULT=${JSON.stringify(editorAudit.result)}`);
+  else if(editorAudit.stderr||editorAudit.stdout) console.log(`GOOGLE_VIDS_EDITOR_DIAGNOSTIC=${JSON.stringify({stdout:editorAudit.stdout,stderr:editorAudit.stderr,exitCode:editorAudit.exitCode})}`);
   console.log('P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY_GREEN');
 }
 
