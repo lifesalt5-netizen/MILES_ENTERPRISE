@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-proof-totals-ui-deploy-20260903-017",
+  "id": "miles-p2gc-delune-final-preacceptance-deploy-20260903-018",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing visible paid-unlock proof totals on the Growth Blueprint UI plus the current client-safe truth, readiness and performance fixes. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
+  "note": "Deploy latest main containing indexed DeLune identity/performance fixes, visible paid-unlock proof totals, explicit-unknown client-safety handling, hardened set-aside and recommendation truth boundaries, and the integrated live acceptance gate. Fast-forward only. Restart p2gc-growth-demo when source is newer. Preserve governed safety and publish runtime evidence."
 }
