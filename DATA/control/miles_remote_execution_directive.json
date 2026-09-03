@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-governed-restart-deploy-20260903-004",
+  "id": "miles-p2gc-delune-post-resolver-diagnostic-20260903-005",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main including governed P2GC restart-on-newer-source logic. Fast-forward only. Restart p2gc-growth-demo only if its demo source modification time is newer than its PM2 start time. Preserve all existing safety rules and publish runtime evidence. No campaign, DNS, billing, credential, customer-data, or production-database mutation."
+  "note": "Run the updated read-only P2GC DeLune diagnostic on the newly restarted live source. Prove canonical name resolution to UEI/CAGE, then measure USAspending award history, current GSA holder truth, current public opportunity matching, current obligation aggregate, and canonical hydrate. No external writes or production data mutations. Publish evidence to miles-runtime-evidence."
 }
