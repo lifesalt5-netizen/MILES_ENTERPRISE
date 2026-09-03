@@ -6,6 +6,83 @@ function num(value) {
 }
 function arr(value) { return Array.isArray(value) ? value.filter(Boolean) : []; }
 function uniq(values) { return [...new Set(arr(values).filter(Boolean))]; }
+function clean(value) { return String(value == null ? '' : value).trim(); }
+function norm(value) { return clean(value).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+
+function dedupeOpportunities(records) {
+  const map = new Map();
+  for (const row of arr(records)) {
+    const key = clean(row?.noticeId || row?.id || row?.solicitationNumber).toUpperCase() || norm(`${row?.agency}|${row?.title}|${row?.dueDate}`);
+    if (!key) continue;
+    const current = map.get(key);
+    if (!current || (num(row?.fitScore) || 0) > (num(current?.fitScore) || 0)) map.set(key, row);
+  }
+  return [...map.values()];
+}
+
+function consolidateAgencyAlignment(model) {
+  const buyers = arr(model?.buyerIntelligence?.records);
+  if (!buyers.length) return;
+  const grouped = new Map();
+  for (const row of buyers) {
+    const agency = clean(row?.agency) || 'Agency unavailable';
+    const key = norm(agency);
+    const current = grouped.get(key) || { agency, historicalAwardValue:0, awardCount:0 };
+    current.historicalAwardValue += Number(row?.historicalAwardValue || row?.spend || 0);
+    current.awardCount += Number(row?.awardCount || 0);
+    grouped.set(key, current);
+  }
+  const rows = [...grouped.values()].sort((a,b)=>b.historicalAwardValue-a.historicalAwardValue || b.awardCount-a.awardCount);
+  const maxValue = Math.max(...rows.map(x=>x.historicalAwardValue),1);
+  const maxAwards = Math.max(...rows.map(x=>x.awardCount),1);
+  model.agencyAlignment = {
+    status:'CONFIRMED_USASPENDING_HISTORICAL_ALIGNMENT',
+    agencies:rows.slice(0,10).map(row=>({
+      ...row,
+      fitScore:Math.round(((row.historicalAwardValue/maxValue)*0.7 + (row.awardCount/maxAwards)*0.3)*100),
+      basis:'Confirmed USAspending award history aggregated by agency for this UEI',
+      confidence:'CONFIRMED_HISTORICAL_BUYER'
+    }))
+  };
+}
+
+function scrubRecommendations(model) {
+  const recommendations = model?.recommendations;
+  if (!recommendations) return;
+  const hasCurrentGsa = model?.profile?.gsaHolderVerified === true || /CURRENT GSA MAS HOLDER/i.test(clean(model?.profile?.gsaStatus));
+  const revenueModeled = model?.revenue?.opportunity?.modeledPotentialFederalRevenue != null || model?.revenue?.opportunity?.modeledGrowthOpportunity != null;
+  const recompetes = arr(model?.opportunities?.recompetes);
+  const samActive = model?.currentState?.samRegistration === true || /^ACTIVE$/i.test(clean(model?.profile?.samStatus));
+
+  const reject = text => {
+    const t = clean(text);
+    if (!revenueModeled && /revenue leakage|modeled (potential )?revenue|commercial pain point.*\$/i.test(t)) return true;
+    if (hasCurrentGsa && /primary growth driver:\s*vehicle gap|vehicle gap contractor|missing vehicle|no contract vehicle/i.test(t)) return true;
+    if (!recompetes.length && /prioriti[sz]e .*recompete|recompete\/incumbent|incumbent-displacement signal/i.test(t)) return true;
+    if (!samActive && /sam entity appears active|sam active|registration expiration is current|optimi[sz]e sam profile/i.test(t)) return true;
+    return false;
+  };
+
+  for (const key of ['immediate','vehicle','agency','partner','opportunity','growth']) {
+    recommendations[key] = arr(recommendations[key]).filter(item=>!reject(item));
+  }
+  if (model?.vehicles) model.vehicles.recommendations = arr(model.vehicles.recommendations).filter(item=>!reject(item));
+  if (model?.primePartners) model.primePartners.strategy = arr(model.primePartners.strategy).filter(item=>!reject(item));
+  if (model?.subcontracting) model.subcontracting.strategy = arr(model.subcontracting.strategy).filter(item=>!reject(item));
+  if (model?.gaps) model.gaps.items = arr(model.gaps.items).filter(item=>!reject(item));
+}
+
+function normalizeUnknownRevenue(model) {
+  const current = model?.revenue?.current;
+  if (!current) return;
+  for (const field of ['state','local','commercial']) {
+    const status = clean(current[`${field}Status`] || model?.currentState?.[`${field}SalesStatus`]);
+    if (current[field] === 0 && !/CONFIRMED|AUTHORITATIVE|ZERO_PERMITTED/i.test(status)) current[field] = null;
+  }
+  if (model?.currentState?.stateLocalSales === 0 && !/CONFIRMED|AUTHORITATIVE|ZERO_PERMITTED/i.test(clean(model.currentState.stateLocalSalesStatus))) {
+    model.currentState.stateLocalSales = null;
+  }
+}
 
 class DemoCommercialPreviewService {
   constructor(options = {}) {
@@ -62,6 +139,10 @@ class DemoCommercialPreviewService {
       model.currentState.activeContractsStatus = 'NOT_DERIVED_FROM_AWARD_COUNT';
       model.currentState.activeContractsLabel = 'Active federal contracts';
     }
+    normalizeUnknownRevenue(model);
+    if (model?.opportunities) model.opportunities.liveAndForecast = dedupeOpportunities(model.opportunities.liveAndForecast);
+    consolidateAgencyAlignment(model);
+    scrubRecommendations(model);
   }
 
   apply(model) {
@@ -82,7 +163,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Stale or contradicted recommendations are suppressed after canonical truth hydration.",
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
       primePartners: this.preview(model?.primePartners?.records, this.previewLimits.primePartners),
@@ -96,3 +177,4 @@ class DemoCommercialPreviewService {
 }
 
 module.exports = DemoCommercialPreviewService;
+module.exports.helpers = { dedupeOpportunities, consolidateAgencyAlignment, scrubRecommendations, normalizeUnknownRevenue };
