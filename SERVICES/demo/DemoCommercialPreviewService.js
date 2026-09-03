@@ -3,6 +3,7 @@
 const PrimeCandidateDiscoveryService = require('./PrimeCandidateDiscoveryService');
 
 function num(value) {
+  if (value === null || value === undefined || clean(value) === '') return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
@@ -166,7 +167,7 @@ function sumKnown(records, field) {
   let known = 0;
   for (const row of arr(records)) {
     const value = num(row?.[field]);
-    if (value == null) continue;
+    if (value == null || value <= 0) continue;
     total += value;
     known += 1;
   }
@@ -284,7 +285,7 @@ class DemoCommercialPreviewService {
     model.commercialPreview = {
       mode: "PROOF_THEN_UNLOCK",
       rule: "Reveal a small set of evidence-backed records. Lock only known additional records; never invent hidden inventory.",
-      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships.",
+      truthBoundary: "USAspending performance-period award counts remain visible in Award & Contract History but are not relabeled as active contracts. Unknown non-federal revenue is not rendered as zero. Restricted set-aside opportunities fail closed on direct-pursuit eligibility until the matching certification is confirmed. Unsupported inherited readiness categories and stale or contradicted recommendations are suppressed after canonical truth hydration. Explicit SAM unknown is client-safe only when every other critical source is green and no contradictory SAM claim is made. Prime/team candidates are modeled only from validated award/buyer evidence and are not represented as confirmed relationships. Opportunity and recompete dollar totals include only positive published/known values; absent or zero-like placeholders are treated as undisclosed.",
       totals:buildProofTotals(model),
       opportunities: this.preview(model?.opportunities?.liveAndForecast, this.previewLimits.opportunities),
       recompetes: this.preview(model?.opportunities?.recompetes, this.previewLimits.recompetes),
