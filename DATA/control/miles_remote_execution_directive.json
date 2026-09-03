@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-sam-public-schema-audit-20260903-030",
+  "id": "miles-p2gc-delune-sam-neutral-identity-deploy-20260903-031",
   "enabled": true,
-  "job": "SAM_BULK_SCHEMA_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Inspect the staged current official SAM.gov public Entity Registration bulk extract schema and report fields/structure needed for authoritative DeLune identity resolution by UEI WDCVJGELGBB5, including legal business name, CAGE, registration status/expiration, NAICS and business type/certification indicators where present. Read-only; no production writes or credential changes."
+  "note": "Deploy latest main containing the neutral all-public SAM identity index builder/resolver, separation of SAM identity from marketing lead qualification, current-SAM merge by exact UEI, and in-flight model-build deduplication. Preserve all previously GREEN DeLune truth, sales-story, proof-total and UI acceptance safeguards. Fast-forward only, restart p2gc-growth-demo when source is newer, publish evidence."
 }
