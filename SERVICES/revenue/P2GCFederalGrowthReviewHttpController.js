@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const Lifecycle = require('./P2GCFederalGrowthReviewLifecycleService');
@@ -60,6 +61,31 @@ class P2GCFederalGrowthReviewHttpController {
 
   securityHeaders(){ return this.access.publicSecurityHeaders(); }
 
+  async healthCheck(){
+    const files=['review.html','review.js','review.css'];
+    const assets=Object.fromEntries(files.map(name=>[name,fs.existsSync(path.join(this.publicDir,name))]));
+    let senderHealth={ok:false,status:'IONOS_SMTP_HEALTH_UNAVAILABLE'};
+    try{
+      senderHealth=typeof this.verification?.sender?.healthCheck==='function'
+        ? await this.verification.sender.healthCheck()
+        : {ok:false,status:'IONOS_SMTP_HEALTH_UNAVAILABLE'};
+    }catch(error){senderHealth={ok:false,status:'IONOS_SMTP_HEALTH_FAILED',error:error.message};}
+    const tokenSecretReady=clean(this.access.secret).length>=32;
+    const assetsReady=Object.values(assets).every(Boolean);
+    const headers=this.securityHeaders();
+    const securityHeadersReady=/noindex/i.test(headers['X-Robots-Tag']||'') && /no-store/i.test(headers['Cache-Control']||'');
+    return {
+      ok:tokenSecretReady&&assetsReady&&senderHealth.ok===true&&securityHeadersReady,
+      status:tokenSecretReady&&assetsReady&&senderHealth.ok===true&&securityHeadersReady?'P2GC_FEDERAL_GROWTH_REVIEW_DELIVERY_READY':'P2GC_FEDERAL_GROWTH_REVIEW_DELIVERY_BLOCKED',
+      tokenSecretReady,
+      assets,
+      senderHealth,
+      securityHeadersReady,
+      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false},
+      checkedAt:new Date().toISOString()
+    };
+  }
+
   readReview(reviewId){
     try{return this.lifecycle.read(reviewId);}catch{return null;}
   }
@@ -88,21 +114,24 @@ class P2GCFederalGrowthReviewHttpController {
 
   async handle(req,res,url){
     const pathname=url.pathname;
+    if(req.method==='GET' && pathname==='/api/review/health'){
+      const health=await this.healthCheck();
+      safeJson(res,health.ok?200:503,health,this.securityHeaders());return true;
+    }
     const pageMatch=pathname.match(/^\/review\/([A-Za-z0-9._-]+)$/);
     if(req.method==='GET' && pageMatch){
       const file=path.join(this.publicDir,'review.html');
-      const fs=require('fs');
       if(!fs.existsSync(file)){ res.writeHead(503,this.securityHeaders()); res.end('Review application unavailable'); return true; }
       res.writeHead(200,{...this.securityHeaders(),'Content-Type':'text/html; charset=utf-8'});
       res.end(fs.readFileSync(file)); return true;
     }
     if(req.method==='GET' && pathname==='/review/review.js'){
-      const fs=require('fs'); const file=path.join(this.publicDir,'review.js');
+      const file=path.join(this.publicDir,'review.js');
       if(!fs.existsSync(file)){res.writeHead(404);res.end('Not found');return true;}
       res.writeHead(200,{...this.securityHeaders(),'Content-Type':'application/javascript; charset=utf-8'});res.end(fs.readFileSync(file));return true;
     }
     if(req.method==='GET' && pathname==='/review/review.css'){
-      const fs=require('fs'); const file=path.join(this.publicDir,'review.css');
+      const file=path.join(this.publicDir,'review.css');
       if(!fs.existsSync(file)){res.writeHead(404);res.end('Not found');return true;}
       res.writeHead(200,{...this.securityHeaders(),'Content-Type':'text/css; charset=utf-8'});res.end(fs.readFileSync(file));return true;
     }
