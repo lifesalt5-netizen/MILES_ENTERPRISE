@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-capability-balanced-preview-service-deploy-20260903-042",
+  "id": "miles-p2gc-public-8787-focused-route-repair-20260903-043",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest P2GC commercial preview service. Requirements: semantic duplicate opportunities collapsed before totals/visibility; visible forward-looking sample balanced across validated capability/NAICS groups; defaults show up to 6 representative opportunities and 6 representative prime/team candidates, 3 diversified buyers; preserve locked remainder counts, fail-closed eligibility and all canonical truth rules. Restart p2gc-growth-demo when source is newer."
+  "note": "Repair the live public P2GC focused-intelligence path seen by CEO at http://127.0.0.1:8787/recompetes where Analyze Company returned Failed to fetch. Governed deploy must restart miles-command-center (public 8787 gateway) and p2gc-growth-demo if source is newer, preserve latest capability-balanced preview changes, and restore public /api/intelligence routing for opportunities, vehicles, and recompetes through the unified gateway. Do not modify customer data or credentials. Publish runtime evidence."
 }
