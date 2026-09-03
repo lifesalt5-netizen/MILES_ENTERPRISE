@@ -9,6 +9,7 @@ const ROOT = path.resolve(__dirname, '..');
 const policyEngine = require('../SERVICES/governance/PolicyEngineService');
 const HistoricalProspectFallbackService = require('../SERVICES/demo/HistoricalProspectFallbackService');
 const DemoTruthReconciliationService = require('../SERVICES/demo/DemoTruthReconciliationService');
+const identity = require('../SERVICES/demo/CompanyIdentityCanonicalizer');
 
 // Regression: READ_SENDING_ACCOUNTS must not match the protected SEND action
 // merely because SEND is a substring of SENDING.
@@ -54,6 +55,27 @@ assert(commandCenterSource.includes('function dashboardOperations(operations = [
 assert(commandCenterSource.includes("'AWAITING_APPROVAL', 'WAITING_FOR_CEO_APPROVAL', 'AWAITING_CEO_APPROVAL'"));
 assert(commandCenterSource.includes('const operations = dashboardOperations(queue.operations, 50);'));
 assert(!commandCenterSource.includes('operations: queue.operations.slice(0, 50)'));
+
+// Company identity formatting variants must converge without enabling broad
+// fuzzy matching. Equivalent formatting maps to one canonical key; genuinely
+// different names remain different until another authoritative ID corroborates.
+const deLuneKey = identity.canonicalCompact('DeLune Corporation');
+for (const variant of [
+  'DeLune',
+  'DE LUNE',
+  'DE-LUNE',
+  'DeLune Corp.',
+  'DE LUNE CORPORATION',
+  'de_lune, co.'
+]) {
+  assert.strictEqual(identity.canonicalCompact(variant), deLuneKey, `variant must resolve equivalently: ${variant}`);
+}
+assert.strictEqual(identity.canonicalCompact("O'Neill Technologies, L.L.C."), identity.canonicalCompact('ONeill Technologies LLC'));
+assert.strictEqual(identity.canonicalCompact('Smith & Jones, Inc.'), identity.canonicalCompact('Smith and Jones Incorporated'));
+assert.strictEqual(identity.canonicalCompact('Café Federal LLC'), identity.canonicalCompact('Cafe Federal, L.L.C.'));
+assert.strictEqual(identity.canonicalCompact('Alpha/Beta Corp.'), identity.canonicalCompact('Alpha Beta Corporation'));
+assert.notStrictEqual(identity.canonicalCompact('DeLune Corporation'), identity.canonicalCompact('Delaney Corporation'));
+assert.notStrictEqual(identity.canonicalCompact('ABC Technologies'), identity.canonicalCompact('ABD Technologies'));
 
 // Historical fallback must canonicalize common legal suffixes without ever
 // turning a missing identity into a fabricated contractor match.
