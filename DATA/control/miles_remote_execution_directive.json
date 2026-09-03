@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-qualification-gap-restart-20260903-054",
+  "id": "miles-p2gc-live-qualification-gap-acceptance-20260903-055",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy main commit cb7505e84d4ff88b0526df1ee84114b63e9dccfc and all required commits listed in SERVICES/demo/P2GC_DEPLOY_REVISION.json. Force governed restart of p2gc-growth-demo and unified 8787 gateway because the live server must load the new opportunity qualification and near-fit gap fields. After restart, run the three qualification/gap regression tests and preserve all prior DeLune/Kebros truth, vehicle-scope, SAM, GSA and opportunity eligibility safeguards."
+  "note": "Run read-only live acceptance on the fresh P2GC qualification-gap build. For DeLune and Kebros, report opportunity qualification counts and sample records including qualificationTier, allowedAction, recommendationEligible, nearFit, materialGapCount, missingRequirements, and gapClosureOptions. Required rule: discovered candidates are not qualified pursuits; near-fit one-gap records remain visible with explicit closure path; validation-required/not-recommended records cannot be represented as missed revenue or direct pursuit. Also confirm prior DeLune truth remains green and Kebros remains protected from MAS-non-holder => no-vehicle inference while broader vehicle discovery is still incomplete."
 }
