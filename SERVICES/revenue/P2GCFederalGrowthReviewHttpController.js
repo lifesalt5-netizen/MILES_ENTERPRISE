@@ -29,6 +29,7 @@ function readBody(req,limit=256*1024){
   });
 }
 function publicReview(record){
+  const videoStatus=record.presentation?.videoStatus||'PENDING';
   return {
     reviewId:record.reviewId,
     company:{ name:record.company?.name||null },
@@ -43,7 +44,7 @@ function publicReview(record){
     scoring:{ fitScore:record.scoring?.fitScore??0,intentScore:record.scoring?.intentScore??0,salesPriority:record.scoring?.salesPriority??0 },
     engagement:{ maxPlaybackPct:record.engagementSummary?.maxPlaybackPct||0,questionCount:record.engagementSummary?.questionCount||0,meetingBooked:record.engagementSummary?.meetingBooked===true },
     runtime:record.presentation?.runtime||null,
-    video:{ status:record.presentation?.videoStatus||'PENDING',mediaId:record.presentation?.mediaId||null },
+    video:{ status:videoStatus,ready:videoStatus==='READY',playable:videoStatus==='READY'&&record.presentation?.streamingReady===true },
     writtenReviewFallback:true,
     cta:{ label:'Review Your Findings With Kevin',meetingMinutes:'15–20' }
   };
@@ -175,10 +176,10 @@ class P2GCFederalGrowthReviewHttpController {
         safeJson(res,200,{ok:true,review:publicReview(session.record),watermark:this.access.watermarkContext(session.record,session.authenticatedEmail)},this.securityHeaders());return true;
       }
       if(req.method==='POST' && action==='video-token'){
-        const body=await readBody(req); const mediaId=clean(body.mediaId||session.record.presentation?.mediaId);
-        if(!mediaId){safeJson(res,409,{ok:false,status:'VIDEO_NOT_READY',writtenReviewFallback:true},this.securityHeaders());return true;}
+        const mediaId=clean(session.record.presentation?.mediaId);
+        if(!mediaId||session.record.presentation?.videoStatus!=='READY'||session.record.presentation?.streamingReady!==true){safeJson(res,409,{ok:false,status:'VIDEO_NOT_PLAYABLE',writtenReviewFallback:true},this.securityHeaders());return true;}
         const token=this.access.createVideoToken(session.record,session.authenticatedEmail,session.sessionId,mediaId);
-        safeJson(res,200,{ok:true,status:'SIGNED_VIDEO_TOKEN_ISSUED',token,expiresInSeconds:this.access.videoTokenTtlSeconds,mediaId},this.securityHeaders());return true;
+        safeJson(res,200,{ok:true,status:'SIGNED_VIDEO_TOKEN_ISSUED',token,expiresInSeconds:this.access.videoTokenTtlSeconds},this.securityHeaders());return true;
       }
       if(req.method==='POST' && action==='event'){
         const body=await readBody(req);
