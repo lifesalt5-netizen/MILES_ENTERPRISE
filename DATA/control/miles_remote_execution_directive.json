@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-latency-diagnostic-20260903-001",
+  "id": "miles-p2gc-canonical-identity-deploy-20260903-002",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the current main federal source readiness audit with the embedded read-only P2GC DeLune latency diagnostic. Measure ORION base resolution, SAM fallback, historical fallback, current SAM by UEI, USAspending award history, GSA current-holder truth, SAM public opportunity matching, current obligation aggregate, and full canonical hydrate. No campaign, DNS, billing, credential, customer-data, production-database, or external write mutations. Publish runtime evidence back to the miles-runtime-evidence branch."
+  "note": "Deploy current main containing the shared P2GC canonical SAM name resolver and live demo wiring. Fast-forward only, preserve governed safety, restart the managed P2GC demo stack through the existing deployment path, and publish runtime evidence. No campaign, DNS, billing, credential, customer-data, or production-database mutation."
 }
