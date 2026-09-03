@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-delune-ui-gate-deploy-20260903-027",
+  "id": "miles-p2gc-delune-end-to-end-final-acceptance-20260903-028",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing the live P2GC browser-surface acceptance audit and combined end-to-end gate. Preserve the already deployed DeLune sales-story UI and all GREEN truth/performance safeguards. Fast-forward only; publish evidence."
+  "note": "Run the complete DeLune end-to-end acceptance after sales-story UI deployment: federal-source readiness, latency, live assessment/opportunity/vehicle/recompete/teaming endpoint semantics, commercial proof totals, prime/team readiness, live served HTML/app.js/styles browser-surface presence, JavaScript syntax compilation, responsive CSS and print CSS. Require no semantic regression, no false zero, no invented SAM/CAGE/certification/contact claims, exact shown/locked counts, and explicit SAM unknown while the current credential remains invalid. Read-only; publish evidence."
 }
