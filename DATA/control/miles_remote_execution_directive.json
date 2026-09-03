@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-calendly-reminders-20260903-062",
+  "id": "miles-p2gc-calendly-reminder-guard-20260903-063",
   "enabled": true,
   "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Retry the approved P2GC Calendly reminder policy through the authenticated Calendly app navigation. Target only Federal Strategy Call - Pathways 2 Gov't Contracting. Verify immediate invitee confirmation and the 24-hour-before invitee reminder. Make no unrelated Calendly changes and fail closed unless both verify GREEN."
+  "note": "Deploy the MILES P2GC Calendly reminder guard. Calendly native booking confirmation is the immediate notification. MILES must enforce one 24-hour-before reminder from kevin@pathways2gc.com for the authorized Federal Strategy Call event type, with duplicate suppression and a 60-second guard cadence. The prior browser configuration request is disabled. Restart miles-worker and preserve all existing P2GC safeguards."
 }
