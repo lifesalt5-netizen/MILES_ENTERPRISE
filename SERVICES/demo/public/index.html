@@ -98,7 +98,7 @@
 
       <section class="two-col">
         <article class="section"><div class="eyebrow">CONTRACT VEHICLES</div><h2>Vehicle Position</h2><div id="vehicles"></div></article>
-        <article class="section"><div class="eyebrow">AGENCY ALIGNMENT</div><h2>Confirmed Agency Alignment</h2><div id="agencies"></div></article>
+        <article class="section"><div class="eyebrow">AGENCY HISTORY</div><h2>Historical Agency Concentration</h2><div id="agencies"></div></article>
       </section>
 
       <section class="section">
@@ -277,6 +277,25 @@
           $("awardHistory").innerHTML=unavailable(a?.truthClass==="CONFIRMED"?"Authoritative lookup confirmed no federal prime/subcontract award history for this identity.":"Authoritative award history is not currently available; no zero-award claim is made.");
         }
         $("awardDisclosure").textContent=`${summary.awardedValueDefinition||"Award values are shown separately from realized federal obligations/sales evidence."} Award history is public company evidence and is not paywalled in this preview.`;
+      };
+
+      renderAgencies = function(a) {
+        const agencies=listUx(a?.agencies);
+        $("agencies").innerHTML=agencies.length?agencies.map(x=>{
+          const pct=x.historicalConcentrationPct;
+          const metric=pct==null?"Historical relationship confirmed":`${Number(pct).toLocaleString()}% historical concentration`;
+          return `<div class="agency-row"><div><strong>${esc(x.agency||"Unavailable")}</strong><span>${esc(x.basis||"Confirmed historical award/buyer evidence")}</span></div><b>${esc(metric)}</b></div>`;
+        }).join(""):unavailable("No confirmed historical agency/buyer evidence is available from current award history.");
+      };
+
+      opportunityCard = function(x) {
+        const href=safeUrl(x.sourceUrl);
+        const source=href?`<a href="${esc(href)}" target="_blank" rel="noopener">${esc(x.source||"Source")}</a>`:esc(x.source||"Source unavailable");
+        const capabilitySupported=x.directPursuitCapabilitySupported===true || x.capabilityStatus==="DEMONSTRATED_CAPABILITY_SUPPORTED";
+        const capabilityLabel=capabilitySupported?"CAPABILITY SUPPORTED":"CAPABILITY VALIDATION REQUIRED";
+        const meta=[x.agency,x.stage,x.naics?`NAICS ${x.naics}`:null,x.setAside,x.dueDate?`Due ${x.dueDate}`:null,x.fitScore!=null?`Fit ${x.fitScore}/100`:null].filter(Boolean).join(" • ");
+        const blocker=x.eligibilityBlocker?`<small><strong>Eligibility:</strong> ${esc(x.eligibilityBlocker)}</small>`:"";
+        return `<div class="opportunity"><strong>${esc(x.title||"Untitled")}</strong><span>${esc(meta)}</span><span>${statusPill(capabilityLabel)} ${source}</span><small>${esc(x.qualification||"")}</small>${blocker}</div>`;
       };
 
       renderPrimes = function(p0) {
