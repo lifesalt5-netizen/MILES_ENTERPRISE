@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-strict-qualification-deploy-20260903-058",
+  "id": "miles-p2gc-strict-qualification-live-acceptance-20260903-059",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy the latest P2GC revision and restart p2gc-growth-demo plus the 8787 gateway. Preserve the new rule that preliminary capability support is separate from full solicitation qualification, along with prior DeLune, Kebros, award-history, vehicle, set-aside and recommendation-integrity safeguards."
+  "note": "Run live acceptance on the strict qualification build. Confirm DeLune remains canonical/truth green and that preliminary capability-supported records are not counted as fully qualified direct pursuits until solicitation-specific requirements are validated. Report qualification counts and representative records, then run the five-company regression and browser/UI gate."
 }
