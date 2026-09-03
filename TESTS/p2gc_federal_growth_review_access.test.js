@@ -29,6 +29,8 @@ const s3 = svc.openSession(review, 'owner@testfederal.example', { ip: '1.2.3.5',
 assert.strictEqual(s1.ok, true);
 assert.strictEqual(s2.ok, true);
 assert.strictEqual(s3.reason, 'CONCURRENT_SESSION_LIMIT_REACHED');
+assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).ok,true);
+assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example','missing-session').reason,'SESSION_NOT_ACTIVE');
 
 const mediaToken = svc.createVideoToken(review, 'owner@testfederal.example', s1.session.sessionId, 'review-video-1');
 assert.strictEqual(svc.validateVideoToken(mediaToken, {
@@ -43,6 +45,18 @@ assert.strictEqual(svc.validateVideoToken(mediaToken, {
   sessionId: s1.session.sessionId,
   mediaId: 'other-video'
 }).reason, 'VIDEO_TOKEN_MEDIA_MISMATCH');
+
+assert.strictEqual(svc.closeSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).ok,true);
+assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).reason,'SESSION_CLOSED');
+assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s2.session.sessionId).ok,true);
+
+const restarted = new Access({
+  secret: '0123456789abcdef0123456789abcdef0123456789abcdef',
+  maxConcurrentSessions: 2,
+  sessionTtlSeconds: 3600,
+  videoTokenTtlSeconds: 300
+});
+assert.strictEqual(restarted.validateSession(review.reviewId,'owner@testfederal.example',s2.session.sessionId).reason,'SESSION_NOT_ACTIVE');
 
 const wm = svc.watermarkContext(review, 'owner@testfederal.example');
 assert.ok(wm.label.includes('owner@testfederal.example'));
