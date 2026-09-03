@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-measurement-window-truth-deploy-20260903-038",
+  "id": "miles-p2gc-final-five-company-green-gate-20260903-039",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy latest main containing the shared canonical rule that current USAspending obligation totals, including zero, may render only when the exact governed measurement-window start and end dates are present. If an aggregate row exists without window metadata, withhold the total as unavailable and publish an explicit warning instead of representing it as current sales. Preserve all DeLune SAM identity, coverage-gap safety, in-flight dedupe, sales-story, browser and five-company regression safeguards. Fast-forward only; restart affected runtime when source is newer; publish evidence."
+  "note": "Run the complete final P2GC demo gate after governed measurement-window enforcement. Require DeLune alias continuity, all five standard demo companies to pass assessment/opportunity/vehicle/recompete/teaming semantics, no false zero/none, no unsupported current-obligation value without exact measurement-window dates, explicit safe coverage gaps where authoritative data is unavailable, browser sales-story assets, JavaScript syntax, responsive/print CSS, proof totals and current runtime. Read-only; publish evidence."
 }
