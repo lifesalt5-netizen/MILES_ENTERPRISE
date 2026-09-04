@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-production-truth-20260904-1430",
+  "id": "miles-full-systems-production-truth-20260904-1442",
   "enabled": true,
   "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run full production-truth reconciliation now. Reconcile and archive terminal work-queue records, preserve all historical evidence, safely rotate oversized archive if required, rebuild live queue truth, audit runtime approval state and ORION freshness without fabricating freshness, and publish evidence. Continue FULL SYSTEMS GO closeout based on resulting blockers."
+  "note": "Rerun full production-truth reconciliation after canonical company-name deduplication fix commit 959e84f869508609ef62f03af908e51260e30222. Verify the live Sera Brynn canonical probe no longer emits duplicate prime partners, reconcile/archive terminal work-queue records, preserve all historical evidence, reassess runtime approval backlog, and audit ORION freshness without fabricating freshness. Continue FULL SYSTEMS GO closeout from resulting evidence."
 }
