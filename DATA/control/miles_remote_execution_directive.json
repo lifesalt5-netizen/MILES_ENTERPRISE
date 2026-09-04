@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-runtime-approval-verify-20260904-1648",
+  "id": "miles-full-systems-production-truth-retry-20260904-1649",
   "enabled": true,
-  "job": "COO_RUNTIME_APPROVAL_AUDIT",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Verify the post-deployment runtime approval backlog after bounded self-maintenance cancelled the three proven orphaned read-only audit approvals. Confirm runtimePendingCount=0, workerRuntimeReportedAwaitingApproval=0, canonicalPendingCount=0, perform no mutations, and return exact item-level evidence."
+  "note": "Rerun production-truth reconciliation after runtime approval backlog reached zero. Revalidate all five live demo companies, specifically determine whether the prior Integrated Technology Partners 180-second assessment timeout was transient or reproducible, preserve the now-green Sera Brynn duplicate-prime probe, and continue ORION/IONOS closeout without provider mutation or fabricated freshness."
 }
