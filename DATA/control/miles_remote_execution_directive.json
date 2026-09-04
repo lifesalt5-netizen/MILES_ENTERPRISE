@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-ionos-cleanup-20260904-1702",
+  "id": "miles-full-systems-runtime-approval-audit-20260904-1831",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
+  "job": "COO_RUNTIME_APPROVAL_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Execute governed IONOS all-folder inbox cleanup now that live demo acceptance is green. Route high-confidence DMARC aggregate/system noise and known cold-outreach noise out of executive Inbox using UID MOVE only, preserve legitimate human/client/direct-sent-thread replies, scan all configured mailboxes/folders, perform no delete/expunge/SMTP/DNS/Instantly mutation, and return before/after proof including executableMisroutesAfter or equivalent remaining-routable-noise count."
+  "note": "Re-audit runtime approvals after governed self-maintenance reconciliation. Prove canonicalPendingCount and worker runtime awaiting-approval counts, classify any residual records, perform no approvals/provider mutations, and return item-level evidence for FULL SYSTEMS GO closeout."
 }
