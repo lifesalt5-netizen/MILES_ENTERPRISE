@@ -18,12 +18,17 @@ const Release=require('../SERVICES/revenue/P2GCFederalGrowthReviewReleaseService
   const sender={sendEmail:async payload=>{sent.push(payload);return {ok:true,status:'IONOS_SMTP_ACCEPTED',messageId:'msg-1',sentAt:'2026-09-03T20:40:00Z'};}};
   const release=new Release({lifecycle,access,sender,publicBaseUrl:'https://reviews.pathways2gc.com'});
 
-  assert.throws(()=>release.applyDecision(review.reviewId,'APPROVE'),/PROFESSIONAL_AI_DEMO_REQUIRED/);
+  assert.throws(()=>release.applyDecision(review.reviewId,'APPROVE'),/PRE_RELEASE_STAGES_INCOMPLETE/);
+  for(const stage of ['PROSPECT_INTAKE','COMPANY_RESOLUTION','VERIFIED_INTELLIGENCE','ACCURATE_FINDINGS','PERSONALIZED_SCRIPT']){
+    lifecycle.completeStage(review.reviewId,stage,{source:'TEST',freshness:'2026-09-03T20:38:00Z',confidence:'HIGH',verificationState:'CONFIRMED'});
+  }
   let r=lifecycle.read(review.reviewId);
-  r.presentation={videoStatus:'READY',mediaId:'media-123',runtime:{estimatedMinutes:7.8,display:'Actual runtime: 7 minutes 48 seconds'}};
+  r.presentation={videoStatus:'READY',mediaId:'media-123',streamingReady:false,runtime:{estimatedMinutes:7.8,display:'Actual runtime: 7 minutes 48 seconds'}};
   lifecycle.write(r);
   lifecycle.completeStage(review.reviewId,'PROFESSIONAL_AI_DEMO',{source:'AI_VIDEO_PROVIDER',freshness:'2026-09-03T20:39:00Z',confidence:'HIGH',verificationState:'CONFIRMED'});
+  assert.throws(()=>release.applyDecision(review.reviewId,'APPROVE'),/PROFESSIONAL_AI_PRIVATE_STREAM_NOT_READY/);
 
+  r=lifecycle.read(review.reviewId);r.presentation.streamingReady=true;lifecycle.write(r);
   r=release.applyDecision(review.reviewId,'APPROVE','Approved for release');
   assert.strictEqual(r.release.approvedByKevin,true);
   assert.strictEqual(r.stageState.KEVIN_APPROVAL.status,'COMPLETE');
@@ -38,6 +43,10 @@ const Release=require('../SERVICES/revenue/P2GCFederalGrowthReviewReleaseService
   assert.strictEqual(draft.to,'buyer@example.com');
   assert(draft.text.includes('Actual runtime: 7 minutes 48 seconds'));
   assert(draft.text.includes(link.link));
+
+  r=lifecycle.read(review.reviewId);r.presentation.streamingReady=false;lifecycle.write(r);
+  await assert.rejects(()=>release.sendApprovedReview(review.reviewId,{secureLink:link.link,secureLinkId:link.secureLinkId}),/PROFESSIONAL_AI_PRIVATE_STREAM_NOT_READY/);
+  r=lifecycle.read(review.reviewId);r.presentation.streamingReady=true;lifecycle.write(r);
 
   const result=await release.sendApprovedReview(review.reviewId,{secureLink:link.link,secureLinkId:link.secureLinkId});
   assert.strictEqual(result.ok,true);
