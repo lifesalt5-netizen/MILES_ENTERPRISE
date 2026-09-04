@@ -4,6 +4,7 @@ const fs=require('fs');
 const path=require('path');
 const crypto=require('crypto');
 const Lifecycle=require('./P2GCFederalGrowthReviewLifecycleService');
+const Media=require('./P2GCFederalGrowthReviewMediaService');
 
 function clean(v){return String(v==null?'':v).trim();}
 function readJson(file){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return null;}}
@@ -15,6 +16,7 @@ class P2GCFederalGrowthReviewVideoProviderService{
   constructor(options={}){
     this.rootDir=options.rootDir||process.env.MILES_ROOT||process.cwd();
     this.lifecycle=options.lifecycle||new Lifecycle({rootDir:this.rootDir});
+    this.media=options.media||new Media({rootDir:this.rootDir});
     this.vidsAuditFile=options.vidsAuditFile||path.join(this.rootDir,'DATA','operational_acceptance','latest_google_vids_editor_avatar_audit.json');
     this.localAuditFile=options.localAuditFile||path.join(this.rootDir,'DATA','operational_acceptance','latest_local_avatar_runtime_audit.json');
     this.googleMaxSegmentWords=Math.max(80,Math.min(125,Number(options.googleMaxSegmentWords||120)));
@@ -54,24 +56,9 @@ class P2GCFederalGrowthReviewVideoProviderService{
       const slice=list.slice(i,i+max);
       const estimatedSeconds=Math.max(1,Math.ceil((slice.length/this.wordsPerMinute)*60));
       if(estimatedSeconds>60)throw new Error('GOOGLE_VIDS_SEGMENT_EXCEEDS_60_SECONDS');
-      segments.push({
-        index:segments.length+1,
-        wordCount:slice.length,
-        estimatedSeconds,
-        script:slice.join(' '),
-        scriptSha256:sha256(slice.join(' '))
-      });
+      segments.push({index:segments.length+1,wordCount:slice.length,estimatedSeconds,script:slice.join(' '),scriptSha256:sha256(slice.join(' '))});
     }
-    return {
-      provider:'GOOGLE_VIDS',
-      maxSegmentSeconds:60,
-      maxSegmentWords:max,
-      wordsPerMinute:this.wordsPerMinute,
-      totalWords:list.length,
-      estimatedTotalSeconds:segments.reduce((n,s)=>n+s.estimatedSeconds,0),
-      segmentCount:segments.length,
-      segments
-    };
+    return {provider:'GOOGLE_VIDS',maxSegmentSeconds:60,maxSegmentWords:max,wordsPerMinute:this.wordsPerMinute,totalWords:list.length,estimatedTotalSeconds:segments.reduce((n,s)=>n+s.estimatedSeconds,0),segmentCount:segments.length,segments};
   }
 
   prepareReview(reviewId){
@@ -82,6 +69,7 @@ class P2GCFederalGrowthReviewVideoProviderService{
     record.presentation.providerDecision=selected;
     record.presentation.videoStatus=selected.ok?'PROVIDER_READY':'BLOCKED_PROVIDER_NOT_PROVEN';
     record.presentation.mediaId=record.presentation.mediaId||null;
+    record.presentation.streamingReady=false;
     if(selected.provider==='GOOGLE_VIDS') record.presentation.segmentPlan=this.buildGoogleSegmentPlan(record.presentation.script);
     record.green=false;
     this.lifecycle.write(record);
@@ -101,14 +89,7 @@ class P2GCFederalGrowthReviewVideoProviderService{
       const completed=Number(proof.completedSegmentCount);
       if(!Number.isInteger(completed)||completed!==plan.segmentCount)throw new Error('GOOGLE_VIDS_ALL_SEGMENTS_REQUIRED');
     }
-    return {
-      renderedAt,
-      providerProjectRef:clean(proof.providerProjectRef),
-      artifactRef:clean(proof.artifactRef),
-      completedSegmentCount:Number(proof.completedSegmentCount||1),
-      verifiedBy:clean(proof.verifiedBy||'MILES_PROVIDER_ACCEPTANCE'),
-      verificationState:'CONFIRMED'
-    };
+    return {renderedAt,providerProjectRef:clean(proof.providerProjectRef),artifactRef:clean(proof.artifactRef),completedSegmentCount:Number(proof.completedSegmentCount||1),verifiedBy:clean(proof.verifiedBy||'MILES_PROVIDER_ACCEPTANCE'),verificationState:'CONFIRMED'};
   }
 
   markVideoReady(reviewId,input={}){
@@ -116,20 +97,27 @@ class P2GCFederalGrowthReviewVideoProviderService{
     const provider=clean(input.provider).toUpperCase();
     if(!['GOOGLE_VIDS','LOCAL_OPEN_SOURCE','HEYGEN'].includes(provider))throw new Error('SUPPORTED_VIDEO_PROVIDER_REQUIRED');
     if(record.presentation?.providerDecision?.provider&&provider!==record.presentation.providerDecision.provider)throw new Error('VIDEO_PROVIDER_MISMATCH');
-    if(!clean(input.mediaId))throw new Error('VIDEO_MEDIA_ID_REQUIRED');
+    const mediaId=clean(input.mediaId);if(!mediaId)throw new Error('VIDEO_MEDIA_ID_REQUIRED');
     if(!Number.isFinite(Number(input.durationSeconds))||Number(input.durationSeconds)<=0)throw new Error('VIDEO_DURATION_REQUIRED');
     const evidence=this.validateRenderEvidence(record,provider,input);
+    const localArtifactPath=clean(input.localArtifactPath);
+    if(!localArtifactPath)throw new Error('VIDEO_LOCAL_ARTIFACT_REQUIRED');
+    const registered=this.media.registerLocalArtifact(mediaId,localArtifactPath);
+    if(!registered?.ok||!this.media.exists(mediaId))throw new Error('PRIVATE_VIDEO_REGISTRATION_FAILED');
+
     record.presentation=record.presentation||{};
     record.presentation.videoStatus='READY';
     record.presentation.provider=provider;
-    record.presentation.mediaId=clean(input.mediaId);
+    record.presentation.mediaId=mediaId;
+    record.presentation.streamingReady=true;
     record.presentation.durationSeconds=Number(input.durationSeconds);
     record.presentation.readyAt=evidence.renderedAt;
     record.presentation.renderEvidence=evidence;
+    record.presentation.privateMedia={status:'REGISTERED',bytes:registered.bytes,storedAt:registered.storedAt};
     record.presentation.runtimeTargetStatus=Number(input.durationSeconds)>=360&&Number(input.durationSeconds)<=600?'WITHIN_6_TO_10_MINUTE_TARGET':'OUTSIDE_6_TO_10_MINUTE_TARGET';
     this.lifecycle.write(record);
-    this.lifecycle.completeStage(reviewId,'PROFESSIONAL_AI_DEMO',{source:`P2GC_VIDEO_PROVIDER:${provider}`,freshness:evidence.renderedAt,confidence:'HIGH',verificationState:'CONFIRMED',notes:`Rendered artifact verified; duration ${record.presentation.durationSeconds}s; segments ${evidence.completedSegmentCount}`});
-    return {ok:true,status:'PROFESSIONAL_AI_DEMO_READY',reviewId,provider,mediaId:record.presentation.mediaId,durationSeconds:record.presentation.durationSeconds,runtimeTargetStatus:record.presentation.runtimeTargetStatus,renderEvidence:evidence};
+    this.lifecycle.completeStage(reviewId,'PROFESSIONAL_AI_DEMO',{source:`P2GC_VIDEO_PROVIDER:${provider}`,freshness:evidence.renderedAt,confidence:'HIGH',verificationState:'CONFIRMED',notes:`Rendered artifact verified and privately registered; duration ${record.presentation.durationSeconds}s; segments ${evidence.completedSegmentCount}`});
+    return {ok:true,status:'PROFESSIONAL_AI_DEMO_READY',reviewId,provider,mediaId:record.presentation.mediaId,streamingReady:true,durationSeconds:record.presentation.durationSeconds,runtimeTargetStatus:record.presentation.runtimeTargetStatus,renderEvidence:evidence,privateMedia:record.presentation.privateMedia};
   }
 }
 
