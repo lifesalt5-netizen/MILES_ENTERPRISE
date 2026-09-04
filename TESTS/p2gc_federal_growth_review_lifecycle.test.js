@@ -49,10 +49,23 @@ assert.strictEqual(state.scoring.salesPriority, 44);
 state = svc.recordEngagement(review.reviewId, 'DELIVERY');
 state = svc.recordEngagement(review.reviewId, 'AUTHENTICATED_REVIEW_ACCESS');
 state = svc.recordEngagement(review.reviewId, 'VIDEO_START');
+assert.strictEqual(state.stageState.PLAYBACK_TRACKING.status, 'PENDING', 'play alone must not satisfy the 75% meaningful-completion threshold');
+state = svc.recordEngagement(review.reviewId, 'VIDEO_50');
+assert.strictEqual(state.stageState.PLAYBACK_TRACKING.status, 'PENDING', '50% playback must remain below the contract threshold');
 state = svc.recordEngagement(review.reviewId, 'VIDEO_75');
+assert.strictEqual(state.stageState.PLAYBACK_TRACKING.status, 'COMPLETE');
+assert.strictEqual(state.stageState.PLAYBACK_TRACKING.evidence.source, 'P2GC_PROSPECT_ENGAGEMENT');
 assert.ok(state.scoring.intentScore > 0);
 assert.strictEqual(state.scoring.fitScore, 80, 'engagement must not overwrite FIT score');
 assert.ok(state.scoring.salesPriority > 44);
+
+state = svc.recordEngagement(review.reviewId, 'QUESTION_SUBMITTED', { metadata: { question: 'What should we address first?' } });
+assert.strictEqual(state.stageState.QUESTION_CAPTURE.status, 'COMPLETE');
+assert.strictEqual(state.engagementSummary.questionCount, 1);
+
+state = svc.recordEngagement(review.reviewId, 'SCHEDULING_OPENED');
+assert.strictEqual(state.stageState.SCHEDULING.status, 'COMPLETE');
+assert.strictEqual(state.engagementSummary.schedulingOpenedCount, 1);
 
 assert.throws(() => svc.markSent(review.reviewId, {
   sentFrom: 'other@pathways2gc.com', secureLinkId: 'link-1'
@@ -68,7 +81,7 @@ svc.markSent(review.reviewId, {
 });
 
 for (const stage of contract.greenDefinition.requiredStages) {
-  if (stage === 'KEVIN_APPROVAL' || stage === 'SECURE_SEND_FROM_KEVIN') continue;
+  if (['KEVIN_APPROVAL', 'SECURE_SEND_FROM_KEVIN', 'PLAYBACK_TRACKING', 'QUESTION_CAPTURE', 'SCHEDULING'].includes(stage)) continue;
   svc.completeStage(review.reviewId, stage, {
     source: 'TEST', freshness: 'CURRENT', confidence: 'HIGH', verificationState: 'CONFIRMED'
   });

@@ -27,7 +27,13 @@ const s1 = svc.openSession(review, 'owner@testfederal.example', { ip: '1.2.3.4',
 const s2 = svc.openSession(review, 'owner@testfederal.example', { ip: '1.2.3.4', userAgent: 'browser-b' });
 const s3 = svc.openSession(review, 'owner@testfederal.example', { ip: '1.2.3.5', userAgent: 'browser-c' });
 assert.strictEqual(s1.ok, true);
+assert.strictEqual(s1.session.suspicious, false);
+assert.deepStrictEqual(s1.session.suspiciousReasons, []);
 assert.strictEqual(s2.ok, true);
+assert.strictEqual(s2.session.suspicious, true);
+assert(s2.session.suspiciousReasons.includes('USER_AGENT_CONTEXT_CHANGED'));
+assert(!s2.session.suspiciousReasons.includes('IP_CONTEXT_CHANGED'));
+assert.ok(s2.session.suspiciousDetectedAt);
 assert.strictEqual(s3.reason, 'CONCURRENT_SESSION_LIMIT_REACHED');
 assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).ok,true);
 assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example','missing-session').reason,'SESSION_NOT_ACTIVE');
@@ -49,6 +55,11 @@ assert.strictEqual(svc.validateVideoToken(mediaToken, {
 assert.strictEqual(svc.closeSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).ok,true);
 assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s1.session.sessionId).reason,'SESSION_CLOSED');
 assert.strictEqual(svc.validateSession(review.reviewId,'owner@testfederal.example',s2.session.sessionId).ok,true);
+
+const s4 = svc.openSession(review, 'owner@testfederal.example', { ip: '1.2.3.5', userAgent: 'browser-b' });
+assert.strictEqual(s4.ok, true);
+assert.strictEqual(s4.session.suspicious, true);
+assert(s4.session.suspiciousReasons.includes('IP_CONTEXT_CHANGED'));
 
 const restarted = new Access({
   secret: '0123456789abcdef0123456789abcdef0123456789abcdef',

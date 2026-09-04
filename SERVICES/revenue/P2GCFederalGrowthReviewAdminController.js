@@ -48,7 +48,13 @@ class P2GCFederalGrowthReviewAdminController{
         const out=this.videoProvider.prepareReview(reviewId);json(res,out.ok?200:409,{...out,videoGenerated:false});return true;
       }
       if(url.pathname==='/api/admin/review/video-ready'){
-        const out=this.videoProvider.markVideoReady(reviewId,{provider:body.provider,mediaId:body.mediaId,durationSeconds:body.durationSeconds});json(res,200,out);return true;
+        const out=this.videoProvider.markVideoReady(reviewId,{
+          provider:body.provider,
+          mediaId:body.mediaId,
+          durationSeconds:body.durationSeconds,
+          localArtifactPath:body.localArtifactPath,
+          renderEvidence:body.renderEvidence
+        });json(res,200,out);return true;
       }
       if(url.pathname==='/api/admin/review/decision'){
         const record=this.release.applyDecision(reviewId,body.decision,body.notes);json(res,200,{ok:true,status:'KEVIN_REVIEW_DECISION_RECORDED',reviewId,decision:record.release?.decision,state:record.status,approvedByKevin:record.release?.approvedByKevin===true});return true;

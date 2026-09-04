@@ -42,8 +42,6 @@ function publicReview(record){
       .map(f=>({ id:f.id,section:f.section,title:f.title,finding:f.finding,whatItMeans:f.whatItMeans,whyItMatters:f.whyItMatters,businessImpact:f.businessImpact,howP2GCAddressesIt:f.howP2GCAddressesIt })),
     lockedFindingCount:(record.findings||[]).filter(f=>f.freePreviewVisibility==='LOCKED').length,
     priorityOptions:record.priorityOptions||[],
-    scoring:{ fitScore:record.scoring?.fitScore??0,intentScore:record.scoring?.intentScore??0,salesPriority:record.scoring?.salesPriority??0 },
-    engagement:{ maxPlaybackPct:record.engagementSummary?.maxPlaybackPct||0,questionCount:record.engagementSummary?.questionCount||0,meetingBooked:record.engagementSummary?.meetingBooked===true },
     runtime:record.presentation?.runtime||null,
     video:{ status:videoStatus,ready:videoStatus==='READY',playable:videoStatus==='READY'&&record.presentation?.streamingReady===true },
     writtenReviewFallback:true,
@@ -84,7 +82,7 @@ class P2GCFederalGrowthReviewHttpController {
       assets,
       senderHealth,
       securityHeadersReady,
-      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false,protectedRangeStreaming:true,activeSessionRequired:true},
+      policy:{private:true,authenticated:true,noIndex:true,downloadable:false,recipientBound:true,signedVideoTokens:true,directMediaExposure:false,protectedRangeStreaming:true,activeSessionRequired:true,internalSalesScoringExposed:false},
       checkedAt:new Date().toISOString()
     };
   }
@@ -198,14 +196,14 @@ class P2GCFederalGrowthReviewHttpController {
       }
       if(req.method==='POST' && action==='event'){
         const body=await readBody(req);
-        const updated=this.lifecycle.recordEngagement(reviewId,clean(body.type),{recipientEmail:session.authenticatedEmail,sessionId:session.sessionId,value:body.value,metadata:body.metadata||null});
-        safeJson(res,200,{ok:true,status:'ENGAGEMENT_RECORDED',intentScore:updated.scoring.intentScore,salesPriority:updated.scoring.salesPriority},this.securityHeaders());return true;
+        this.lifecycle.recordEngagement(reviewId,clean(body.type),{recipientEmail:session.authenticatedEmail,sessionId:session.sessionId,value:body.value,metadata:body.metadata||null});
+        safeJson(res,200,{ok:true,status:'ENGAGEMENT_RECORDED'},this.securityHeaders());return true;
       }
       if(req.method==='POST' && action==='question'){
         const body=await readBody(req); const question=clean(body.question).slice(0,2000);
         if(!question){safeJson(res,400,{ok:false,status:'QUESTION_REQUIRED'},this.securityHeaders());return true;}
-        const updated=this.lifecycle.recordEngagement(reviewId,'QUESTION_SUBMITTED',{recipientEmail:session.authenticatedEmail,sessionId:session.sessionId,metadata:{question,priorityOptionId:clean(body.priorityOptionId)||null}});
-        safeJson(res,200,{ok:true,status:'QUESTION_RECORDED',intentScore:updated.scoring.intentScore,salesPriority:updated.scoring.salesPriority},this.securityHeaders());return true;
+        this.lifecycle.recordEngagement(reviewId,'QUESTION_SUBMITTED',{recipientEmail:session.authenticatedEmail,sessionId:session.sessionId,metadata:{question,priorityOptionId:clean(body.priorityOptionId)||null}});
+        safeJson(res,200,{ok:true,status:'QUESTION_RECORDED'},this.securityHeaders());return true;
       }
       if(req.method==='POST' && action==='close-session'){
         this.access.closeSession(reviewId,session.authenticatedEmail,session.sessionId);

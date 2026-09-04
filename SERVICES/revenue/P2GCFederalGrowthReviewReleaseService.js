@@ -23,10 +23,16 @@ class P2GCFederalGrowthReviewReleaseService {
   }
 
   requireReview(reviewId){const r=this.lifecycle.read(reviewId);if(!r)throw new Error('REVIEW_NOT_FOUND');return r;}
+  requirePreReleaseStages(record){
+    const required=['PROSPECT_INTAKE','COMPANY_RESOLUTION','VERIFIED_INTELLIGENCE','ACCURATE_FINDINGS','PERSONALIZED_SCRIPT','PROFESSIONAL_AI_DEMO'];
+    const missing=required.filter(stage=>record.stageState?.[stage]?.status!=='COMPLETE');
+    if(missing.length)throw new Error(`PRE_RELEASE_STAGES_INCOMPLETE:${missing.join(',')}`);
+  }
   requirePresentationComplete(record){
-    if(record.stageState?.PROFESSIONAL_AI_DEMO?.status!=='COMPLETE')throw new Error('PROFESSIONAL_AI_DEMO_REQUIRED_BEFORE_APPROVAL');
+    this.requirePreReleaseStages(record);
     if(record.presentation?.videoStatus!=='READY')throw new Error('PROFESSIONAL_AI_VIDEO_NOT_READY');
     if(!clean(record.presentation?.mediaId))throw new Error('PROFESSIONAL_AI_MEDIA_ID_REQUIRED');
+    if(record.presentation?.streamingReady!==true)throw new Error('PROFESSIONAL_AI_PRIVATE_STREAM_NOT_READY');
   }
   applyDecision(reviewId,decision,notes=''){
     const action=clean(decision).toUpperCase();
@@ -46,6 +52,7 @@ class P2GCFederalGrowthReviewReleaseService {
   createSecureLink(reviewId,options={}){
     const record=this.requireReview(reviewId);
     if(!record.release?.approvedByKevin)throw new Error('KEVIN_APPROVAL_REQUIRED_BEFORE_SECURE_LINK');
+    this.requirePresentationComplete(record);
     if(!this.publicBaseUrl||!/^https:\/\//i.test(this.publicBaseUrl))throw new Error('PUBLIC_REVIEW_HTTPS_BASE_URL_REQUIRED');
     const token=this.access.createAccessToken(record,{ttlSeconds:Number(options.ttlSeconds||record.expirationHours*3600)});
     const secureLinkId=crypto.randomUUID();
@@ -58,6 +65,7 @@ class P2GCFederalGrowthReviewReleaseService {
   emailDraft(reviewId,secureLink){
     const record=this.requireReview(reviewId);
     if(!record.release?.approvedByKevin)throw new Error('KEVIN_APPROVAL_REQUIRED_BEFORE_EMAIL_DRAFT');
+    this.requirePresentationComplete(record);
     const runtime=record.presentation?.runtime?.display||`Estimated runtime: ${record.presentation?.runtime?.estimatedMinutes||'6–10'} minutes`;
     const first=clean(record.recipient?.name).split(/\s+/)[0]||'there';
     const subject=`Your Personalized Federal Growth Review — ${record.company?.name}`;
@@ -79,6 +87,7 @@ class P2GCFederalGrowthReviewReleaseService {
     let record=this.requireReview(reviewId);
     if(!record.release?.approvedByKevin)throw new Error('KEVIN_APPROVAL_REQUIRED_BEFORE_SEND');
     if(record.release?.sentAt)throw new Error('REVIEW_ALREADY_SENT');
+    this.requirePresentationComplete(record);
     const linkResult=options.secureLink?{link:options.secureLink,secureLinkId:options.secureLinkId||crypto.randomUUID()}:this.createSecureLink(reviewId,options);
     const draft=this.emailDraft(reviewId,linkResult.link);
     const sent=await this.getSender().sendEmail(draft);
@@ -91,9 +100,12 @@ class P2GCFederalGrowthReviewReleaseService {
   }
 
   recordManualSend(reviewId,secureLinkId){
-    const record=this.lifecycle.markSent(reviewId,{sentFrom:'kevin@pathways2gc.com',secureLinkId});
-    record.release.manualSendRecorded=true;record.release.deliveryVerificationState='MANUAL_SEND_RECORDED_DELIVERY_NOT_CONFIRMED';
-    return this.lifecycle.write(record);
+    const record=this.requireReview(reviewId);
+    if(!record.release?.approvedByKevin)throw new Error('KEVIN_APPROVAL_REQUIRED_BEFORE_SEND');
+    this.requirePresentationComplete(record);
+    const sent=this.lifecycle.markSent(reviewId,{sentFrom:'kevin@pathways2gc.com',secureLinkId});
+    sent.release.manualSendRecorded=true;sent.release.deliveryVerificationState='MANUAL_SEND_RECORDED_DELIVERY_NOT_CONFIRMED';
+    return this.lifecycle.write(sent);
   }
 }
 
