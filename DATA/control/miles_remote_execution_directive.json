@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-prospect-funnel-cutover-20260904-084",
+  "id": "miles-full-systems-ionos-cleanup-20260904-1425",
   "enabled": true,
-  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Retry the governed Personalized Federal Growth Review production cutover after resolving the absolute Tailscale CLI path. Add only persistent Tailscale Funnel path handlers for /review and /api/review to 127.0.0.1:8792. Preserve the existing root route and keep /api/admin/review blocked. Verify public HTTPS review page, noindex/no-store headers, review health, root preservation, and admin blocking. Persist P2GC_PUBLIC_REVIEW_BASE_URL only after acceptance. Automatically roll back only the added paths and env change if any acceptance check fails. Do not reset Funnel, alter DNS, send email, or generate video content."
+  "note": "Execute the governed IONOS inbox cleanup now across configured mailboxes. Move DMARC aggregate reports and other classified system noise out of the human inbox using UID MOVE only, preserve all messages, preserve active-client and real sent-thread replies, and post-verify that no routable noise remains. This is part of FULL SYSTEMS GO closeout; no message deletion is authorized."
 }
