@@ -9,6 +9,8 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js'
       - 'TESTS/p2gc_federal_growth_review_release.test.js'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/p2gc-federal-growth-review-release-controls.yml'
   pull_request:
     paths:
@@ -18,6 +20,8 @@ on:
       - 'SERVICES/revenue/P2GCFederalGrowthReviewAccessService.js'
       - 'SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js'
       - 'TESTS/p2gc_federal_growth_review_release.test.js'
+      - 'package.json'
+      - 'package-lock.json'
 
 jobs:
   release-control:
@@ -28,6 +32,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+      - name: Install runtime dependencies
+        run: npm ci --ignore-scripts
       - name: Syntax check release service
         run: node --check SERVICES/revenue/P2GCFederalGrowthReviewReleaseService.js
       - name: Run Kevin release-control regression
