@@ -298,6 +298,8 @@ class SelfMaintenanceService {
       const sourceOperationId = this.runtimeApprovalSourceOperationId(task);
       const operation = sourceOperationId ? byId.get(sourceOperationId) : null;
       const operationStatus = String(operation?.status || "").toUpperCase();
+      const taskAction = String(task.action || task.payload?.action || task.type || "").trim();
+      const taskCapability = String(task.capability || task.payload?.capability || "").trim();
       let policy = null;
       let classification = "REVIEW_REQUIRED";
       let reason = "Runtime approval requires review.";
@@ -306,9 +308,16 @@ class SelfMaintenanceService {
         String(task?.source || "") === "AutonomousWorkGenerationService" &&
         /^AUTO_/i.test(String(task?.id || "")) &&
         String(task?.payload?.finding?.category || "").toUpperCase() === "CREDENTIAL";
+      const orphanedReadOnlyAudit =
+        !sourceOperationId &&
+        ((taskCapability === "website.health.audit" && taskAction === "verifyWebsite") ||
+         (taskCapability === "marketing.campaign.audit" && taskAction === "refresh"));
       if (autonomousCredentialOrphan) {
         classification = "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING";
         reason = "Legacy autonomous credential finding has no canonical CEO-routable source operation; cancel it without approval or execution.";
+      } else if (orphanedReadOnlyAudit) {
+        classification = "ORPHANED_READ_ONLY_AUDIT";
+        reason = "Read-only audit task has no canonical source operation and cannot represent a CEO approval; cancel the stale approval record without executing the task.";
       } else if (!sourceOperationId) {
         classification = "ORPHANED_NO_SOURCE_ID";
         reason = "Runtime approval has no source operation ID; no automatic mutation is permitted.";
@@ -338,7 +347,7 @@ class SelfMaintenanceService {
       }
       return {
         taskId: task.id, status: task.status, sourceOperationId, sourceOperationStatus: operation?.status || null,
-        action: task.action || task.payload?.action || task.type || null,
+        action: taskAction || null, capability: taskCapability || null,
         provider: task.provider || task.payload?.provider || null,
         classification, reason, policyDecision: policy?.decision || null, approvalRequired: policy?.approvalRequired ?? null
       };
@@ -355,7 +364,7 @@ class SelfMaintenanceService {
     const reconciled = [];
     const untouched = [];
     for (const item of audit.items) {
-      if (!["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING"].includes(item.classification)) {
+      if (!["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING", "ORPHANED_READ_ONLY_AUDIT"].includes(item.classification)) {
         untouched.push(item);
         continue;
       }
@@ -373,7 +382,7 @@ class SelfMaintenanceService {
     return {
       ok: true, service: "SelfMaintenanceService", action: "SELF_MAINTENANCE_RECONCILE_RUNTIME_APPROVALS",
       audited: audit.total, reconciledCount: reconciled.length, untouchedCount: untouched.length, reconciled, untouched,
-      safety: { approvalsGranted: 0, tasksResumed: 0, tasksDeleted: 0, onlyCancelledClassifications: ["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING"] },
+      safety: { approvalsGranted: 0, tasksResumed: 0, tasksDeleted: 0, onlyCancelledClassifications: ["STALE_FALSE_APPROVAL", "TERMINAL_SOURCE", "ORPHANED_AUTONOMOUS_CREDENTIAL_FINDING", "ORPHANED_READ_ONLY_AUDIT"] },
       completedAt: now()
     };
   }
