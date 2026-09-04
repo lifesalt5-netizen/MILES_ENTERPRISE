@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-production-truth-20260904-1507",
+  "id": "miles-full-systems-runtime-approval-audit-20260904-1522",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "COO_RUNTIME_APPROVAL_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun full production-truth reconciliation after commit 6003d10bfa966ab6665e0c7e9bcfdafb949ac0d1 fixes the remaining duplicate prime-candidate source path in PrimeCandidateDiscoveryService. Confirm p2gc-growth-demo reloads current source, verify the Sera Brynn canonical company probe has zero duplicate prime partners, keep the five-company live semantic acceptance green, reconcile terminal queue state, reassess runtime approval backlog, and continue ORION freshness closeout without fabricating freshness."
+  "note": "Audit the worker-runtime approval backlog now after production-truth reconciliation. Classify every awaiting-approval task against its canonical source operation, distinguish stale/terminal/runtime-only records from genuine canonical approvals, perform no approvals or mutations, and return exact item-level evidence for FULL SYSTEMS GO closeout."
 }
