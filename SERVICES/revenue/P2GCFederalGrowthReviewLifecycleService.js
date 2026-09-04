@@ -254,7 +254,6 @@ class P2GCFederalGrowthReviewLifecycleService {
   }
 
   recalculateSalesPriority(record) {
-    // Deliberately combines but never collapses FIT and INTENT into one source score.
     record.scoring.salesPriority = clamp((record.scoring.fitScore * 0.55) + (record.scoring.intentScore * 0.45));
     record.scoring.salesPriorityUpdatedAt = nowIso();
   }
@@ -274,7 +273,9 @@ class P2GCFederalGrowthReviewLifecycleService {
     };
     record.engagement.push(event);
     this.applyEngagementSummary(record, event);
+    this.applyEngagementStageProgression(record, event);
     this.recalculateIntentFromEngagement(record);
+    this.recalculateGreen(record);
     return this.write(record);
   }
 
@@ -303,6 +304,26 @@ class P2GCFederalGrowthReviewLifecycleService {
     }
   }
 
+  applyEngagementStageProgression(record, event) {
+    const evidence = {
+      source: 'P2GC_PROSPECT_ENGAGEMENT',
+      freshness: event.at,
+      confidence: 'HIGH',
+      verificationState: 'CONFIRMED',
+      notes: `Completed from verified engagement event ${event.type}`
+    };
+
+    if (['VIDEO_START', 'VIDEO_25', 'VIDEO_50', 'VIDEO_75', 'VIDEO_90', 'VIDEO_COMPLETE'].includes(event.type)) {
+      this.markStageCompleteInMemory(record, 'PLAYBACK_TRACKING', evidence);
+    }
+    if (event.type === 'QUESTION_SUBMITTED') {
+      this.markStageCompleteInMemory(record, 'QUESTION_CAPTURE', evidence);
+    }
+    if (event.type === 'SCHEDULING_OPENED' || event.type === 'MEETING_BOOKED') {
+      this.markStageCompleteInMemory(record, 'SCHEDULING', evidence);
+    }
+  }
+
   recalculateIntentFromEngagement(record) {
     const s = record.engagementSummary;
     let score = 0;
@@ -326,7 +347,7 @@ class P2GCFederalGrowthReviewLifecycleService {
     record.release.approvedByKevin = actor === 'KEVIN';
     record.release.approvedAt = nowIso();
     if (record.release.approvedByKevin) {
-      this.markStageCompleteInMemory(record, 'KEVIN_APPROVAL', { source: 'KEVIN_APPROVAL', verificationState: 'CONFIRMED' });
+      this.markStageCompleteInMemory(record, 'KEVIN_APPROVAL', { source: 'KEVIN_APPROVAL', freshness: nowIso(), confidence: 'HIGH', verificationState: 'CONFIRMED' });
     }
     this.recalculateGreen(record);
     return this.write(record);
@@ -339,7 +360,7 @@ class P2GCFederalGrowthReviewLifecycleService {
     record.release.sentAt = nowIso();
     record.release.sentFrom = clean(sentFrom).toLowerCase();
     record.release.secureLinkId = secureLinkId || null;
-    this.markStageCompleteInMemory(record, 'SECURE_SEND_FROM_KEVIN', { source: 'P2GC_DELIVERY', verificationState: 'CONFIRMED' });
+    this.markStageCompleteInMemory(record, 'SECURE_SEND_FROM_KEVIN', { source: 'P2GC_DELIVERY', freshness: record.release.sentAt, confidence: 'HIGH', verificationState: 'CONFIRMED' });
     this.applyEngagementSummary(record, { type: 'SEND' });
     this.recalculateIntentFromEngagement(record);
     this.recalculateGreen(record);
@@ -348,6 +369,7 @@ class P2GCFederalGrowthReviewLifecycleService {
 
   markStageCompleteInMemory(record, stage, evidence = {}) {
     if (!record.stageState[stage]) return;
+    if (record.stageState[stage].status === 'COMPLETE') return;
     record.stageState[stage] = {
       status: 'COMPLETE',
       completedAt: nowIso(),
