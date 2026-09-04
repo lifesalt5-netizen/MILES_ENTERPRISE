@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-runtime-approval-audit-20260904-1522",
+  "id": "miles-full-systems-self-maintenance-deploy-20260904-1525",
   "enabled": true,
-  "job": "COO_RUNTIME_APPROVAL_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Audit the worker-runtime approval backlog now after production-truth reconciliation. Classify every awaiting-approval task against its canonical source operation, distinguish stale/terminal/runtime-only records from genuine canonical approvals, perform no approvals or mutations, and return exact item-level evidence for FULL SYSTEMS GO closeout."
+  "note": "Deploy current main and run bounded self-maintenance after commit e91f167be522c53baef6ace833d8ca1666933e83. Reconcile only the three proven orphaned read-only runtime audit approvals by cancelling their stale approval records without approving, resuming, deleting, or executing them; restart governed MILES runtime owners onto current source; preserve canonical CEO approval count at zero; return exact before/after evidence."
 }
