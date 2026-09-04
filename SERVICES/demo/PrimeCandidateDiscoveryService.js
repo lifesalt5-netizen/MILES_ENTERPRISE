@@ -7,6 +7,23 @@ function clean(v){return String(v==null?'':v).trim();}
 function list(v){return Array.isArray(v)?v.filter(Boolean):[];}
 function uniq(values){return [...new Set((values||[]).map(clean).filter(Boolean))];}
 function num(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function normCompany(v){return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g,' ').replace(/\s+/g,' ').trim();}
+function dedupeCompanies(rows){
+  const byCompany=new Map();
+  for(const row of list(rows)){
+    const key=normCompany(row?.company||row?.legalBusinessName||row?.recipientName);
+    if(!key)continue;
+    const current=byCompany.get(key);
+    const rowScore=num(row?.fitScore)||0;
+    const currentScore=num(current?.fitScore)||0;
+    const rowRevenue=Math.abs(num(row?.federalRevenue)||0);
+    const currentRevenue=Math.abs(num(current?.federalRevenue)||0);
+    if(!current||rowScore>currentScore||(rowScore===currentScore&&rowRevenue>currentRevenue)||(rowScore===currentScore&&rowRevenue===currentRevenue&&clean(row?.uei)&&!clean(current?.uei))){
+      byCompany.set(key,row);
+    }
+  }
+  return [...byCompany.values()].sort((a,b)=>((num(b?.fitScore)||0)-(num(a?.fitScore)||0))||(Math.abs(num(b?.federalRevenue)||0)-Math.abs(num(a?.federalRevenue)||0)));
+}
 
 class PrimeCandidateDiscoveryService{
   constructor(options={}){
@@ -110,11 +127,13 @@ class PrimeCandidateDiscoveryService{
           disclosure:'Candidate is evidence-backed for prime/team research, not a confirmed existing subcontracting relationship. Validate current contract, vehicle, capability whitespace and SBLO contact before outreach.'
         });
       }
-      result.sort((a,b)=>(b.fitScore-a.fitScore)||(b.federalRevenue-a.federalRevenue));
+      const deduped=dedupeCompanies(result);
       const limit=Math.max(1,Math.min(Number(options.limit||20),50));
-      return {ok:true,status:result.length?'EVIDENCE_BACKED_PRIME_CANDIDATES_AVAILABLE':'NO_DEFENSIBLE_PRIME_CANDIDATES_FROM_CURRENT_SIDECAR',records:result.slice(0,limit),source,safety:{readOnly:true,productionDatabaseModified:false,contactsInvented:false}};
+      return {ok:true,status:deduped.length?'EVIDENCE_BACKED_PRIME_CANDIDATES_AVAILABLE':'NO_DEFENSIBLE_PRIME_CANDIDATES_FROM_CURRENT_SIDECAR',records:deduped.slice(0,limit),source,safety:{readOnly:true,productionDatabaseModified:false,contactsInvented:false}};
     }finally{try{db.close();}catch{}}
   }
 }
 
 module.exports=PrimeCandidateDiscoveryService;
+module.exports.dedupeCompanies=dedupeCompanies;
+module.exports.normCompany=normCompany;
