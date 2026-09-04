@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-runtime-approval-audit-20260904-1831",
+  "id": "miles-full-systems-federal-source-readiness-20260904-1832",
   "enabled": true,
-  "job": "COO_RUNTIME_APPROVAL_AUDIT",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Re-audit runtime approvals after governed self-maintenance reconciliation. Prove canonicalPendingCount and worker runtime awaiting-approval counts, classify any residual records, perform no approvals/provider mutations, and return item-level evidence for FULL SYSTEMS GO closeout."
+  "note": "Run the end-to-end federal source readiness audit now. Verify governed federal source freshness/readiness, DeLune canonical demo latency, live acceptance, sales-preview proof totals, and UI surface integrity. Read-only audit only; no provider mutation, no sends, no DNS changes. Return exact blocker evidence if any lane is not green."
 }
