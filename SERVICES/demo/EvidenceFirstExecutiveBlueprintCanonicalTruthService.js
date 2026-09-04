@@ -3,10 +3,26 @@
 const BaseCanonical = require('./ExecutiveBlueprintCanonicalTruthService');
 
 function clean(v){ return String(v == null ? '' : v).trim(); }
+function norm(v){ return clean(v).toUpperCase().replace(/[^A-Z0-9]+/g, ' ').replace(/\s+/g, ' ').trim(); }
 function list(v){ return Array.isArray(v) ? v.filter(Boolean) : (v == null || v === '' ? [] : [v]); }
 function measurementWindowKnown(aggregate){
   const window=aggregate?.source?.measurementWindow;
   return Boolean(window && clean(window.startDate) && clean(window.endDate));
+}
+
+function dedupeCanonicalCompanies(rows){
+  const byCompany = new Map();
+  for (const row of list(rows)) {
+    const company = norm(row?.company || row?.legalBusinessName || row?.recipientName);
+    if (!company) continue;
+    const current = byCompany.get(company);
+    const revenue = Number(row?.federalRevenue || 0);
+    const currentRevenue = Number(current?.federalRevenue || 0);
+    if (!current || revenue > currentRevenue || (revenue === currentRevenue && clean(row?.uei) && !clean(current?.uei))) {
+      byCompany.set(company, row);
+    }
+  }
+  return [...byCompany.values()];
 }
 
 function enforceSolicitationQualificationBoundary(opportunity){
@@ -85,8 +101,8 @@ class EvidenceFirstExecutiveBlueprintCanonicalTruthService extends BaseCanonical
       out.opportunities.qualification = opportunity?.qualification || opportunity?.match?.qualification || null;
     }
 
-    out.competitors = { ...(out.competitors||{}), records:BaseCanonical.dedupeEntities(out.competitors?.records).slice(0,10) };
-    out.primePartners = { ...(out.primePartners||{}), records:BaseCanonical.dedupeEntities(out.primePartners?.records).slice(0,10) };
+    out.competitors = { ...(out.competitors||{}), records:dedupeCanonicalCompanies(BaseCanonical.dedupeEntities(out.competitors?.records)).slice(0,10) };
+    out.primePartners = { ...(out.primePartners||{}), records:dedupeCanonicalCompanies(BaseCanonical.dedupeEntities(out.primePartners?.records)).slice(0,10) };
     this.rebuildGapsAndPathway(out,award,gsa);
     this.recomputeReadiness(out);
     this.finalIntegrity(out,award,gsa,opportunity,aggregate);
@@ -108,3 +124,4 @@ class EvidenceFirstExecutiveBlueprintCanonicalTruthService extends BaseCanonical
 
 module.exports = EvidenceFirstExecutiveBlueprintCanonicalTruthService;
 module.exports.enforceSolicitationQualificationBoundary = enforceSolicitationQualificationBoundary;
+module.exports.dedupeCanonicalCompanies = dedupeCanonicalCompanies;
