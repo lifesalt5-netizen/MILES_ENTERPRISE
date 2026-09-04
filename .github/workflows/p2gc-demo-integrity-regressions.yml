@@ -1,0 +1,36 @@
+name: P2GC Demo Integrity Regressions
+
+on:
+  push:
+    paths:
+      - 'SERVICES/demo/PrimeCandidateDiscoveryService.js'
+      - 'SERVICES/revenue/IonosInboxHygieneProductionLoopService.js'
+      - 'SERVICES/revenue/IonosInboxCleanupService.js'
+      - 'TESTS/prime_candidate_company_dedupe.test.js'
+      - 'TESTS/ionos_continuous_dmarc_routing.test.js'
+      - '.github/workflows/p2gc-demo-integrity-regressions.yml'
+  pull_request:
+    paths:
+      - 'SERVICES/demo/PrimeCandidateDiscoveryService.js'
+      - 'SERVICES/revenue/IonosInboxHygieneProductionLoopService.js'
+      - 'SERVICES/revenue/IonosInboxCleanupService.js'
+      - 'TESTS/prime_candidate_company_dedupe.test.js'
+      - 'TESTS/ionos_continuous_dmarc_routing.test.js'
+      - '.github/workflows/p2gc-demo-integrity-regressions.yml'
+
+jobs:
+  integrity-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install runtime dependencies
+        run: npm ci --ignore-scripts
+      - name: Prime candidate company dedupe regression
+        run: node TESTS/prime_candidate_company_dedupe.test.js
+      - name: Continuous IONOS DMARC routing regression
+        run: node TESTS/ionos_continuous_dmarc_routing.test.js
