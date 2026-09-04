@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-federal-source-readiness-20260904-1832",
+  "id": "miles-federal-source-readiness-rerun-20260904-2348",
   "enabled": true,
   "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the end-to-end federal source readiness audit now. Verify governed federal source freshness/readiness, DeLune canonical demo latency, live acceptance, sales-preview proof totals, and UI surface integrity. Read-only audit only; no provider mutation, no sends, no DNS changes. Return exact blocker evidence if any lane is not green."
+  "note": "Re-run the end-to-end federal source readiness and P2GC demo latency audit after the live p2gc-growth-demo restart and observed 60-second assessment timeout. Read-only diagnostic only. Verify source readiness, canonical assessment latency, live acceptance, sales preview, and multi-company UI regression. Return exact timeout/source blocker evidence; no provider mutation, no sends, no DNS changes."
 }
