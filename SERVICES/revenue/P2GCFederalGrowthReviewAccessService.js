@@ -10,6 +10,10 @@ function timingSafeEqualString(a, b) {
   const bb = Buffer.from(String(b));
   return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
 }
+function contextHash(value) {
+  const normalized = clean(value);
+  return normalized ? crypto.createHash('sha256').update(normalized).digest('hex') : null;
+}
 
 class P2GCFederalGrowthReviewAccessService {
   constructor(options = {}) {
@@ -103,6 +107,13 @@ class P2GCFederalGrowthReviewAccessService {
     if (sessions.length >= this.maxConcurrentSessions) {
       return { ok: false, reason: 'CONCURRENT_SESSION_LIMIT_REACHED', activeSessions: sessions.length };
     }
+
+    const ipHash = contextHash(client.ip);
+    const userAgentHash = contextHash(client.userAgent);
+    const suspiciousReasons = [];
+    if (sessions.some(s => s.ipHash && ipHash && s.ipHash !== ipHash)) suspiciousReasons.push('IP_CONTEXT_CHANGED');
+    if (sessions.some(s => s.userAgentHash && userAgentHash && s.userAgentHash !== userAgentHash)) suspiciousReasons.push('USER_AGENT_CONTEXT_CHANGED');
+
     const session = {
       sessionId: crypto.randomUUID(),
       reviewId,
@@ -110,9 +121,11 @@ class P2GCFederalGrowthReviewAccessService {
       createdAt: new Date(now).toISOString(),
       expiresAt: new Date(now + this.sessionTtlSeconds * 1000).toISOString(),
       expiresAtMs: now + this.sessionTtlSeconds * 1000,
-      ipHash: client.ip ? crypto.createHash('sha256').update(String(client.ip)).digest('hex') : null,
-      userAgentHash: client.userAgent ? crypto.createHash('sha256').update(String(client.userAgent)).digest('hex') : null,
-      suspicious: false,
+      ipHash,
+      userAgentHash,
+      suspicious: suspiciousReasons.length > 0,
+      suspiciousReasons,
+      suspiciousDetectedAt: suspiciousReasons.length ? new Date(now).toISOString() : null,
       closedAt: null
     };
     sessions.push(session);
