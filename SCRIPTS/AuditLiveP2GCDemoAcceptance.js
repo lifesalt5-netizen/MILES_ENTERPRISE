@@ -16,6 +16,7 @@ const DEMO_SOURCE_FILES = Object.freeze([
   'SERVICES/demo/ExecutiveGrowthBlueprintDemoService.js',
   'SERVICES/demo/DemoTruthReconciliationService.js',
   'SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js',
+  'SERVICES/demo/EvidenceFirstExecutiveBlueprintCanonicalTruthService.js',
   'SERVICES/demo/DemoCommercialPreviewService.js',
   'SERVICES/demo/DemoUnifiedOpportunityService.js',
   'SERVICES/demo/P2GCFocusedIntelligenceService.js',
