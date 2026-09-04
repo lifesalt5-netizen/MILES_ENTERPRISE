@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-ionos-cleanup-20260904-1425",
+  "id": "miles-full-systems-production-truth-20260904-1430",
   "enabled": true,
-  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
+  "job": "PRODUCTION_TRUTH_RECONCILIATION",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Execute the governed IONOS inbox cleanup now across configured mailboxes. Move DMARC aggregate reports and other classified system noise out of the human inbox using UID MOVE only, preserve all messages, preserve active-client and real sent-thread replies, and post-verify that no routable noise remains. This is part of FULL SYSTEMS GO closeout; no message deletion is authorized."
+  "note": "Run full production-truth reconciliation now. Reconcile and archive terminal work-queue records, preserve all historical evidence, safely rotate oversized archive if required, rebuild live queue truth, audit runtime approval state and ORION freshness without fabricating freshness, and publish evidence. Continue FULL SYSTEMS GO closeout based on resulting blockers."
 }
