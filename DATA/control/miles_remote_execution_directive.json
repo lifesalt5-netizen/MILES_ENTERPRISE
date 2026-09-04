@@ -1,7 +1,7 @@
 {
-  "id": "miles-full-systems-production-truth-retry-20260904-1649",
+  "id": "miles-full-systems-ionos-cleanup-20260904-1702",
   "enabled": true,
-  "job": "PRODUCTION_TRUTH_RECONCILIATION",
+  "job": "IONOS_INBOX_CLEANUP_EXECUTE",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Rerun production-truth reconciliation after runtime approval backlog reached zero. Revalidate all five live demo companies, specifically determine whether the prior Integrated Technology Partners 180-second assessment timeout was transient or reproducible, preserve the now-green Sera Brynn duplicate-prime probe, and continue ORION/IONOS closeout without provider mutation or fabricated freshness."
+  "note": "Execute governed IONOS all-folder inbox cleanup now that live demo acceptance is green. Route high-confidence DMARC aggregate/system noise and known cold-outreach noise out of executive Inbox using UID MOVE only, preserve legitimate human/client/direct-sent-thread replies, scan all configured mailboxes/folders, perform no delete/expunge/SMTP/DNS/Instantly mutation, and return before/after proof including executableMisroutesAfter or equivalent remaining-routable-noise count."
 }
