@@ -2,13 +2,14 @@
 
 const assert=require('assert');
 const Admin=require('../SERVICES/revenue/P2GCFederalGrowthReviewAdminController');
+const {publicReview}=require('../SERVICES/revenue/P2GCFederalGrowthReviewHttpController');
 
 function resCapture(){return{statusCode:null,headers:null,body:'',writeHead(code,headers){this.statusCode=code;this.headers=headers;},end(v){this.body=String(v||'');}};}
 function req(method,path,body=null,headers={}){const handlers={};return{method,url:path,headers,socket:{remoteAddress:'127.0.0.1'},connection:{remoteAddress:'127.0.0.1'},on(name,fn){handlers[name]=fn;if(name==='end')setImmediate(()=>{if(body&&handlers.data)handlers.data(Buffer.from(JSON.stringify(body)));fn();});return this;}};}
 
 (async()=>{
   let sends=0;let capturedVideoReady=null;
-  const review={reviewId:'R1',status:'READY',release:{approvedByKevin:true,decision:'APPROVE'},presentation:{videoStatus:'READY'},stageState:{PROFESSIONAL_AI_DEMO:{status:'COMPLETE'}}};
+  const review={reviewId:'R1',status:'READY',recipient:{name:'Buyer',email:'buyer@example.com'},company:{name:'Example Co'},release:{approvedByKevin:true,decision:'APPROVE'},presentation:{videoStatus:'READY',streamingReady:true,mediaId:'secret-media-id',renderEvidence:{providerProjectRef:'secret-provider-ref'}},stageState:{PROFESSIONAL_AI_DEMO:{status:'COMPLETE'}},scoring:{fitScore:92,intentScore:77,salesPriority:85},engagementSummary:{maxPlaybackPct:75,questionCount:2,meetingBooked:false},findings:[],priorityOptions:[]};
   const lifecycle={read:id=>id==='R1'?review:null,getGreenGate:()=>({green:false}),write:r=>r};
   const release={
     lifecycle,
@@ -25,6 +26,12 @@ function req(method,path,body=null,headers={}){const handlers={};return{method,u
     markVideoReady:(id,input)=>{capturedVideoReady={id,input};return{ok:true,status:'PROFESSIONAL_AI_DEMO_READY',reviewId:id,streamingReady:true};}
   };
   const admin=new Admin({builder,release,videoProvider});
+
+  const prospectView=publicReview(review);
+  assert.strictEqual(prospectView.scoring,undefined,'internal sales scoring must not be exposed to prospect');
+  assert.strictEqual(prospectView.engagement,undefined,'internal behavioral engagement metrics must not be exposed to prospect');
+  assert.strictEqual(prospectView.video.mediaId,undefined,'private media identifier must not be exposed to prospect');
+  assert.strictEqual(prospectView.video.playable,true);
 
   let r=resCapture();await admin.handle(req('GET','/api/admin/review/health'),r,new URL('http://127.0.0.1/api/admin/review/health'));assert.strictEqual(r.statusCode,200);assert.strictEqual(JSON.parse(r.body).loopbackOnly,true);
 
