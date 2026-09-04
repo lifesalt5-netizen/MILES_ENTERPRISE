@@ -313,7 +313,7 @@ class P2GCFederalGrowthReviewLifecycleService {
       notes: `Completed from verified engagement event ${event.type}`
     };
 
-    if (['VIDEO_START', 'VIDEO_25', 'VIDEO_50', 'VIDEO_75', 'VIDEO_90', 'VIDEO_COMPLETE'].includes(event.type)) {
+    if (['VIDEO_75', 'VIDEO_90', 'VIDEO_COMPLETE'].includes(event.type)) {
       this.markStageCompleteInMemory(record, 'PLAYBACK_TRACKING', evidence);
     }
     if (event.type === 'QUESTION_SUBMITTED') {
