@@ -168,8 +168,10 @@ async function currentGsaCase() {
   assert(index.includes('awardHistory'));
   const server=fs.readFileSync(path.join(__dirname,'..','StartP2GCGrowthBlueprintDemo.js'),'utf8');
   const worker=fs.readFileSync(path.join(__dirname,'..','SERVICES','demo','P2GCGrowthModelWorker.js'),'utf8');
+  const child=fs.readFileSync(path.join(__dirname,'..','SERVICES','demo','P2GCGrowthModelChild.js'),'utf8');
   assert(server.includes('P2GCGrowthModelWorker.js'));
-  assert(worker.includes('ExecutiveBlueprintCanonicalTruthService'));
-  assert(worker.includes('await canonicalTruth.hydrate'));
+  assert(worker.includes('P2GCGrowthModelChild.js'));
+  assert(child.includes('ExecutiveBlueprintCanonicalTruthService'));
+  assert(child.includes('await canonicalTruth.hydrate'));
   console.log('EXECUTIVE_BLUEPRINT_CANONICAL_TRUTH_TEST: GREEN');
 })().catch(error=>{console.error(error.stack||error);process.exit(1);});
