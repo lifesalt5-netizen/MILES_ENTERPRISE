@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "provider": "BING_RSS_PUBLIC_SEARCH",
+  "maxResultsPerQuery": 10,
+  "queries": [
+    {"id":"govcon-help","signalType":"GOVCON_HELP_REQUEST","query":"\"need help\" \"government contracts\" company"},
+    {"id":"govcon-consultant","signalType":"GOVCON_CONSULTANT_REQUEST","query":"\"government contracting consultant\" \"looking for\""},
+    {"id":"first-contract","signalType":"FIRST_CONTRACT_HELP","query":"\"first government contract\" \"help\" small business"},
+    {"id":"sam-help","signalType":"SAM_HELP","query":"\"SAM.gov\" \"need help\" business"},
+    {"id":"gsa-no-sales","signalType":"GSA_HELP","query":"\"GSA Schedule\" \"no sales\""},
+    {"id":"gsa-traction","signalType":"GSA_HELP","query":"\"GSA Schedule\" \"need help\" sales"},
+    {"id":"va-contracting","signalType":"VA_HELP","query":"\"VA contracting\" \"need help\" vendor"},
+    {"id":"rfp-help","signalType":"PROPOSAL_HELP","query":"\"RFP\" \"proposal writing help\" government contractor"},
+    {"id":"rfq-help","signalType":"PROPOSAL_HELP","query":"\"RFQ\" \"need help\" government contract proposal"},
+    {"id":"teaming-help","signalType":"TEAMING_SUBCONTRACTING_HELP","query":"\"looking for teaming partners\" government contracting"},
+    {"id":"prime-help","signalType":"TEAMING_SUBCONTRACTING_HELP","query":"\"looking for a prime\" government contract small business"},
+    {"id":"cert-no-contracts","signalType":"CERTIFICATION_NO_TRACTION","query":"certified small business \"not getting contracts\" government"},
+    {"id":"reddit-govcon-help","signalType":"GOVCON_HELP_REQUEST","query":"site:reddit.com/r/govcon \"need help\" contracting"},
+    {"id":"reddit-gsa","signalType":"GSA_HELP","query":"site:reddit.com \"GSA Schedule\" \"sales\" \"help\""},
+    {"id":"linkedin-govcon-help","signalType":"GOVCON_HELP_REQUEST","query":"site:linkedin.com/posts \"government contracting\" \"need help\""},
+    {"id":"linkedin-gsa-help","signalType":"GSA_HELP","query":"site:linkedin.com/posts \"GSA Schedule\" \"help\" sales"},
+    {"id":"freelance-govcon","signalType":"GOVCON_CONSULTANT_REQUEST","query":"\"government contracting\" consultant freelance job SAM GSA"},
+    {"id":"freelance-proposal","signalType":"PROPOSAL_HELP","query":"\"government proposal writer\" freelance RFP RFQ"},
+    {"id":"expiring-contract","signalType":"EXPIRING_CONTRACT_REPLACEMENT","query":"\"contract ending\" \"government\" \"need new contracts\" company"},
+    {"id":"become-contractor","signalType":"BECOME_GOVERNMENT_CONTRACTOR","query":"\"want to become a government contractor\" business"}
+  ]
+}
