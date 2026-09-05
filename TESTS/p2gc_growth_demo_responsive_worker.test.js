@@ -18,5 +18,11 @@ assert(worker.includes('samFallback.build(term)'), 'worker must retain SAM fallb
 assert(worker.includes('historicalNameIndex.resolve(term)'), 'worker must retain historical identity fallback behavior');
 assert(worker.includes('canonicalTruth.hydrate'), 'worker must retain canonical truth hydration');
 assert(worker.includes('commercialPreview.apply'), 'worker must retain commercial preview generation');
+assert(worker.includes('P2GC_GROWTH_WORKER_MAX_CONCURRENCY || 2'), 'worker pool must default to bounded concurrency of two');
+assert(worker.includes("fs.openSync(candidate, 'wx')"), 'worker must claim an atomic runtime slot before heavy model construction');
+assert(worker.includes('await acquireGate()'), 'worker must acquire a slot before loading heavyweight model dependencies');
+assert(worker.indexOf('await acquireGate()') < worker.indexOf("require('./ExecutiveGrowthBlueprintDemoService')"), 'heavy demo dependencies must load only after slot acquisition');
+assert(worker.includes('gateStaleMs'), 'worker slot gate must have stale-lock recovery');
+assert(worker.includes('releaseGate()'), 'worker must release its model slot after completion/failure');
 
 console.log('P2GC_GROWTH_DEMO_RESPONSIVE_WORKER_GREEN');
