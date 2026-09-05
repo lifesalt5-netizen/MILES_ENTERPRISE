@@ -21,6 +21,7 @@ const LEGACY_HTML_FILE = path.join(OUT_DIR, "index.html");
 const STATE_FILE = path.join(OUT_DIR, "dashboard_state.json");
 const PUBLIC_DIR = path.join(ROOT, "SERVICES", "ceo_dashboard", "public");
 const CONTROL_HTML = path.join(PUBLIC_DIR, "index.html");
+const CONTROL_REVENUE_HTML = path.join(PUBLIC_DIR, "revenue-control.html");
 const CONTROL_JS = path.join(PUBLIC_DIR, "ceo.js");
 const CONTROL_CSS = path.join(PUBLIC_DIR, "ceo.css");
 
@@ -57,6 +58,7 @@ class DashboardServerService {
 
         if(req.method==="GET"&&requestUrl.pathname==="/ceo.js"){sendFile(res,CONTROL_JS,"application/javascript; charset=utf-8");return;}
         if(req.method==="GET"&&requestUrl.pathname==="/ceo.css"){sendFile(res,CONTROL_CSS,"text/css; charset=utf-8");return;}
+        if(req.method==="GET"&&requestUrl.pathname==="/revenue-control"){sendFile(res,CONTROL_REVENUE_HTML,"text/html; charset=utf-8");return;}
         if(req.method==="GET"&&requestUrl.pathname==="/legacy"){dashboard.run({source:"DashboardServerService/legacy"});sendFile(res,LEGACY_HTML_FILE,"text/html; charset=utf-8");return;}
         if(req.method==="GET"&&(requestUrl.pathname==="/"||requestUrl.pathname==="/index.html")){sendFile(res,CONTROL_HTML,"text/html; charset=utf-8");return;}
         sendJson(res,404,{ok:false,error:"Not found"});
