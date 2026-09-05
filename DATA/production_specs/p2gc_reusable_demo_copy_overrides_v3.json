@@ -1,0 +1,27 @@
+{
+  "version": "2026-09-05-production-urgency-v3",
+  "sceneOverrides": {
+    "3": {
+      "title": "Current Federal Position + Federal Growth Position Scorecard",
+      "replaceScreen": {
+        "FEDERAL POSITION SCORECARD": "FEDERAL GROWTH POSITION SCORECARD"
+      }
+    },
+    "5": {
+      "replaceScreen": {
+        "64% of current revenue enters the exposure view": "64% of current revenue deserves attention over the next 18 months"
+      },
+      "replaceNarration": {
+        "That is roughly 64 percent of the current revenue base entering an exposure view.": "That means roughly 64 percent of the current revenue base deserves attention over the next 18 months."
+      }
+    },
+    "11": {
+      "replaceScreen": {
+        "Know where you stand before your next recompete, capture decision or growth push.": "Know what deserves attention before your next recompete, capture decision, or growth push."
+      },
+      "replaceNarration": {
+        "Know where you stand before your next recompete, capture decision or growth push.": "Know what deserves attention before your next recompete, capture decision, or growth push."
+      }
+    }
+  }
+}
