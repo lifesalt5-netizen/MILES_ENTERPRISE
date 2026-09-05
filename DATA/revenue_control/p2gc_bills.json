@@ -1,0 +1,123 @@
+{
+  "generatedAt": "2026-09-04T21:46:00-04:00",
+  "currency": "USD",
+  "bills": [
+    {
+      "vendor": "Instantly",
+      "purpose": "Cold-email / outreach platform",
+      "amount": 97.00,
+      "frequency": "Amount currently owed",
+      "invoiceDate": null,
+      "dueDate": null,
+      "status": "ON HOLD / OWED",
+      "priority": "HIGH",
+      "accountPlan": "Instantly",
+      "action": "Do not pay until it is required for revenue-producing outreach; use a lower-cost fallback if possible.",
+      "source": "Kevin confirmed 2026-09-04"
+    },
+    {
+      "vendor": "Google Workspace",
+      "purpose": "Core P2GC business email",
+      "amount": null,
+      "frequency": "Business Starter billing",
+      "invoiceDate": "2026-09-02",
+      "dueDate": "2026-10-02",
+      "status": "PAYMENT FAILED",
+      "priority": "CRITICAL",
+      "accountPlan": "Google Workspace Business Starter — pathways2gc.com",
+      "action": "Pay/update billing before suspension; determine exact outstanding balance and reduce unused paid seats.",
+      "source": "Google Workspace payment-failure notice"
+    },
+    {
+      "vendor": "IONOS",
+      "purpose": "Email marketing",
+      "amount": 7.50,
+      "frequency": "Invoice / recurring plan",
+      "invoiceDate": "2026-08-24",
+      "dueDate": "2026-08-31",
+      "status": "VERIFY PAID / OUTSTANDING",
+      "priority": "MEDIUM",
+      "accountPlan": "IONOS Email Marketing Plus — Contract 109173888",
+      "action": "Verify whether the card debit completed; cancel if unused after confirming no dependency.",
+      "source": "IONOS Invoice 202064242098"
+    },
+    {
+      "vendor": "IONOS",
+      "purpose": "Mailbox service",
+      "amount": 8.50,
+      "frequency": "Invoice / recurring plan",
+      "invoiceDate": "2026-08-22",
+      "dueDate": "2026-08-29",
+      "status": "VERIFY PAID / OUTSTANDING",
+      "priority": "HIGH",
+      "accountPlan": "IONOS Mail Basic 25 — Contract 107898800",
+      "action": "Verify status; keep only if this mailbox plan is still needed for P2GC operations.",
+      "source": "IONOS Invoice 202064203608"
+    },
+    {
+      "vendor": "IONOS",
+      "purpose": "Email archiving",
+      "amount": 2.50,
+      "frequency": "Invoice / recurring plan",
+      "invoiceDate": "2026-08-18",
+      "dueDate": "2026-08-25",
+      "status": "VERIFY PAID / OUTSTANDING",
+      "priority": "LOW",
+      "accountPlan": "IONOS Email Archiving — Contract 111692634",
+      "action": "Verify status and whether archiving is essential; cancel if not needed.",
+      "source": "IONOS Invoice 202064123387"
+    },
+    {
+      "vendor": "IONOS",
+      "purpose": "Security / backup",
+      "amount": 2.50,
+      "frequency": "Invoice / recurring plan",
+      "invoiceDate": "2026-08-20",
+      "dueDate": "2026-08-27",
+      "status": "VERIFY PAID / OUTSTANDING",
+      "priority": "LOW",
+      "accountPlan": "IONOS MyDefender Starter — Contract 108308626",
+      "action": "Verify status and whether service is necessary; cut if nonessential.",
+      "source": "IONOS Invoice 202064163475"
+    },
+    {
+      "vendor": "Namecheap",
+      "purpose": "Six P2GC outreach/brand domains",
+      "amount": 64.19,
+      "frequency": "Annual registrations",
+      "invoiceDate": "2026-04-20",
+      "dueDate": "2027-04-20",
+      "status": "PAID / FUTURE RENEWAL",
+      "priority": "MEDIUM",
+      "accountPlan": "pathways2gc.co; pathwaysgov.com; pathwaysfederal.com; pathwaysgovcon.com; pathwaysgsa.com; pathwaystogc.com",
+      "action": "Review each domain before renewal and retain only domains still supporting active P2GC operations.",
+      "source": "Namecheap Order 200327422; original first-year cost, renewal prices may differ"
+    },
+    {
+      "vendor": "ChatGPT Plus",
+      "purpose": "P2GC research / operating support",
+      "amount": 20.00,
+      "frequency": "Monthly",
+      "invoiceDate": "2026-09-04",
+      "dueDate": null,
+      "status": "PAID",
+      "priority": "HIGH",
+      "accountPlan": "ChatGPT Plus",
+      "action": "Keep active while materially supporting P2GC sales/research; add exact renewal date when available.",
+      "source": "Kevin confirmed 2026-09-04"
+    },
+    {
+      "vendor": "P2GC Website",
+      "purpose": "Website / prospect credibility",
+      "amount": null,
+      "frequency": "Unknown",
+      "invoiceDate": null,
+      "dueDate": null,
+      "status": "VERIFY NEXT BILL",
+      "priority": "CRITICAL",
+      "accountPlan": "Website plan — exact vendor/plan to confirm",
+      "action": "Protect the core website/domain; record amount and due date as soon as the next invoice or notice arrives.",
+      "source": "Kevin confirmed no current notice yet"
+    }
+  ]
+}
