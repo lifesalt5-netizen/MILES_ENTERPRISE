@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-growth-demo-responsive-verify-20260905-0121",
+  "id": "miles-p2gc-8791-runtime-health-diagnose-20260905-0209",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Post-deploy verification for merged 8791 responsiveness repair. Prove p2gc-growth-demo stays responsive while canonical assessment/source work runs, confirm assessment no longer starves health/static routes, capture live acceptance and source timing, and return exact remaining blockers if any. Read-only verification only; no sends, no DNS changes, no provider mutations."
+  "note": "Read-only runtime diagnostic after post-deploy 8791 acceptance showed ECONNRESET followed by ECONNREFUSED while canonical model/data path succeeded. Verify PM2 ownership/status/restart count, port 8791 listener health, process/runtime freshness, and capture precise failure evidence. No sends, no provider mutations, no destructive git recovery."
 }
