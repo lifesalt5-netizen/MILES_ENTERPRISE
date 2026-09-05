@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-fgr-video-provider-evidence-20260905-1055",
+  "id": "miles-p2gc-demo-video-finalize-20260905-1412",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Run the now-current Federal Growth Review deploy so the pre-funnel Google Vids/editor/local video readiness evidence is emitted even if public Tailscale Funnel remains blocked. No external send or paid/provider/DNS/billing mutation."
+  "note": "CEO PRIORITY: execute the autonomous P2GC prospect-facing demo video finalization runner. Generate and export the real MP4 from the latest personalized Federal Growth Review. Do not perform unrelated business work."
 }
