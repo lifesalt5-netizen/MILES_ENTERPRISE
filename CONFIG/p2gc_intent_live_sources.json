@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "purpose": "Production high-intent GovCon buying-signal discovery. Public job postings are permitted signals under issue #480 when an employer is explicitly seeking GovCon expertise.",
+  "sources": [
+    {
+      "name": "JOBICY_GOVERNMENT_CONTRACTING",
+      "platform": "PUBLIC_JOB_POSTING",
+      "enabled": true,
+      "url": "https://jobicy.com/api/v2/remote-jobs?count=100&geo=usa&tag=government%20contracting",
+      "itemsPath": "jobs",
+      "fieldMap": {
+        "company": "companyName",
+        "sourceUrl": "url",
+        "originalPostDate": "pubDate",
+        "needSummary": "jobTitle",
+        "excerpt": "jobDescription"
+      }
+    },
+    {
+      "name": "JOBICY_FEDERAL_PROPOSAL",
+      "platform": "PUBLIC_JOB_POSTING",
+      "enabled": true,
+      "url": "https://jobicy.com/api/v2/remote-jobs?count=100&geo=usa&tag=federal%20proposal",
+      "itemsPath": "jobs",
+      "fieldMap": {
+        "company": "companyName",
+        "sourceUrl": "url",
+        "originalPostDate": "pubDate",
+        "needSummary": "jobTitle",
+        "excerpt": "jobDescription"
+      }
+    },
+    {
+      "name": "REMOTIVE_GOVERNMENT_CONTRACT",
+      "platform": "PUBLIC_JOB_POSTING",
+      "enabled": true,
+      "url": "https://remotive.com/api/remote-jobs?search=government%20contract",
+      "itemsPath": "jobs",
+      "fieldMap": {
+        "company": "company_name",
+        "sourceUrl": "url",
+        "originalPostDate": "publication_date",
+        "needSummary": "title",
+        "excerpt": "description"
+      }
+    },
+    {
+      "name": "REMOTIVE_FEDERAL_PROPOSAL",
+      "platform": "PUBLIC_JOB_POSTING",
+      "enabled": true,
+      "url": "https://remotive.com/api/remote-jobs?search=federal%20proposal",
+      "itemsPath": "jobs",
+      "fieldMap": {
+        "company": "company_name",
+        "sourceUrl": "url",
+        "originalPostDate": "publication_date",
+        "needSummary": "title",
+        "excerpt": "description"
+      }
+    }
+  ]
+}
