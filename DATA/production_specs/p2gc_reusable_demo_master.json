@@ -1,0 +1,98 @@
+{
+  "title": "P2GC Federal Growth Review — Reusable Demo",
+  "version": "2026-09-05-production",
+  "format": {"aspectRatio":"16:9","resolution":"1920x1080","targetRuntimeSeconds":510,"runtimeWindowSeconds":[495,525]},
+  "fictionalCompany": {
+    "name":"Apex Ridge Solutions, LLC",
+    "disclaimer":"Fictional Demonstration Company",
+    "focus":"IT modernization, cybersecurity support, program support",
+    "primaryNaics":"541512",
+    "adjacentNaics":["541519","541611"],
+    "fiveYearFederalAwards":11800000,
+    "trailingTwelveMonthRevenue":4200000,
+    "revenueTrend":[2300000,2700000,3100000,3500000,4200000],
+    "primeSharePct":61,
+    "subSharePct":39,
+    "agencyRevenue":[{"agency":"VA","amount":2100000},{"agency":"DHA","amount":1000000},{"agency":"HHS","amount":650000},{"agency":"DHS","amount":450000}],
+    "gsaMas":true,
+    "gsaSins":["54151S","541611"],
+    "gsaTrailingSales":460000,
+    "revenueExposed18Months":2700000,
+    "exposureItems":[{"label":"Contract A","amount":1200000,"reason":"Recompete approaching"},{"label":"Contract B","amount":900000,"reason":"Option period ending"},{"label":"Contract C","amount":600000,"reason":"Buyer concentration risk"}],
+    "qualifiedPaths":7
+  },
+  "competitors":[
+    {"name":"Apex Ridge Solutions","annualAwards":4200000,"agencies":4,"vehicle":"GSA MAS","primeSharePct":61},
+    {"name":"Summit Federal Tech","annualAwards":7100000,"agencies":7,"vehicle":"GSA MAS + agency BPAs","primeSharePct":76},
+    {"name":"Blue Harbor Systems","annualAwards":5800000,"agencies":6,"vehicle":"GSA MAS","primeSharePct":70},
+    {"name":"Meridian Public Sector","annualAwards":4900000,"agencies":5,"vehicle":"GSA MAS + teaming footprint","primeSharePct":66}
+  ],
+  "scenes":[
+    {
+      "scene":1,"title":"Federal opportunities are everywhere. Clarity is not.","durationSeconds":40,"avatarSeconds":18,
+      "screen":["Federal opportunities are everywhere.","Clarity is not.","Why are you winning?","Why are you not winning?","Which revenue is exposed?","Are your vehicles producing?","Where should you expand next?","Which opportunities actually fit?","More opportunities ≠ more growth"],
+      "visual":"Fast-moving federal data tiles collapse into one clean P2GC intelligence view. Avatar only for opening 18 seconds, then transition to dashboard visual.",
+      "narration":"Federal contractors rarely suffer from a lack of information. There are contract notices, award records, forecasts, agency portals, GSA data, teaming opportunities and more. The harder problem is knowing what that information means for your business. Why are you winning where you are winning? Where is current revenue exposed? Are your contract vehicles actually producing? And out of all the opportunities available, which ones truly fit your company? That is the problem the P2GC Federal Growth Review is built to address."
+    },
+    {
+      "scene":2,"title":"P2GC Federal Growth Review","durationSeconds":38,"avatarSeconds":0,
+      "screen":["P2GC Federal Growth Review","Federal data → Business meaning → Growth pathway","POSITION","EXPOSURE","OPPORTUNITY","Not another bid-notification service"],
+      "visual":"Awards, GSA/VA, agencies, NAICS, recompetes, forecasts, competitors and opportunities flow into P2GC Intelligence, then into Growth Diagnosis.",
+      "narration":"The Federal Growth Review connects the pieces that normally sit in separate systems. We examine where a contractor stands today, where revenue may be exposed, how vehicles are being used, where agencies are buying, what competitors are doing, and where realistic expansion paths may exist. The objective is not to create the longest list of opportunities. It is to turn federal information into business meaning and a clearer growth pathway."
+    },
+    {
+      "scene":3,"title":"Current Federal Position","durationSeconds":55,"avatarSeconds":0,
+      "screen":["Sample Federal Position","Apex Ridge Solutions, LLC","Fictional Demonstration Company","$11.8M — 5-Year Federal Awards","$4.2M — Trailing 12-Month Revenue","61% / 39% — Prime / Sub","4 — Current Federal Agencies","VA $2.1M","DHA $1.0M","HHS $650K","DHS $450K","Revenue tells us what happened. Buying patterns help explain why."],
+      "visual":"Five-year revenue bars, prime/sub donut, agency-revenue bars, NAICS chips 541512 / 541519 / 541611.",
+      "narration":"Consider our fictional contractor, Apex Ridge Solutions. Over five years, Apex Ridge has received about 11.8 million dollars in federal awards and is currently generating about 4.2 million dollars annually. That sounds healthy, but revenue by itself does not tell us whether the position is strong. P2GC looks at who is buying, which NAICS codes are producing, contract type, and how much work is prime versus subcontract. Here, 61 percent of the work is prime and 39 percent is subcontracted. The VA represents roughly half of current federal revenue. That shows proven performance with an important customer, but it also reveals meaningful concentration risk."
+    },
+    {
+      "scene":4,"title":"Contract Vehicle ≠ Revenue","durationSeconds":46,"avatarSeconds":0,
+      "screen":["Contract Vehicle ≠ Revenue","GSA MAS — Active","SIN 54151S","SIN 541611","Trailing 12-Month GSA Sales — $460K","Total Federal Revenue — $4.2M","Potential underutilization","A vehicle creates access. A strategy creates utilization.","Where relevant: VA / VISN purchasing pathways"],
+      "visual":"GSA card next to $4.2M total revenue bar and $460K GSA-sales bar. Add small VA/VISN pathway card.",
+      "narration":"P2GC then examines contract vehicles. Having a GSA Schedule, VA vehicle, BPA or another purchasing vehicle can create access, but access is not the same as utilization. Apex Ridge has an active GSA Schedule with two relevant SINs, yet only about 460 thousand dollars of its current annual federal revenue is flowing through that vehicle. That does not automatically mean the Schedule is failing. It raises the question of whether the company is fully monetizing access it already owns. Where relevant, the same analysis can include VA and VISN purchasing pathways. Vehicle ownership and vehicle performance are two different things."
+    },
+    {
+      "scene":5,"title":"Revenue Exposure / Recompetes","durationSeconds":50,"avatarSeconds":0,
+      "screen":["Current Federal Revenue — $4.2M","Potentially Exposed Within 18 Months — $2.7M","Contract A — $1.2M — Recompete approaching","Contract B — $900K — Option period ending","Contract C — $600K — Buyer concentration risk","Protecting revenue can be as important as finding new revenue."],
+      "visual":"Animate $4.2M revenue bar, then highlight $2.7M exposure segment. Add 18-month timeline with three risk markers.",
+      "narration":"Growth analysis has to look backward and forward at the same time. Apex Ridge currently has 4.2 million dollars in federal revenue. In this sample, about 2.7 million dollars is connected to contracts, option periods or buying relationships that may require attention within the next 18 months. P2GC looks for approaching recompetes, expirations, concentration within a limited number of agencies or buyers, and other conditions that can expose revenue. That can completely change the growth priority. Protecting two million dollars of existing work may be more urgent than chasing two million dollars of new work."
+    },
+    {
+      "scene":6,"title":"Opportunity Environment","durationSeconds":64,"avatarSeconds":0,
+      "screen":["Opportunity Environment","Active Procurements","Recompetes","Forecast Opportunities","Agency Buying Patterns","GSA / Vehicle Opportunities","Prime Opportunities","Subcontract / Teaming","VA / VISN","Adjacent NAICS","7 Qualified Paths","The goal is not to find the most opportunities.","The goal is to identify the right opportunities for your company."],
+      "visual":"Dozens of opportunity cards enter, then filters remove poor fits using Agency / NAICS / Vehicle / Past Performance / Prime-Sub / Timing / Buyer Fit until seven remain. End on fit matrix.",
+      "narration":"This is where P2GC differs from a basic opportunity search. A contractor usually does not need more notices in the inbox. We look across active procurements, recompetes, agency forecasts, buying patterns, contract vehicles, prime opportunities, subcontracting and teaming possibilities, VA or VISN pathways where relevant, and logical adjacent NAICS markets. Then we narrow. Does the company have relevant performance? Is the agency already buying similar work? Is the opportunity accessible through a vehicle the company owns or a realistic teaming path? Is the timing workable? Is it a credible prime target, a better subcontract target, or something to ignore? In this example, dozens of possibilities become seven qualified paths worth deeper attention. The goal is not to find the most opportunities. It is to identify the right opportunities for that company."
+    },
+    {
+      "scene":7,"title":"Competitive Position","durationSeconds":45,"avatarSeconds":0,
+      "screen":["Competitive Position","Apex Ridge — $4.2M / 4 agencies / 61% prime","Summit — $7.1M / 7 agencies / 76% prime","Blue Harbor — $5.8M / 6 agencies / 70% prime","Meridian — $4.9M / 5 agencies / 66% prime","Where is the gap forming?","Broader agency reach","Higher prime position","Stronger vehicle utilization"],
+      "visual":"Four-company bar comparison with agencies, prime share and vehicle footprint. Highlight three gap signals.",
+      "narration":"Federal performance also needs context. P2GC can compare a contractor with companies competing in similar markets. Apex Ridge is producing 4.2 million dollars annually, while several fictional peers are generating more revenue across a broader group of agencies and showing somewhat higher prime percentages. The point is not to rank companies. The useful question is what may be contributing to the gap. Are competitors reaching more agencies, monetizing vehicles more effectively, positioning earlier around recompetes, or priming work Apex Ridge is still performing as a subcontractor? Those patterns help show where strategic changes may matter."
+    },
+    {
+      "scene":8,"title":"Federal Growth Gaps","durationSeconds":40,"avatarSeconds":0,
+      "screen":["Sample Growth Diagnosis","1. GSA underutilized","2. 50% of revenue concentrated in one agency","3. $2.7M entering an 18-month exposure window","4. Limited reach into adjacent buyers","5. Strong subcontract capability, but prime position can improve","Data becomes useful when the findings connect."],
+      "visual":"Five finding tiles connect into one central Growth Diagnosis node.",
+      "narration":"When these elements are viewed together, the picture becomes clearer. Apex Ridge is not a weak contractor. It has real federal performance. But the review identifies five connected growth gaps: GSA appears underutilized, half of revenue sits in one agency, 2.7 million dollars may require protection within 18 months, adjacent-buyer reach is limited, and the company has room to strengthen its prime position. The value is not any single data point. The value is connecting those findings into a diagnosis."
+    },
+    {
+      "scene":9,"title":"Protect → Expand → Capture","durationSeconds":50,"avatarSeconds":0,
+      "screen":["PROTECT → EXPAND → CAPTURE","PROTECT — Existing revenue / Recompetes / Key buyers","EXPAND — Adjacent agencies / Existing vehicles / Prime position","CAPTURE — Best-fit opportunities / Teaming paths / Priority pursuits","Sequence matters."],
+      "visual":"Three-step pathway builds left to right, with Protect appearing first, then Expand, then Capture.",
+      "narration":"That leads to the P2GC pathway: Protect, Expand and Capture. Protect means understanding the revenue already in place, identifying approaching recompetes, and making sure important buyer relationships are not overlooked. Expand means identifying logical new agencies, buyers, vehicles and prime positions that fit what the company already does well. Capture means focusing time and resources on the opportunities most likely to produce meaningful results. The sequence matters. Chasing every solicitation while existing revenue is exposed or positioning is weak can waste enormous effort. A clearer pathway tells the company where attention should go first."
+    },
+    {
+      "scene":10,"title":"What Happens With a Real Company","durationSeconds":43,"avatarSeconds":0,
+      "screen":["This demonstration used fictional data.","YOUR COMPANY","Federal Intelligence","Growth Diagnosis","Recommended Pathway","Execution","The demonstration shows how the analysis works.","Your engagement applies that process to your actual company, priorities, opportunities and execution path."],
+      "visual":"Apex Ridge fades out and YOUR COMPANY appears. Animate Company → Federal Intelligence → Growth Diagnosis → Recommended Pathway → Execution. Do not show detailed target lists or consulting deliverables.",
+      "narration":"Everything in this demonstration is fictional. When P2GC evaluates a real contractor, the same process is applied to that company's actual federal footprint. We examine the available intelligence, connect the signals, identify the issues that appear most important, and develop the recommended pathway. The demonstration shows how the analysis works. Your engagement applies that process to your actual company, priorities, opportunities and execution path. The purpose is to understand what your federal position is really telling you before deciding where your time and resources should go."
+    },
+    {
+      "scene":11,"title":"Review Your Federal Position With Kevin","durationSeconds":39,"avatarSeconds":18,
+      "screen":["Want to know what this analysis reveals about your company?","Review Your Federal Position With Kevin","15–20 Minute Discussion","No generic sales presentation.","We’ll discuss what we’re seeing in your actual federal position.","REQUEST YOUR REVIEW","Pathways 2 Government Contracting","pathways2gc.com"],
+      "visual":"Clean branded CTA screen. Avatar for about 18 seconds, then hold final CTA card.",
+      "narration":"The question is not whether federal opportunities exist. The better question is whether your current position is pointing you toward the right ones. If you want to understand what this type of analysis reveals about your company, schedule a short Federal Position Review with Kevin. It is a 15-to-20-minute discussion, not a generic sales presentation. We will discuss what we are seeing in your actual federal position and whether there is a meaningful pathway worth pursuing. Request your review today."
+    }
+  ]
+}
