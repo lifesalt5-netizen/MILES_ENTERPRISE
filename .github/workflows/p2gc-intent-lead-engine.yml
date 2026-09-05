@@ -5,7 +5,9 @@ on:
     paths:
       - 'SERVICES/revenue/P2GCIntentLeadCanonicalService.js'
       - 'SERVICES/revenue/P2GCWarmPipelineContractService.js'
+      - 'SCRIPTS/UpsertP2GCWarmPipelineWorkbook.ps1'
       - 'TESTS/p2gc_intent_lead_*'
+      - 'TESTS/Test_P2GCWarmPipelineWorkbookUpsert.ps1'
       - '.github/workflows/p2gc-intent-lead-engine.yml'
 
 jobs:
@@ -26,3 +28,17 @@ jobs:
         run: node TESTS/p2gc_intent_lead_canonical_test.js
       - name: Warm Pipeline mapping and upsert contract
         run: node TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
+
+  xlsx-upsert-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell 5.1 parse validation
+        shell: powershell
+        run: |
+          $errors=$null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path '.\SCRIPTS\UpsertP2GCWarmPipelineWorkbook.ps1'),[ref]$null,[ref]$errors)
+          if($errors){ $errors | Format-List | Out-String | Write-Error; exit 2 }
+      - name: Functional XLSX append update dedupe acceptance
+        shell: powershell
+        run: powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .\TESTS\Test_P2GCWarmPipelineWorkbookUpsert.ps1
