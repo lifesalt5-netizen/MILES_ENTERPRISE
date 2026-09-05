@@ -4,15 +4,8 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
+const { Worker } = require("worker_threads");
 const ExecutiveGrowthBlueprintDemoService = require("./SERVICES/demo/ExecutiveGrowthBlueprintDemoService");
-const DemoTruthReconciliationService = require("./SERVICES/demo/DemoTruthReconciliationService");
-const ExecutiveBlueprintCanonicalTruthService = require("./SERVICES/demo/ExecutiveBlueprintCanonicalTruthService");
-const DemoCommercialPreviewService = require("./SERVICES/demo/DemoCommercialPreviewService");
-const SamPublicEntityIdentityService = require("./SERVICES/demo/SamPublicEntityIdentityService");
-const SamQualifiedProspectFallbackService = require("./SERVICES/demo/SamQualifiedProspectFallbackService");
-const SamQualifiedProspectNameResolver = require("./SERVICES/demo/SamQualifiedProspectNameResolver");
-const HistoricalRecipientNameIndexService = require("./SERVICES/demo/HistoricalRecipientNameIndexService");
-const HistoricalProspectFallbackService = require("./SERVICES/demo/HistoricalProspectFallbackService");
 const P2GCFocusedIntelligenceService = require("./SERVICES/demo/P2GCFocusedIntelligenceService");
 const P2GCPrimeSubTeamingService = require("./SERVICES/teaming/P2GCPrimeSubTeamingService");
 const FederalPathwayScoreIntegratedService = require("./SERVICES/FederalPathwayScoreIntegratedService");
@@ -21,15 +14,9 @@ const P2GCProposalCommandService = require("./SERVICES/proposal/P2GCProposalComm
 const ROOT = __dirname;
 const PORT = Number(process.env.P2GC_GROWTH_DEMO_PORT || 8791);
 const PUBLIC = path.join(ROOT, "SERVICES", "demo", "public");
+const MODEL_WORKER = path.join(ROOT, "SERVICES", "demo", "P2GCGrowthModelWorker.js");
+const MODEL_TIMEOUT_MS = Math.max(60000, Number(process.env.P2GC_GROWTH_MODEL_TIMEOUT_MS || 180000));
 const service = new ExecutiveGrowthBlueprintDemoService();
-const truthReconciler = new DemoTruthReconciliationService();
-const canonicalTruth = new ExecutiveBlueprintCanonicalTruthService({ rootDir: ROOT });
-const commercialPreview = new DemoCommercialPreviewService();
-const samPublicIdentity = new SamPublicEntityIdentityService({ rootDir: ROOT });
-const samFallback = new SamQualifiedProspectFallbackService({ rootDir: ROOT });
-const samNameResolver = new SamQualifiedProspectNameResolver({ rootDir: ROOT });
-const historicalNameIndex = new HistoricalRecipientNameIndexService({ rootDir: ROOT });
-const historicalFallback = new HistoricalProspectFallbackService({ rootDir: ROOT });
 const focused = new P2GCFocusedIntelligenceService();
 const teaming = new P2GCPrimeSubTeamingService({ blueprintService:service });
 const pathwayScore = new FederalPathwayScoreIntegratedService();
@@ -46,18 +33,25 @@ function json(res, status, body) { send(res, status, "application/json; charset=
 function safeFile(name) { return path.join(PUBLIC, name); }
 function staticFile(res, name, type) {
   const file = safeFile(name);
-  if (!fs.existsSync(file)) return send(res, 404, "text/plain; charset=utf-8", "Not found");
-  send(res, 200, type, fs.readFileSync(file));
+  fs.promises.readFile(file)
+    .then(body => send(res, 200, type, body))
+    .catch(error => send(res, error?.code === "ENOENT" ? 404 : 500, "text/plain; charset=utf-8", error?.code === "ENOENT" ? "Not found" : "Static file read failed"));
 }
 function key(term) { return String(term || "").trim().toUpperCase(); }
 function readJsonBody(req, limitBytes = 2 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     let raw = "";
+    let rejected = false;
     req.on("data", chunk => {
+      if (rejected) return;
       raw += chunk;
-      if (Buffer.byteLength(raw, "utf8") > limitBytes) reject(new Error("REQUEST_TOO_LARGE"));
+      if (Buffer.byteLength(raw, "utf8") > limitBytes) {
+        rejected = true;
+        reject(new Error("REQUEST_TOO_LARGE"));
+      }
     });
     req.on("end", () => {
+      if (rejected) return;
       if (!raw.trim()) return resolve({});
       try { resolve(JSON.parse(raw)); } catch { reject(new Error("INVALID_JSON")); }
     });
@@ -65,131 +59,36 @@ function readJsonBody(req, limitBytes = 2 * 1024 * 1024) {
   });
 }
 
-function mergePublicSamIdentity(baseModel, identity) {
-  if (!baseModel?.ok || !identity?.ok) return baseModel;
-  const resolvedUei = String(baseModel.profile?.uei || '').trim().toUpperCase();
-  const samUei = String(identity.uei || '').trim().toUpperCase();
-  if (!resolvedUei || !samUei || resolvedUei !== samUei) return baseModel;
-  return {
-    ...baseModel,
-    profile: {
-      ...(baseModel.profile || {}),
-      companyName: identity.legalBusinessName || baseModel.profile?.companyName || null,
-      uei: identity.uei || baseModel.profile?.uei || null,
-      cage: identity.cage || baseModel.profile?.cage || null,
-      headquarters: baseModel.profile?.headquarters || identity.headquarters || null,
-      website: baseModel.profile?.website || identity.website || null,
-      naicsCodes: Array.from(new Set([...(baseModel.profile?.naicsCodes || []), ...(identity.naicsCodes || [])].filter(Boolean))),
-      samStatus: identity.samStatus || 'UNVERIFIED',
-      samExpirationCurrent: identity.samExpirationCurrent
-    },
-    currentState: {
-      ...(baseModel.currentState || {}),
-      samRegistration: identity.samRegistration
-    },
-    evidence: {
-      ...(baseModel.evidence || {}),
-      currentSamRegistration: identity.source || null
-    }
-  };
+function runModelWorker(term, refresh = false) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(MODEL_WORKER, { workerData:{ rootDir:ROOT, term, refresh } });
+    let settled = false;
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { worker.terminate(); } catch {}
+      fn(value);
+    };
+    const timer = setTimeout(() => finish(reject, new Error(`MODEL_WORKER_TIMEOUT_${MODEL_TIMEOUT_MS}MS`)), MODEL_TIMEOUT_MS);
+    timer.unref?.();
+    worker.once("message", message => {
+      if (message?.ok === true) return finish(resolve, message.model);
+      finish(reject, new Error(message?.error || "MODEL_WORKER_FAILED"));
+    });
+    worker.once("error", error => finish(reject, error));
+    worker.once("exit", code => {
+      if (!settled && code !== 0) finish(reject, new Error(`MODEL_WORKER_EXIT_${code}`));
+    });
+  });
 }
 
 async function buildModel(term, refresh = false) {
-  let baseModel = service.build(term);
-  if (!baseModel?.ok && baseModel?.status === "CONTRACTOR_NOT_FOUND") {
-    const publicIdentity = samPublicIdentity.resolve(term);
-    if (publicIdentity?.ok) {
-      baseModel = samPublicIdentity.toDemoModel(term, publicIdentity);
-    } else {
-      let fallback = samFallback.build(term);
-      let canonicalIdentity = null;
-      if (!fallback?.ok) {
-        canonicalIdentity = samNameResolver.resolve(term);
-        if (canonicalIdentity?.ok && canonicalIdentity.uei) fallback = samFallback.build(canonicalIdentity.uei);
-      }
-      if (fallback?.ok) {
-        baseModel = {
-          ...fallback,
-          evidence: {
-            ...(fallback.evidence || {}),
-            canonicalNameResolution: canonicalIdentity?.ok ? {
-              authority: 'SAM_PUBLIC_BULK_QUALIFIED_UNIVERSE',
-              matchedBy: canonicalIdentity.matchedBy,
-              requestedTerm: term,
-              legalName: canonicalIdentity.legalName,
-              uei: canonicalIdentity.uei,
-              cage: canonicalIdentity.cage || null
-            } : null
-          }
-        };
-      } else {
-        const historicalIdentity = historicalNameIndex.resolve(term);
-        if (historicalIdentity?.ok && historicalIdentity.row) {
-          baseModel = historicalFallback.historicalModel(
-            term,
-            { ok:true, row:historicalIdentity.row, matchedBy:historicalIdentity.matchedBy },
-            historicalFallback.sourceStatus()
-          );
-          baseModel = {
-            ...baseModel,
-            evidence: {
-              ...(baseModel.evidence || {}),
-              canonicalHistoricalNameResolution: {
-                authority: 'USA_SPENDING_OFFICIAL_FY2026_VALIDATED_SIDECAR',
-                matchedBy: historicalIdentity.matchedBy,
-                requestedTerm: term,
-                legalName: historicalIdentity.legalName,
-                uei: historicalIdentity.uei,
-                indexStatus: historicalIdentity.indexStatus,
-                indexGeneratedAt: historicalIdentity.indexGeneratedAt
-              }
-            }
-          };
-        } else {
-          baseModel = historicalFallback.build(term, { samFallback: fallback, canonicalIdentity, historicalIdentity, orionFailure: baseModel });
-        }
-      }
-    }
-  }
-
-  if (baseModel?.ok && baseModel.profile?.uei) {
-    const currentPublicSam = samPublicIdentity.resolve(baseModel.profile.uei);
-    if (currentPublicSam?.ok) {
-      baseModel = mergePublicSamIdentity(baseModel, currentPublicSam);
-    } else {
-      const currentSam = samFallback.build(baseModel.profile.uei);
-      const resolvedUei = String(baseModel.profile.uei || '').trim().toUpperCase();
-      const samUei = String(currentSam?.profile?.uei || '').trim().toUpperCase();
-      if (currentSam?.ok === true && resolvedUei && samUei === resolvedUei) {
-        baseModel = {
-          ...baseModel,
-          profile: {
-            ...(baseModel.profile || {}),
-            cage: currentSam.profile?.cage || baseModel.profile?.cage || null,
-            website: baseModel.profile?.website || currentSam.profile?.website || null,
-            samStatus: currentSam.profile?.samStatus || 'ACTIVE',
-            samExpirationCurrent: currentSam.profile?.samExpirationCurrent === true || baseModel.profile?.samExpirationCurrent === true
-          },
-          currentState: {
-            ...(baseModel.currentState || {}),
-            samRegistration: currentSam.currentState?.samRegistration === false ? false : true
-          },
-          evidence: {
-            ...(baseModel.evidence || {}),
-            currentSamRegistration: currentSam.evidence?.identity || null
-          }
-        };
-      }
-    }
-  }
-
-  const reconciled = truthReconciler.reconcile(baseModel);
-  const canonical = await canonicalTruth.hydrate(reconciled, { refresh });
-  const model = commercialPreview.apply(canonical);
+  const model = await runModelWorker(term, refresh);
   if (model?.ok) {
     const aliases = [term, model.profile?.companyName, model.profile?.uei, model.profile?.cage, model.profile?.website].map(key).filter(Boolean);
     const record = { at:Date.now(), model };
-    aliases.forEach(alias => cache.set(key(alias), record));
+    aliases.forEach(alias => cache.set(alias, record));
   }
   return model?.ok ? { ...model, cache:{ hit:false, ttlMs:TTL } } : model;
 }
@@ -221,7 +120,15 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && pathname === "/favicon.ico") { res.writeHead(204); return res.end(); }
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return json(res, 200, { ok:true, status:"HEALTHY", service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO", capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_public_entity_identity","sam_qualified_identity_fallback","canonical_sam_name_resolution","canonical_historical_name_index","inflight_model_dedupe","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command"], port:PORT, checkedAt:new Date().toISOString() });
+    return json(res, 200, {
+      ok:true,
+      status:"HEALTHY",
+      service:"P2GC_EXECUTIVE_GROWTH_BLUEPRINT_DEMO",
+      responsiveness:{ assessmentIsolation:"WORKER_THREAD", modelTimeoutMs:MODEL_TIMEOUT_MS },
+      capabilities:["executive_growth_blueprint","canonical_current_truth","authoritative_award_history","current_gsa_holder_truth","current_public_opportunity_matching","truth_reconciliation","commercial_preview","sam_public_entity_identity","sam_qualified_identity_fallback","canonical_sam_name_resolution","canonical_historical_name_index","inflight_model_dedupe","federal_pathway_score","prime_sub_teaming","opportunity_intelligence","vehicle_intelligence","recompete_intelligence","proposal_command","isolated_assessment_worker"],
+      port:PORT,
+      checkedAt:new Date().toISOString()
+    });
   }
 
   if (req.method === "GET" && pathname === "/api/proposal-command/health") return json(res, 200, proposalCommand.healthCheck());
