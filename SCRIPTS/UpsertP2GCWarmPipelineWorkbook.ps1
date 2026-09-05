@@ -32,8 +32,8 @@ function NormDomain([object]$v){
  try { if($raw -notmatch '^https?://'){ $raw='https://'+$raw }; $u=[Uri]$raw; return ($u.Host -replace '^www\.','').ToLowerInvariant() }
  catch { return (($raw -replace '^https?://','' -replace '^www\.','') -split '[/?#]')[0] }
 }
-function LoadXml([string]$file){ $x=New-Object System.Xml.XmlDocument; $x.PreserveWhitespace=$true; $x.Load($file); return $x }
-function Ns([xml]$x){ $n=New-Object System.Xml.XmlNamespaceManager($x.NameTable); $n.AddNamespace('x','http://schemas.openxmlformats.org/spreadsheetml/2006/main'); $n.AddNamespace('r','http://schemas.openxmlformats.org/officeDocument/2006/relationships'); $n.AddNamespace('p','http://schemas.openxmlformats.org/package/2006/relationships'); return $n }
+function LoadXml([string]$file){ $x=New-Object System.Xml.XmlDocument; $x.PreserveWhitespace=$true; $x.Load($file); Write-Output -NoEnumerate $x }
+function Ns([System.Xml.XmlDocument]$x){ $n=New-Object System.Xml.XmlNamespaceManager($x.NameTable); $n.AddNamespace('x','http://schemas.openxmlformats.org/spreadsheetml/2006/main'); $n.AddNamespace('r','http://schemas.openxmlformats.org/officeDocument/2006/relationships'); $n.AddNamespace('p','http://schemas.openxmlformats.org/package/2006/relationships'); Write-Output -NoEnumerate $n }
 function SharedStrings([string]$root){
  $file=Join-Path $root 'xl/sharedStrings.xml'; if(!(Test-Path $file)){return @()}; $x=LoadXml $file; $n=Ns $x; $out=@(); foreach($si in $x.SelectNodes('//x:si',$n)){ $texts=@($si.SelectNodes('.//x:t',$n)|ForEach-Object{$_.InnerText}); $out+=($texts -join '') }; return ,$out
 }
@@ -76,11 +76,10 @@ try{
  foreach($h in $IntentHeaders){ if(!$headers.ContainsKey($h)){ $cell=EnsureCell $headerRow $nextCol 1 $ws; SetCellText $cell $h $ws $wsn; $headers[$h]=$nextCol; $nextCol++ } }
  $maxCol=[int](($headers.Values|Measure-Object -Maximum).Maximum)
 
- # Find current table from worksheet relationship.
  $sheetRelsPath=Join-Path ([IO.Path]::GetDirectoryName($sheetFile)) ('_rels\'+[IO.Path]::GetFileName($sheetFile)+'.rels'); if(!(Test-Path $sheetRelsPath)){throw 'SHEET_RELATIONSHIPS_NOT_FOUND'}
  $srels=LoadXml $sheetRelsPath; $srn=Ns $srels; $tablePart=$ws.SelectSingleNode('//x:tablePart',$wsn); if(!$tablePart){throw 'WARM_PIPELINE_TABLE_NOT_FOUND'}; $trid=$tablePart.GetAttribute('id','http://schemas.openxmlformats.org/officeDocument/2006/relationships'); $trel=$srels.SelectSingleNode("//p:Relationship[@Id='$trid']",$srn); if(!$trel){throw 'TABLE_RELATIONSHIP_NOT_FOUND'}
  $target=$trel.GetAttribute('Target'); $tableFile=[IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetDirectoryName($sheetFile)) ($target -replace '/','\'))); $table=LoadXml $tableFile; $tn=Ns $table; $tableRoot=$table.DocumentElement; $tableCols=$table.SelectSingleNode('//x:tableColumns',$tn); if(!$tableCols){throw 'TABLE_COLUMNS_NOT_FOUND'}
- $existingTableNames=@($tableCols.SelectNodes('./x:tableColumn',$tn)|ForEach-Object{$_.GetAttribute('name')}); foreach($h in $IntentHeaders){ if($existingTableNames -notcontains $h){ $node=$table.CreateElement('tableColumn','http://schemas.openxmlformats.org/spreadsheetml/2006/main'); $node.SetAttribute('id',[string]($tableCols.ChildNodes.Count+1)); $node.SetAttribute('name',$h); [void]$tableCols.AppendChild($node) } }; $tableCols.SetAttribute('count',[string]$tableCols.ChildNodes.Count)
+ $existingTableNames=@($tableCols.SelectNodes('./x:tableColumn',$tn)|ForEach-Object{$_.GetAttribute('name')}); foreach($h in $IntentHeaders){ if($existingTableNames -notcontains $h){ $currentCols=@($tableCols.SelectNodes('./x:tableColumn',$tn)); $node=$table.CreateElement('tableColumn','http://schemas.openxmlformats.org/spreadsheetml/2006/main'); $node.SetAttribute('id',[string]($currentCols.Count+1)); $node.SetAttribute('name',$h); [void]$tableCols.AppendChild($node) } }; $tableCols.SetAttribute('count',[string](@($tableCols.SelectNodes('./x:tableColumn',$tn)).Count))
 
  $rows=@($sheetData.SelectNodes('./x:row',$wsn)|Where-Object{$_.GetAttribute('r') -ne '1'}); $best=$null
  function RowVal($r,[string]$h){ if(!$headers.ContainsKey($h)){return ''}; return CellText (CellByCol $r ([int]$headers[$h])) $shared $wsn }
