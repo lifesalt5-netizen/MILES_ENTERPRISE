@@ -53,7 +53,7 @@ try{
  [xml]$sx=Get-Content -Raw (Join-Path $Check 'xl/worksheets/sheet1.xml'); $ns=New-Object Xml.XmlNamespaceManager($sx.NameTable);$ns.AddNamespace('x','http://schemas.openxmlformats.org/spreadsheetml/2006/main')
  $rows=@($sx.SelectNodes('//x:sheetData/x:row',$ns)); if($rows.Count -ne 3){throw "ROW_COUNT_WRONG:$($rows.Count)"}
  $sourceCell=$sx.SelectSingleNode('//x:row[@r="3"]/x:c[@r="AT3"]/x:is/x:t',$ns); if(!$sourceCell -or $sourceCell.InnerText -ne 'https://linkedin.com/posts/acme'){throw 'SOURCE_URL_NOT_PERSISTED'}
- $painCell=$sx.SelectSingleNode('//x:row[@r="3"]/x:c[@r="AZ3"]/x:is/x:t',$ns); if(!$painCell -or $painCell.InnerText -ne 'Updated GSA sales problem'){throw "PAIN_POINT_UPDATE_NOT_PERSISTED:$($painCell.InnerText)"}
+ $painCell=$sx.SelectSingleNode('//x:row[@r="3"]/x:c[@r="AW3"]/x:is/x:t',$ns); if(!$painCell -or $painCell.InnerText -ne 'Updated GSA sales problem'){throw "PAIN_POINT_UPDATE_NOT_PERSISTED:$($painCell.InnerText)"}
  [xml]$tx=Get-Content -Raw (Join-Path $Check 'xl/tables/table1.xml'); $tn=New-Object Xml.XmlNamespaceManager($tx.NameTable);$tn.AddNamespace('x','http://schemas.openxmlformats.org/spreadsheetml/2006/main'); $tc=$tx.SelectSingleNode('//x:tableColumns',$tn); if([int]$tc.count -ne 63){throw "TABLE_COLUMN_COUNT_WRONG:$($tc.count)"}; if($tx.table.ref -ne 'A1:BK3'){throw 'TABLE_REF_NOT_PERSISTED'}
  Write-Output 'P2GC_WARM_PIPELINE_XLSX_UPSERT_GREEN'
 } finally { Remove-Item -LiteralPath $Temp -Recurse -Force -ErrorAction SilentlyContinue }
