@@ -46,8 +46,18 @@ if errorlevel 1 (
 )
 
 echo Clean-soak preflight gates GREEN.
+echo Ensuring governed P2GC intent production scheduler is registered in PM2...
+call pm2 describe p2gc-intent-production-scheduler >nul 2>&1
+if errorlevel 1 (
+  call pm2 start SERVICES\revenue\P2GCIntentProductionScheduler.js --name p2gc-intent-production-scheduler
+  if errorlevel 1 (
+    echo ERROR: P2GC intent production scheduler could not be registered in PM2.
+    exit /b 2
+  )
+)
+
 echo Restarting governed MILES production PM2 stack and reloading current .env...
-call pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer --update-env
+call pm2 restart miles-command-center miles-api miles-executive-dashboard miles-desktop-ui p2gc-growth-demo p2gc-customer-delivery miles-worker miles-autonomous-coo miles-queue-maintainer p2gc-intent-production-scheduler --update-env
 if errorlevel 1 (
   echo ERROR: One or more governed MILES PM2 applications failed to restart.
   exit /b 2
