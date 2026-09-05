@@ -1,0 +1,23 @@
+name: P2GC Intent Lead Engine Validation
+
+on:
+  pull_request:
+    paths:
+      - 'SERVICES/revenue/P2GCIntentLeadCanonicalService.js'
+      - 'TESTS/p2gc_intent_lead_*'
+      - '.github/workflows/p2gc-intent-lead-engine.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check SERVICES/revenue/P2GCIntentLeadCanonicalService.js
+          node --check TESTS/p2gc_intent_lead_canonical_test.js
+      - name: Canonical intent qualification and dedupe
+        run: node TESTS/p2gc_intent_lead_canonical_test.js
