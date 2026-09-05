@@ -1,20 +1,54 @@
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { parentPort, workerData } = require('worker_threads');
-const ExecutiveGrowthBlueprintDemoService = require('./ExecutiveGrowthBlueprintDemoService');
-const DemoTruthReconciliationService = require('./DemoTruthReconciliationService');
-const ExecutiveBlueprintCanonicalTruthService = require('./ExecutiveBlueprintCanonicalTruthService');
-const DemoCommercialPreviewService = require('./DemoCommercialPreviewService');
-const SamPublicEntityIdentityService = require('./SamPublicEntityIdentityService');
-const SamQualifiedProspectFallbackService = require('./SamQualifiedProspectFallbackService');
-const SamQualifiedProspectNameResolver = require('./SamQualifiedProspectNameResolver');
-const HistoricalRecipientNameIndexService = require('./HistoricalRecipientNameIndexService');
-const HistoricalProspectFallbackService = require('./HistoricalProspectFallbackService');
 
 const rootDir = path.resolve(workerData?.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, '..', '..'));
 const term = String(workerData?.term || '').trim();
 const refresh = workerData?.refresh === true;
+const gateFile = path.join(rootDir, 'DATA', 'runtime', 'p2gc-growth-model-worker.lock');
+const gatePollMs = Math.max(100, Number(process.env.P2GC_GROWTH_WORKER_GATE_POLL_MS || 250));
+const gateStaleMs = Math.max(60000, Number(process.env.P2GC_GROWTH_WORKER_GATE_STALE_MS || 300000));
+let gateFd = null;
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+function staleGate() {
+  try {
+    const stat = fs.statSync(gateFile);
+    return Date.now() - stat.mtimeMs > gateStaleMs;
+  } catch {
+    return false;
+  }
+}
+
+async function acquireGate() {
+  fs.mkdirSync(path.dirname(gateFile), { recursive:true });
+  for (;;) {
+    try {
+      gateFd = fs.openSync(gateFile, 'wx');
+      fs.writeFileSync(gateFd, JSON.stringify({ pid:process.pid, term, acquiredAt:new Date().toISOString(), host:os.hostname() }));
+      return;
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+      if (staleGate()) {
+        try { fs.unlinkSync(gateFile); } catch {}
+        continue;
+      }
+      await sleep(gatePollMs);
+    }
+  }
+}
+
+function releaseGate() {
+  if (gateFd !== null) {
+    try { fs.closeSync(gateFd); } catch {}
+    gateFd = null;
+  }
+  try { fs.unlinkSync(gateFile); } catch {}
+}
 
 function key(value) { return String(value || '').trim().toUpperCase(); }
 
@@ -49,6 +83,17 @@ function mergePublicSamIdentity(baseModel, identity) {
 
 async function buildModel() {
   if (!term) return { ok:false, status:'TERM_REQUIRED' };
+  await acquireGate();
+
+  const ExecutiveGrowthBlueprintDemoService = require('./ExecutiveGrowthBlueprintDemoService');
+  const DemoTruthReconciliationService = require('./DemoTruthReconciliationService');
+  const ExecutiveBlueprintCanonicalTruthService = require('./ExecutiveBlueprintCanonicalTruthService');
+  const DemoCommercialPreviewService = require('./DemoCommercialPreviewService');
+  const SamPublicEntityIdentityService = require('./SamPublicEntityIdentityService');
+  const SamQualifiedProspectFallbackService = require('./SamQualifiedProspectFallbackService');
+  const SamQualifiedProspectNameResolver = require('./SamQualifiedProspectNameResolver');
+  const HistoricalRecipientNameIndexService = require('./HistoricalRecipientNameIndexService');
+  const HistoricalProspectFallbackService = require('./HistoricalProspectFallbackService');
 
   const service = new ExecutiveGrowthBlueprintDemoService();
   const truthReconciler = new DemoTruthReconciliationService();
@@ -157,9 +202,13 @@ async function buildModel() {
     try { samNameResolver.close?.(); } catch {}
     try { historicalNameIndex.close?.(); } catch {}
     try { historicalFallback.close?.(); } catch {}
+    releaseGate();
   }
 }
 
 buildModel()
   .then(model => parentPort.postMessage({ ok:true, model }))
-  .catch(error => parentPort.postMessage({ ok:false, error:String(error?.stack || error?.message || error) }));
+  .catch(error => {
+    releaseGate();
+    parentPort.postMessage({ ok:false, error:String(error?.stack || error?.message || error) });
+  });
