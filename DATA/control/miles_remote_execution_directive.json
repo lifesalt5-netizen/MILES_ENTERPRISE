@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-growth-child-isolation-deploy-20260905-0223",
+  "id": "miles-p2gc-growth-child-isolation-verify-20260905-0224",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy merged main commit 3a311a4a87d30cb9c781361c3660978b6037e059. This moves heavyweight P2GC growth-model construction into an isolated child process behind the worker-thread wrapper. Fast-forward safely, restart p2gc-growth-demo when source is newer, preserve governance, and return deployment evidence. No prospect sends, DNS changes, or destructive git recovery."
+  "note": "Post-deploy live verification of child-process-isolated P2GC model builds. Prove port 8791 remains alive through fresh DeLune and five-company assessment/intelligence regression, verify canonical current truth and UI/static health, and report any remaining latency or model-child failure without killing the HTTP service. Read-only; no sends, provider mutations, DNS changes, or destructive recovery."
 }
