@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "mode": "RECOMMENDATION_ONLY",
+  "levels": {
+    "NO_VIDEO": {"minScore": 0, "kevinApprovalRequired": false},
+    "LEVEL_1_REUSABLE": {"minScore": 20, "kevinApprovalRequired": false},
+    "LEVEL_2_SHORT_PERSONALIZED": {"minScore": 50, "kevinApprovalRequired": true},
+    "LEVEL_3_DEEP_PERSONALIZED": {"minScore": 75, "kevinApprovalRequired": true}
+  },
+  "scoreWeights": {
+    "engagement": {
+      "replied": 5,
+      "requestedDemo": 6,
+      "videoStarted": 2,
+      "playback25": 3,
+      "playback50": 6,
+      "playback75": 9,
+      "videoComplete": 12,
+      "clickedScheduling": 6,
+      "bookedAppointment": 14,
+      "max": 40
+    },
+    "businessFit": {
+      "federalAwardHistory": 5,
+      "activeVehicle": 5,
+      "meaningfulRevenue": 5,
+      "agencyConcentration": 4,
+      "recompeteExposure": 5,
+      "poorVehicleUtilization": 4,
+      "expansionOpportunity": 3,
+      "primeSubGrowthPotential": 2,
+      "currentProcurementNeed": 5,
+      "max": 35
+    },
+    "buyingIntent": {
+      "asksPricing": 6,
+      "asksWhatP2GCFound": 5,
+      "asksCompanySpecificReview": 7,
+      "asksForCall": 6,
+      "mentionsActiveProblem": 5,
+      "mentionsLostRevenueOrExpiringWork": 6,
+      "mentionsLackOfPipeline": 4,
+      "max": 25
+    }
+  },
+  "hardStops": [
+    "SUPPRESSED",
+    "OPTED_OUT",
+    "INVALID_CONTACT",
+    "LOW_CONTACT_CONFIDENCE",
+    "PERSONALIZED_EVIDENCE_UNVALIDATED"
+  ],
+  "level1Triggers": [
+    "REQUESTED_DEMO",
+    "ASKED_WHAT_P2GC_DOES",
+    "GENERAL_INTEREST",
+    "QUALIFIED_EARLY_STAGE",
+    "METHODOLOGY_FOLLOWUP_HELPFUL"
+  ],
+  "level2Triggers": [
+    "WATCHED_MEANINGFUL_PORTION",
+    "POSITIVE_REPLY_AFTER_DEMO",
+    "SPECIFIC_GOVCON_PAIN",
+    "VALIDATED_COMPANY_TRIGGER",
+    "UNDERUSED_GSA_VA_VEHICLE",
+    "AGENCY_CONCENTRATION",
+    "RECOMPETE_OR_EXPIRATION_EXPOSURE",
+    "WEAK_GROWTH_TRAJECTORY",
+    "CURRENT_OPPORTUNITY_MATCH"
+  ],
+  "level3Triggers": [
+    "APPOINTMENT_BOOKED",
+    "EXPLICIT_DEEP_ANALYSIS_REQUEST",
+    "STRONG_BUYING_INTENT",
+    "HIGH_EXPECTED_ENGAGEMENT_VALUE",
+    "MEANINGFUL_FEDERAL_REVENUE_OR_VEHICLE_POSITION",
+    "CLEAR_REVENUE_PROTECTION_OR_GROWTH_ISSUE",
+    "KEVIN_TIER_1_STRATEGIC"
+  ],
+  "governance": {
+    "automaticRecommendationAllowed": true,
+    "automaticLevel1SendAllowedOnlyWhenExistingOutboundGovernancePermits": true,
+    "automaticLevel2SendAllowed": false,
+    "automaticLevel3SendAllowed": false,
+    "level2RequiresKevinApproval": true,
+    "level3RequiresKevinApproval": true,
+    "personalizedClaimsRequireValidatedEvidence": true,
+    "sendExecutionImplemented": false
+  }
+}
