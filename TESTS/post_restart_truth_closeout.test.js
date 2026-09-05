@@ -107,14 +107,18 @@ try {
   fs.rmSync(tempRoot, { recursive: true, force: true });
 }
 
-// Successful ORION models are now rechecked against the governed current SAM
-// qualified universe by UEI before truth reconciliation, and contractor-not-
-// found models have a validated historical/explicit-coverage fallback.
+// Expensive identity/truth resolution now runs in the isolated growth-model
+// worker so the 8791 HTTP process stays responsive. The post-restart truth
+// contract must follow that real execution path rather than requiring those
+// services to be imported by the thin HTTP entrypoint.
 const demoStartSource = fs.readFileSync(path.join(ROOT, 'StartP2GCGrowthBlueprintDemo.js'), 'utf8').replace(/^\uFEFF/, '');
-assert(demoStartSource.includes('HistoricalProspectFallbackService'));
-assert(demoStartSource.includes('historicalFallback.build(term'));
-assert(demoStartSource.includes('const currentSam = samFallback.build(baseModel.profile.uei);'));
-assert(demoStartSource.includes('currentSamRegistration'));
+const growthWorkerSource = fs.readFileSync(path.join(ROOT, 'SERVICES', 'demo', 'P2GCGrowthModelWorker.js'), 'utf8').replace(/^\uFEFF/, '');
+assert(demoStartSource.includes('P2GCGrowthModelWorker.js'));
+assert(demoStartSource.includes('new Worker('));
+assert(growthWorkerSource.includes('HistoricalProspectFallbackService'));
+assert(growthWorkerSource.includes('historicalFallback.build(term'));
+assert(growthWorkerSource.includes('const currentSam = samFallback.build(baseModel.profile.uei);'));
+assert(growthWorkerSource.includes('currentSamRegistration'));
 
 const blueprintSource = fs.readFileSync(
   path.join(ROOT, 'SERVICES', 'demo', 'ExecutiveGrowthBlueprintDemoService.js'),
