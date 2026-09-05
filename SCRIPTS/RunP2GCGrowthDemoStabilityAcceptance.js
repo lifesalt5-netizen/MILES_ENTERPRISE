@@ -138,7 +138,7 @@ async function auditCompany(company) {
   };
 }
 
-async function main(){
+async function runAcceptance(){
   const runtime=await Live.ensureDemoCurrent();
   const initial=await probeStatic('INITIAL');
   const baseline=pm2Snapshot();
@@ -152,7 +152,7 @@ async function main(){
   if(!finalProbe.ok)failures.push(...finalProbe.failures.map(x=>`FINAL:${x}`));
   if(!sameRuntime(baseline,finalRuntime))addFailure(failures,'P2GC_RUNTIME_CHANGED_OVER_ACCEPTANCE',`${baseline.pid||'NA'}:${baseline.restartCount??'NA'}->${finalRuntime.pid||'NA'}:${finalRuntime.restartCount??'NA'}`);
   for(const result of results) if(!result.ok) failures.push(...result.failures.map(x=>`${result.requestedTerm}:${x}`));
-  const report={
+  return {
     ok:failures.length===0,
     status:failures.length===0?'P2GC_GROWTH_DEMO_STABILITY_GREEN':'P2GC_GROWTH_DEMO_STABILITY_RED',
     generatedAt:new Date().toISOString(),
@@ -169,10 +169,14 @@ async function main(){
     failures,
     safety:{readOnly:true,prospectSends:false,providerMutations:false,dnsChanges:false,authBypass:false}
   };
+}
+
+async function main(){
+  const report=await runAcceptance();
   console.log(JSON.stringify(report,null,2));
   console.log(`RESULT: ${report.status}`);
   process.exitCode=report.ok?0:2;
 }
 
 if(require.main===module)main().catch(error=>{console.error(error.stack||error);console.log('RESULT: P2GC_GROWTH_DEMO_STABILITY_RED');process.exitCode=2;});
-module.exports={requestText,pm2Snapshot,sameRuntime,probeStatic,auditCompany};
+module.exports={requestText,pm2Snapshot,sameRuntime,probeStatic,auditCompany,runAcceptance};
