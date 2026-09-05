@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-growth-demo-responsive-deploy-20260905-0120",
+  "id": "miles-p2gc-growth-demo-responsive-verify-20260905-0121",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Deploy merged main commit 53a5177983e0747cf36b6ad6063671eb7d25ee47. This deploy must fast-forward production safely, restart p2gc-growth-demo because its source is newer than the running process, preserve governed runtime safety, and return deployment evidence. No prospect sends, no DNS changes, no destructive git recovery."
+  "note": "Post-deploy verification for merged 8791 responsiveness repair. Prove p2gc-growth-demo stays responsive while canonical assessment/source work runs, confirm assessment no longer starves health/static routes, capture live acceptance and source timing, and return exact remaining blockers if any. Read-only verification only; no sends, no DNS changes, no provider mutations."
 }
