@@ -7,6 +7,7 @@ on:
       - 'SERVICES/demo/CurrentGsaHolderTruthService.js'
       - 'SERVICES/demo/CurrentPublicOpportunityMatchService.js'
       - 'SERVICES/demo/P2GCGrowthModelWorker.js'
+      - 'SERVICES/demo/P2GCGrowthModelChild.js'
       - 'SERVICES/demo/public/index.html'
       - 'SERVICES/demo/public/app.js'
       - 'StartP2GCGrowthBlueprintDemo.js'
@@ -35,6 +36,7 @@ jobs:
           node --check SERVICES/demo/CurrentGsaHolderTruthService.js
           node --check SERVICES/demo/CurrentPublicOpportunityMatchService.js
           node --check SERVICES/demo/P2GCGrowthModelWorker.js
+          node --check SERVICES/demo/P2GCGrowthModelChild.js
           node --check SERVICES/demo/public/app.js
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check TESTS/executive_blueprint_canonical_truth.test.js
@@ -54,7 +56,8 @@ jobs:
       - name: Shared-path contract
         run: |
           grep -q 'P2GCGrowthModelWorker.js' StartP2GCGrowthBlueprintDemo.js
-          grep -q 'ExecutiveBlueprintCanonicalTruthService' SERVICES/demo/P2GCGrowthModelWorker.js
-          grep -q 'await canonicalTruth.hydrate' SERVICES/demo/P2GCGrowthModelWorker.js
+          grep -q 'P2GCGrowthModelChild.js' SERVICES/demo/P2GCGrowthModelWorker.js
+          grep -q 'ExecutiveBlueprintCanonicalTruthService' SERVICES/demo/P2GCGrowthModelChild.js
+          grep -q 'await canonicalTruth.hydrate' SERVICES/demo/P2GCGrowthModelChild.js
           grep -q 'CURRENT_GSA_MAS_HOLDER_CONFIRMED' SERVICES/demo/CurrentGsaHolderTruthService.js
           grep -q 'SAM.gov Public Contract Opportunities' SERVICES/demo/CurrentPublicOpportunityMatchService.js
