@@ -5,6 +5,7 @@ on:
     paths:
       - 'SERVICES/revenue/P2GCIntentLeadCanonicalService.js'
       - 'SERVICES/revenue/P2GCWarmPipelineContractService.js'
+      - 'SERVICES/revenue/P2GCIntentLeadPipelineService.js'
       - 'SCRIPTS/UpsertP2GCWarmPipelineWorkbook.ps1'
       - 'TESTS/p2gc_intent_lead_*'
       - 'TESTS/Test_P2GCWarmPipelineWorkbookUpsert.ps1'
@@ -22,12 +23,16 @@ jobs:
         run: |
           node --check SERVICES/revenue/P2GCIntentLeadCanonicalService.js
           node --check SERVICES/revenue/P2GCWarmPipelineContractService.js
+          node --check SERVICES/revenue/P2GCIntentLeadPipelineService.js
           node --check TESTS/p2gc_intent_lead_canonical_test.js
           node --check TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
+          node --check TESTS/p2gc_intent_lead_pipeline_test.js
       - name: Canonical intent qualification and dedupe
         run: node TESTS/p2gc_intent_lead_canonical_test.js
       - name: Warm Pipeline mapping and upsert contract
         run: node TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
+      - name: Governed canonical-to-Warm-Pipeline orchestration
+        run: node TESTS/p2gc_intent_lead_pipeline_test.js
 
   xlsx-upsert-windows:
     runs-on: windows-latest
