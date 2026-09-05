@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-urgency-v3-final-20260905-1530",
+  "id": "miles-p2gc-reusable-demo-urgency-v3-uploadfix-20260905-1533",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "CEO APPROVED FINAL REUSABLE-DEMO BUILD: pull current main, apply the final v3 copy overrides, and render the 11-scene reusable P2GC Federal Growth Review demo. Use Federal Growth Position Scorecard, the revised 64% attention wording, and the final action-oriented CTA. Use the fixed 1920x1080 scene renderer. Google Vids first. Avatar only opening and close. Target 8:15-8:45. Do not return to personalized-video work."
+  "note": "CEO APPROVED FINAL REUSABLE-DEMO BUILD: pull current main and render urgency-v3 using the hardened Google Vids uploader. Keep the approved 11-scene fictional Apex Ridge master, Federal Growth Position Scorecard, revised 64% attention wording, strengthened CTA, fixed 1920x1080 scene assets, Google Vids first, and avatar only opening/close. Target 8:15-8:45. Do not return to personalized-video work."
 }
