@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-post-child-isolation-health-20260905-0227",
+  "id": "miles-p2gc-8791-isolated-final-verify-20260905-0237",
   "enabled": true,
-  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
+  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Read-only health check after the broad federal-source verification restarted before completion. Capture current PM2/runtime/8791 health without reloading the full federal diagnostic stack. No sends, provider mutations, DNS changes, or destructive git recovery."
+  "note": "Final read-only 8791 acceptance after main separated live stability verification from heavyweight diagnostics. Verify production 8791 health/static responsiveness, isolated five-company stability, sales preview, and federal source readiness on current main. No sends, provider mutations, DNS changes, or destructive git recovery."
 }
