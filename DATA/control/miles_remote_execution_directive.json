@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-growth-child-isolation-verify-20260905-0224",
+  "id": "miles-p2gc-post-child-isolation-health-20260905-0227",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "INFRASTRUCTURE_HEALTH_AUDIT",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Post-deploy live verification of child-process-isolated P2GC model builds. Prove port 8791 remains alive through fresh DeLune and five-company assessment/intelligence regression, verify canonical current truth and UI/static health, and report any remaining latency or model-child failure without killing the HTTP service. Read-only; no sends, provider mutations, DNS changes, or destructive recovery."
+  "note": "Read-only health check after the broad federal-source verification restarted before completion. Capture current PM2/runtime/8791 health without reloading the full federal diagnostic stack. No sends, provider mutations, DNS changes, or destructive git recovery."
 }
