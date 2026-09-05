@@ -1,7 +1,7 @@
 'use strict';
 
 const path=require('path');
-process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS=process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS||'120000';
+process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS=process.env.P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS||'210000';
 
 const Service=require('../SERVICES/orion/FederalSourceReadinessAuditServiceV2');
 const LiveAcceptance=require('./AuditLiveP2GCDemoAcceptance');
