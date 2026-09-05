@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-demo-video-finalize-20260905-1450",
+  "id": "miles-p2gc-reusable-demo-production-20260905-1512",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "CEO PRIORITY RETRY: pull current main and execute the hardened P2GC prospect-facing demo video finalization runner. Generate and export the real MP4 only. Do not perform unrelated business work."
+  "note": "CEO APPROVED PRIORITY: build the reusable 11-scene P2GC Federal Growth Review demo using fictional Apex Ridge Solutions. Create scene assets, use Google Vids first, keep avatar to opening and close only, target 8:15-8:45, and export the first prospect-ready MP4. Do not return to personalized-video work."
 }
