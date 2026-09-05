@@ -6,10 +6,12 @@ on:
       - 'SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js'
       - 'SERVICES/demo/CurrentGsaHolderTruthService.js'
       - 'SERVICES/demo/CurrentPublicOpportunityMatchService.js'
+      - 'SERVICES/demo/P2GCGrowthModelWorker.js'
       - 'SERVICES/demo/public/index.html'
       - 'SERVICES/demo/public/app.js'
       - 'StartP2GCGrowthBlueprintDemo.js'
       - 'TESTS/executive_blueprint_canonical_truth.test.js'
+      - 'TESTS/p2gc_growth_demo_responsive_worker.test.js'
       - '.github/workflows/executive-blueprint-canonical-truth-validation.yml'
   workflow_dispatch:
 
@@ -32,11 +34,15 @@ jobs:
           node --check SERVICES/demo/ExecutiveBlueprintCanonicalTruthService.js
           node --check SERVICES/demo/CurrentGsaHolderTruthService.js
           node --check SERVICES/demo/CurrentPublicOpportunityMatchService.js
+          node --check SERVICES/demo/P2GCGrowthModelWorker.js
           node --check SERVICES/demo/public/app.js
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check TESTS/executive_blueprint_canonical_truth.test.js
+          node --check TESTS/p2gc_growth_demo_responsive_worker.test.js
       - name: Canonical truth regressions
         run: node TESTS/executive_blueprint_canonical_truth.test.js
+      - name: Responsive worker regression
+        run: node TESTS/p2gc_growth_demo_responsive_worker.test.js
       - name: No fake-zero or unconditional first-award regressions
         run: |
           ! grep -q 'Number(value)||0' SERVICES/demo/public/app.js
@@ -47,7 +53,8 @@ jobs:
           grep -q 'Federal Award & Contract History' SERVICES/demo/public/index.html
       - name: Shared-path contract
         run: |
-          grep -q 'ExecutiveBlueprintCanonicalTruthService' StartP2GCGrowthBlueprintDemo.js
-          grep -q 'await canonicalTruth.hydrate' StartP2GCGrowthBlueprintDemo.js
+          grep -q 'P2GCGrowthModelWorker.js' StartP2GCGrowthBlueprintDemo.js
+          grep -q 'ExecutiveBlueprintCanonicalTruthService' SERVICES/demo/P2GCGrowthModelWorker.js
+          grep -q 'await canonicalTruth.hydrate' SERVICES/demo/P2GCGrowthModelWorker.js
           grep -q 'CURRENT_GSA_MAS_HOLDER_CONFIRMED' SERVICES/demo/CurrentGsaHolderTruthService.js
           grep -q 'SAM.gov Public Contract Opportunities' SERVICES/demo/CurrentPublicOpportunityMatchService.js
