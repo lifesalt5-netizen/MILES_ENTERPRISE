@@ -8,7 +8,7 @@ const root=path.resolve(__dirname,'..');
 const audit=fs.readFileSync(path.join(root,'SCRIPTS','AuditFederalSourceReadiness.js'),'utf8');
 const stability=fs.readFileSync(path.join(root,'SCRIPTS','RunP2GCGrowthDemoStabilityAcceptance.js'),'utf8');
 
-assert(audit.includes("P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS||'120000'"));
+assert(audit.includes("P2GC_LIVE_DEMO_AUDIT_TIMEOUT_MS||'210000'"));
 assert(audit.includes("require('./RunP2GCGrowthDemoStabilityAcceptance')"));
 assert(audit.includes('DEFERRED_TO_ISOLATED_LIVE_RUNTIME_ACCEPTANCE'));
 assert(!audit.includes("require('../SERVICES/demo/ExecutiveGrowthBlueprintDemoService')"),'federal readiness acceptance must not load a duplicate heavyweight demo model stack');
