@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-8791-post-timeout-fix-final-verify-20260905-0510",
+  "id": "miles-p2gc-fgr-video-finish-audit-20260905-1044",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Read-only final rerun after PR #484 merged timeout alignment to main. Verify production 8791 health/static responsiveness, isolated five-company stability including Dreamers Inc., sales preview, and federal source readiness on current main. No sends, provider mutations, DNS changes, billing changes, credential changes, or destructive git recovery."
+  "note": "Priority correction: finish the actual P2GC Federal Growth Review demo video before any more intent-lead work. Deploy/currentize 8792 review runtime and run the governed Google Vids editor/avatar, ingress, SMTP, and provider readiness audits. No external prospect send, no pricing/billing/DNS mutation, no paid provider action. Return exact blocker/evidence needed to generate and privately register the real video artifact."
 }
