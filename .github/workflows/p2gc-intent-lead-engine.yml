@@ -6,8 +6,10 @@ on:
       - 'SERVICES/revenue/P2GCIntentLeadCanonicalService.js'
       - 'SERVICES/revenue/P2GCWarmPipelineContractService.js'
       - 'SERVICES/revenue/P2GCIntentLeadPipelineService.js'
+      - 'SERVICES/revenue/P2GCIntentBusinessDayRunner.js'
       - 'SCRIPTS/UpsertP2GCWarmPipelineWorkbook.ps1'
       - 'TESTS/p2gc_intent_lead_*'
+      - 'TESTS/p2gc_intent_business_day_runner_test.js'
       - 'TESTS/Test_P2GCWarmPipelineWorkbookUpsert.ps1'
       - '.github/workflows/p2gc-intent-lead-engine.yml'
 
@@ -24,15 +26,19 @@ jobs:
           node --check SERVICES/revenue/P2GCIntentLeadCanonicalService.js
           node --check SERVICES/revenue/P2GCWarmPipelineContractService.js
           node --check SERVICES/revenue/P2GCIntentLeadPipelineService.js
+          node --check SERVICES/revenue/P2GCIntentBusinessDayRunner.js
           node --check TESTS/p2gc_intent_lead_canonical_test.js
           node --check TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
           node --check TESTS/p2gc_intent_lead_pipeline_test.js
+          node --check TESTS/p2gc_intent_business_day_runner_test.js
       - name: Canonical intent qualification and dedupe
         run: node TESTS/p2gc_intent_lead_canonical_test.js
       - name: Warm Pipeline mapping and upsert contract
         run: node TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
       - name: Governed canonical-to-Warm-Pipeline orchestration
         run: node TESTS/p2gc_intent_lead_pipeline_test.js
+      - name: Governed once-per-business-day execution gate
+        run: node TESTS/p2gc_intent_business_day_runner_test.js
 
   xlsx-upsert-windows:
     runs-on: windows-latest
