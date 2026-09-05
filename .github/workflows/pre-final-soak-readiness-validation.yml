@@ -12,6 +12,8 @@ on:
       - "SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js"
       - "SCRIPTS/AuditInstantlySendWindowHistory.js"
       - "SCRIPTS/RepairInstantlyWeekdaySchedules.js"
+      - "SCRIPTS/AuditFederalSourceReadiness.js"
+      - "SCRIPTS/RunP2GCGrowthDemoStabilityAcceptance.js"
       - "SERVICES/sales/P2GCSalesQualificationService.js"
       - "SERVICES/proposal/**"
       - "SERVICES/monica/**"
@@ -53,6 +55,9 @@ jobs:
           node --check SCRIPTS/AuditInstantlyCampaignScheduleGovernance.js
           node --check SCRIPTS/AuditInstantlySendWindowHistory.js
           node --check SCRIPTS/RepairInstantlyWeekdaySchedules.js
+          node --check SCRIPTS/AuditFederalSourceReadiness.js
+          node --check SCRIPTS/RunP2GCGrowthDemoStabilityAcceptance.js
+          node --check TESTS/p2gc_growth_demo_stability_acceptance.test.js
           node --check SERVICES/sales/P2GCSalesQualificationService.js
           node --check SERVICES/proposal/P2GCProposalCommandService.js
           node --check SERVICES/proposal/P2GCPostSubmissionLearningService.js
@@ -60,6 +65,8 @@ jobs:
           node --check RUN_P2GC_PROPOSAL_COMMAND.js
           node --check StartP2GCGrowthBlueprintDemo.js
           node --check SERVICES/demo/public/proposal-command.js
+      - name: P2GC live stability acceptance contract
+        run: node TESTS/p2gc_growth_demo_stability_acceptance.test.js
       - name: Weekday governance regression
         run: node TESTS/Test_InstantlyCampaignScheduleGovernance.js
       - name: Send-window timestamp regression
