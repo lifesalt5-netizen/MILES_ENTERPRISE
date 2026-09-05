@@ -10,11 +10,14 @@ on:
       - 'SERVICES/revenue/P2GCIntentBusinessDayRunner.js'
       - 'SERVICES/revenue/P2GCIntentLiveSourceIngestionService.js'
       - 'SERVICES/revenue/P2GCIntentProductionScheduler.js'
+      - 'SCRIPTS/RunP2GCIntentProductionAcceptance.js'
       - 'SCRIPTS/UpsertP2GCWarmPipelineWorkbook.ps1'
+      - 'FINAL_GO_LIVE.cmd'
       - 'TESTS/p2gc_intent_lead_*'
       - 'TESTS/p2gc_intent_business_day_runner_test.js'
       - 'TESTS/p2gc_intent_live_source_ingestion_test.js'
       - 'TESTS/p2gc_intent_production_scheduler_test.js'
+      - 'TESTS/p2gc_intent_runtime_registration_test.js'
       - 'TESTS/Test_P2GCWarmPipelineWorkbookUpsert.ps1'
       - '.github/workflows/p2gc-intent-lead-engine.yml'
 
@@ -34,12 +37,14 @@ jobs:
           node --check SERVICES/revenue/P2GCIntentBusinessDayRunner.js
           node --check SERVICES/revenue/P2GCIntentLiveSourceIngestionService.js
           node --check SERVICES/revenue/P2GCIntentProductionScheduler.js
+          node --check SCRIPTS/RunP2GCIntentProductionAcceptance.js
           node --check TESTS/p2gc_intent_lead_canonical_test.js
           node --check TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
           node --check TESTS/p2gc_intent_lead_pipeline_test.js
           node --check TESTS/p2gc_intent_business_day_runner_test.js
           node --check TESTS/p2gc_intent_live_source_ingestion_test.js
           node --check TESTS/p2gc_intent_production_scheduler_test.js
+          node --check TESTS/p2gc_intent_runtime_registration_test.js
       - name: Canonical intent qualification and dedupe
         run: node TESTS/p2gc_intent_lead_canonical_test.js
       - name: Warm Pipeline mapping and upsert contract
@@ -52,6 +57,8 @@ jobs:
         run: node TESTS/p2gc_intent_live_source_ingestion_test.js
       - name: Production source registration and scheduler gate
         run: node TESTS/p2gc_intent_production_scheduler_test.js
+      - name: Governed PM2 registration and forced acceptance contract
+        run: node TESTS/p2gc_intent_runtime_registration_test.js
 
   xlsx-upsert-windows:
     runs-on: windows-latest
