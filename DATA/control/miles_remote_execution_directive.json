@@ -1,7 +1,7 @@
 {
-  "id": "miles-federal-source-readiness-rerun-20260904-2348",
+  "id": "miles-p2gc-growth-demo-responsive-deploy-20260905-0120",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Re-run the end-to-end federal source readiness and P2GC demo latency audit after the live p2gc-growth-demo restart and observed 60-second assessment timeout. Read-only diagnostic only. Verify source readiness, canonical assessment latency, live acceptance, sales preview, and multi-company UI regression. Return exact timeout/source blocker evidence; no provider mutation, no sends, no DNS changes."
+  "note": "Deploy merged main commit 53a5177983e0747cf36b6ad6063671eb7d25ee47. This deploy must fast-forward production safely, restart p2gc-growth-demo because its source is newer than the running process, preserve governed runtime safety, and return deployment evidence. No prospect sends, no DNS changes, no destructive git recovery."
 }
