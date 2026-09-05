@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>P2GC Revenue Control Center</title>
+  <link rel="stylesheet" href="/ceo.css">
+  <style>
+    .rc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:18px 0}
+    .rc-card{background:#0f1f33;border:1px solid #29415d;border-radius:14px;padding:16px}
+    .rc-value{font-size:28px;font-weight:800;margin-top:6px}
+    .rc-table{width:100%;border-collapse:collapse;font-size:14px}
+    .rc-table th,.rc-table td{padding:10px;border-bottom:1px solid #29415d;text-align:left;vertical-align:top}
+    .rc-table th{position:sticky;top:0;background:#132a45}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#284665}
+    .critical{background:#7f1d1d}.high{background:#854d0e}.paid{background:#166534}.verify{background:#713f12}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.toolbar a{display:inline-block;padding:10px 14px;border:1px solid #426485;border-radius:10px;text-decoration:none}
+    .scroll{overflow:auto;max-height:620px}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div><div class="eyebrow">P2GC · CEO CONTROL CENTER</div><h1>Revenue Control Center</h1><p>Cash pipeline, sales activity, open revenue, and P2GC bill risk in one place.</p></div>
+      <div class="toolbar"><a href="/">Back to CEO Dashboard</a><a href="/opportunities" target="_blank" rel="noopener">Opportunity Intelligence</a><a href="/proposal-command" target="_blank" rel="noopener">Proposal Command</a></div>
+    </header>
+
+    <section class="rc-grid">
+      <article class="rc-card"><div class="eyebrow">MONTHLY TARGET</div><div class="rc-value">$5,000</div></article>
+      <article class="rc-card"><div class="eyebrow">STRETCH TARGET</div><div class="rc-value">$7,500</div></article>
+      <article class="rc-card"><div class="eyebrow">INSTANTLY OWED</div><div class="rc-value">$97</div></article>
+      <article class="rc-card"><div class="eyebrow">GOOGLE WORKSPACE RISK</div><div class="rc-value">Oct 2</div></article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2>P2GC Bills / Subscription Risk</h2><span class="muted">Source-of-truth snapshot built from verified notices and CEO-confirmed amounts.</span></div>
+      <div class="scroll"><table class="rc-table"><thead><tr><th>Vendor</th><th>Purpose</th><th>Amount</th><th>Due / Risk</th><th>Status</th><th>Priority</th><th>Action</th></tr></thead><tbody>
+        <tr><td>Google Workspace</td><td>Core P2GC business email</td><td>Verify balance</td><td>2026-10-02 suspension risk</td><td><span class="pill critical">PAYMENT FAILED</span></td><td>CRITICAL</td><td>Update billing before suspension; reduce unused paid seats.</td></tr>
+        <tr><td>Instantly</td><td>Outbound platform</td><td>$97.00 owed</td><td>Before continued use</td><td><span class="pill high">ON HOLD / OWED</span></td><td>HIGH</td><td>Do not pay unless needed for revenue-producing outreach; use fallback where possible.</td></tr>
+        <tr><td>IONOS</td><td>Email Marketing Plus</td><td>$7.50</td><td>Invoice 2026-08-24</td><td><span class="pill verify">VERIFY</span></td><td>MEDIUM</td><td>Confirm debit/payment and cancel if unused.</td></tr>
+        <tr><td>IONOS</td><td>Mail Basic 25</td><td>$8.50</td><td>Invoice 2026-08-22</td><td><span class="pill verify">VERIFY</span></td><td>HIGH</td><td>Keep only if required for active P2GC mailboxes.</td></tr>
+        <tr><td>IONOS</td><td>Email Archiving</td><td>$2.50</td><td>Invoice 2026-08-18</td><td><span class="pill verify">VERIFY</span></td><td>LOW</td><td>Confirm whether essential; cancel if not.</td></tr>
+        <tr><td>IONOS</td><td>MyDefender Starter</td><td>$2.50</td><td>Invoice 2026-08-20</td><td><span class="pill verify">VERIFY</span></td><td>LOW</td><td>Confirm whether essential; cancel if not.</td></tr>
+        <tr><td>Namecheap</td><td>Six P2GC domains</td><td>$64.19 paid first-year total</td><td>Review before 2027-04-20</td><td><span class="pill paid">PAID</span></td><td>MEDIUM</td><td>Retain only domains still supporting active P2GC operations.</td></tr>
+        <tr><td>ChatGPT Plus</td><td>P2GC research / operations</td><td>$20.00</td><td>Monthly</td><td><span class="pill paid">PAID</span></td><td>HIGH</td><td>Keep while materially supporting sales and delivery.</td></tr>
+        <tr><td>P2GC Website</td><td>Website / prospect credibility</td><td>Verify</td><td>Next invoice unknown</td><td><span class="pill critical">VERIFY NEXT BILL</span></td><td>CRITICAL</td><td>Protect core website/domain and record next amount/due date immediately.</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="panel"><h2>Sales Control</h2><p class="muted">The detailed live pipeline workbook is maintained as the P2GC Revenue Control Center. This dashboard section is the CEO-facing quick-access surface; MILES should treat cash collected, appointments, proposals, follow-ups, and bill risk as executive priorities.</p></section>
+  </main>
+</body>
+</html>
