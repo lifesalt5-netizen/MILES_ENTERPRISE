@@ -24,6 +24,24 @@ async function chooseAccount(page){for(let slot=0;slot<12;slot++){await page.got
 async function ensureEditor(page,slot){await page.goto('https://vids.new',{waitUntil:'domcontentloaded',timeout:60000});await sleep(6500);if(/\/videos\/d\//i.test(page.url()))return;if((await clickAny(page,/Create a landscape video|\bLandscape\b/i)).ok){await sleep(7000);return;}await page.goto(`https://docs.google.com/videos/u/${slot}/`,{waitUntil:'domcontentloaded',timeout:60000});await sleep(2000);await clickAny(page,/Create new video/i);await sleep(4000);if(!(await clickAny(page,/Create a landscape video|\bLandscape\b/i)).ok)throw new Error('GOOGLE_VIDS_LANDSCAPE_CREATE_NOT_FOUND');await sleep(7000);}
 async function setExistingFileInput(page,file){for(const root of [page,...page.frames().filter(f=>f!==page.mainFrame())]){const inputs=root.locator('input[type="file"]');const n=await inputs.count().catch(()=>0);if(n){await inputs.last().setInputFiles(file);return true;}}return false;}
 async function chooserExact(page,text,file){const p=page.waitForEvent('filechooser',{timeout:12000}).catch(()=>null);const c=await clickExactText(page,text);if(!c.ok)return false;const chooser=await p;if(!chooser)return false;await chooser.setFiles(file);return true;}
+async function dropImageToCanvas(page,file){
+  const b64=fs.readFileSync(file).toString('base64');
+  const name=path.basename(file);
+  for(const root of [page,...page.frames().filter(f=>f!==page.mainFrame())]){
+    try{
+      const ok=await root.evaluate(async({b64,name})=>{
+        const raw=atob(b64);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+        const dt=new DataTransfer();dt.items.add(new File([bytes],name,{type:'image/png'}));
+        const candidates=[...document.querySelectorAll('[aria-label*="canvas" i],[role="application"],canvas,.canvas,body')];
+        const target=candidates.find(el=>{const r=el.getBoundingClientRect();return r.width>300&&r.height>200;})||document.body;
+        for(const type of ['dragenter','dragover','drop'])target.dispatchEvent(new DragEvent(type,{bubbles:true,cancelable:true,dataTransfer:dt}));
+        return true;
+      },{b64,name});
+      if(ok){await sleep(4500);return true;}
+    }catch{}
+  }
+  return false;
+}
 async function uploadSceneImage(page,file){
   if(await setExistingFileInput(page,file)){await sleep(5000);await clickAny(page,/Insert|Add to scene|Use|Add/i);await sleep(2200);return;}
   const insert=(await clickExactText(page,'Insert')).ok || (await clickAny(page,/^Insert$/i)).ok;
@@ -34,7 +52,8 @@ async function uploadSceneImage(page,file){
   for(const label of ['Upload from computer','Upload from device','Upload image','Choose image','Browse']){if(await chooserExact(page,label,file)){uploaded=true;break;}}
   if(!uploaded){for(const label of ['Uploads','Upload']){if((await clickExactText(page,label)).ok){await sleep(700);for(const sub of ['Upload from computer','Upload files','Choose files','Select files','Browse','From computer']){if(await chooserExact(page,sub,file)){uploaded=true;break;}}if(uploaded)break;}}}
   if(!uploaded)uploaded=await setExistingFileInput(page,file);
-  if(!uploaded)throw new Error(`GOOGLE_VIDS_IMAGE_UPLOAD_PATH_NOT_FOUND:insert=${insert}:image=${image}`);
+  if(!uploaded)uploaded=await dropImageToCanvas(page,file);
+  if(!uploaded)throw new Error(`GOOGLE_VIDS_IMAGE_UPLOAD_PATH_NOT_FOUND:insert=${insert}:image=${image}:drop=false`);
   await sleep(5000);await clickAny(page,/Insert|Add to scene|Use|Add/i);await sleep(2200);
 }
 async function generateTextFeature(page,featureRe,text,res,label){if(!(await clickAny(page,featureRe)).ok)throw new Error(`${label}_CONTROL_NOT_FOUND`);await sleep(1600);const fill=await fillAny(page,text);res.lastFill={label,...fill};write(res);if(!fill.ok)throw new Error(`${label}_TEXT_INPUT_NOT_FOUND`);const gen=await clickAny(page,/\bGenerate\b|\bCreate\b/i);res.lastGenerate={label,...gen};write(res);if(!gen.ok)throw new Error(`${label}_GENERATE_NOT_FOUND`);let done=false,start=Date.now();while(Date.now()-start<180000){await sleep(3500);const body=(await Promise.all(page.frames().map(f=>f.locator('body').innerText().catch(()=>'')))).join('\n');if(/insert|add to scene|use this|done|generated|ready/i.test(body)&&!/generating|creating/i.test(body)){done=true;break;}}if(!done)throw new Error(`${label}_GENERATION_TIMEOUT`);await clickAny(page,/Insert|Add to scene|Use this|Add/i);await sleep(1800);}
