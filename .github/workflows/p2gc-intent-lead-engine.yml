@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'SERVICES/revenue/P2GCIntentLeadCanonicalService.js'
+      - 'SERVICES/revenue/P2GCWarmPipelineContractService.js'
       - 'TESTS/p2gc_intent_lead_*'
       - '.github/workflows/p2gc-intent-lead-engine.yml'
 
@@ -18,6 +19,10 @@ jobs:
       - name: Syntax
         run: |
           node --check SERVICES/revenue/P2GCIntentLeadCanonicalService.js
+          node --check SERVICES/revenue/P2GCWarmPipelineContractService.js
           node --check TESTS/p2gc_intent_lead_canonical_test.js
+          node --check TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
       - name: Canonical intent qualification and dedupe
         run: node TESTS/p2gc_intent_lead_canonical_test.js
+      - name: Warm Pipeline mapping and upsert contract
+        run: node TESTS/p2gc_intent_lead_warm_pipeline_contract_test.js
