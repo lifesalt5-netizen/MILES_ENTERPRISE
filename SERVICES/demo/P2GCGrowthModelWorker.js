@@ -8,16 +8,19 @@ const { parentPort, workerData } = require('worker_threads');
 const rootDir = path.resolve(workerData?.rootDir || process.env.MILES_ROOT || path.resolve(__dirname, '..', '..'));
 const term = String(workerData?.term || '').trim();
 const refresh = workerData?.refresh === true;
-const gateFile = path.join(rootDir, 'DATA', 'runtime', 'p2gc-growth-model-worker.lock');
+const maxConcurrency = Math.min(4, Math.max(1, Number(process.env.P2GC_GROWTH_WORKER_MAX_CONCURRENCY || 2)));
+const gateBase = path.join(rootDir, 'DATA', 'runtime', 'p2gc-growth-model-worker');
+const gateFiles = Array.from({ length:maxConcurrency }, (_, index) => `${gateBase}.${index}.lock`);
 const gatePollMs = Math.max(100, Number(process.env.P2GC_GROWTH_WORKER_GATE_POLL_MS || 250));
 const gateStaleMs = Math.max(60000, Number(process.env.P2GC_GROWTH_WORKER_GATE_STALE_MS || 300000));
 let gateFd = null;
+let gateFile = null;
 
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-function staleGate() {
+function staleGate(candidate) {
   try {
-    const stat = fs.statSync(gateFile);
+    const stat = fs.statSync(candidate);
     return Date.now() - stat.mtimeMs > gateStaleMs;
   } catch {
     return false;
@@ -25,20 +28,23 @@ function staleGate() {
 }
 
 async function acquireGate() {
-  fs.mkdirSync(path.dirname(gateFile), { recursive:true });
+  fs.mkdirSync(path.dirname(gateBase), { recursive:true });
   for (;;) {
-    try {
-      gateFd = fs.openSync(gateFile, 'wx');
-      fs.writeFileSync(gateFd, JSON.stringify({ pid:process.pid, term, acquiredAt:new Date().toISOString(), host:os.hostname() }));
-      return;
-    } catch (error) {
-      if (error?.code !== 'EEXIST') throw error;
-      if (staleGate()) {
-        try { fs.unlinkSync(gateFile); } catch {}
-        continue;
+    for (const candidate of gateFiles) {
+      try {
+        const fd = fs.openSync(candidate, 'wx');
+        gateFd = fd;
+        gateFile = candidate;
+        fs.writeFileSync(fd, JSON.stringify({ pid:process.pid, term, acquiredAt:new Date().toISOString(), host:os.hostname(), maxConcurrency }));
+        return;
+      } catch (error) {
+        if (error?.code !== 'EEXIST') throw error;
+        if (staleGate(candidate)) {
+          try { fs.unlinkSync(candidate); } catch {}
+        }
       }
-      await sleep(gatePollMs);
     }
+    await sleep(gatePollMs);
   }
 }
 
@@ -47,7 +53,10 @@ function releaseGate() {
     try { fs.closeSync(gateFd); } catch {}
     gateFd = null;
   }
-  try { fs.unlinkSync(gateFile); } catch {}
+  if (gateFile) {
+    try { fs.unlinkSync(gateFile); } catch {}
+    gateFile = null;
+  }
 }
 
 function key(value) { return String(value || '').trim().toUpperCase(); }
