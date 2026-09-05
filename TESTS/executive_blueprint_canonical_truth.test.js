@@ -101,7 +101,7 @@ async function canonicalZeroGsaActivationCase() {
   assert.strictEqual(m.pathway.type,'GSA_ACTIVATION_PATHWAY','current GSA holder with no proven obligations must not be called generic first-award only');
 }
 
-async function failClosedCase() {
+async function explicitCoverageGapCase() {
   const service=new Canonical({
     now:'2026-09-02T12:00:00Z',
     awardHistoryService:{auditByUei:async()=>{throw new Error('provider unavailable');}},
@@ -110,10 +110,12 @@ async function failClosedCase() {
   });
   service.aggregateEvidence=async()=>({ok:false,status:'CURRENT_USASPENDING_OBLIGATION_AGGREGATE_UNAVAILABLE_OR_STALE',row:null,source:{fresh:false}});
   const m=await service.hydrate(baseModel());
-  assert.strictEqual(m.status,'DEMO_REVIEW_REQUIRED');
+  assert.strictEqual(m.status,'DEMO_READY_WITH_EXPLICIT_COVERAGE_GAPS');
   assert.strictEqual(m.currentState.awardCount,null);
   assert.strictEqual(m.revenue.current.federal,null,'unknown current obligations must not become $0');
   assert.strictEqual(m.pathway.type,'EVIDENCE_COMPLETION_PATHWAY','unknown award truth must never imply first award');
+  assert.strictEqual(m.truthIntegrity.clientSafe,true,'explicit source gaps without conflicts remain client-safe when UNKNOWN is preserved');
+  assert.strictEqual(m.truthIntegrity.fullyReconciled,false);
   assert(m.truthIntegrity.blockers.length>=3);
 }
 
@@ -155,7 +157,7 @@ async function currentGsaCase() {
 (async()=>{
   await canonicalGrowthCase();
   await canonicalZeroGsaActivationCase();
-  await failClosedCase();
+  await explicitCoverageGapCase();
   await currentOpportunityCsvCase();
   await currentGsaCase();
   const app=fs.readFileSync(path.join(__dirname,'..','SERVICES','demo','public','app.js'),'utf8');
@@ -165,7 +167,9 @@ async function currentGsaCase() {
   assert(index.includes('Federal Award & Contract History'));
   assert(index.includes('awardHistory'));
   const server=fs.readFileSync(path.join(__dirname,'..','StartP2GCGrowthBlueprintDemo.js'),'utf8');
-  assert(server.includes('ExecutiveBlueprintCanonicalTruthService'));
-  assert(server.includes('await canonicalTruth.hydrate'));
+  const worker=fs.readFileSync(path.join(__dirname,'..','SERVICES','demo','P2GCGrowthModelWorker.js'),'utf8');
+  assert(server.includes('P2GCGrowthModelWorker.js'));
+  assert(worker.includes('ExecutiveBlueprintCanonicalTruthService'));
+  assert(worker.includes('await canonicalTruth.hydrate'));
   console.log('EXECUTIVE_BLUEPRINT_CANONICAL_TRUTH_TEST: GREEN');
 })().catch(error=>{console.error(error.stack||error);process.exit(1);});
