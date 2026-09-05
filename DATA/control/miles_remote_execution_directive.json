@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-growth-worker-pool-verify-20260905-0214",
+  "id": "miles-p2gc-growth-child-isolation-deploy-20260905-0223",
   "enabled": true,
-  "job": "FEDERAL_SOURCE_READINESS_AUDIT",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Post-deploy live verification for bounded P2GC growth-model worker concurrency. Prove 8791 remains responsive during multi-company assessment/source work, confirm health/static routes stay live, verify DeLune current truth and five-company regression, and return exact remaining blockers. Read-only; no sends, no provider mutations, no DNS changes."
+  "note": "Deploy merged main commit 3a311a4a87d30cb9c781361c3660978b6037e059. This moves heavyweight P2GC growth-model construction into an isolated child process behind the worker-thread wrapper. Fast-forward safely, restart p2gc-growth-demo when source is newer, preserve governance, and return deployment evidence. No prospect sends, DNS changes, or destructive git recovery."
 }
