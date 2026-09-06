@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v3-localrender-20260905-2030",
+  "id": "miles-p2gc-reusable-demo-v3-ffmpegfix-20260905-2040",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "FINAL RENDER ONLY. Pull current main. Do not use Google Vids audio or avatar. Use the existing 11 approved 1920x1080 scene assets and approved narration. Generate Scene 1 WAV first with Piper if available, otherwise Windows/local system TTS, verify it exists and parses, then generate Scenes 2-11 with the same professional voice. Assemble locally with FFmpeg to P2GC_Federal_Growth_Review_Demo_V3.mp4, 1920x1080 16:9 30fps H.264 AAC. No script/design/routing changes."
+  "note": "FINAL RENDER ONLY. Pull current main. Fix only FFMPEG_NOT_FOUND_AFTER_TTS by locating or provisioning free project-local FFmpeg, verify ffmpeg -version, then reuse the already-created 11 narration WAVs and approved 11 scene assets for local composition. Do not regenerate audio unless corrupt. Export P2GC_Federal_Growth_Review_Demo_V3.mp4 at 1920x1080 30fps H.264 AAC."
 }
