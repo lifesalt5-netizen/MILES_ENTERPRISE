@@ -22,6 +22,7 @@ function main() {
     .replace(/FINAL_V10_/g, 'FINAL_V11_')
     .replace(/v10_concat\.txt/g, 'v11_concat.txt')
     .replace(/final_v10_mp4_created/g, 'final_v11_mp4_created')
+    .replace('timeout: 1800000,', 'timeout: 5400000,')
     .replace("fs.writeFileSync(GENERATED, src, 'utf8');", "src = applyV11Transforms(src);\n\n  fs.writeFileSync(GENERATED, src, 'utf8');");
 
   if (!wrapper.includes('applyV11Transforms(src)')) throw new Error('V11_WRAPPER_TRANSFORM_INJECTION_FAILED');
@@ -31,7 +32,7 @@ function main() {
     cwd: ROOT,
     encoding: 'utf8',
     windowsHide: true,
-    timeout: 1800000,
+    timeout: 5400000,
     maxBuffer: 32 * 1024 * 1024
   });
 
