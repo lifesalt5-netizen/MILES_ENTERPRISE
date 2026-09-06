@@ -57,6 +57,7 @@ class P2GCCompanySpecificOutboundPipelineService{
       company:clean(input.company),website:clean(input.website),contact:clean(input.contact),contactRole:clean(input.contactRole),email:q.email,
       segment:clean(input.outreachSegment),diagnosticId:diagnosticResult.diagnostic.id,diagnosticToken:diagnosticResult.diagnostic.token,privatePath:diagnosticResult.diagnostic.privatePath,
       strongestFindings:q.strongestFindings,status:'DIAGNOSTIC_PREPARED_BEFORE_OUTREACH',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),
+      positiveReply:false,privateLinkReleasedAt:null,privateLinkReleasedFrom:null,
       coldSequence:{step:0,replyReceived:false,stopped:false}
     };
     const rows=readJson(this.stateFile,[]);rows.push(record);writeJson(this.stateFile,rows);
@@ -101,26 +102,35 @@ class P2GCCompanySpecificOutboundPipelineService{
     if(!row)return {ok:false,code:'PIPELINE_RECORD_NOT_FOUND'};
     row.coldSequence.replyReceived=true;row.coldSequence.stopped=true;row.coldSequence.stopReason='REPLY_RECEIVED';row.replyText=clean(replyText);row.updatedAt=new Date().toISOString();
     if(/\b(stop|unsubscribe|remove me|do not contact|don't contact)\b/i.test(replyText||'')){
+      row.positiveReply=false;
       const result=this.suppression.upsert({email:email||row.email,reason:'PROSPECT_DO_NOT_CONTACT',source:'P2GC_REPLY',sourceId,evidence:clean(replyText),hard:true});
       row.status='GLOBAL_SUPPRESSION_ADDED';writeJson(this.stateFile,rows);
       this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:'REPLY_DO_NOT_CONTACT',recipient:row.email,status:'SUPPRESSED',reply:clean(replyText),result});
       return {ok:true,suppressed:true,result};
     }
     const positive=Policy.positiveReplyIntent(replyText);
+    row.positiveReply=positive;
     row.status=positive?'DIAGNOSTIC_REQUESTED':'REPLY_RECEIVED';writeJson(this.stateFile,rows);
-    this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:positive?'POSITIVE_REPLY_DIAGNOSTIC_REQUEST':'REPLY_RECEIVED',recipient:row.email,status:'REPLIED',reply:clean(replyText),result:{diagnosticId:row.diagnosticId}});
+    this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:positive?'POSITIVE_REPLY_DIAGNOSTIC_REQUEST':'REPLY_RECEIVED',recipient:row.email,status:'REPLIED',reply:clean(replyText),result:{diagnosticId:row.diagnosticId,positiveReply:positive}});
     return {ok:true,positive,row};
   }
 
   positiveReplyLinkMessage({pipelineId,sendingMailbox}={}){
     const rows=readJson(this.stateFile,[]);const row=rows.find(x=>x.id===pipelineId);
     if(!row)return {ok:false,code:'PIPELINE_RECORD_NOT_FOUND'};
-    if(!row.coldSequence.replyReceived)return {ok:false,code:'POSITIVE_REPLY_REQUIRED_BEFORE_PRIVATE_LINK'};
+    if(row.positiveReply!==true || !['DIAGNOSTIC_REQUESTED','PRIVATE_DIAGNOSTIC_LINK_RELEASED'].includes(row.status))return {ok:false,code:'POSITIVE_REPLY_REQUIRED_BEFORE_PRIVATE_LINK'};
     if(Policy.isProtectedDomain(sendingMailbox))return {ok:false,code:'P2GC_PRIMARY_DOMAIN_HANDOFF_TOO_EARLY'};
+    if(!Policy.isApprovedSecondaryDomain(sendingMailbox))return {ok:false,code:'P2GC_PRIVATE_LINK_MUST_STAY_ON_APPROVED_SECONDARY_THREAD'};
     const urlBase=clean(process.env.P2GC_PRIVATE_REVIEW_BASE_URL||'');
     const link=urlBase?`${urlBase.replace(/\/$/,'')}${row.privatePath}`:row.privatePath;
     const body=`Absolutely.\n\nHere is the private Federal Growth Snapshot we prepared for ${row.company}:\n\n${link}\n\nIt uses ${row.company}'s actual public federal contracting data and shows the main areas that stood out along with the underlying sources.\n\nI've left enough visible for you to determine whether the findings are relevant. If they are, you can request the complete review and decide whether you want the intelligence for your internal team or want P2GC involved in executing it.\n\nKevin`;
-    return {ok:true,fromName:'Kevin',fromMailbox:lower(sendingMailbox),sameThreadRequired:true,body,privateLink:link};
+    row.privateLinkReleasedAt=row.privateLinkReleasedAt||new Date().toISOString();
+    row.privateLinkReleasedFrom=lower(sendingMailbox);
+    row.status='PRIVATE_DIAGNOSTIC_LINK_RELEASED';
+    row.updatedAt=new Date().toISOString();
+    writeJson(this.stateFile,rows);
+    this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:'PRIVATE_DIAGNOSTIC_LINK_RELEASED_AFTER_POSITIVE_REPLY',recipient:row.email,senderMailbox:lower(sendingMailbox),status:'READY_TO_SEND_IN_SAME_THREAD',message:body,result:{pipelineId:row.id,diagnosticId:row.diagnosticId,privatePath:row.privatePath}});
+    return {ok:true,fromName:'Kevin',fromMailbox:lower(sendingMailbox),sameThreadRequired:true,body,privateLink:link,privateLinkReleasedAt:row.privateLinkReleasedAt};
   }
 
   qualification(input={}){
