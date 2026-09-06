@@ -1,7 +1,8 @@
 'use strict';
 
-// Pacing-only wrapper around the approved V5 speech-synced renderer.
-// Keeps content and narration-driven reveal logic unchanged while targeting ~8:00 total runtime.
+// Pacing + short welcome wrapper around the approved V5 speech-synced renderer.
+// Keeps the approved 11-scene content unchanged, adds a brief human intro,
+// and targets approximately 8:00 total runtime without restoring long topic gaps.
 
 const fs = require('fs');
 const path = require('path');
@@ -17,14 +18,19 @@ function main() {
     .replace("path.join(ROOT,'DATA','reusable_demo','v5')", "path.join(ROOT,'DATA','reusable_demo','v6')")
     .replace('P2GC_Federal_Growth_Review_Demo_V5.mp4', 'P2GC_Federal_Growth_Review_Demo_V6.mp4')
     .replace('latest_p2gc_v5_render.json', 'latest_p2gc_v6_render.json')
-    .replace("const RATE='-8%';", "const RATE='-22%';")
+    .replace("const RATE='-8%';", "const RATE='-20%';")
     .replace('const BETWEEN_CHUNK_HOLD=0.10;', 'const BETWEEN_CHUNK_HOLD=0.15;')
     .replace('const BETWEEN_SCENE_HOLD=0.18;', 'const BETWEEN_SCENE_HOLD=0.20;')
+    .replace(
+      "if(!Array.isArray(master.scenes)||master.scenes.length!==11)throw new Error('APPROVED_SCENE_COUNT_INVALID');",
+      "if(!Array.isArray(master.scenes)||master.scenes.length!==11)throw new Error('APPROVED_SCENE_COUNT_INVALID');master.scenes.unshift({scene:0,title:'Welcome to the P2GC Federal Growth Review',selfDiagnosis:null,narration:\"I'm glad you're able to review this today. In the next few minutes, we'll show how P2GC turns federal data into a clearer growth picture. Let's get started.\"});"
+    )
     .replace(/V5_SPEECH_SYNC_RENDER/g, 'V6_PACED_SPEECH_SYNC_RENDER')
     .replace(/Final V5 speech-synced MP4 created/g, 'Final V6 paced speech-synced MP4 created')
     .replace(/FINAL_V5_/g, 'FINAL_V6_')
     .replace(/v5_concat\.txt/g, 'v6_concat.txt')
-    .replace(/final_v5_mp4_created/g, 'final_v6_mp4_created');
+    .replace(/final_v5_mp4_created/g, 'final_v6_mp4_created')
+    .replace("status.all11Scenes='PASS';", "status.intro='PASS';status.all11Scenes='PASS';");
 
   fs.writeFileSync(GENERATED, src, 'utf8');
   const r = spawnSync(process.execPath, [GENERATED], {
