@@ -1,7 +1,7 @@
 {
-  "id": "miles-command-center-owner-recovery-20260906-2137",
+  "id": "miles-command-center-owner-recovery-20260906-2142",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main and run the fail-closed command-center ownership recovery. Inspect the process holding port 8787. Terminate it only if Windows process metadata proves it is the canonical Node process for C:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartUnifiedMilesControlCenter.js (or UnifiedMilesGateway under that same repo). If the signature does not match, do not terminate anything. After a verified orphan cleanup, restart only PM2 miles-command-center, require /api/dashboard ok=true, and require port 8787 PID to match the PM2 miles-command-center PID. No destructive git recovery, no provider mutation, no task/history deletion."
+  "note": "Retry after syntax correction. Pull current main and run the fail-closed command-center ownership recovery. Inspect the process holding port 8787. Terminate it only if Windows process metadata proves it is the canonical Node process for C:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartUnifiedMilesControlCenter.js (or UnifiedMilesGateway under that same repo). If the signature does not match, do not terminate anything. After verified orphan cleanup, restart only PM2 miles-command-center, require /api/dashboard ok=true, and require the port 8787 PID to match the PM2 miles-command-center PID. No destructive git recovery, no provider mutation, no task/history deletion."
 }
