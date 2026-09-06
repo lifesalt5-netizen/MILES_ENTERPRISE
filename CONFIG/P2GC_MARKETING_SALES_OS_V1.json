@@ -1,0 +1,75 @@
+{
+  "version": "2026-09-06-v1",
+  "status": "ACTIVE",
+  "supersedes": "GENERIC_DEMO_FIRST",
+  "visibleIdentity": {
+    "senderName": "Kevin",
+    "company": "Pathways 2 Government Contracting",
+    "forbiddenSenderNames": ["Kevin Carter"]
+  },
+  "primaryObjective": "FIND_RIGHT_CONTRACTOR_TO_COMPANY_SPECIFIC_FINDING_TO_PERMISSION_TO_PRIVATE_DIAGNOSTIC_TO_QUALIFICATION_TO_HIGH_INTENT_CALENDAR",
+  "protectedPrimaryDomains": ["p2gc.com"],
+  "coldSending": {
+    "protectedPrimaryDomainsEnabled": false,
+    "useSecondaryDomainsOnly": true,
+    "requireHealthVerificationBeforeAssignment": true,
+    "failoverToProtectedPrimaryDomain": false,
+    "firstEmailMayContainDiagnosticLink": false,
+    "firstEmailMayContainCalendly": false,
+    "firstEmailMayContainAttachment": false,
+    "firstEmailObjective": "GET_PERMISSION_TO_SEND_PRIVATE_DIAGNOSTIC",
+    "cadenceDays": [0, 3, 7],
+    "stopAfterDay": 7,
+    "stopSequenceImmediatelyOnReply": true
+  },
+  "secondaryDomains": [
+    "pathwaysgov.com",
+    "pathwaysfederal.com",
+    "pathwaysgovcon.com",
+    "pathwaystogc.com",
+    "pathwaysgsa.com",
+    "pathways2gc.co"
+  ],
+  "segments": [
+    "P2GC – GSA No Sales",
+    "P2GC – GSA Low Sales",
+    "P2GC – VA Growth",
+    "P2GC – Recompete / Protect Revenue",
+    "P2GC – Agency Concentration",
+    "P2GC – Agency Expansion",
+    "P2GC – Sub → Prime",
+    "P2GC – Teaming",
+    "P2GC – Qualified Capture",
+    "P2GC – Vehicle Expansion",
+    "P2GC – SLED/Commercial → Federal",
+    "P2GC – Established Federal Growth"
+  ],
+  "decisionFramework": ["PROTECT", "EXPAND", "CAPTURE"],
+  "requiredFindingLabels": ["CONFIRMED FACT", "CALCULATED INDICATOR", "P2GC OBSERVATION / RECOMMENDATION"],
+  "diagnostic": {
+    "mustExistBeforeFirstOutreach": true,
+    "privateTokenRequired": true,
+    "predictableCompanyIdsForbidden": true,
+    "primaryDemo": "PROSPECT_OWN_COMPANY_DATA",
+    "lockedPreview": true,
+    "showStrongExamplesPerAreaMin": 1,
+    "showStrongExamplesPerAreaMax": 3
+  },
+  "calendarQualification": {
+    "required": true,
+    "questions": ["goal", "executionPreference", "timing", "willingnessToInvest"],
+    "deprioritize": ["JUST_RESEARCHING", "NO_ONLY_GATHERING_INFORMATION"],
+    "primaryDomainHandoffStages": ["FULL_REVIEW_REQUESTED", "QUALIFIED", "BOOKED", "SUBSTANTIVE_SALES_QUESTION", "REAL_OPPORTUNITY"]
+  },
+  "globalSuppression": {
+    "enabled": true,
+    "channels": ["EMAIL", "INSTANTLY", "COLD_SEQUENCE", "LINKEDIN_OUTBOUND", "FUTURE_AUTOMATION"]
+  },
+  "dashboard": {
+    "topLevelArea": "MARKETING ACTIVITY",
+    "views": ["MARKETING CALENDAR", "WHAT IS GOING OUT?", "EMAIL ACTIVITY", "LINKEDIN ACTIVITY", "OUTBOUND DOMAIN HEALTH", "AUDIT HISTORY", "PERFORMANCE ANALYTICS", "DAILY CEO MARKETING SCORECARD", "MESSAGE LIBRARY"]
+  },
+  "qualityOrder": ["RELEVANCE", "ACCURACY", "DELIVERABILITY", "BUYING_INTENT", "CONVERSION", "REVENUE"],
+  "rawSendVolumeIsPrimaryMetric": false,
+  "spendWithoutKevinApproval": false
+}
