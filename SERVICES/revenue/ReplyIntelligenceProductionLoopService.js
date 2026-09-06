@@ -6,6 +6,7 @@ const ReplyIntelligenceService = require("./ReplyIntelligenceService");
 const GlobalSuppressionService = require("./GlobalSuppressionService");
 const ExecutiveReplySurfacePolicyService = require("./ExecutiveReplySurfacePolicyService");
 const ReplacementContactRecoveryService = require("./ReplacementContactRecoveryService");
+const P2GCCompanySpecificOutboundPipelineService = require("./P2GCCompanySpecificOutboundPipelineService");
 const { evaluateQualifiedReplyForAutonomy } = require("./AutonomousQualifiedReplyPolicy");
 
 const DEFAULT_INTERVAL_MS = 5 * 60 * 1000;
@@ -66,6 +67,7 @@ class ReplyIntelligenceProductionLoopService {
     this.suppression=options.suppression||new GlobalSuppressionService({rootDir:this.rootDir});
     this.surfacePolicy=options.surfacePolicy||new ExecutiveReplySurfacePolicyService({rootDir:this.rootDir});
     this.replacementRecovery=options.replacementRecovery||new ReplacementContactRecoveryService();
+    this.companySpecificPipeline=options.companySpecificPipeline||new P2GCCompanySpecificOutboundPipelineService({rootDir:this.rootDir,suppressionService:this.suppression});
     this.calendlyUrl=options.calendlyUrl||process.env.P2GC_CALENDLY_URL||DEFAULT_CALENDLY_URL;
     this.timer=null; this.running=false; this.passRunning=false;
     this.outputDir=options.outputDir||path.join(this.rootDir,"DATA","runtime","revenue","replies");
@@ -81,7 +83,7 @@ class ReplyIntelligenceProductionLoopService {
   }
 
   getEmailSource(){ if(this.emailSource) return this.emailSource; const instantly=require(path.join(this.rootDir,"CONNECTORS","INSTANTLY","instantly.js")); return {async listEmails(params){return instantly.request("/emails",{method:"GET",params});}}; }
-  initialState(){ return {version:5,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
+  initialState(){ return {version:6,processedIds:[],lastSuccessfulPollAt:null,cumulative:{rawReceived:0,humanReplies:0,meaningfulHumanReplies:0,qualifiedPositiveReplies:0,counts:{}},generatedAt:new Date().toISOString()}; }
   loadState(){ const state=readJson(this.statePath,this.initialState()); return {...this.initialState(),...state,processedIds:Array.isArray(state?.processedIds)?state.processedIds:[],cumulative:{...this.initialState().cumulative,...(state?.cumulative||{}),counts:{...(state?.cumulative?.counts||{})}}}; }
   saveState(state){ state.processedIds=[...new Set(state.processedIds||[])].slice(-MAX_PROCESSED_IDS); state.generatedAt=new Date().toISOString(); writeJsonAtomic(this.statePath,state); }
 
@@ -109,31 +111,56 @@ class ReplyIntelligenceProductionLoopService {
     return recovery;
   }
 
+  companySpecificReplyContext(classification){
+    if(classification?.humanReply!==true||!classification?.from||!this.companySpecificPipeline?.markClassifiedReply)return null;
+    try{
+      const result=this.companySpecificPipeline.markClassifiedReply({email:classification.from,replyText:classification.preview,sourceId:classification.emailId,category:classification.category,qualifiedPositive:classification.qualifiedPositive===true,hardSuppression:classification.hardSuppression===true});
+      return result?.matched===true?result:null;
+    }catch(error){
+      return {matched:true,ok:false,code:'COMPANY_SPECIFIC_REPLY_BRIDGE_FAILED',error:error.message};
+    }
+  }
+
   buildQualifiedReplyOperation(item, classification, base){
     const email=String(classification.from||"").trim().toLowerCase();
     const suppression= email && typeof this.suppression.get === "function" ? this.suppression.get(email) : null;
     const reply_to_uuid=replyTargetUuid(item);
     const eaccount=senderAccount(item);
     const autonomy=evaluateQualifiedReplyForAutonomy({...classification,reply_to_uuid,eaccount,suppressed:Boolean(suppression)});
-    const bodyText=draftQualifiedReply(classification.category,this.calendlyUrl);
+    const companySpecific=base.companySpecificDiagnostic||null;
+    let diagnosticHandoff=null;
+    let conversionPath="LEGACY_DIRECT_MEETING";
+    let bodyText=draftQualifiedReply(classification.category,this.calendlyUrl);
+    if(companySpecific?.matched===true&&companySpecific?.positive===true&&companySpecific?.pipelineId){
+      conversionPath="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR";
+      diagnosticHandoff=this.companySpecificPipeline.positiveReplyLinkMessage({pipelineId:companySpecific.pipelineId,sendingMailbox:eaccount});
+      bodyText=diagnosticHandoff?.ok===true?diagnosticHandoff.body:"";
+    }
     const executable=autonomy.eligible && Boolean(bodyText);
+    const diagnosticBlocked=conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"&&diagnosticHandoff?.ok!==true;
     return {
       ...base,
       id:`QUALIFIED_REPLY_${reply_to_uuid || classification.emailId || Buffer.from(base.conversationKey).toString("base64url").slice(0,48)}`,
-      title:`Respond to qualified ${classification.category} reply from ${email || "prospect"}`,
-      objective:"Respond promptly to a qualified human reply and move the prospect toward a meeting without bypassing MILES write governance.",
-      reason:`Reply Intelligence classified this as ${classification.category} with confidence ${classification.confidence}.`,
+      title:conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"?`Send requested private Federal Growth Snapshot to ${email || "prospect"}`:`Respond to qualified ${classification.category} reply from ${email || "prospect"}`,
+      objective:conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"?"Send the already-prepared company-specific diagnostic in the same thread, then require diagnostic qualification before exposing Kevin's calendar.":"Respond promptly to a qualified human reply and move the prospect toward a meeting without bypassing MILES write governance.",
+      reason:diagnosticBlocked?`Company-specific positive reply was detected, but private diagnostic handoff is blocked: ${diagnosticHandoff?.code||'UNKNOWN'}.`:`Reply Intelligence classified this as ${classification.category} with confidence ${classification.confidence}.`,
       provider:"INSTANTLY",connector:"INSTANTLY",system:"INSTANTLY",department:"Revenue Operations",
       action:executable?"replyToEmail":"REVIEW_QUALIFIED_REPLY",
       type:executable?"replyToEmail":"REVIEW_QUALIFIED_REPLY",
       capability:executable?"INSTANTLY_SEND_REPLY":"REVIEW_QUALIFIED_REPLY",
       reply_to_uuid,eaccount,subject:replySubject(classification.subject),body:{text:bodyText},
       contactEmail:email,campaignId:classification.campaignId,leadId:classification.leadId,
+      conversionPath,
+      companySpecificPipelineId:companySpecific?.pipelineId||null,
+      diagnosticId:companySpecific?.diagnosticId||null,
+      privateDiagnosticPath:diagnosticHandoff?.privateLink||null,
+      calendlyIncluded:conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"?false:Boolean(bodyText&&String(bodyText).includes('calendly')),
       status:executable?"READY":"REVIEW_REQUIRED",
       owner:executable?"MILES":"KEVIN",requiresKevin:false,requiresCEO:false,
       autonomy,
-      requiredGates:["QUALIFIED_POSITIVE_CATEGORY","CONFIDENCE_0_90_PLUS","REPLY_IDENTITY","SENDER_ACCOUNT","GLOBAL_SUPPRESSION_CHECK","INSTANTLY_WRITE_GOVERNANCE"],
-      nextAction:executable?"QUEUE_GOVERNED_INSTANTLY_REPLY":"REVIEW_MISSING_AUTONOMY_EVIDENCE"
+      diagnosticHandoff:diagnosticHandoff?{ok:diagnosticHandoff.ok===true,code:diagnosticHandoff.code||null,sameThreadRequired:diagnosticHandoff.sameThreadRequired===true}:null,
+      requiredGates:conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"?["QUALIFIED_POSITIVE_CATEGORY","POSITIVE_REPLY_MATCHED_TO_COMPANY_SPECIFIC_PIPELINE","PRIVATE_DIAGNOSTIC_PREPARED_BEFORE_OUTREACH","APPROVED_SECONDARY_SENDER","NO_P2GC_COM_HANDOFF","SAME_THREAD_REPLY","GLOBAL_SUPPRESSION_CHECK","INSTANTLY_WRITE_GOVERNANCE","QUALIFICATION_BEFORE_KEVIN_CALENDAR"]:["QUALIFIED_POSITIVE_CATEGORY","CONFIDENCE_0_90_PLUS","REPLY_IDENTITY","SENDER_ACCOUNT","GLOBAL_SUPPRESSION_CHECK","INSTANTLY_WRITE_GOVERNANCE"],
+      nextAction:executable?(conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR"?"SEND_PRIVATE_DIAGNOSTIC_IN_SAME_THREAD":"QUEUE_GOVERNED_INSTANTLY_REPLY"):(diagnosticBlocked?"HOLD_PRIVATE_LINK_UNTIL_SAFE_SECONDARY_SENDER":"REVIEW_MISSING_AUTONOMY_EVIDENCE")
     };
   }
 
@@ -144,12 +171,14 @@ class ReplyIntelligenceProductionLoopService {
     const email=classification.from;
     const queueKey=row=>this.queueKey(row);
     this.clearConversationQueues(base);
+    const companySpecific=this.companySpecificReplyContext(classification);
+    if(companySpecific)base.companySpecificDiagnostic={matched:true,ok:companySpecific.ok!==false,positive:companySpecific.positive===true,suppressed:companySpecific.suppressed===true,pipelineId:companySpecific.pipelineId||null,diagnosticId:companySpecific.diagnosticId||null,company:companySpecific.company||null,code:companySpecific.code||null};
     const replacement=this.recoverReplacementContact(item,classification,base);
     if(replacement){ base.replacementContact=replacement; base.action="REPLACE_CONTACT_AND_CONTINUE"; base.priority="HIGH"; }
     else if(classification.qualifiedPositive) {
       const operation=this.buildQualifiedReplyOperation(item,classification,base);
       queueUpsert(this.qualifiedQueuePath,operation,queueKey);
-      base.governedReplyOperation={id:operation.id,status:operation.status,action:operation.action,owner:operation.owner,autonomy:operation.autonomy};
+      base.governedReplyOperation={id:operation.id,status:operation.status,action:operation.action,owner:operation.owner,autonomy:operation.autonomy,conversionPath:operation.conversionPath,diagnosticId:operation.diagnosticId,companySpecificPipelineId:operation.companySpecificPipelineId,calendlyIncluded:operation.calendlyIncluded};
     }
     else if(classification.category==="OOO"||classification.category==="NOT_NOW") queueUpsert(this.followupQueuePath,{...base,status:"SCHEDULED"},queueKey);
     else if(classification.category==="NEUTRAL_QUESTION"||classification.category==="UNKNOWN") queueUpsert(this.reviewQueuePath,{...base,status:"OPEN",owner:"MILES"},queueKey);
@@ -178,15 +207,17 @@ class ReplyIntelligenceProductionLoopService {
       const executiveAlerts=routed.filter(item=>item.surfaceToExecutiveInbox===true);
       const suppressedFromExecutive=routed.filter(item=>item.surfaceToExecutiveInbox!==true);
       const replacements=routed.filter(item=>item.replacementContact?.detected===true);
+      const diagnosticReplies=routed.filter(item=>item.companySpecificDiagnostic?.matched===true);
+      const diagnosticHandoffs=routed.filter(item=>item.governedReplyOperation?.conversionPath==="PRIVATE_DIAGNOSTIC_BEFORE_CALENDAR");
       const governedReady=routed.filter(item=>item.governedReplyOperation?.status==="READY").length;
-      const report={ok:true,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:governedReady>0?"QUALIFIED_REPLIES_READY_FOR_GOVERNED_EXECUTION":executiveAlerts.length>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":replacements.length>0?"REPLACEMENT_CONTACTS_REQUIRE_RECOVERY":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",fetched:{rows:fetched.items.length,newRows:fresh.length,pages:fetched.pages,minTimestamp:fetched.minTimestamp,truncated:fetched.truncated},latest:summary,cumulative:state.cumulative,alerts:executiveAlerts,governedRepliesReady:governedReady,replacementContactsRecovered:replacements.length,replacementContacts:replacements.map(item=>item.replacementContact),executiveSurface:{policy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,surfaced:executiveAlerts.length,withheld:suppressedFromExecutive.length,queue:this.surfacePolicy.queuePath},suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression||item.replacementContact?.departedContactEmail).length,followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)&&!item.replacementContact).length,manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)&&!item.replacementContact).length,queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,replacementContacts:this.replacementQueuePath,suppression:this.suppression.filePath,executiveSurface:this.surfacePolicy.queuePath},safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false,nonQualifiedExecutiveInboxAllowed:false,replacementLeadRequiresVerification:true,qualifiedReplyExecutionDelegatedToGovernedRevenuePath:true},generatedAt:new Date().toISOString()};
-      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","MEETINGS","HELD_MEETINGS","BLUEPRINT_DEMOS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative,executiveSurface:report.executiveSurface,governedRepliesReady:governedReady,replacementContactsRecovered:replacements.length});
-      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}; governedReady=${governedReady}; surfaced=${executiveAlerts.length}; replacements=${replacements.length}`); return report;
+      const report={ok:true,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:governedReady>0?"QUALIFIED_REPLIES_READY_FOR_GOVERNED_EXECUTION":executiveAlerts.length>0?"QUALIFIED_REPLIES_REQUIRE_IMMEDIATE_REVIEW":replacements.length>0?"REPLACEMENT_CONTACTS_REQUIRE_RECOVERY":summary.humanReplies>0?"HUMAN_REPLIES_CLASSIFIED":"NO_NEW_HUMAN_REPLIES",fetched:{rows:fetched.items.length,newRows:fresh.length,pages:fetched.pages,minTimestamp:fetched.minTimestamp,truncated:fetched.truncated},latest:summary,cumulative:state.cumulative,alerts:executiveAlerts,governedRepliesReady:governedReady,companySpecificRepliesMatched:diagnosticReplies.length,privateDiagnosticHandoffsPrepared:diagnosticHandoffs.length,replacementContactsRecovered:replacements.length,replacementContacts:replacements.map(item=>item.replacementContact),executiveSurface:{policy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,surfaced:executiveAlerts.length,withheld:suppressedFromExecutive.length,queue:this.surfacePolicy.queuePath},suppressionsAddedOrConfirmed:routed.filter(item=>item.hardSuppression||item.replacementContact?.departedContactEmail).length,followupsScheduled:routed.filter(item=>["OOO","NOT_NOW"].includes(item.category)&&!item.replacementContact).length,manualReview:routed.filter(item=>["NEUTRAL_QUESTION","UNKNOWN"].includes(item.category)&&!item.replacementContact).length,queues:{qualified:this.qualifiedQueuePath,followup:this.followupQueuePath,review:this.reviewQueuePath,replacementContacts:this.replacementQueuePath,suppression:this.suppression.filePath,executiveSurface:this.surfacePolicy.queuePath},safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0,autoActivation:false,nonQualifiedExecutiveInboxAllowed:false,replacementLeadRequiresVerification:true,qualifiedReplyExecutionDelegatedToGovernedRevenuePath:true,companySpecificCalendarBeforeQualification:false,companySpecificPrivateLinkRequiresPositiveReply:true},generatedAt:new Date().toISOString()};
+      writeJsonAtomic(this.latestPath,report); writeJsonAtomic(this.kpiPath,{generatedAt:report.generatedAt,primaryFunnel:["DELIVERED","HUMAN_REPLIES","QUALIFIED_POSITIVE_REPLIES","DIAGNOSTIC_VIEWED","FULL_REVIEW_REQUESTED","QUALIFIED","MEETINGS","PROPOSALS","REVENUE"],rawReplyMetricDeprecated:true,threadDeduplicated:true,latest:summary,cumulative:state.cumulative,executiveSurface:report.executiveSurface,governedRepliesReady:governedReady,companySpecificRepliesMatched:diagnosticReplies.length,privateDiagnosticHandoffsPrepared:diagnosticHandoffs.length,replacementContactsRecovered:replacements.length});
+      this.log(`${report.status}; messages=${fresh.length}; conversations=${representatives.length}; human=${summary.humanReplies}; qualified=${summary.qualifiedPositiveReplies}; diagnosticMatched=${diagnosticReplies.length}; diagnosticHandoffs=${diagnosticHandoffs.length}; governedReady=${governedReady}; surfaced=${executiveAlerts.length}; replacements=${replacements.length}`); return report;
     }catch(error){ const report={ok:false,service:"REPLY_INTELLIGENCE_PRODUCTION_LOOP",status:"REPLY_INTELLIGENCE_POLL_FAILED",error:error.stack||error.message,safety:{instantlyReadOnly:true,sendsExecuted:0,repliesSent:0,campaignMutations:0},generatedAt:new Date().toISOString()}; writeJsonAtomic(this.latestPath,report); this.log(`${report.status}: ${error.message}`); return report; }
     finally{this.passRunning=false;}
   }
 
-  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:true,autonomousReplyExecution:"GOVERNED_REVENUE_PATH_ONLY",executiveSurfacePolicy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,replacementContactRecovery:true}; }
+  start(){ if(this.running) return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_ALREADY_STARTED",intervalMs:this.intervalMs}; this.running=true; Promise.resolve().then(()=>this.runOnce()).catch(error=>this.log(`Initial pass failed: ${error.message}`)); this.timer=setInterval(()=>this.runOnce().catch(error=>this.log(`Scheduled pass failed: ${error.message}`)),this.intervalMs); if(typeof this.timer.unref==="function") this.timer.unref(); return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STARTED",intervalMs:this.intervalMs,instantlyReadOnly:true,autonomousRepliesAllowed:true,autonomousReplyExecution:"GOVERNED_REVENUE_PATH_ONLY",executiveSurfacePolicy:"QUALIFIED_POSITIVE_ONLY",rawForwardingAllowed:false,replacementContactRecovery:true,companySpecificDiagnosticRouting:true,companySpecificCalendarBeforeQualification:false}; }
   stop(){ if(this.timer) clearInterval(this.timer); this.timer=null; this.running=false; return {ok:true,status:"REPLY_INTELLIGENCE_LOOP_STOPPED"}; }
 }
 
