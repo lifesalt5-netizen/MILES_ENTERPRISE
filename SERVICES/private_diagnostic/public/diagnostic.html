@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <title>Your Private Federal Growth Snapshot | P2GC</title>
+  <link rel="stylesheet" href="/private-diagnostic/diagnostic.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">PATHWAYS 2 GOVERNMENT CONTRACTING</div>
+        <h1>Your Private Federal Growth Snapshot</h1>
+        <p class="lede">Prepared from company-specific public federal contracting information after you asked to see what stood out.</p>
+      </div>
+      <div class="privacy">PRIVATE · NON-INDEXED</div>
+    </header>
+
+    <section id="loading" class="card"><h2>Loading your company snapshot…</h2></section>
+    <section id="error" class="card error" hidden><h2>This private snapshot is not available.</h2><p>Please use the link from Kevin’s email thread.</p></section>
+
+    <div id="content" hidden>
+      <section class="card hero-card">
+        <div>
+          <div class="eyebrow">COMPANY-SPECIFIC REVIEW</div>
+          <h2 id="companyName"></h2>
+          <p id="preparedAt" class="muted"></p>
+        </div>
+        <div class="badge">FREE PREVIEW</div>
+      </section>
+
+      <section class="card">
+        <div class="section-head"><div><div class="eyebrow">POSITION</div><h2>Where the company appears to stand today</h2></div></div>
+        <div id="positionGrid" class="position-grid"></div>
+      </section>
+
+      <section class="card" id="findingsSection">
+        <div class="section-head"><div><div class="eyebrow">WHAT STOOD OUT</div><h2>Representative findings</h2><p class="muted">Each point below includes the source, as-of date, and what the metric means.</p></div></div>
+        <div id="findings"></div>
+        <div id="locked" class="locked" hidden></div>
+      </section>
+
+      <section class="card" id="pathwaysSection">
+        <div class="section-head"><div><div class="eyebrow">P2GC PATHWAY VIEW</div><h2>Protect · Expand · Capture</h2></div></div>
+        <div class="path-grid">
+          <article><h3>PROTECT</h3><div id="protect"></div></article>
+          <article><h3>EXPAND</h3><div id="expand"></div></article>
+          <article><h3>CAPTURE</h3><div id="capture"></div></article>
+        </div>
+      </section>
+
+      <section class="card" id="opportunitySection" hidden>
+        <div class="section-head"><div><div class="eyebrow">REPRESENTATIVE SIGNALS</div><h2>Current opportunity environment</h2><p class="muted">These are review signals, not guarantees of eligibility or award.</p></div></div>
+        <div id="opportunities"></div>
+        <div id="moreOpportunities" class="locked" hidden></div>
+      </section>
+
+      <section class="card qualification" id="qualificationSection">
+        <div class="section-head"><div><div class="eyebrow">NEXT STEP</div><h2>Request the full company-specific review</h2><p>Before we place anything on Kevin’s calendar, answer four quick questions so the conversation can be about your actual priorities—not a generic sales presentation.</p></div></div>
+
+        <label>1. What are you trying to accomplish in federal contracting over the next 6–12 months?
+          <textarea id="goal" rows="3" placeholder="Example: replace expiring revenue, win our first prime award, grow GSA sales, expand into new agencies, move from sub to prime…"></textarea>
+        </label>
+
+        <label>2. If the findings are valid, how would you prefer to act on them?
+          <select id="executionPreference">
+            <option value="">Choose one</option>
+            <option>Our internal team would execute it</option>
+            <option>We would want P2GC working with our team</option>
+            <option>We would prefer P2GC to lead the execution</option>
+            <option>Not sure yet — show us the best path first</option>
+          </select>
+        </label>
+
+        <label>3. When would you want to start addressing the highest-priority issue?
+          <select id="timing">
+            <option value="">Choose one</option>
+            <option>Now / within 30 days</option>
+            <option>Within 30–90 days</option>
+            <option>Later this year</option>
+            <option>Just researching right now</option>
+          </select>
+        </label>
+
+        <label>4. If there is a clear, practical path, are you willing to invest in getting it executed?
+          <select id="willingnessToInvest">
+            <option value="">Choose one</option>
+            <option>Yes — if the path and fit make sense</option>
+            <option>Possibly — we need to understand scope and cost</option>
+            <option>We would likely execute internally</option>
+            <option>No — we are only gathering information</option>
+          </select>
+        </label>
+
+        <label>Anything you want Kevin to address if you qualify for a focused review? <span class="muted">(optional)</span>
+          <textarea id="salesQuestion" rows="3" placeholder="Add a specific question or concern here."></textarea>
+        </label>
+
+        <button id="requestReview">Request My Full Company Review</button>
+        <p id="qualificationMessage" class="message"></p>
+      </section>
+
+      <section id="qualifiedCta" class="card qualified" hidden>
+        <div class="eyebrow">QUALIFIED FOR A FOCUSED REVIEW</div>
+        <h2>Choose a time with Kevin</h2>
+        <p>Your answers indicate that a company-specific conversation is the right next step. Kevin will receive the findings you viewed and the answers you provided before the meeting.</p>
+        <button id="schedule">See Available Times</button>
+      </section>
+
+      <footer>
+        <p><strong>Pathways 2 Government Contracting</strong></p>
+        <p class="muted">This snapshot is a preliminary company-specific diagnostic based on public federal contracting information. It does not guarantee awards, revenue, eligibility, or future opportunities.</p>
+      </footer>
+    </div>
+  </main>
+  <script src="/private-diagnostic/diagnostic.js" defer></script>
+</body>
+</html>
