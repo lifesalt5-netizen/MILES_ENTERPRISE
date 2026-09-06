@@ -1,14 +1,14 @@
 'use strict';
 
-// Presentation timing correction only: approved content remains unchanged.
-// Ensure project-local FFmpeg + ffprobe exist, then render speech-synced V5.
+// Final pacing/content pass: approved 11-scene core remains intact.
+// Adds a short welcome and one SLED-to-Fed expansion mention, then renders speech-synced V7.
 
 const { main: provisionFfmpeg } = require('./ProvisionProjectFfmpeg');
-const { main: renderV5 } = require('./RenderP2GCFederalGrowthReviewV5SpeechSync');
+const { main: renderV7 } = require('./RenderP2GCFederalGrowthReviewV7FinalPaced');
 
 Promise.resolve()
   .then(() => provisionFfmpeg())
-  .then(() => renderV5())
+  .then(() => renderV7())
   .catch(error => {
     console.error(error && (error.stack || error.message) || error);
     process.exitCode = 2;
