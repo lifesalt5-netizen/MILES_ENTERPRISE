@@ -1,14 +1,12 @@
 'use strict';
 
-// FINAL RENDER PRIORITY: use approved 11 scene assets + existing narration WAVs only.
-// Google Vids audio/avatar automation is intentionally bypassed.
+// Presentation upgrade only: approved content remains unchanged.
+// V4 uses a brighter executive theme, natural neural narration, and progressive reveals.
 
-const { main: provisionFfmpeg } = require('./ProvisionProjectFfmpeg');
-const { main: renderLocal } = require('./RenderP2GCFederalGrowthReviewLocal');
+const { main: renderV4 } = require('./RenderP2GCFederalGrowthReviewV4');
 
 Promise.resolve()
-  .then(() => provisionFfmpeg())
-  .then(() => renderLocal())
+  .then(() => renderV4())
   .catch(error => {
     console.error(error && (error.stack || error.message) || error);
     process.exitCode = 2;
