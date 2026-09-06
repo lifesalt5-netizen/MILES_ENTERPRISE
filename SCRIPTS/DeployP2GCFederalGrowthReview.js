@@ -1,14 +1,14 @@
 'use strict';
 
-// V9 pacing correction: preserve approved content, voice, intro, SLED-to-Fed mention, and speech sync.
-// Add a landing pause after every spoken point so the matching screen remains long enough to register.
+// V10 copy/content correction: decimal-safe narration, broader company pathways,
+// FREE company-specific demo CTA, closing thank-you, and preserved point-landing sync.
 
 const { main: provisionFfmpeg } = require('./ProvisionProjectFfmpeg');
-const { main: renderV9 } = require('./RenderP2GCFederalGrowthReviewV9PointLanding');
+const { main: renderV10 } = require('./RenderP2GCFederalGrowthReviewV10CopyFix');
 
 Promise.resolve()
   .then(() => provisionFfmpeg())
-  .then(() => renderV9())
+  .then(() => renderV10())
   .catch(error => {
     console.error(error && (error.stack || error.message) || error);
     process.exitCode = 2;
