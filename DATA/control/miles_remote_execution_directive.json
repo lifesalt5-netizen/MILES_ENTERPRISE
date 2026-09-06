@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v4-presentation-20260905-2115",
+  "id": "miles-p2gc-reusable-demo-v4-ffprobefix-20260905-2120",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "PRESENTATION UPGRADE ONLY. Keep the approved 11-scene factual content and strategy intact. Render V4 locally with a bright white/light executive background, natural zero-cost neural narration, progressive content reveals so viewers do not read ahead, and all transitions/delays capped at 2 seconds maximum (target about 0.6s). No Google Vids audio/avatar dependency. Export P2GC_Federal_Growth_Review_Demo_V4.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "CONTINUE V4 UNTIL READY. Fix only PROJECT_FFMPEG_OR_FFPROBE_MISSING by provisioning project-local ffprobe alongside existing FFmpeg, verify both, then render the approved 11-scene V4 with bright executive theme, natural zero-cost neural narration, progressive reveals, and transitions under 2 seconds (target 0.6s). Export P2GC_Federal_Growth_Review_Demo_V4.mp4 at 1920x1080 30fps H.264 AAC."
 }
