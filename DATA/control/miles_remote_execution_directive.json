@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v11-questionsequence-20260905-2220",
+  "id": "miles-p2gc-reusable-demo-v11-questionsequence-retry-20260906-1516",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "QUESTION-SEQUENCE PRESENTATION PASS. Preserve all V10 approved content, decimal fixes, broader company pathways, FREE company-specific demo CTA, closing thank-you, natural neural voice and point-landing pacing. Every question must be its own visual/narration unit even if very short. Show the question on screen first, hold briefly, then speak that exact question, let it land, then advance to the next question or point. Add all on-screen question items and self-diagnosis questions to narration when not already spoken. Suppress the old small self-diagnosis banner because the question should be the main visual. Keep screen and narration synchronized and do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V11.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "RETRY V11 QUESTION-SEQUENCE PASS AFTER CHILD PROCESS TIMEOUT ONLY. Pull current main. Reuse any valid V11 audio and segment files already created. Preserve all V10 approved content, decimal fixes, broader company pathways, FREE company-specific demo CTA, closing thank-you, natural neural voice and point-landing pacing. Every question must be its own visual/narration unit. Show each question on screen first for a short beat, then speak that exact question, let it land, then advance. Include self-diagnosis questions in narration if not already spoken. Do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V11.mp4 at 1920x1080 30fps H.264 AAC."
 }
