@@ -1,7 +1,7 @@
 {
-  "id": "miles-command-center-unique-registration-recovery-20260906-2158",
+  "id": "miles-command-center-stable-ownership-recovery-20260906-2207",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main and recover port 8787 only after the strengthened composite proof passes. Require the listener to be a PM2 ProcessContainerFork child of the active PM2 daemon; require exact MILES_UNIFIED_CEO_GATEWAY HTTP identity and healthy dashboard; require exactly one PM2 registration for C:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartUnifiedMilesControlCenter.js, named miles-command-center with canonical cwd; then allow cleanup if direct app PID proof exists, start-time correlation exists, or the uniquely registered canonical app is stopped while the listener is the exact gateway child of the same PM2 daemon. Restart only miles-command-center and require PM2 PID == 8787 listener PID and /api/dashboard ok=true. Otherwise fail closed. No destructive git recovery, provider mutation, approval mutation, or data deletion."
+  "note": "Pull current main and stabilize the canonical command center. First require unique canonical PM2 registration and metadata. Stop PM2 miles-command-center to halt the respawn loop. While it is stopped, clear only port-8787 listeners that independently pass the exact MILES_UNIFIED_CEO_GATEWAY HTTP identity, PM2-child, same-daemon, unique-registration composite proof. Require port 8787 fully free. Restart only miles-command-center. Then require five consecutive 2-second checks where PM2 status is online, PM2 PID equals the port-8787 listener PID, exact gateway/dashboard health passes, and PM2 restart_time does not change. If stability is not achieved within 60 seconds, stop miles-command-center to end the loop and fail closed. No destructive git recovery, provider mutation, approval mutation, task/history deletion, or unknown-process termination."
 }
