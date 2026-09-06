@@ -60,8 +60,25 @@ async function generateTextFeature(page,featureRe,text,res,label){if(!(await cli
 function splitAvatar(text,seconds){const words=clean(text).split(/\s+/);const count=Math.max(1,Math.round(seconds*135/60));return {avatar:words.slice(0,count).join(' '),remainder:words.slice(count).join(' ')};}
 async function newScene(page){if(!(await clickAny(page,/New scene/i)).ok)throw new Error('NEW_SCENE_CONTROL_NOT_FOUND');await sleep(1800);}
 async function exportMp4(page,res){await clickAny(page,/^File$/i);await sleep(800);const promise=page.waitForEvent('download',{timeout:180000}).catch(()=>null);if(!(await clickAny(page,/Download as MP4|Download|Export/i)).ok)throw new Error('VIDEO_EXPORT_CONTROL_NOT_FOUND');const dl=await promise;if(!dl)throw new Error('VIDEO_EXPORT_DOWNLOAD_NOT_OBSERVED');const dir=path.join(ROOT,'DATA','reusable_demo','exports');fs.mkdirSync(dir,{recursive:true});let name=dl.suggestedFilename()||'P2GC_Federal_Growth_Review_Demo.mp4';if(!name.toLowerCase().endsWith('.mp4'))name+='.mp4';const target=path.join(dir,name);await dl.saveAs(target);const bytes=fs.statSync(target).size;if(bytes<10000)throw new Error('VIDEO_EXPORT_ARTIFACT_INVALID');res.mp4Path=target;res.mp4Bytes=bytes;}
-async function main(){const res={ok:false,status:'STARTED',startedAt:new Date().toISOString(),completedScene:0,snapshots:[]};write(res);let ctx;try{run('BuildP2GCReusableDemoAssets.js');const manifest=JSON.parse(fs.readFileSync(MANIFEST,'utf8'));res.assetCount=manifest.assetCount;res.targetRuntimeSeconds=manifest.targetRuntimeSeconds;res.sceneAssets=manifest.assets.map(a=>({scene:a.scene,pngFile:a.pngFile,durationSeconds:a.durationSeconds,avatarSeconds:a.avatarSeconds}));write(res);ctx=await chromium.launchPersistentContext(PROFILE,{headless:true,channel:'chrome',acceptDownloads:true,viewport:{width:1440,height:1000},args:['--disable-blink-features=AutomationControlled']});const page=ctx.pages()[0]||await ctx.newPage();res.googleAccount=await chooseAccount(page);await ensureEditor(page,res.googleAccount.slot);await snapshot(page,'editor_ready',res);
- for(const a of manifest.assets){if(a.scene>1)await newScene(page);await uploadSceneImage(page,a.pngFile);if(a.avatarSeconds>0){const parts=splitAvatar(a.narration,a.avatarSeconds);await generateTextFeature(page,/Generate an avatar|\bAvatar\b/i,parts.avatar,res,`SCENE_${a.scene}_AVATAR`);if(clean(parts.remainder))await generateTextFeature(page,/Generate a voiceover|\bVoiceover\b/i,parts.remainder,res,`SCENE_${a.scene}_VOICEOVER`);}else{await generateTextFeature(page,/Generate a voiceover|\bVoiceover\b/i,a.narration,res,`SCENE_${a.scene}_VOICEOVER`);}res.completedScene=a.scene;write(res);await snapshot(page,`scene_${a.scene}_complete`,res);}
+async function main(){const res={ok:false,status:'STARTED',startedAt:new Date().toISOString(),completedScene:0,snapshots:[],fallbacks:[]};write(res);let ctx;try{run('BuildP2GCReusableDemoAssets.js');const manifest=JSON.parse(fs.readFileSync(MANIFEST,'utf8'));res.assetCount=manifest.assetCount;res.targetRuntimeSeconds=manifest.targetRuntimeSeconds;res.sceneAssets=manifest.assets.map(a=>({scene:a.scene,pngFile:a.pngFile,durationSeconds:a.durationSeconds,avatarSeconds:a.avatarSeconds}));write(res);ctx=await chromium.launchPersistentContext(PROFILE,{headless:true,channel:'chrome',acceptDownloads:true,viewport:{width:1440,height:1000},args:['--disable-blink-features=AutomationControlled']});const page=ctx.pages()[0]||await ctx.newPage();res.googleAccount=await chooseAccount(page);await ensureEditor(page,res.googleAccount.slot);await snapshot(page,'editor_ready',res);
+ for(const a of manifest.assets){
+   if(a.scene>1)await newScene(page);
+   await uploadSceneImage(page,a.pngFile);
+   if(a.avatarSeconds>0){
+     const parts=splitAvatar(a.narration,a.avatarSeconds);
+     try{
+       await generateTextFeature(page,/Generate an avatar|AI avatar|Personal avatar|Have your avatar present|\bAvatar\b/i,parts.avatar,res,`SCENE_${a.scene}_AVATAR`);
+       if(clean(parts.remainder))await generateTextFeature(page,/Generate a voiceover|\bVoiceover\b/i,parts.remainder,res,`SCENE_${a.scene}_VOICEOVER`);
+     }catch(error){
+       res.fallbacks.push({scene:a.scene,from:'AVATAR',to:'FULL_SCENE_VOICEOVER',reason:error.message,at:new Date().toISOString()});write(res);
+       await snapshot(page,`scene_${a.scene}_avatar_fallback`,res);
+       await generateTextFeature(page,/Generate a voiceover|\bVoiceover\b/i,a.narration,res,`SCENE_${a.scene}_VOICEOVER_FALLBACK`);
+     }
+   }else{
+     await generateTextFeature(page,/Generate a voiceover|\bVoiceover\b/i,a.narration,res,`SCENE_${a.scene}_VOICEOVER`);
+   }
+   res.completedScene=a.scene;write(res);await snapshot(page,`scene_${a.scene}_complete`,res);
+ }
  await exportMp4(page,res);res.ok=true;res.status='MP4_EXPORTED';res.finishedAt=new Date().toISOString();write(res);console.log(JSON.stringify(res,null,2));}catch(e){res.status='FAILED';res.error=e.message;res.stack=e.stack;res.finishedAt=new Date().toISOString();write(res);console.error(JSON.stringify(res,null,2));process.exitCode=2;}finally{try{await ctx?.close();}catch{}}}
 if(require.main===module)main();
 module.exports={main};
