@@ -50,67 +50,57 @@ function pm2CanonicalMetadata(app){
   const cwdMatch=normalizedPath(cwd)===normalizedPath(ROOT);
   const pidFilePid=pidPath?readPidFile(pidPath):null;
   let pm2Home='';
-  if(pidPath){
-    const pidsDir=path.dirname(pidPath);
-    pm2Home=path.basename(pidsDir).toLowerCase()==='pids'?path.dirname(pidsDir):path.dirname(pidPath);
-  }
+  if(pidPath){const pidsDir=path.dirname(pidPath);pm2Home=path.basename(pidsDir).toLowerCase()==='pids'?path.dirname(pidsDir):path.dirname(pidPath);}
   const daemonPid=pm2Home?readPidFile(path.join(pm2Home,'pm2.pid')):null;
   const uptimeMs=Number(env.pm_uptime||0);
   return {ok:execMatch&&cwdMatch,execPath,cwd,pidPath,pidFilePid,pm2Home,daemonPid,uptimeMs:Number.isFinite(uptimeMs)?uptimeMs:0,execMatch,cwdMatch,pm2Status:String(env.status||''),pmId:app?.pm_id??env.pm_id??null,reportedPid:Number(app?.pid)||0};
 }
+function canonicalRegistrations(rows){
+  return (Array.isArray(rows)?rows:[]).filter(row=>normalizedPath(row?.pm2_env?.pm_exec_path)===normalizedPath(CANONICAL_ENTRY)).map(row=>({name:appName(row),pmId:row?.pm_id??row?.pm2_env?.pm_id??null,status:String(row?.pm2_env?.status||''),pid:Number(row?.pid)||0,cwd:String(row?.pm2_env?.pm_cwd||''),execPath:String(row?.pm2_env?.pm_exec_path||'')}));
+}
 function creationTimeMs(value){
   if(!value)return null;
+  const dotNet=String(value).match(/^\/Date\((\d+)(?:[+-]\d+)?\)\/$/);if(dotNet)return Number(dotNet[1]);
   const parsed=Date.parse(value);if(Number.isFinite(parsed))return parsed;
-  const m=String(value).match(/^(\d{14})(?:\.\d+)?([+-]\d{3})?$/);
-  if(!m)return null;
-  const s=m[1];const iso=`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(8,10)}:${s.slice(10,12)}:${s.slice(12,14)}`;
-  const t=Date.parse(iso);return Number.isFinite(t)?t:null;
+  const m=String(value).match(/^(\d{14})(?:\.\d+)?([+-]\d{3})?$/);if(!m)return null;
+  const s=m[1];const t=Date.parse(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(8,10)}:${s.slice(10,12)}:${s.slice(12,14)}`);return Number.isFinite(t)?t:null;
 }
 function startupTimeCorrelation(info,meta){
-  const created=creationTimeMs(info?.CreationDate);
-  const uptime=Number(meta?.uptimeMs||0);
+  const created=creationTimeMs(info?.CreationDate);const uptime=Number(meta?.uptimeMs||0);
   if(!created||!uptime)return {available:false,match:false,deltaMs:null,createdMs:created,pm2UptimeMs:uptime||null};
-  const delta=Math.abs(created-uptime);
-  return {available:true,match:delta<=10000,deltaMs:delta,createdMs:created,pm2UptimeMs:uptime};
+  const delta=Math.abs(created-uptime);return {available:true,match:delta<=10000,deltaMs:delta,createdMs:created,pm2UptimeMs:uptime};
 }
 function httpJson(requestPath='/api/health',timeoutMs=5000){
   return new Promise((resolve,reject)=>{
     const req=http.get({hostname:'127.0.0.1',port:PORT,path:requestPath,timeout:timeoutMs},res=>{
-      let body='';res.setEncoding('utf8');res.on('data',c=>body+=c);res.on('end',()=>{
-        if(res.statusCode<200||res.statusCode>=300)return reject(new Error(`HTTP_${res.statusCode}`));
-        try{resolve({statusCode:res.statusCode,json:JSON.parse(body)});}catch{reject(new Error('INVALID_JSON'));}
-      });
+      let body='';res.setEncoding('utf8');res.on('data',c=>body+=c);res.on('end',()=>{if(res.statusCode<200||res.statusCode>=300)return reject(new Error(`HTTP_${res.statusCode}`));try{resolve({statusCode:res.statusCode,json:JSON.parse(body)});}catch{reject(new Error('INVALID_JSON'));}});
     });
     req.on('timeout',()=>req.destroy(new Error('TIMEOUT')));req.on('error',reject);
   });
 }
 async function currentHttpIdentity(){
   try{
-    const health=await httpJson('/api/health');
-    const dashboard=await httpJson('/api/dashboard');
-    const service=String(health?.json?.service||'');
-    return {ok:health.statusCode===200&&health.json?.ok===true&&service==='MILES_UNIFIED_CEO_GATEWAY'&&dashboard.statusCode===200&&dashboard.json?.ok===true,health:health.json,dashboardOk:dashboard.json?.ok===true};
+    const health=await httpJson('/api/health');const dashboard=await httpJson('/api/dashboard');
+    const h=health?.json||{};
+    const upstreams=h.upstreams||{};
+    const exactGateway=h.ok===true&&h.service==='MILES_UNIFIED_CEO_GATEWAY'&&h.publicUrl===`http://127.0.0.1:${PORT}`&&upstreams.commandCenter==='http://127.0.0.1:8788'&&upstreams.executiveDashboard==='http://127.0.0.1:8737'&&upstreams.productLaunchpad==='http://127.0.0.1:8791';
+    return {ok:health.statusCode===200&&exactGateway&&dashboard.statusCode===200&&dashboard.json?.ok===true,exactGateway,health:h,dashboardOk:dashboard.json?.ok===true};
   }catch(error){return {ok:false,error:error.message};}
 }
 async function waitHealthy(timeoutMs=45000){
   const deadline=Date.now()+timeoutMs;let last=null;
-  while(Date.now()<deadline){
-    try{const r=await httpJson('/api/dashboard');if(r?.json?.ok===true)return r.json;last=new Error(`DASHBOARD_OK_${r?.json?.ok}`);}catch(e){last=e;}
-    await new Promise(r=>setTimeout(r,1200));
-  }
+  while(Date.now()<deadline){try{const r=await httpJson('/api/dashboard');if(r?.json?.ok===true)return r.json;last=new Error(`DASHBOARD_OK_${r?.json?.ok}`);}catch(e){last=e;}await new Promise(r=>setTimeout(r,1200));}
   throw last||new Error('DASHBOARD_RECOVERY_TIMEOUT');
 }
-function compositeOrphanProof({beforePid,app,info,httpIdentity}){
-  const child=genericPm2ChildSignature(info);
-  const meta=pm2CanonicalMetadata(app);
-  const start=startupTimeCorrelation(info,meta);
-  const directPidFileMatch=Number(meta.pidFilePid)===Number(beforePid);
-  const pm2ReportedPidMatch=Number(meta.reportedPid)===Number(beforePid);
-  const daemonParentMatch=Boolean(meta.daemonPid&&Number(meta.daemonPid)===Number(child.parentProcessId));
+function compositeOrphanProof({beforePid,app,rows,info,httpIdentity}){
+  const child=genericPm2ChildSignature(info);const meta=pm2CanonicalMetadata(app);const start=startupTimeCorrelation(info,meta);
+  const registrations=canonicalRegistrations(rows);const uniqueCanonicalRegistration=registrations.length===1&&registrations[0].name===APP;
+  const directPidFileMatch=Number(meta.pidFilePid)===Number(beforePid);const pm2ReportedPidMatch=Number(meta.reportedPid)===Number(beforePid);const daemonParentMatch=Boolean(meta.daemonPid&&Number(meta.daemonPid)===Number(child.parentProcessId));
   const directAppPidProof=directPidFileMatch||pm2ReportedPidMatch;
-  const corroboratedFallback=!directAppPidProof&&daemonParentMatch&&start.available&&start.match;
-  const ok=child.ok&&meta.ok&&httpIdentity?.ok===true&&(directAppPidProof||corroboratedFallback);
-  return {ok,child,meta,start,httpIdentity,directPidFileMatch,pm2ReportedPidMatch,daemonParentMatch,directAppPidProof,corroboratedFallback,rule:'PM2_CHILD + CANONICAL_PM2_METADATA + UNIFIED_HTTP_IDENTITY + (DIRECT_APP_PID_LINK OR DAEMON_PARENT_AND_START_TIME_MATCH)'};
+  const startTimeFallback=!directAppPidProof&&daemonParentMatch&&start.available&&start.match;
+  const verifiedOrphanGatewayFallback=!directAppPidProof&&daemonParentMatch&&uniqueCanonicalRegistration&&String(meta.pm2Status).toLowerCase()!=='online'&&httpIdentity?.ok===true;
+  const ok=child.ok&&meta.ok&&httpIdentity?.ok===true&&uniqueCanonicalRegistration&&(directAppPidProof||startTimeFallback||verifiedOrphanGatewayFallback);
+  return {ok,child,meta,start,registrations,uniqueCanonicalRegistration,httpIdentity,directPidFileMatch,pm2ReportedPidMatch,daemonParentMatch,directAppPidProof,startTimeFallback,verifiedOrphanGatewayFallback,rule:'PM2_CHILD + UNIQUE_CANONICAL_PM2_REGISTRATION + EXACT_UNIFIED_GATEWAY_HTTP_IDENTITY + (DIRECT_APP_PID_LINK OR DAEMON_PARENT_AND_START_TIME_MATCH OR STOPPED_CANONICAL_APP_WITH_SAME_DAEMON_PARENT)'};
 }
 
 async function main(){
@@ -118,31 +108,24 @@ async function main(){
   let rows;try{rows=pm2List();}catch(error){fail('Unable to read PM2 list',error.message);}
   const app=rows.find(x=>appName(x)===APP);if(!app)fail('Canonical PM2 command-center app not found.');
   const beforePid=listenerPid();
-  if(!beforePid){
-    try{runPm2(['restart',APP,'--update-env'],'inherit');}catch(error){fail('No listener existed and PM2 restart failed',error.message);}
-  }else{
+  if(!beforePid){try{runPm2(['restart',APP,'--update-env'],'inherit');}catch(error){fail('No listener existed and PM2 restart failed',error.message);}}
+  else{
     const managed=rows.find(x=>Number(x?.pid)===Number(beforePid));
-    if(managed){
-      if(appName(managed)!==APP)fail(`Port ${PORT} is PM2-managed by unexpected app ${appName(managed)}; refusing recovery.`);
-      if(String(managed?.pm2_env?.status||'').toLowerCase()!=='online')fail('Canonical PM2 owner is not online; refusing ambiguous recovery.');
-    }else{
-      const info=processInfo(beforePid);
-      const httpIdentity=await currentHttpIdentity();
-      const proof=compositeOrphanProof({beforePid,app,info,httpIdentity});
+    if(managed){if(appName(managed)!==APP)fail(`Port ${PORT} is PM2-managed by unexpected app ${appName(managed)}; refusing recovery.`);if(String(managed?.pm2_env?.status||'').toLowerCase()!=='online')fail('Canonical PM2 owner is not online; refusing ambiguous recovery.');}
+    else{
+      const info=processInfo(beforePid);const httpIdentity=await currentHttpIdentity();const proof=compositeOrphanProof({beforePid,app,rows,info,httpIdentity});
       if(!proof.ok)fail(`Port ${PORT} PID ${beforePid} is not provably the orphaned canonical MILES command center; refusing to terminate it.`,proof);
       console.log(`VERIFIED_ORPHAN_CANONICAL_COMMAND_CENTER_PID=${beforePid}`);
       try{runPs(`Stop-Process -Id ${beforePid} -Force -ErrorAction Stop`);}catch(error){fail('Verified canonical orphan could not be stopped',String(error.stderr||error.message||error));}
-      const deadline=Date.now()+10000;while(Date.now()<deadline&&listenerPid()===beforePid)await new Promise(r=>setTimeout(r,400));
-      if(listenerPid()===beforePid)fail('Verified orphan still owns port after stop attempt.');
+      const deadline=Date.now()+10000;while(Date.now()<deadline&&listenerPid()===beforePid)await new Promise(r=>setTimeout(r,400));if(listenerPid()===beforePid)fail('Verified orphan still owns port after stop attempt.');
       try{runPm2(['restart',APP,'--update-env'],'inherit');}catch(error){fail('PM2 restart after verified orphan cleanup failed',error.message);}
     }
   }
-  const dashboard=await waitHealthy();
-  const afterRows=pm2List();const afterApp=afterRows.find(x=>appName(x)===APP);const afterPid=listenerPid();
+  const dashboard=await waitHealthy();const afterRows=pm2List();const afterApp=afterRows.find(x=>appName(x)===APP);const afterPid=listenerPid();
   if(!afterApp||String(afterApp?.pm2_env?.status||'').toLowerCase()!=='online')fail('PM2 command center is not online after recovery.');
   if(Number(afterApp.pid)!==Number(afterPid))fail(`Port ${PORT} owner ${afterPid} does not match PM2 ${APP} pid ${afterApp.pid}.`);
   console.log(JSON.stringify({ok:true,status:'MILES_COMMAND_CENTER_OWNER_RECOVERY_GREEN',port:PORT,priorListenerPid:beforePid||null,currentPid:afterPid,pm2App:APP,dashboardOk:dashboard.ok===true,checkedAt:new Date().toISOString(),safety:{terminatedOnlyAfterCompositeCanonicalProof:true,unknownProcessTermination:false,destructiveGitRecovery:false}},null,2));
 }
 
 if(require.main===module)main().catch(error=>fail(error.message,error.stack));
-module.exports={main,compositeOrphanProof,pm2CanonicalMetadata,genericPm2ChildSignature};
+module.exports={main,compositeOrphanProof,pm2CanonicalMetadata,genericPm2ChildSignature,canonicalRegistrations};
