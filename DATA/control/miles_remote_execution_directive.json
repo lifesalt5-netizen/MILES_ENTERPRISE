@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v11-questionsequence-retry-20260906-1516",
+  "id": "miles-p2gc-reusable-demo-v12-tightquestions-20260906-1522",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "RETRY V11 QUESTION-SEQUENCE PASS AFTER CHILD PROCESS TIMEOUT ONLY. Pull current main. Reuse any valid V11 audio and segment files already created. Preserve all V10 approved content, decimal fixes, broader company pathways, FREE company-specific demo CTA, closing thank-you, natural neural voice and point-landing pacing. Every question must be its own visual/narration unit. Show each question on screen first for a short beat, then speak that exact question, let it land, then advance. Include self-diagnosis questions in narration if not already spoken. Do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V11.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "V12 FINAL QUESTION-SEQUENCE PACING PASS. Pull current main. Preserve all V10 content fixes: decimal integrity, fictional-company setup, no-federal-awards path, Sub-to-Prime, SLED-to-Fed, GSA/VA vehicle growth, FREE company-specific demo CTA and closing thank-you. Preserve V11 behavior: every question is its own visual/narration unit; show the question first, pause briefly, speak that exact question, let it land, then advance. Do not speed up the neural voice. Tighten only repetitive narration around the questions so total runtime returns near 8 minutes. Keep screen/narration synchronized and do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V12.mp4 at 1920x1080 30fps H.264 AAC."
 }
