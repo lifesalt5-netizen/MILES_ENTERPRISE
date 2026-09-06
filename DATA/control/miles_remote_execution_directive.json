@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-private-diagnostic-qualification-20260906-2128",
+  "id": "miles-command-center-recovery-after-private-diagnostic-20260906-2131",
   "enabled": true,
-  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
+  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main and deploy the P2GC private company diagnostic conversion flow. Validate syntax and the positive-reply/qualification acceptance test, restart only the existing p2gc-customer-delivery PM2 app, verify /api/health plus private diagnostic CSS/JS security headers. Hard rules: private diagnostic link is released only after a genuinely positive reply, never from p2gc.com, same-thread handoff must remain on an approved secondary domain, page asks the four qualification questions, and Kevin scheduling remains hidden unless the prospect qualifies as high intent. Do not delete data or perform destructive recovery."
+  "note": "Pull current main, restore and verify the governed MILES runtime after the private diagnostic deployment. Specifically ensure miles-command-center is online and port 8787 serves the CEO dashboard GREEN. Preserve the new 5-day Recent Work/Recent Activity window and Marketing Activity destination. Do not alter private diagnostic data, do not delete tasks/history, and do not grant approvals automatically."
 }
