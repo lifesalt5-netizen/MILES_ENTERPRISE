@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v10-copyfix2-20260905-2203",
+  "id": "miles-p2gc-reusable-demo-v11-questionsequence-20260905-2220",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "RETRY V10 AFTER EXACT CHUNK FIX. Preserve all V10 content requirements. Decimal values such as 11.8, 4.2 and 2.7 must remain intact; short comma fragments must stay attached to their sentence. Keep the fictional-company setup, pathways for companies with and without federal awards, GSA/VA low-or-zero-sales, Sub-to-Prime, SLED-to-Fed, agency expansion, teaming/prime strategy and capture prioritization. Keep point-landing pauses. Closing must offer the FREE company-specific Federal Growth Review demo, visibly show pathways2gc.com/schedule, state no generic sales presentation, and end with thank you for watching. Export P2GC_Federal_Growth_Review_Demo_V10.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "QUESTION-SEQUENCE PRESENTATION PASS. Preserve all V10 approved content, decimal fixes, broader company pathways, FREE company-specific demo CTA, closing thank-you, natural neural voice and point-landing pacing. Every question must be its own visual/narration unit even if very short. Show the question on screen first, hold briefly, then speak that exact question, let it land, then advance to the next question or point. Add all on-screen question items and self-diagnosis questions to narration when not already spoken. Suppress the old small self-diagnosis banner because the question should be the main visual. Keep screen and narration synchronized and do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V11.mp4 at 1920x1080 30fps H.264 AAC."
 }
