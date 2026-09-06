@@ -12,8 +12,10 @@ function arr(v){return Array.isArray(v)?v:[];}
 function ensureDir(d){fs.mkdirSync(d,{recursive:true});}
 function readJson(file,fallback){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function writeJson(file,value){ensureDir(path.dirname(file));fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
+function time(v){const n=Date.parse(clean(v));return Number.isFinite(n)?n:0;}
 
 const REQUIRED_FINDING_LABELS=new Set(['CONFIRMED FACT','CALCULATED INDICATOR','P2GC OBSERVATION / RECOMMENDATION']);
+const ACTIVE_REPLY_STATUSES=new Set(['DIAGNOSTIC_PREPARED_BEFORE_OUTREACH','OUTREACH_READY','OUTREACH_SENT','REPLY_RECEIVED','DIAGNOSTIC_REQUESTED','PRIVATE_DIAGNOSTIC_LINK_RELEASED']);
 
 class P2GCCompanySpecificOutboundPipelineService{
   constructor(options={}){
@@ -65,6 +67,13 @@ class P2GCCompanySpecificOutboundPipelineService{
     return {ok:true,record,diagnostic:diagnosticResult.diagnostic};
   }
 
+  findActiveByEmail(email){
+    const key=lower(email);if(!key)return null;
+    return arr(readJson(this.stateFile,[]))
+      .filter(row=>lower(row.email)===key&&ACTIVE_REPLY_STATUSES.has(clean(row.status).toUpperCase()))
+      .sort((a,b)=>time(b.updatedAt||b.createdAt)-time(a.updatedAt||a.createdAt))[0]||null;
+  }
+
   firstEmail(record={},options={}){
     const senderCheck=Policy.assertColdSenderSafe(options.sendingMailbox,{mailboxHealthy:options.mailboxHealthy===true,healthVerifiedAt:options.healthVerifiedAt});
     if(!senderCheck.ok)return senderCheck;
@@ -73,17 +82,12 @@ class P2GCCompanySpecificOutboundPipelineService{
     const second=arr(record.strongestFindings)[1];
     const contactFirst=clean(record.contact).split(/\s+/)[0]||'there';
     const body=[
-      `Hi ${contactFirst},`,
-      '',
+      `Hi ${contactFirst},`,'',
       `P2GC reviewed ${record.company}'s current federal footprint, and one thing stood out: ${clean(first.finding)}`,
-      second?clean(second.finding):'',
-      '',
-      'We prepared a brief company-specific Federal Growth Snapshot using current public federal contracting data.',
-      '',
-      'Would you like me to send you the private link?',
-      '',
-      'Kevin',
-      'Pathways 2 Government Contracting'
+      second?clean(second.finding):'','',
+      'We prepared a brief company-specific Federal Growth Snapshot using current public federal contracting data.','',
+      'Would you like me to send you the private link?','',
+      'Kevin','Pathways 2 Government Contracting'
     ].filter((line,i,a)=>!(line===''&&a[i-1]==='')).join('\n');
     const policy=Policy.validateFirstTouch({body});
     if(!policy.ok)return {ok:false,code:'FIRST_TOUCH_POLICY_BLOCK',errors:policy.errors};
@@ -97,22 +101,33 @@ class P2GCCompanySpecificOutboundPipelineService{
     return {ok:false,code:'NO_APPROVED_FOLLOW_UP_FOR_DAY'};
   }
 
-  markReply({pipelineId,replyText,email,sourceId}={}){
+  markReply({pipelineId,replyText,email,sourceId,positiveOverride,hardSuppressionOverride=false,category=''}={}){
     const rows=readJson(this.stateFile,[]);const row=rows.find(x=>x.id===pipelineId);
     if(!row)return {ok:false,code:'PIPELINE_RECORD_NOT_FOUND'};
-    row.coldSequence.replyReceived=true;row.coldSequence.stopped=true;row.coldSequence.stopReason='REPLY_RECEIVED';row.replyText=clean(replyText);row.updatedAt=new Date().toISOString();
-    if(/\b(stop|unsubscribe|remove me|do not contact|don't contact)\b/i.test(replyText||'')){
+    row.coldSequence=row.coldSequence||{};row.coldSequence.replyReceived=true;row.coldSequence.stopped=true;row.coldSequence.stopReason='REPLY_RECEIVED';row.replyText=clean(replyText);row.replyCategory=clean(category).toUpperCase()||null;row.updatedAt=new Date().toISOString();
+    const explicitDnc=/\b(stop|unsubscribe|remove me|do not contact|don't contact)\b/i.test(replyText||'');
+    if(hardSuppressionOverride===true||explicitDnc){
       row.positiveReply=false;
-      const result=this.suppression.upsert({email:email||row.email,reason:'PROSPECT_DO_NOT_CONTACT',source:'P2GC_REPLY',sourceId,evidence:clean(replyText),hard:true});
+      const reason=clean(category).toUpperCase()||'PROSPECT_DO_NOT_CONTACT';
+      const result=this.suppression.upsert({email:email||row.email,reason,category:reason,source:'P2GC_REPLY_INTELLIGENCE',sourceId,evidence:clean(replyText),hard:true});
       row.status='GLOBAL_SUPPRESSION_ADDED';writeJson(this.stateFile,rows);
-      this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:'REPLY_DO_NOT_CONTACT',recipient:row.email,status:'SUPPRESSED',reply:clean(replyText),result});
-      return {ok:true,suppressed:true,result};
+      this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:'REPLY_SUPPRESSED',recipient:row.email,status:'SUPPRESSED',reply:clean(replyText),result:{...result,category:reason,pipelineId:row.id,diagnosticId:row.diagnosticId}});
+      return {ok:true,suppressed:true,positive:false,row,result};
     }
-    const positive=Policy.positiveReplyIntent(replyText);
+    const positive=positiveOverride===true?true:positiveOverride===false?false:Policy.positiveReplyIntent(replyText);
     row.positiveReply=positive;
     row.status=positive?'DIAGNOSTIC_REQUESTED':'REPLY_RECEIVED';writeJson(this.stateFile,rows);
-    this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:positive?'POSITIVE_REPLY_DIAGNOSTIC_REQUEST':'REPLY_RECEIVED',recipient:row.email,status:'REPLIED',reply:clean(replyText),result:{diagnosticId:row.diagnosticId,positiveReply:positive}});
+    this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:positive?'POSITIVE_REPLY_DIAGNOSTIC_REQUEST':'REPLY_RECEIVED',recipient:row.email,status:'REPLIED',reply:clean(replyText),result:{diagnosticId:row.diagnosticId,pipelineId:row.id,positiveReply:positive,category:row.replyCategory}});
     return {ok:true,positive,row};
+  }
+
+  markClassifiedReply({email,replyText,sourceId,category,qualifiedPositive=false,hardSuppression=false}={}){
+    const row=this.findActiveByEmail(email);
+    if(!row)return {ok:true,matched:false,status:'NO_ACTIVE_COMPANY_SPECIFIC_PIPELINE'};
+    const categoryKey=clean(category).toUpperCase();
+    const positiveEligible=qualifiedPositive===true&&!['REFERRAL'].includes(categoryKey);
+    const result=this.markReply({pipelineId:row.id,replyText,email,sourceId,category:categoryKey,positiveOverride:positiveEligible?true:undefined,hardSuppressionOverride:hardSuppression===true});
+    return {...result,matched:true,pipelineId:row.id,diagnosticId:row.diagnosticId,company:row.company,segment:row.segment};
   }
 
   positiveReplyLinkMessage({pipelineId,sendingMailbox}={}){
@@ -126,11 +141,9 @@ class P2GCCompanySpecificOutboundPipelineService{
     const body=`Absolutely.\n\nHere is the private Federal Growth Snapshot we prepared for ${row.company}:\n\n${link}\n\nIt uses ${row.company}'s actual public federal contracting data and shows the main areas that stood out along with the underlying sources.\n\nI've left enough visible for you to determine whether the findings are relevant. If they are, you can request the complete review and decide whether you want the intelligence for your internal team or want P2GC involved in executing it.\n\nKevin`;
     row.privateLinkReleasedAt=row.privateLinkReleasedAt||new Date().toISOString();
     row.privateLinkReleasedFrom=lower(sendingMailbox);
-    row.status='PRIVATE_DIAGNOSTIC_LINK_RELEASED';
-    row.updatedAt=new Date().toISOString();
-    writeJson(this.stateFile,rows);
+    row.status='PRIVATE_DIAGNOSTIC_LINK_RELEASED';row.updatedAt=new Date().toISOString();writeJson(this.stateFile,rows);
     this.activity.recordActivity({channel:'EMAIL',campaign:row.segment,segment:row.segment,action:'PRIVATE_DIAGNOSTIC_LINK_RELEASED_AFTER_POSITIVE_REPLY',recipient:row.email,senderMailbox:lower(sendingMailbox),status:'READY_TO_SEND_IN_SAME_THREAD',message:body,result:{pipelineId:row.id,diagnosticId:row.diagnosticId,privatePath:row.privatePath}});
-    return {ok:true,fromName:'Kevin',fromMailbox:lower(sendingMailbox),sameThreadRequired:true,body,privateLink:link,privateLinkReleasedAt:row.privateLinkReleasedAt};
+    return {ok:true,fromName:'Kevin',fromMailbox:lower(sendingMailbox),sameThreadRequired:true,body,privateLink:link,privateLinkReleasedAt:row.privateLinkReleasedAt,pipelineId:row.id,diagnosticId:row.diagnosticId};
   }
 
   qualification(input={}){
@@ -150,3 +163,4 @@ class P2GCCompanySpecificOutboundPipelineService{
 }
 
 module.exports=P2GCCompanySpecificOutboundPipelineService;
+module.exports.ACTIVE_REPLY_STATUSES=ACTIVE_REPLY_STATUSES;
