@@ -1,7 +1,7 @@
 {
-  "id": "miles-command-center-recovery-after-private-diagnostic-20260906-2131",
+  "id": "miles-command-center-owner-recovery-20260906-2137",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main, restore and verify the governed MILES runtime after the private diagnostic deployment. Specifically ensure miles-command-center is online and port 8787 serves the CEO dashboard GREEN. Preserve the new 5-day Recent Work/Recent Activity window and Marketing Activity destination. Do not alter private diagnostic data, do not delete tasks/history, and do not grant approvals automatically."
+  "note": "Pull current main and run the fail-closed command-center ownership recovery. Inspect the process holding port 8787. Terminate it only if Windows process metadata proves it is the canonical Node process for C:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartUnifiedMilesControlCenter.js (or UnifiedMilesGateway under that same repo). If the signature does not match, do not terminate anything. After a verified orphan cleanup, restart only PM2 miles-command-center, require /api/dashboard ok=true, and require port 8787 PID to match the PM2 miles-command-center PID. No destructive git recovery, no provider mutation, no task/history deletion."
 }
