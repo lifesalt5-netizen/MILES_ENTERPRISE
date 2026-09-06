@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v8-landingbeats-20260905-2125",
+  "id": "miles-p2gc-reusable-demo-v9-pointlanding-20260905-2133",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "PACING-ONLY PASS. Keep the approved 11-scene core, short welcome intro, SLED-to-Fed mention in Scene 10, bright executive theme, natural neural voice at the current V7 rate, and narration-driven screen sync. Do not slow the voice further. Increase only the between-scene landing beat to about 0.80 seconds so the final point of each topic has time to register before the next scene begins. Keep in-scene reveal timing unchanged. Export P2GC_Federal_Growth_Review_Demo_V8.mp4 at 1920x1080 30fps H.264 AAC. Do not change facts, narration content, routing logic, or presentation design."
+  "note": "POINT-LANDING PACING CORRECTION. Keep the approved 11-scene core, welcome intro, SLED-to-Fed mention in Scene 10, bright executive theme, natural neural voice at the current V7/V8 rate, and narration-driven screen sync. Do not slow the voice further. After EACH spoken point, keep the matching screen visible briefly so the point lands before the next narration/reveal begins. Use about 0.30s after normal points, about 0.45s after major metrics/questions/risk/protect-expand-capture points, and about 0.70s at topic endings. Then advance narration and screen together. Export P2GC_Federal_Growth_Review_Demo_V9.mp4 at 1920x1080 30fps H.264 AAC. Do not change facts, narration content, routing logic, or presentation design."
 }
