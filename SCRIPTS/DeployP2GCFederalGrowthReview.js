@@ -1,15 +1,12 @@
 'use strict';
 
-// CEO priority override (2026-09-05): build the reusable P2GC Federal Growth Review demo.
-// Apply the final approved copy refinements before rendering, then run the reusable-demo
-// production pipeline through the existing allowlisted remote execution job.
+// FINAL RENDER PRIORITY: use approved 11 scene assets + approved narration only.
+// Google Vids audio/avatar automation is intentionally bypassed.
 
-const { main: applyCopyOverrides } = require('./ApplyP2GCReusableDemoCopyOverrides');
-const { main: runReusableDemoProduction } = require('./RunP2GCReusableDemoVidsProduction');
+const { main: renderLocal } = require('./RenderP2GCFederalGrowthReviewLocal');
 
 Promise.resolve()
-  .then(() => applyCopyOverrides())
-  .then(() => runReusableDemoProduction())
+  .then(() => renderLocal())
   .catch(error => {
     console.error(error && (error.stack || error.message) || error);
     process.exitCode = 2;
