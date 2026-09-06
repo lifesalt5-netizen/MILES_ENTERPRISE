@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v12-tightquestions-20260906-1522",
+  "id": "miles-p2gc-reusable-demo-v13-pacedquestions-20260906-1529",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "V12 FINAL QUESTION-SEQUENCE PACING PASS. Pull current main. Preserve all V10 content fixes: decimal integrity, fictional-company setup, no-federal-awards path, Sub-to-Prime, SLED-to-Fed, GSA/VA vehicle growth, FREE company-specific demo CTA and closing thank-you. Preserve V11 behavior: every question is its own visual/narration unit; show the question first, pause briefly, speak that exact question, let it land, then advance. Do not speed up the neural voice. Tighten only repetitive narration around the questions so total runtime returns near 8 minutes. Keep screen/narration synchronized and do not skip questions. Export P2GC_Federal_Growth_Review_Demo_V12.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "V13 PACED QUESTION-SEQUENCE PASS. Pull current main. Preserve all V10 content fixes, V11 show-question-first/speak-exact-question behavior, and V12 concise narration. Do not speed up the neural voice. Restore deliberate point-level breathing room so information lands: normal points hold about 0.72s, impactful metrics/questions about 0.92s, topic endings about 1.0s, with visual lead before narration of about 0.48s for normal points and 0.85s for questions. Keep every individual delay under 2 seconds, keep screen/narration synchronized, and do not skip questions. Target about 8 minutes total. Export P2GC_Federal_Growth_Review_Demo_V13.mp4 at 1920x1080 30fps H.264 AAC."
 }
