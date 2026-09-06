@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-urgency-v3-dragdrop-20260905-1629",
+  "id": "miles-p2gc-reusable-demo-urgency-v3-avatarfallback-20260905-2012",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "CEO APPROVED FINAL REUSABLE-DEMO BUILD: pull current main and render urgency-v3. Use the 11-scene fictional Apex Ridge master, Federal Growth Position Scorecard, revised 64% attention wording, strengthened CTA, fixed 1920x1080 scene assets, Google Vids first, and avatar only opening/close. Use direct drag/drop-to-canvas fallback if Vids does not expose Insert/Image upload controls. Target 8:15-8:45. Do not return to personalized-video work."
+  "note": "FINAL REUSABLE-DEMO BUILD: pull current main and render urgency-v3. Keep all 11 scene assets and approved copy. Use drag/drop scene import. Attempt avatar only for opening/close; if avatar control is unavailable, automatically fall back to full-scene professional voiceover and continue rather than fail. Target 8:15-8:45. Export MP4 and do not return to personalized-video work."
 }
