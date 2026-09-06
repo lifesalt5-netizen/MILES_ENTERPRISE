@@ -30,7 +30,7 @@ function canonicalSignature(info){
   const entryMatch=command.includes('startunifiedmilescontrolcenter.js')||command.includes('services\\digital_coo\\unifiedmilesgateway');
   return {ok:node&&rootMatch&&entryMatch,node,rootMatch,entryMatch,commandLine:info?.CommandLine||null,executablePath:info?.ExecutablePath||null,parentProcessId:info?.ParentProcessId||null};
 }
-function httpJson(timeoutMs=5000){return new Promise((resolve,reject)=>{const req=http.get({hostname:'127.0.0.1',port:PORT,path:'/api/dashboard',timeout:timeoutMs},res=>{let body='';res.setEncoding('utf8');res.on('data',c=>body+=c);res.on('end',()=>{if(res.statusCode<200||res.statusCode>=300)return reject(new Error(`HTTP_${res.statusCode}`));try{resolve(JSON.parse(body));}catch{reject(new Error('INVALID_JSON'));}});});req.on('timeout',()=>req.destroy(new Error('TIMEOUT'));req.on('error',reject);});}
+function httpJson(timeoutMs=5000){return new Promise((resolve,reject)=>{const req=http.get({hostname:'127.0.0.1',port:PORT,path:'/api/dashboard',timeout:timeoutMs},res=>{let body='';res.setEncoding('utf8');res.on('data',c=>body+=c);res.on('end',()=>{if(res.statusCode<200||res.statusCode>=300)return reject(new Error(`HTTP_${res.statusCode}`));try{resolve(JSON.parse(body));}catch{reject(new Error('INVALID_JSON'));}});});req.on('timeout',()=>req.destroy(new Error('TIMEOUT')));req.on('error',reject);});}
 async function waitHealthy(timeoutMs=45000){const deadline=Date.now()+timeoutMs;let last=null;while(Date.now()<deadline){try{const d=await httpJson();if(d?.ok===true)return d;last=new Error(`DASHBOARD_OK_${d?.ok}`);}catch(e){last=e;}await new Promise(r=>setTimeout(r,1200));}throw last||new Error('DASHBOARD_RECOVERY_TIMEOUT');}
 
 async function main(){
