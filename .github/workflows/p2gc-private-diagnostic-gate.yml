@@ -1,0 +1,31 @@
+name: P2GC Private Diagnostic Gate
+
+on:
+  push:
+    paths:
+      - 'SERVICES/revenue/P2GCMarketingSalesOperatingPolicy.js'
+      - 'SERVICES/revenue/P2GCCompanySpecificOutboundPipelineService.js'
+      - 'SERVICES/revenue/P2GCPrivateDiagnosticHttpController.js'
+      - 'SERVICES/private_diagnostic/public/**'
+      - 'StartP2GCCustomerDelivery.js'
+      - 'TESTS/p2gc_private_diagnostic_gate.test.js'
+      - '.github/workflows/p2gc-private-diagnostic-gate.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check SERVICES/revenue/P2GCMarketingSalesOperatingPolicy.js
+          node --check SERVICES/revenue/P2GCCompanySpecificOutboundPipelineService.js
+          node --check SERVICES/revenue/P2GCPrivateDiagnosticHttpController.js
+          node --check SERVICES/private_diagnostic/public/diagnostic.js
+          node --check StartP2GCCustomerDelivery.js
+      - name: Positive reply and qualification gate
+        run: node TESTS/p2gc_private_diagnostic_gate.test.js
