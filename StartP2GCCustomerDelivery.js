@@ -6,10 +6,12 @@ const { URL } = require("url");
 const service = require("./SERVICES/customer/P2GCCustomerDeliveryService");
 const P2GCFederalGrowthReviewHttpController = require("./SERVICES/revenue/P2GCFederalGrowthReviewHttpController");
 const P2GCFederalGrowthReviewAdminController = require("./SERVICES/revenue/P2GCFederalGrowthReviewAdminController");
+const P2GCPrivateDiagnosticHttpController = require("./SERVICES/revenue/P2GCPrivateDiagnosticHttpController");
 
 const PORT = Number(process.env.P2GC_CUSTOMER_PORT || 8792);
 const adminReviewController = new P2GCFederalGrowthReviewAdminController({ rootDir: __dirname });
 const reviewController = new P2GCFederalGrowthReviewHttpController({ rootDir: __dirname });
+const privateDiagnosticController = new P2GCPrivateDiagnosticHttpController({ rootDir: __dirname });
 
 function send(res, code, body) {
   const text = JSON.stringify(body, null, 2);
@@ -23,6 +25,7 @@ function readBody(req) {
 const server = http.createServer(async (req,res)=>{
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
   try {
+    if(await privateDiagnosticController.handle(req,res,url)) return;
     if(await adminReviewController.handle(req,res,url)) return;
     if(await reviewController.handle(req,res,url)) return;
     if(req.method==="GET" && url.pathname==="/api/health") return send(res,200,service.healthCheck());
