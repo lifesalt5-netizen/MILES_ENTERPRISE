@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-09-06T20:50:00.000Z",
+  "status": "BUILDING",
+  "operatingSystem": "P2GC_MARKETING_SALES_OS_V1",
+  "senderIdentity": "Kevin",
+  "protectedPrimaryDomain": {
+    "domain": "p2gc.com",
+    "coldSending": "DISABLED",
+    "failover": "DISABLED"
+  },
+  "whatIsGoingOut": {"today": [], "totalMarketingTouchesToday": 0, "next": []},
+  "calendar": {"today": [], "week": [], "month": []},
+  "emailActivity": {"campaigns": [], "today": [], "exactMessageHistory": []},
+  "linkedinActivity": {"searches": [], "connections": [], "messages": [], "posts": []},
+  "outboundDomainHealth": [
+    {"domain":"p2gc.com","mailbox":"","sendingStatus":"DISABLED","healthIndicator":"PROTECTED","recommendedMaxSendingVolume":0,"coldSendingDisabled":true},
+    {"domain":"pathwaysgov.com","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0},
+    {"domain":"pathwaysfederal.com","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0},
+    {"domain":"pathwaysgovcon.com","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0},
+    {"domain":"pathwaystogc.com","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0},
+    {"domain":"pathwaysgsa.com","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0},
+    {"domain":"pathways2gc.co","mailbox":"","sendingStatus":"PAUSED","healthIndicator":"WATCH","recommendedMaxSendingVolume":0}
+  ],
+  "auditHistory": [],
+  "messageLibrary": [],
+  "diagnostics": {"prepared":0,"items":[],"interactions":[]},
+  "qualification": {"latest":[],"highIntent":0,"researchOnly":0},
+  "scorecard": {"today":{},"weekToDate":{},"monthToDate":{}},
+  "funnel": {"stages":{},"conversions":[]},
+  "segments": [
+    "P2GC – GSA No Sales","P2GC – GSA Low Sales","P2GC – VA Growth","P2GC – Recompete / Protect Revenue","P2GC – Agency Concentration","P2GC – Agency Expansion","P2GC – Sub → Prime","P2GC – Teaming","P2GC – Qualified Capture","P2GC – Vehicle Expansion","P2GC – SLED/Commercial → Federal","P2GC – Established Federal Growth"
+  ],
+  "warmPipelineSyncQueue": [],
+  "governance": {"qualityOrder":["RELEVANCE","ACCURACY","DELIVERABILITY","BUYING_INTENT","CONVERSION","REVENUE"],"rawSendVolumePrimary":false,"globalSuppressionRequired":true,"largeNewCampaignNeedsKevinWhenRiskChanges":true,"paidResourcesNeedKevin":true}
+}
