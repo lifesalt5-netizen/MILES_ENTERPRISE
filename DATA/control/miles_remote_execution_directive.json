@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v4-ffprobefix-20260905-2120",
+  "id": "miles-p2gc-reusable-demo-v5-speechsync-20260905-2140",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "CONTINUE V4 UNTIL READY. Fix only PROJECT_FFMPEG_OR_FFPROBE_MISSING by provisioning project-local ffprobe alongside existing FFmpeg, verify both, then render the approved 11-scene V4 with bright executive theme, natural zero-cost neural narration, progressive reveals, and transitions under 2 seconds (target 0.6s). Export P2GC_Federal_Growth_Review_Demo_V4.mp4 at 1920x1080 30fps H.264 AAC."
+  "note": "PRESENTATION TIMING CORRECTION ONLY. Keep all approved 11-scene factual content and the bright executive presentation. Fix the two reviewed delivery issues: the screen must change in direct sync with narration instead of running behind, and topic changes must not have long pauses. Use narration-driven progressive reveals, trim leading/trailing TTS silence, slow the existing natural neural voice slightly to -8%, keep between-reveal hold about 0.10s and between-topic hold about 0.18s (always under 2s). Provision existing project-local FFmpeg/ffprobe if needed. Export P2GC_Federal_Growth_Review_Demo_V5.mp4 at 1920x1080 30fps H.264 AAC. Do not change approved factual content or routing logic."
 }
