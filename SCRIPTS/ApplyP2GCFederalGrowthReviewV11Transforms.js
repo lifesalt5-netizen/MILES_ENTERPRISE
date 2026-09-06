@@ -27,11 +27,11 @@ function applyV11Transforms(src) {
     'V11_QUESTION_BANNER_ANCHOR_NOT_FOUND'
   );
 
-  // Let the visual appear first, then begin narration. Questions receive a larger visual lead.
+  // Let the visual appear first, then begin narration. Questions receive a clear visual lead.
   src = replaceRequired(
     src,
     'const hold=isLastInScene?BETWEEN_SCENE_HOLD:(impactful?0.45:BETWEEN_CHUNK_HOLD);const duration=audioDuration+hold;',
-    "const hold=isLastInScene?BETWEEN_SCENE_HOLD:(impactful?0.45:BETWEEN_CHUNK_HOLD);const question=/\\?\\s*$/.test(String(chunkText||''));const lead=question?0.50:0.16;const duration=lead+audioDuration+hold;",
+    "const hold=isLastInScene?BETWEEN_SCENE_HOLD:(impactful?0.45:BETWEEN_CHUNK_HOLD);const question=/\\?\\s*$/.test(String(chunkText||''));const lead=question?0.60:0.16;const duration=lead+audioDuration+hold;",
     'V11_VISUAL_LEAD_TIMING_ANCHOR_NOT_FOUND'
   );
 
@@ -40,6 +40,14 @@ function applyV11Transforms(src) {
     '[1:a]apad=pad_dur=${hold.toFixed(3)},atrim=0:${duration.toFixed(3)}[a]',
     '[1:a]adelay=${Math.round(lead*1000)}|${Math.round(lead*1000)},apad=pad_dur=${hold.toFixed(3)},atrim=0:${duration.toFixed(3)}[a]',
     'V11_AUDIO_DELAY_ANCHOR_NOT_FOUND'
+  );
+
+  // Reuse any valid V11 segments from the timed-out run instead of re-encoding them.
+  src = replaceRequired(
+    src,
+    "const out=path.join(SEGMENTS,`scene_${String(sceneNo).padStart(2,'0')}_chunk_${String(chunkNo).padStart(2,'0')}.mp4`);const fadeOutStart=Math.max(0,duration-0.10);",
+    "const out=path.join(SEGMENTS,`scene_${String(sceneNo).padStart(2,'0')}_chunk_${String(chunkNo).padStart(2,'0')}.mp4`);if(fs.existsSync(out)&&fs.statSync(out).size>100000){return{file:out,duration:probeDuration(out)};}const fadeOutStart=Math.max(0,duration-0.10);",
+    'V11_SEGMENT_REUSE_ANCHOR_NOT_FOUND'
   );
 
   // Report the new acceptance gates explicitly.
