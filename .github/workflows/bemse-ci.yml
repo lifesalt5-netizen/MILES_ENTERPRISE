@@ -1,0 +1,28 @@
+name: BEMSE CI
+
+on:
+  push:
+    branches: ["bemse-mvp"]
+    paths:
+      - "BEMSE/**"
+      - ".github/workflows/bemse-ci.yml"
+  pull_request:
+    paths:
+      - "BEMSE/**"
+      - ".github/workflows/bemse-ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BEMSE
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -e .[dev]
+      - run: pytest -q
+      - run: ruff check src tests
