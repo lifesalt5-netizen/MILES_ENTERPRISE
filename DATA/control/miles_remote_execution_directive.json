@@ -1,7 +1,7 @@
 {
-  "id": "miles-ceo-dashboard-five-day-recent-window-20260906-2055",
+  "id": "miles-p2gc-private-diagnostic-qualification-20260906-2128",
   "enabled": true,
-  "job": "COO_CONSOLIDATED_SELF_MAINTENANCE_DEPLOY",
+  "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main and deploy the CEO dashboard update. Recent Work and Recent Activity must display only records from the last 5 days maximum. Preserve full underlying history for audit/analysis; do not delete historical records. Collapse exact repeated visible events to reduce CEO dashboard noise. Ensure Marketing Activity remains a top-level CEO Dashboard destination. Restart only governed MILES runtime applications through the existing consolidated deployment flow and verify the command center recovers GREEN."
+  "note": "Pull current main and deploy the P2GC private company diagnostic conversion flow. Validate syntax and the positive-reply/qualification acceptance test, restart only the existing p2gc-customer-delivery PM2 app, verify /api/health plus private diagnostic CSS/JS security headers. Hard rules: private diagnostic link is released only after a genuinely positive reply, never from p2gc.com, same-thread handoff must remain on an approved secondary domain, page asks the four qualification questions, and Kevin scheduling remains hidden unless the prospect qualifies as high intent. Do not delete data or perform destructive recovery."
 }
