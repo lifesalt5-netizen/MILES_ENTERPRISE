@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MILES Marketing Activity</title>
+  <link rel="stylesheet" href="/ceo.css">
+  <style>
+    .marketing-shell{max-width:1500px;margin:0 auto;padding:24px}.marketing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.wide{grid-column:1/-1}.metric{padding:14px;border:1px solid rgba(120,140,180,.28);border-radius:12px;background:rgba(255,255,255,.04)}.metric b{display:block;font-size:1.65rem}.guard{border:1px solid #b45309;padding:12px;border-radius:10px}.good{border-color:#15803d}.bad{border-color:#b91c1c}.table-wrap{overflow:auto}.marketing-table{width:100%;border-collapse:collapse}.marketing-table th,.marketing-table td{padding:9px 10px;border-bottom:1px solid rgba(140,150,180,.18);text-align:left;vertical-align:top}.marketing-table th{position:sticky;top:0;background:#111827}.copy{white-space:pre-wrap;max-width:600px}.pill{display:inline-block;padding:3px 8px;border-radius:999px;background:rgba(96,165,250,.15);font-size:.78rem}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar button{min-width:auto}.section-note{margin-top:4px}.empty-state{padding:20px;text-align:center;opacity:.72}.hero-actions{display:flex;gap:10px;flex-wrap:wrap}.hero-actions a{display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;background:#1d4ed8;color:white}.hero-actions a.secondary{background:#374151}
+  </style>
+</head>
+<body>
+  <main class="marketing-shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">P2GC · CEO CONTROL CENTER</div>
+        <h1>Marketing Activity</h1>
+        <p>One place to see what P2GC is doing today, what is going out, to whom, how many, the exact message, which mailbox is sending it, what prospects are doing next, and which activity creates meetings, sales and revenue.</p>
+      </div>
+      <div class="hero-actions"><a href="/">CEO DASHBOARD</a><a class="secondary" href="/revenue-control">REVENUE CONTROL</a></div>
+    </header>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">HARD GOVERNANCE</div><h2>Sender & Domain Firewall</h2></div><button id="refreshMarketing" class="secondary">Refresh</button></div><div id="governance"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">CEO VIEW</div><h2>What Is Going Out?</h2><p class="muted section-note">Today’s scheduled/completed email, LinkedIn, diagnostic, nurture and other approved touches with exact copy.</p></div></div><div id="whatGoingOut"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">TODAY / WEEK / MONTH</div><h2>Marketing Calendar</h2></div><div class="toolbar"><button data-calendar="today">Today</button><button class="secondary" data-calendar="week">Week</button><button class="secondary" data-calendar="month">Month</button></div></div><div id="calendar"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">DAILY CEO MARKETING SCORECARD</div><h2>Pipeline Creation</h2></div></div><div id="scorecard"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">EMAIL</div><h2>Email Activity</h2><p class="muted section-note">Campaign, segment, sending domain/mailbox, subject, exact message, send counts, replies, diagnostic requests, meetings, proposals, wins and revenue.</p></div></div><div id="emailActivity"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">DELIVERABILITY</div><h2>Outbound Domain Health</h2></div></div><div id="domainHealth"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">LINKEDIN</div><h2>LinkedIn Marketing Activity</h2></div></div><div id="linkedinActivity"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">COMPANY-SPECIFIC CONVERSION</div><h2>Diagnostics & Qualification</h2></div></div><div id="diagnostics"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">FUNNEL</div><h2>Conversion Performance</h2></div></div><div id="funnel"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">MESSAGE LIBRARY</div><h2>Copy Versions & Performance</h2></div></div><div id="messageLibrary"></div></section>
+
+    <section class="panel"><div class="panel-head"><div><div class="eyebrow">PERMANENT HISTORY</div><h2>What Went Out? Audit</h2></div></div><div id="audit"></div></section>
+  </main>
+  <script src="/marketing-activity.js"></script>
+</body>
+</html>
