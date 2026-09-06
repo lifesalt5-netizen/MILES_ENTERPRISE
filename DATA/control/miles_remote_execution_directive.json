@@ -1,7 +1,7 @@
 {
-  "id": "miles-command-center-composite-owner-recovery-20260906-2150",
+  "id": "miles-command-center-unique-registration-recovery-20260906-2158",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "Pull current main and run composite fail-closed ownership recovery for port 8787. Require: generic PM2 child signature; PM2 miles-command-center metadata points to the canonical StartUnifiedMilesControlCenter.js and MILES repo cwd; live port 8787 /api/health identifies MILES_UNIFIED_CEO_GATEWAY and /api/dashboard is ok=true; and either PM2's app pid/pid-file directly matches the listener PID OR both PM2 daemon parent correlation and process-start/pm_uptime correlation match. Only after that composite proof may the orphan be stopped. Then restart only PM2 miles-command-center and require its PID to own 8787 with /api/dashboard ok=true. Otherwise fail closed. No destructive git recovery, provider mutation, approval mutation, or data deletion."
+  "note": "Pull current main and recover port 8787 only after the strengthened composite proof passes. Require the listener to be a PM2 ProcessContainerFork child of the active PM2 daemon; require exact MILES_UNIFIED_CEO_GATEWAY HTTP identity and healthy dashboard; require exactly one PM2 registration for C:\\P2GC_Intelligence\\MILES_ENTERPRISE\\StartUnifiedMilesControlCenter.js, named miles-command-center with canonical cwd; then allow cleanup if direct app PID proof exists, start-time correlation exists, or the uniquely registered canonical app is stopped while the listener is the exact gateway child of the same PM2 daemon. Restart only miles-command-center and require PM2 PID == 8787 listener PID and /api/dashboard ok=true. Otherwise fail closed. No destructive git recovery, provider mutation, approval mutation, or data deletion."
 }
