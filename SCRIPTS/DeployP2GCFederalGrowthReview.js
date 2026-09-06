@@ -1,14 +1,14 @@
 'use strict';
 
-// V12 final question-sequence pacing pass: preserve V10 content fixes and V11 question behavior,
-// while trimming only redundant narration so the demo stays near the approved runtime.
+// V13 pacing pass: preserve V10 content fixes, V11 question behavior, and V12 concise narration,
+// while restoring deliberate visual lead/landing time so each point can register near the 8-minute target.
 
 const { main: provisionFfmpeg } = require('./ProvisionProjectFfmpeg');
-const { main: renderV12 } = require('./RenderP2GCFederalGrowthReviewV12QuestionSequence');
+const { main: renderV13 } = require('./RenderP2GCFederalGrowthReviewV13QuestionSequence');
 
 Promise.resolve()
   .then(() => provisionFfmpeg())
-  .then(() => renderV12())
+  .then(() => renderV13())
   .catch(error => {
     console.error(error && (error.stack || error.message) || error);
     process.exitCode = 2;
