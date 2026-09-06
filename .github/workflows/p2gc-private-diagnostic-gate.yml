@@ -6,9 +6,11 @@ on:
       - 'SERVICES/revenue/P2GCMarketingSalesOperatingPolicy.js'
       - 'SERVICES/revenue/P2GCCompanySpecificOutboundPipelineService.js'
       - 'SERVICES/revenue/P2GCPrivateDiagnosticHttpController.js'
+      - 'SERVICES/revenue/ReplyIntelligenceProductionLoopService.js'
       - 'SERVICES/private_diagnostic/public/**'
       - 'StartP2GCCustomerDelivery.js'
       - 'TESTS/p2gc_private_diagnostic_gate.test.js'
+      - 'TESTS/p2gc_company_specific_reply_bridge.test.js'
       - '.github/workflows/p2gc-private-diagnostic-gate.yml'
   workflow_dispatch:
 
@@ -25,7 +27,12 @@ jobs:
           node --check SERVICES/revenue/P2GCMarketingSalesOperatingPolicy.js
           node --check SERVICES/revenue/P2GCCompanySpecificOutboundPipelineService.js
           node --check SERVICES/revenue/P2GCPrivateDiagnosticHttpController.js
+          node --check SERVICES/revenue/ReplyIntelligenceProductionLoopService.js
           node --check SERVICES/private_diagnostic/public/diagnostic.js
           node --check StartP2GCCustomerDelivery.js
       - name: Positive reply and qualification gate
         run: node TESTS/p2gc_private_diagnostic_gate.test.js
+      - name: Live reply intelligence to private diagnostic bridge
+        run: node TESTS/p2gc_company_specific_reply_bridge.test.js
+      - name: Legacy qualified reply path remains intact
+        run: node TESTS/Test_QualifiedReplyRevenueBridge.js
