@@ -1,7 +1,7 @@
 {
-  "id": "miles-p2gc-reusable-demo-v7-finalpaced-20260905-2117",
+  "id": "miles-p2gc-reusable-demo-v8-landingbeats-20260905-2125",
   "enabled": true,
   "job": "P2GC_FEDERAL_GROWTH_REVIEW_DEPLOY",
   "requestedBy": "CEO_VIA_CHATGPT",
-  "note": "FINAL PRESENTATION PACING PASS. Keep the approved 11-scene federal growth review core, bright executive theme, natural neural voice, and narration-driven screen sync. Add a short opening before Scene 1: glad you are able to review this today / next few minutes / let's get started. Add one brief SLED-to-Fed expansion mention in Scene 10. Slow the natural voice enough to target approximately 8:00 total runtime, without reintroducing long topic-change pauses; keep between-topic hold about 0.20s and narration-driven reveals synced to speech. Provision project-local FFmpeg/ffprobe if needed. Export P2GC_Federal_Growth_Review_Demo_V7.mp4 at 1920x1080 30fps H.264 AAC. Do not change routing logic or approved federal facts."
+  "note": "PACING-ONLY PASS. Keep the approved 11-scene core, short welcome intro, SLED-to-Fed mention in Scene 10, bright executive theme, natural neural voice at the current V7 rate, and narration-driven screen sync. Do not slow the voice further. Increase only the between-scene landing beat to about 0.80 seconds so the final point of each topic has time to register before the next scene begins. Keep in-scene reveal timing unchanged. Export P2GC_Federal_Growth_Review_Demo_V8.mp4 at 1920x1080 30fps H.264 AAC. Do not change facts, narration content, routing logic, or presentation design."
 }
